@@ -1,0 +1,388 @@
+﻿body {
+    /*padding-bottom: 20px;*/
+    padding-top:80px;
+    background-color: #061639;
+}
+
+.banner {
+    position: fixed;
+    top: 70px;
+    left: 0px;
+    height:300px;
+    /*width:100%;*/
+    z-index:-10;
+    border-bottom: solid 1px #4e638e;
+}
+
+.carousel {
+    position: absolute;
+    top: 70px;
+    left: 0px;
+    z-index: -10;
+    border-bottom: solid 1px #4e638e;
+}
+
+.carousel .item {
+    /*width: 100%;*/ /*slider width*/
+    max-height: 699px /*slider height*/
+}
+
+.carousel-overlay {
+    position:fixed;
+    top:69px;
+    left:0px;
+    width:100%;
+    z-index:-5;
+
+    background: rgba(21,42,85,0.70);
+    /*background: -moz-linear-gradient(top, rgba(21,42,85,0.66) 0%, rgba(21,42,85,0.66) 12%, rgba(21,42,85,0.8) 50%, rgba(21,42,85,0.66) 90%, rgba(21,42,85,0.66) 100%);
+    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(21,42,85,0.66)), color-stop(12%, rgba(21,42,85,0.66)), color-stop(50%, rgba(21,42,85,0.8)), color-stop(90%, rgba(21,42,85,0.66)), color-stop(100%, rgba(21,42,85,0.66)));
+    background: -webkit-linear-gradient(top, rgba(21,42,85,0.66) 0%, rgba(21,42,85,0.66) 12%, rgba(21,42,85,0.8) 50%, rgba(21,42,85,0.66) 90%, rgba(21,42,85,0.66) 100%);
+    background: -o-linear-gradient(top, rgba(21,42,85,0.66) 0%, rgba(21,42,85,0.66) 12%, rgba(21,42,85,0.8) 50%, rgba(21,42,85,0.66) 90%, rgba(21,42,85,0.66) 100%);
+    background: -ms-linear-gradient(top, rgba(21,42,85,0.66) 0%, rgba(21,42,85,0.66) 12%, rgba(21,42,85,0.8) 50%, rgba(21,42,85,0.66) 90%, rgba(21,42,85,0.66) 100%);
+    background: linear-gradient(to bottom, rgba(21,42,85,0.66) 0%, rgba(21,42,85,0.75) 10%, rgba(21,42,85,0.9) 50%, rgba(21,42,85,0.75) 90%, rgba(21,42,85,0.66) 100%);*/
+    /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#152a55', endColorstr='#152a55', GradientType=0 );*/
+}
+
+.carousel-overlay-parent {
+    height:700px;
+}
+
+.carousel-overlay-child {
+    height:300px;
+}
+
+.body-content-header {
+    position: fixed;
+    top:75px;
+    left:0px;
+    width:100%
+}
+
+.body-content {
+    position:absolute;
+    left:0px;
+    top:390px;
+    width:100%;
+    z-index:-15;
+}
+
+
+/* Set padding to keep content from hitting the edges */
+/*.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}*/
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.navbar-brand {
+    float: left;
+    font-size: 48px;
+    /*padding-top: 8px;*/
+    padding-left: -15px;
+    padding-top:1px;
+    /*padding-bottom: 8px;*/
+    /*padding-right: 10px;*/
+    /*vertical-align: middle;*/
+    height: 50px;
+    font-weight:bold;
+    margin-top:5px;
+}
+
+/*.navbar-brand img {
+    border: solid 1px #4e638e;
+    border-radius:4px;
+}*/
+
+.navbar-nav li a {
+ line-height: 36px;
+}
+
+.navbar-form {
+    padding-top: 8px;
+}
+
+.navbar-inverse {
+    background-image: linear-gradient(to left, #061639, #152a55 66%, #4e638e);
+    background-image: -ms-linear-gradient(top, rgba(21,42,85,0.66) 0%, rgba(21,42,85,0.66) 12%, rgba(21,42,85,0.8) 50%, rgba(21,42,85,0.66) 90%, rgba(21,42,85,0.66) 100%);
+    border: 1px solid #152a55;
+    height: 70px
+}
+
+.navbar-inverse .navbar-brand {
+    color:#7788aa;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-nav > li > a:focus {
+    background-color: transparent;
+    color: rgb(255, 240, 170);
+}
+
+/*.carousel .item img {
+    height:300px;
+}*/
+/*add some makeup*/
+.carousel .carousel-control {
+    background: none;
+    border: none;
+    top: 50%;
+}
+
+/*full width container*/
+@media (max-width: 767px) {
+    .block {
+        margin-left: -20px;
+        margin-right: -20px;
+    }
+}
+
+/* Breadcrumb bar, give some transparency, as it sits over the carousel */
+.breadcrumb {
+    padding: 8px 15px;
+    margin-bottom: 20px;
+    list-style: outside none none;
+    background-color: #F5F5F5;
+    border-radius: 4px;
+    opacity: 0.9;
+    border-color: #12073b;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.inverse {
+    color: #fff0aa;
+}
+
+.inverse h2
+{
+    color: #fff;
+}
+
+.inverse h3
+{
+    color: #fff;
+}
+
+.inverse h1
+{
+    color: #fff;
+}
+
+.inverse p
+{
+    color: #fff0aa;
+}
+
+.panel-primary {
+    border-color: #48638e;
+    background: transparent none repeat scroll 0% 0%;
+}
+
+.panel-body {
+    background: rgba(78, 100, 142, 0.33) none repeat scroll 0% 0% !important;
+}
+
+.panel-primary > .panel-heading {
+    color: #FFF;
+    background-image: linear-gradient(to left, #061639, #152a55 66%, #4e638e);
+    border-color: #152a55;
+}
+
+.panel-primary > .panel-heading .badge {
+    color: #061639;
+    background-color: #Fff0aa;
+    opacity: 1;
+}
+
+.form-control:focus {
+    border-color: #887cb0;
+    outline: 0px none;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(136, 124, 176, 0.8);
+}
+
+.label-primary {
+    font-weight: normal;
+    display: block;
+    text-align: left;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background-color: #061639;
+    color: #fff;
+}
+
+.label-primary i {
+    color: #fff;
+    padding-right: 6px
+}
+
+.btn-primary {
+    color: #FFF;
+    background-color: #605292;
+    border-color: #261758;
+    background-image: none;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #261758;
+    border-color: #12073b;
+    background-image: none;
+}
+
+.btn-primary:focus {
+    color: #fff;
+    background-color: #261758;
+    border-color: #12073b;
+    background-image: none;
+}
+
+.table-bordered.dataTable {
+    border-color: #152A55;
+    background-color: #fff;
+}
+
+.table-bordered.dataTable > thead {
+    color: #FFF;
+    background-color: #152a55;
+    background-image: linear-gradient(to left, #061639, #152A55 66%, #4E638E);
+}
+
+.table-bordered.dataTable > thead > tr > th {
+    border-right: 1px solid #7788aa;
+    border-top: 1px solid #7788aa !important;
+    border-left: none;
+    border-bottom: none;
+    padding-right: 8px;
+    color: #fff0aa;
+}
+
+.table-bordered.dataTable > thead > tr > th > div > small {
+    color: #806d15 !important;
+}
+
+.table-bordered.dataTable > thead > tr:last-of-type > th {
+    border-bottom: 1px solid #7788aa;
+}
+
+.table-bordered.dataTable > thead > tr > th:first-of-type {
+    border-left: 1px solid #7788aa;
+}
+
+.table-bordered.dataTable > tbody > tr > td {
+    padding-right: 8px;
+}
+
+.table-bordered.dataTable > tbody > tr > td:first-of-type {
+    border-left: 1px solid #7788aa;
+}
+
+.table-bordered.dataTable > tbody > tr > td:last-of-type {
+    border-right: 1px solid #7788aa;
+}
+
+.table-bordered.dataTable > tbody > tr:last-of-type > td {
+    border-bottom: 1px solid #7788aa;
+}
+
+.table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+    border: 1px solid #4e638e;
+}
+
+.table-striped > tbody > tr:nth-of-type(2n+1) {
+    background-color: #4e638e;
+    color: #fff;
+}
+
+.table-striped > tbody > tr:nth-of-type(2n+1) {
+    background-color: #4e638e;
+    color: #fff;
+}
+
+.table-striped > tbody > tr > td {
+    border-right: 1px solid #7788aa;
+}
+
+.editEngineCode {
+    text-align:center;
+    height: 24px;
+}
+
+.editEngineCode > form > input {
+    color:#061639 !important;
+    width: 75px !important;
+    height: 24px !important;
+    font-size: 0.8em;
+}
+
+.vehicle-filter {
+    color: #666666;
+    font-size: 0.8em;
+    width:auto;
+}
+
+/*.vehicle-filter-trim {
+    
+    width: 75px !important;
+    height: 24px !important;
+    
+}*/
+
+hr {
+    border-color: #7788aa;
+}
+
+.vertical-spacer {
+    height: 20px;
+}
+
+select
+{
+     width:100% !important;
+}
+
+.vehicle-readonly {
+    color: #fff;
+}
+
+.dataTable-vertical-seperator {
+    border-right: double #7788aa;
+}
+
+.vertical-align {
+    position:relative;
+    top:50%;
+    transform: translateY(-50%);
+}

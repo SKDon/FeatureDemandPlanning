@@ -1,0 +1,227 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DCB42053-F686-4CD9-BE40-9BF11BFE19E1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FeatureDemandPlanning.Model</RootNamespace>
+    <AssemblyName>FeatureDemandPlanning.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ClosedXML">
+      <HintPath>..\..\FDP\OXOChart\bin\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="GotDotNet.Exslt">
+      <HintPath>..\..\FDP\OXOChart\bin\GotDotNet.Exslt.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Interfaces\IConfigurationDataContext.cs" />
+    <Compile Include="Interfaces\IForecast.cs" />
+    <Compile Include="Interfaces\IForecastDataContext.cs" />
+    <Compile Include="Interfaces\IImportDataContext.cs" />
+    <Compile Include="Interfaces\IMarketDataContext.cs" />
+    <Compile Include="Interfaces\IVehicleDataContext.cs" />
+    <Compile Include="Toolbox\BusinessObjects\BaseDataContext.cs" />
+    <Compile Include="Interfaces\IDbHelper.cs" />
+    <Compile Include="Interfaces\IDocumentDataContext.cs" />
+    <Compile Include="Interfaces\IEmailDataContext.cs" />
+    <Compile Include="Interfaces\IDataContext.cs" />
+    <Compile Include="Interfaces\IUserDataContext.cs" />
+    <Compile Include="Interfaces\IVehicle.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Schematron\Assert.cs" />
+    <Compile Include="Schematron\BadSchemaException.cs" />
+    <Compile Include="Schematron\CompiledExpressions.cs" />
+    <Compile Include="Schematron\Config.cs" />
+    <Compile Include="Schematron\DomMatchedNodes.cs" />
+    <Compile Include="Schematron\EvaluableExpression.cs" />
+    <Compile Include="Schematron\EvaluationContextBase.cs" />
+    <Compile Include="Schematron\Formatters\BooleanFormatter.cs" />
+    <Compile Include="Schematron\Formatters\FormatterBase.cs" />
+    <Compile Include="Schematron\Formatters\FormattingUtils.cs" />
+    <Compile Include="Schematron\Formatters\IFormatter.cs" />
+    <Compile Include="Schematron\Formatters\LogFormatter.cs" />
+    <Compile Include="Schematron\Formatters\SimpleFormatter.cs" />
+    <Compile Include="Schematron\Formatters\XmlFormatter.cs">
+      <DependentUpon>XmlFormatter.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Schematron\GenericMatchedNodes.cs" />
+    <Compile Include="Schematron\IMatchedNodes.cs" />
+    <Compile Include="Schematron\Int32Collection.cs" />
+    <Compile Include="Schematron\InvalidExpressionException.cs" />
+    <Compile Include="Schematron\NavigableType.cs" />
+    <Compile Include="Schematron\OutputFormatting.cs" />
+    <Compile Include="Schematron\Pattern.cs" />
+    <Compile Include="Schematron\PatternCollection.cs" />
+    <Compile Include="Schematron\Phase.cs" />
+    <Compile Include="Schematron\PhaseCollection.cs" />
+    <Compile Include="Schematron\Report.cs" />
+    <Compile Include="Schematron\Rule.cs" />
+    <Compile Include="Schematron\RuleCollection.cs" />
+    <Compile Include="Schematron\Schema.cs" />
+    <Compile Include="Schematron\SchemaCollection.cs" />
+    <Compile Include="Schematron\SchemaLoader.cs" />
+    <Compile Include="Schematron\StartDelegate.cs" />
+    <Compile Include="Schematron\SyncEvaluationContext.cs" />
+    <Compile Include="Schematron\TagExpressions.cs" />
+    <Compile Include="Schematron\Test.cs" />
+    <Compile Include="Schematron\TestCollection.cs" />
+    <Compile Include="Schematron\ValidationException.cs" />
+    <Compile Include="Schematron\ValidationResult.cs" />
+    <Compile Include="Schematron\Validator.cs" />
+    <Compile Include="Schematron\XPathMatchedNodes.cs" />
+    <Compile Include="Service References\RADSMailService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Toolbox\BusinessObjects\BusinessObject.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ConfigurationItem.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Configuration.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Context\PagedResults.cs" />
+    <Compile Include="Toolbox\BusinessObjects\EmailInfo.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyForecast.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyVehicle.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Filters\EngineCodeFilter.cs" />
+    <Compile Include="Toolbox\BusinessObjects\EngineCodeMapping.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Filters\ForecastFilter.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Filters\ImportQueueFilter.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Filters\FilterBase.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Filters\VehicleFilter.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Forecast.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ForecastComparison.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ForecastComparisonView.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ForecastVehicle.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ForecastView.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ImportError.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ImportQueue.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ImportStatus.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ImportType.cs" />
+    <Compile Include="Toolbox\BusinessObjects\JQueryDataTableParamModel.cs" />
+    <Compile Include="Toolbox\BusinessObjects\JQueryDataTableResultModel.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOChangeDiary.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOChangeSet.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Toolbox\BusinessObjects\OXODoc.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Toolbox\BusinessObjects\OXOFeature.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOFeatureRequest.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOMarket.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOMarketGroup.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOMFD.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOModel.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOModelBody.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOModelEngine.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOModelTransmission.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOModelTrim.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOPack.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOPermission.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOProgrammeFile.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOReferenceList.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXORule.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXORuleFeature.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXORuleResult.cs" />
+    <Compile Include="Toolbox\BusinessObjects\OXOVehicleProgramme.cs" />
+    <Compile Include="Toolbox\BusinessObjects\PermissionObjectType.cs" />
+    <Compile Include="Toolbox\BusinessObjects\PermissionOperation.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ProcessState.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ProgrammeByGatewayView.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Filters\ProgrammeFilter.cs" />
+    <Compile Include="Toolbox\BusinessObjects\SystemUser.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Test.cs" />
+    <Compile Include="Toolbox\BusinessObjects\TrimMapping.cs" />
+    <Compile Include="Toolbox\Comparers\StringArrayIndexComparer.cs" />
+    <Compile Include="Toolbox\Comparers\UniqueVehicleByNameComparer.cs" />
+    <Compile Include="Toolbox\Enumerations\ImportStatus.cs" />
+    <Compile Include="Toolbox\Enumerations\ImportType.cs" />
+    <Compile Include="Toolbox\Enumerations\ProcessStatus.cs" />
+    <Compile Include="Toolbox\Enumerations\SortDirection.cs" />
+    <Compile Include="Toolbox\Extensions\StringExtensions.cs" />
+    <Compile Include="Toolbox\Helpers\AppHelper.cs" />
+    <Compile Include="Toolbox\Helpers\EmailHelper.cs" />
+    <Compile Include="Toolbox\Helpers\HtmlHelper.cs" />
+    <Compile Include="Toolbox\Others\LogonAuthorize.cs" />
+    <Compile Include="Toolbox\Others\sqlMapper.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Vehicle.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Schematron\Formatters\XmlFormatter.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Schematron\Formatters\XmlFormatter.xsx">
+      <DependentUpon>XmlFormatter.xsd</DependentUpon>
+    </None>
+    <None Include="Service References\RADSMailService\SendMail.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\RADSMailService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\RADSMailService\SendMail.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\RADSMailService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\RADSMailService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\RADSMailService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,61 @@
+﻿@using FeatureDemandPlanning.BusinessObjects
+@using enums = FeatureDemandPlanning.Enumerations
+
+@section PageScripts{
+    <script src="@Url.Content("~/Scripts/Admin/admin.js")?v=@Model.CurrentVersion"></script>
+}
+
+@section PageContentHeader
+{
+<div class="row">
+    <div class="col-lg-12 text-center inverse">
+        <img src="~/Content/Images/Icons/admin128_coloured.png" style="opacity:0.9;border:0" />
+
+        <h1 style="height:66px">Administration</h1>
+        <p style="height:60px">Perform administration activities within FDP</p>
+
+    </div>
+</div>
+}
+
+@section PageBody
+{
+    <div class="row">
+
+
+        <div class="col-lg-2 col-lg-offset-2 text-center inverse">
+            <a href="@Url.Action("Market", "Market")">
+                <img src="~/Content/Images/Icons/market64.png" style="opacity:0.9;border:0" />
+            </a>
+            <h2 style="height:66px">Top Markets</h2>
+            <p style="height:60px">Configure the top markets for forecasting</p>
+            <p><a class="btn btn-default" href="@Url.Action("Market", "Market")" role="button">Top Markets</a></p>
+        </div>
+        <div class="col-lg-2 text-center inverse">
+            <a href="@Url.Action("EngineCodeMapping", "EngineCodeMapping")">
+                <img src="~/Content/Images/Icons/mapping64.png" style="opacity:0.9;border:0" />
+            </a>
+            <h2 style="height:66px">Map Engine Codes</h2>
+            <p style="height:60px">Map Engine Codes to OXO Programmes</p>
+            <p><a class="btn btn-default" href="@Url.Action("EngineCodeMapping", "EngineCodeMapping")" role="button">Engine Codes</a></p>
+        </div>
+        <div class="col-lg-2 text-center inverse">
+            <a href="@Url.Action("Derivatives")">
+                <img src="~/Content/Images/Icons/mapping64.png" style="opacity:0.9;border:0" />
+            </a>
+            <h2 style="height:66px">Map Models</h2>
+            <p style="height:60px">Map models to OXO</p>
+            <p><a class="btn btn-default" href="@Url.Action("Derivatives")" role="button">Models</a></p>
+        </div>
+        <div class="col-lg-2 text-center inverse">
+            <a href="@Url.Action("Users")">
+                <img src="~/Content/Images/Icons/users64.png" style="opacity:0.9;border:0" />
+            </a>
+                <h2 style="height:66px">Users</h2>
+                <p style="height:60px">User management</p>
+                <p><a class="btn btn-default" href="@Url.Action("Users")" role="button">Users</a></p>
+        </div>
+    </div>
+}
+
+

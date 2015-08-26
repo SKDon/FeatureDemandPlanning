@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://jlrint.com/rads/message/sendmail/1" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://jlrint.com/rads/message/sendmail/1" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://jlrint.com/rads/message/sendmail/1">
+      <s:element name="SendMailRequestWithAttachments">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="from" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="to" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="subject" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="body" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cc" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="bcc" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="app" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="attachments" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMailRequestWithAttachmentsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SendMailRequestWithAttachmentsResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="JLRCommonHeader" type="tns:JLRCommonHeader" />
+      <s:complexType name="JLRCommonHeader">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ContextId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Timestamp" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="To" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="From" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Logging" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="MessageID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="NullMessage" type="s:string" />
+        </s:sequence>
+        <s:anyAttribute />
+      </s:complexType>
+      <s:element name="AuthHeader" type="tns:AuthHeader" />
+      <s:complexType name="AuthHeader">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="UserName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+        </s:sequence>
+        <s:anyAttribute />
+      </s:complexType>
+      <s:element name="SendMailRequest">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="from" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="to" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="subject" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="body" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cc" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="bcc" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="app" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMailRequestResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SendMailRequestResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="SendMailRequestWithAttachmentsSoapIn">
+    <wsdl:part name="parameters" element="tns:SendMailRequestWithAttachments" />
+  </wsdl:message>
+  <wsdl:message name="SendMailRequestWithAttachmentsSoapOut">
+    <wsdl:part name="parameters" element="tns:SendMailRequestWithAttachmentsResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendMailRequestWithAttachmentsJLRCommonHeader">
+    <wsdl:part name="JLRCommonHeader" element="tns:JLRCommonHeader" />
+  </wsdl:message>
+  <wsdl:message name="SendMailRequestWithAttachmentsAuthHeader">
+    <wsdl:part name="AuthHeader" element="tns:AuthHeader" />
+  </wsdl:message>
+  <wsdl:message name="SendMailRequestSoapIn">
+    <wsdl:part name="parameters" element="tns:SendMailRequest" />
+  </wsdl:message>
+  <wsdl:message name="SendMailRequestSoapOut">
+    <wsdl:part name="parameters" element="tns:SendMailRequestResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendMailRequestJLRCommonHeader">
+    <wsdl:part name="JLRCommonHeader" element="tns:JLRCommonHeader" />
+  </wsdl:message>
+  <wsdl:message name="SendMailRequestAuthHeader">
+    <wsdl:part name="AuthHeader" element="tns:AuthHeader" />
+  </wsdl:message>
+  <wsdl:portType name="SendMailSoap">
+    <wsdl:operation name="SendMailRequestWithAttachments">
+      <wsdl:input message="tns:SendMailRequestWithAttachmentsSoapIn" />
+      <wsdl:output message="tns:SendMailRequestWithAttachmentsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendMailRequest">
+      <wsdl:input message="tns:SendMailRequestSoapIn" />
+      <wsdl:output message="tns:SendMailRequestSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SendMailSoap" type="tns:SendMailSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SendMailRequestWithAttachments">
+      <soap:operation soapAction="http://jlrint.com/rads/message/sendmail/1/SendMailRequestWithAttachments" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:SendMailRequestWithAttachmentsJLRCommonHeader" part="JLRCommonHeader" use="literal" />
+        <soap:header message="tns:SendMailRequestWithAttachmentsAuthHeader" part="AuthHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMailRequest">
+      <soap:operation soapAction="http://jlrint.com/rads/message/sendmail/1/SendMailRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:SendMailRequestJLRCommonHeader" part="JLRCommonHeader" use="literal" />
+        <soap:header message="tns:SendMailRequestAuthHeader" part="AuthHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="SendMailSoap12" type="tns:SendMailSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SendMailRequestWithAttachments">
+      <soap12:operation soapAction="http://jlrint.com/rads/message/sendmail/1/SendMailRequestWithAttachments" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:SendMailRequestWithAttachmentsJLRCommonHeader" part="JLRCommonHeader" use="literal" />
+        <soap12:header message="tns:SendMailRequestWithAttachmentsAuthHeader" part="AuthHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMailRequest">
+      <soap12:operation soapAction="http://jlrint.com/rads/message/sendmail/1/SendMailRequest" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:SendMailRequestJLRCommonHeader" part="JLRCommonHeader" use="literal" />
+        <soap12:header message="tns:SendMailRequestAuthHeader" part="AuthHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SendMail">
+    <wsdl:port name="SendMailSoap" binding="tns:SendMailSoap">
+      <soap:address location="http://radsdev.portsmouth.jlrint.com/Services/SendMail.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SendMailSoap12" binding="tns:SendMailSoap12">
+      <soap12:address location="http://radsdev.portsmouth.jlrint.com/Services/SendMail.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

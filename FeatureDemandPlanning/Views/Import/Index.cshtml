@@ -1,0 +1,76 @@
+﻿@using FeatureDemandPlanning.BusinessObjects
+@using enums = FeatureDemandPlanning.Enumerations
+
+@model FeatureDemandPlanning.Models.ImportViewModel
+
+@section PageScripts{
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/import.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/importpage.js")?v=@Model.CurrentVersion"></script>
+    <script language="javascript">
+
+        // TO DO, push these parameters out from the model
+        var params = {
+            ProcessUri: "@Url.Action("Process")",
+            CancelUri: "@Url.Action("Cancel")",
+            Configuration: @Html.Raw(Json.Encode(Model.Configuration)),
+            ImportQueue: @Html.Raw(Json.Encode(Model.ImportQueue)),
+            ImportQueueUri: "@Url.Action("ListImportQueue")",
+            PageSize: @Model.PageSize,
+            PageIndex: @Model.PageIndex
+        };
+
+        var importQueue = new FeatureDemandPlanning.Import.Model.ImportQueue(params);
+        var page = new FeatureDemandPlanning.Import.Page.Page([importQueue]);
+
+        $(document).ready(function ()
+        {
+            page.initialise();
+        });
+    
+    </script>
+}
+
+@section PageStyles{
+    <link href="@Url.Content("~/Styles/Import/import.css")?v=@Model.CurrentVersion" rel="stylesheet" type="text/css" />
+}
+
+@section PageContentHeader
+{
+<div class="row">
+    <div class="col-lg-12 text-center inverse">
+        <img src="~/Content/Images/Icons/import128.png" style="opacity:0.9;border:0" />
+
+        <h1 style="height:66px">Import</h1>
+        <p style="height:60px">Import pre-populated OXO data with volume information</p>
+
+    </div>
+</div>
+}
+
+@section PageBody
+{
+    <div id="notifier" class="subscribers-notifySuccess subscribers-notifyError col-lg-8 col-lg-offset-2">
+
+    </div>
+
+    <div class="container">
+
+        @{Html.RenderPartial("ProcessState", Model);}
+
+        <div class="row col-lg-6 col-lg-offset-3">
+            <a name="new"></a>
+            @{Html.RenderPartial("Upload", Model);}
+        </div>
+
+        <div class="row col-lg-12">
+            <a name="queue"></a>
+
+            <div id="dvImportQueue">
+                @{Html.RenderPartial("ImportQueue", Model);}
+            </div>
+        </div>
+        </div>
+}
+
+

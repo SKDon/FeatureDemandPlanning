@@ -1,0 +1,20 @@
+﻿@using System.Web
+@{
+    // Determine the layout page to use depending on the controller in use
+    
+    var path = "~/Views/Shared/_{0}.cshtml";
+    var controller = ViewContext.Controller as FeatureDemandPlanning.Controllers.ControllerBase;
+    
+    switch (controller.ControllerType)
+    {
+        case FeatureDemandPlanning.Controllers.ControllerType.SectionChild:
+            Layout = String.Format(path, "Child");
+            break;
+        case FeatureDemandPlanning.Controllers.ControllerType.SectionParent:
+            Layout = String.Format(path, "Parent");
+            break;
+        case FeatureDemandPlanning.Controllers.ControllerType.Default:
+            Layout = String.Format(path, "Layout");
+            break;
+    }
+}

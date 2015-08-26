@@ -1,0 +1,100 @@
+﻿@using FeatureDemandPlanning.BusinessObjects
+@using enums = FeatureDemandPlanning.Enumerations
+
+@model FeatureDemandPlanning.Models.MarketViewModel
+
+@section PageScripts{
+    <script src="@Url.Content("~/Scripts/Admin/market.js")?v=@Model.CurrentVersion"></script>
+    <script type="text/javascript">
+
+    var params = {
+        MarketsUri: "@Url.Action("Market")",
+        TopMarketsUri: "@Url.Action("TopMarkets")",
+        DeleteUri: "@Url.Action("DeleteTopMarket")",
+        AddUri: "@Url.Action("AddTopMarket")",
+        Configuration: {},
+        AvailableMarkets: {},
+        TopMarkets: {}
+    };
+
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+    params.AvailableMarkets = @Html.Raw(Json.Encode(Model.AvailableMarkets));
+    params.TopMarkets = @Html.Raw(Json.Encode(Model.TopMarkets));
+
+    var markets = new FeatureDemandPlanning.Model.Markets(params);
+    markets.initialise();
+
+    </script>
+}
+
+@section PageContentHeader
+{
+    <div class="row">
+        <div class="col-lg-12 text-center inverse">
+            <img src="~/Content/Images/Icons/market128_coloured.png" style="opacity:0.9;border:0" />
+
+            <h1 style="height:66px">Top Markets</h1>
+            <p style="height:60px">Configure the top markets for forecasting</p>
+
+        </div>
+    </div>
+}
+
+@section PageBody
+{
+    
+
+<div id="notifier" class="subscribers-notifySuccess subscribers-notifyError col-lg-8 col-lg-offset-2">
+
+</div>
+
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2">
+            <div class="panel panel-primary" style="background: none;">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-lg-6 pull-left">
+                            <div class="panel-title">Top Markets</div>
+                        </div>
+                        <div class="coll-lg-6 text-right" style="padding-right:10px">
+                            <span id="numberOfMarkets" class="subscribers-notifySuccess badge">@Model.NumberOfMarkets</span>
+                        </div>
+                    </div>
+                   
+                    
+                </div>
+                
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-lg-8">
+
+                            <label class="control-label inverse" for="ddlAddMarket">Add Market</label>
+                            <form class="form-inline form-group-sm">
+                            
+                                <select class="form-control" id="ddlAddMarket">
+                                    @foreach (var market in Model.AvailableMarkets)
+                                    {
+                                        <option value="@market.Id">@market.Name</option>
+                                    }
+                                </select>
+                                
+                                    <button id="btnAddMarket" type="button" class="btn btn-primary btn-sm">Add Market</button>
+
+                           
+                                </form>
+                        </div>
+                    </div>
+
+                    <div id="dvTopMarkets" class="row" style="margin-top:20px">
+                        @{Html.RenderPartial("TopMarkets", Model);}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+}
+
+

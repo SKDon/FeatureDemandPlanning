@@ -1,0 +1,328 @@
+﻿using FeatureDemandPlanning.BusinessObjects;
+using FeatureDemandPlanning.Dapper;
+using enums = FeatureDemandPlanning.Enumerations;
+using FeatureDemandPlanning.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FeatureDemandPlanning.DataStore.DataStore;
+using FeatureDemandPlanning.BusinessObjects.Context;
+using FeatureDemandPlanning.BusinessObjects.Filters;
+
+namespace FeatureDemandPlanning.DataStore
+{
+    public class ImportQueueDataStore : DataStoreBase
+    {
+        public ImportQueueDataStore(string cdsid)
+        {
+            this.CurrentCDSID = cdsid;
+        }
+
+        public PagedResults<ImportQueue> ImportQueueGetMany(ImportQueueFilter filter)
+        {
+            PagedResults<ImportQueue> retVal = null;
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    var totalRecords = 0;
+
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                    }
+
+
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = conn.Query<ImportQueueDataItem>("dbo.ImportQueue_GetMany", para, commandType: CommandType.StoredProcedure);
+                    
+                    if (results.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                    }
+                    retVal = new PagedResults<ImportQueue>() 
+                    {
+                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        TotalRecords = totalRecords,
+                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                    };
+
+                    var currentPage = new List<ImportQueue>();
+                    
+                    foreach (var result in results)
+                    {
+                        HydrateImportType(result, conn);
+                        HydrateImportStatus(result, conn);
+                        HydrateImportErrors(result, conn);
+
+                        currentPage.Add(HydrateImportQueue(result, conn));
+                    }
+
+                    retVal.CurrentPage = currentPage;
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportQueueGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
+
+        public ImportQueue ImportQueueGet(int importQueueId)
+        {
+            ImportQueue retVal = null;
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@ImportQueueId", importQueueId, dbType: DbType.Int32);
+                    
+                    var result = conn.Query<ImportQueueDataItem>("dbo.ImportQueue_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+
+                    HydrateImportType(result, conn);
+                    HydrateImportStatus(result, conn);
+                    HydrateImportErrors(result, conn);
+
+                    retVal = HydrateImportQueue(result, conn);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ConfigurationDataStore.ImportQueueGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
+
+        public ImportError ImportErrorSave(ImportError importError)
+        {
+            ImportError retVal = null;
+            string procName = "dbo.ImportQueue_Edit";
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    para.Add("@ImportQueueId", importError.ImportQueueId, dbType: DbType.Int32);
+                    para.Add("@Error", dbType: DbType.String, size: -1);
+
+                    conn.Execute(procName, para, commandType: CommandType.StoredProcedure);
+
+                    retVal = importError;
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportQueueSave", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
+
+        public ImportQueue ImportQueueSave(ImportQueue importQueue)
+        {
+            ImportQueue retVal = null;
+            string procName = "dbo.ImportQueue_Save";
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    para.Add("@ImportQueueId", importQueue.ImportQueueId, dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+                    para.Add("@SystemUser", CurrentCDSID, dbType: DbType.String, size: 16);
+                    para.Add("@FilePath", importQueue.FilePath, dbType: DbType.String, size: -1);
+                    para.Add("@ImportTypeId", (int)importQueue.ImportType.ImportTypeDefinition, dbType: DbType.Int32);
+                    para.Add("@ImportStatusId", (int)importQueue.ImportStatus.ImportStatusCode, dbType: DbType.Int32);
+
+                    conn.Execute(procName, para, commandType: CommandType.StoredProcedure);
+
+                    if (!importQueue.ImportQueueId.HasValue)
+                    {
+                        importQueue.ImportQueueId = para.Get<int?>("@ImportQueueId");
+                    }
+
+                    // Repopulate the object following save
+                    
+                    para = new DynamicParameters();
+                    para.Add("@ImportQueueId", importQueue.ImportQueueId, dbType: DbType.Int32);
+
+                    var result = conn.Query<ImportQueueDataItem>("dbo.ImportQueue_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+
+                    HydrateImportType(result, conn);
+                    HydrateImportStatus(result, conn);
+                    HydrateImportErrors(result, conn);
+
+                    // As we have used an interim object here and don't want to return some of the elements of that object
+                    // create a new ImportQueue instance and return
+                    retVal = HydrateImportQueue(result, conn);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportQueueSave", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
+
+        }
+
+        public bool ImportQueueProcess()
+        {
+            var retVal = false;
+            string procName = "dbo.Fdp_Import_Process";
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    conn.Execute(procName, para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportQueueProcess::0", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            retVal = true;
+
+            return retVal;
+        }
+
+        public bool ImportQueueProcess(ImportQueue importItem)
+        {
+            var retVal = false;
+            string procName = "dbo.Fdp_Import_Process";
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@ImportQueueId", importItem.ImportQueueId, dbType: DbType.Int32);
+               
+                    conn.Execute(procName, para, commandType: CommandType.StoredProcedure);  
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportQueueProcess::1", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            retVal = true;
+
+            return retVal;
+        }
+
+        private void HydrateImportErrors(ImportQueueDataItem importQueue, IDbConnection connection)
+        {
+            var para = new DynamicParameters();
+            para.Add("@ImportQueueId", importQueue.ImportQueueId, dbType: DbType.Int32);
+
+            importQueue.Errors = connection.Query<ImportError>("dbo.ImportError_GetMany", para, commandType: CommandType.StoredProcedure);
+        }
+
+        private void HydrateImportType(ImportQueueDataItem importQueue, IDbConnection connection)
+        {
+            var para = new DynamicParameters();
+            para.Add("@ImportTypeId", importQueue.ImportTypeId, dbType: DbType.Int32);
+
+            var type = connection.Query<ImportType>("dbo.ImportType_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+            if (type != null)
+                importQueue.ImportType = type;
+        }
+
+        private void HydrateImportStatus(ImportQueueDataItem importQueue, IDbConnection connection)
+        {
+            var para = new DynamicParameters();
+            para.Add("@ImportStatusId", importQueue.ImportStatusId, dbType: DbType.Int32);
+
+            var status = connection.Query<ImportStatus>("dbo.ImportStatus_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+            if (status != null)
+                importQueue.ImportStatus = status;
+        }
+
+        private ImportQueue HydrateImportQueue(ImportQueueDataItem importQueue, IDbConnection connection)
+        {
+            return new ImportQueue()
+            {
+                ImportQueueId = importQueue.ImportQueueId,
+                CreatedOn = importQueue.CreatedOn,
+                CreatedBy = importQueue.CreatedBy,
+                UpdatedOn = importQueue.UpdatedOn,
+                FilePath = importQueue.FilePath,
+                ImportStatus = importQueue.ImportStatus,
+                ImportType = importQueue.ImportType,
+                Errors = importQueue.Errors
+            };
+        }
+
+        private ImportStatus HydrateImportStatus(ImportStatusDataItem importStatus, IDbConnection connection)
+        {
+            return new ImportStatus()
+            {
+                ImportStatusCode = (enums.ImportStatus)importStatus.ImportStatusId,
+                Status = importStatus.Status,
+                Description = importStatus.Description
+            };
+        }
+
+        private ImportType HydrateImportType(ImportTypeDataItem importType, IDbConnection connection)
+        {
+            return new ImportType()
+            {
+                ImportTypeDefinition = (enums.ImportType)importType.ImportTypeId,
+                Type = importType.Type,
+                Description = importType.Description
+            };
+        }
+
+        private class ImportQueueDataItem : ImportQueue
+        {
+            public int ImportStatusId { get; set; }
+            public string StatusCode { get; set; }
+            public int ImportTypeId { get; set; }
+            public string Type { get; set; }
+        }
+
+        private class ImportStatusDataItem
+        {
+            public int ImportStatusId { get; set; }
+            public string Status { get; set; }
+            public string Description { get; set; }
+        }
+
+        private class ImportTypeDataItem
+        {
+            public int ImportTypeId { get; set; }
+            public string Type { get; set; }
+            public string Description { get; set; }
+        }
+    }
+}

@@ -1,0 +1,89 @@
+﻿@using FeatureDemandPlanning.BusinessObjects;
+@using enums = FeatureDemandPlanning.Enumerations;
+
+@model FeatureDemandPlanning.Models.ForecastComparisonViewModel
+
+@{var forecastTrimLevels = Model.Forecast.ForecastVehicle.ListTrimLevels(); }
+
+<div class="page" data-index="2" style="display:none">
+    <div class="col-lg-10 col-lg-offset-1">
+        <div class="panel panel-primary">
+
+            <div class="panel-heading">
+                <div class="panel-title">Trim Level</div>
+
+            </div>
+
+            <div class="panel-body">
+
+                <table class="table table-striped table-bordered table-responsive dataTable">
+                    <thead>
+                        <tr>
+                            <th colspan="2">
+                                <p>Vehicle</p>
+                            </th>
+                            <th colspan="@forecastTrimLevels.Count()"><p class="text-center">Level</p></th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <p>@Model.Forecast.ForecastVehicle.Description</p>
+                            </th>
+                            <th>
+                                <p class="text-center">@Model.Forecast.ForecastVehicle.ModelYear</p>
+                            </th>
+                            @foreach (var trimLevel in forecastTrimLevels)
+                            {
+                            <th>
+                                <div class="text-center">
+                                    <p>@trimLevel.Abbreviation</p>
+                                    @if (!string.IsNullOrEmpty(trimLevel.DPCK))
+                                    {
+                                        <small>(@trimLevel.DPCK)</small>
+                                    }
+                                
+                                </div>
+                            </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @{var i = 1;}
+                    @foreach (var comparisonVehicle in Model.Forecast.ComparisonVehicles)
+                    {
+                        var comparisonTrimLevels = comparisonVehicle.ListTrimLevels();
+                        var j = 1;
+                        <tr>
+                            <td>@(i). @comparisonVehicle.FullDescription</td>
+                            <td class="dataTable-vertical-seperator"><p class="text-center">@comparisonVehicle.ModelYear</p></td>
+                            
+                            @foreach (var trimLevel in forecastTrimLevels)
+                            {
+                                <td class="text-center">
+
+                                    @if (comparisonTrimLevels.Any())
+                                    {
+                                        <select class="vehicle-filter vehicle-filter-trim" id="ddlComparisonTrimLevel@(i)_@(j++)" data-index="@(i)" data-forecast-trim="@trimLevel.Id">
+                                            <option value="" selected="selected">-- SELECT --</option>
+                                            @foreach (var comparisonTrimLevel in comparisonTrimLevels)
+                                            {
+                                                <option value="@comparisonTrimLevel.Id">@comparisonTrimLevel.Abbreviation</option>
+                                            }
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-center">N/A</p>
+                                    }
+                                </td>
+                                    
+                            }
+                        </tr>
+                        i++;
+                    }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
