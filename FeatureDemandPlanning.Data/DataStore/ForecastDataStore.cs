@@ -18,6 +18,7 @@ using FeatureDemandPlanning.BusinessObjects;
 using FeatureDemandPlanning.Helpers;
 using FeatureDemandPlanning.Interfaces;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -49,7 +50,68 @@ namespace FeatureDemandPlanning.DataStore
 			return retVal;   
 		}
 
-		public Forecast ForecastGet(int id)
+        public async Task<IEnumerable<Forecast>> ForecastGetManyAsync()
+        {
+            IEnumerable<Forecast> retVal = null;
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    retVal = conn.Query<Forecast>("dbo.Fdp_Forecast_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ForecastDataStore.ForecastGetMany", ex.Message, CurrentCDSID);
+                }
+            }
+
+            return retVal;
+        }
+
+        public Forecast ForecastGet(int id)
+        {
+            Forecast forecast = null;
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@ForecastId", id, dbType: DbType.Int32);
+
+                    var results = conn.QueryMultiple("dbo.Fdp_Forecast_Get", para, commandType: CommandType.StoredProcedure);
+
+                    // First resultset represents basic forecast information
+
+                    forecast = results.Read<Forecast>().FirstOrDefault();
+
+                    // Second resultset represents the forecast vehicle
+
+                    if (forecast != null)
+                    {
+                        forecast.ForecastVehicle = results.Read<Vehicle>().FirstOrDefault();
+                    }
+
+                    // Final resultset represents the comparison vehicles
+
+                    if (forecast != null)
+                    {
+                        forecast.ComparisonVehicles = results.Read<Vehicle>();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ForecastDataStore.ForecastGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return forecast;
+        }
+
+		public async Task<Forecast> ForecastGetAsync(int id)
 		{
 			Forecast forecast = null;
 

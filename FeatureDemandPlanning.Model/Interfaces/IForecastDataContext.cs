@@ -14,6 +14,11 @@ namespace FeatureDemandPlanning.Interfaces
         IForecast SaveForecast(IForecast forecastToSave);
         IForecast DeleteForecast(IForecast forecastToDelete);
 
+        Task<IForecast> GetForecastAsync(ForecastFilter filter);
+        Task<IForecast> SaveForecastAsync(IForecast forecastToSave);
+        Task<IForecast> DeleteForecastAsync(IForecast forecastToDelete);
+
         PagedResults<IForecast> ListForecasts(ForecastFilter filter);
+        Task<PagedResults<IForecast>> ListForecastsAsync(ForecastFilter filter);
     }
 }

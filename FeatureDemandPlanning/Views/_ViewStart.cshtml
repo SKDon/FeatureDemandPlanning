@@ -17,4 +17,6 @@
             Layout = String.Format(path, "Layout");
             break;
     }
+    
+    Layout = Request.IsAjaxRequest() || ViewContext.IsChildAction ? null : Layout;
 }

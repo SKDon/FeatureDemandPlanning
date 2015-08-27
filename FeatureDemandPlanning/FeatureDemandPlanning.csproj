@@ -168,6 +168,7 @@
     <Compile Include="Controllers\ImportController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\MarketController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\VehicleController.cs" />
     <Compile Include="Models\AdminViewModel.cs" />
     <Compile Include="Models\EngineCodeMappingViewModel.cs" />
