@@ -192,8 +192,11 @@ model.Page = function (models) {
         getPager().previousPage();
     };
     me.notifyBeforePageChangedEventHandler = function (sender, eventArgs) {
-        var forecast = getForecastModel();
-        forecast.validate();
+        //var forecast = getForecastModel();
+        //forecast.validate();
+    };
+    me.notifyValidationEventHandler = function (sender, eventArgs) {
+
     };
     me.notifyValidationFilterEventHandler = function (sender, eventArgs) {
         var vehicleIndex = parseInt($(sender.target).attr("data-index"));
@@ -416,6 +419,9 @@ model.Page = function (models) {
             button.hide();
         } else {
             button.show();
+        }
+        if (button.attr("id") == "btnNext" && eventArgs.PageIndex == 2) {
+            me.saveForecast();
         }
     };
     me.notifyGatewaysEventHandler = function (sender, eventArgs) {

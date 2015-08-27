@@ -127,11 +127,12 @@ model.Forecast = function (params) {
     }
 
     function genericErrorCallback(response) {
-        if (response.status === 200) {
-            return false;
+        if (response.status == 400) {
+            var json = JSON.parse(response.responseText);
+            $(document).trigger("notifyValidation", [json]);
+        } else {
+            $(document).trigger("notifyError", response);
         }
-        privateStore[me.id].Config = response.Configuration;
-        $(document).trigger("notifyError", response);
     }
 }
 

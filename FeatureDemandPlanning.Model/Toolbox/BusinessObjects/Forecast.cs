@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using System.Web.Mvc;
 using FeatureDemandPlanning.Dapper;
+using FeatureDemandPlanning.Enumerations;
 using FeatureDemandPlanning.Interfaces;
+using FeatureDemandPlanning.BusinessObjects.Validators;
+using da = System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using System.ComponentModel.DataAnnotations;
 
 namespace FeatureDemandPlanning.BusinessObjects
 {
-    public class Forecast : BusinessObject, IForecast, IValidatableObject
+    public class Forecast : BusinessObject, IForecast, da.IValidatableObject
     {
         public int? ForecastId { get; set; }
         public int VehicleId { get; set; }
@@ -39,7 +44,15 @@ namespace FeatureDemandPlanning.BusinessObjects
             }
             set
             {
-                _forecastVehicle = value;
+                // Cast to a type vehicle to avoid simply setting the values of an empty vehicle
+                if (value is EmptyVehicle && value.ProgrammeId.GetValueOrDefault() != 0)
+                {
+                    _forecastVehicle = Vehicle.FromVehicle(value);
+                }
+                else
+                {
+                    _forecastVehicle = value;
+                }
             } 
         }
 
@@ -52,6 +65,7 @@ namespace FeatureDemandPlanning.BusinessObjects
             set
             {
                 _comparisonVehicles = value;
+                ReplaceNullValuesWithEmptyVehicles();
             }
         }
 
@@ -64,6 +78,18 @@ namespace FeatureDemandPlanning.BusinessObjects
             set
             {
                 _trimMapping = value;
+            }
+        }
+
+        public IEnumerable<ExtendedValidationResult> ExtendedValidationResults
+        {
+            get
+            {
+                return _extendedValidationResults;
+            }
+            set
+            {
+                _extendedValidationResults = value;
             }
         }
 
@@ -83,75 +109,46 @@ namespace FeatureDemandPlanning.BusinessObjects
             return isPersisted;
         }
 
-        public bool IsValid(ProcessState processState)
+        public IEnumerable<da.ValidationResult> Validate(da.ValidationContext validationContext)
         {
-            var isValid = IsValid();
-            if (!isValid)
-            {
-                processState.Status = Enumerations.ProcessStatus.Warning;
-                processState.Messages = ValidationMessages;
-            }
-            return isValid;
+            var validator = new ForecastValidator(this);
+            var result = validator.Validate(this);
+
+            return result.Errors.Select(error => 
+                new da.ValidationResult(PrependProcessStatusToString(error.ErrorMessage, ProcessStatus.Warning), 
+                    new [] { error.PropertyName }));
         }
 
-        public bool IsValid()
+        private void ReplaceNullValuesWithEmptyVehicles()
         {
-            var isValid = true;
-            ValidationMessages.Clear();
-
-            
-
-            return isValid;
-        }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (HasDuplicateComparisonVehicles())
-            {
-                yield return new ValidationResult("Duplicate comparison vehicles are not allowed");
+            var comparisonVehicleList = new List<Vehicle>();
+      
+            foreach (var comparisonVehicle in _comparisonVehicles) {
+                if (comparisonVehicle.ProgrammeId.HasValue) 
+                {
+                    comparisonVehicleList.Add(comparisonVehicle);
+                }
+                else
+                {
+                    comparisonVehicleList.Add(new EmptyVehicle());
+                }
             }
 
-            if (IsForecastVehicleEquivalentToComparisonVehicle())
-            {
-                yield return new ValidationResult("Cannot compare the forecast vehicle to itself");
-            }
+            _comparisonVehicles = comparisonVehicleList;
         }
 
-        /// <summary>
-        /// Determines whether the forecast has duplicate comparison vehicles.
-        /// </summary>
-        /// <returns></returns>
-        private bool HasDuplicateComparisonVehicles()
+        private string PrependProcessStatusToString(string inputString, ProcessStatus status)
         {
-            if (ComparisonVehicles == null || !ComparisonVehicles.Any()) 
-            {
-                return false;
-            }
-
-            return ComparisonVehicles.GroupBy(v => v)
-                .Where(g => g.Count() > 1)
-                .Select(v => v.Key)
-                .Count() > 0;
+            return string.Format("{0}::{1}", status, inputString);
         }
 
-        /// <summary>
-        /// Determines whether the forecast vehicle is equivalent to a comparison vehicle.
-        /// </summary>
-        /// <returns></returns>
-        private bool IsForecastVehicleEquivalentToComparisonVehicle()
-        {
-            if (ForecastVehicle == null || ComparisonVehicles == null)
-            {
-                return false;
-            }
-
-            return ComparisonVehicles.Contains(ForecastVehicle);
-        }
-
-        protected internal IList<string> ValidationMessages = new List<string>();
+        #region "Private Members"
 
         private Vehicle _forecastVehicle = new EmptyVehicle();
         private IEnumerable<Vehicle> _comparisonVehicles = Enumerable.Empty<Vehicle>();
         private IEnumerable<TrimMapping> _trimMapping = Enumerable.Empty<TrimMapping>();
+        private IEnumerable<ExtendedValidationResult> _extendedValidationResults = Enumerable.Empty<ExtendedValidationResult>();
+
+        #endregion
     }
 }

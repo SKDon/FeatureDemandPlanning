@@ -11,6 +11,7 @@ using enums = FeatureDemandPlanning.Enumerations;
 using FeatureDemandPlanning.BusinessObjects.Filters;
 using FeatureDemandPlanning.BusinessObjects;
 using System.Net;
+using FeatureDemandPlanning.BusinessObjects.Validators;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -55,18 +56,13 @@ namespace FeatureDemandPlanning.Controllers
         [HttpPost]
         public ActionResult ValidateForecast(Forecast forecastToValidate)
         {
-            var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecastToValidate);
-
-            if (!ModelState.IsValid)
-            {
-
-            }
-
-            return Json(forecastComparisonModel);
+            var validator = new ForecastValidator(forecastToValidate);
+            return Json(validator.Validate(forecastToValidate));
         }
         
         [HttpPost]
-        public ActionResult SaveForecast(Forecast forecastToSave)
+        [ValidateAjax]
+        public JsonResult SaveForecast(Forecast forecastToSave)
         {
             var processState = new ProcessState();
             var model = GetFullAndPartialForecastComparisonViewModel();
@@ -84,7 +80,7 @@ namespace FeatureDemandPlanning.Controllers
                 {
                     return GetResult(processState, model);
                 }
-                
+               
                 model = GetFullAndPartialForecastComparisonViewModel(forecastToSave);
                 processState.AddMessage("Forecast saved successfully");
             }

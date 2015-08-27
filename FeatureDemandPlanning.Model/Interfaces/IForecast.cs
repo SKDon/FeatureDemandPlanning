@@ -21,6 +21,6 @@ namespace FeatureDemandPlanning.Interfaces
         IEnumerable<Vehicle> ComparisonVehicles { get; set; }
         IEnumerable<TrimMapping> TrimMapping { get; set; }
 
-        bool IsValid();
+        //bool IsValid();
     }
 }

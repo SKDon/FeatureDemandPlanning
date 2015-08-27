@@ -13,9 +13,9 @@
                     int i = 1;
                     foreach (var comparisonVehicle in Model.Forecast.ComparisonVehicles)
                     {
-                        <div class="row subscribers-notifyVehicle vehicle-filter" data-index="@(i)">
+                        <div class="row subscribers-notifyVehicle subscribers-notifyValidation vehicle-filter" data-index="@(i)">
 
-                            <div class="col-lg-5 col-lg-offset-1">
+                            <div class="col-lg-5 col-lg-offset-1 form-group has-error">
                                 <select id="ddlComparisonMakes@(i)" style="display:none"
                                         class="form-control subscribers-notifyMakes vehicle-filter vehicle-filter-make"
                                         data-index="@(i)"></select>

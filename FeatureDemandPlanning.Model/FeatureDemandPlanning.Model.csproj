@@ -33,6 +33,12 @@
     <Reference Include="ClosedXML">
       <HintPath>..\..\FDP\OXOChart\bin\ClosedXML.dll</HintPath>
     </Reference>
+    <Reference Include="FluentValidation">
+      <HintPath>..\FeatureDemandPlanning\bin\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation.Mvc">
+      <HintPath>..\FeatureDemandPlanning\bin\FluentValidation.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="GotDotNet.Exslt">
       <HintPath>..\..\FDP\OXOChart\bin\GotDotNet.Exslt.dll</HintPath>
     </Reference>
@@ -47,6 +53,7 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -54,7 +61,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyCustomState.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Validators\ExtendedValidationResult.cs" />
     <Compile Include="Interfaces\IConfigurationDataContext.cs" />
+    <Compile Include="Interfaces\IExtendedValidatableObject.cs" />
     <Compile Include="Interfaces\IForecast.cs" />
     <Compile Include="Interfaces\IForecastDataContext.cs" />
     <Compile Include="Interfaces\IImportDataContext.cs" />
@@ -171,6 +181,10 @@
     <Compile Include="Toolbox\BusinessObjects\SystemUser.cs" />
     <Compile Include="Toolbox\BusinessObjects\Test.cs" />
     <Compile Include="Toolbox\BusinessObjects\TrimMapping.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Validators\ComparisonVehicleValidator.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Validators\ForecastValidator.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Validators\ForecastVehicleValidator.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Validators\VehicleValidator.cs" />
     <Compile Include="Toolbox\Comparers\StringArrayIndexComparer.cs" />
     <Compile Include="Toolbox\Comparers\UniqueVehicleByNameComparer.cs" />
     <Compile Include="Toolbox\Enumerations\ImportStatus.cs" />

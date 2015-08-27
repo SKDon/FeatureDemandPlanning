@@ -6,7 +6,7 @@ using FeatureDemandPlanning.Interfaces;
 
 namespace FeatureDemandPlanning.BusinessObjects
 {
-    public class Vehicle : BusinessObject, IVehicle, IEqualityComparer<IVehicle>
+    public class Vehicle : BusinessObject, IVehicle, IEquatable<Vehicle>
     {
         public int? VehicleId { get; set; }
         public int? ProgrammeId { get; set; }
@@ -66,48 +66,65 @@ namespace FeatureDemandPlanning.BusinessObjects
             return sb.ToString().Trim();
         }
 
-        public bool Equals(IVehicle x, IVehicle y)
+        public bool Equals(Vehicle other)
         {
-            if (x == null || y == null)
+            if (other == null)
                 return false;
 
-            return IsMakeEquivalent(x, y) &&
-                IsCodeEquivalent(x, y) &&
-                IsModelYearEquivalent(x, y) &&
-                IsGatewayEquivalent(x, y);
+            return IsMakeEquivalent(other) &&
+                IsCodeEquivalent(other) &&
+                IsModelYearEquivalent(other) &&
+                IsGatewayEquivalent(other);
         }
 
-        public int GetHashCode(IVehicle obj)
+        public static Vehicle FromVehicle(IVehicle vehicle)
         {
-            return new { obj.Make, obj.Code, obj.ModelYear, obj.Gateway }.GetHashCode();
+            return new Vehicle() {
+
+                VehicleId = vehicle.VehicleId,
+                ProgrammeId = vehicle.ProgrammeId,
+                GatewayId = vehicle.GatewayId,
+                Make = vehicle.Make,
+                Code = vehicle.Code,
+                ModelYear = vehicle.ModelYear,
+                Gateway = vehicle.Gateway,
+                ImageUri = vehicle.ImageUri,
+                Description = vehicle.Description,
+                FullDescription = vehicle.FullDescription,
+                Programmes = vehicle.Programmes
+            };
         }
 
-        private bool IsMakeEquivalent(IVehicle x, IVehicle y)
+        private bool IsMakeEquivalent(Vehicle other)
         {
-            return string.IsNullOrEmpty(x.Make) ||
-                string.IsNullOrEmpty(y.Make) ||
-                x.Make.Equals(y.Make, StringComparison.InvariantCultureIgnoreCase);
+            var thisMake = string.IsNullOrEmpty(Make) ? string.Empty : Make;
+            var otherMake = string.IsNullOrEmpty(other.Make) ? string.Empty : other.Make;
+
+            return thisMake.Equals(otherMake, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private bool IsCodeEquivalent(IVehicle x, IVehicle y)
+        private bool IsCodeEquivalent(Vehicle other)
         {
-            return string.IsNullOrEmpty(x.Code) ||
-                string.IsNullOrEmpty(y.Make) ||
-                x.Code.Equals(y.Code, StringComparison.InvariantCultureIgnoreCase);
+            var thisCode = string.IsNullOrEmpty(Code) ? string.Empty : Code;
+            var otherCode = string.IsNullOrEmpty(other.Code) ? string.Empty : other.Code;
+            
+            return thisCode.Equals(otherCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private bool IsModelYearEquivalent(IVehicle x, IVehicle y)
+        private bool IsModelYearEquivalent(Vehicle other)
         {
-            return string.IsNullOrEmpty(x.ModelYear) ||
-                string.IsNullOrEmpty(y.ModelYear) ||
-                x.ModelYear.Equals(y.ModelYear, StringComparison.InvariantCultureIgnoreCase);
+            var thisModelYear = string.IsNullOrEmpty(ModelYear) ? string.Empty : ModelYear;
+            var otherModelYear = string.IsNullOrEmpty(other.ModelYear) ? string.Empty : other.ModelYear;
+
+            return thisModelYear.Equals(otherModelYear, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private bool IsGatewayEquivalent(IVehicle x, IVehicle y)
+        private bool IsGatewayEquivalent(Vehicle other)
         {
-            return string.IsNullOrEmpty(x.Gateway) ||
-                string.IsNullOrEmpty(y.Gateway) ||
-                x.Gateway.Equals(y.Gateway, StringComparison.InvariantCultureIgnoreCase);
+            var thisGateway = string.IsNullOrEmpty(Gateway) ? string.Empty : Gateway;
+            var otherGateway = string.IsNullOrEmpty(other.Gateway) ? string.Empty : other.Gateway;
+
+            return thisGateway.Equals(otherGateway, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private IEnumerable<Programme> _programmes = new List<Programme>();
