@@ -12,6 +12,9 @@ using FeatureDemandPlanning.BusinessObjects.Filters;
 using FeatureDemandPlanning.BusinessObjects;
 using System.Net;
 using FeatureDemandPlanning.BusinessObjects.Validators;
+using FeatureDemandPlanning.Enumerations;
+using FluentValidation;
+using FluentValidation.Internal;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -25,6 +28,8 @@ namespace FeatureDemandPlanning.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            ViewBag.Title = "Forecasts";
+
             return RedirectToAction("Forecast");
         }
 
@@ -35,6 +40,8 @@ namespace FeatureDemandPlanning.Controllers
             filter.ForecastId = forecastId;
             var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(filter);
             forecastComparisonModel.ViewPage = viewPage.GetValueOrDefault();
+
+            ViewBag.PageTitle = "Edit Forecast";
             
             return View("Forecast", forecastComparisonModel);
         }
@@ -54,10 +61,41 @@ namespace FeatureDemandPlanning.Controllers
         }
 
         [HttpPost]
-        public ActionResult ValidateForecast(Forecast forecastToValidate)
+        public ActionResult ValidateForecast(Forecast forecastToValidate, 
+                                             ForecastValidationSection sectionToValidate = ForecastValidationSection.All)
         {
             var validator = new ForecastValidator(forecastToValidate);
-            return Json(validator.Validate(forecastToValidate));
+            var ruleSets = ForecastValidator.GetRulesetsToValidate(sectionToValidate);
+            var jsonResult = new JsonResult()
+            {
+                Data = new { IsValid = true }
+            };
+
+            var results = validator.Validate(forecastToValidate, ruleSet: ruleSets);
+            if (!results.IsValid)
+            {
+                var errorModel = results.Errors.Select(e => new
+                {
+                    key = e.PropertyName,
+                    errors = new [] 
+                    { 
+                        new 
+                        { 
+                            ErrorMessage = e.ErrorMessage,
+                            CustomState = e.CustomState//, 
+                            //ProcessStatus = (FeatureDemandPlanning.Enumerations.ProcessStatus) e.CustomState == null 
+                            //    ? FeatureDemandPlanning.Enumerations.ProcessStatus.Warning 
+                            //    : e.CustomState 
+                        }
+                    }
+                });
+
+                jsonResult = new JsonResult()
+                {
+                    Data = new { IsValid = false, Errors = errorModel }
+                };
+            }
+            return jsonResult;
         }
         
         [HttpPost]

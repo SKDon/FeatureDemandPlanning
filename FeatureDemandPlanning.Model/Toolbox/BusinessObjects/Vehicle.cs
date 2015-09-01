@@ -6,7 +6,7 @@ using FeatureDemandPlanning.Interfaces;
 
 namespace FeatureDemandPlanning.BusinessObjects
 {
-    public class Vehicle : BusinessObject, IVehicle, IEquatable<Vehicle>
+    public class Vehicle : BusinessObject, IVehicle, IEquatable<Vehicle>, IEqualityComparer<Vehicle>
     {
         public int? VehicleId { get; set; }
         public int? ProgrammeId { get; set; }
@@ -73,8 +73,33 @@ namespace FeatureDemandPlanning.BusinessObjects
 
             return IsMakeEquivalent(other) &&
                 IsCodeEquivalent(other) &&
-                IsModelYearEquivalent(other) &&
-                IsGatewayEquivalent(other);
+                IsModelYearEquivalent(other); //&&
+                //IsGatewayEquivalent(other);
+        }
+
+        public bool Equals(Vehicle x, Vehicle y)
+        {
+            return x == y;
+        }
+
+        public int GetHashCode(Vehicle obj)
+        {
+            return obj.GetHashCode();
+        }
+
+        public override int GetHashCode()
+        {
+            // Used for grouping and equality operations
+            unchecked
+            {
+                int hash = 17;
+                
+                hash = hash * 23 + (string.IsNullOrEmpty(Code) ? string.Empty : Code).GetHashCode();
+                hash = hash * 23 + (string.IsNullOrEmpty(ModelYear) ? string.Empty : ModelYear).GetHashCode();
+                //hash = hash * 23 + (string.IsNullOrEmpty(Gateway) ? string.Empty : Gateway).GetHashCode();
+                
+                return hash;
+            }
         }
 
         public static Vehicle FromVehicle(IVehicle vehicle)

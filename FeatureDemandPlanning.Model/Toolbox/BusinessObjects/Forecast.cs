@@ -14,7 +14,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FeatureDemandPlanning.BusinessObjects
 {
-    public class Forecast : BusinessObject, IForecast, da.IValidatableObject
+    public class Forecast : BusinessObject, IForecast//, da.IValidatableObject
     {
         public int? ForecastId { get; set; }
         public int VehicleId { get; set; }
@@ -67,6 +67,11 @@ namespace FeatureDemandPlanning.BusinessObjects
                 _comparisonVehicles = value;
                 ReplaceNullValuesWithEmptyVehicles();
             }
+        }
+
+        public IEnumerable<VehicleWithIndex> ComparisonVehiclesToValidate
+        {
+            get { return _comparisonVehicles.ToVehicleWithIndexList(); }
         }
 
         public IEnumerable<TrimMapping> TrimMapping

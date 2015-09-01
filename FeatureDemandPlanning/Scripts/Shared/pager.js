@@ -42,25 +42,43 @@ model.Pager = function (pages) {
         if (pageIndex < 0 || pageIndex > getPages().length - 1) {
             return;
         }
-        privateStore[me.id].PageIndex = pageIndex;
+        var currentPageIndex = me.getPageIndex();
+        var nextPage = currentPageIndex < pageIndex;
+        var previousPage = currentPageIndex > pageIndex;
 
         var args = {
+            CurrentPageIndex: currentPageIndex,
             PageIndex: pageIndex,
             Page: getPage(pageIndex),
             IsFirstPage: me.isFirstPage(),
-            IsLastPage: me.isLastPage()
+            IsLastPage: me.isLastPage(),
+            NextPage: nextPage,
+            PreviousPage: previousPage,
+            Cancel: false
         };
         $(document).trigger("notifyBeforePageChanged", args);
 
+        // If anything in the before page changed handler has cancelled the event, don't change pages
+        if (args.Cancel == true)
+        {
+            return;
+        }
+        
+        var newPageIndex = pageIndex;
+        privateStore[me.id].PageIndex = newPageIndex;
         displayPage();
 
-        args = {
-            PageIndex: pageIndex,
-            Page: getPage(pageIndex),
+        var args = {
+            CurrentPageIndex: newPageIndex,
+            PageIndex: newPageIndex,
+            Page: getPage(newPageIndex),
             IsFirstPage: me.isFirstPage(),
-            IsLastPage: me.isLastPage()
+            IsLastPage: me.isLastPage(),
+            NextPage: false,
+            PreviousPage: false,
+            Cancel: false
         };
-        if (pageIndex == 0) {
+        if (newPageIndex == 0) {
             $(document).trigger("notifyFirstPage", args);
         } else if (pageIndex == getPages.length - 1) {
             $(document).trigger("notifyLastPage", args);

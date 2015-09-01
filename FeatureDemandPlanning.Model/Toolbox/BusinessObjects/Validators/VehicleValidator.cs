@@ -4,7 +4,6 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
 {
     public abstract class VehicleValidator : AbstractValidator<Vehicle>
     {
-        public const string forecastVehicleEmpty = "Please specify a forecast vehicle";
         public const string programmeNotSet = "Please specify a programme";
         public const string modelYearNotSet = "Please specify a model year";
 
@@ -12,7 +11,6 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
 
-            RuleFor(v => v).Must(NotBeAnEmptyVehicle).WithName("ForecastVehicle").WithMessage(forecastVehicleEmpty);
             RuleFor(v => v.ProgrammeId).NotEmpty().WithMessage(programmeNotSet);
             RuleFor(v => v.ModelYear).NotEmpty().WithMessage(modelYearNotSet);
         }
@@ -20,6 +18,11 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
         public static bool NotBeAnEmptyVehicle(Vehicle vehicle)
         {
             return vehicle != null && (!(vehicle is EmptyVehicle) || vehicle.VehicleId.HasValue);
+        }
+
+        public static bool NotBeAnEmptyVehicle(VehicleWithIndex vehicle)
+        {
+            return vehicle != null && (!(vehicle.Vehicle is EmptyVehicle) || vehicle.Vehicle.VehicleId.HasValue);
         }
     }
 }

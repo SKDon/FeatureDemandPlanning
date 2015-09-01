@@ -12,7 +12,8 @@ model.Page = function (models) {
     privateStore[me.id].PageIndex = 0;
     privateStore[me.id].ForecastVehicle = null;
     privateStore[me.id].InitCount = 0;
-
+    privateStore[me.id].IsValid = false;
+ 
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
@@ -121,6 +122,9 @@ model.Page = function (models) {
         $(document).on("notifyBeforePageChanged", function (sender, eventArgs) {
             $(".subscribers-notifyBeforePageChanged").trigger("notifyBeforePageChangedEventHandler", [eventArgs]);
         });
+        $(document).on("notifyBeforeValidation", function (sender, eventArgs) {
+            $(".subscribers-notifyValidation").trigger("notifyBeforeValidationEventHandler", [eventArgs]);
+        });
         $(document).on("notifyValidation", function (sender, eventArgs) {
             $(".subscribers-notifyValidation").trigger("notifyValidationEventHandler", [eventArgs]);
         });
@@ -179,11 +183,8 @@ model.Page = function (models) {
         // Each of the dropdowns will listen for validation messages if the data the hold is somehow in error
         // They will only respond if the validation message is intended for them
 
-        $(".vehicle-filter-make").on("notifyValidationEventHandler", me.notifyValidationFilterEventHandler);
-        $(".vehicle-filter-programme").on("notifyValidationEventHandler", me.notifyValidationFilterEventHandler);
-        $(".vehicle-filter-modelYear").on("notifyValidationEventHandler", me.notifyValidationFilterEventHandler);
-        $(".vehicle-filter-gateway").on("notifyValidationEventHandler", me.notifyValidationFilterEventHandler);
-        $(".vehicle-filter-trim").on("notifyValidationEventHandler", me.notifyValidationFilterEventHandler);
+        $(".vehicle-filter").on("notifyBeforeValidationEventHandler", me.notifyBeforeValidationFilterEventHandler);
+        $(".vehicle-filter").on("notifyValidationEventHandler", me.notifyValidationFilterEventHandler);
     };
     me.nextPage = function (sender, eventArgs) {
         getPager().nextPage();
@@ -192,17 +193,70 @@ model.Page = function (models) {
         getPager().previousPage();
     };
     me.notifyBeforePageChangedEventHandler = function (sender, eventArgs) {
-        //var forecast = getForecastModel();
-        //forecast.validate();
+        if (!eventArgs.NextPage) {
+            return;
+        }
+        me.validateForecast(eventArgs.PageIndex);
+        var model = getForecastModel();
+        eventArgs.Cancel = !model.isValid();
     };
     me.notifyValidationEventHandler = function (sender, eventArgs) {
+        var control = $(this);
+        var errorHtml = "<div class=\"alert alert-dismissible alert-warning\"><ul>";
 
+        if (eventArgs.IsValid == true) {
+            control.html("");
+            return;
+        }
+
+        $(eventArgs.Errors).each(function () {
+            errorHtml += me.parseError(this);
+        });
+        errorHtml += "</ul></div>";
+
+        control.html(errorHtml);
+    };
+    me.parseError = function (error) {
+        var retVal = "";
+        
+        $(error.errors).each(function () {
+            retVal += "<li>";
+            retVal += this.ErrorMessage;
+            retVal += "</li>";
+        });
+
+        return retVal;
+    };
+    me.notifyBeforeValidationFilterEventHandler = function (sender, eventArgs) {
+        $(sender.target).removeClass("has-error")
+            .removeClass("has-warning");
     };
     me.notifyValidationFilterEventHandler = function (sender, eventArgs) {
-        var vehicleIndex = parseInt($(sender.target).attr("data-index"));
-        if (vehicleIndex != eventArgs.VehicleIndex) {
-            return;
-        };
+        var validationKey = $(sender.target).attr("data-val");
+        $(eventArgs.Errors).each(function ()
+        {
+            if (validationKey == this.key) {
+                $(sender.target).addClass("has-error");
+            }
+
+            if (this.errors != undefined && this.errors) {
+                me.notifyAdditionalValidationFilters(this.errors);
+            }
+        });
+    };
+    me.notifyAdditionalValidationFilters = function (additionalItems) {
+        $(additionalItems).each(function () {
+            $(this).each(function () {
+                if (this.CustomState != null)
+                    me.notifyAdditionValidationFiltersForVehicle(this.CustomState);
+            });
+        });
+    };
+    me.notifyAdditionValidationFiltersForVehicle = function (customState) {
+        $(customState).each(function () {
+            var selector = $("[data-val='ComparisonVehiclesToValidate[" + (this.VehicleIndex - 1) + "].ComparisonVehicle']");
+            selector.addClass("has-error");
+        });
     };
     me.notifySuccessEventHandler = function (sender, eventArgs) {
         var notifier = $("#notifier");
@@ -230,7 +284,9 @@ model.Page = function (models) {
             return;
         };
 
-        if (eventArgs.Vehicle.VehicleId == null || eventArgs.Vehicle.VehicleId == 0) {
+        if (eventArgs.Vehicle == null ||
+            eventArgs.Vehicle.VehicleId == null ||
+            eventArgs.Vehicle.VehicleId == 0) {
             $(sender.target).show();
         } else {
             $(sender.target).hide();
@@ -244,7 +300,7 @@ model.Page = function (models) {
         var target = $(sender.target);
         var vehicle = eventArgs.Vehicle;
 
-        if (vehicle.VehicleId != null && vehicle.VehicleId != 0) {
+        if (vehicle != null && vehicle.VehicleId != null && vehicle.VehicleId != 0) {
             target.show();
 
             if (target.hasClass("vehicle-readonly-programme") && vehicleIndex == 0) {
@@ -270,6 +326,11 @@ model.Page = function (models) {
         } else {
             me.setComparisonVehicle(eventArgs.VehicleIndex - 1, eventArgs.Vehicle);
         }
+        var pager = getPager();
+        me.validateForecast(pager.getPageIndex() + 1, true);
+    };
+    me.notifyVehicleClearedEventHandler = function (sender, eventArgs) {
+
     };
     me.notifyVehicleDescriptionEventHandler = function (sender, eventArgs) {
         if (eventArgs.VehicleIndex != 0) {
@@ -462,8 +523,12 @@ model.Page = function (models) {
     };
     me.programmeChanged = function (data) {
         var control = $(this);
+        var model = getVehicleModel();
         var vehicleIndex = parseInt(control.attr("data-index"));
         me.populateModelYears(vehicleIndex);
+        if (control.val() == "") {
+            $(document).trigger("notifyVehicleChanged", { VehicleIndex: vehicleIndex, Vehicle: model.getEmptyVehicle() });
+        }
     };
     me.modelYearChanged = function (data) {
         var control = $(this);
@@ -534,7 +599,26 @@ model.Page = function (models) {
         var forecast = getForecastModel();
         forecast.saveForecast();
     };
-
+    me.validateForecast = function (pageIndex, async) {
+        var forecast = getForecastModel();
+        var sectionToValidate = 0;
+        if (pageIndex != null) {
+            switch (pageIndex) {
+                case 1:
+                    sectionToValidate = 1;
+                    break;
+                case 2:
+                    sectionToValidate = 3;
+                    break;
+                case 3:
+                    sectionToValidate = 4;
+                    break;
+                default:
+                    break;
+            }
+        }
+        forecast.validateForecast(sectionToValidate, async);
+    };
     function getVehicleModel() {
         return getModel("Vehicle");
     };

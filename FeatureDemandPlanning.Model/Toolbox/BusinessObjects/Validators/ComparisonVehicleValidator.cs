@@ -2,6 +2,7 @@
 using FeatureDemandPlanning.BusinessObjects;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace FeatureDemandPlanning.BusinessObjects.Validators
 {
@@ -14,57 +15,85 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
         }
     }
 
-    public class ComparisonVehicleDuplicateValidator : AbstractValidator<Vehicle>
+    public class ComparisonVehicleDuplicateValidator : AbstractValidator<VehicleWithIndex>
     {
         public const string duplicateComparisonVehicle = "Comparison vehicle '{0}' has been specified more than once";
 
         public IEnumerable<VehicleWithIndex> DuplicateVehicles { get { return _duplicateVehicles; } }
-        public IEnumerable<Vehicle> ComparisonVehicles { get; set; }
-        public int CurrentVehicleIndex { get; set; }
+        public IEnumerable<VehicleWithIndex> ComparisonVehicles { get; set; }
         
-        public ComparisonVehicleDuplicateValidator(IEnumerable<Vehicle> comparisonVehicles)
+        public ComparisonVehicleDuplicateValidator(IEnumerable<VehicleWithIndex> comparisonVehicles)
         {
-            ComparisonVehicles = comparisonVehicles;
-            RuleFor(c => c)
-                .Must(HaveNoDuplicates)
-                .WithName("ComparisonVehicle")
-                .WithMessage(duplicateComparisonVehicle, c => c.Description)
-                .WithState(v => DuplicateVehicles);
-        }
-
-        private bool HaveNoDuplicates(Vehicle comparisonVehicle)
-        {
-            _duplicateVehicles = new List<VehicleWithIndex>();
-
-            var currentIndex = 0;
-            foreach (var otherVehicle in ComparisonVehicles)
-            {
-                if (currentIndex == CurrentVehicleIndex)
-                {
-                    currentIndex++;
-                    continue;
-                }
-
-                if (otherVehicle == comparisonVehicle)
-                {
-                    _duplicateVehicles.Add(new VehicleWithIndex() 
-                        { 
-                            VehicleIndex = currentIndex, 
-                            Vehicle = comparisonVehicle 
-                        });
-                }
-                currentIndex++;
-            }
+            var index = 1;
+            ComparisonVehicles = comparisonVehicles
+                .Where(c => !(c.Vehicle is EmptyVehicle)).ToList();
+                //.Select(c => new VehicleWithIndex() { VehicleIndex = index++, Vehicle = c }).ToList();
             
-            return _duplicateVehicles.Count() == 0;
+            _duplicateVehicles = ListDuplicates().ToList();
+
+            RuleSet("ComparisonVehicles", () =>
+            {
+                RuleFor(c => c)
+                    .Must(HaveNoDuplicates)
+                    .WithName("ComparisonVehicle")
+                    .WithMessage(duplicateComparisonVehicle, c => c.Vehicle.Description)
+                    .WithState(v => _duplicatesForCurrentVehicle);
+            });
         }
 
-        private IList<VehicleWithIndex> _duplicateVehicles = new List<VehicleWithIndex>();
+        private bool HaveNoDuplicates(VehicleWithIndex comparisonVehicle)
+        {
+            _duplicatesForCurrentVehicle = DuplicateVehicles.Where(v => v.Vehicle == comparisonVehicle.Vehicle);
+            return !_duplicatesForCurrentVehicle.Any();
+        }
+
+        private IEnumerable<VehicleWithIndex> ListDuplicates()
+        {
+            var duplicatesWithIndices = ComparisonVehicles
+                //.Select((vehicle, index) => new { vehicle, index = index + 1 })
+                .GroupBy(v => v.Vehicle)
+                .Select(vg => new VehicleGroup() {
+                    Vehicle = vg.Key,
+                    Indices = vg.Select(i => i.VehicleIndex)
+                })
+                .Where(v => v.Indices.Count() > 1).ToList();
+
+            foreach (var duplicate in duplicatesWithIndices)
+            {
+                foreach (var duplicateIndex in duplicate.Indices)
+                {
+                    yield return new VehicleWithIndex()
+                    {
+                        VehicleIndex = duplicateIndex,
+                        Vehicle = duplicate.Vehicle
+                    };
+                }
+            }
+        }
+
+        private IEnumerable<VehicleWithIndex> _duplicateVehicles = Enumerable.Empty<VehicleWithIndex>();
+        private IEnumerable<VehicleWithIndex> _duplicatesForCurrentVehicle = Enumerable.Empty<VehicleWithIndex>();
     }
 
-    public class VehicleWithIndex
+    public class VehicleWithIndex : IEquatable<VehicleWithIndex>
     {
         public int VehicleIndex { get; set; }
         public Vehicle Vehicle { get; set; }
+
+        public override int GetHashCode()
+        {
+            return Vehicle.GetHashCode();
+        }
+
+        public bool Equals(VehicleWithIndex other)
+        {
+            return Vehicle == other.Vehicle;
+        }
+    }
+
+    public class VehicleGroup
+    {
+        public Vehicle Vehicle { get; set; }
+        public IEnumerable<int> Indices { get; set; }
     }
 }
