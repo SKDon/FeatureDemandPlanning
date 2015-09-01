@@ -20,7 +20,9 @@ model.Forecast = function (params) {
     privateStore[me.id].ComparisonVehicles = params.ComparisonVehicles;
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].SaveForecastUri = params.SaveForecastUri;
+    privateStore[me.id].ValidateForecastUri = params.ValidateForecastUri;
     privateStore[me.id].TrimMapping = params.TrimMapping;
+    privateStore[me.id].IsValid = true;
 
     me.ModelName = "Forecast";
 
@@ -32,6 +34,9 @@ model.Forecast = function (params) {
 
     me.getSaveForecastUri = function () {
         return privateStore[me.id].SaveForecastUri;
+    };
+    me.getValidateForecastUri = function () {
+        return privateStore[me.id].ValidateForecastUri;
     }
 
     me.setComparisonVehicle = function (vehicleIndex, comparisonVehicle) {
@@ -39,6 +44,11 @@ model.Forecast = function (params) {
             privateStore[me.id].ComparisonVehicles[vehicleIndex] = comparisonVehicle;
         }
     };
+
+    me.isValid = function()
+    {
+        return privateStore[me.id].IsValid;
+    }
 
     me.setComparisonVehicleTrim = function (trim) {
         var existingTrim = null;
@@ -61,8 +71,7 @@ model.Forecast = function (params) {
         }
 
         me.saveForecast();
-    }
-
+    };
     me.getComparisonVehicle = function (vehicleIndex) {
         var comparisonVehicle = null;
         if (privateStore[me.id].ComparisonVehicles.length > vehicleIndex) {
@@ -70,11 +79,9 @@ model.Forecast = function (params) {
         }
         return comparisonVehicle;
     };
-
     me.getComparisonVehicles = function () {
         return privateStore[me.id].ComparisonVehicles;
     };
-
     me.getTrimMapping = function () {
         return privateStore[me.id].TrimMapping;
     }
@@ -107,6 +114,9 @@ model.Forecast = function (params) {
     me.saveForecast = function () {
         var forecast = me.getForecast();
         var encodedForecast = JSON.stringify(forecast);
+
+        $(document).trigger("notifyBeforeValidation", forecast);
+
         $.ajax({
             url: me.getSaveForecastUri(),
             type: "POST",
@@ -118,21 +128,47 @@ model.Forecast = function (params) {
         });
     };
 
+    me.validateForecast = function (sectionToValidate, isAsync) {
+
+        var forecast = me.getForecast();
+        var encodedForecast = JSON.stringify({ forecastToValidate: forecast, sectionToValidate: sectionToValidate });
+
+        $(document).trigger("notifyBeforeValidation", forecast);
+
+        $.ajax({
+            url: me.getValidateForecastUri(),
+            type: "POST",
+            async: isAsync != undefined ? isAsync : false, // Need to validate before we are allowed to do anything else
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: encodedForecast,
+            complete: validateForecastCallback
+        });
+    };
+
     function loadForecastCallback(response) {
         $(document).trigger("notifyResults", response);
-    }
+    };
 
     function saveForecastCallback(response) {
+
         $(document).trigger("notifyUpdated", response);
+    };
+
+    function validateForecastCallback(response) {
+        var json = JSON.parse(response.responseText);
+        privateStore[me.id].IsValid = json.IsValid;
+        $(document).trigger("notifyValidation", [json]);
     }
 
     function genericErrorCallback(response) {
         if (response.status == 400) {
             var json = JSON.parse(response.responseText);
+            privateStore[me.id].IsValid = false;
             $(document).trigger("notifyValidation", [json]);
         } else {
             $(document).trigger("notifyError", response);
         }
-    }
+    };
 }
 

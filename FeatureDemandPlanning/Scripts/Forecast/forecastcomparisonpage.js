@@ -12,6 +12,7 @@ model.Page = function (models) {
     privateStore[me.id].PageIndex = 0;
     privateStore[me.id].ForecastVehicle = null;
     privateStore[me.id].InitCount = 0;
+    privateStore[me.id].IsValid = false;
 
     me.initialise = function () {
         me.registerEvents();
@@ -44,7 +45,7 @@ model.Page = function (models) {
         }
     };
     me.initialiseComparisonVehicles = function () {
-        var vehicleIndex = 1;
+            var vehicleIndex = 1;
         $(me.getComparisonVehicles()).each(function () { $(document).trigger("notifyVehicleLoaded", { Vehicle: this, VehicleIndex: vehicleIndex++ }); });
     };
     me.getForecastId = function () {
@@ -158,16 +159,70 @@ model.Page = function (models) {
         getPager().previousPage();
     };
     me.notifyBeforePageChangedEventHandler = function (sender, eventArgs) {
-        
+        if (!eventArgs.NextPage) {
+            return;
+        }
+        me.validateForecast(eventArgs.PageIndex);
+        var model = getForecastModel();
+        eventArgs.Cancel = !model.isValid();
     };
     me.notifyValidationEventHandler = function (sender, eventArgs) {
+        var control = $(this);
+        var errorHtml = "<div class=\"alert alert-dismissible alert-warning\"><ul>";
 
+        if (eventArgs.IsValid == true) {
+            control.html("");
+            return;
+        }
+
+        $(eventArgs.Errors).each(function () {
+            errorHtml += me.parseError(this);
+        });
+        errorHtml += "</ul></div>";
+
+        control.html(errorHtml);
+    };
+    me.parseError = function (error) {
+        var retVal = "";
+        
+        $(error.errors).each(function () {
+            retVal += "<li>";
+            retVal += this.ErrorMessage;
+            retVal += "</li>";
+        });
+
+        return retVal;
+    };
+    me.notifyBeforeValidationFilterEventHandler = function (sender, eventArgs) {
+        $(sender.target).removeClass("has-error")
+            .removeClass("has-warning");
     };
     me.notifyValidationFilterEventHandler = function (sender, eventArgs) {
-        var vehicleIndex = parseInt($(sender.target).attr("data-index"));
-        if (vehicleIndex != eventArgs.VehicleIndex) {
-            return;
+        var validationKey = $(sender.target).attr("data-val");
+        $(eventArgs.Errors).each(function ()
+        {
+            if (validationKey == this.key) {
+                $(sender.target).addClass("has-error");
+            }
+
+            if (this.errors != undefined && this.errors) {
+                me.notifyAdditionalValidationFilters(this.errors);
+            }
+        });
+    };
+    me.notifyAdditionalValidationFilters = function (additionalItems) {
+        $(additionalItems).each(function () {
+            $(this).each(function () {
+                if (this.CustomState != null)
+                    me.notifyAdditionValidationFiltersForVehicle(this.CustomState);
+            });
+        });
         };
+    me.notifyAdditionValidationFiltersForVehicle = function (customState) {
+        $(customState).each(function () {
+            var selector = $("[data-val='ComparisonVehiclesToValidate[" + (this.VehicleIndex - 1) + "].ComparisonVehicle']");
+            selector.addClass("has-error");
+        });
     };
     me.notifySuccessEventHandler = function (sender, eventArgs) {
         var notifier = $("#notifier");
@@ -195,7 +250,9 @@ model.Page = function (models) {
             return;
         };
 
-        if (eventArgs.Vehicle.VehicleId == null || eventArgs.Vehicle.VehicleId == 0) {
+        if (eventArgs.Vehicle == null ||
+            eventArgs.Vehicle.VehicleId == null ||
+            eventArgs.Vehicle.VehicleId == 0) {
             $(sender.target).show();
         } else {
             $(sender.target).hide();
@@ -209,7 +266,7 @@ model.Page = function (models) {
         var target = $(sender.target);
         var vehicle = eventArgs.Vehicle;
 
-        if (vehicle.VehicleId != null && vehicle.VehicleId != 0) {
+        if (vehicle != null && vehicle.VehicleId != null && vehicle.VehicleId != 0) {
             target.show();
 
             if (target.hasClass("vehicle-readonly-programme") && vehicleIndex == 0) {
@@ -235,6 +292,11 @@ model.Page = function (models) {
         } else {
             me.setComparisonVehicle(eventArgs.VehicleIndex - 1, eventArgs.Vehicle);
         }
+        var pager = getPager();
+        me.validateForecast(pager.getPageIndex() + 1, true);
+    };
+    me.notifyVehicleClearedEventHandler = function (sender, eventArgs) {
+
     };
     me.notifyVehicleDescriptionEventHandler = function (sender, eventArgs) {
         if (eventArgs.VehicleIndex != 0) {
@@ -252,7 +314,7 @@ model.Page = function (models) {
     me.notifyUpdatedEventHandler = function (sender, eventArgs) {
         $("#notifier").html("<div class=\"alert alert-dismissible alert-success\">" + eventArgs.StatusMessage + "</div>");
     };
-    me.notifyMakesEventHandler = function (sender, eventArgs) {        
+    me.notifyMakesEventHandler = function (sender, eventArgs) {
         var vehicleIndex = parseInt($(this).attr("data-index"));
 
         // If this event is not intended for this specific control, return
@@ -406,7 +468,13 @@ model.Page = function (models) {
         me.populateProgrammes(parseInt($(this).attr("data-index")));
     };
     me.programmeChanged = function (data) {
-        me.populateModelYears(parseInt($(this).attr("data-index")));
+        var control = $(this);
+        var model = getVehicleModel();
+        var vehicleIndex = parseInt(control.attr("data-index"));
+        me.populateModelYears(vehicleIndex);
+        if (control.val() == "") {
+            $(document).trigger("notifyVehicleChanged", { VehicleIndex: vehicleIndex, Vehicle: model.getEmptyVehicle() });
+        }
     };
     me.modelYearChanged = function (data) {
         var vehicleIndex = parseInt($(this).attr("data-index"));
@@ -464,6 +532,26 @@ model.Page = function (models) {
     };
     me.saveForecast = function () {
         getForecastModel().saveForecast();
+    };
+    me.validateForecast = function (pageIndex, async) {
+        var forecast = getForecastModel();
+        var sectionToValidate = 0;
+        if (pageIndex != null) {
+            switch (pageIndex) {
+                case 1:
+                    sectionToValidate = 1;
+                    break;
+                case 2:
+                    sectionToValidate = 3;
+                    break;
+                case 3:
+                    sectionToValidate = 4;
+                    break;
+                default:
+                    break;
+            }
+        }
+        forecast.validateForecast(sectionToValidate, async);
     };
     function getVehicleModel() {
         return getModel("Vehicle");

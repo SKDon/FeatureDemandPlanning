@@ -1,5 +1,5 @@
 ﻿<div class="page" data-index="1" style="display:none">
-    <div class="col-lg-8 col-lg-offset-2">
+    <div class="col-lg-8">
         <div class="panel panel-primary">
 
             <div class="panel-heading">
@@ -13,25 +13,20 @@
                     int i = 1;
                     foreach (var comparisonVehicle in Model.Forecast.ComparisonVehicles)
                     {
-                        <div class="row subscribers-notifyVehicle subscribers-notifyValidation vehicle-filter" data-index="@(i)">
+                        <div class="row form-group subscribers-notifyVehicle subscribers-notifyValidation vehicle-filter" data-index="@(i)" data-val="ComparisonVehiclesToValidate[@(i-1)].ComparisonVehicle">
 
-                            <div class="col-lg-5 col-lg-offset-1 form-group has-error">
+                            <div class="col-lg-5 col-lg-offset-1">
                                 <select id="ddlComparisonMakes@(i)" style="display:none"
                                         class="form-control subscribers-notifyMakes vehicle-filter vehicle-filter-make"
                                         data-index="@(i)"></select>
-                                @if (i == 1)
-                                {
-                                    <label class="control-label inverse" for="ddlComparisonProgramme@(i)">Comparison Vehicle</label>
-                                }
+                                <label class="control-label inverse" for="ddlComparisonProgramme@(i)">Comparison Vehicle #@(i)</label>
                                 <select id="ddlComparisonProgramme@(i)"
                                         class="form-control subscribers-notifyProgrammes vehicle-filter vehicle-filter-programme"
                                         data-index="@(i)"></select>
                             </div>
                             <div class="col-lg-5">
-                                @if (i == 1)
-                                {
-                                    <label class="control-label inverse" for="ddlComparisonModelYear@(i)">Model Year</label>
-                                }
+                                <label class="control-label inverse" for="ddlComparisonModelYear@(i)">Model Year</label>
+                               
 
                                 <select id="ddlComparisonModelYear@(i)"
                                         class="form-control subscribers-notifyModelYears vehicle-filter vehicle-filter-modelYear"
@@ -41,22 +36,19 @@
                         </div>
                         <div class="row subscribers-notifyVehicle vehicle-readonly" data-index="@(i)" style="display:none">
                             <div class="col-lg-5 col-lg-offset-1">
-                                @if (i == 1)
-                                {
-                                    <label class="control-label inverse" for="lblComparisonProgramme@(i)">Comparison Vehicle</label>
-                                }
+                                <label class="control-label inverse" for="lblComparisonProgramme@(i)">Comparison Vehicle #@(i)</label>
+                                
                                 <p id="lblComparisonProgramme@(i)" class="subscribers-notifyVehicle vehicle-readonly vehicle-readonly-programme" data-index="@(i)"></p>
                             </div>
                             <div class="col-lg-5">
-                                @if (i == 1)
-                                {
+                            
                                     <label class="control-label inverse" for="lblComparisonModelYear@(i)">Model Year</label>
-                                }
+                              
                                 <p id="lblComparisonModelYear@(i)" class="subscribers-notifyVehicle vehicle-readonly vehicle-readonly-modelYear" data-index="@(i)"></p>
                             </div>
                         </div>
                         i++;
-                        <div class="vertical-spacer"></div>
+                        @*<div class="vertical-spacer"></div>*@
                     }
 
 }

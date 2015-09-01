@@ -75,6 +75,21 @@ model.Vehicle = function (params) {
         getData({ make: filter.Make, name: filter.Name, modelYear: filter.ModelYear, gateway: filter.Gateway, vehicleIndex: filter.VehicleIndex }, getVehicleCallback);
     };
 
+    me.getEmptyVehicle = function () {
+        return {
+            VehicleId: null,
+            ProgrammeId: null,
+            GatewayId: null,
+            Make: "",
+            Code: "",
+            ModelYear: "",
+            DerivativeCode: "",
+            Gateway: "",
+            ImageUri: "",
+            Description: ""
+        }
+    };
+
     me.filterResults = function () {
         $(document).trigger("notifyFilterComplete");
     };
