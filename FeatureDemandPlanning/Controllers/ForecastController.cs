@@ -34,28 +34,27 @@ namespace FeatureDemandPlanning.Controllers
         }
 
         [HttpPost]
-        public ActionResult Page(Forecast forecast, int pageIndex)
+        public ActionResult ForecastComparisonPage(Forecast forecast, int pageIndex)
         {
-            var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecast);
-
-            ActionResult result = null;
+            var view = string.Empty;
+            
             switch (pageIndex)
             {
-                case 1: 
-                    result = PartialView("ForecastVehicle", forecastComparisonModel);
+                case 0:
+                    view = "_ForecastVehicle";
+                    break;
+                case 1:
+                    view = "_ForecastComparison";
                     break;
                 case 2:
-                    result = PartialView("ForecastComparison", forecastComparisonModel);
-                    break;
-                case 3:
-                    result = PartialView("ForecastTrim", forecastComparisonModel);
+                    view = "_ForecastTrim";
                     break;
                 default:
-                    result = PartialView("ForecastVehicle", forecastComparisonModel);
+                    view = "_ForecastVehicle";
                     break;
             }
 
-            return result;
+            return PartialView(view, GetFullAndPartialForecastComparisonViewModel(forecast));
         }
 
         [HttpGet]
@@ -176,7 +175,19 @@ namespace FeatureDemandPlanning.Controllers
 
         private ForecastComparisonViewModel GetFullAndPartialForecastComparisonViewModel(Forecast forecast)
         {
-            return GetFullAndPartialForecastComparisonViewModel(new ForecastFilter(forecast.ForecastId));
+            var forecastComparisonModel = new ForecastComparisonViewModel(DataContext)
+            {
+                Forecast = forecast,
+                PageSize = PageSize,
+                PageIndex = PageIndex
+            };
+
+            if (!(forecast.ForecastVehicle is EmptyVehicle))
+            {
+                forecastComparisonModel.VehicleLookup = new VehicleViewModel(DataContext, forecast.ForecastVehicle);
+            }
+
+            return forecastComparisonModel;
         }
 
         private ForecastComparisonViewModel GetFullAndPartialForecastComparisonViewModel(ForecastFilter filter)
@@ -193,6 +204,11 @@ namespace FeatureDemandPlanning.Controllers
                 PageSize = PageSize,
                 PageIndex = PageIndex
             };
+
+            if (!(forecast.ForecastVehicle is EmptyVehicle))
+            {
+                forecastComparisonModel.VehicleLookup = new VehicleViewModel(DataContext, forecast.ForecastVehicle);
+            }
 
             return forecastComparisonModel;
         }

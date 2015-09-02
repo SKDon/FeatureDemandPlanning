@@ -2,7 +2,7 @@
 
 var model = namespace("FeatureDemandPlanning");
 
-model.Pager = function (pages) {
+model.Pager = function (pages, params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
@@ -10,6 +10,7 @@ model.Pager = function (pages) {
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Pages = pages;
     privateStore[me.id].PageIndex = 0;
+    privateStore[me.id].PageUri = params.PageUri;
 
     me.ModelName = "Pager";
 
@@ -36,6 +37,9 @@ model.Pager = function (pages) {
     };
     me.isLastPage = function () {
         return me.getPageIndex() == getPages().length - 1;
+    };
+    me.getPageUri = function () {
+        return privateStore[me.id].PageUri;
     };
 
     function setPageIndex(pageIndex) {
