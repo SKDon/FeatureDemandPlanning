@@ -184,7 +184,7 @@ namespace FeatureDemandPlanning.Controllers
 
             if (!(forecast.ForecastVehicle is EmptyVehicle))
             {
-                forecastComparisonModel.VehicleLookup = new VehicleViewModel(DataContext, forecast.ForecastVehicle);
+                forecastComparisonModel.ForecastVehicleLookup = new Lookup(DataContext, forecast.ForecastVehicle);
             }
 
             return forecastComparisonModel;
@@ -205,10 +205,7 @@ namespace FeatureDemandPlanning.Controllers
                 PageIndex = PageIndex
             };
 
-            if (!(forecast.ForecastVehicle is EmptyVehicle))
-            {
-                forecastComparisonModel.VehicleLookup = new VehicleViewModel(DataContext, forecast.ForecastVehicle);
-            }
+            forecastComparisonModel.ForecastVehicleLookup = new Lookup(DataContext, forecast.ForecastVehicle);
 
             return forecastComparisonModel;
         }

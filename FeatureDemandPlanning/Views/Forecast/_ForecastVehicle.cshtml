@@ -15,34 +15,47 @@
                 <div class="row subscribers-notifyVehicle subscribers-notifyValidation vehicle-filter" data-index="0" data-val="Forecast" style="display:block">
 
                     <div class="col-lg-4">
-                        <select id="ddlMake" name="Make" class="subscribers-notifyMakes vehicle-filter-make" style="display:none" data-index="0"></select>
+                        @Html.DropDownListFor(m => m.Forecast.ForecastVehicle.Make, Model.ForecastVehicleLookup.Makes, 
+                            new {
+                                @id = "ddlMake",
+                                @name = "Make",
+                                @class = "subscribers-notifyMakes vehicle-filter-make",
+                                @style = "display:none",
+                                @data_index = "0"
+                            })
                         <label class="control-label inverse" for="ddlProgramme">Vehicle</label>
-                        <select class="form-control subscribers-notifyProgrammes vehicle-filter-programme" id="ddlProgramme" name="Programme" data-index="0">
-                            @if (!(Model.Forecast.ForecastVehicle is EmptyVehicle))
+                        @Html.DropDownListFor(m => m.Forecast.ForecastVehicle.Code, Model.ForecastVehicleLookup.Programmes,
+                            new
                             {
-                                @Model.VehicleLookup.Programmes
-                            }
-                        </select>
+                                @id = "ddlProgramme",
+                                @name = "Programme",
+                                @class = "form-control subscribers-notifyProgrammes vehicle-filter-programme",
+                                @data_index = "0"
+                            })
                     </div>
 
                     <div class="col-lg-4">
                         <label class="control-label inverse" for="ddlModelYear">Model Year</label>
-                        <select class="form-control subscribers-notifyModelYears vehicle vehicle-filter-modelYear" id="ddlModelYear" name="ModelYear" data-index="0">
-                            @if (!(Model.Forecast.ForecastVehicle is EmptyVehicle))
+                        @Html.DropDownListFor(m => m.Forecast.ForecastVehicle.ModelYear, Model.ForecastVehicleLookup.ModelYears,
+                            new
                             {
-                                @Model.VehicleLookup.ModelYears
-                            }
-                        </select>
+                                @id = "ddlModelYear",
+                                @name = "ModelYear",
+                                @class = "form-control subscribers-notifyModelYears vehicle-filter-modelYear",
+                                @data_index = "0"
+                            })
                     </div>
 
                     <div class="col-lg-4">
                         <label class="control-label inverse" for="ddlGateway">Gateway</label>
-                        <select class="form-control subscribers-notifyGateways vehicle-filter-gateway" id="ddlGateway" name="Gateway" data-index="0">
-                            @if (!(Model.Forecast.ForecastVehicle is EmptyVehicle))
+                        @Html.DropDownListFor(m => m.Forecast.ForecastVehicle.Gateway, Model.ForecastVehicleLookup.Gateways,
+                            new
                             {
-                                @Model.VehicleLookup.Gateways
-                            }
-                        </select>
+                                @id = "ddlGateway",
+                                @name = "Gateway",
+                                @class = "form-control subscribers-notifyGateways vehicle-filter-gateway",
+                                @data_index = "0"
+                            })
                     </div>
 
                 </div>

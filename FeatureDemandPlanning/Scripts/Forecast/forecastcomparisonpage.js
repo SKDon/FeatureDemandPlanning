@@ -191,9 +191,6 @@ model.Page = function (models) {
         $("#btnNext").unbind("click").on("click", me.nextPage);
         $("#btnPrevious").unbind("click").on("click", me.previousPage);
     };
-    me.unbindEvents = function () {
-
-    };
     me.nextPage = function (sender, eventArgs) {
         getPager().nextPage();
     };
@@ -496,7 +493,8 @@ model.Page = function (models) {
     };
     me.notifyPageContentChangedCallback = function (content) {
         $("#frmContent").html(content);
-        me.initialise();
+        me.registerEvents();
+        me.registerSubscribers();
     };
     me.notifyGatewaysEventHandler = function (sender, eventArgs) {
         var control = $(this);
@@ -654,7 +652,7 @@ model.Page = function (models) {
         var classPrefix = ".vehicle-filter";
         var attrFilter = "[data-index='" + vehicleIndex + "']";
 
-        filter.Make = $(classPrefix + "-make" + attrFilter).val();
+        filter.Make = ""; //$(classPrefix + "-make" + attrFilter).val();
         filter.Name = $(classPrefix + "-programme" + attrFilter).val();
         filter.ModelYear = $(classPrefix + "-modelYear" + attrFilter).val();
         filter.Gateway = $(classPrefix + "-gateway" + attrFilter).val();

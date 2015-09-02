@@ -182,7 +182,7 @@
     <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Models\ImportViewModel.cs" />
     <Compile Include="Models\MarketViewModel.cs" />
-    <Compile Include="Models\NewVehicleViewModel.cs" />
+    <Compile Include="Models\Lookup.cs" />
     <Compile Include="Models\SharedModelBase.cs" />
     <Compile Include="Models\VehicleModel.cs" />
     <Compile Include="Models\VehicleViewModel.cs" />

@@ -29,7 +29,7 @@ namespace FeatureDemandPlanning.Models
             set { _forecasts = value; }
         }
 
-        public VehicleViewModel VehicleLookup { get; set; }
+        public Lookup ForecastVehicleLookup { get; set; }
 
         public int NumberOfComparisonVehicles
         {
@@ -47,6 +47,7 @@ namespace FeatureDemandPlanning.Models
             : base(dataContext)
         {
             Configuration = dataContext.ConfigurationSettings;
+            ForecastVehicleLookup = new Lookup(dataContext);
         }
 
         private IForecast _forecast = new EmptyForecast();
