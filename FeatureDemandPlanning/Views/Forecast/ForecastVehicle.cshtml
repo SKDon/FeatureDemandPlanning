@@ -1,9 +1,4 @@
-﻿@using FeatureDemandPlanning.BusinessObjects
-@using enums = FeatureDemandPlanning.Enumerations
-
-@model FeatureDemandPlanning.Models.ForecastComparisonViewModel
-
-<div class="row subscribers-notifyFilterComplete" data-index="0">
+﻿<div class="page row subscribers-notifyFilterComplete" data-index="0" style="display:block">
     <div class="col-lg-8">
         <div class="panel panel-primary">
             <div class="panel-heading">
@@ -17,32 +12,17 @@
                     <div class="col-lg-4">
                         <select id="ddlMake" name="Make" class="subscribers-notifyMakes vehicle-filter-make" style="display:none" data-index="0"></select>
                         <label class="control-label inverse" for="ddlProgramme">Vehicle</label>
-                        <select class="form-control subscribers-notifyProgrammes vehicle-filter-programme" id="ddlProgramme" name="Programme" data-index="0">
-                            @if (!(Model.Forecast.ForecastVehicle is EmptyVehicle))
-                            {
-                                @Model.VehicleLookup.Programmes
-                            }
-                        </select>
+                        <select class="form-control subscribers-notifyProgrammes vehicle-filter-programme" id="ddlProgramme" name="Programme" data-index="0"></select>
                     </div>
 
                     <div class="col-lg-4">
                         <label class="control-label inverse" for="ddlModelYear">Model Year</label>
-                        <select class="form-control subscribers-notifyModelYears vehicle vehicle-filter-modelYear" id="ddlModelYear" name="ModelYear" data-index="0">
-                            @if (!(Model.Forecast.ForecastVehicle is EmptyVehicle))
-                            {
-                                @Model.VehicleLookup.ModelYears
-                            }
-                        </select>
+                        <select class="form-control subscribers-notifyModelYears vehicle vehicle-filter-modelYear" id="ddlModelYear" name="ModelYear" data-index="0"></select>
                     </div>
 
                     <div class="col-lg-4">
                         <label class="control-label inverse" for="ddlGateway">Gateway</label>
-                        <select class="form-control subscribers-notifyGateways vehicle-filter-gateway" id="ddlGateway" name="Gateway" data-index="0">
-                            @if (!(Model.Forecast.ForecastVehicle is EmptyVehicle))
-                            {
-                                @Model.VehicleLookup.Gateways
-                            }
-                        </select>
+                        <select class="form-control subscribers-notifyGateways vehicle-filter-gateway" id="ddlGateway" name="Gateway" data-index="0"></select>
                     </div>
 
                 </div>

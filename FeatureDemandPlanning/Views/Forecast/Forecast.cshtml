@@ -14,7 +14,6 @@
 
         var forecast, vehicle, pager, page;
         var params = {
-            PageUri: "@Url.Action("ForecastComparisonPage")",
             SaveForecastUri: "@Url.Action("SaveForecast")",
             ValidateForecastUri: "@Url.Action("ValidateForecast")",
             FilterVehiclesUri: "@Url.Action("FilterVehicles", "Vehicle")",
@@ -42,33 +41,48 @@
 {
     <div class="row">
         <div class="col-lg-12 inverse">
+            @*<div class="col-lg-2">
+
+                <img src="~/Content/Images/Icons/create128.png" style="opacity:0.9;border:0" />
+            </div>*@
             <div class="col-lg-10">
-                <h1 style="height:25px">Forecast Comparison</h1>
-                <p style="height:18px" id="lblPageDescription" class="subscribers-notifyPageChanged">
-                    <div class="page-description" data-index="0">Choose a carline, model year and gateway to create a forecast for</div>
-                    <div class="page-description" data-index="1" style="display:none">Choose up to 5 carlines &amp; model years to compare to</div>
-                    <div class="page-description" data-index="2" style="display:none">Choose equivalent trim level for each comparison</div>
-                </p>
-                <h3 id="lblVehicleDescription" class="subscribers-notifyVehicle"></h3>
-            </div>
+            <h1 style="height:50px">Forecast Comparison</h1>
+            <p style="height:25px" id="lblPageDescription" class="subscribers-notifyPageChanged">
+                <span data-index="1">"Choose a carline, model year and gateway to create a forecast for"</span>
+                <span data-index="2">Choose up to 5 carlines &amp; model years to compare to</span>
+                <span data-index="3">Choose equivalent trim level for each comparison</span>
+            </p>
+            <h3 id="lblVehicleDescription" class="subscribers-notifyVehicle">
+                
+            </h3>
+        </div>
+            
+
+            
         </div>
     </div>
 }
 
 @section PageBody
 {
-    <div id="notifier" class="subscribers-notifySuccess subscribers-notifyError subscribers-notifyVehicle subscribers-notifyUpdated subscribers-notifyBeforePageChanged subscribers-notifyValidation col-lg-8"></div>
+    <div id="notifier" class="subscribers-notifySuccess subscribers-notifyError subscribers-notifyVehicle subscribers-notifyUpdated subscribers-notifyBeforePageChanged subscribers-notifyValidation col-lg-8">
+</div>
 
-    <form method="post" id="frmContent" action="@Url.Action("ForecastComparisonPage")" class="form-group-sm subscribers-notifyPageChanged">
+    <form method="post" id="frmContent" action="@Url.Action("Page")" class="form-group-sm">
 
-        @Html.Partial("_ForecastVehicle", Model)
+        @Html.Partial("ForecastVehicle", Model)
+
+        @*@Html.Partial("ForecastComparison", Model)
+
+        @Html.Partial("ForecastTrim", Model)*@
+
+        @Html.Partial("Pager", Model)
 
     </form>
 
-    @Html.Partial("_Pager", Model)
-    @Html.Partial("_ForecastPages", Model)
+        
+
+    @*</form>*@
 }
-
-
 
 
