@@ -162,6 +162,10 @@ model.Page = function (models) {
         $("#btnPrevious").on("notifyPageChangedEventHandler", me.notifyPageChangedEventHandler);
         $("#btnNext").on("notifyPageChangedEventHandler", me.notifyPageChangedEventHandler);
 
+        // Notify the parent form of any page changes so we can actually render the appropriate content for the page
+
+        $("#frmContent").on("notifyPageChangedEventHandler", me.notifyPageContentChangedEventHandler);
+
         // For both forecast and comparisons, we have a pair of controls, one with selection controls, the other read-only fields
         // Both will listen for "notifyVehicleLoaded" events and take appropriate action (basically toggling the display)
 
@@ -329,9 +333,6 @@ model.Page = function (models) {
         var pager = getPager();
         me.validateForecast(pager.getPageIndex() + 1, true);
     };
-    me.notifyVehicleClearedEventHandler = function (sender, eventArgs) {
-
-    };
     me.notifyVehicleDescriptionEventHandler = function (sender, eventArgs) {
         if (eventArgs.VehicleIndex != 0) {
             return;
@@ -484,6 +485,17 @@ model.Page = function (models) {
         if (button.attr("id") == "btnNext" && eventArgs.PageIndex == 2) {
             me.saveForecast();
         }
+    };
+    me.notifyPageContentChangedEventHandler = function (sender, eventArgs) {
+        $.ajax({
+            type: "POST",
+            url: $(sender.target).attr("action"),
+            data: eventArgs.PageIndex,
+            success: function(response) {
+                $(sender.target).html(response.data);
+            },
+            async: true
+        });
     };
     me.notifyGatewaysEventHandler = function (sender, eventArgs) {
         var control = $(this);

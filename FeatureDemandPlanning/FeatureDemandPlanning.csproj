@@ -629,6 +629,7 @@
     <Content Include="Views\Forecast\ForecastTrim.cshtml" />
     <Content Include="Views\Forecast\ForecastComparisonVehicle.cshtml" />
     <Content Include="Views\Forecast\ForecastComparisonVehicleReadOnly.cshtml" />
+    <Content Include="Views\Forecast\Pager.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

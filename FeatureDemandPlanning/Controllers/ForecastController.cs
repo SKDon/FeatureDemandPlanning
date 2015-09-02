@@ -33,6 +33,31 @@ namespace FeatureDemandPlanning.Controllers
             return RedirectToAction("Forecast");
         }
 
+        [HttpPost]
+        public ActionResult Page(Forecast forecast, int pageIndex)
+        {
+            var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecast);
+
+            ActionResult result = null;
+            switch (pageIndex)
+            {
+                case 1: 
+                    result = PartialView("ForecastVehicle", forecastComparisonModel);
+                    break;
+                case 2:
+                    result = PartialView("ForecastComparison", forecastComparisonModel);
+                    break;
+                case 3:
+                    result = PartialView("ForecastTrim", forecastComparisonModel);
+                    break;
+                default:
+                    result = PartialView("ForecastVehicle", forecastComparisonModel);
+                    break;
+            }
+
+            return result;
+        }
+
         [HttpGet]
         public ActionResult Forecast(int? viewPage, int? forecastId)
         {

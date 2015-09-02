@@ -62,24 +62,21 @@
     <div id="notifier" class="subscribers-notifySuccess subscribers-notifyError subscribers-notifyVehicle subscribers-notifyUpdated subscribers-notifyBeforePageChanged subscribers-notifyValidation col-lg-8">
 </div>
 
-    <form method="post" action="@Url.Action("SaveForecast")" class=" form-group-sm">
+    <form method="post" id="frmContent" action="@Url.Action("Page")" class="form-group-sm">
 
         @Html.Partial("ForecastVehicle", Model)
 
-        @Html.Partial("ForecastComparison", Model)
+        @*@Html.Partial("ForecastComparison", Model)
 
-        @Html.Partial("ForecastTrim", Model)
+        @Html.Partial("ForecastTrim", Model)*@
 
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="pull-right">
-                    <button type="button" class="btn btn-primary subscribers-notifyPageChanged subscribers-notifyFirstPage subscribers-notifyLastPage" id="btnPrevious" style="display:none">&lt; Previous</button>
-                    <button type="button" class="btn btn-primary subscribers-notifyPageChanged subscribers-notifyFirstPage subscribers-notifyLastPage" id="btnNext">Next &gt;</button>
-                </div>
-            </div>
-        </div>
+        @Html.Partial("Pager", Model)
 
     </form>
+
+        
+
+    @*</form>*@
 }
 
 
