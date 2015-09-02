@@ -1,4 +1,5 @@
-﻿using FeatureDemandPlanning.BusinessObjects.Filters;
+﻿using FeatureDemandPlanning.BusinessObjects;
+using FeatureDemandPlanning.BusinessObjects.Filters;
 using FeatureDemandPlanning.Models;
 using System;
 using System.Collections.Generic;
@@ -18,11 +19,11 @@ namespace FeatureDemandPlanning.Controllers
 
         private VehicleViewModel GetFullAndPartialVehicleViewModel(VehicleFilter filter)
         {
-            var vehicleViewModel = new VehicleViewModel(DataContext)
+            var vehicleViewModel = new VehicleViewModel(DataContext, new EmptyVehicle())
             {
                 VehicleIndex = filter.VehicleIndex,
                 Filter = filter,
-                AvailableVehicles = DataContext.Vehicle.ListAvailableVehicles(filter),
+                _availableVehicles = DataContext.Vehicle.ListAvailableVehicles(filter),
                 PageSize = this.PageSize,
                 PageIndex = this.PageIndex
             };

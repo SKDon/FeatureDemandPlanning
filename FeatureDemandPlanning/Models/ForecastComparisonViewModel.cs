@@ -29,6 +29,8 @@ namespace FeatureDemandPlanning.Models
             set { _forecasts = value; }
         }
 
+        public VehicleViewModel VehicleLookup { get; set; }
+
         public int NumberOfComparisonVehicles
         {
             get

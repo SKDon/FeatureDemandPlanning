@@ -10,7 +10,7 @@ using System.Web.Mvc;
 
 namespace FeatureDemandPlanning.Models
 {
-    public class VehicleViewModel : SharedModelBase
+    public class NewVehicleViewModel : SharedModelBase
     {
         public IEnumerable<SelectListItem> Makes { get; set; }
         public IEnumerable<SelectListItem> Programmes { get; set; }
@@ -34,7 +34,7 @@ namespace FeatureDemandPlanning.Models
         private IEnumerable<SelectListItem> ListProgrammes()
         {
             return _availableVehicles
-                .Where(v => _lookupVehicle is EmptyVehicle || 
+                .Where(v => _lookupVehicle is EmptyVehicle ||
                         (
                             v.Make.Equals(_lookupVehicle.Make, StringComparison.OrdinalIgnoreCase))
                         )
@@ -87,7 +87,8 @@ namespace FeatureDemandPlanning.Models
                 });
         }
 
-        public VehicleViewModel(IDataContext dataContext, IVehicle lookupVehicle) : base(dataContext)
+        public NewVehicleViewModel(IDataContext dataContext, IVehicle lookupVehicle)
+            : base(dataContext)
         {
             _availableVehicles = dataContext.Vehicle.ListAvailableVehicles(new VehicleFilter());
 

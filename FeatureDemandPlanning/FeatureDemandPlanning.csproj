@@ -182,6 +182,7 @@
     <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Models\ImportViewModel.cs" />
     <Compile Include="Models\MarketViewModel.cs" />
+    <Compile Include="Models\NewVehicleViewModel.cs" />
     <Compile Include="Models\SharedModelBase.cs" />
     <Compile Include="Models\VehicleModel.cs" />
     <Compile Include="Models\VehicleViewModel.cs" />
@@ -624,12 +625,11 @@
     <Content Include="Views\EngineCodeMapping\EngineCodeMapping.cshtml" />
     <Content Include="Views\EngineCodeMapping\EngineCodeMappings.cshtml" />
     <Content Include="Views\Shared\_Child.cshtml" />
-    <Content Include="Views\Forecast\ForecastComparison.cshtml" />
-    <Content Include="Views\Forecast\ForecastVehicle.cshtml" />
-    <Content Include="Views\Forecast\ForecastTrim.cshtml" />
-    <Content Include="Views\Forecast\ForecastComparisonVehicle.cshtml" />
-    <Content Include="Views\Forecast\ForecastComparisonVehicleReadOnly.cshtml" />
-    <Content Include="Views\Forecast\Pager.cshtml" />
+    <Content Include="Views\Forecast\_ForecastComparison.cshtml" />
+    <Content Include="Views\Forecast\_ForecastVehicle.cshtml" />
+    <Content Include="Views\Forecast\_ForecastTrim.cshtml" />
+    <Content Include="Views\Forecast\_Pager.cshtml" />
+    <Content Include="Views\Forecast\_ForecastPages.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
