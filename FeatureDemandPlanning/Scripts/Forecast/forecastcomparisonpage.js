@@ -495,6 +495,7 @@ model.Page = function (models) {
         $("#frmContent").html(content);
         me.registerEvents();
         me.registerSubscribers();
+        me.initialiseComparisonVehicles();
     };
     me.notifyGatewaysEventHandler = function (sender, eventArgs) {
         var control = $(this);

@@ -30,6 +30,7 @@ namespace FeatureDemandPlanning.Models
         }
 
         public Lookup ForecastVehicleLookup { get; set; }
+        public IList<Lookup> ComparisonVehicleLookup { get; set; }
 
         public int NumberOfComparisonVehicles
         {
@@ -48,6 +49,7 @@ namespace FeatureDemandPlanning.Models
         {
             Configuration = dataContext.ConfigurationSettings;
             ForecastVehicleLookup = new Lookup(dataContext);
+            ComparisonVehicleLookup = new List<Lookup>();
         }
 
         private IForecast _forecast = new EmptyForecast();

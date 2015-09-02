@@ -1,4 +1,9 @@
-﻿<div class="col-lg-8" data-index="1">
+﻿@using FeatureDemandPlanning.BusinessObjects
+@using enums = FeatureDemandPlanning.Enumerations
+
+@model FeatureDemandPlanning.Models.ForecastComparisonViewModel
+
+<div class="col-lg-8" data-index="1">
     <div class="panel panel-primary">
 
         <div class="panel-heading">
@@ -9,33 +14,48 @@
         <div class="panel-body">
 
             @{
-                int i = 1;
+                int i = 0;
                 foreach (var comparisonVehicle in Model.Forecast.ComparisonVehicles)
                 {
-                    <div class="row form-group subscribers-notifyVehicle subscribers-notifyValidation vehicle-filter" data-index="@(i)" data-val="ComparisonVehiclesToValidate[@(i-1)].ComparisonVehicle">
+                    <div class="row form-group subscribers-notifyVehicle subscribers-notifyValidation vehicle-filter" data-index="@(i+1)" data-val="ComparisonVehiclesToValidate[@(i)].ComparisonVehicle">
 
                         <div class="col-lg-5 col-lg-offset-1">
-                            <select id="ddlComparisonMakes@(i)" style="display:none"
-                                    class="form-control subscribers-notifyMakes vehicle-filter vehicle-filter-make"
-                                    data-index="@(i)"></select>
-                            <label class="control-label inverse" for="ddlComparisonProgramme@(i)">Comparison Vehicle #@(i)</label>
-                            <select id="ddlComparisonProgramme@(i)"
-                                    class="form-control subscribers-notifyProgrammes vehicle-filter vehicle-filter-programme"
-                                    data-index="@(i)"></select>
+                            @Html.DropDownListFor(m => comparisonVehicle.Make, Model.ComparisonVehicleLookup[i].Makes,
+                                new {
+                                    @id = "ddlComparisonMakes" + i.ToString(),
+                                    @class = "form-control subscribers-notifyMakes vehicle-filter vehicle-filter-make",
+                                    @style = "display:none",
+                                    @data_index = (i + 1).ToString()
+                                })
+
+                            <label class="control-label inverse" for="ddlComparisonProgramme@(i)">Comparison Vehicle #@(i+1)</label>
+                            @Html.DropDownListFor(m => comparisonVehicle.Code, Model.ComparisonVehicleLookup[i].Programmes,
+                                new
+                                {
+                                    @id = "ddlComparisonMakes" + i.ToString(),
+                                    @class = "form-control subscribers-notifyProgrammes vehicle-filter vehicle-filter-programme",
+                                    @data_index = (i + 1).ToString()
+                                })
                         </div>
                         <div class="col-lg-5">
                             <label class="control-label inverse" for="ddlComparisonModelYear@(i)">Model Year</label>
+                            @Html.DropDownListFor(m => comparisonVehicle.ModelYear, Model.ComparisonVehicleLookup[i].ModelYears,
+                                new
+                                {
+                                    @id = "ddlComparisonMakes" + i.ToString(),
+                                    @class = "form-control subscribers-notifyModelYears vehicle-filter vehicle-filter-modelYear",
+                                    @data_index = (i + 1).ToString()
+                                })
 
-
-                            <select id="ddlComparisonModelYear@(i)"
+                            @*<select id="ddlComparisonModelYear@(i)"
                                     class="form-control subscribers-notifyModelYears vehicle-filter vehicle-filter-modelYear"
-                                    data-index="@(i)"></select>
+                                    data-index="@(i)"></select>*@
                         </div>
 
                     </div>
-                    <div class="row subscribers-notifyVehicle vehicle-readonly" data-index="@(i)" style="display:none">
+                    <div class="row subscribers-notifyVehicle vehicle-readonly" data-index="@(i+1)" style="display:none">
                         <div class="col-lg-5 col-lg-offset-1">
-                            <label class="control-label inverse" for="lblComparisonProgramme@(i)">Comparison Vehicle #@(i)</label>
+                            <label class="control-label inverse" for="lblComparisonProgramme@(i)">Comparison Vehicle #@(i+1)</label>
 
                             <p id="lblComparisonProgramme@(i)" class="subscribers-notifyVehicle vehicle-readonly vehicle-readonly-programme" data-index="@(i)"></p>
                         </div>
@@ -47,7 +67,6 @@
                         </div>
                     </div>
                     i++;
-                    @*<div class="vertical-spacer"></div>*@
                 }
 
             }

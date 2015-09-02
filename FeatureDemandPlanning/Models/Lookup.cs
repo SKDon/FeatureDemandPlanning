@@ -164,13 +164,13 @@ namespace FeatureDemandPlanning.Models
         {
             _lookupVehicle = lookupVehicle;
 
-            if (!(lookupVehicle is EmptyVehicle))
-            {
+            //if (!(lookupVehicle is EmptyVehicle))
+            //{
                 Makes = ListMakes();
                 Programmes = ListProgrammes();
                 ModelYears = ListModelYears();
                 Gateways = ListGateways();
-            }
+            //}
         }
 
         private IEnumerable<IVehicle> _availableVehicles = Enumerable.Empty<Vehicle>();
