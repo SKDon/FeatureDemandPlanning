@@ -204,7 +204,10 @@ model.Page = function (models) {
         var errorHtml = "<div class=\"alert alert-dismissible alert-warning\"><ul>";
 
         if (eventArgs.IsValid == true) {
-            control.fadeOut("slow").html("");
+            control.fadeOut("slow", function ()
+            {
+                control.html("");
+            });
             return;
         }
 
