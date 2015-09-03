@@ -204,7 +204,7 @@ model.Page = function (models) {
         var errorHtml = "<div class=\"alert alert-dismissible alert-warning\"><ul>";
 
         if (eventArgs.IsValid == true) {
-            control.html("");
+            control.fadeOut("slow").html("");
             return;
         }
 
@@ -213,7 +213,9 @@ model.Page = function (models) {
         });
         errorHtml += "</ul></div>";
 
-        control.html(errorHtml);
+        control.fadeOut("fast", function () {
+            control.html(errorHtml).fadeIn("slow");
+        });
     };
     me.parseError = function (error) {
         var retVal = "";
@@ -257,7 +259,7 @@ model.Page = function (models) {
         });
     };
     me.notifySuccessEventHandler = function (sender, eventArgs) {
-        var notifier = $("#notifier");
+        var notifier = $("#notifier")
 
         switch (eventArgs.StatusCode) {
             case "Success":
@@ -275,6 +277,7 @@ model.Page = function (models) {
             default:
                 break;
         }
+        notifier.fadeIn("slow");
     };
     me.notifyVehicleLoadedFilterEventHandler = function (sender, eventArgs) {
         var vehicleIndex = parseInt($(sender.target).attr("data-index"));
@@ -347,7 +350,7 @@ model.Page = function (models) {
         }
     };
     me.notifyDown = function () {
-        $("#notifier").html("");
+        //$("#notifier").fadeOut("slow").html("");
     };
     me.clearVehicle = function (vehicleIndex) {
         var emptyVehicle = getVehicleModel().getEmptyVehicle();
