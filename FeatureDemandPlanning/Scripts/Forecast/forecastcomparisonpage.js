@@ -457,9 +457,6 @@ model.Page = function (models) {
 
         if (eventArgs.ModelYears.length == 1) {
             control.val(eventArgs.ModelYears[0]);
-            if (vehicleIndex > 0) {
-                me.toggleEvent(); // No gateway to choose on the comparison vehicle
-            }
             me.populateGateways(vehicleIndex);
         }
         else {
@@ -525,7 +522,7 @@ model.Page = function (models) {
         var params = JSON.stringify({ forecast: forecast, pageIndex: eventArgs.PageIndex });
         var pager = getPager();
 
-        pager.getPageContent(params, me.notifyPageContentChangedCallback)
+        pager.getPageContent(params, me.notifyPageContentChangedCallback, me)
     };
     me.notifyPageContentChangedCallback = function (content) {
         $("#frmContent").html(content);

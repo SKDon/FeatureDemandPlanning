@@ -42,12 +42,16 @@ model.Pager = function (pages, params) {
         return privateStore[me.id].PageUri;
     };
     me.getPageContent = function (params, callback) {
+
         $.ajax({
             type: "POST",
-            url: uri,
-            data: me.getPageUri(),
+            url: me.getPageUri(),
+            context: this,
+            data: params,
             contentType: "application/json",
-            success: callback,
+            success: function (response) {
+                callback.call(this, response);
+            },
             error: function (response) {
                 alert(response.responseText);
             },
