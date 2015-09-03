@@ -1,4 +1,5 @@
 ﻿@using FeatureDemandPlanning.BusinessObjects
+@using FeatureDemandPlanning.Helpers
 @using enums = FeatureDemandPlanning.Enumerations
 
 @model FeatureDemandPlanning.Models.ForecastComparisonViewModel
@@ -15,47 +16,51 @@
                 <div class="row subscribers-notifyVehicle subscribers-notifyValidation vehicle-filter" data-index="0" data-val="Forecast" style="display:block">
 
                     <div class="col-lg-4">
-                        @Html.DropDownListFor(m => m.Forecast.ForecastVehicle.Make, Model.ForecastVehicleLookup.Makes, 
+                        @Html.DropDownListForExtended(m => m.Forecast.ForecastVehicle.Make, Model.ForecastVehicleLookup.Makes, 
                             new {
                                 @id = "ddlMake",
                                 @name = "Make",
                                 @class = "subscribers-notifyMakes vehicle-filter-make",
                                 @style = "display:none",
                                 @data_index = "0"
-                            })
+                            },
+                            m => true)
                         <label class="control-label inverse" for="ddlProgramme">Vehicle</label>
-                        @Html.DropDownListFor(m => m.Forecast.ForecastVehicle.Code, Model.ForecastVehicleLookup.Programmes,
+                        @Html.DropDownListForExtended(m => m.Forecast.ForecastVehicle.Code, Model.ForecastVehicleLookup.Programmes,
                             new
                             {
                                 @id = "ddlProgramme",
                                 @name = "Programme",
                                 @class = "form-control subscribers-notifyProgrammes vehicle-filter-programme",
                                 @data_index = "0"
-                            })
+                            },
+                            m => true)
                     </div>
 
                     <div class="col-lg-4">
                         <label class="control-label inverse" for="ddlModelYear">Model Year</label>
-                        @Html.DropDownListFor(m => m.Forecast.ForecastVehicle.ModelYear, Model.ForecastVehicleLookup.ModelYears,
+                        @Html.DropDownListForExtended(m => m.Forecast.ForecastVehicle.ModelYear, Model.ForecastVehicleLookup.ModelYears,
                             new
                             {
                                 @id = "ddlModelYear",
                                 @name = "ModelYear",
                                 @class = "form-control subscribers-notifyModelYears vehicle-filter-modelYear",
-                                @data_index = "0"
-                            })
+                                @data_index = "0",
+                            },
+                            m => !string.IsNullOrEmpty(m.Forecast.ForecastVehicle.Code))
                     </div>
 
                     <div class="col-lg-4">
                         <label class="control-label inverse" for="ddlGateway">Gateway</label>
-                        @Html.DropDownListFor(m => m.Forecast.ForecastVehicle.Gateway, Model.ForecastVehicleLookup.Gateways,
+                        @Html.DropDownListForExtended(m => m.Forecast.ForecastVehicle.Gateway, Model.ForecastVehicleLookup.Gateways,
                             new
                             {
                                 @id = "ddlGateway",
                                 @name = "Gateway",
                                 @class = "form-control subscribers-notifyGateways vehicle-filter-gateway",
                                 @data_index = "0"
-                            })
+                            },
+                            m => !string.IsNullOrEmpty(m.Forecast.ForecastVehicle.ModelYear))
                     </div>
 
                 </div>

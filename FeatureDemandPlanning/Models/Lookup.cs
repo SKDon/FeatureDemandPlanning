@@ -92,7 +92,7 @@ namespace FeatureDemandPlanning.Models
                     {
                         Text = my,
                         Value = my,
-                        Selected = !(_lookupVehicle is EmptyVehicle) &&
+                        Selected = !(_lookupVehicle is EmptyVehicle) && !string.IsNullOrEmpty(_lookupVehicle.ModelYear) &&
                             _lookupVehicle.ModelYear.Equals(my, StringComparison.OrdinalIgnoreCase)
                     }).ToList();
 
@@ -128,7 +128,7 @@ namespace FeatureDemandPlanning.Models
                 {
                     Text = g,
                     Value = g,
-                    Selected = !(_lookupVehicle is EmptyVehicle) &&
+                    Selected = !(_lookupVehicle is EmptyVehicle) && !string.IsNullOrEmpty(_lookupVehicle.Gateway) &&
                         _lookupVehicle.Gateway.Equals(g, StringComparison.OrdinalIgnoreCase)
                 }).ToList();
 

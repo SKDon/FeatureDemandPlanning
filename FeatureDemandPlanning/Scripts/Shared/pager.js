@@ -41,6 +41,19 @@ model.Pager = function (pages, params) {
     me.getPageUri = function () {
         return privateStore[me.id].PageUri;
     };
+    me.getPageContent = function (params, callback) {
+        $.ajax({
+            type: "POST",
+            url: uri,
+            data: me.getPageUri(),
+            contentType: "application/json",
+            success: callback,
+            error: function (response) {
+                alert(response.responseText);
+            },
+            async: true
+        });
+    };
 
     function setPageIndex(pageIndex) {
         if (pageIndex < 0 || pageIndex > getPages().length - 1) {

@@ -24,7 +24,6 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
         
         public ComparisonVehicleDuplicateValidator(IEnumerable<VehicleWithIndex> comparisonVehicles)
         {
-            var index = 1;
             ComparisonVehicles = comparisonVehicles
                 .Where(c => !(c.Vehicle is EmptyVehicle)).ToList();
                 //.Select(c => new VehicleWithIndex() { VehicleIndex = index++, Vehicle = c }).ToList();

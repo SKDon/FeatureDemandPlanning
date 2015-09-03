@@ -10,7 +10,7 @@ namespace FeatureDemandPlanning.Interfaces
 {
     public interface IVehicleDataContext
     {
-        IVehicle GetVehicle(int vehicleId);
+        IVehicle GetVehicle(VehicleFilter filter);
         IEnumerable<IVehicle> ListAvailableVehicles(VehicleFilter filter);
         IEnumerable<Programme> ListProgrammes(ProgrammeFilter filter);
 

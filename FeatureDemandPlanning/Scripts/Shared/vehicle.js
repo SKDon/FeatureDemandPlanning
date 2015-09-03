@@ -42,7 +42,7 @@ model.Vehicle = function (params) {
     me.initialise = function (callback) {
         // trigger automatic load of the vehicle makes
         // this will trigger broadcast events that all dropdowns will listen to, as vehicle index is not specified
-        me.getMakes();
+        //me.getMakes();
         callback();
     };
 
@@ -136,10 +136,24 @@ model.Vehicle = function (params) {
 
     function getVehicleCallback(response) {
         var vehicle = null;
-        if (response.AvailableVehicles.length > 0)
+        if (response.AvailableVehicles.length > 0) {
+            // If not all of the information has been specified in the filter, clear the vehicle details yet to have been chosen
+            // If we have full information in the vehicle, validation goes wrong
             vehicle = response.AvailableVehicles[0];
+        }
 
-        $(document).trigger("notifyVehicleChanged", { VehicleIndex: response.VehicleIndex, Vehicle: vehicle });
+        if (response.AvailableVehicles.length > 1) {
+            vehicle.Name = response.Filter.Name;
+            vehicle.ModelYear = response.Filter.ModelYear;
+            vehicle.Gateway = response.Filter.Gateway;
+        }
+
+        $(document).trigger("notifyVehicleChanged",
+            {
+                VehicleIndex: response.VehicleIndex,
+                Vehicle: vehicle,
+                MultipleResults: response.AvailableVehicles.length > 1
+            });
     }
 
     function setFilteredVehicleDetailsFromResponse(response) {

@@ -16,7 +16,7 @@ namespace FeatureDemandPlanning.BusinessObjects
             DerivativeCode = string.Empty;
             Gateway = string.Empty;
             ImageUri = string.Empty;
-            Description = string.Empty;
+            //Description = string.Empty;
         }
     }
 }

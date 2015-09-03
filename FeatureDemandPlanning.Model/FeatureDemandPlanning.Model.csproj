@@ -211,6 +211,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyCustomState.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyVehicleList.cs" />
     <Compile Include="Toolbox\BusinessObjects\Validators\ComparisonVehicleExtensions.cs" />
     <Compile Include="Toolbox\BusinessObjects\Validators\ExtendedValidationResult.cs" />
     <Compile Include="Interfaces\IConfigurationDataContext.cs" />

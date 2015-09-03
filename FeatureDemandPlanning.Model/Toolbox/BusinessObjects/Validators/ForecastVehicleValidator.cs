@@ -1,14 +1,41 @@
-﻿using FluentValidation;
+﻿using FeatureDemandPlanning.Interfaces;
+using FluentValidation;
+using FluentValidation.Mvc;
+using System.Linq;
 
 namespace FeatureDemandPlanning.BusinessObjects.Validators
 {
     public class ForecastVehicleValidator : VehicleValidator
     {
-        public const string gatewayNotSet = "Please specify a gateway";
+        public const string noGateway = "No gateway specified for '{0}'";
+        public const string noTrim = "No trim levels available for '{0}'";
 
         public ForecastVehicleValidator() : base()
         {
-            RuleFor(v => v.Gateway).NotEmpty().WithMessage(gatewayNotSet);
+            RuleSet("ForecastVehicle", () => {
+                RuleFor(v => v)
+                    .Cascade(CascadeMode.StopOnFirstFailure)
+                    .NotNull()
+                    .Must(HaveProgramme)
+                    .WithMessage(noProgramme)
+                    .Must(HaveModelYear)
+                    .WithMessage(noModelYear, f => f.Description)
+                    .Must(HaveGateway)
+                    .WithMessage(noGateway, f => f.Description)
+                    .Must(HaveTrim)
+                    .WithMessage(noTrim, f => f.Description);
+            });
+        }
+
+        private bool HaveGateway(IVehicle vehicleToValidate)
+        {
+            return !string.IsNullOrEmpty(vehicleToValidate.Gateway);
+        }
+
+        private bool HaveTrim(IVehicle vehicleToValidate)
+        {
+            return vehicleToValidate.Programmes.Any() &&
+                vehicleToValidate.Programmes.First().AllTrims.Any();
         }
     }
 }

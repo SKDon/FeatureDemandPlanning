@@ -72,8 +72,8 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
                 RuleFor(f => f.ForecastVehicle)
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotNull()
-                    .Must(HaveAForecastVehicle)
-                    .WithMessage(noForecastVehicle)
+                    //.Must(HaveAForecastVehicle)
+                    //.WithMessage(noForecastVehicle)
                     .SetValidator(forecastVehicleValidator);
             });
         }

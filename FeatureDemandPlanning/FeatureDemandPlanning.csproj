@@ -171,6 +171,7 @@
     <Compile Include="Controllers\MarketController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\VehicleController.cs" />
+    <Compile Include="Helpers\HtmlHelperExtensions.cs" />
     <Compile Include="Models\AdminViewModel.cs" />
     <Compile Include="Models\EngineCodeMappingViewModel.cs" />
     <Compile Include="Models\ForecastComparisonViewModel.cs" />

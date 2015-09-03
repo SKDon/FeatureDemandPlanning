@@ -18,17 +18,20 @@ namespace FeatureDemandPlanning.DataStore
             _programmeDataStore = new ProgrammeDataStore(cdsId);
         }
 
-        public IVehicle GetVehicle(int vehicleId)
+        public IVehicle GetVehicle(VehicleFilter filter)
         {
-            var programmes = _programmeDataStore.ProgrammeGetMany();
-            if (programmes == null || !programmes.Any())
-                return null;
-
-            var programme = programmes.FirstOrDefault(p => p.VehicleId == vehicleId);
+            if (!filter.ProgrammeId.HasValue)
+                return new EmptyVehicle();
+            
+            var programme = _programmeDataStore.ProgrammeGetConfiguration(filter.ProgrammeId.Value);
             if (programme == null)
-                return null;
+                return new EmptyVehicle();
 
-            return HydrateVehicleFromProgramme(programme);
+            var vehicle = HydrateVehicleFromProgramme(programme);
+            vehicle.Gateway = filter.Gateway;
+            vehicle.ModelYear = filter.ModelYear;
+
+            return vehicle;
         }
 
         public IEnumerable<string> ListAvailableMakes()
@@ -134,17 +137,17 @@ namespace FeatureDemandPlanning.DataStore
                 ModelYear = programme.ModelYear,
                 Gateway = vehicleIndex.GetValueOrDefault() == 0 ? programme.Gateway : string.Empty,
                 Description = String.Format("{0} - {1}", programme.VehicleName, programme.VehicleAKA),
-                FullDescription = vehicleIndex.GetValueOrDefault() == 0 ? 
-                    string.Format("{0} - {1} ({2}, {3})", 
-                        programme.VehicleName, 
+                FullDescription = vehicleIndex.GetValueOrDefault() == 0 ?
+                    string.Format("{0} - {1} ({2}, {3})",
+                        programme.VehicleName,
                         programme.VehicleAKA,
                         programme.ModelYear,
                         programme.Gateway) :
                     string.Format("{0} - {1} ({2})",
-                        programme.VehicleName, 
+                        programme.VehicleName,
                         programme.VehicleAKA,
-                        programme.ModelYear)
-
+                        programme.ModelYear),
+                Programmes = new List<Programme>() { programme }
             };
         }
 

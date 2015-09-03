@@ -21,7 +21,7 @@
                         <th colspan="2">
                             <p>Vehicle</p>
                         </th>
-                        <th colspan="@forecastTrimLevels.Count()"><p class="text-center">Level</p></th>
+                        <th colspan="@(forecastTrimLevels.Count())"><p class="text-center">Level</p></th>
                     </tr>
                     <tr>
                         <th>
@@ -47,7 +47,7 @@
                 </thead>
                 <tbody>
                     @{var i = 1;}
-                    @foreach (var comparisonVehicle in Model.Forecast.ComparisonVehicles)
+                    @foreach (var comparisonVehicle in Model.NonEmptyComparisonVehicles)
                     {
                         var comparisonTrimLevels = comparisonVehicle.ListTrimLevels();
                         var j = 1;
@@ -71,7 +71,7 @@
                                     }
                                     else
                                     {
-                                        <p class="text-center">N/A</p>
+                                        <p class="text-center" title="No trim information available for @(comparisonVehicle.FullDescription)">N/A</p>
                                     }
                                 </td>
 

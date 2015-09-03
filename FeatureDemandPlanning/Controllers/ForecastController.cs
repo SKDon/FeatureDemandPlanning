@@ -88,14 +88,15 @@ namespace FeatureDemandPlanning.Controllers
         public ActionResult ValidateForecast(Forecast forecastToValidate, 
                                              ForecastValidationSection sectionToValidate = ForecastValidationSection.All)
         {
-            var validator = new ForecastValidator(forecastToValidate);
+            var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecastToValidate);
+            var validator = new ForecastValidator((Forecast)forecastComparisonModel.Forecast);
             var ruleSets = ForecastValidator.GetRulesetsToValidate(sectionToValidate);
             var jsonResult = new JsonResult()
             {
                 Data = new { IsValid = true }
             };
 
-            var results = validator.Validate(forecastToValidate, ruleSet: ruleSets);
+            var results = validator.Validate((Forecast)forecastComparisonModel.Forecast, ruleSet: ruleSets);
             if (!results.IsValid)
             {
                 var errorModel = results.Errors.Select(e => new

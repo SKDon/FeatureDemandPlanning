@@ -17,8 +17,15 @@ namespace FeatureDemandPlanning.BusinessObjects
         public string DerivativeCode { get; set; }
         public string Gateway { get; set; }
         public string ImageUri { get; set; }
-        public string Description { get; set; }
-        public string FullDescription { get; set; }
+        public string FullDescription
+        {
+            get; set;
+        }
+        public string Description
+        {
+            get;
+            set;
+        }
         
         public IEnumerable<Programme> Programmes 
         {
@@ -114,8 +121,8 @@ namespace FeatureDemandPlanning.BusinessObjects
                 ModelYear = vehicle.ModelYear,
                 Gateway = vehicle.Gateway,
                 ImageUri = vehicle.ImageUri,
-                Description = vehicle.Description,
-                FullDescription = vehicle.FullDescription,
+                //Description = vehicle.Description,
+                //FullDescription = vehicle.FullDescription,
                 Programmes = vehicle.Programmes
             };
         }

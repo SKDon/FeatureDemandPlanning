@@ -13,6 +13,7 @@ model.Page = function (models) {
     privateStore[me.id].ForecastVehicle = null;
     privateStore[me.id].InitCount = 0;
     privateStore[me.id].IsValid = false;
+    privateStore[me.id].EventComplete = true;
 
     me.initialise = function () {
         me.resetNumberOfInitialisedModels();
@@ -22,18 +23,25 @@ model.Page = function (models) {
             this.initialise(me.initialiseCallback);
         });
     };
+    me.resetEvent = function () {
+        privateStore[me.id].EventComplete = true;
+    };
+    me.toggleEvent = function () {
+        privateStore[me.id].EventComplete = !privateStore[me.id].EventComplete;
+    };
+    me.isEventCompleted = function () {
+        return privateStore[me.id].EventComplete == true;
+    };
     me.initialiseCallback = function () {
         me.incrementNumberOfInitialisedModels();
         if (!me.isInitComplete()) {
             return;
         }
-        me.initialiseForecastVehicle();
-        me.initialiseComparisonVehicles();
     };
-    me.getNumberOfInitialisedModels = function() {
+    me.getNumberOfInitialisedModels = function () {
         return privateStore[me.id].InitCount;
     };
-    me.incrementNumberOfInitialisedModels = function() {
+    me.incrementNumberOfInitialisedModels = function () {
         privateStore[me.id].InitCount++;
     };
     me.isInitComplete = function () {
@@ -41,16 +49,6 @@ model.Page = function (models) {
     };
     me.resetNumberOfInitialisedModels = function () {
         privateStore[me.id].InitCount = 0;
-    };
-    me.initialiseForecastVehicle = function () {
-        var forecastVehicle = me.getForecastVehicle();
-        if (forecastVehicle != null) {
-            $(document).trigger("notifyVehicleLoaded", { Vehicle: forecastVehicle, VehicleIndex: 0 });
-        }
-    };
-    me.initialiseComparisonVehicles = function () {
-        var vehicleIndex = 1;
-        $(me.getComparisonVehicles()).each(function () { $(document).trigger("notifyVehicleLoaded", { Vehicle: this, VehicleIndex: vehicleIndex++ }); });
     };
     me.getForecastId = function () {
         return getForecastModel().getForecastId();
@@ -82,7 +80,6 @@ model.Page = function (models) {
             .unbind("notifyModelYears").on("notifyModelYears", function (sender, eventArgs) { $(".subscribers-notifyModelYears").trigger("notifyModelYearsEventHandler", [eventArgs]); })
             .unbind("notifyGateways").on("notifyGateways", function (sender, eventArgs) { $(".subscribers-notifyGateways").trigger("notifyGatewaysEventHandler", [eventArgs]); })
             .unbind("notifyFilterComplete").on("notifyFilterComplete", function (sender, eventArgs) { $(".subscribers-notifyFilterComplete").trigger("notifyFilterCompleteEventHandler", [eventArgs]); })
-            .unbind("notifyVehicleLoaded").on("notifyVehicleLoaded", function (sender, eventArgs) { $(".subscribers-notifyVehicle").trigger("notifyVehicleLoadedEventHandler", [eventArgs]); })
             .unbind("notifyVehicleChanged").on("notifyVehicleChanged", function (sender, eventArgs) { $(".subscribers-notifyVehicle").trigger("notifyVehicleChangedEventHandler", [eventArgs]); })
             .unbind("notifyResults").on("notifyResults", function (sender, eventArgs) { $(".subscribers-notifyResults").trigger("notifyResultsEventHandler", [eventArgs]); })
             .unbind("notifyUpdated").on("notifyUpdated", function (sender, eventArgs) { $(".subscribers-notifyUpdated").trigger("notifyUpdatedEventHandler", [eventArgs]); })
@@ -117,8 +114,6 @@ model.Page = function (models) {
             .unbind("notifyPageChangedEventHandler")
             .on("notifyPageChangedEventHandler", me.notifyDescriptionPageChangedEventHandler);
         $("#lblVehicleDescription")
-            .unbind("notifyVehicleLoadedEventHandler")
-            .on("notifyVehicleLoadedEventHandler", me.notifyVehicleDescriptionEventHandler)
             .unbind("notifyVehicleChangedEventHandler")
             .on("notifyVehicleChangedEventHandler", me.notifyVehicleDescriptionEventHandler);
 
@@ -140,8 +135,6 @@ model.Page = function (models) {
         $(".vehicle-filter,.vehicle-readonly")
             .unbind("notifyVehicleChangedEventHandler")
             .on("notifyVehicleChangedEventHandler", me.notifyVehicleLoadedFilterEventHandler)
-            .unbind("notifyVehicleLoadedEventHandler")
-            .on("notifyVehicleLoadedEventHandler", me.notifyVehicleLoadedFilterEventHandler);
 
         // Each of the individual dropdowns and other controls for forecast / comparison will listen for
         // broadcast changes to makes, programmes, etc.
@@ -198,6 +191,7 @@ model.Page = function (models) {
         getPager().previousPage();
     };
     me.notifyBeforePageChangedEventHandler = function (sender, eventArgs) {
+        me.notifyDown();
         if (!eventArgs.NextPage) {
             return;
         }
@@ -223,7 +217,7 @@ model.Page = function (models) {
     };
     me.parseError = function (error) {
         var retVal = "";
-        
+
         $(error.errors).each(function () {
             retVal += "<li>";
             retVal += this.ErrorMessage;
@@ -238,8 +232,7 @@ model.Page = function (models) {
     };
     me.notifyValidationFilterEventHandler = function (sender, eventArgs) {
         var validationKey = $(sender.target).attr("data-val");
-        $(eventArgs.Errors).each(function ()
-        {
+        $(eventArgs.Errors).each(function () {
             if (validationKey == this.key) {
                 $(sender.target).addClass("has-error");
             }
@@ -256,7 +249,7 @@ model.Page = function (models) {
                     me.notifyAdditionValidationFiltersForVehicle(this.CustomState);
             });
         });
-        };
+    };
     me.notifyAdditionValidationFiltersForVehicle = function (customState) {
         $(customState).each(function () {
             var selector = $("[data-val='ComparisonVehiclesToValidate[" + (this.VehicleIndex - 1) + "].ComparisonVehicle']");
@@ -339,36 +332,48 @@ model.Page = function (models) {
         }
     };
     me.notifyVehicleChangedEventHandler = function (sender, eventArgs) {
-        if (eventArgs.VehicleIndex == 0) {
-            me.setForecastVehicle(eventArgs.Vehicle);
-        } else {
-            me.setComparisonVehicle(eventArgs.VehicleIndex - 1, eventArgs.Vehicle);
-        }
-        var pager = getPager();
-        me.validateForecast(pager.getPageIndex() + 1, true);
+        me.setVehicle(eventArgs.VehicleIndex, eventArgs.Vehicle)
+        me.toggleEvent();
+        me.validateForecast(getPager().getPageIndex() + 1, true);
     };
     me.notifyVehicleDescriptionEventHandler = function (sender, eventArgs) {
         if (eventArgs.VehicleIndex != 0) {
             return;
         }
-        if (eventArgs.Vehicle == null || eventArgs.Vehicle.ProgrammeId == null) {
+        if (eventArgs.Vehicle == null || eventArgs.Vehicle.ProgrammeId == null || eventArgs.MultipleResults == true) {
             $(sender.target).html("");
         } else {
             $(sender.target).html(eventArgs.Vehicle.FullDescription);
         }
     };
+    me.notifyDown = function () {
+        $("#notifier").html("");
+    };
+    me.clearVehicle = function (vehicleIndex) {
+        var emptyVehicle = getVehicleModel().getEmptyVehicle();
+        me.setVehicle(vehicleIndex, emptyVehicle);
+    };
+    me.setVehicle = function (vehicleIndex, vehicle) {
+        if (vehicleIndex == 0) {
+            me.setForecastVehicle(vehicle);
+        } else {
+            me.setComparisonVehicle(vehicleIndex - 1, vehicle);
+        }
+    }
     me.notifyErrorEventHandler = function (sender, eventArgs) {
         $("#notifier").html("<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.statusText + "</div>");
     };
     me.notifyUpdatedEventHandler = function (sender, eventArgs) {
         $("#notifier").html("<div class=\"alert alert-dismissible alert-success\">" + eventArgs.StatusMessage + "</div>");
     };
+    me.isEventForControl = function (control, vehicleIndex) {
+        return vehicleIndex != null && vehicleIndex == parseInt(control.attr("data-index"));
+    };
     me.notifyMakesEventHandler = function (sender, eventArgs) {
         var control = $(this);
         var vehicleIndex = parseInt(control.attr("data-index"));
 
-        // If this event is not intended for this specific control, return
-        if (eventArgs.VehicleIndex != null && eventArgs.VehicleIndex != vehicleIndex)
+        if (!me.isEventForControl(control, eventArgs.VehicleIndex))
             return;
 
         control.empty();
@@ -389,14 +394,13 @@ model.Page = function (models) {
 
         me.populateProgrammes(vehicleIndex);
 
-        $(".vehicle-filter-programme").filter(function() { $(this).attr("data-index") == vehicleIndex; }).removeAttr("disabled");
+        $(".vehicle-filter-programme").filter(function () { $(this).attr("data-index") == vehicleIndex; }).removeAttr("disabled");
     };
     me.notifyProgrammesEventHandler = function (sender, eventArgs) {
         var control = $(this);
         var vehicleIndex = parseInt($(this).attr("data-index"));
 
-        // If this event is not intended for this specific control, return
-        if (eventArgs.VehicleIndex != null && eventArgs.VehicleIndex != vehicleIndex)
+        if (!me.isEventForControl(control, eventArgs.VehicleIndex))
             return;
 
         control.empty().attr("disabled", "disabled");
@@ -413,29 +417,30 @@ model.Page = function (models) {
             }).appendTo(control);
         });
 
-        if (eventArgs.Programmes.length === 1) {
+        if (eventArgs.Programmes.length == 1) {
             control.val(eventArgs.Programmes[0].VehicleName).removeAttr("disabled");
             me.populateModelYears(vehicleIndex);
         }
         else {
+            me.toggleEvent();
             control.prepend("<option value='' selected='selected'>-- SELECT --</option>").removeAttr("disabled");
         }
+        me.populateVehicle(vehicleIndex);
     };
     me.notifyModelYearsEventHandler = function (sender, eventArgs) {
         var control = $(this);
         var vehicleIndex = parseInt(control.attr("data-index"));
 
-        // If this event is not intended for this specific control, return
-        if (eventArgs.VehicleIndex != null && eventArgs.VehicleIndex !== vehicleIndex)
+        if (!me.isEventForControl(control, eventArgs.VehicleIndex))
             return;
 
         control.empty().attr("disabled", "disabled");
 
         $(".vehicle-filter-gateway").filter(function () { return $(this).attr("data-index") == vehicleIndex; }).empty().attr("disabled", "disabled");
 
-        if (eventArgs.Filter.Name == null) {
-            return;
-        }
+        //if (eventArgs.Filter.Name == null) {
+        //    return;
+        //}
 
         $(eventArgs.ModelYears).each(function () {
             $("<option />", {
@@ -444,15 +449,49 @@ model.Page = function (models) {
             }).appendTo(control);
         });
 
-        if (eventArgs.ModelYears.length === 1) {
+        if (eventArgs.ModelYears.length == 1) {
             control.val(eventArgs.ModelYears[0]);
+            if (vehicleIndex > 0) {
+                me.toggleEvent(); // No gateway to choose on the comparison vehicle
+            }
             me.populateGateways(vehicleIndex);
         }
         else {
+            me.toggleEvent();
             control.prepend("<option value='' selected='selected'>-- SELECT --</option>");
         }
 
         control.removeAttr("disabled");
+        me.populateVehicle(vehicleIndex);
+    };
+    me.notifyGatewaysEventHandler = function (sender, eventArgs) {
+        var control = $(this);
+        var vehicleIndex = parseInt(control.attr("data-index"));
+
+        if (!me.isEventForControl(control, eventArgs.VehicleIndex))
+            return;
+
+        control.empty().attr("disabled", "disabled");
+
+        if (eventArgs.Filter.ModelYear == null) {
+            return;
+        }
+
+        $(eventArgs.Gateways).each(function () {
+            $("<option />", {
+                val: this,
+                text: this
+            }).appendTo(control);
+        });
+
+        if (eventArgs.Gateways.length === 1) {
+            control.val(eventArgs.Gateways[0]).removeAttr("disabled");
+        }
+        else {
+            control.prepend("<option value='' selected='selected'>-- SELECT --</option>").removeAttr("disabled");
+        }
+        me.toggleEvent()
+        me.populateVehicle(vehicleIndex);
     };
     me.notifyTrimEventHandler = function (sender, eventArgs) {
     };
@@ -478,86 +517,40 @@ model.Page = function (models) {
 
         var forecast = getForecastModel().getForecast();
         var params = JSON.stringify({ forecast: forecast, pageIndex: eventArgs.PageIndex });
+        var pager = getPager();
 
-        $.ajax({
-            type: "POST",
-            url: getPager().getPageUri(),
-            data: params,
-            contentType: "application/json",
-            success: me.notifyPageContentChangedCallback,
-            error: function(response) {
-                alert(response.responseText);
-            },
-            async: true
-        });
+        pager.getPageContent(params, me.notifyPageContentChangedCallback)
     };
     me.notifyPageContentChangedCallback = function (content) {
         $("#frmContent").html(content);
-        me.registerEvents();
-        me.registerSubscribers();
-        me.initialiseComparisonVehicles();
+        me.initialise();
     };
-    me.notifyGatewaysEventHandler = function (sender, eventArgs) {
-        var control = $(this);
-        var vehicleIndex = parseInt(control.attr("data-index"));
-
-        // If this event is not intended for this specific control, return
-
-        if (eventArgs.VehicleIndex != null && eventArgs.VehicleIndex !== vehicleIndex)
-            return;
-
-        control.empty().attr("disabled", "disabled");
-
-        if (eventArgs.Filter.ModelYear == null) {
-            return;
-        }
-
-        $(eventArgs.Gateways).each(function () {
-            $("<option />", {
-                val: this,
-                text: this
-            }).appendTo(control);
-        });
-
-        if (eventArgs.Gateways.length === 1) {
-            control.val(eventArgs.Gateways[0]).removeAttr("disabled");
-        }
-        else {
-            control.prepend("<option value='' selected='selected'>-- SELECT --</option>").removeAttr("disabled");
-        }
+    me.resetVehicle = function (vehicleIndex, startEventChain) {
+        me.notifyDown();
+        me.clearVehicle(vehicleIndex);
+        me.resetEvent();
+        if (startEventChain == true)
+            me.toggleEvent();
     };
     me.makeChanged = function (data) {
-        var model = getVehicleModel();
-        var vehicleIndex = parseInt(control.attr("data-index"));
-        $(document).trigger("notifyVehicleChanged", { VehicleIndex: vehicleIndex, Vehicle: model.getEmptyVehicle() });
+        var vehicleIndex = parseInt($(this).attr("data-index"));
+        me.resetVehicle(vehicleIndex, true);
         me.populateProgrammes(vehicleIndex);
     };
     me.programmeChanged = function (data) {
-        var control = $(this);
-        var model = getVehicleModel();
-        var vehicleIndex = parseInt(control.attr("data-index"));
-        $(document).trigger("notifyVehicleChanged", { VehicleIndex: vehicleIndex, Vehicle: model.getEmptyVehicle() });
+        var vehicleIndex = parseInt($(this).attr("data-index"));
+        me.resetVehicle(vehicleIndex, true);
         me.populateModelYears(vehicleIndex);
     };
     me.modelYearChanged = function (data) {
         var vehicleIndex = parseInt($(this).attr("data-index"));
-        var model = getVehicleModel();
-        $(document).trigger("notifyVehicleChanged", { VehicleIndex: vehicleIndex, Vehicle: model.getEmptyVehicle() });
-        if (vehicleIndex > 0) {
-            me.populateVehicle(vehicleIndex);
-        } else {
-            me.populateGateways(vehicleIndex);
-        }
+        me.resetVehicle(vehicleIndex, true);
+        me.populateGateways(vehicleIndex);
     };
     me.gatewayChanged = function (data) {
         var vehicleIndex = parseInt($(this).attr("data-index"));
-        var model = getVehicleModel();
-        if ($(this).val() == "") {
-            $(document).trigger("notifyVehicleChanged", { VehicleIndex: vehicleIndex, Vehicle: model.getEmptyVehicle() });
-        }
-        else {
-            me.populateVehicle(vehicleIndex);
-        }
+        me.resetVehicle(vehicleIndex, false); // No event chain will be started by changing the gateway, we simply populate the chosen vehicle
+        me.populateVehicle(vehicleIndex);
     };
     me.trimChanged = function (data) {
         var control = $(this);
@@ -590,11 +583,13 @@ model.Page = function (models) {
         if (vehicleIndex == 0) {
             getVehicleModel().getGateways(getVehicleFilter(vehicleIndex));
         } else {
-            getVehicleModel().getVehicle(getVehicleFilter(vehicleIndex));
+            me.toggleEvent();
+            me.populateVehicle(vehicleIndex);
         }
     };
     me.populateVehicle = function (vehicleIndex) {
-        getVehicleModel().getVehicle(getVehicleFilter(vehicleIndex));
+        if (me.isEventCompleted())
+            getVehicleModel().getVehicle(getVehicleFilter(vehicleIndex));
     };
     me.getPageIndex = function () {
         return privateStore[me.id].PageIndex;
@@ -653,7 +648,7 @@ model.Page = function (models) {
         var classPrefix = ".vehicle-filter";
         var attrFilter = "[data-index='" + vehicleIndex + "']";
 
-        filter.Make = ""; //$(classPrefix + "-make" + attrFilter).val();
+        filter.Make = "";
         filter.Name = $(classPrefix + "-programme" + attrFilter).val();
         filter.ModelYear = $(classPrefix + "-modelYear" + attrFilter).val();
         filter.Gateway = $(classPrefix + "-gateway" + attrFilter).val();

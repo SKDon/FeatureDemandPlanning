@@ -15,7 +15,7 @@ namespace FeatureDemandPlanning.Interfaces
 
         string Make { get; set; }
         string Code { get; set; }
-        string Description { get; set; }
+        string Description { get; set;  }
         string FullDescription { get; set; }
         string ModelYear { get; set; }
         string Gateway { get; set; }

@@ -37,11 +37,12 @@ namespace FeatureDemandPlanning.DataStore
                 throw new ArgumentException(string.Format("Forecast {0} not found", filter.ForecastId.Value));
             }
 
-            HydrateVehicleProgrammeAsync(forecast.ForecastVehicle);
-            HydrateComparisonVehicleProgrammesAsync(forecast);
-            HydrateVehicleTrimLevelsAsync(forecast.ForecastVehicle);
-            HydrateComparisonVehicleTrimLevelsAsync(forecast);
-            HydrateComparisonVehicleTrimMappingsAsync(forecast);
+            HydrateForecastAsync(forecast);           
+            //HydrateVehicleProgrammeAsync(forecast.ForecastVehicle);
+            //HydrateComparisonVehicleProgrammesAsync(forecast);
+            //HydrateVehicleTrimLevelsAsync(forecast.ForecastVehicle);
+            //HydrateComparisonVehicleTrimLevelsAsync(forecast);
+            //HydrateComparisonVehicleTrimMappingsAsync(forecast);
 
             return forecast;
         }
@@ -62,7 +63,7 @@ namespace FeatureDemandPlanning.DataStore
                 throw new ArgumentException(string.Format("Forecast {0} not found", filter.ForecastId.Value));
             }
 
-            await HydrateForecast(forecast);
+            //await HydrateForecast(forecast);
 
             return forecast;
         }
@@ -74,7 +75,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public async Task<PagedResults<IForecast>> ListForecastsAsync(ForecastFilter filter)
         {
-            var forecasts = _forecastDataStore.ForecastGetManyAsync().Result.Select(f => HydrateForecast(f).Result);
+            var forecasts = _forecastDataStore.ForecastGetManyAsync().Result.Select(f => HydrateForecastAsync(f).Result);
 
             return new PagedResults<IForecast>(forecasts);
         }
@@ -101,7 +102,7 @@ namespace FeatureDemandPlanning.DataStore
             throw new NotImplementedException();
         }
 
-        private async Task<IForecast> HydrateForecast(IForecast forecast)
+        private async Task<IForecast> HydrateForecastAsync(IForecast forecast)
         {
             await HydrateVehicleProgrammeAsync(forecast.ForecastVehicle);
             await HydrateComparisonVehicleProgrammesAsync(forecast);

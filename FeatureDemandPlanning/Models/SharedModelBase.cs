@@ -15,10 +15,16 @@ namespace FeatureDemandPlanning.Models
     [DataContract]
     public abstract class SharedModelBase
     {
+        public SharedModelBase(IDataContext dataContext)
+        {
+            _dataContext = dataContext;
+        }
+
         public string CurrentPage { get; set; }
         
         [IgnoreDataMember]
         public SystemUser CurrentUser { get { return _dataContext.User.GetUser(); } }
+        public IDataContext DataContext { get { return _dataContext; } }
         public string CurrentVersion { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
         public string HTMLTitle { get; set; }
 
@@ -26,7 +32,6 @@ namespace FeatureDemandPlanning.Models
         public int PageSize { get; set; }
         public int TotalRecords { get; set; }
         public int TotalPages { get; set; }
-
         public int ViewPage { get; set; }
 
         public string StatusCode
@@ -56,11 +61,6 @@ namespace FeatureDemandPlanning.Models
             }
         }
         public IEnumerable<ProcessState> ProcessStates { get { return _processStates; } }
-
-        public SharedModelBase(IDataContext dataContext)
-        {
-            _dataContext = dataContext;
-        }
 
         public void AddProcessState(ProcessState state)
         {
