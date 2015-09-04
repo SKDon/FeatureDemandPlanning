@@ -214,6 +214,11 @@ namespace FeatureDemandPlanning.Controllers
 
             forecastComparisonModel.ForecastVehicleLookup = new Lookup(DataContext, forecast.ForecastVehicle);
 
+            foreach (var comparisonVehicle in forecast.ComparisonVehicles)
+            {
+                forecastComparisonModel.ComparisonVehicleLookup.Add(new Lookup(DataContext, comparisonVehicle));
+            }
+
             return forecastComparisonModel;
         }
     }

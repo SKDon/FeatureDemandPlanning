@@ -181,6 +181,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ConfigurationModel.cs" />
+    <Compile Include="Models\ForecastTrim.cs" />
     <Compile Include="Models\ImportViewModel.cs" />
     <Compile Include="Models\MarketViewModel.cs" />
     <Compile Include="Models\Lookup.cs" />
@@ -631,6 +632,7 @@
     <Content Include="Views\Forecast\_ForecastTrim.cshtml" />
     <Content Include="Views\Forecast\_Pager.cshtml" />
     <Content Include="Views\Forecast\_ForecastPages.cshtml" />
+    <Content Include="Views\Forecast\_ForecastTrimSelect.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

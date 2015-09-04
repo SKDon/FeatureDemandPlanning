@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using FeatureDemandPlanning.BusinessObjects.Context;
 using FeatureDemandPlanning.BusinessObjects.Filters;
+using FeatureDemandPlanning.BusinessObjects.Validators;
 
 namespace FeatureDemandPlanning.Models
 {
@@ -96,9 +97,19 @@ namespace FeatureDemandPlanning.Models
         /// <value>
         /// The non empty comparison vehicles.
         /// </value>
-        public IEnumerable<IVehicle> NonEmptyComparisonVehicles
+        public IEnumerable<VehicleWithIndex> NonEmptyComparisonVehicles
         {
-            get { return Forecast.ComparisonVehicles.Where(c => !(c is EmptyVehicle)); }
+            get 
+            {
+                var index = 0;
+                return Forecast.ComparisonVehicles
+                    .Where(c => !(c is EmptyVehicle))
+                    .Select(c => new VehicleWithIndex()
+                    {
+                        Vehicle = c,
+                        VehicleIndex = ++index 
+                    });
+            }
         }
 
         /// <summary>

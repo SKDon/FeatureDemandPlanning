@@ -17,15 +17,8 @@ namespace FeatureDemandPlanning.BusinessObjects
         public string DerivativeCode { get; set; }
         public string Gateway { get; set; }
         public string ImageUri { get; set; }
-        public string FullDescription
-        {
-            get; set;
-        }
-        public string Description
-        {
-            get;
-            set;
-        }
+        public string FullDescription { get; set; }
+        public string Description { get; set; }
         
         public IEnumerable<Programme> Programmes 
         {
@@ -36,6 +29,18 @@ namespace FeatureDemandPlanning.BusinessObjects
             set
             {
                 _programmes = value;
+            }
+        }
+
+        public IDictionary<ModelTrim, IList<ModelTrim>> TrimMapping
+        {
+            get
+            {
+                return _trimMapping;
+            }
+            set
+            {
+                _trimMapping = value;
             }
         }
 
@@ -121,8 +126,8 @@ namespace FeatureDemandPlanning.BusinessObjects
                 ModelYear = vehicle.ModelYear,
                 Gateway = vehicle.Gateway,
                 ImageUri = vehicle.ImageUri,
-                //Description = vehicle.Description,
-                //FullDescription = vehicle.FullDescription,
+                Description = vehicle.Description,
+                FullDescription = vehicle.FullDescription,
                 Programmes = vehicle.Programmes
             };
         }
@@ -160,5 +165,6 @@ namespace FeatureDemandPlanning.BusinessObjects
         }
 
         private IEnumerable<Programme> _programmes = new List<Programme>();
+        private IDictionary<ModelTrim, IList<ModelTrim>> _trimMapping = new Dictionary<ModelTrim, IList<ModelTrim>>();
     }
 }

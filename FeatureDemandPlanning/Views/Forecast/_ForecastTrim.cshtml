@@ -46,38 +46,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @{var i = 1;}
+                    @{var vehicleIndex = 1;}
                     @foreach (var comparisonVehicle in Model.NonEmptyComparisonVehicles)
                     {
-                        var comparisonTrimLevels = comparisonVehicle.ListTrimLevels();
-                        var j = 1;
                         <tr>
-                            <td>@(i). @comparisonVehicle.FullDescription</td>
-                            <td class="dataTable-vertical-seperator"><p class="text-center">@comparisonVehicle.ModelYear</p></td>
+                            <td>@(vehicleIndex++). @comparisonVehicle.Vehicle.Description</td>
+                            <td class="dataTable-vertical-seperator"><p class="text-center">@comparisonVehicle.Vehicle.ModelYear</p></td>
 
                             @foreach (var trimLevel in forecastTrimLevels)
                             {
                                 <td class="text-center">
-
-                                    @if (comparisonTrimLevels.Any())
-                                    {
-                                        <select class="vehicle-filter vehicle-filter-trim" id="ddlComparisonTrimLevel@(i)_@(j++)" data-index="@(i)" data-forecast-trim="@trimLevel.Id">
-                                            <option value="" selected="selected">-- SELECT --</option>
-                                            @foreach (var comparisonTrimLevel in comparisonTrimLevels)
-                                            {
-                                                <option value="@comparisonTrimLevel.Id">@comparisonTrimLevel.Abbreviation</option>
-                                            }
-                                        </select>
-                                    }
-                                    else
-                                    {
-                                        <p class="text-center" title="No trim information available for @(comparisonVehicle.FullDescription)">N/A</p>
-                                    }
+                                    @*@Html.Partial("_ForecastTrimSelect", Model);*@
                                 </td>
 
                             }
                         </tr>
-                            i++;
                     }
                 </tbody>
             </table>

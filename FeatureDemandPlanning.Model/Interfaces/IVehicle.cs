@@ -21,6 +21,8 @@ namespace FeatureDemandPlanning.Interfaces
         string Gateway { get; set; }
         string ImageUri { get; set; }
 
+        IDictionary<ModelTrim, IList<ModelTrim>> TrimMapping { get; set; }
+
         IEnumerable<Programme> Programmes { get; set; }
 
         Programme GetProgramme();

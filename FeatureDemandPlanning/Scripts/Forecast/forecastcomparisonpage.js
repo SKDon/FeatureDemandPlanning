@@ -509,9 +509,6 @@ model.Page = function (models) {
         } else {
             button.show();
         }
-        if (button.attr("id") == "btnNext" && eventArgs.PageIndex == 2) {
-            me.saveForecast();
-        }
     };
     me.notifyPageContentChangedEventHandler = function (sender, eventArgs) {
 
