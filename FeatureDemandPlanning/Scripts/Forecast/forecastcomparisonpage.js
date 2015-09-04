@@ -204,7 +204,10 @@ model.Page = function (models) {
         var errorHtml = "<div class=\"alert alert-dismissible alert-warning\"><ul>";
 
         if (eventArgs.IsValid == true) {
-            control.html("");
+            control.fadeOut("slow", function ()
+            {
+                control.html("");
+            });
             return;
         }
 
@@ -213,7 +216,9 @@ model.Page = function (models) {
         });
         errorHtml += "</ul></div>";
 
-        control.html(errorHtml);
+        control.fadeOut("fast", function () {
+            control.html(errorHtml).fadeIn("slow");
+        });
     };
     me.parseError = function (error) {
         var retVal = "";
@@ -257,7 +262,7 @@ model.Page = function (models) {
         });
     };
     me.notifySuccessEventHandler = function (sender, eventArgs) {
-        var notifier = $("#notifier");
+        var notifier = $("#notifier")
 
         switch (eventArgs.StatusCode) {
             case "Success":
@@ -275,6 +280,7 @@ model.Page = function (models) {
             default:
                 break;
         }
+        notifier.fadeIn("slow");
     };
     me.notifyVehicleLoadedFilterEventHandler = function (sender, eventArgs) {
         var vehicleIndex = parseInt($(sender.target).attr("data-index"));
@@ -347,7 +353,7 @@ model.Page = function (models) {
         }
     };
     me.notifyDown = function () {
-        $("#notifier").html("");
+        //$("#notifier").fadeOut("slow").html("");
     };
     me.clearVehicle = function (vehicleIndex) {
         var emptyVehicle = getVehicleModel().getEmptyVehicle();
@@ -451,9 +457,6 @@ model.Page = function (models) {
 
         if (eventArgs.ModelYears.length == 1) {
             control.val(eventArgs.ModelYears[0]);
-            if (vehicleIndex > 0) {
-                me.toggleEvent(); // No gateway to choose on the comparison vehicle
-            }
             me.populateGateways(vehicleIndex);
         }
         else {
@@ -516,7 +519,7 @@ model.Page = function (models) {
         var params = JSON.stringify({ forecast: forecast, pageIndex: eventArgs.PageIndex });
         var pager = getPager();
 
-        pager.getPageContent(params, me.notifyPageContentChangedCallback)
+        pager.getPageContent(params, me.notifyPageContentChangedCallback, me)
     };
     me.notifyPageContentChangedCallback = function (content) {
         $("#frmContent").html(content);
