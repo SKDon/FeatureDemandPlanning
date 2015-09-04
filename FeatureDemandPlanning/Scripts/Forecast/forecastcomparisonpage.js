@@ -183,6 +183,8 @@ model.Page = function (models) {
 
         $("#btnNext").unbind("click").on("click", me.nextPage);
         $("#btnPrevious").unbind("click").on("click", me.previousPage);
+
+        $(".forecast-trim-link").unbind("click").on("click", me.notifyForecastTrimClicked)
     };
     me.nextPage = function (sender, eventArgs) {
         getPager().nextPage();
@@ -198,6 +200,26 @@ model.Page = function (models) {
         me.validateForecast(eventArgs.PageIndex);
         var model = getForecastModel();
         eventArgs.Cancel = !model.isValid();
+    };
+    me.notifyForecastTrimClicked = function (sender, eventArgs) {
+        $("#forecastTrimDialog").html("Test").dialog({
+            model: true,
+            resizable: false,
+            height: 250,
+            width: 250,
+            buttons: [
+                {
+                    "OK": function () {
+                        $(this).dialog("close");
+                    }
+                },
+                {
+                    "Cancel": function () {
+                        $(this).dialog("close");
+                    }
+                }
+            ]
+        });
     };
     me.notifyValidationEventHandler = function (sender, eventArgs) {
         var control = $(this);

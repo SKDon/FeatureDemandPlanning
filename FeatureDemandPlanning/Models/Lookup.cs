@@ -16,6 +16,7 @@ namespace FeatureDemandPlanning.Models
         public IEnumerable<SelectListItem> Programmes { get; set; }
         public IEnumerable<SelectListItem> ModelYears { get; set; }
         public IEnumerable<SelectListItem> Gateways { get; set; }
+        public IEnumerable<SelectListItem> TrimLevels { get; set; }
 
         private IEnumerable<SelectListItem> ListMakes()
         {
@@ -66,14 +67,7 @@ namespace FeatureDemandPlanning.Models
                 return programmes;
             }
 
-            if (programmes.Any(i => i.Selected == true))
-            {
-                programmes.Insert(0, new SelectListItem { Text = "-- SELECT --", Value = "" });
-            }
-            else
-            {
-                programmes.Insert(0, new SelectListItem { Text = "-- SELECT --", Value = "", Selected = true });
-            }
+            AppendDefaultItem(programmes);
 
             return programmes;
         }
@@ -101,14 +95,7 @@ namespace FeatureDemandPlanning.Models
                 return modelYears;
             }
 
-            if (modelYears.Any(i => i.Selected == true))
-            {
-                modelYears.Insert(0, new SelectListItem { Text = "-- SELECT --", Value = "" });
-            }
-            else
-            {
-                modelYears.Insert(0, new SelectListItem { Text = "-- SELECT --", Value = "", Selected = true });
-            }
+            AppendDefaultItem(modelYears);
 
             return modelYears;
         }
@@ -137,16 +124,26 @@ namespace FeatureDemandPlanning.Models
                 return gateways;
             }
 
-            if (gateways.Any(i => i.Selected == true))
-            {
-                gateways.Insert(0, new SelectListItem { Text = "-- SELECT --", Value = "" });
-            }
-            else
-            {
-                gateways.Insert(0, new SelectListItem { Text = "-- SELECT --", Value = "", Selected = true });
-            }
+            AppendDefaultItem(gateways);
 
             return gateways;
+        }
+
+        public IEnumerable<SelectListItem> ListTrimLevels()
+        {
+            if (_lookupVehicle is EmptyVehicle)
+                return Enumerable.Empty<SelectListItem>();
+
+            var trimLevels = _lookupVehicle.Programmes.First()
+                .AllTrims.Select(t => new SelectListItem()
+            {
+                Text = t.Abbreviation,
+                Value = t.Id.ToString()
+            }).ToList();
+
+            AppendDefaultItem(trimLevels);
+
+            return trimLevels;
         }
 
         public Lookup(IDataContext dataContext) : base(dataContext)
@@ -157,12 +154,13 @@ namespace FeatureDemandPlanning.Models
             Programmes = Enumerable.Empty<SelectListItem>();
             ModelYears = Enumerable.Empty<SelectListItem>();
             Gateways = Enumerable.Empty<SelectListItem>();
+            TrimLevels = Enumerable.Empty<SelectListItem>();
         }
 
         public Lookup(IDataContext dataContext, IVehicle lookupVehicle)
             : this(dataContext)
         {
-            _lookupVehicle = lookupVehicle;
+            _lookupVehicle = dataContext.Vehicle.GetVehicle(VehicleFilter.FromVehicle(lookupVehicle));
 
             //if (!(lookupVehicle is EmptyVehicle))
             //{
@@ -170,7 +168,20 @@ namespace FeatureDemandPlanning.Models
                 Programmes = ListProgrammes();
                 ModelYears = ListModelYears();
                 Gateways = ListGateways();
+                TrimLevels = ListTrimLevels();
             //}
+        }
+
+        private void AppendDefaultItem(IList<SelectListItem> selectList)
+        {
+            if (selectList.Any(i => i.Selected == true))
+            {
+                selectList.Insert(0, new SelectListItem { Text = "-- SELECT --", Value = "" });
+            }
+            else
+            {
+                selectList.Insert(0, new SelectListItem { Text = "-- SELECT --", Value = "", Selected = true });
+            }
         }
 
         private IEnumerable<IVehicle> _availableVehicles = Enumerable.Empty<Vehicle>();

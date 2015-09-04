@@ -1,0 +1,29 @@
+﻿@using FeatureDemandPlanning.BusinessObjects;
+@using FeatureDemandPlanning.BusinessObjects.Validators;
+@using FeatureDemandPlanning.Extensions;
+@using FeatureDemandPlanning.Helpers
+@using enums = FeatureDemandPlanning.Enumerations;
+
+@model FeatureDemandPlanning.Models.ForecastComparisonViewModel
+
+@{
+    var currentVehicle = (VehicleWithIndex)ViewData["CurrentVehicle"];
+    var forecastTrim = (ModelTrim)ViewData["ForecastTrim"];
+
+    if (!Model.ComparisonVehicleLookup[currentVehicle.VehicleIndex - 1].TrimLevels.Any())
+    {
+        <div title="No trim levels available for comparison vehicle">N/A</div>
+    }
+    else
+    {
+       @Html.DropDownListForExtended(m => m.NonEmptyComparisonVehicles,
+                                        Model.ComparisonVehicleLookup[currentVehicle.VehicleIndex - 1].TrimLevels,
+                                        new
+                                        {
+                                            @class = "vehicle-filter vehicle-filter-trim",
+                                            @data_index = currentVehicle.VehicleIndex.ToString(),
+                                            @data_forecast_trim = forecastTrim.Id.ToString()
+                                        },
+                                        m => true);
+    }
+}
