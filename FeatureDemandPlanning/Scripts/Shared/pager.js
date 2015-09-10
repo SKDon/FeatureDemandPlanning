@@ -14,9 +14,9 @@ model.Pager = function (pages, params) {
 
     me.ModelName = "Pager";
 
-    me.initialise = function() {
+    me.initialise = function () {
         displayPage();
-    }
+    };
     me.nextPage = function () {
         setPageIndex(me.getPageIndex() + 1);
     };
@@ -42,7 +42,6 @@ model.Pager = function (pages, params) {
         return privateStore[me.id].PageUri;
     };
     me.getPageContent = function (params, callback) {
-
         $.ajax({
             type: "POST",
             url: me.getPageUri(),
@@ -58,7 +57,6 @@ model.Pager = function (pages, params) {
             async: true
         });
     };
-
     function setPageIndex(pageIndex) {
         if (pageIndex < 0 || pageIndex > getPages().length - 1) {
             return;
@@ -77,7 +75,7 @@ model.Pager = function (pages, params) {
             PreviousPage: previousPage,
             Cancel: false
         };
-        $(document).trigger("notifyBeforePageChanged", args);
+        $(document).trigger("BeforePageChanged", args);
 
         // If anything in the before page changed handler has cancelled the event, don't change pages
         if (args.Cancel == true)
@@ -100,11 +98,11 @@ model.Pager = function (pages, params) {
             Cancel: false
         };
         if (newPageIndex == 0) {
-            $(document).trigger("notifyFirstPage", args);
+            $(document).trigger("FirstPage", args);
         } else if (pageIndex == getPages.length - 1) {
-            $(document).trigger("notifyLastPage", args);
+            $(document).trigger("LastPage", args);
         } 
-        $(document).trigger("notifyPageChanged", args);
+        $(document).trigger("PageChanged", args);
     };
     function getPage(pageIndex) {
         return privateStore[me.id].Pages[pageIndex];

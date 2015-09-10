@@ -3,8 +3,6 @@
 
 @model FeatureDemandPlanning.Models.ForecastComparisonViewModel
 
-@{var forecastTrimLevels = Model.Forecast.ForecastVehicle.ListTrimLevels(); }
-
 <div id="#forecastTrimDialog"></div>
 
 <div class="col-lg-12" data-index="2">
@@ -23,7 +21,7 @@
                         <th colspan="2">
                             <p>Vehicle</p>
                         </th>
-                        <th colspan="@(forecastTrimLevels.Count())"><p class="text-center">Level</p></th>
+                        <th colspan="@(Model.Forecast.ForecastVehicle.TrimMappings.Count())"><p class="text-center">Level</p></th>
                     </tr>
                     <tr>
                         <th>
@@ -32,16 +30,15 @@
                         <th>
                             <p class="text-center">@Model.Forecast.ForecastVehicle.ModelYear</p>
                         </th>
-                        @foreach (var trimLevel in forecastTrimLevels)
+                        @foreach (var trimMapping in Model.Forecast.ForecastVehicle.TrimMappings)
                         {
                             <th>
                                 <div class="text-center">
-                                    <p>@trimLevel.Abbreviation</p>
-                                    @if (!string.IsNullOrEmpty(trimLevel.DPCK))
+                                    <p>@trimMapping.ForecastVehicleTrim.Abbreviation</p>
+                                    @if (!string.IsNullOrEmpty(trimMapping.ForecastVehicleTrim.DPCK))
                                     {
-                                        <small>(@trimLevel.DPCK)</small>
+                                        <small>(@trimMapping.ForecastVehicleTrim.DPCK)</small>
                                     }
-
                                 </div>
                             </th>
                         }
@@ -54,11 +51,14 @@
                             <td>@(comparisonVehicle.VehicleIndex). @comparisonVehicle.Vehicle.Description</td>
                             <td class="dataTable-vertical-seperator"><p class="text-center">@comparisonVehicle.Vehicle.ModelYear</p></td>
 
-                            @foreach (var forecastTrim in forecastTrimLevels)
+                            @foreach (var trimMapping in Model.Forecast.ForecastVehicle.TrimMappings)
                             {
                                 <td class="text-center">
-                                    <a class="forecast-trim-link" href="#" data-index="@(comparisonVehicle.VehicleIndex)" data-forecast-trim="@(forecastTrim.Id)">Select Trim</a>
-                                       @*@Html.Partial("_ForecastTrimSelect", Model, new ViewDataDictionary { { "CurrentVehicle", comparisonVehicle }, { "ForecastTrim", forecastTrim } })*@
+                                    <a href="#" data-toggle="modal" data-target="#modal">
+                                        Select Trim
+                                    </a>
+                                    @*<a class="forecast-trim-link" href="#" data-index="@(comparisonVehicle.VehicleIndex)" data-forecast-trim="@(trimMapping.ForecastVehicleTrim.Id)">Select Trim</a>*@
+                                    @*@Html.Partial("_ForecastTrimSelect", Model, new ViewDataDictionary { { "CurrentVehicle", comparisonVehicle }, { "ForecastTrim", forecastTrim } })*@
                                 </td>
                             }
                         </tr>

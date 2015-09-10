@@ -18,208 +18,237 @@ using FluentValidation.Internal;
 
 namespace FeatureDemandPlanning.Controllers
 {
-    public class ForecastController : ControllerBase
-    {
-        public ForecastController() : base()
-        {
-            ControllerType = Controllers.ControllerType.SectionChild;
-        }
+	public class ForecastController : ControllerBase
+	{
+		public ForecastController() : base()
+		{
+			ControllerType = Controllers.ControllerType.SectionChild;
+		}
 
-        [HttpGet]
-        public ActionResult Index()
-        {
-            ViewBag.Title = "Forecasts";
+		[HttpGet]
+		public ActionResult Index()
+		{
+			ViewBag.Title = "Forecasts";
 
-            return RedirectToAction("Forecast");
-        }
+			return RedirectToAction("Forecast");
+		}
 
-        [HttpPost]
-        public ActionResult ForecastComparisonPage(Forecast forecast, int pageIndex)
-        {
-            var view = string.Empty;
-            
-            switch (pageIndex)
-            {
-                case 0:
-                    view = "_ForecastVehicle";
-                    break;
-                case 1:
-                    view = "_ForecastComparison";
-                    break;
-                case 2:
-                    view = "_ForecastTrim";
-                    break;
-                default:
-                    view = "_ForecastVehicle";
-                    break;
-            }
+		[HttpPost]
+		public ActionResult ForecastComparisonPage(Forecast forecast, int pageIndex)
+		{
+			var view = string.Empty;
+			
+			switch (pageIndex)
+			{
+				case 0:
+					view = "_ForecastVehicle";
+					break;
+				case 1:
+					view = "_ForecastComparison";
+					break;
+				case 2:
+					view = "_ForecastTrim";
+					break;
+				default:
+					view = "_ForecastVehicle";
+					break;
+			}
 
-            return PartialView(view, GetFullAndPartialForecastComparisonViewModel(forecast));
-        }
+			return PartialView(view, GetFullAndPartialForecastComparisonViewModel(forecast));
+		}
 
-        [HttpGet]
-        public ActionResult Forecast(int? viewPage, int? forecastId)
-        {
-            var filter = new ForecastFilter();
-            filter.ForecastId = forecastId;
-            var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(filter);
-            forecastComparisonModel.ViewPage = viewPage.GetValueOrDefault();
+		[HttpPost]
+		public ActionResult ValidationMessage(ValidationMessage message)
+		{
+			return PartialView("_ValidationMessage", message);
+		}
 
-            ViewBag.PageTitle = "Edit Forecast";
-            
-            return View("Forecast", forecastComparisonModel);
-        }
+		[HttpGet]
+		public ActionResult Forecast(int? viewPage, int? forecastId)
+		{
+			var filter = new ForecastFilter();
+			filter.ForecastId = forecastId;
+			var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(filter);
+			forecastComparisonModel.ViewPage = viewPage.GetValueOrDefault();
 
-        [HttpPost]
-        public ActionResult ForecastComparison(ForecastFilter filter)
-        {
-            var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(filter);
+			ViewBag.PageTitle = "Edit Forecast";
+			
+			return View("Forecast", forecastComparisonModel);
+		}
 
-            if (forecastComparisonModel.Forecast.ForecastVehicle == null)
-            {
-                forecastComparisonModel.SetProcessState(
-                    new BusinessObjects.ProcessState(Enumerations.ProcessStatus.Warning, "No programmes available matching search criteria"));
-            }
+		[HttpPost]
+		public ActionResult ForecastComparison(ForecastFilter filter)
+		{
+			var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(filter);
 
-            return View("ForecastComparison", forecastComparisonModel);
-        }
+			if (forecastComparisonModel.Forecast.ForecastVehicle == null)
+			{
+				forecastComparisonModel.SetProcessState(
+					new BusinessObjects.ProcessState(Enumerations.ProcessStatus.Warning, "No programmes available matching search criteria"));
+			}
 
-        [HttpPost]
-        public ActionResult ValidateForecast(Forecast forecastToValidate, 
-                                             ForecastValidationSection sectionToValidate = ForecastValidationSection.All)
-        {
-            var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecastToValidate);
-            var validator = new ForecastValidator((Forecast)forecastComparisonModel.Forecast);
-            var ruleSets = ForecastValidator.GetRulesetsToValidate(sectionToValidate);
-            var jsonResult = new JsonResult()
-            {
-                Data = new { IsValid = true }
-            };
+			return View("ForecastComparison", forecastComparisonModel);
+		}
 
-            var results = validator.Validate((Forecast)forecastComparisonModel.Forecast, ruleSet: ruleSets);
-            if (!results.IsValid)
-            {
-                var errorModel = results.Errors.Select(e => new
-                {
-                    key = e.PropertyName,
-                    errors = new [] 
-                    { 
-                        new 
-                        { 
-                            ErrorMessage = e.ErrorMessage,
-                            CustomState = e.CustomState//, 
-                            //ProcessStatus = (FeatureDemandPlanning.Enumerations.ProcessStatus) e.CustomState == null 
-                            //    ? FeatureDemandPlanning.Enumerations.ProcessStatus.Warning 
-                            //    : e.CustomState 
-                        }
-                    }
-                });
+		[HttpPost]
+		public ActionResult ValidateForecast(Forecast forecastToValidate, 
+											 ForecastValidationSection sectionToValidate = ForecastValidationSection.All)
+		{
+			var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecastToValidate);
+			var validator = new ForecastValidator((Forecast)forecastComparisonModel.Forecast);
+			var ruleSets = ForecastValidator.GetRulesetsToValidate(sectionToValidate);
+			var jsonResult = new JsonResult()
+			{
+				Data = new { IsValid = true }
+			};
 
-                jsonResult = new JsonResult()
-                {
-                    Data = new { IsValid = false, Errors = errorModel }
-                };
-            }
-            return jsonResult;
-        }
-        
-        [HttpPost]
-        [ValidateAjax]
-        public JsonResult SaveForecast(Forecast forecastToSave)
-        {
-            var processState = new ProcessState();
-            var model = GetFullAndPartialForecastComparisonViewModel();
-            var result = GetResult(processState, model);
-            
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return GetResult(processState, model);
-                }
-                
-                forecastToSave = (Forecast)DataContext.Forecast.SaveForecast(forecastToSave);
-                if (!forecastToSave.IsPersisted(processState))
-                {
-                    return GetResult(processState, model);
-                }
-               
-                model = GetFullAndPartialForecastComparisonViewModel(forecastToSave);
-                processState.AddMessage("Forecast saved successfully");
-            }
-            catch (ApplicationException ex)
-            {
-                processState = ProcessState.FromException("An error occurred saving the forecast", ex);
-            }
-            finally
-            {
-                if (processState.Status == enums.ProcessStatus.Failure)
-                {
-                    Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                }
-                result = GetResult(processState, model);
-            }
+			var results = validator.Validate((Forecast)forecastComparisonModel.Forecast, ruleSet: ruleSets);
+			if (!results.IsValid)
+			{
+				var errorModel = results.Errors.Select(e => new ValidationError()
+				{
+					key = e.PropertyName,
+					errors = new List<ValidationErrorItem>() 
+					{ 
+						new ValidationErrorItem()
+						{ 
+							ErrorMessage = e.ErrorMessage,
+							CustomState = e.CustomState//, 
+							//ProcessStatus = (FeatureDemandPlanning.Enumerations.ProcessStatus) e.CustomState == null 
+							//    ? FeatureDemandPlanning.Enumerations.ProcessStatus.Warning 
+							//    : e.CustomState 
+						}
+					}
+				});
 
-            return result;
-        }
+				jsonResult = new JsonResult()
+				{
+					Data = new ValidationMessage() { IsValid = false, Errors = errorModel.ToList() }
+				};
+			}
+			return jsonResult;
+		}
+		
+		[HttpPost]
+		[ValidateAjax]
+		public JsonResult SaveForecast(Forecast forecastToSave)
+		{
+			var processState = new ProcessState();
+			var model = GetFullAndPartialForecastComparisonViewModel();
+			var result = GetResult(processState, model);
+			
+			try
+			{
+				if (!ModelState.IsValid)
+				{
+					return GetResult(processState, model);
+				}
+				
+				forecastToSave = (Forecast)DataContext.Forecast.SaveForecast(forecastToSave);
+				if (!forecastToSave.IsPersisted(processState))
+				{
+					return GetResult(processState, model);
+				}
+			   
+				model = GetFullAndPartialForecastComparisonViewModel(forecastToSave);
+				processState.AddMessage("Forecast saved successfully");
+			}
+			catch (ApplicationException ex)
+			{
+				processState = ProcessState.FromException("An error occurred saving the forecast", ex);
+			}
+			finally
+			{
+				if (processState.Status == enums.ProcessStatus.Failure)
+				{
+					Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+				}
+				result = GetResult(processState, model);
+			}
 
-        private JsonResult GetResult(ProcessState processState, ForecastComparisonViewModel model)
-        {
-            model.SetProcessState(processState);
-            return Json(model);
-        }
+			return result;
+		}
 
-        private ForecastComparisonViewModel GetFullAndPartialForecastComparisonViewModel()
-        {
-            return GetFullAndPartialForecastComparisonViewModel(new ForecastFilter());
-        }
+		private JsonResult GetResult(ProcessState processState, ForecastComparisonViewModel model)
+		{
+			model.SetProcessState(processState);
+			return Json(model);
+		}
+		private ForecastComparisonViewModel GetFullAndPartialForecastComparisonViewModel()
+		{
+			return GetFullAndPartialForecastComparisonViewModel(new ForecastFilter());
+		}
+		private ForecastComparisonViewModel GetFullAndPartialForecastComparisonViewModel(ForecastFilter filter)
+		{
+			IForecast forecast = new EmptyForecast();
+			if (filter.ForecastId.HasValue)
+			{
+				forecast = DataContext.Forecast.GetForecast(filter);
+			}
+			return GetFullAndPartialForecastComparisonViewModel(forecast);
+		}
+		private ForecastComparisonViewModel GetFullAndPartialForecastComparisonViewModel(IForecast forecast)
+		{
+			var forecastComparisonModel = new ForecastComparisonViewModel(DataContext)
+			{
+				Forecast = forecast,
+				PageSize = PageSize,
+				PageIndex = PageIndex
+			};
 
-        private ForecastComparisonViewModel GetFullAndPartialForecastComparisonViewModel(Forecast forecast)
-        {
-            var forecastComparisonModel = new ForecastComparisonViewModel(DataContext)
-            {
-                Forecast = forecast,
-                PageSize = PageSize,
-                PageIndex = PageIndex
-            };
+			HydrateForecastVehicleTrimMapping(forecast);
+			HydrateComparisonVehiclesTrimMappings(forecast);
+			HydrateLookups(forecast, forecastComparisonModel);
 
-            if (!(forecast.ForecastVehicle is EmptyVehicle))
-            {
-                forecastComparisonModel.ForecastVehicleLookup = new Lookup(DataContext, forecast.ForecastVehicle);
-            }
+			return forecastComparisonModel;
+		}
+		private void HydrateForecastVehicleTrimMapping(IForecast forecast)
+		{
+			if (forecast.ForecastVehicle.TrimMappings.Any() || !forecast.ForecastVehicle.Programmes.Any())
+				return;
 
+			var programme = forecast.ForecastVehicle.Programmes.First();
 
-            foreach (var comparisonVehicle in forecast.ComparisonVehicles)
-            {
-                forecastComparisonModel.ComparisonVehicleLookup.Add(new Lookup(DataContext, comparisonVehicle));
-            }
+			forecast.ForecastVehicle.TrimMappings = programme.AllTrims
+				.Select(t => new TrimMapping()
+				{
+					ForecastVehicleTrim = t,
+					ComparisonVehicleTrimMappings = new List<ModelTrim>()
+				}).ToList();
+		}
+		private void HydrateComparisonVehiclesTrimMappings(IForecast forecast)
+		{
+			if (forecast.ComparisonVehicles == null || !forecast.ComparisonVehicles.Any())
+				return;
 
-            return forecastComparisonModel;
-        }
+			foreach (var comparisonVehicle in forecast.ComparisonVehicles)
+			{
+				HydrateComparisonVehicleTrimMappings(forecast, comparisonVehicle);
+			}
+		}
+		private void HydrateComparisonVehicleTrimMappings(IForecast forecast, IVehicle comparisonVehicle)
+		{
+			if (comparisonVehicle.TrimMappings.Any() || !forecast.ForecastVehicle.Programmes.Any())
+				return;
 
-        private ForecastComparisonViewModel GetFullAndPartialForecastComparisonViewModel(ForecastFilter filter)
-        {
-            IForecast forecast = new EmptyForecast();
-            if (filter.ForecastId.HasValue)
-            {
-                forecast = DataContext.Forecast.GetForecast(filter);
-            }
+			var programme = forecast.ForecastVehicle.Programmes.First();
 
-            var forecastComparisonModel = new ForecastComparisonViewModel(DataContext)
-            {
-                Forecast = forecast,
-                PageSize = PageSize,
-                PageIndex = PageIndex
-            };
+			comparisonVehicle.TrimMappings = programme.AllTrims
+				.Select(t => new TrimMapping() {
+					ForecastVehicleTrim = t,
+					ComparisonVehicleTrimMappings = new List<ModelTrim>()
+				}).ToList();
 
-            forecastComparisonModel.ForecastVehicleLookup = new Lookup(DataContext, forecast.ForecastVehicle);
+			// TO DO, get the trim mappings if anything has been saved to the database
+		}
+		private void HydrateLookups(IForecast forecast, ForecastComparisonViewModel forecastComparisonModel)
+		{
+			forecastComparisonModel.ForecastVehicleLookup = new Lookup(DataContext, forecast.ForecastVehicle);
 
-            foreach (var comparisonVehicle in forecast.ComparisonVehicles)
-            {
-                forecastComparisonModel.ComparisonVehicleLookup.Add(new Lookup(DataContext, comparisonVehicle));
-            }
-
-            return forecastComparisonModel;
-        }
-    }
+			foreach (var comparisonVehicle in forecast.ComparisonVehicles)
+			{
+				forecastComparisonModel.ComparisonVehicleLookup.Add(new Lookup(DataContext, comparisonVehicle));
+			}
+		}
+	}
 }

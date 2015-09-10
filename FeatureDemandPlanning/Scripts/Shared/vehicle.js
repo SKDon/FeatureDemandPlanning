@@ -33,48 +33,34 @@ model.Vehicle = function (params) {
 
     me.getPageSize = function () {
         return privateStore[me.id].PageSize;
-    }
-
+    };
     me.getPageIndex = function () {
         return privateStore[me.id].PageIndex
-    }
-
-    me.initialise = function (callback) {
-        // trigger automatic load of the vehicle makes
-        // this will trigger broadcast events that all dropdowns will listen to, as vehicle index is not specified
-        //me.getMakes();
-        callback();
     };
-
+    me.initialise = function () {
+    };
     me.getMakes = function () {
         getData({}, getMakesCallback);
     };
-
     me.getNumberOfComparisonVehicles = function () {
         var config = getConfiguration();
         return config.NumberOfComparisonVehicles;
     };
-
     me.getProgrammes = function (filter) {
         getData({ make: filter.Make, vehicleIndex: filter.VehicleIndex }, getProgrammesCallback);
     };
-
     me.getModelYears = function (filter) {
         getData({ make: filter.Make, name: filter.Name, vehicleIndex: filter.VehicleIndex }, getModelYearsCallback);
     };
-
     me.getGateways = function (filter) {
         getData({ make: filter.Make, name: filter.Name, modelYear: filter.ModelYear, vehicleIndex: filter.VehicleIndex }, getGatewaysCallback);
     };
-
     me.getDerivativeCodes = function (filter) {
         getData({ make: filter.Make, name: filter.Name, modelYear: filter.ModelYear, vehicleIndex: filter.VehicleIndex }, getDerivativeCodesCallback);
     };
-
     me.getVehicle = function (filter) {
         getData({ make: filter.Make, name: filter.Name, modelYear: filter.ModelYear, gateway: filter.Gateway, vehicleIndex: filter.VehicleIndex }, getVehicleCallback);
     };
-
     me.getEmptyVehicle = function () {
         return {
             VehicleId: null,
@@ -89,11 +75,9 @@ model.Vehicle = function (params) {
             Description: ""
         }
     };
-
     me.filterResults = function () {
-        $(document).trigger("notifyFilterComplete");
+        $(document).trigger("FilterComplete");
     };
-
     function getData(data, callback) {
         $.ajax({
             url: privateStore[me.id].FilterVehiclesUri,
@@ -111,27 +95,27 @@ model.Vehicle = function (params) {
 
     function getMakesCallback(response) {
         setFilteredVehicleDetailsFromResponse(response);
-        $(document).trigger("notifyMakes", response);
+        $(document).trigger("MakesChanged", response);
     };
 
     function getProgrammesCallback(response) {
         setFilteredVehicleDetailsFromResponse(response);
-        $(document).trigger("notifyProgrammes", response);
+        $(document).trigger("ProgrammesChanged", response);
     };
 
     function getModelYearsCallback(response) {
         setFilteredVehicleDetailsFromResponse(response);
-        $(document).trigger("notifyModelYears", response);
+        $(document).trigger("ModelYearsChanged", response);
     };
 
     function getGatewaysCallback(response) {
         setFilteredVehicleDetailsFromResponse(response);
-        $(document).trigger("notifyGateways", response);
+        $(document).trigger("GatewaysChanged", response);
     };
 
     function getDerivativeCodesCallback(response) {
         setFilteredVehicleDetailsFromResponse(response);
-        $(document).trigger("notifyDerivativeCodes", response);
+        $(document).trigger("DerivativeCodesChanged", response);
     };
 
     function getVehicleCallback(response) {
@@ -148,7 +132,7 @@ model.Vehicle = function (params) {
             vehicle.Gateway = response.Filter.Gateway;
         }
 
-        $(document).trigger("notifyVehicleChanged",
+        $(document).trigger("VehicleChanged",
             {
                 VehicleIndex: response.VehicleIndex,
                 Vehicle: vehicle,
@@ -167,7 +151,7 @@ model.Vehicle = function (params) {
 
     function genericErrorCallback(response) {
         privateStore[me.id].Config = response.Configuration;
-        $(document).trigger("notifyError", response);
+        $(document).trigger("Error", response);
     };
 
 

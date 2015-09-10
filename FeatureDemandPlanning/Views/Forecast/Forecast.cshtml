@@ -18,6 +18,7 @@
             SaveForecastUri: "@Url.Action("SaveForecast")",
             ValidateForecastUri: "@Url.Action("ValidateForecast")",
             FilterVehiclesUri: "@Url.Action("FilterVehicles", "Vehicle")",
+            ValidationMessageUri: "@Url.Action("ValidationMessage")",
             Configuration: {},
             ForecastVehicle: {},
             ComparisonVehicles: {},
@@ -33,7 +34,7 @@
         @if (Model.Forecast.ForecastId.HasValue)
         {
         @:params.ForecastId = @Model.Forecast.ForecastId.Value;
-        }
+                }
     </script>
     <script src="@Url.Content("~/Scripts/Forecast/init.js")?v=@Model.CurrentVersion"></script>
 }
@@ -58,6 +59,23 @@
 @section PageBody
 {
     <div id="notifier" class="subscribers-notifySuccess subscribers-notifyError subscribers-notifyVehicle subscribers-notifyUpdated subscribers-notifyBeforePageChanged subscribers-notifyValidation col-lg-8"></div>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                This is some test content
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <form method="post" id="frmContent" action="@Url.Action("ForecastComparisonPage")" class="form-group-sm subscribers-notifyPageChanged">
 

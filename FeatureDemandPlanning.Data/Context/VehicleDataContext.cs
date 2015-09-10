@@ -147,24 +147,8 @@ namespace FeatureDemandPlanning.DataStore
                         programme.VehicleName,
                         programme.VehicleAKA,
                         programme.ModelYear),
-                Programmes = new List<Programme>() { programme },
-                TrimMapping = ListTrimMappings(programme, vehicleIndex)
+                Programmes = new List<Programme>() { programme }
             };
-        }
-
-        private IDictionary<ModelTrim, IList<ModelTrim>> ListTrimMappings(Programme programme, int? vehicleIndex)
-        {
-            var trimMapping = new Dictionary<ModelTrim, IList<ModelTrim>>();
-            if (programme.AllTrims == null || !programme.AllTrims.Any())
-                return trimMapping;
-
-            foreach (var trimLevel in programme.AllTrims) {
-                trimMapping.Add(trimLevel, new List<ModelTrim>());
-            }
-
-            // TODO populate the actual mappings
-
-            return trimMapping;
         }
 
         private VehicleDataStore _vehicleDataStore = null;

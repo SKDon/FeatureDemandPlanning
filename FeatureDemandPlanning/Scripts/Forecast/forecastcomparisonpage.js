@@ -3,25 +3,41 @@
 var model = namespace("FeatureDemandPlanning.Forecast");
 
 model.Page = function (models) {
-    var uid = 0;
-    var privateStore = {};
-    var me = this;
+    var uid = 0, privateStore = {}, me = this;
 
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Models = models;
-    privateStore[me.id].PageIndex = 0;
-    privateStore[me.id].ForecastVehicle = null;
-    privateStore[me.id].InitCount = 0;
-    privateStore[me.id].IsValid = false;
     privateStore[me.id].EventComplete = true;
 
     me.initialise = function () {
-        me.resetNumberOfInitialisedModels();
         me.registerEvents();
         me.registerSubscribers();
         $(privateStore[me.id].Models).each(function () {
-            this.initialise(me.initialiseCallback);
+            this.initialise();
         });
+    };
+    me.clearVehicle = function (vehicleIndex) {
+        me.setVehicle(vehicleIndex, getVehicleModel().getEmptyVehicle());
+    };
+    me.resetVehicle = function (vehicleIndex, startEventChain) {
+        me.clearVehicle(vehicleIndex);
+        me.resetEvent();
+        if (startEventChain)
+            me.toggleEvent();
+    };
+    me.setVehicle = function (vehicleIndex, vehicle) {
+        if (vehicleIndex == 0) {
+            me.setForecastVehicle(vehicle);
+        } else {
+            me.setComparisonVehicle(vehicleIndex - 1, vehicle);
+        }
+    };
+    me.parseError = function (error) {
+        var retVal = "";
+        $(error.errors).each(function () {
+            retVal += ("<li>" + this.ErrorMessage + "</li>");
+        });
+        return retVal;
     };
     me.resetEvent = function () {
         privateStore[me.id].EventComplete = true;
@@ -32,24 +48,12 @@ model.Page = function (models) {
     me.isEventCompleted = function () {
         return privateStore[me.id].EventComplete == true;
     };
-    me.initialiseCallback = function () {
-        me.incrementNumberOfInitialisedModels();
-        if (!me.isInitComplete()) {
-            return;
-        }
+    me.isEventForControl = function (control, vehicleIndex) {
+        return vehicleIndex != null && vehicleIndex == parseInt(control.attr("data-index"));
     };
-    me.getNumberOfInitialisedModels = function () {
-        return privateStore[me.id].InitCount;
-    };
-    me.incrementNumberOfInitialisedModels = function () {
-        privateStore[me.id].InitCount++;
-    };
-    me.isInitComplete = function () {
-        return privateStore[me.id].InitCount < getModels().length - 1
-    };
-    me.resetNumberOfInitialisedModels = function () {
-        privateStore[me.id].InitCount = 0;
-    };
+    me.getForecast = function () {
+        return getForecastModel().getForecast();
+    }
     me.getForecastId = function () {
         return getForecastModel().getForecastId();
     };
@@ -73,95 +77,62 @@ model.Page = function (models) {
     };
     me.registerEvents = function () {
         $(document)
-            .unbind("notifySuccess").on("notifySuccess", function (sender, eventArgs) { $(".subscribers-notifySuccess").trigger("notifySuccessEventHandler", [eventArgs]); })
-            .unbind("notifyError").on("notifyError", function (sender, eventArgs) { $(".subscribers-notifyError").trigger("notifyErrorEventHandler", [eventArgs]); })
-            .unbind("notifyMakes").on("notifyMakes", function (sender, eventArgs) { $(".subscribers-notifyMakes").trigger("notifyMakesEventHandler", [eventArgs]); })
-            .unbind("notifyProgrammes").on("notifyProgrammes", function (sender, eventArgs) { $(".subscribers-notifyProgrammes").trigger("notifyProgrammesEventHandler", [eventArgs]); })
-            .unbind("notifyModelYears").on("notifyModelYears", function (sender, eventArgs) { $(".subscribers-notifyModelYears").trigger("notifyModelYearsEventHandler", [eventArgs]); })
-            .unbind("notifyGateways").on("notifyGateways", function (sender, eventArgs) { $(".subscribers-notifyGateways").trigger("notifyGatewaysEventHandler", [eventArgs]); })
-            .unbind("notifyFilterComplete").on("notifyFilterComplete", function (sender, eventArgs) { $(".subscribers-notifyFilterComplete").trigger("notifyFilterCompleteEventHandler", [eventArgs]); })
-            .unbind("notifyVehicleChanged").on("notifyVehicleChanged", function (sender, eventArgs) { $(".subscribers-notifyVehicle").trigger("notifyVehicleChangedEventHandler", [eventArgs]); })
-            .unbind("notifyResults").on("notifyResults", function (sender, eventArgs) { $(".subscribers-notifyResults").trigger("notifyResultsEventHandler", [eventArgs]); })
-            .unbind("notifyUpdated").on("notifyUpdated", function (sender, eventArgs) { $(".subscribers-notifyUpdated").trigger("notifyUpdatedEventHandler", [eventArgs]); })
-            .unbind("notifyPageChanged").on("notifyPageChanged", function (sender, eventArgs) { $(".subscribers-notifyPageChanged").trigger("notifyPageChangedEventHandler", [eventArgs]); })
-            .unbind("notifyFirstPage").on("notifyFirstPage", function (sender, eventArgs) { $(".subscribers-notifyFirstPage").trigger("notifyFirstPageEventHandler", [eventArgs]); })
-            .unbind("notifyLastPage").on("notifyLastPage", function (sender, eventArgs) { $(".subscribers-notifyLastPage").trigger("notifyLastPageEventHandler", [eventArgs]); })
-            .unbind("notifyBeforePageChanged").on("notifyBeforePageChanged", function (sender, eventArgs) { $(".subscribers-notifyBeforePageChanged").trigger("notifyBeforePageChangedEventHandler", [eventArgs]); })
-            .unbind("notifyValidation").on("notifyValidation", function (sender, eventArgs) { $(".subscribers-notifyValidation").trigger("notifyValidationEventHandler", [eventArgs]); });
+            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notifySuccess").trigger("OnSuccessDelegate", [eventArgs]); })
+            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notifyError").trigger("OnErrorDelegate", [eventArgs]); })
+            .unbind("MakesChanged").on("MakesChanged", function (sender, eventArgs) { $(".subscribers-notifyMakes").trigger("OnMakesChangedDelegate", [eventArgs]); })
+            .unbind("ProgrammesChanged").on("ProgrammesChanged", function (sender, eventArgs) { $(".subscribers-notifyProgrammes").trigger("OnProgrammesChangedDelegate", [eventArgs]); })
+            .unbind("ModelYearsChanged").on("ModelYearsChanged", function (sender, eventArgs) { $(".subscribers-notifyModelYears").trigger("OnModelYearsChangedDelegate", [eventArgs]); })
+            .unbind("GatewaysChanged").on("GatewaysChanged", function (sender, eventArgs) { $(".subscribers-notifyGateways").trigger("OnGatewaysChangedDelegate", [eventArgs]); })
+            .unbind("FilterComplete").on("FilterComplete", function (sender, eventArgs) { $(".subscribers-notifyFilterComplete").trigger("OnFilterCompleteDelegate", [eventArgs]); })
+            .unbind("VehicleChanged").on("VehicleChanged", function (sender, eventArgs) { $(".subscribers-notifyVehicle").trigger("OnVehicleChangedDelegate", [eventArgs]); })
+            .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notifyResults").trigger("OnResultsDelegate", [eventArgs]); })
+            .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notifyUpdated").trigger("OnUpdatedDelegate", [eventArgs]); })
+            .unbind("BeforePageChanged").on("BeforePageChanged", function (sender, eventArgs) { $(".subscribers-notifyBeforePageChanged").trigger("OnBeforePageChangedDelegate", [eventArgs]); })
+            .unbind("PageChanged").on("PageChanged", function (sender, eventArgs) { $(".subscribers-notifyPageChanged").trigger("OnPageChangedDelegate", [eventArgs]); })
+            .unbind("FirstPage").on("FirstPage", function (sender, eventArgs) { $(".subscribers-notifyFirstPage").trigger("OnFirstPageDelegate", [eventArgs]); })
+            .unbind("LastPage").on("LastPage", function (sender, eventArgs) { $(".subscribers-notifyLastPage").trigger("OnLastPageDelegate", [eventArgs]); })
+            .unbind("Validation").on("Validation", function (sender, eventArgs) { $(".subscribers-notifyValidation").trigger("OnValidationDelegate", [eventArgs]); });
     };
     me.registerSubscribers = function () {
         // The #notifier displays status changed message, therefore it makes sense for it to listen to status
         // events and dispatch accordingly
 
         $("#notifier")
-            .unbind("notifySuccessEventHandler")
-            .on("notifySuccessEventHandler", me.notifySuccessEventHandler)
-            .unbind("notifyVehicleChangedEventHandler")
-            .on("notifyVehicleChangedEventHandler", me.notifyVehicleChangedEventHandler)
-            .unbind("notifyErrorEventHandler")
-            .on("notifyErrorEventHandler", me.notifyErrorEventHandler)
-            .unbind("notifyUpdatedEventHandler")
-            .on("notifyUpdatedEventHandler", me.notifyUpdatedEventHandler)
-            .unbind("notifyBeforePageChangedEventHandler")
-            .on("notifyBeforePageChangedEventHandler", me.notifyBeforePageChangedEventHandler)
-            .unbind("notifyValidationEventHandler")
-            .on("notifyValidationEventHandler", me.notifyValidationEventHandler)
+            .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
+            .unbind("OnVehicleChangedDelegate").on("OnVehicleChangedDelegate", me.onVehicleChangedEventHandler)
+            .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
+            .unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
+            .unbind("OnBeforePageChangedDelegate").on("OnBeforePageChangedDelegate", me.onBeforePageChangedEventHandler)
+            .unbind("OnValidationDelegate").on("OnValidationDelegate", me.onValidationEventHandler);
 
         // The page and vehicle descriptions need to respond and update if the forecast vehicle is changed
         // or the page is changed
 
-        $("#lblPageDescription")
-            .unbind("notifyPageChangedEventHandler")
-            .on("notifyPageChangedEventHandler", me.notifyDescriptionPageChangedEventHandler);
-        $("#lblVehicleDescription")
-            .unbind("notifyVehicleChangedEventHandler")
-            .on("notifyVehicleChangedEventHandler", me.notifyVehicleDescriptionEventHandler);
+        $("#lblPageDescription").unbind("OnPageChangedDelegate").on("OnPageChangedDelegate", me.onDescriptionPageChangedEventHandler);
+        $("#lblVehicleDescription").unbind("OnVehicleChangedDelegate").on("OnVehicleChangedDelegate", me.onVehicleDescriptionEventHandler);
 
         // Notify the pager buttons of any page changes so they can toggle visibility as appropriate
 
-        $("#btnPrevious,#btnNext")
-            .unbind("notifyPageChangedEventHandler")
-            .on("notifyPageChangedEventHandler", me.notifyPageChangedEventHandler);
+        $("#btnPrevious,#btnNext").unbind("OnPageChangedDelegate").on("OnPageChangedDelegate", me.onPageChangedEventHandler);
 
         // Notify the parent form of any page changes so we can actually render the appropriate content for the page
 
-        $("#frmContent")
-            .unbind("notifyPageChangedEventHandler")
-            .on("notifyPageChangedEventHandler", me.notifyPageContentChangedEventHandler);
-
-        // For both forecast and comparisons, we have a pair of controls, one with selection controls, the other read-only fields
-        // Both will listen for "notifyVehicleLoaded" events and take appropriate action (basically toggling the display)
-
-        $(".vehicle-filter,.vehicle-readonly")
-            .unbind("notifyVehicleChangedEventHandler")
-            .on("notifyVehicleChangedEventHandler", me.notifyVehicleLoadedFilterEventHandler)
+        $("#frmContent").unbind("OnPageChangedDelegate").on("OnPageChangedDelegate", me.onPageContentChangedEventHandler);
 
         // Each of the individual dropdowns and other controls for forecast / comparison will listen for
         // broadcast changes to makes, programmes, etc.
         // They will only respond if the message is intended for them
 
-        $(".vehicle-filter-make")
-            .unbind("notifyMakesEventHandler")
-            .on("notifyMakesEventHandler", me.notifyMakesEventHandler);
-        $(".vehicle-filter-programme")
-            .unbind("notifyProgrammesEventHandler")
-            .on("notifyProgrammesEventHandler", me.notifyProgrammesEventHandler);
-        $(".vehicle-filter-modelYear")
-            .unbind("notifyModelYearsEventHandler")
-            .on("notifyModelYearsEventHandler", me.notifyModelYearsEventHandler);
-        $(".vehicle-filter-gateway")
-            .unbind("notifyGatewaysEventHandler")
-            .on("notifyGatewaysEventHandler", me.notifyGatewaysEventHandler);
-        $(".vehicle-filter-trim")
-            .unbind("notifyTrimEventHandler")
-            .on("notifyTrimEventHandler", me.notifyTrimEventHandler);
+        $(".vehicle-filter-make").unbind("OnMakesChangedDelegate").on("OnMakesChangedDelegate", me.onMakesChangedEventHandler);
+        $(".vehicle-filter-programme").unbind("OnProgrammesChangedDelegate").on("OnProgrammesChangedDelegate", me.onProgrammesChangedEventHandler);
+        $(".vehicle-filter-modelYear").unbind("OnModelYearsChangedDelegate").on("OnModelYearsChangedDelegate", me.onModelYearsChangedEventHandler);
+        $(".vehicle-filter-gateway").unbind("OnGatewaysChangedDelegate").on("OnGatewaysChangedDelegate", me.onGatewaysChangedEventHandler);
 
         // Each of the dropdowns will listen for validation messages if the data the hold is somehow in error
         // They will only respond if the validation message is intended for them
 
         $(".vehicle-filter-make,.vehicle-filter-programme,.vehicle-filter-modelYear,.vehicle-filter-gateway,.vehicle-filter-trim")
-            .unbind("notifyValidationEventHandler")
-            .on("notifyValidationEventHandler", me.notifyValidationFilterEventHandler);
+            .unbind("OnValidationDelegate").on("OnValidationDelegate", me.onValidationFilterEventHandler);
 
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
 
@@ -184,7 +155,7 @@ model.Page = function (models) {
         $("#btnNext").unbind("click").on("click", me.nextPage);
         $("#btnPrevious").unbind("click").on("click", me.previousPage);
 
-        $(".forecast-trim-link").unbind("click").on("click", me.notifyForecastTrimClicked)
+        $(".forecast-trim-link").unbind("click").on("click", me.onForecastTrimClickedEventHandler)
     };
     me.nextPage = function (sender, eventArgs) {
         getPager().nextPage();
@@ -192,179 +163,90 @@ model.Page = function (models) {
     me.previousPage = function (sender, eventArgs) {
         getPager().previousPage();
     };
-    me.notifyBeforePageChangedEventHandler = function (sender, eventArgs) {
-        me.notifyDown();
+    me.onBeforePageChangedEventHandler = function (sender, eventArgs) {
         if (!eventArgs.NextPage) {
             return;
         }
         me.validateForecast(eventArgs.PageIndex);
-        var model = getForecastModel();
-        eventArgs.Cancel = !model.isValid();
+        eventArgs.Cancel = !getForecastModel().isValid();
     };
-    me.notifyForecastTrimClicked = function (sender, eventArgs) {
-        $("#forecastTrimDialog").html("Test").dialog({
-            model: true,
-            resizable: false,
-            height: 250,
-            width: 250,
-            buttons: [
-                {
-                    "OK": function () {
-                        $(this).dialog("close");
-                    }
-                },
-                {
-                    "Cancel": function () {
-                        $(this).dialog("close");
-                    }
-                }
-            ]
+    me.onForecastTrimClickedEventHandler = function (sender, eventArgs) {
+
+    };
+    me.onValidationEventHandler = function (sender, eventArgs) {
+        me.getValidationMessage(eventArgs);
+    };
+    me.getValidationMessage = function (validationResults) {
+        $.ajax({
+            type: "POST",
+            url: getForecastModel().getValidationMessageUri(),
+            data: JSON.stringify(validationResults),
+            context: this,
+            contentType: "application/json",
+            complete: me.getValidationMessageCallback,
+            async: true
         });
     };
-    me.notifyValidationEventHandler = function (sender, eventArgs) {
-        var control = $(this);
-        var errorHtml = "<div class=\"alert alert-dismissible alert-warning\"><ul>";
-
-        if (eventArgs.IsValid == true) {
-            control.fadeOut("slow", function ()
-            {
-                control.html("");
-            });
-            return;
-        }
-
+    me.getValidationMessageCallback = function (validationMessageResponse) {
+        var control = $("#notifier");
+        control.fadeOut("slow", function () {
+            control.html(validationMessageResponse.responseText);
+            if (validationMessageResponse.responseText != "") control.fadeIn("slow");
+        });
+    };
+    me.onBeforeValidationFilterEventHandler = function (sender, eventArgs) {
+        $(sender.target).removeClass("has-error").removeClass("has-warning");
+    };
+    me.onValidationFilterEventHandler = function (sender, eventArgs) {
         $(eventArgs.Errors).each(function () {
-            errorHtml += me.parseError(this);
-        });
-        errorHtml += "</ul></div>";
-
-        control.fadeOut("fast", function () {
-            control.html(errorHtml).fadeIn("slow");
-        });
-    };
-    me.parseError = function (error) {
-        var retVal = "";
-
-        $(error.errors).each(function () {
-            retVal += "<li>";
-            retVal += this.ErrorMessage;
-            retVal += "</li>";
-        });
-
-        return retVal;
-    };
-    me.notifyBeforeValidationFilterEventHandler = function (sender, eventArgs) {
-        $(sender.target).removeClass("has-error")
-            .removeClass("has-warning");
-    };
-    me.notifyValidationFilterEventHandler = function (sender, eventArgs) {
-        var validationKey = $(sender.target).attr("data-val");
-        $(eventArgs.Errors).each(function () {
-            if (validationKey == this.key) {
+            if ($(sender.target).attr("data-val") == this.key) {
                 $(sender.target).addClass("has-error");
             }
-
-            if (this.errors != undefined && this.errors) {
-                me.notifyAdditionalValidationFilters(this.errors);
-            }
+            me.notifyAdditionalValidationFilters(this.errors);
         });
     };
     me.notifyAdditionalValidationFilters = function (additionalItems) {
+        if (this.errors == undefined || !this.errors) 
+            return;
         $(additionalItems).each(function () {
             $(this).each(function () {
-                if (this.CustomState != null)
-                    me.notifyAdditionValidationFiltersForVehicle(this.CustomState);
+                me.notifyAdditionValidationFiltersForVehicle(this.CustomState);
             });
         });
     };
     me.notifyAdditionValidationFiltersForVehicle = function (customState) {
+        if (customState == null)
+            return;
         $(customState).each(function () {
-            var selector = $("[data-val='ComparisonVehiclesToValidate[" + (this.VehicleIndex - 1) + "].ComparisonVehicle']");
-            selector.addClass("has-error");
+            $("[data-val='ComparisonVehiclesToValidate[" + (this.VehicleIndex - 1) + "].ComparisonVehicle']").addClass("has-error");
         });
     };
-    me.notifySuccessEventHandler = function (sender, eventArgs) {
-        var notifier = $("#notifier")
-
+    me.onSuccessEventHandler = function (sender, eventArgs) {
+        var html = "";
         switch (eventArgs.StatusCode) {
             case "Success":
-                notifier.html("<div class=\"alert alert-dismissible alert-success\">" + eventArgs.StatusMessage + "</div>");
+                html = "<div class=\"alert alert-dismissible alert-success\">" + eventArgs.StatusMessage + "</div>";
                 break;
             case "Warning":
-                notifier.html("<div class=\"alert alert-dismissible alert-warning\">" + eventArgs.StatusMessage + "</div>");
+                html = "<div class=\"alert alert-dismissible alert-warning\">" + eventArgs.StatusMessage + "</div>";
                 break;
             case "Failure":
-                notifier.html("<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.StatusMessage + "</div>");
+                html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.StatusMessage + "</div>";
                 break;
             case "Information":
-                notifier.html("<div class=\"alert alert-dismissible alert-info\">" + eventArgs.StatusMessage + "</div>");
+                html = "<div class=\"alert alert-dismissible alert-info\">" + eventArgs.StatusMessage + "</div>";
                 break;
             default:
                 break;
         }
-        notifier.fadeIn("slow");
+        $("notifier").html(html).fadeIn("slow");
     };
-    me.notifyVehicleLoadedFilterEventHandler = function (sender, eventArgs) {
-        var vehicleIndex = parseInt($(sender.target).attr("data-index"));
-        if (vehicleIndex != eventArgs.VehicleIndex) {
-            return;
-        };
-
-        if ($(sender.target).hasClass("vehicle-readonly")) {
-
-            if (eventArgs.Vehicle == null ||
-            eventArgs.Vehicle.VehicleId == null ||
-            eventArgs.Vehicle.VehicleId == 0) {
-                $(sender.target).hide();
-            } else {
-                $(sender.target).show();
-            }
-
-        } else {
-
-            if (eventArgs.Vehicle == null ||
-             eventArgs.Vehicle.VehicleId == null ||
-             eventArgs.Vehicle.VehicleId == 0) {
-                $(sender.target).show();
-            } else {
-                $(sender.target).hide();
-            }
-        }
-    };
-    me.notifyVehicleLoadedReadOnlyEventHandler = function (sender, eventArgs) {
-        var vehicleIndex = parseInt($(sender.target).attr("data-index"));
-        if (vehicleIndex != eventArgs.VehicleIndex) {
-            return;
-        };
-        var target = $(sender.target);
-        var vehicle = eventArgs.Vehicle;
-
-        if (vehicle != null && vehicle.VehicleId != null && vehicle.VehicleId != 0) {
-            target.show();
-
-            if (target.hasClass("vehicle-readonly-programme") && vehicleIndex == 0) {
-                target.html(vehicle.Description);
-            }
-            if (target.hasClass("vehicle-readonly-programme") && vehicleIndex > 0) {
-                target.html(vehicleIndex + ". " + vehicle.Description);
-            }
-            if (target.hasClass("vehicle-readonly-modelYear")) {
-                target.html(vehicle.ModelYear);
-            }
-            if (target.hasClass("vehicle-readonly-gateway")) {
-                target.html(vehicle.Gateway);
-            }
-        }
-        else {
-            target.hide();
-        }
-    };
-    me.notifyVehicleChangedEventHandler = function (sender, eventArgs) {
+    me.onVehicleChangedEventHandler = function (sender, eventArgs) {
         me.setVehicle(eventArgs.VehicleIndex, eventArgs.Vehicle)
         me.toggleEvent();
         me.validateForecast(getPager().getPageIndex() + 1, true);
     };
-    me.notifyVehicleDescriptionEventHandler = function (sender, eventArgs) {
+    me.onVehicleDescriptionEventHandler = function (sender, eventArgs) {
         if (eventArgs.VehicleIndex != 0) {
             return;
         }
@@ -374,32 +256,14 @@ model.Page = function (models) {
             $(sender.target).html(eventArgs.Vehicle.FullDescription);
         }
     };
-    me.notifyDown = function () {
-        //$("#notifier").fadeOut("slow").html("");
-    };
-    me.clearVehicle = function (vehicleIndex) {
-        var emptyVehicle = getVehicleModel().getEmptyVehicle();
-        me.setVehicle(vehicleIndex, emptyVehicle);
-    };
-    me.setVehicle = function (vehicleIndex, vehicle) {
-        if (vehicleIndex == 0) {
-            me.setForecastVehicle(vehicle);
-        } else {
-            me.setComparisonVehicle(vehicleIndex - 1, vehicle);
-        }
-    }
-    me.notifyErrorEventHandler = function (sender, eventArgs) {
+    me.onErrorEventHandler = function (sender, eventArgs) {
         $("#notifier").html("<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.statusText + "</div>");
     };
-    me.notifyUpdatedEventHandler = function (sender, eventArgs) {
+    me.onUpdatedEventHandler = function (sender, eventArgs) {
         $("#notifier").html("<div class=\"alert alert-dismissible alert-success\">" + eventArgs.StatusMessage + "</div>");
     };
-    me.isEventForControl = function (control, vehicleIndex) {
-        return vehicleIndex != null && vehicleIndex == parseInt(control.attr("data-index"));
-    };
-    me.notifyMakesEventHandler = function (sender, eventArgs) {
-        var control = $(this);
-        var vehicleIndex = parseInt(control.attr("data-index"));
+    me.onMakesChangedEventHandler = function (sender, eventArgs) {
+        var control = $(this), vehicleIndex = parseInt(control.attr("data-index"));
 
         if (!me.isEventForControl(control, eventArgs.VehicleIndex))
             return;
@@ -410,12 +274,8 @@ model.Page = function (models) {
             .filter(function () { return control.attr("data-index") == vehicleIndex; }).empty().attr("disabled", "disabled");
 
         $(eventArgs.Makes).each(function () {
-            $("<option />", {
-                val: this,
-                text: this
-            }).appendTo(control);
+            $("<option />", { val: this, text: this }).appendTo(control);
         });
-
         control.prepend("<option value='' selected='selected'>-- SELECT --</option>");
 
         // As the make dropdown is actually hidden, populate the programmes on load
@@ -424,9 +284,8 @@ model.Page = function (models) {
 
         $(".vehicle-filter-programme").filter(function () { $(this).attr("data-index") == vehicleIndex; }).removeAttr("disabled");
     };
-    me.notifyProgrammesEventHandler = function (sender, eventArgs) {
-        var control = $(this);
-        var vehicleIndex = parseInt($(this).attr("data-index"));
+    me.onProgrammesChangedEventHandler = function (sender, eventArgs) {
+        var control = $(this), vehicleIndex = parseInt($(this).attr("data-index"));
 
         if (!me.isEventForControl(control, eventArgs.VehicleIndex))
             return;
@@ -436,28 +295,20 @@ model.Page = function (models) {
         $(".vehicle-filter-modelYear,.vehicle-filter-gateway")
             .filter(function () { return $(this).attr("data-index") == vehicleIndex; }).empty().attr("disabled", "disabled");
 
-        // If the value of the sender is null or empty, we don't want to populate anything
-
         $(eventArgs.Programmes).each(function () {
-            $("<option />", {
-                val: this.VehicleName,
-                text: this.Description
-            }).appendTo(control);
+            $("<option />", { val: this.VehicleName, text: this.Description }).appendTo(control);
         });
-
         if (eventArgs.Programmes.length == 1) {
             control.val(eventArgs.Programmes[0].VehicleName).removeAttr("disabled");
             me.populateModelYears(vehicleIndex);
-        }
-        else {
+        } else {
             me.toggleEvent();
             control.prepend("<option value='' selected='selected'>-- SELECT --</option>").removeAttr("disabled");
         }
         me.populateVehicle(vehicleIndex);
     };
-    me.notifyModelYearsEventHandler = function (sender, eventArgs) {
-        var control = $(this);
-        var vehicleIndex = parseInt(control.attr("data-index"));
+    me.onModelYearsChangedEventHandler = function (sender, eventArgs) {
+        var control = $(this), vehicleIndex = parseInt(control.attr("data-index"));
 
         if (!me.isEventForControl(control, eventArgs.VehicleIndex))
             return;
@@ -466,32 +317,21 @@ model.Page = function (models) {
 
         $(".vehicle-filter-gateway").filter(function () { return $(this).attr("data-index") == vehicleIndex; }).empty().attr("disabled", "disabled");
 
-        //if (eventArgs.Filter.Name == null) {
-        //    return;
-        //}
-
         $(eventArgs.ModelYears).each(function () {
-            $("<option />", {
-                val: this,
-                text: this
-            }).appendTo(control);
+            $("<option />", { val: this, text: this }).appendTo(control);
         });
-
         if (eventArgs.ModelYears.length == 1) {
             control.val(eventArgs.ModelYears[0]);
             me.populateGateways(vehicleIndex);
-        }
-        else {
+        } else {
             me.toggleEvent();
             control.prepend("<option value='' selected='selected'>-- SELECT --</option>");
         }
-
         control.removeAttr("disabled");
         me.populateVehicle(vehicleIndex);
     };
-    me.notifyGatewaysEventHandler = function (sender, eventArgs) {
-        var control = $(this);
-        var vehicleIndex = parseInt(control.attr("data-index"));
+    me.onGatewaysChangedEventHandler = function (sender, eventArgs) {
+        var control = $(this), vehicleIndex = parseInt(control.attr("data-index"));
 
         if (!me.isEventForControl(control, eventArgs.VehicleIndex))
             return;
@@ -501,31 +341,23 @@ model.Page = function (models) {
         if (eventArgs.Filter.ModelYear == null) {
             return;
         }
-
         $(eventArgs.Gateways).each(function () {
-            $("<option />", {
-                val: this,
-                text: this
-            }).appendTo(control);
+            $("<option />", { val: this, text: this }).appendTo(control);
         });
-
         if (eventArgs.Gateways.length === 1) {
             control.val(eventArgs.Gateways[0]).removeAttr("disabled");
-        }
-        else {
+        } else {
             control.prepend("<option value='' selected='selected'>-- SELECT --</option>").removeAttr("disabled");
         }
         me.toggleEvent()
         me.populateVehicle(vehicleIndex);
     };
-    me.notifyTrimEventHandler = function (sender, eventArgs) {
-    };
-    me.notifyDescriptionPageChangedEventHandler = function (sender, eventArgs) {
+    me.onDescriptionPageChangedEventHandler = function (sender, eventArgs) {
         var descriptions = $(".page-description").hide().filter(function () {
             return $(this).attr("data-index") == eventArgs.PageIndex;
         }).show();
     };
-    me.notifyPageChangedEventHandler = function (sender, eventArgs) {
+    me.onPageChangedEventHandler = function (sender, eventArgs) {
         var button = $(sender.target);
         if (eventArgs.IsFirstPage && button.attr("id") == "btnPrevious") {
             button.hide();
@@ -535,24 +367,12 @@ model.Page = function (models) {
             button.show();
         }
     };
-    me.notifyPageContentChangedEventHandler = function (sender, eventArgs) {
-
-        var forecast = getForecastModel().getForecast();
-        var params = JSON.stringify({ forecast: forecast, pageIndex: eventArgs.PageIndex });
-        var pager = getPager();
-
-        pager.getPageContent(params, me.notifyPageContentChangedCallback, me)
+    me.onPageContentChangedEventHandler = function (sender, eventArgs) {
+        getPager().getPageContent(JSON.stringify({ forecast: me.getForecast(), pageIndex: eventArgs.PageIndex }), me.notifyPageContentChangedCallback, me)
     };
     me.notifyPageContentChangedCallback = function (content) {
         $("#frmContent").html(content);
         me.initialise();
-    };
-    me.resetVehicle = function (vehicleIndex, startEventChain) {
-        me.notifyDown();
-        me.clearVehicle(vehicleIndex);
-        me.resetEvent();
-        if (startEventChain == true)
-            me.toggleEvent();
     };
     me.makeChanged = function (data) {
         var vehicleIndex = parseInt($(this).attr("data-index"));
@@ -575,25 +395,22 @@ model.Page = function (models) {
         me.populateVehicle(vehicleIndex);
     };
     me.trimChanged = function (data) {
-        var control = $(this);
-        var forecast = getForecastModel();
-
-        var vehicleIndex = parseInt(control.attr("data-index"));
-        var forecastVehicleTrimId = parseInt(control.attr("data-forecast-trim"));
-        var comparisonVehicle = me.getComparisonVehicle(vehicleIndex);
-        var comparisonVehicleTrimId = null;
+        var control = $(this),
+            forecast = getForecastModel(),
+            vehicleIndex = parseInt(control.attr("data-index")),
+            forecastVehicleTrimId = parseInt(control.attr("data-forecast-trim")),
+            comparisonVehicle = me.getComparisonVehicle(vehicleIndex),
+            comparisonVehicleTrimId = null,
+            mapping = new model.TrimMapping();
 
         if (control.val() != "") {
             comparisonVehicleTrimId = parseInt(control.val());
         }
-
-        var mapping = new model.TrimMapping();
         mapping.VehicleIndex = vehicleIndex;
         mapping.ForecastVehicleTrimId = forecastVehicleTrimId;
         mapping.ComparisonVehicleTrimId = comparisonVehicleTrimId;
 
         forecast.setComparisonVehicleTrim(mapping);
-        forecast.saveForecast();
     };
     me.populateProgrammes = function (vehicleIndex) {
         getVehicleModel().getProgrammes(getVehicleFilter(vehicleIndex));
@@ -613,34 +430,25 @@ model.Page = function (models) {
         if (me.isEventCompleted())
             getVehicleModel().getVehicle(getVehicleFilter(vehicleIndex));
     };
-    me.getPageIndex = function () {
-        return privateStore[me.id].PageIndex;
-    };
-    me.setPageIndex = function (pageIndex) {
-        privateStore[me.id].PageIndex = pageIndex;
-    };
     me.saveForecast = function () {
         getForecastModel().saveForecast();
     };
     me.validateForecast = function (pageIndex, async) {
-        var forecast = getForecastModel();
         var sectionToValidate = 0;
-        if (pageIndex != null) {
-            switch (pageIndex) {
-                case 1:
-                    sectionToValidate = 1;
-                    break;
-                case 2:
-                    sectionToValidate = 3;
-                    break;
-                case 3:
-                    sectionToValidate = 4;
-                    break;
-                default:
-                    break;
-            }
+        switch (pageIndex) {
+            case 1:
+                sectionToValidate = 1;
+                break;
+            case 2:
+                sectionToValidate = 3;
+                break;
+            case 3:
+                sectionToValidate = 4;
+                break;
+            default:
+                break;
         }
-        forecast.validateForecast(sectionToValidate, async);
+        getForecastModel().validateForecast(sectionToValidate, async);
     };
     function getVehicleModel() {
         return getModel("Vehicle");
@@ -665,10 +473,8 @@ model.Page = function (models) {
         return getModel("Pager");
     };
     function getVehicleFilter(vehicleIndex) {
-        var model = getVehicleModel();
-        var filter = new FeatureDemandPlanning.Vehicle.VehicleFilter();
-        var classPrefix = ".vehicle-filter";
-        var attrFilter = "[data-index='" + vehicleIndex + "']";
+        var model = getVehicleModel(), filter = new FeatureDemandPlanning.Vehicle.VehicleFilter(),
+            classPrefix = ".vehicle-filter", attrFilter = "[data-index='" + vehicleIndex + "']";
 
         filter.Make = "";
         filter.Name = $(classPrefix + "-programme" + attrFilter).val();

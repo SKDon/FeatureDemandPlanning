@@ -32,15 +32,15 @@ namespace FeatureDemandPlanning.BusinessObjects
             }
         }
 
-        public IDictionary<ModelTrim, IList<ModelTrim>> TrimMapping
+        public IList<TrimMapping> TrimMappings
         {
             get
             {
-                return _trimMapping;
+                return _trimMappings;
             }
             set
             {
-                _trimMapping = value;
+                _trimMappings = value;
             }
         }
 
@@ -165,6 +165,6 @@ namespace FeatureDemandPlanning.BusinessObjects
         }
 
         private IEnumerable<Programme> _programmes = new List<Programme>();
-        private IDictionary<ModelTrim, IList<ModelTrim>> _trimMapping = new Dictionary<ModelTrim, IList<ModelTrim>>();
+        private IList<TrimMapping> _trimMappings = new List<TrimMapping>();
     }
 }

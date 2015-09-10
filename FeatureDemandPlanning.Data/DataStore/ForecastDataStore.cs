@@ -246,17 +246,17 @@ namespace FeatureDemandPlanning.DataStore
                                                 IDbConnection connection,
 												IDbTransaction transaction)
         {
-            foreach (var mapping in forecastToSave.TrimMapping)
-            {
-                if (mapping.ComparisonVehicleTrimId.HasValue)
-                {
-                    ForecastComparisonTrimSave(forecastToSave, mapping, connection, transaction);
-                }
-                else
-                {
-                    ForecastComparisonTrimDelete(forecastToSave, mapping, connection, transaction);
-                }
-            }
+            //foreach (var mapping in forecastToSave.TrimMappings)
+            //{
+            //    if (mapping.ComparisonVehicleTrimId.HasValue)
+            //    {
+            //        ForecastComparisonTrimSave(forecastToSave, mapping, connection, transaction);
+            //    }
+            //    else
+            //    {
+            //        ForecastComparisonTrimDelete(forecastToSave, mapping, connection, transaction);
+            //    }
+            //}
         }
 
         public void ForecastComparisonTrimSave( IForecast forecastToSave, 
@@ -271,17 +271,17 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
                     para.Add("@ForecastId", forecastToSave.ForecastId, dbType: DbType.Int32);
                     para.Add("@SystemUser", CurrentCDSID, dbType: DbType.String, size: 16);
-                    para.Add("@ForecastVehicleTrimId", mappingToSave.ForecastVehicleTrimId, dbType: DbType.Int32);
-                    para.Add("@ComparisonVehicleProgrammeId", mappingToSave.ComparisonVehicleProgrammeId, dbType: DbType.Int32);
-                    para.Add("@ComparisonVehicleTrimId", mappingToSave.ComparisonVehicleTrimId.Value, dbType: DbType.Int32);
+                    //para.Add("@ForecastVehicleTrimId", mappingToSave.ForecastVehicleTrimId, dbType: DbType.Int32);
+                    //para.Add("@ComparisonVehicleProgrammeId", mappingToSave.ComparisonVehicleProgrammeId, dbType: DbType.Int32);
+                    //para.Add("@ComparisonVehicleTrimId", mappingToSave.ComparisonVehicleTrimId.Value, dbType: DbType.Int32);
                     para.Add("@ForecastComparisonTrimId", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                     connection.Execute("Fdp_ForecastComparisonTrim_Save", para, commandType: CommandType.StoredProcedure, transaction: transaction);
 
-                    if (!mappingToSave.Id.HasValue)
-                    {
-                        mappingToSave.Id = para.Get<int>("@ForecastComparisonTrimId");
-                    }
+                    //if (!mappingToSave.Id.HasValue)
+                    //{
+                    //    mappingToSave.Id = para.Get<int>("@ForecastComparisonTrimId");
+                    //}
                 }
                 catch (SqlException sqex)
                 {
@@ -308,8 +308,8 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
                     para.Add("@ForecastId", forecastToSave.ForecastId, dbType: DbType.Int32);
                     para.Add("@SystemUser", CurrentCDSID, dbType: DbType.String, size: 16);
-                    para.Add("@ForecastVehicleTrimId", mappingToDelete.ForecastVehicleTrimId, dbType: DbType.Int32);
-                    para.Add("@ComparisonVehicleProgrammeId", mappingToDelete.ComparisonVehicleProgrammeId, dbType: DbType.Int32);
+                    //para.Add("@ForecastVehicleTrimId", mappingToDelete.ForecastVehicleTrimId, dbType: DbType.Int32);
+                    //para.Add("@ComparisonVehicleProgrammeId", mappingToDelete.ComparisonVehicleProgrammeId, dbType: DbType.Int32);
 
                     connection.Execute("Fdp_ForecastComparisonTrim_Delete", para, commandType: CommandType.StoredProcedure, transaction: transaction);
                 }

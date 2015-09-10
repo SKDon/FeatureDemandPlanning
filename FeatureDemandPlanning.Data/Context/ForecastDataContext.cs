@@ -37,7 +37,7 @@ namespace FeatureDemandPlanning.DataStore
                 throw new ArgumentException(string.Format("Forecast {0} not found", filter.ForecastId.Value));
             }
 
-            HydrateForecastAsync(forecast);           
+            //HydrateForecastAsync(forecast);           
             //HydrateVehicleProgrammeAsync(forecast.ForecastVehicle);
             //HydrateComparisonVehicleProgrammesAsync(forecast);
             //HydrateVehicleTrimLevelsAsync(forecast.ForecastVehicle);
@@ -75,7 +75,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public async Task<PagedResults<IForecast>> ListForecastsAsync(ForecastFilter filter)
         {
-            var forecasts = _forecastDataStore.ForecastGetManyAsync().Result.Select(f => HydrateForecastAsync(f).Result);
+            var forecasts = _forecastDataStore.ForecastGetManyAsync().Result.Select(f => HydrateForecast(f));
 
             return new PagedResults<IForecast>(forecasts);
         }
@@ -102,18 +102,18 @@ namespace FeatureDemandPlanning.DataStore
             throw new NotImplementedException();
         }
 
-        private async Task<IForecast> HydrateForecastAsync(IForecast forecast)
+        private IForecast HydrateForecast(IForecast forecast)
         {
-            await HydrateVehicleProgrammeAsync(forecast.ForecastVehicle);
-            await HydrateComparisonVehicleProgrammesAsync(forecast);
-            await HydrateVehicleTrimLevelsAsync(forecast.ForecastVehicle);
-            await HydrateComparisonVehicleTrimLevelsAsync(forecast);
-            await HydrateComparisonVehicleTrimMappingsAsync(forecast);
+            //await HydrateVehicleProgrammeAsync(forecast.ForecastVehicle);
+            //await HydrateComparisonVehicleProgrammesAsync(forecast);
+            //await HydrateVehicleTrimLevelsAsync(forecast.ForecastVehicle);
+            //await HydrateComparisonVehicleTrimLevelsAsync(forecast);
+            //await HydrateComparisonVehicleTrimMappingsAsync(forecast);
 
             return forecast;
         }
 
-        private async Task HydrateComparisonVehicleProgrammesAsync(IForecast forecast)
+        private void HydrateComparisonVehicleProgrammesAsync(IForecast forecast)
         {
             if (forecast.ComparisonVehicles == null || !forecast.ComparisonVehicles.Any())
                 return;
@@ -124,47 +124,26 @@ namespace FeatureDemandPlanning.DataStore
             }
         }
 
-        private async Task HydrateComparisonVehicleTrimLevelsAsync(IForecast forecast)
+        public void HydrateComparisonVehiclesTrimMappings(IForecast forecast)
         {
             if (forecast.ComparisonVehicles == null || !forecast.ComparisonVehicles.Any())
                 return;
 
             foreach (var comparisonVehicle in forecast.ComparisonVehicles)
             {
-                HydrateVehicleTrimLevelsAsync(comparisonVehicle);
+                HydrateComparisonVehicleTrimMappings(forecast, comparisonVehicle);
             }
         }
 
-        private async Task HydrateComparisonVehicleTrimMappingsAsync(IForecast forecast)
+        public void HydrateComparisonVehicleTrimMappings(IForecast forecast, IVehicle comparisonVehicle)
         {
-            var mappings = _forecastDataStore.TrimMappingGetMany(forecast.ForecastId.Value);
-            if (mappings == null || !mappings.Any())
-                return;
+            //var programme = forecast.ForecastVehicle.Programmes.First();
 
-            forecast.TrimMapping = mappings;
-
-            // We can go a step further and associate the actual details of the trim from the already loaded trim details
-            // we can then use this in any views to show loaded details
-
-            foreach (var mapping in mappings)
-            {
-                mapping.ForecastVehicleTrim = forecast.ForecastVehicle
-                                                        .ListTrimLevels()
-                                                        .Where(t => t.Id == mapping.ForecastVehicleTrimId)
-                                                        .FirstOrDefault();
-
-                var comparisonVehicle = forecast.ComparisonVehicles
-                                                .Where(c => c.ProgrammeId == mapping.ComparisonVehicleProgrammeId)
-                                                .FirstOrDefault();
-
-                if (comparisonVehicle == null) 
-                    continue;
-
-                mapping.ComparisonVehicleTrim = comparisonVehicle
-                                                    .ListTrimLevels()
-                                                    .Where(t => t.Id == mapping.ComparisonVehicleTrimId)
-                                                    .FirstOrDefault();
-            }
+            //comparisonVehicle.TrimMappings = forecast.ForecastVehicle.Programmes.AllTrims
+            //    .Select(t => new TrimMapping() {
+            //        ForecastVehicleTrim = t,
+            //        ComparisonVehicleTrimMappings = new List<ModelTrim>()
+            //    }).ToList();
         }
 
         private async Task HydrateVehicleProgrammeAsync(IVehicle vehicle)
@@ -176,7 +155,7 @@ namespace FeatureDemandPlanning.DataStore
             vehicle.Programmes = new List<Programme>() { programme };
         }
 
-        private async Task HydrateVehicleTrimLevelsAsync(IVehicle vehicle)
+        private void HydrateVehicleTrimLevelsAsync(IVehicle vehicle)
         {
             if (vehicle == null || vehicle is EmptyVehicle || !vehicle.ProgrammeId.HasValue)
                 return;

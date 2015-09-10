@@ -170,6 +170,9 @@
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\MarketController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\ValidationError.cs" />
+    <Compile Include="Controllers\ValidationErrorItem.cs" />
+    <Compile Include="Controllers\ValidationMessage.cs" />
     <Compile Include="Controllers\VehicleController.cs" />
     <Compile Include="Helpers\HtmlHelperExtensions.cs" />
     <Compile Include="Models\AdminViewModel.cs" />
@@ -633,6 +636,7 @@
     <Content Include="Views\Forecast\_Pager.cshtml" />
     <Content Include="Views\Forecast\_ForecastPages.cshtml" />
     <Content Include="Views\Forecast\_ForecastTrimSelect.cshtml" />
+    <Content Include="Views\Forecast\_ValidationMessage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
