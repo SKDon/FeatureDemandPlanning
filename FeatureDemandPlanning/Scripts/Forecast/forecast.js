@@ -22,6 +22,7 @@ model.Forecast = function (params) {
     privateStore[me.id].SaveForecastUri = params.SaveForecastUri;
     privateStore[me.id].ValidateForecastUri = params.ValidateForecastUri;
     privateStore[me.id].ValidationMessageUri = params.ValidationMessageUri;
+    privateStore[me.id].TrimSelectUri = params.TrimSelectUri;
     privateStore[me.id].TrimMapping = params.TrimMapping;
     privateStore[me.id].IsValid = true;
 
@@ -39,6 +40,9 @@ model.Forecast = function (params) {
     };
     me.getValidationMessageUri = function () {
         return privateStore[me.id].ValidationMessageUri;
+    };
+    me.getTrimSelectUri = function () {
+        return privateStore[me.id].TrimSelectUri;
     };
     me.setComparisonVehicle = function (vehicleIndex, comparisonVehicle) {
         if (privateStore[me.id].ComparisonVehicles.length > vehicleIndex) {
@@ -133,7 +137,7 @@ model.Forecast = function (params) {
 
         $.ajax({
             url: me.getValidateForecastUri(),
-            type: "POST",
+            method: "POST",
             async: isAsync != undefined ? isAsync : false, // Need to validate before we are allowed to do anything else
             dataType: "json",
             contentType: "application/json; charset=utf-8",
@@ -147,7 +151,6 @@ model.Forecast = function (params) {
     };
 
     function saveForecastCallback(response) {
-
         $(document).trigger("Updated", response);
     };
 

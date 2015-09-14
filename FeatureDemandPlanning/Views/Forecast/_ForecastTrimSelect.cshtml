@@ -7,23 +7,33 @@
 @model FeatureDemandPlanning.Models.ForecastComparisonViewModel
 
 @{
-    var currentVehicle = (VehicleWithIndex)ViewData["CurrentVehicle"];
-    var forecastTrim = (ModelTrim)ViewData["ForecastTrim"];
+    var comparisonVehicle = (VehicleWithIndex)ViewData["ComparisonVehicle"];
+    var forecastTrimLevel = (ModelTrim)ViewData["ForecastTrim"];
+    var currentTrimMappings = comparisonVehicle.Vehicle.TrimMappings.Where(t => t.ForecastVehicleTrim.Id == forecastTrimLevel.Id);
 
-    if (!Model.ComparisonVehicleLookup[currentVehicle.VehicleIndex - 1].TrimLevels.Any())
+    if (!Model.ComparisonVehicleLookup[comparisonVehicle.VehicleIndex - 1].TrimLevels.Any())
     {
-        <div title="No trim levels available for comparison vehicle">N/A</div>
+        <div>No trim levels available for comparison vehicle</div>
     }
     else
     {
-       @Html.DropDownListForExtended(m => m.NonEmptyComparisonVehicles,
-                                        Model.ComparisonVehicleLookup[currentVehicle.VehicleIndex - 1].TrimLevels,
+        <div>Select one or more more trim levels from the comparison vehicle that map to the forecast vehicle trim level <strong>(@forecastTrimLevel.Name)</strong></div>
+        <div class="vertical-spacer"></div>
+        <div class="center-block">
+        @Html.DropDownListForExtended(m => m.NonEmptyComparisonVehicles,
+                                        Model.ComparisonVehicleLookup[comparisonVehicle.VehicleIndex - 1].TrimLevels,
                                         new
                                         {
                                             @class = "vehicle-filter vehicle-filter-trim",
-                                            @data_index = currentVehicle.VehicleIndex.ToString(),
-                                            @data_forecast_trim = forecastTrim.Id.ToString()
+                                            @data_index = comparisonVehicle.VehicleIndex.ToString(),
+                                            @data_forecast_trim = forecastTrimLevel.Id.ToString(),
+                                            @id = "ddlTrimMapping"
                                         },
-                                        m => true);
+                                        m => true)
+            <button type="button" class="btn btn-sm btn-default">Add Mapping</button>
+        </div>
     }
 }
+<div id="configuredMappings">
+    @Html.Partial("_ForecastTrimMapping", Model)
+</div>

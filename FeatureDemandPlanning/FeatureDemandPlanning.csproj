@@ -554,6 +554,8 @@
     <Content Include="Scripts\Admin\model.js" />
     <Content Include="Scripts\Forecast\forecastcomparisonpage.js" />
     <Content Include="Scripts\Forecast\init.js" />
+    <Content Include="Scripts\Forecast\trimmapping.js" />
+    <Content Include="Scripts\Shared\modal.js" />
     <Content Include="Scripts\Shared\pager.js" />
     <Content Include="Scripts\Shared\vehicle.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -637,6 +639,8 @@
     <Content Include="Views\Forecast\_ForecastPages.cshtml" />
     <Content Include="Views\Forecast\_ForecastTrimSelect.cshtml" />
     <Content Include="Views\Forecast\_ValidationMessage.cshtml" />
+    <Content Include="Views\Forecast\_Modal.cshtml" />
+    <Content Include="Views\Forecast\_ForecastTrimMapping.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

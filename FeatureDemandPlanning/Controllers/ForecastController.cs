@@ -57,10 +57,11 @@ namespace FeatureDemandPlanning.Controllers
 			return PartialView(view, GetFullAndPartialForecastComparisonViewModel(forecast));
 		}
 
-		[HttpPost]
+		
 		public ActionResult ValidationMessage(ValidationMessage message)
 		{
-			return PartialView("_ValidationMessage", message);
+			// Something is making a GET request to this page and I can't figure out what
+            return PartialView("_ValidationMessage", message);
 		}
 
 		[HttpGet]
@@ -89,6 +90,46 @@ namespace FeatureDemandPlanning.Controllers
 
 			return View("ForecastComparison", forecastComparisonModel);
 		}
+
+        [HttpPost]
+        public ActionResult ForecastTrimSelect( Forecast forecast, 
+                                                int vehicleIndex, 
+                                                int forecastTrimId)
+        {
+            var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecast);
+
+            ViewBag.ComparisonVehicle = forecastComparisonModel
+                .NonEmptyComparisonVehicles
+                .Where(v => v.VehicleIndex == vehicleIndex)
+                .First();
+
+            ViewBag.ForecastTrim = forecastComparisonModel.Forecast.ForecastVehicle.TrimMappings
+                .Where(t => t.ForecastVehicleTrim.Id == forecastTrimId)
+                .Select(t => t.ForecastVehicleTrim)
+                .First();
+
+            return PartialView("_ForecastTrimSelect", forecastComparisonModel);
+        }
+
+        [HttpPost]
+        public ActionResult ForecastTrimMapping(Forecast forecast,
+                                                int vehicleIndex,
+                                                int forecastTrimId)
+        {
+            var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecast);
+
+            ViewBag.ComparisonVehicle = forecastComparisonModel
+                .NonEmptyComparisonVehicles
+                .Where(v => v.VehicleIndex == vehicleIndex)
+                .First();
+
+            ViewBag.ForecastTrim = forecastComparisonModel.Forecast.ForecastVehicle.TrimMappings
+                .Where(t => t.ForecastVehicleTrim.Id == forecastTrimId)
+                .Select(t => t.ForecastVehicleTrim)
+                .First();
+
+            return PartialView("_ForecastTrimMapping", forecastComparisonModel);
+        }
 
 		[HttpPost]
 		public ActionResult ValidateForecast(Forecast forecastToValidate, 
