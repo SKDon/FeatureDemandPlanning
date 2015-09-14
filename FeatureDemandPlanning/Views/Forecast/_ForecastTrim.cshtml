@@ -54,11 +54,21 @@
                             @foreach (var trimMapping in Model.Forecast.ForecastVehicle.TrimMappings)
                             {
                                 <td class="text-center">
-                                    <a href="#" data-toggle="modal" data-target="#modal">
-                                        Select Trim
+                                    <a href="#" class="forecast-trim-link" data-index="@comparisonVehicle.VehicleIndex " data-forecast-trim-id=" @trimMapping.ForecastVehicleTrim.Id ">
+                                    @{
+                                        var trimText = "Select...";
+
+                                        if(trimMapping.ComparisonVehicleTrimMappings.Count() == 1)
+                                        {
+                                            trimText = trimMapping.ComparisonVehicleTrimMappings.First().Abbreviation;
+                                        }
+                                        else if (trimMapping.ComparisonVehicleTrimMappings.Count() > 1)
+                                        {
+                                            trimText = trimMapping.ComparisonVehicleTrimMappings.ToCommaSeperatedList();
+                                        }
+                                    }
+                                    @trimText
                                     </a>
-                                    @*<a class="forecast-trim-link" href="#" data-index="@(comparisonVehicle.VehicleIndex)" data-forecast-trim="@(trimMapping.ForecastVehicleTrim.Id)">Select Trim</a>*@
-                                    @*@Html.Partial("_ForecastTrimSelect", Model, new ViewDataDictionary { { "CurrentVehicle", comparisonVehicle }, { "ForecastTrim", forecastTrim } })*@
                                 </td>
                             }
                         </tr>

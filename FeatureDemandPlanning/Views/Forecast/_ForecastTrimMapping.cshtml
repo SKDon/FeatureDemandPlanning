@@ -1,0 +1,24 @@
+﻿@using FeatureDemandPlanning.BusinessObjects;
+@using FeatureDemandPlanning.BusinessObjects.Validators;
+@using FeatureDemandPlanning.Extensions;
+@using FeatureDemandPlanning.Helpers
+@using enums = FeatureDemandPlanning.Enumerations;
+
+@model FeatureDemandPlanning.Models.ForecastComparisonViewModel
+
+@{
+    var comparisonVehicle = (VehicleWithIndex)ViewData["ComparisonVehicle"];
+    var forecastTrimLevel = (ModelTrim)ViewData["ForecastTrim"];
+    var configuredMappings = comparisonVehicle.Vehicle.TrimMappings.Where(m => m.ForecastVehicleTrim.Id == forecastTrimLevel.Id).First().ComparisonVehicleTrimMappings;
+    if (configuredMappings.Any())
+    {
+        <div class="vertical-spacer"></div>
+        <h4>Configured Mappings:</h4>
+        <ul>
+            @foreach (var mapping in configuredMappings)
+            {
+                <li>@mapping.Name</li>
+            }
+        </ul>
+    }
+}

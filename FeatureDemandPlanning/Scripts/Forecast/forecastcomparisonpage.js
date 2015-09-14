@@ -91,7 +91,9 @@ model.Page = function (models) {
             .unbind("PageChanged").on("PageChanged", function (sender, eventArgs) { $(".subscribers-notifyPageChanged").trigger("OnPageChangedDelegate", [eventArgs]); })
             .unbind("FirstPage").on("FirstPage", function (sender, eventArgs) { $(".subscribers-notifyFirstPage").trigger("OnFirstPageDelegate", [eventArgs]); })
             .unbind("LastPage").on("LastPage", function (sender, eventArgs) { $(".subscribers-notifyLastPage").trigger("OnLastPageDelegate", [eventArgs]); })
-            .unbind("Validation").on("Validation", function (sender, eventArgs) { $(".subscribers-notifyValidation").trigger("OnValidationDelegate", [eventArgs]); });
+            .unbind("Validation").on("Validation", function (sender, eventArgs) { $(".subscribers-notifyValidation").trigger("OnValidationDelegate", [eventArgs]); })
+            .unbind("hide.bs.modal").on("hide.bs.modal", function (sender, eventArgs) { $(".subscribers-notifyModal").trigger("OnHideModal", [eventArgs]); })
+            .unbind("TrimMappingChanged").on("TrimMappingChanged", function (sender, eventArgs) { $(".subscribers-notifyTrimMappingChanged").trigger("OnTrimMappingChangedDelegate", [eventArgs]); });
     };
     me.registerSubscribers = function () {
         // The #notifier displays status changed message, therefore it makes sense for it to listen to status
@@ -155,7 +157,8 @@ model.Page = function (models) {
         $("#btnNext").unbind("click").on("click", me.nextPage);
         $("#btnPrevious").unbind("click").on("click", me.previousPage);
 
-        $(".forecast-trim-link").unbind("click").on("click", me.onForecastTrimClickedEventHandler)
+        $(".forecast-trim-link").unbind("click").on("click", me.onForecastTrimClickedEventHandler);
+        $(".modal-listener").unbind("OnHideModal").on("OnHideModal", me.onModalEventHandler);
     };
     me.nextPage = function (sender, eventArgs) {
         getPager().nextPage();
@@ -171,28 +174,48 @@ model.Page = function (models) {
         eventArgs.Cancel = !getForecastModel().isValid();
     };
     me.onForecastTrimClickedEventHandler = function (sender, eventArgs) {
-
+        getModal().showModal({
+            title: "Trim Mapping",
+            uri: getForecastModel().getTrimSelectUri(),
+            data: JSON.stringify({
+                forecast: me.getForecast(),
+                vehicleIndex: $(sender.target).attr("data-index"),
+                forecastTrimId: $(sender.target).attr("data-forecast-trim-id")
+            }),
+            modalModel: getTrimMapping()
+        });
+    };
+    me.onModalEventHandler = function (sender, eventArgs) {
+        alert(eventArgs);
     };
     me.onValidationEventHandler = function (sender, eventArgs) {
         me.getValidationMessage(eventArgs);
     };
     me.getValidationMessage = function (validationResults) {
         $.ajax({
-            type: "POST",
+            method: "POST",
             url: getForecastModel().getValidationMessageUri(),
             data: JSON.stringify(validationResults),
             context: this,
             contentType: "application/json",
-            complete: me.getValidationMessageCallback,
+            success: me.getValidationMessageCallback,
+            error: me.getValidationMessageError,
             async: true
         });
     };
-    me.getValidationMessageCallback = function (validationMessageResponse) {
+    me.getValidationMessageCallback = function (response, textStatus, jqXHR) {
         var control = $("#notifier");
+        var html = "";
+        if (response != "") {
+            html = response;
+        }
         control.fadeOut("slow", function () {
-            control.html(validationMessageResponse.responseText);
-            if (validationMessageResponse.responseText != "") control.fadeIn("slow");
+            control.html(html);
+            if (html != "") control.fadeIn("slow");
         });
+    };
+    me.getValidationMessageError = function (jqXHR, textStatus, errorThrown) {
+        console.log("Validate: " + errorThrown);
     };
     me.onBeforeValidationFilterEventHandler = function (sender, eventArgs) {
         $(sender.target).removeClass("has-error").removeClass("has-warning");
@@ -469,8 +492,14 @@ model.Page = function (models) {
         });
         return model;
     };
+    function getModal() {
+        return getModel("Modal");
+    };
     function getPager() {
         return getModel("Pager");
+    };
+    function getTrimMapping() {
+        return getModel("TrimMapping");
     };
     function getVehicleFilter(vehicleIndex) {
         var model = getVehicleModel(), filter = new FeatureDemandPlanning.Vehicle.VehicleFilter(),

@@ -9,5 +9,11 @@ namespace FeatureDemandPlanning.Controllers
     {
         public bool IsValid { get; set; }
         public List<ValidationError> Errors { get; set; }
+
+        public ValidationMessage()
+        {
+            IsValid = true;
+            Errors = Enumerable.Empty<ValidationError>().ToList();
+        }
     }
 }

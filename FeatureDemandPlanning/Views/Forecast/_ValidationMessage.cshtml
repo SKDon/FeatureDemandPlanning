@@ -1,6 +1,6 @@
 ﻿@model FeatureDemandPlanning.Controllers.ValidationMessage
 
-@if (!Model.IsValid) { 
+@if (Model != null && !Model.IsValid) { 
 <div class="alert alert-dismissible alert-warning">
     @foreach (var error in Model.Errors)
     {

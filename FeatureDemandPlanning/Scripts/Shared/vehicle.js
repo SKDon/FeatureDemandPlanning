@@ -88,36 +88,29 @@ model.Vehicle = function (params) {
             error: genericErrorCallback
         });
     }
-
     function getConfiguration() {
         return privateStore[me.id].Config;
     }
-
     function getMakesCallback(response) {
         setFilteredVehicleDetailsFromResponse(response);
         $(document).trigger("MakesChanged", response);
     };
-
     function getProgrammesCallback(response) {
         setFilteredVehicleDetailsFromResponse(response);
         $(document).trigger("ProgrammesChanged", response);
     };
-
     function getModelYearsCallback(response) {
         setFilteredVehicleDetailsFromResponse(response);
         $(document).trigger("ModelYearsChanged", response);
     };
-
     function getGatewaysCallback(response) {
         setFilteredVehicleDetailsFromResponse(response);
         $(document).trigger("GatewaysChanged", response);
     };
-
     function getDerivativeCodesCallback(response) {
         setFilteredVehicleDetailsFromResponse(response);
         $(document).trigger("DerivativeCodesChanged", response);
     };
-
     function getVehicleCallback(response) {
         var vehicle = null;
         if (response.AvailableVehicles.length > 0) {
@@ -125,21 +118,18 @@ model.Vehicle = function (params) {
             // If we have full information in the vehicle, validation goes wrong
             vehicle = response.AvailableVehicles[0];
         }
-
         if (response.AvailableVehicles.length > 1) {
             vehicle.Name = response.Filter.Name;
             vehicle.ModelYear = response.Filter.ModelYear;
             vehicle.Gateway = response.Filter.Gateway;
         }
-
         $(document).trigger("VehicleChanged",
             {
                 VehicleIndex: response.VehicleIndex,
                 Vehicle: vehicle,
                 MultipleResults: response.AvailableVehicles.length > 1
             });
-    }
-
+    };
     function setFilteredVehicleDetailsFromResponse(response) {
         privateStore[me.id].Config = response.Configuration;
         privateStore[me.id].Makes = response.Makes;
@@ -148,11 +138,8 @@ model.Vehicle = function (params) {
         privateStore[me.id].Gateways = response.Gateways;
         privateStore[me.id].DerivativeCodes = response.DerivativeCodes;
     };
-
     function genericErrorCallback(response) {
         privateStore[me.id].Config = response.Configuration;
         $(document).trigger("Error", response);
     };
-
-
 }

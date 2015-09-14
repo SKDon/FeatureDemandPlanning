@@ -137,7 +137,7 @@ namespace FeatureDemandPlanning.Models
             var trimLevels = _lookupVehicle.Programmes.First()
                 .AllTrims.Select(t => new SelectListItem()
             {
-                Text = t.Abbreviation,
+                Text = t.Name,
                 Value = t.Id.ToString()
             }).ToList();
 
