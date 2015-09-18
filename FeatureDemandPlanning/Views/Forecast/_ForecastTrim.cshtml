@@ -15,67 +15,96 @@
 
         <div class="panel-body">
 
-            <table class="table table-striped table-bordered table-responsive dataTable">
-                <thead>
-                    <tr>
-                        <th colspan="2">
-                            <p>Vehicle</p>
-                        </th>
-                        <th colspan="@(Model.Forecast.ForecastVehicle.TrimMappings.Count())"><p class="text-center">Level</p></th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <p>@Model.Forecast.ForecastVehicle.Description</p>
-                        </th>
-                        <th>
-                            <p class="text-center">@Model.Forecast.ForecastVehicle.ModelYear</p>
-                        </th>
-                        @foreach (var trimMapping in Model.Forecast.ForecastVehicle.TrimMappings)
-                        {
-                            <th>
-                                <div class="text-center">
-                                    <p>@trimMapping.ForecastVehicleTrim.Abbreviation</p>
-                                    @if (!string.IsNullOrEmpty(trimMapping.ForecastVehicleTrim.DPCK))
-                                    {
-                                        <small>(@trimMapping.ForecastVehicleTrim.DPCK)</small>
-                                    }
-                                </div>
-                            </th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var comparisonVehicle in Model.NonEmptyComparisonVehicles)
-                    {
-                        <tr>
-                            <td>@(comparisonVehicle.VehicleIndex). @comparisonVehicle.Vehicle.Description</td>
-                            <td class="dataTable-vertical-seperator"><p class="text-center">@comparisonVehicle.Vehicle.ModelYear</p></td>
+            <!-- Placeholder for fixed columns for scrollable table -->
+            <div id="scrollerFixed">
+            </div>
 
+            <!-- Scrollable table scrolls horizontally if content too large for panel -->
+            <div id="scroller" class="default-skin subscribers-notifyResize">    
+            <table class="table table-striped table-bordered table-responsive dataTable">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                <div class="text-center-insets">Car Line</div>
+                            </th>
+                            <th class="text-center">
+                                <div class="text-center-insets">Model Year</div>
+</th>
+                            <th class="text-center" colspan="@(Model.Forecast.ForecastVehicle.TrimMappings.Count())"><div class="text-center-insets">Trim Levels</div></th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <div>@Model.Forecast.ForecastVehicle.Description</div>
+                            </th>
+                            <th>
+                                <div class="text-center">@Model.Forecast.ForecastVehicle.ModelYear</div>
+                            </th>
                             @foreach (var trimMapping in Model.Forecast.ForecastVehicle.TrimMappings)
                             {
-                                <td class="text-center">
-                                    <a href="#" class="forecast-trim-link" data-index="@comparisonVehicle.VehicleIndex " data-forecast-trim-id=" @trimMapping.ForecastVehicleTrim.Id ">
-                                    @{
-                                        var trimText = "Select...";
-
-                                        if(trimMapping.ComparisonVehicleTrimMappings.Count() == 1)
+                                <th>
+                                    <div class="text-center">
+                                        <p>@trimMapping.ForecastVehicleTrim.Name</p>
+                                        @if (!string.IsNullOrEmpty(trimMapping.ForecastVehicleTrim.DPCK))
                                         {
-                                            trimText = trimMapping.ComparisonVehicleTrimMappings.First().Abbreviation;
+                                            <small>(@trimMapping.ForecastVehicleTrim.DPCK)</small>
                                         }
-                                        else if (trimMapping.ComparisonVehicleTrimMappings.Count() > 1)
-                                        {
-                                            trimText = trimMapping.ComparisonVehicleTrimMappings.ToCommaSeperatedList();
-                                        }
-                                    }
-                                    @trimText
-                                    </a>
-                                </td>
+                                    </div>
+                                </th>
                             }
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var comparisonVehicle in Model.NonEmptyComparisonVehicles)
+                        {
+                            <tr>
+                                <td class="text-left">@(comparisonVehicle.VehicleIndex). @comparisonVehicle.Vehicle.Description</td>
+                                <td class="text-center"><div class="text-center-insets">@comparisonVehicle.Vehicle.ModelYear</div></td>
 
+                                @foreach (var trimMapping in Model.Forecast.ForecastVehicle.TrimMappings)
+                                {
+                                    var configuredMappings = Enumerable.Empty<ModelTrim>();
+                                    if (comparisonVehicle.Vehicle.TrimMappings != null && comparisonVehicle.Vehicle.TrimMappings.Any())
+                                    {
+                                        var matchingMappings = comparisonVehicle.Vehicle.TrimMappings
+                                            .Where(m => m.ForecastVehicleTrim.Id == trimMapping.ForecastVehicleTrim.Id)
+                                            .FirstOrDefault();
+                                        if (matchingMappings != null)
+                                        {
+                                            configuredMappings = matchingMappings.ComparisonVehicleTrimMappings;
+                                        }
+                                    }
+                                    <td class="text-center">
+                                        @if (comparisonVehicle.Vehicle.TrimMappings != null && comparisonVehicle.Vehicle.TrimMappings.Any())
+                                        {
+                                            <div class="text-center-insets">
+                                                <a href="#" class="forecast-trim-link modal-listener subscribers-notifyTrimMappingChanged" data-index="@comparisonVehicle.VehicleIndex" data-forecast-trim-id="@trimMapping.ForecastVehicleTrim.Id">
+                                                    @{
+                                            if (configuredMappings.Any())
+                                            {
+                                                @configuredMappings.ToCommaSeperatedList();
+                                            }
+                                            else
+                                            {
+                                                <div title="No mappings configured" data-index="@comparisonVehicle.VehicleIndex" data-forecast-trim-id="@trimMapping.ForecastVehicleTrim.Id">-</div>
+                                            }
+                                                    }
+                                                </a>
+                                            </div>
+                                            <div class="forecast-trim-link triangle" data-index="@comparisonVehicle.VehicleIndex" data-forecast-trim-id="@trimMapping.ForecastVehicleTrim.Id"></div>
+                                            <i class="forecast-trim-link glyphicon glyphicon-pencil pencil" data-index="@comparisonVehicle.VehicleIndex" data-forecast-trim-id="@trimMapping.ForecastVehicleTrim.Id"></i>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center-insets" title="No trim levels available for comparison vehicle">N/A</div>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
     </div>
+
+</div>
 </div>

@@ -23,8 +23,8 @@ namespace FeatureDemandPlanning.Models
             : base(dataContext)
         {
             Configuration = dataContext.ConfigurationSettings;
-            ForecastVehicleLookup = new Lookup(dataContext);
-            ComparisonVehicleLookup = new List<Lookup>();
+            //ForecastVehicleLookup = new Lookup(dataContext);
+            //ComparisonVehicleLookup = new List<Lookup>();
         }
 
         #endregion
@@ -168,7 +168,10 @@ namespace FeatureDemandPlanning.Models
 
         private IVehicle InitialiseVehicle(IVehicle vehicle)
         {
-            return this.DataContext.Vehicle.GetVehicle(VehicleFilter.FromVehicle(vehicle));
+            var returnValue = this.DataContext.Vehicle.GetVehicle(VehicleFilter.FromVehicle(vehicle));
+            returnValue.TrimMappings = vehicle.TrimMappings;
+
+            return returnValue;
         }
 
         #endregion

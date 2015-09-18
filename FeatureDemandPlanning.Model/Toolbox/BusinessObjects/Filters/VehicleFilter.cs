@@ -17,6 +17,7 @@ namespace FeatureDemandPlanning.BusinessObjects.Filters
             {
                 ProgrammeId = vehicle.ProgrammeId,
                 VehicleId = vehicle.VehicleId,
+                Code = vehicle.Code,
                 Make = vehicle.Make,
                 ModelYear = vehicle.ModelYear,
                 Gateway = vehicle.Gateway

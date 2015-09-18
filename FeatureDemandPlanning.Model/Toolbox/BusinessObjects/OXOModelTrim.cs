@@ -29,11 +29,15 @@ namespace FeatureDemandPlanning.BusinessObjects
             var sb = new StringBuilder();
             foreach (var trim in trimList)
             {
-                sb.Append(trim);
+                sb.Append(trim.Name);
                 sb.Append(", ");
             }
             var result = sb.ToString();
-            return result.Take(result.Length - 2).ToString();
+            if (result.Length > 0)
+            {
+                result = result.Substring(0, result.Length - 2);
+            }
+            return result;
         }
     }
 }

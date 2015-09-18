@@ -5,7 +5,7 @@
 @model FeatureDemandPlanning.Models.ForecastComparisonViewModel
 
 <div class="row subscribers-notifyFilterComplete" data-index="0">
-    <div class="col-lg-8">
+    <div class="col-lg-12">
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <div class="panel-title">Forecast Vehicle</div>
@@ -25,7 +25,7 @@
                                 @data_index = "0"
                             },
                             m => true)
-                        <label class="control-label inverse" for="ddlProgramme">Vehicle</label>
+                        <label class="control-label inverse" for="ddlProgramme">Car Line</label>
                         @Html.DropDownListForExtended(m => m.Forecast.ForecastVehicle.Code, Model.ForecastVehicleLookup.Programmes,
                             new
                             {

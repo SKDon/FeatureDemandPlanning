@@ -131,7 +131,7 @@ namespace FeatureDemandPlanning.Models
 
         public IEnumerable<SelectListItem> ListTrimLevels()
         {
-            if (_lookupVehicle is EmptyVehicle)
+            if (_lookupVehicle is EmptyVehicle || !_lookupVehicle.Programmes.Any())
                 return Enumerable.Empty<SelectListItem>();
 
             var trimLevels = _lookupVehicle.Programmes.First()
@@ -162,14 +162,11 @@ namespace FeatureDemandPlanning.Models
         {
             _lookupVehicle = dataContext.Vehicle.GetVehicle(VehicleFilter.FromVehicle(lookupVehicle));
 
-            //if (!(lookupVehicle is EmptyVehicle))
-            //{
-                Makes = ListMakes();
-                Programmes = ListProgrammes();
-                ModelYears = ListModelYears();
-                Gateways = ListGateways();
-                TrimLevels = ListTrimLevels();
-            //}
+            Makes = ListMakes();
+            Programmes = ListProgrammes();
+            ModelYears = ListModelYears();
+            Gateways = ListGateways();
+            TrimLevels = ListTrimLevels();
         }
 
         private void AppendDefaultItem(IList<SelectListItem> selectList)

@@ -17,10 +17,13 @@
     }
     else
     {
-        <div>Select one or more more trim levels from the comparison vehicle that map to the forecast vehicle trim level <strong>(@forecastTrimLevel.Name)</strong></div>
-        <div class="vertical-spacer"></div>
-        <div class="center-block">
-        @Html.DropDownListForExtended(m => m.NonEmptyComparisonVehicles,
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Available Mappings
+            </div>
+            @*Select one or more more trim levels from the comparison vehicle that map to the forecast vehicle trim level <strong>(@forecastTrimLevel.Name)</strong></div>*@
+            <div class="panel-body">
+                @Html.DropDownListForExtended(m => m.NonEmptyComparisonVehicles,
                                         Model.ComparisonVehicleLookup[comparisonVehicle.VehicleIndex - 1].TrimLevels,
                                         new
                                         {
@@ -30,10 +33,11 @@
                                             @id = "ddlTrimMapping"
                                         },
                                         m => true)
-            <button type="button" class="btn btn-sm btn-default">Add Mapping</button>
+                <button type="button" id="btnAddMapping" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-plus"></i> Add Mapping</button>
+            </div>
         </div>
     }
 }
-<div id="configuredMappings">
+<div id="configuredMappings" class="subscribers-notifyTrimMappingAdded subscribers-notifyTrimMappingRemoved">
     @Html.Partial("_ForecastTrimMapping", Model)
 </div>

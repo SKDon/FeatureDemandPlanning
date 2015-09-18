@@ -2,6 +2,16 @@
     /*padding-bottom: 20px;*/
     padding-top:80px;
     background-color: #061639;
+    color: #2e4372;
+}
+
+a {
+    color: #2e4372;
+}
+
+a:hover {
+    color: #887cb0;
+    text-decoration: none;
 }
 
 .banner {
@@ -326,10 +336,15 @@ textarea {
     color: #fff;
 }
 
-.table-striped > tbody > tr:nth-of-type(2n+1) {
-    background-color: #4e638e;
-    color: #fff;
+.table-striped > tbody > tr:nth-child(2n+1) a { 
+    color: #fff; 
 }
+
+.table-striped > tbody > tr:nth-child(2n+1) a:hover { 
+    color: #887cb0;
+    text-decoration:none; 
+}
+
 
 .table-striped > tbody > tr > td {
     border-right: 1px solid #7788aa;
@@ -348,7 +363,6 @@ textarea {
 }
 
 .vehicle-filter {
-    color: #666666;
     font-size: 0.8em;
     width:auto;
 }
@@ -385,4 +399,103 @@ select
     position:relative;
     top:50%;
     transform: translateY(-50%);
+}
+
+.triangle {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 25px 25px;
+    border-color: transparent transparent #261758;
+    position:absolute;
+    bottom:0;
+    right:0;
+    cursor:pointer;
+}
+
+.pencil {
+    position:absolute;
+    bottom:2px;
+    right:2px;
+    top:unset;
+    cursor:pointer;
+    color:#fff;
+}
+
+div.text-center-insets {
+    padding:8px;
+}
+
+.text-center {
+    position:relative;
+    padding:0px;
+}
+
+#scrollerFixed .table.fixedTable {
+    width: auto;
+    position: absolute;
+    z-index: 10;
+    /* below styles are specific for borderd Bootstrap tables
+       to remove rounded corners on cloned table */
+    -webkit-border-top-right-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+       -moz-border-radius-topright: 0px;
+       -moz-border-radius-bottomright: 0px;
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+}
+
+#scrollerFixed .table.fixedTable > thead {
+    background-image: linear-gradient(to left, #261758, #403075 66%, #605292);
+}
+
+#scrollerFixed .table.fixedTable > tbody > tr:nth-of-type(2n+1) {
+    background-color: #605292;
+    color: #fff;
+}
+
+#scrollerFixed .table.fixedTable > tbody > tr > td {
+    border-right: 1px solid #887cb0;
+}
+
+#scrollerFixed .table.fixedTable > thead > tr > th {
+    border-right: 1px solid #887cb0;
+}
+
+#scrollerFixed .table.fixedTable > thead > tr > th:first-of-type {
+    border-left: 1px solid #887cb0;
+}
+
+#scrollerFixed .table.fixedTable > thead > tr:last-of-type > th {
+    border-bottom: 1px solid #887cb0;
+}
+
+#scroller {
+    width: 98%;
+}
+
+#scroller .table.fixedTable {
+    width: auto;
+    position: absolute;
+    z-index: 10;
+    /* below styles are specific for borderd Bootstrap tables
+       to remove rounded corners on cloned table */
+    -webkit-border-top-right-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+       -moz-border-radius-topright: 0px;
+       -moz-border-radius-bottomright: 0px;
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+}
+
+.mCS-inset-3.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
+    background-color: rgba(6, 22, 57, 0.75) !important;
+}
+
+.mCS-inset-3.mCSB_scrollTools .mCSB_draggerRail {
+    background-color: rgba(119, 136, 170, 0.6) !important; 
+}
+
+.form-control {
+    color: #2e4372;
 }

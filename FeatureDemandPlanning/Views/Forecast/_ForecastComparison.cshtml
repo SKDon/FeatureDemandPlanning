@@ -3,7 +3,7 @@
 
 @model FeatureDemandPlanning.Models.ForecastComparisonViewModel
 
-<div class="col-lg-8" data-index="1">
+<div class="col-lg-12" data-index="1">
     <div class="panel panel-primary">
 
         <div class="panel-heading">
@@ -46,16 +46,12 @@
                                     @class = "form-control subscribers-notifyModelYears vehicle-filter vehicle-filter-modelYear",
                                     @data_index = (i + 1).ToString()
                                 })
-
-                            @*<select id="ddlComparisonModelYear@(i)"
-                                    class="form-control subscribers-notifyModelYears vehicle-filter vehicle-filter-modelYear"
-                                    data-index="@(i)"></select>*@
                         </div>
 
                     </div>
                     <div class="row subscribers-notifyVehicle vehicle-readonly" data-index="@(i+1)" style="display:none">
                         <div class="col-lg-5 col-lg-offset-1">
-                            <label class="control-label inverse" for="lblComparisonProgramme@(i)">Comparison Vehicle #@(i+1)</label>
+                            <label class="control-label inverse" for="lblComparisonProgramme@(i)">Comparison Car Line #@(i+1)</label>
 
                             <p id="lblComparisonProgramme@(i)" class="subscribers-notifyVehicle vehicle-readonly vehicle-readonly-programme" data-index="@(i)"></p>
                         </div>

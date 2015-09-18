@@ -5,7 +5,7 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
 {
     public abstract class VehicleValidator : AbstractValidator<Vehicle>
     {
-        public const string noProgramme = "No programme specified";
+        public const string noProgramme = "No car line specified";
         public const string noModelYear = "No model year specified for '{0}'";
 
         public VehicleValidator()

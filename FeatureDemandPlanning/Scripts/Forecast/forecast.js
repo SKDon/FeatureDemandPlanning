@@ -76,8 +76,8 @@ model.Forecast = function (params) {
     };
     me.getComparisonVehicle = function (vehicleIndex) {
         var comparisonVehicle = null;
-        if (privateStore[me.id].ComparisonVehicles.length > vehicleIndex) {
-            comparisonVehicle = privateStore[me.id].ComparisonVehicles[vehicleIndex];
+        if (privateStore[me.id].ComparisonVehicles.length >= vehicleIndex) {
+            comparisonVehicle = privateStore[me.id].ComparisonVehicles[vehicleIndex - 1];
         }
         return comparisonVehicle;
     };
@@ -93,15 +93,12 @@ model.Forecast = function (params) {
     me.setForecastId = function (forecastId) {
         privateStore[me.id].ForecastId = value;
     };
-
     me.getForecastVehicle = function () {
         return privateStore[this.id].ForecastVehicle;
     };
-
     me.setForecastVehicle = function (forecastVehicle) {
         privateStore[me.id].ForecastVehicle = forecastVehicle;
     };
-
     me.getForecast = function () {
         return {
             ForecastId: me.getForecastId(),
@@ -110,7 +107,6 @@ model.Forecast = function (params) {
             TrimMapping: me.getTrimMapping()
         }
     };
-
     me.saveForecast = function () {
         var forecast = me.getForecast();
         var encodedForecast = JSON.stringify(forecast);
@@ -127,9 +123,7 @@ model.Forecast = function (params) {
             error: genericErrorCallback
         });
     };
-
     me.validateForecast = function (sectionToValidate, isAsync) {
-
         var forecast = me.getForecast();
         var encodedForecast = JSON.stringify({ forecastToValidate: forecast, sectionToValidate: sectionToValidate });
 

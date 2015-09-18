@@ -12,6 +12,24 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureDemandPlanning.Model", "FeatureDemandPlanning.Model\FeatureDemandPlanning.Model.csproj", "{DCB42053-F686-4CD9-BE40-9BF11BFE19E1}"
 EndProject
 Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://jlr1gbmd3sg3h5j:8080/tfs/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = FeatureDemandPlanning.Data\\FeatureDemandPlanning.DataStore.csproj
+		SccProjectName1 = FeatureDemandPlanning.Data
+		SccLocalPath1 = FeatureDemandPlanning.Data
+		SccProjectUniqueName2 = FeatureDemandPlanning.Model\\FeatureDemandPlanning.Model.csproj
+		SccProjectName2 = FeatureDemandPlanning.Model
+		SccLocalPath2 = FeatureDemandPlanning.Model
+		SccProjectUniqueName3 = FeatureDemandPlanning.Tests\\FeatureDemandPlanning.Tests.csproj
+		SccProjectName3 = FeatureDemandPlanning.Tests
+		SccLocalPath3 = FeatureDemandPlanning.Tests
+		SccProjectUniqueName4 = FeatureDemandPlanning\\FeatureDemandPlanning.csproj
+		SccProjectName4 = FeatureDemandPlanning
+		SccLocalPath4 = FeatureDemandPlanning
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Development|Any CPU = Development|Any CPU

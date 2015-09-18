@@ -9,16 +9,29 @@
 @{
     var comparisonVehicle = (VehicleWithIndex)ViewData["ComparisonVehicle"];
     var forecastTrimLevel = (ModelTrim)ViewData["ForecastTrim"];
-    var configuredMappings = comparisonVehicle.Vehicle.TrimMappings.Where(m => m.ForecastVehicleTrim.Id == forecastTrimLevel.Id).First().ComparisonVehicleTrimMappings;
+    var configuredMappings = (IEnumerable<ModelTrim>)ViewData["ConfiguredMappings"];
+    
     if (configuredMappings.Any())
     {
-        <div class="vertical-spacer"></div>
-        <h4>Configured Mappings:</h4>
-        <ul>
-            @foreach (var mapping in configuredMappings)
-            {
-                <li>@mapping.Name</li>
-            }
-        </ul>
+        <div class="panel panel-primary">
+            <!-- Default panel contents -->
+            <div class="panel-heading">Configured Mappings</div>
+            <table class="table">
+                <tbody>
+                    @foreach (var mapping in configuredMappings)
+                    {
+                        <tr>
+                            <td>@mapping.Name</td>
+                            <td>
+                                <a class="btn btn-danger btn-sm removeMapping" href="#" data-index="@comparisonVehicle.VehicleIndex" data-forecast-trim-id="@forecastTrimLevel.Id" data-trim-id="@mapping.Id">
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 }

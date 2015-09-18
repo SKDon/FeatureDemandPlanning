@@ -48,7 +48,12 @@ namespace FeatureDemandPlanning.BusinessObjects
         public bool UseOACode { get; set; }
 
         // A blank constructor
-        public Programme() { ;}
+        public Programme() {
+            AllEngines = Enumerable.Empty<ModelEngine>();
+            AllBodies = Enumerable.Empty<ModelBody>();
+            AllTrims = Enumerable.Empty<ModelTrim>();
+            AllTransmissions = Enumerable.Empty<ModelTransmission>();
+        }
 
         public int TotalRecords { get; set; }
         public int TotalPages { get; set; }

@@ -26,6 +26,7 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
             InstantiateValidators(forecastToValidate);
             SetupValidationRulesForForecastVehicle();
             SetupValidationRulesForComparisonVehicles();
+            SetupValidationRulesForTrimMapping();
         }
 
         public static string GetRulesetsToValidate(ForecastValidationSection sectionToValidate)
@@ -84,21 +85,18 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
             {
                 // We must have at least one non-empty comparison vehicle
                 RuleFor(f => f.ComparisonVehicles)
-                    //.Cascade(CascadeMode.StopOnFirstFailure)
                     .NotNull()
                     .Must(HaveAtLeastOneComparisonVehicle)
                     .WithMessage(noComparisonVehicles);
 
                 // We need to validate each comparison vehicle in turn to ensure the properties are set
                 RuleFor(f => f.ComparisonVehicles)
-                    //.Cascade(CascadeMode.StopOnFirstFailure)
                     .NotNull()
                     .SetCollectionValidator(comparisonValidator)
                     .Where(v => VehicleValidator.NotBeAnEmptyVehicle(v));
 
                 // The forecast vehicle cannot be the same as one of the comparison vehicles
                 RuleFor(f => f)
-                    //.Cascade(CascadeMode.StopOnFirstFailure)
                     .NotNull()
                     .Must(NotHaveAForecastVehicleSameAsAComparisonVehicle)
                     .WithName("Forecast")
@@ -106,10 +104,21 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
                     .WithState(f => ListForecastVehiclesSameAsComparisonVehicle(f));
 
                 // Each comparison vehicle is checked against to collection as a whole to ensure no duplicates
-                RuleFor(f => f.ComparisonVehiclesToValidate)
-                    //.Cascade(CascadeMode.StopOnFirstFailure)
+                RuleFor(f => f.ComparisonVehiclesWithIndex)
                     .NotNull()
                     .SetCollectionValidator(duplicateValidator)
+                    .Where(v => VehicleValidator.NotBeAnEmptyVehicle(v));
+            });
+        }
+
+        private void SetupValidationRulesForTrimMapping()
+        {
+            RuleSet("TrimMapping", () =>
+            {
+                // We need to validate each comparison vehicle in turn to ensure all trim levels have been mapped
+                RuleFor(f => f.ComparisonVehiclesWithIndex)
+                    .NotNull()
+                    .SetCollectionValidator(trimMappingValidator)
                     .Where(v => VehicleValidator.NotBeAnEmptyVehicle(v));
             });
         }
@@ -131,7 +140,7 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
 
         private IEnumerable<VehicleWithIndex> ListForecastVehiclesSameAsComparisonVehicle(Forecast forecast)
         {
-            var comparisonVehiclesSame = forecast.ComparisonVehiclesToValidate
+            var comparisonVehiclesSame = forecast.ComparisonVehiclesWithIndex
                 .Where(v => !(v.Vehicle is EmptyVehicle) && v.Vehicle.Equals(forecast.ForecastVehicle));
             return comparisonVehiclesSame;
         }
@@ -140,6 +149,8 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
         {
             forecastToValidate = forecast;
             duplicateValidator = new ComparisonVehicleDuplicateValidator(forecast.ComparisonVehicles.ToVehicleWithIndexList());
+            trimMappingValidator = new ComparisonVehicleTrimMappingValidator(forecast.ForecastVehicle, 
+                                                                             forecast.ComparisonVehicles.ToVehicleWithIndexList());
             comparisonValidator = new ComparisonVehicleValidator();
             forecastVehicleValidator = new ForecastVehicleValidator();
 
@@ -147,6 +158,7 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
         }
 
         private ComparisonVehicleDuplicateValidator duplicateValidator = null;
+        private ComparisonVehicleTrimMappingValidator trimMappingValidator = null;
         private ComparisonVehicleValidator comparisonValidator = null;
         private ForecastVehicleValidator forecastVehicleValidator = null;
         private Forecast forecastToValidate = null;

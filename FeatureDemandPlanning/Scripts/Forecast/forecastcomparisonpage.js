@@ -12,6 +12,7 @@ model.Page = function (models) {
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
+        me.configureScroller(2); // Fix first two columns
         $(privateStore[me.id].Models).each(function () {
             this.initialise();
         });
@@ -24,6 +25,13 @@ model.Page = function (models) {
         me.resetEvent();
         if (startEventChain)
             me.toggleEvent();
+    };
+    me.getVehicle = function (vehicleIndex) {
+        if (vehicleIndex == 0) {
+            return me.getForecastVehicle();
+        } else {
+            return me.getComparisonVehicle(vehicleIndex);
+        }
     };
     me.setVehicle = function (vehicleIndex, vehicle) {
         if (vehicleIndex == 0) {
@@ -92,8 +100,16 @@ model.Page = function (models) {
             .unbind("FirstPage").on("FirstPage", function (sender, eventArgs) { $(".subscribers-notifyFirstPage").trigger("OnFirstPageDelegate", [eventArgs]); })
             .unbind("LastPage").on("LastPage", function (sender, eventArgs) { $(".subscribers-notifyLastPage").trigger("OnLastPageDelegate", [eventArgs]); })
             .unbind("Validation").on("Validation", function (sender, eventArgs) { $(".subscribers-notifyValidation").trigger("OnValidationDelegate", [eventArgs]); })
-            .unbind("hide.bs.modal").on("hide.bs.modal", function (sender, eventArgs) { $(".subscribers-notifyModal").trigger("OnHideModal", [eventArgs]); })
-            .unbind("TrimMappingChanged").on("TrimMappingChanged", function (sender, eventArgs) { $(".subscribers-notifyTrimMappingChanged").trigger("OnTrimMappingChangedDelegate", [eventArgs]); });
+            //.unbind("hide.bs.modal").on("hide.bs.modal", function (sender, eventArgs) { $(".subscribers-notifyModal").trigger("OnHideModal", [eventArgs]); })
+            .unbind("TrimMappingUpdated").on("TrimMappingUpdated", function (sender, eventArgs) { $(".subscribers-notifyTrimMappingChanged").trigger("OnTrimMappingChangedDelegate", [eventArgs]); });
+            
+        // Don't keep firing the resize event. Wait until it has completed
+        $(window).unbind("resize").on("resize", function (sender, eventArgs) {
+            if (this.resizeTO) clearTimeout(this.resizeTO);
+            this.resizeTO = setTimeout(function () {
+                $(".subscribers-notifyResize").trigger("OnResizeDelegate")
+            }, 500);
+        });
     };
     me.registerSubscribers = function () {
         // The #notifier displays status changed message, therefore it makes sense for it to listen to status
@@ -150,15 +166,13 @@ model.Page = function (models) {
         $(".vehicle-filter-gateway").each(function () {
             $(this).unbind("change").on("change", me.gatewayChanged);
         });
-        $(".vehicle-filter-trim").each(function () {
-            $(this).unbind("change").on("change", me.trimChanged);
-        });
 
         $("#btnNext").unbind("click").on("click", me.nextPage);
         $("#btnPrevious").unbind("click").on("click", me.previousPage);
 
         $(".forecast-trim-link").unbind("click").on("click", me.onForecastTrimClickedEventHandler);
-        $(".modal-listener").unbind("OnHideModal").on("OnHideModal", me.onModalEventHandler);
+        $(".subscribers-notifyTrimMappingChanged").unbind("OnTrimMappingChangedDelegate").on("OnTrimMappingChangedDelegate", me.onTrimMappingChangedEventHandler);
+        $(".subscribers-notifyResize").unbind("OnResizeDelegate").on("OnResizeDelegate", me.onResizeEventHandler);
     };
     me.nextPage = function (sender, eventArgs) {
         getPager().nextPage();
@@ -178,15 +192,15 @@ model.Page = function (models) {
             title: "Trim Mapping",
             uri: getForecastModel().getTrimSelectUri(),
             data: JSON.stringify({
-                forecast: me.getForecast(),
-                vehicleIndex: $(sender.target).attr("data-index"),
-                forecastTrimId: $(sender.target).attr("data-forecast-trim-id")
+                Forecast: me.getForecast(),
+                VehicleIndex: $(sender.target).attr("data-index"),
+                ForecastTrimId: $(sender.target).attr("data-forecast-trim-id")
             }),
-            modalModel: getTrimMapping()
+            model: getTrimMapping()
         });
     };
-    me.onModalEventHandler = function (sender, eventArgs) {
-        alert(eventArgs);
+    me.onResizeEventHandler = function (sender, eventArgs) {
+        me.configureScroller(2);
     };
     me.onValidationEventHandler = function (sender, eventArgs) {
         me.getValidationMessage(eventArgs);
@@ -204,15 +218,22 @@ model.Page = function (models) {
         });
     };
     me.getValidationMessageCallback = function (response, textStatus, jqXHR) {
-        var control = $("#notifier");
         var html = "";
         if (response != "") {
             html = response;
         }
-        control.fadeOut("slow", function () {
-            control.html(html);
-            if (html != "") control.fadeIn("slow");
-        });
+        me.fadeInNotify(html);
+    };
+    me.fadeInNotify = function (displayHtml) {
+        var control = $("#notifier");
+        if (control.is(":visible")) {
+            control.fadeOut("slow", function () {
+                control.html(displayHtml);
+                if (displayHtml != "") control.fadeIn("slow");
+            });
+        } else {
+            if (displayHtml != "") control.fadeIn("slow");
+        }
     };
     me.getValidationMessageError = function (jqXHR, textStatus, errorThrown) {
         console.log("Validate: " + errorThrown);
@@ -393,6 +414,27 @@ model.Page = function (models) {
     me.onPageContentChangedEventHandler = function (sender, eventArgs) {
         getPager().getPageContent(JSON.stringify({ forecast: me.getForecast(), pageIndex: eventArgs.PageIndex }), me.notifyPageContentChangedCallback, me)
     };
+    me.onTrimMappingChangedEventHandler = function (sender, eventArgs) {
+        var target = $(sender.target);
+        var forecastTrimId = parseInt(target.attr("data-forecast-trim-id"));
+        var vehicleIndex = parseInt(target.attr("data-index"));
+
+        if (eventArgs.VehicleIndex != vehicleIndex || eventArgs.ForecastTrimId != forecastTrimId) {
+            return;
+        }
+
+        var trimMappings = eventArgs.Forecast.ComparisonVehicles[vehicleIndex - 1].TrimMappings;
+        var mappingsForCell = null;
+        $(trimMappings).each(function () {
+            if (this.ForecastVehicleTrim.Id == forecastTrimId) {
+                mappingsForCell = this;
+                return false;
+            }
+        });
+        me.getComparisonVehicle(vehicleIndex).TrimMappings = trimMappings;
+        target.text(getTrimMapping().getDisplayText(mappingsForCell));
+        me.configureScroller(2); // Refresh the fixed columns as the cells widths of the underlying table will have changed
+    };
     me.notifyPageContentChangedCallback = function (content) {
         $("#frmContent").html(content);
         me.initialise();
@@ -416,24 +458,6 @@ model.Page = function (models) {
         var vehicleIndex = parseInt($(this).attr("data-index"));
         me.resetVehicle(vehicleIndex, false); // No event chain will be started by changing the gateway, we simply populate the chosen vehicle
         me.populateVehicle(vehicleIndex);
-    };
-    me.trimChanged = function (data) {
-        var control = $(this),
-            forecast = getForecastModel(),
-            vehicleIndex = parseInt(control.attr("data-index")),
-            forecastVehicleTrimId = parseInt(control.attr("data-forecast-trim")),
-            comparisonVehicle = me.getComparisonVehicle(vehicleIndex),
-            comparisonVehicleTrimId = null,
-            mapping = new model.TrimMapping();
-
-        if (control.val() != "") {
-            comparisonVehicleTrimId = parseInt(control.val());
-        }
-        mapping.VehicleIndex = vehicleIndex;
-        mapping.ForecastVehicleTrimId = forecastVehicleTrimId;
-        mapping.ComparisonVehicleTrimId = comparisonVehicleTrimId;
-
-        forecast.setComparisonVehicleTrim(mapping);
     };
     me.populateProgrammes = function (vehicleIndex) {
         getVehicleModel().getProgrammes(getVehicleFilter(vehicleIndex));
@@ -473,6 +497,74 @@ model.Page = function (models) {
         }
         getForecastModel().validateForecast(sectionToValidate, async);
     };
+    me.configureScroller = function (columnsToClone) {
+        
+        // If we are resizing, destroy and scrollbars first, as this affects the positioning of any fixed columns
+        $("#scroller").mCustomScrollbar("destroy");
+
+        $("#scroller table").each(function () {
+            var table = $(this),
+                fixedTable = table.clone(true),
+                fixedWidth = table.find("th").eq(0).width(),
+                fixedHeight = table.find("th").eq(0).height(),
+                tablePos = table.position(),
+                removeIndex = columnsToClone - 1;
+
+            // Remove all but the number of specified columns from the clones table
+            fixedTable.find("thead tr").each(function () {
+                $(this).find("th:gt(" + removeIndex + ")").remove();
+            });
+            fixedTable.find("tbody tr").each(function () {
+                $(this).find("td:gt(" + removeIndex + ")").remove();
+            });
+
+            // Set positioning so that cloned table overlays
+            // first column of original table
+            fixedTable.addClass("fixedTable");
+            fixedTable.css({
+                left: tablePos.left,
+                top: tablePos.top
+            });
+
+            // Do the same with the table cells, we will need to iterate each row
+            var clonedRows = fixedTable.find("thead tr");
+            var rowIndex = 0;
+            clonedRows.each(function () {
+                var clonedCells = $(this).find("th");
+                var originalRow = table.find("thead tr").eq(rowIndex++);
+
+                for (var i = 0; i < clonedCells.length; i++) {
+                    var originalCell = originalRow.find("th").eq(i);
+                    var width = originalCell.width();
+                    var height = originalCell.height();
+
+                    clonedCells.eq(i).css("width", width + "px").css("height", height + "px");
+                }
+            });
+
+            clonedRows = fixedTable.find("tbody tr");
+            rowIndex = 0;
+            clonedRows.each(function () {
+                var clonedCells = $(this).find("td");
+                var originalRow = table.find("tbody tr").eq(rowIndex++);
+
+                for (var i = 0; i < clonedCells.length; i++) {
+                    var originalCell = originalRow.find("td").eq(i);
+                    var width = originalCell.width();
+                    var height = originalCell.height();
+
+                    clonedCells.eq(i).css("width", width + "px").css("height", height + "px");
+                }
+            });
+
+            $("#scrollerFixed").html(fixedTable);
+
+            $("#scroller").mCustomScrollbar({
+                axis: "x",
+                theme: "inset-3"
+            });
+        });
+    };
     function getVehicleModel() {
         return getModel("Vehicle");
     };
@@ -506,7 +598,7 @@ model.Page = function (models) {
             classPrefix = ".vehicle-filter", attrFilter = "[data-index='" + vehicleIndex + "']";
 
         filter.Make = "";
-        filter.Name = $(classPrefix + "-programme" + attrFilter).val();
+        filter.Code = $(classPrefix + "-programme" + attrFilter).val();
         filter.ModelYear = $(classPrefix + "-modelYear" + attrFilter).val();
         filter.Gateway = $(classPrefix + "-gateway" + attrFilter).val();
         filter.DerivativeCode = $(classPrefix + "-derivativeCode" + attrFilter).val();

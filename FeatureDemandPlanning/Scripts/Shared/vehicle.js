@@ -50,16 +50,16 @@ model.Vehicle = function (params) {
         getData({ make: filter.Make, vehicleIndex: filter.VehicleIndex }, getProgrammesCallback);
     };
     me.getModelYears = function (filter) {
-        getData({ make: filter.Make, name: filter.Name, vehicleIndex: filter.VehicleIndex }, getModelYearsCallback);
+        getData({ make: filter.Make, code: filter.Code, vehicleIndex: filter.VehicleIndex }, getModelYearsCallback);
     };
     me.getGateways = function (filter) {
-        getData({ make: filter.Make, name: filter.Name, modelYear: filter.ModelYear, vehicleIndex: filter.VehicleIndex }, getGatewaysCallback);
+        getData({ make: filter.Make, code: filter.Code, modelYear: filter.ModelYear, vehicleIndex: filter.VehicleIndex }, getGatewaysCallback);
     };
     me.getDerivativeCodes = function (filter) {
-        getData({ make: filter.Make, name: filter.Name, modelYear: filter.ModelYear, vehicleIndex: filter.VehicleIndex }, getDerivativeCodesCallback);
+        getData({ make: filter.Make, code: filter.Code, modelYear: filter.ModelYear, vehicleIndex: filter.VehicleIndex }, getDerivativeCodesCallback);
     };
     me.getVehicle = function (filter) {
-        getData({ make: filter.Make, name: filter.Name, modelYear: filter.ModelYear, gateway: filter.Gateway, vehicleIndex: filter.VehicleIndex }, getVehicleCallback);
+        getData({ make: filter.Make, code: filter.Code, modelYear: filter.ModelYear, gateway: filter.Gateway, vehicleIndex: filter.VehicleIndex }, getVehicleCallback);
     };
     me.getEmptyVehicle = function () {
         return {
@@ -84,6 +84,7 @@ model.Vehicle = function (params) {
             type: "POST",
             dataType: "json",
             data: data,
+            async: true,
             success: callback,
             error: genericErrorCallback
         });
@@ -112,14 +113,13 @@ model.Vehicle = function (params) {
         $(document).trigger("DerivativeCodesChanged", response);
     };
     function getVehicleCallback(response) {
-        var vehicle = null;
+        var vehicle = me.getEmptyVehicle();
+
         if (response.AvailableVehicles.length > 0) {
+            vehicle = response.AvailableVehicles[0];
             // If not all of the information has been specified in the filter, clear the vehicle details yet to have been chosen
             // If we have full information in the vehicle, validation goes wrong
-            vehicle = response.AvailableVehicles[0];
-        }
-        if (response.AvailableVehicles.length > 1) {
-            vehicle.Name = response.Filter.Name;
+            vehicle.Code = response.Filter.Code;
             vehicle.ModelYear = response.Filter.ModelYear;
             vehicle.Gateway = response.Filter.Gateway;
         }

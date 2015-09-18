@@ -21,7 +21,8 @@ namespace FeatureDemandPlanning
                         "~/Extensions/DataTables-1.10.7/media/js/jquery.dataTables.js",
                         "~/Extensions/DataTables-1.10.7/plugins/jquery.dataTables.columnFilter.js",
                         "~/Extensions/Jeditable/jquery.jeditable.mini.js",
-                        "~/Extensions/dataTables.bootstrap/dataTables.bootstrap.js"));
+                        "~/Extensions/dataTables.bootstrap/dataTables.bootstrap.js",
+                        "~/Extensions/malihu-custom-scrollbar-plugin-master/jquery.mCustomScrollbar.concat.min.js"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
@@ -40,7 +41,8 @@ namespace FeatureDemandPlanning
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
                       "~/Content/BrushedMetal.css",
-                      "~/Extensions/dataTables.bootstrap/dataTables.bootstrap.css"));
+                      "~/Extensions/dataTables.bootstrap/dataTables.bootstrap.css",
+                      "~/Extensions/malihu-custom-scrollbar-plugin-master/jquery.mCustomScrollbar.css"));
 
         }
     }

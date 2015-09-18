@@ -8,13 +8,34 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
 {
     public class ComparisonVehicleValidator : VehicleValidator
     {
-        public IEnumerable<Vehicle> InvalidVehicles { get; set; }
+        public const string noTrim = "No trim levels available for '{0}'";
         
         public ComparisonVehicleValidator() : base()
         {
+            RuleSet("ComparisonVehicles", () =>
+            {
+                RuleFor(v => v)
+                    .Cascade(CascadeMode.StopOnFirstFailure)
+                    .NotNull()
+                    .Must(HaveProgramme)
+                    .WithMessage(noProgramme)
+                    .Must(HaveModelYear)
+                    .WithMessage(noModelYear, f => f.FullDescription)
+                    .Must(HaveTrim)
+                    .WithMessage(noTrim, f => f.FullDescription);
+            });
+        }
+
+        private bool HaveTrim(Vehicle vehicleToValidate)
+        {
+            return vehicleToValidate.Programmes.Any() &&
+                vehicleToValidate.Programmes.First().AllTrims.Any();
         }
     }
 
+    /// <summary>
+    /// Tests to see if there are any duplicate vehicles specified
+    /// </summary>
     public class ComparisonVehicleDuplicateValidator : AbstractValidator<VehicleWithIndex>
     {
         public const string duplicateComparisonVehicle = "Comparison vehicle '{0}' has been specified more than once";
@@ -35,7 +56,7 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
                 RuleFor(c => c)
                     .Must(HaveNoDuplicates)
                     .WithName("ComparisonVehicle")
-                    .WithMessage(duplicateComparisonVehicle, c => c.Vehicle.Description)
+                    .WithMessage(duplicateComparisonVehicle, c => c.Vehicle.FullDescription)
                     .WithState(v => _duplicatesForCurrentVehicle);
             });
         }
@@ -72,6 +93,36 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
 
         private IEnumerable<VehicleWithIndex> _duplicateVehicles = Enumerable.Empty<VehicleWithIndex>();
         private IEnumerable<VehicleWithIndex> _duplicatesForCurrentVehicle = Enumerable.Empty<VehicleWithIndex>();
+    }
+
+    /// <summary>
+    /// Tests to see if all trim is mapped to the forecast vehicle
+    /// </summary>
+    public class ComparisonVehicleTrimMappingValidator : AbstractValidator<VehicleWithIndex>
+    {
+        public const string missingTrimMappings = "Comparison vehicle '{0}' trim levels have not all been mapped to the forecast vehicle";
+        public Vehicle ForecastVehicle { get; set; }
+        
+        public ComparisonVehicleTrimMappingValidator(Vehicle forecastVehicle, IEnumerable<VehicleWithIndex> comparisonVehicles)
+        {
+            ForecastVehicle = forecastVehicle;
+
+            RuleSet("TrimMapping", () =>
+            {
+                RuleFor(c => c)
+                    .Must(HaveMappedTrim)
+                    .WithName("ComparisonVehicle")
+                    .WithMessage(missingTrimMappings, c => c.Vehicle.FullDescription);
+            });
+        }
+
+        private bool HaveMappedTrim(VehicleWithIndex comparisonVehicle)
+        {
+            var mappingCount = comparisonVehicle.Vehicle.TrimMappings.Count(t => t.ComparisonVehicleTrimMappings.Any());
+            var expectedMappingCount = ForecastVehicle.Programmes.First().AllTrims.Count();
+
+            return mappingCount == expectedMappingCount;
+        }
     }
 
     public class VehicleWithIndex : IEquatable<VehicleWithIndex>

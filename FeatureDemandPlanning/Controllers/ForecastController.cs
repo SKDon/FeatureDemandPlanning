@@ -61,7 +61,7 @@ namespace FeatureDemandPlanning.Controllers
 		public ActionResult ValidationMessage(ValidationMessage message)
 		{
 			// Something is making a GET request to this page and I can't figure out what
-            return PartialView("_ValidationMessage", message);
+			return PartialView("_ValidationMessage", message);
 		}
 
 		[HttpGet]
@@ -91,45 +91,71 @@ namespace FeatureDemandPlanning.Controllers
 			return View("ForecastComparison", forecastComparisonModel);
 		}
 
-        [HttpPost]
-        public ActionResult ForecastTrimSelect( Forecast forecast, 
-                                                int vehicleIndex, 
-                                                int forecastTrimId)
-        {
-            var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecast);
+		[HttpPost]
+		public ActionResult ForecastTrimSelect( Forecast forecast, 
+												int vehicleIndex, 
+												int forecastTrimId)
+		{
+			var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecast);
+			
+			var comparisonVehicle = forecastComparisonModel
+				.NonEmptyComparisonVehicles
+				.Where(v => v.VehicleIndex == vehicleIndex)
+				.First();
+			var forecastTrim = forecastComparisonModel.Forecast.ForecastVehicle.TrimMappings
+				.Where(t => t.ForecastVehicleTrim.Id == forecastTrimId)
+				.Select(t => t.ForecastVehicleTrim)
+				.First();
+			var configuredMappings = Enumerable.Empty<ModelTrim>();
 
-            ViewBag.ComparisonVehicle = forecastComparisonModel
-                .NonEmptyComparisonVehicles
-                .Where(v => v.VehicleIndex == vehicleIndex)
-                .First();
+			if (comparisonVehicle.Vehicle.TrimMappings.Any())
+			{
+				var mappings = comparisonVehicle.Vehicle.TrimMappings.Where(m => m.ForecastVehicleTrim.Id == forecastTrim.Id).FirstOrDefault();
+				if (mappings != null)
+				{
+					configuredMappings = mappings.ComparisonVehicleTrimMappings;
+				}
+			}
 
-            ViewBag.ForecastTrim = forecastComparisonModel.Forecast.ForecastVehicle.TrimMappings
-                .Where(t => t.ForecastVehicleTrim.Id == forecastTrimId)
-                .Select(t => t.ForecastVehicleTrim)
-                .First();
+			ViewBag.ComparisonVehicle = comparisonVehicle;
+			ViewBag.ForecastTrim = forecastTrim;
+			ViewBag.ConfiguredMappings = configuredMappings;
 
-            return PartialView("_ForecastTrimSelect", forecastComparisonModel);
-        }
+			return PartialView("_ForecastTrimSelect", forecastComparisonModel);
+		}
 
-        [HttpPost]
-        public ActionResult ForecastTrimMapping(Forecast forecast,
-                                                int vehicleIndex,
-                                                int forecastTrimId)
-        {
-            var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecast);
+		[HttpPost]
+		public ActionResult ForecastTrimMapping(Forecast forecast,
+												int vehicleIndex,
+												int forecastTrimId)
+		{
+			var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(forecast);
 
-            ViewBag.ComparisonVehicle = forecastComparisonModel
-                .NonEmptyComparisonVehicles
-                .Where(v => v.VehicleIndex == vehicleIndex)
-                .First();
+			var comparisonVehicle = forecastComparisonModel
+				.NonEmptyComparisonVehicles
+				.Where(v => v.VehicleIndex == vehicleIndex)
+				.First();
+			var forecastTrim = forecastComparisonModel.Forecast.ForecastVehicle.TrimMappings
+				.Where(t => t.ForecastVehicleTrim.Id == forecastTrimId)
+				.Select(t => t.ForecastVehicleTrim)
+				.First();
+			var configuredMappings = Enumerable.Empty<ModelTrim>();
 
-            ViewBag.ForecastTrim = forecastComparisonModel.Forecast.ForecastVehicle.TrimMappings
-                .Where(t => t.ForecastVehicleTrim.Id == forecastTrimId)
-                .Select(t => t.ForecastVehicleTrim)
-                .First();
+			if (comparisonVehicle.Vehicle.TrimMappings.Any())
+			{
+				var mappings = comparisonVehicle.Vehicle.TrimMappings.Where(m => m.ForecastVehicleTrim.Id == forecastTrim.Id).FirstOrDefault();
+				if (mappings != null)
+				{
+					configuredMappings = mappings.ComparisonVehicleTrimMappings;
+				}
+			}
 
-            return PartialView("_ForecastTrimMapping", forecastComparisonModel);
-        }
+			ViewBag.ComparisonVehicle = comparisonVehicle;
+			ViewBag.ForecastTrim = forecastTrim;
+			ViewBag.ConfiguredMappings = configuredMappings;
+
+			return PartialView("_ForecastTrimMapping", forecastComparisonModel);
+		}
 
 		[HttpPost]
 		public ActionResult ValidateForecast(Forecast forecastToValidate, 
@@ -237,9 +263,9 @@ namespace FeatureDemandPlanning.Controllers
 				PageIndex = PageIndex
 			};
 
+			HydrateLookups(forecast, forecastComparisonModel);
 			HydrateForecastVehicleTrimMapping(forecast);
 			HydrateComparisonVehiclesTrimMappings(forecast);
-			HydrateLookups(forecast, forecastComparisonModel);
 
 			return forecastComparisonModel;
 		}
@@ -269,27 +295,75 @@ namespace FeatureDemandPlanning.Controllers
 		}
 		private void HydrateComparisonVehicleTrimMappings(IForecast forecast, IVehicle comparisonVehicle)
 		{
-			if (comparisonVehicle.TrimMappings.Any() || !forecast.ForecastVehicle.Programmes.Any())
+			if (!forecast.ForecastVehicle.Programmes.Any())
 				return;
 
 			var programme = forecast.ForecastVehicle.Programmes.First();
 
-			comparisonVehicle.TrimMappings = programme.AllTrims
-				.Select(t => new TrimMapping() {
-					ForecastVehicleTrim = t,
-					ComparisonVehicleTrimMappings = new List<ModelTrim>()
-				}).ToList();
+			if (comparisonVehicle.TrimMappings.Any())
+			{
+				// If we have trim mappings, we may only have the identifiers, we need the full descriptive information
+				// So fill in the missing information
+
+				foreach (var existingTrimMapping in comparisonVehicle.TrimMappings)
+				{
+					// Get the fully populated forecast trim
+					var forecastVehicleTrim = programme.AllTrims.Where(t => t.Id == existingTrimMapping.ForecastVehicleTrim.Id).First();
+					existingTrimMapping.ForecastVehicleTrim = forecastVehicleTrim;
+
+					// Build a list of fully populated comparison trim
+					var newComparisonVehicleTrimMappings = new List<ModelTrim>();
+					foreach (var comparisonVehicleTrimMapping in existingTrimMapping.ComparisonVehicleTrimMappings)
+					{
+						newComparisonVehicleTrimMappings.Add(comparisonVehicle.ListTrimLevels()
+							.Where(t => t.Id == comparisonVehicleTrimMapping.Id).First());
+					}
+					existingTrimMapping.ComparisonVehicleTrimMappings = newComparisonVehicleTrimMappings;
+				}
+			}
+            else
+            {
+                // If the vehicle has no trim levels, we don't want to populate the trim mapping model
+                var comparisonProgramme = comparisonVehicle.Programmes.FirstOrDefault();
+                if (comparisonProgramme == null || !comparisonProgramme.AllTrims.Any())
+                {
+                    comparisonVehicle.TrimMappings = Enumerable.Empty<TrimMapping>().ToList();
+                }
+                else
+                {
+                    comparisonVehicle.TrimMappings = programme.AllTrims
+                        .Select(t => new TrimMapping()
+                        {
+                            ForecastVehicleTrim = t,
+                            ComparisonVehicleTrimMappings = new List<ModelTrim>()
+                        }).ToList();
+                }
+            }
 
 			// TO DO, get the trim mappings if anything has been saved to the database
 		}
 		private void HydrateLookups(IForecast forecast, ForecastComparisonViewModel forecastComparisonModel)
 		{
-			forecastComparisonModel.ForecastVehicleLookup = new Lookup(DataContext, forecast.ForecastVehicle);
-
+			forecastComparisonModel.ForecastVehicleLookup = GetLookup(forecast.ForecastVehicle);
+            forecastComparisonModel.ComparisonVehicleLookup = new List<Lookup>();
 			foreach (var comparisonVehicle in forecast.ComparisonVehicles)
 			{
-				forecastComparisonModel.ComparisonVehicleLookup.Add(new Lookup(DataContext, comparisonVehicle));
+				forecastComparisonModel.ComparisonVehicleLookup.Add(GetLookup(comparisonVehicle));
 			}
+		}
+		private Lookup GetLookup(IVehicle forVehicle)
+		{
+			Lookup lookup = null;
+			var cacheKey = string.Format("ProgrammeLookup_{0}", forVehicle.GetHashCode());
+			var cachedLookup = HttpContext.Cache.Get(cacheKey);
+			if (cachedLookup != null) {
+				lookup = (Lookup) cachedLookup;
+			}
+			else {
+				lookup = new Lookup(DataContext, forVehicle);
+				HttpContext.Cache.Add(cacheKey, lookup, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+			}
+			return lookup;
 		}
 	}
 }

@@ -69,7 +69,7 @@ namespace FeatureDemandPlanning.BusinessObjects
             }
         }
 
-        public IEnumerable<VehicleWithIndex> ComparisonVehiclesToValidate
+        public IEnumerable<VehicleWithIndex> ComparisonVehiclesWithIndex
         {
             get { return _comparisonVehicles.ToVehicleWithIndexList(); }
         }

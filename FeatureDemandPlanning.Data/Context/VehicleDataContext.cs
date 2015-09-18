@@ -20,14 +20,18 @@ namespace FeatureDemandPlanning.DataStore
 
         public IVehicle GetVehicle(VehicleFilter filter)
         {
-            if (!filter.ProgrammeId.HasValue)
-                return new EmptyVehicle();
-            
+            IVehicle vehicle = new EmptyVehicle();
+
+            if (string.IsNullOrEmpty(filter.Code))
+            {
+                return vehicle;
+            }
+                
             var programme = _programmeDataStore.ProgrammeGetConfiguration(filter.ProgrammeId.Value);
             if (programme == null)
-                return new EmptyVehicle();
+                return vehicle;
 
-            var vehicle = HydrateVehicleFromProgramme(programme);
+            vehicle = HydrateVehicleFromProgramme(programme);
             vehicle.Gateway = filter.Gateway;
             vehicle.ModelYear = filter.ModelYear;
 
@@ -59,7 +63,7 @@ namespace FeatureDemandPlanning.DataStore
             engineCodeMappings = engineCodeMappings
                 .Where(e => !filter.ProgrammeId.HasValue || e.Id == filter.ProgrammeId.Value)
                 .Where(e => !filter.VehicleId.HasValue || e.VehicleId == filter.VehicleId.Value)
-                .Where(e => String.IsNullOrEmpty(filter.Name) || e.VehicleName.Equals(filter.Name, StringComparison.InvariantCultureIgnoreCase))
+                .Where(e => String.IsNullOrEmpty(filter.Code) || e.VehicleName.Equals(filter.Code, StringComparison.InvariantCultureIgnoreCase))
                 .Where(e => String.IsNullOrEmpty(filter.Make) || e.VehicleMake.Equals(filter.Make, StringComparison.InvariantCultureIgnoreCase))
                 .Where(e => String.IsNullOrEmpty(filter.ModelYear) || e.ModelYear.Equals(filter.ModelYear, StringComparison.InvariantCultureIgnoreCase))
                 .Where(e => String.IsNullOrEmpty(filter.Gateway) || e.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase))
@@ -101,7 +105,7 @@ namespace FeatureDemandPlanning.DataStore
             programmes = programmes
                 .Where(p => !filter.ProgrammeId.HasValue || p.Id == filter.ProgrammeId.Value)
                 .Where(p => !filter.VehicleId.HasValue || p.VehicleId == filter.VehicleId.Value)
-                .Where(p => String.IsNullOrEmpty(filter.Name) || p.VehicleName.Equals(filter.Name, StringComparison.InvariantCultureIgnoreCase))
+                .Where(p => String.IsNullOrEmpty(filter.Code) || p.VehicleName.Equals(filter.Code, StringComparison.InvariantCultureIgnoreCase))
                 .Where(p => String.IsNullOrEmpty(filter.Make) || p.VehicleMake.Equals(filter.Make, StringComparison.InvariantCultureIgnoreCase))
                 .Where(p => String.IsNullOrEmpty(filter.ModelYear) || p.ModelYear.Equals(filter.ModelYear, StringComparison.InvariantCultureIgnoreCase))
                 .Where(p => String.IsNullOrEmpty(filter.Gateway) || p.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase));
@@ -137,7 +141,7 @@ namespace FeatureDemandPlanning.DataStore
                 ModelYear = programme.ModelYear,
                 Gateway = vehicleIndex.GetValueOrDefault() == 0 ? programme.Gateway : string.Empty,
                 Description = String.Format("{0} - {1}", programme.VehicleName, programme.VehicleAKA),
-                FullDescription = vehicleIndex.GetValueOrDefault() == 0 ?
+                FullDescription = vehicleIndex.GetValueOrDefault() == 0 || string.IsNullOrEmpty(programme.Gateway) ?
                     string.Format("{0} - {1} ({2}, {3})",
                         programme.VehicleName,
                         programme.VehicleAKA,
