@@ -39,8 +39,7 @@ namespace FeatureDemandPlanning.Controllers
             }
             catch (ApplicationException ex)
             {
-                
-                throw;
+                throw ex;
             }
         }
 
@@ -60,8 +59,7 @@ namespace FeatureDemandPlanning.Controllers
             }
             catch (ApplicationException ex)
             {
-                
-                throw;
+                throw ex;
             }
         }
 
@@ -81,8 +79,7 @@ namespace FeatureDemandPlanning.Controllers
             }
             catch (ApplicationException ex)
             {
-                
-                throw;
+                throw ex;
             }
         }
 

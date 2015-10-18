@@ -180,8 +180,6 @@ namespace FeatureDemandPlanning.Models
 
         private IForecast _forecast = new EmptyForecast();
         private PagedResults<IForecast> _forecasts = new PagedResults<IForecast>();
-        private VolumeResultMode _resultsMode = VolumeResultMode.Raw;
-        private VolumeMarketMode _marketMode = VolumeMarketMode.MarketGroup;
         
         private const string cookieKey = "FdpFbm"; 
 

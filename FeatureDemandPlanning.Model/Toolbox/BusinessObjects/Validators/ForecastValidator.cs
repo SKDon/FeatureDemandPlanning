@@ -123,11 +123,6 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
             });
         }
 
-        private bool HaveAForecastVehicle(Vehicle forecastVehicle)
-        {
-            return forecastVehicle != null && !(forecastVehicle is EmptyVehicle);
-        }
-
         private bool HaveAtLeastOneComparisonVehicle(IEnumerable<Vehicle> comparisonVehicles)
         {
             return comparisonVehicles.Where(v => !(v is EmptyVehicle)).Any();
@@ -147,7 +142,6 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
 
         private bool InstantiateValidators(Forecast forecast)
         {
-            forecastToValidate = forecast;
             duplicateValidator = new ComparisonVehicleDuplicateValidator(forecast.ComparisonVehicles.ToVehicleWithIndexList());
             trimMappingValidator = new ComparisonVehicleTrimMappingValidator(forecast.ForecastVehicle, 
                                                                              forecast.ComparisonVehicles.ToVehicleWithIndexList());
@@ -161,7 +155,5 @@ namespace FeatureDemandPlanning.BusinessObjects.Validators
         private ComparisonVehicleTrimMappingValidator trimMappingValidator = null;
         private ComparisonVehicleValidator comparisonValidator = null;
         private ForecastVehicleValidator forecastVehicleValidator = null;
-        private Forecast forecastToValidate = null;
-
     }
 }

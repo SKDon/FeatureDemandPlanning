@@ -27,7 +27,7 @@ namespace FeatureDemandPlanning.DataStore
 
             if (!filter.ForecastId.HasValue)
             {
-                throw new ArgumentNullException("ForecastId not specified");
+                throw new ArgumentNullException("filter.ForecastId not specified");
             }
 
             forecast = _forecastDataStore.ForecastGet(filter.ForecastId.Value);

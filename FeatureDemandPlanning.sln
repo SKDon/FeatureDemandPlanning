@@ -5,31 +5,13 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureDemandPlanning", "FeatureDemandPlanning\FeatureDemandPlanning.csproj", "{CA9A2021-83FC-4611-B44B-A23A4B0A976A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureDemandPlanning.Tests", "FeatureDemandPlanning.Tests\FeatureDemandPlanning.Tests.csproj", "{796677B1-8298-43CD-9C06-E518659A7F2D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureDemandPlanning.DataStore", "FeatureDemandPlanning.Data\FeatureDemandPlanning.DataStore.csproj", "{D2174586-6BC6-48CE-B8E3-1CD81E0886E4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureDemandPlanning.Model", "FeatureDemandPlanning.Model\FeatureDemandPlanning.Model.csproj", "{DCB42053-F686-4CD9-BE40-9BF11BFE19E1}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "FeatureDemandPlanning.SqlDb", "FeatureDemandPlanning.SqlDb\FeatureDemandPlanning.SqlDb.sqlproj", "{A5529CD6-E42A-4EA1-A076-043BED22167C}"
+EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://jlr1gbmd3sg3h5j:8080/tfs/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = FeatureDemandPlanning.Data\\FeatureDemandPlanning.DataStore.csproj
-		SccProjectName1 = FeatureDemandPlanning.Data
-		SccLocalPath1 = FeatureDemandPlanning.Data
-		SccProjectUniqueName2 = FeatureDemandPlanning.Model\\FeatureDemandPlanning.Model.csproj
-		SccProjectName2 = FeatureDemandPlanning.Model
-		SccLocalPath2 = FeatureDemandPlanning.Model
-		SccProjectUniqueName3 = FeatureDemandPlanning.Tests\\FeatureDemandPlanning.Tests.csproj
-		SccProjectName3 = FeatureDemandPlanning.Tests
-		SccLocalPath3 = FeatureDemandPlanning.Tests
-		SccProjectUniqueName4 = FeatureDemandPlanning\\FeatureDemandPlanning.csproj
-		SccProjectName4 = FeatureDemandPlanning
-		SccLocalPath4 = FeatureDemandPlanning
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Development|Any CPU = Development|Any CPU
@@ -42,12 +24,6 @@ Global
 		{CA9A2021-83FC-4611-B44B-A23A4B0A976A}.Development|Any CPU.Build.0 = Debug|Any CPU
 		{CA9A2021-83FC-4611-B44B-A23A4B0A976A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA9A2021-83FC-4611-B44B-A23A4B0A976A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{796677B1-8298-43CD-9C06-E518659A7F2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{796677B1-8298-43CD-9C06-E518659A7F2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{796677B1-8298-43CD-9C06-E518659A7F2D}.Development|Any CPU.ActiveCfg = Debug|Any CPU
-		{796677B1-8298-43CD-9C06-E518659A7F2D}.Development|Any CPU.Build.0 = Debug|Any CPU
-		{796677B1-8298-43CD-9C06-E518659A7F2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{796677B1-8298-43CD-9C06-E518659A7F2D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D2174586-6BC6-48CE-B8E3-1CD81E0886E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D2174586-6BC6-48CE-B8E3-1CD81E0886E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2174586-6BC6-48CE-B8E3-1CD81E0886E4}.Development|Any CPU.ActiveCfg = Debug|Any CPU
@@ -60,6 +36,15 @@ Global
 		{DCB42053-F686-4CD9-BE40-9BF11BFE19E1}.Development|Any CPU.Build.0 = Debug|Any CPU
 		{DCB42053-F686-4CD9-BE40-9BF11BFE19E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCB42053-F686-4CD9-BE40-9BF11BFE19E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Development|Any CPU.Build.0 = Debug|Any CPU
+		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Development|Any CPU.Deploy.0 = Debug|Any CPU
+		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

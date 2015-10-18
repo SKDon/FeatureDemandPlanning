@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.Controllers
         }
 
         [HttpGet]
-        public ActionResult EngineCodeMapping(VehicleFilter filter)
+        public ActionResult EngineCodeMapping()
         {
             var engineCodeMappingModel = GetFullAndPartialEngineCodeMappingViewModel(new EngineCodeFilter()
             {

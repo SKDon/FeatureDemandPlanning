@@ -57,12 +57,6 @@ namespace FeatureDemandPlanning.BusinessObjects
     }
 
     [Serializable]
-    public class DataTableResult
-    {
-        public Model[] aaData { get; set; } 
-    }
-
-    [Serializable]
     public class NameValuePair
     {
         public string name { get; set; }

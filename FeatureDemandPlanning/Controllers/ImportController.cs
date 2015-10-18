@@ -284,7 +284,6 @@ namespace FeatureDemandPlanning.Controllers
 
         private HttpPostedFileBase _fileToUpload = null;
         private string _fileName = String.Empty;
-        private string _error = String.Empty;
         private ImportViewModel _importView = null;
       
         #endregion

@@ -10,7 +10,7 @@ namespace FeatureDemandPlanning.Models
 {
     public class ImportViewModel : SharedModelBase
     {
-        public ImportQueue CurrentImport { get; set; }
+        public ImportQueue CurrentImport { get { return _currentImport; } set { _currentImport = value; } }
         public PagedResults<ImportError> Exceptions { get; set; }
         public PagedResults<ImportQueue> ImportQueue { get; set; }
         

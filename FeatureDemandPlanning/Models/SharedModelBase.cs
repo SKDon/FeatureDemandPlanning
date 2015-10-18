@@ -28,7 +28,7 @@ namespace FeatureDemandPlanning.Models
         [IgnoreDataMember]
         public SystemUser CurrentUser { get { return _dataContext.User.GetUser(); } }
         public IDataContext DataContext { get { return _dataContext; } }
-        public string CurrentVersion { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
+        public static string CurrentVersion { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
         public string HTMLTitle { get; set; }
 
         public int PageIndex { get; set; }

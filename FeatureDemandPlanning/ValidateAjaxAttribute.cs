@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace FeatureDemandPlanning
 {
-    public class ValidateAjaxAttribute : ActionFilterAttribute
+    public sealed class ValidateAjaxAttribute : ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -52,7 +52,7 @@ namespace FeatureDemandPlanning
             var parts = errorMessage.Split(new string[] { "::" }, StringSplitOptions.None);
             if (parts.Length > 1)
             {
-                Enum.TryParse<FeatureDemandPlanning.Enumerations.ProcessStatus>(parts[0], true, out status);
+                var success = Enum.TryParse<FeatureDemandPlanning.Enumerations.ProcessStatus>(parts[0], true, out status);
             }
             return status;
         }

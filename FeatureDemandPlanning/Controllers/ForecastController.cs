@@ -172,25 +172,14 @@ namespace FeatureDemandPlanning.Controllers
 			var results = validator.Validate((Forecast)forecastComparisonModel.Forecast, ruleSet: ruleSets);
 			if (!results.IsValid)
 			{
-				var errorModel = results.Errors.Select(e => new ValidationError()
+                var errorModel = results.Errors.Select(e => new ValidationError(new ValidationErrorItem(e.ErrorMessage, e.CustomState))
 				{
-					key = e.PropertyName,
-					errors = new List<ValidationErrorItem>() 
-					{ 
-						new ValidationErrorItem()
-						{ 
-							ErrorMessage = e.ErrorMessage,
-							CustomState = e.CustomState//, 
-							//ProcessStatus = (FeatureDemandPlanning.Enumerations.ProcessStatus) e.CustomState == null 
-							//    ? FeatureDemandPlanning.Enumerations.ProcessStatus.Warning 
-							//    : e.CustomState 
-						}
-					}
+					key = e.PropertyName
 				});
 
 				jsonResult = new JsonResult()
 				{
-					Data = new ValidationMessage() { IsValid = false, Errors = errorModel.ToList() }
+					Data = new ValidationMessage(false, errorModel)
 				};
 			}
 			return jsonResult;
@@ -269,7 +258,7 @@ namespace FeatureDemandPlanning.Controllers
 
 			return forecastComparisonModel;
 		}
-		private void HydrateForecastVehicleTrimMapping(IForecast forecast)
+		private static void HydrateForecastVehicleTrimMapping(IForecast forecast)
 		{
 			if (forecast.ForecastVehicle.TrimMappings.Any() || !forecast.ForecastVehicle.Programmes.Any())
 				return;
@@ -283,7 +272,7 @@ namespace FeatureDemandPlanning.Controllers
 					ComparisonVehicleTrimMappings = new List<ModelTrim>()
 				}).ToList();
 		}
-		private void HydrateComparisonVehiclesTrimMappings(IForecast forecast)
+		private static void HydrateComparisonVehiclesTrimMappings(IForecast forecast)
 		{
 			if (forecast.ComparisonVehicles == null || !forecast.ComparisonVehicles.Any())
 				return;
@@ -293,7 +282,7 @@ namespace FeatureDemandPlanning.Controllers
 				HydrateComparisonVehicleTrimMappings(forecast, comparisonVehicle);
 			}
 		}
-		private void HydrateComparisonVehicleTrimMappings(IForecast forecast, IVehicle comparisonVehicle)
+		private static void HydrateComparisonVehicleTrimMappings(IForecast forecast, IVehicle comparisonVehicle)
 		{
 			if (!forecast.ForecastVehicle.Programmes.Any())
 				return;
@@ -344,24 +333,24 @@ namespace FeatureDemandPlanning.Controllers
 		}
 		private void HydrateLookups(IForecast forecast, ForecastComparisonViewModel forecastComparisonModel)
 		{
-			forecastComparisonModel.ForecastVehicleLookup = GetLookup(forecast.ForecastVehicle);
+			forecastComparisonModel.ForecastVehicleLookup = GetLookup(forecast.ForecastVehicle, HttpContext.Cache, DataContext);
             forecastComparisonModel.ComparisonVehicleLookup = new List<Lookup>();
 			foreach (var comparisonVehicle in forecast.ComparisonVehicles)
 			{
-				forecastComparisonModel.ComparisonVehicleLookup.Add(GetLookup(comparisonVehicle));
+				forecastComparisonModel.ComparisonVehicleLookup.Add(GetLookup(comparisonVehicle, HttpContext.Cache, DataContext));
 			}
 		}
-		private Lookup GetLookup(IVehicle forVehicle)
+		private static Lookup GetLookup(IVehicle forVehicle, Cache cache, IDataContext dataContext)
 		{
 			Lookup lookup = null;
 			var cacheKey = string.Format("ProgrammeLookup_{0}", forVehicle.GetHashCode());
-			var cachedLookup = HttpContext.Cache.Get(cacheKey);
+			var cachedLookup = cache.Get(cacheKey);
 			if (cachedLookup != null) {
 				lookup = (Lookup) cachedLookup;
 			}
 			else {
-				lookup = new Lookup(DataContext, forVehicle);
-				HttpContext.Cache.Add(cacheKey, lookup, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+				lookup = new Lookup(dataContext, forVehicle);
+				cache.Add(cacheKey, lookup, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
 			}
 			return lookup;
 		}
