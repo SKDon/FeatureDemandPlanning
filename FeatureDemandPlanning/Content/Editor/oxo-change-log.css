@@ -1,0 +1,306 @@
+﻿#reasonText {
+     width: 244px;
+     border: 1px solid #cccccc;
+     line-height: 130%;
+     padding: 2px;
+     font-size: 11px;
+     resize: none;
+}
+
+div#change-history-sub-title
+{
+    text-align:left;
+    font:bold 13px Tahoma,arial,helvetica,sans-serif;    
+    margin-bottom: 10px;
+}   
+
+table#change-history-table tr
+{
+    height:24px;
+}
+
+table#change-history-table thead tr th 
+{
+    background-color: black;
+    font-size: 11px;
+	color: #FFFFFF;
+	border-right: 1px solid #FFFFFF;	
+	text-align:left;
+	font-weight:normal;
+	outline: none;
+}
+
+
+#changeTree 
+{    
+    max-height:451px; 
+    overflow-y:auto; 
+    overflow-x:hidden;
+    background-color: White;
+    border: 1px solid gray;
+    padding: 2px 5px;
+    text-align:left;
+}
+    
+span.change-set
+{
+    display:inline-block;
+    width: 90px;
+    vertical-align:top;
+}
+
+span.change-version
+{
+    display:inline-block;
+    width: 50px;
+    vertical-align:top;
+}
+     
+span.change-date
+{
+    display:inline-block;
+    width: 120px;
+    vertical-align:top;
+}
+
+span.change-by
+{
+    display:inline-block;  
+    width: 77px;
+    vertical-align:top;
+}
+
+span.change-reason
+{
+    display:inline-block;  
+    width: 478px;
+    margin: 1px 3px;
+    overflow:visible;
+    white-space:normal;
+}
+
+span.change-ref
+{
+    display:inline-block;  
+    width: 100px;
+    margin: 1px 3px;
+    vertical-align:top;
+}
+
+
+span.log-market-header
+{
+    display:inline-block;
+    background-color: black;
+    color:White;
+    padding: 1px 0px;
+    width: 210px;
+    text-align:center;
+}
+span.log-model-header
+{
+    display:inline-block;
+    background-color: black;
+    color:White;
+    padding: 1px 0px;
+    width: 200px;
+    text-align:center;
+}
+span.log-feature-header
+{
+    display:inline-block;
+    background-color: black;
+    color:White;
+    padding: 1px 0px;
+    width: 250px;  
+    text-align:center;
+}
+span.log-prev-header, span.log-curr-header
+{
+    display:inline-block;
+    background-color: black;
+    color:White;
+    padding: 1px 0px;
+    width: 75px;
+    text-align:center;
+}
+span.log-market-detail
+{
+    display:inline-block;
+    padding: 2px 0px; 
+}
+span.log-model-detail
+{
+    display:inline-block;   
+    padding: 2px 0px;   
+}
+span.log-feature-detail
+{
+    display:inline-block;
+    padding: 2px 0px;    
+}
+span.log-prev-detail
+{
+    font-size:11px;
+    -webkit-border-radius: 2px;
+    float:right;
+    display:inline-block;
+    padding: 1px 0px;
+    margin: 1px 0px;
+    margin-right: 4px;
+    text-align: center;
+    width:36px;
+    background-color:Red;
+    color: White;
+}
+
+span.log-curr-detail
+{
+    font-size:11px;
+    -webkit-border-radius: 2px;
+    float:right;
+    display:inline-block;
+    padding: 1px 0px;
+    margin: 1px 0px;
+    margin-right: 4px;
+    text-align: center;
+    width:36px;
+    background-color:green;
+    color: White;
+}
+
+span.log-prev-detail-header
+{
+    -webkit-border-radius: 2px;
+    float:right;
+    display:inline-block;
+    padding: 1px 0px 3px 0px;
+    margin-right: 4px;
+    margin-top:4px;
+    text-align: center;
+    width:85px;
+    background-color:Red;
+    color: White;
+}
+
+span.log-curr-detail-header
+{
+    -webkit-border-radius: 2px;
+    float:right;
+    display:inline-block;
+    padding: 2px 0px;
+    margin-right: 4px;
+    margin-top:3px;
+    text-align: center;
+    width:85px;
+    background-color:green;
+    color: White;
+}
+
+
+div.change-container
+{
+    margin-left: 15px;
+}
+
+UL.jqueryFileTree LI
+{
+    padding-left:3px!important;    
+}
+
+div#change-log-detail-sub-title
+{
+    text-align:left;
+    font:normal 13px Tahoma,arial,helvetica,sans-serif; 
+    background-color: Black;  
+}
+
+span.change-set-header
+{
+    display:inline-block;
+    background-color:Black;
+    color:White;
+    width: 110px;
+    text-align: center;
+    padding:5px 0px;
+    border-right:1px solid white;
+}
+
+span.change-version-header
+{
+    display:inline-block;
+    background-color:Black;
+    color:White;
+    width: 55px;
+    text-align: center;
+    padding:5px 0px;
+    border-right:1px solid white;
+}
+
+span.change-date-header
+{
+    display:inline-block;
+    background-color:Black;
+    color:White;
+    width: 118px;
+    text-align: center;
+    padding:5px 0px;
+    border-right:1px solid white;
+}   
+span.change-by-header
+{
+    display:inline-block;
+    background-color:Black;
+    color:White;
+    width: 70px;
+    padding:5px 5px;
+    border-right:1px solid white;
+}
+span.change-reason-header
+{
+    display:inline-block;
+    background-color:Black;
+    color:White;
+    padding:5px;
+}
+
+UL.jqueryFileTree LI.directory 
+{
+    padding-left:5px!important;    
+    border-bottom: 1px solid black;
+    background: url(../../Content/Images/tree/open.png) 0px 4px no-repeat;
+}
+
+UL.jqueryFileTree LI.expanded 
+{
+    padding-left:5px!important;    
+    border-bottom: 1px solid gray;
+    background: url(../../Content/Images/tree/close.png) 0px 4px no-repeat;
+}
+
+.jqueryFileTree LI.detail
+{
+    background: #C0D9AF url(../../Content/Images/tree/branch.png) -2px 2px no-repeat;
+    border-bottom: 1px solid white;  
+    margin-left: 0px!important;
+    padding-left: 18px!important;
+}
+
+.jqueryFileTree LI.detail:last-child 
+{
+     background: #C0D9AF url(../../Content/Images/tree/branchend.png) -2px 2px no-repeat;
+      border-bottom: 0px solid black; 
+}
+
+UL.jqueryFileTree LI
+{
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+table#change-history-table td
+{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    vertical-align:top;
+}

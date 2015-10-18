@@ -1,0 +1,180 @@
+﻿@using FeatureDemandPlanning.BusinessObjects
+@using enums = FeatureDemandPlanning.Enumerations
+
+@model FeatureDemandPlanning.Models.ImportViewModel
+
+@section PageScripts
+{
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/exceptions.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/exceptionspage.js")?v=@Model.CurrentVersion"></script>
+
+    <script type="text/javascript">
+
+        var exceptions, page, modal;
+        var params = {
+            ExceptionsUri: "@Url.Action("ListImportExceptions")",
+            AddFeatureUri: "@Url.Action("AddFeature", "Vehicle")",
+            MapFeatureUri: "@Url.Action("MapFeature", "Vehicle")",
+            MapMarketUri: "@Url.Action("MapMarket")",
+            AddDerivativeUri: "@Url.Action("AddDerivative", "Vehicle")",
+            MapDerivativeUri: "@Url.Action("MapDerivative", "Vehicle")",
+            IgnoreUri: "@Url.Action("IgnoreError")",
+            ModalDialogId: "modal",
+            ModalContentId: "modalBody",
+            Configuration: {},
+            PageSize: @Model.PageSize,
+            PageIndex: @Model.PageIndex,
+            ImportQueueId: @Model.CurrentImport.ImportQueueId.GetValueOrDefault()
+        };
+
+        params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+    </script>
+    <script src="@Url.Content("~/Scripts/Import/exceptionsinit.js")?v=@Model.CurrentVersion"></script>
+}
+
+@section PageContentHeader
+{
+    <div class="row">
+        <div class="col-lg-5 inverse">
+            <p style="height:18px" id="lblPageDescription" class="subscribers-notifyPageChanged">
+                <div class="page-description">View the exception information for the selected import and take action as appropriate</div>
+            </p>
+            <h3 id="lblVehicleDescription">Import Exception Report</h3>
+        </div>
+        <div class="col-lg-3 pull-right" style="padding-top: 20px">
+            <div class="panel panel-primary" style="margin-bottom: 0px">
+                <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Filter</div></div>
+                <div class="panel-body" style="padding-bottom:0px;padding-top:5px">
+                    <div class="form-group form-group-sm">
+                        <label for="ddlExceptionType" class="form-label inverse" style="font-size:11px">Error Type:</label>
+                        <select id="ddlExceptionType" class="form-control">
+                            <option value="0">All</option>
+                            <option value="1">Missing Market</option>
+                            <option value="3">Missing Derivative</option>
+                            <option value="2">Missing Feature</option>
+                        </select>
+                        <label for="txtFilterMessage" class="form-label inverse" style="font-size:11px">Message:</label>
+                    <input type="text" id="txtFilterMessage" class="form-control" />    
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 pull-right" style="padding-top: 20px">
+            <div class="panel panel-primary" style="margin-bottom: 0px">
+                <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Import Summary</div></div>
+                <div class="panel-body" style="padding-left:15px;padding-right:15px;padding-top:5px;padding-bottom:5px">
+                    <table class="table table-bordered table-condensed dataTable table-striped" style="font-size:11px">
+                        <tbody>
+                            <tr>
+                                <td>Lines Imported:</td>
+                                <td><span id="spnLinesImported">-</span></td>
+                            </tr>
+                            <tr>
+                                <td>Lines Failed:</td>
+                                <td><span id="spnLinesFailed">-</span></td>
+                            </tr>
+                            <tr>
+                                <td>Total Lines:</td>
+                                <td><span id="spnTotalRows">-</span></td>
+                            </tr>
+                            <tr>
+                                <td>Import Filename:</td>
+                                <td>@System.IO.Path.GetFileName(Model.CurrentImport.FilePath)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section PageBody
+{
+    <div id="dvFilter" class="subscribers-notifyFilterComplete"></div>
+    <div id="notifier" class="subscribers-notifySuccess subscribers-notifyError subscribers-notifyUpdated col-lg-12" style="float:unset"></div>
+
+    @Html.Partial("_Modal", Model)
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title"><span id="spnFilteredRecords" class="badge">@Model.Exceptions.TotalRecords</span> Import Exceptions</div>
+        </div>
+        <div class="panel-body">
+            <table id="tblImportExceptions" class="table table-bordered table-condensed table-striped dataTable">
+                <thead>
+                    <tr>
+                        <th class="text-right col-lg-1">Line #</th>
+                        <th class="text-left col-lg-2">Error Type</th>
+                        <th class="col-lg-5">Message</th>
+                        <th class="text-center col-lg-2">Error On</th>
+                        <th class="text-center col-lg-2">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @*@foreach (var exception in Model.Exceptions.CurrentPage)
+                    {
+                        <tr>
+                            <td class="text-right">@exception.LineNumber</td>
+                            <td class="text-center">@exception.ErrorTypeDescription</td>
+                            <td>@exception.ErrorMessage</td>
+                            <td class="text-center">@exception.ErrorOn</td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                        Action
+                                        <span class="caret"></span>
+                                    </button>
+                                    @RenderActionButton(exception)
+                                </div>
+                            </td>
+                        </tr>
+                    }*@
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+}
+
+@helper RenderActionButton(ImportError error)
+{
+    @:<ul class="dropdown-menu pull-right">
+
+        switch (error.ErrorType)
+        {
+            case enums.ImportExceptionType.MissingMarket:
+
+                @:<li><a href="#"><span class="glyphicon glyphicon-random"></span> Map to market</a></li>
+
+                break;
+
+            case enums.ImportExceptionType.MissingDerivative:
+
+                @:<li><a href="#"><span class="glyphicon glyphicon-plus"></span> Add manual derivative</a></li>
+                @:<li><a href="#"><span class="glyphicon glyphicon-random"></span> Map to existing derivative</a></li>
+
+                break;
+
+            case enums.ImportExceptionType.MissingFeature:
+
+                @:<li><a href="#"><span class="glyphicon glyphicon-plus"></span> Add manual feature</a></li>
+                @:<li><a href="#"><span class="glyphicon glyphicon-random"></span> Map to existing feature</a></li>
+
+                break;
+
+            default:
+                break;
+
+        }
+        @:<li role="separator" class="divider"></li>
+        @:<li><a href="#">Ignore error</a></li>
+
+    @:</ul>
+}
+
+
+

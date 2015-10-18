@@ -1,0 +1,77 @@
+﻿@using FeatureDemandPlanning.BusinessObjects
+@using FeatureDemandPlanning.Helpers
+@using enums = FeatureDemandPlanning.Enumerations
+
+@model FeatureDemandPlanning.Models.FdpOxoVolumeViewModel
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="panel-title">Volume Data</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Placeholder for fixed columns for scrollable table -->
+        @*<div id="scrollerFixed">
+        </div>*@
+
+        <div id="scroller" class="default-skin subscribers-notifyResize">
+            <table style="table-layout:fixed" id="volumeDataTable" class="table table-bordered table-condensed dataTable">
+                <thead>
+                    <tr>
+                        @*<th style="width:0px !important">display order</th>*@
+                        <th>Feature Group</th>
+                        <th style="border-right:none!important;width:200px">&nbsp;&nbsp;Feature Description</th>
+                        <th style="border-left:none!important;"></th>
+                        <th style="width:60px" class="text-center">Feature<br />Code<br />(JLR)</th>
+                        <th>Feature Sub Group</th>
+
+                        @foreach (var carModel in Model.Volume.Vehicle.AvailableModels)
+                        {
+                            var nameParts = carModel.NameWithBR.Split('#');
+                            <th data="@carModel.Id" style="width:80px" class="text-center">
+                                @foreach (string part in nameParts)
+                                {
+                                    @part<br />
+                                }
+                                @if (!String.IsNullOrEmpty(carModel.BMC))
+                                {
+                                    @carModel.BMC
+                                }
+                                <br />
+                                @*@if (carModel.CoA != null)
+                            {
+                                string country = Model.RefLists("Country of Assembly").Where(B => B.Code == carModel.CoA).FirstOrDefault().Description;
+                                <img style="padding-top: 4px;" title="Country of Assembly: @(country)" src="../Content/Images/flags/@(carModel.CoA).png" />
+                            }*@
+                            </th>
+                        }
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Volume.VolumeData)
+                    {
+                        var descr = @item["BrandDescription"].ToString();
+                        var subGroup = @item["FeatureSubGroup"].ToString() == "" ? "NA" : @item["FeatureSubGroup"].ToString();
+
+                        <tr>
+                            @*<td style="width:0px">@item["Display_Order"]</td>*@
+                            <td>@item["FeatureGroup"]</td>
+                            <td style="border-right:none!important"><span title="@descr">@descr</span></td>
+                            <td style="border-left:none!important"></td>
+                            <td class="text-center">@item["Feature_Code"]</td>
+                            <td>@subGroup</td>
+
+                            @foreach (var modelItem in Model.Volume.Vehicle.AvailableModels)
+                            {
+                                <td class="text-center">@item[modelItem.Id.ToString()]</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
