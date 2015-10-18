@@ -1,4 +1,5 @@
 ﻿
+
 CREATE VIEW [dbo].[JMFD]
 AS
 
@@ -31,6 +32,6 @@ ON F.Feat_Code = J.Feat_Code
 AND J.Brand = 'J'
 LEFT OUTER JOIN OXO_IMP_Brand_Desc L
 ON F.Feat_Code = L.Feat_Code
-AND L.Brand = 'L'
+AND L.Brand = 'LR'
 
 

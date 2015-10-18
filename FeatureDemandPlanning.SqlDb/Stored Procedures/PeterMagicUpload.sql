@@ -4,7 +4,7 @@
 /* The two files should then be copied to the server and the path adjusted accordingly */
 
 /* Empty the temp feature table */
-CREATE PROCEDURE [dbo].[PeterMagicUpload]
+CREATE PROCEDURE PeterMagicUpload
 AS
 
 TRUNCATE TABLE TMP_Feature_Import

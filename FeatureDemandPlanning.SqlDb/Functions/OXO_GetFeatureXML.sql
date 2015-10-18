@@ -2,10 +2,10 @@
 RETURNS XML
 WITH RETURNS NULL ON NULL INPUT 
 BEGIN RETURN 
-	(SELECT F.PROFET_JAG AS '@profet',
-	        F.Feature_Group AS '@featGroup', 
+	(SELECT F.OA_Code AS '@profet',
+	        F.OXO_Grp AS '@featGroup', 
 		    ISNULL(OXO_Code, '') as '@oxoCode'    
-	FROM OXO_Feature F
+	FROM OXO_Feature_Ext F
 	LEFT OUTER JOIN OXO_Item_Data D
 	ON F.Id = D.Feature_Id
 	AND D.OXO_Doc_Id = @doc_Id

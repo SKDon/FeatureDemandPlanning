@@ -1,4 +1,4 @@
-﻿CREATE VIEW [dbo].[OXO_Programme_VW]
+﻿CREATE VIEW [OXO_Programme_VW]
 AS
 
     SELECT 

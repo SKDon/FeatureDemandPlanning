@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_PackFeature_GetMany]
+﻿CREATE PROCEDURE [OXO_PackFeature_GetMany]
    @p_programme_id INT
 AS
 	

@@ -6,7 +6,7 @@
     [In_LR_Coding]      NVARCHAR (MAX) NULL,
     [In_Jag_Coding]     NVARCHAR (MAX) NULL,
     [WERS_Code]         NVARCHAR (MAX) NULL,
-    [Blank]             NVARCHAR (MAX) NULL,
+    [RADS_Id]           NVARCHAR (MAX) NULL,
     [On_Relevant_Map]   NVARCHAR (MAX) NULL,
     [Brand_Desc_LR]     NVARCHAR (MAX) NULL,
     [LR_Char]           NVARCHAR (MAX) NULL,
@@ -35,6 +35,13 @@
     [L319]              NVARCHAR (MAX) NULL,
     [L550]              NVARCHAR (MAX) NULL,
     [L462]              NVARCHAR (MAX) NULL,
-    [L316]              NVARCHAR (MAX) NULL
+    [L316]              NVARCHAR (MAX) NULL,
+    [L663]              NVARCHAR (MAX) NULL,
+    [L560]              NVARCHAR (MAX) NULL,
+    [X590]              NVARCHAR (MAX) NULL,
+    [X261]              NVARCHAR (MAX) NULL,
+    [Status]            NVARCHAR (MAX) NULL
 );
+
+
 

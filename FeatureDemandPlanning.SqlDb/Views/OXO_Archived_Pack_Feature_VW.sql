@@ -1,4 +1,4 @@
-﻿CREATE VIew [dbo].[OXO_Archived_Pack_Feature_VW]
+﻿CREATE VIew [OXO_Archived_Pack_Feature_VW]
  AS
  SELECT 
     V.Make AS VehicleMake,
@@ -17,6 +17,7 @@
 	WHEN ISNULL(P.Use_OA_Code, 0) = 0 THEN F.Feat_Code 
 	ELSE F.OA_Code END AS FeatureCode,     
     F.OA_Code AS OACode,
+    F.Long_Desc AS LongDescription,
     F.Created_By  AS CreatedBy,  
     F.Created_On  AS CreatedOn,  
     F.Updated_By  AS UpdatedBy,  

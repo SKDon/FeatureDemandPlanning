@@ -1,4 +1,4 @@
-﻿CREATE VIEW [dbo].[JMFD_Feature_VW]
+﻿CREATE VIEW [JMFD_Feature_VW]
 AS
 SELECT   F.Id
        , F.Feat_Code
@@ -9,16 +9,13 @@ SELECT   F.Id
        , G.Sub_Group_Name
        , F.[Description]
        , F.Long_Desc
-       , BJ.Brand_Desc AS Jaugar_Desc
+       , BJ.Brand_Desc AS Jaguar_Desc
        , LR.Brand_Desc AS LR_Desc
        , ISNULL(G.Display_Order, 10000) AS Display_Order
 FROM OXO_IMP_Feature F
---LEFT JOIN OXO_Vehicle_Feature_Applicability VFA 
---									ON	VFA.Feature_Id	= F.ID
---LEFT JOIN OXO_Vehicle			V	ON	V.ID			= VFA.Vehicle_Id
 LEFT JOIN OXO_IMP_OXO_Group		G	ON	F.OXO_Grp		= G.Id 
 LEFT JOIN OXO_IMP_Brand_Desc	BJ	ON	F.Feat_Code		= BJ.Feat_Code
 									AND BJ.Brand		= 'J'
-LEFT JOIN OXO_IMP_Brand_Desc	LR	ON	F.Feat_Code		= LR.Feat_Code
+LEFT JOIN OXO_IMP_Brand_Desc	LR	ON F.Feat_Code		= LR.Feat_Code
 									AND LR.Brand		= 'LR'
 

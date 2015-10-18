@@ -1,13 +1,15 @@
-﻿CREATE VIEW [dbo].[OXO_Archived_Models_VW]
+﻿
+
+CREATE VIEW [dbo].[OXO_Archived_Models_VW]
 AS
-SELECT     DisplayOrder = dbo.OXO_GetVariantDisplayOrder(B.Doors, B.Wheelbase, E.Size, E.Fuel_Type, E.Power, T .DriveTrain, CAST(RIGHT(TM. LEVEL, 1) 
+SELECT     DisplayOrder = dbo.OXO_GetVariantDisplayOrder(B.Doors, B.Wheelbase, E.Size, E.Fuel_Type, E.Power, T.DriveTrain, T.Type, CAST(RIGHT(TM. LEVEL, 1) 
                       AS INT)), V.Name AS VehicleName, V.AKA AS VehicleAKA, P.Model_Year AS ModelYear, V.Display_Format AS DisplayFormat, 
                       Name = dbo.OXO_GetVariantName(V.Display_Format, B.Shape, B.Doors, B.Wheelbase, E.Size, E.Fuel_Type, E.Cylinder, E.Turbo, E.Power, 
                       T.DriveTrain, T.Type, TM.Name, TM.LEVEL, 0, 0), NameWithBR = dbo.OXO_GetVariantName(V.Display_Format, B.Shape, B.Doors, B.Wheelbase, 
                       E.Size, E.Fuel_Type, E.Cylinder, E.Turbo, E.Power, T.DriveTrain, T.Type, TM.Abbreviation, TM.LEVEL, 0, 1), M.Id AS Id, M.Programme_Id, M.Body_Id, 
                       M.Engine_Id, M.Transmission_Id, M.Trim_Id, M.Active, M.Created_By, M.Created_On, M.Updated_By, M.Last_Updated, M.CoA, B.Shape, B.Doors, 
                       B.Wheelbase, E.Size, E.Cylinder, E.Turbo, E.Fuel_Type, E.Power, E.Electrification, T .Type, T .Drivetrain, TM.Name AS TrimName, TM.Abbreviation, 
-                      TM. LEVEL, M.BMC AS BMC, TM.DPCK, M.Doc_Id AS Doc_Id, V.Make, M.KD
+                      TM. LEVEL, M.BMC AS BMC, TM.DPCK, M.Doc_Id AS Doc_Id, V.Make, M.KD, TM.Display_Order
 FROM         dbo.OXO_Archived_Programme_Model M INNER JOIN
                       dbo.OXO_Archived_Programme_Body B ON M.Body_Id = B.Id INNER JOIN
                       dbo.OXO_Archived_Programme_Engine E ON M.Engine_Id = E.Id INNER JOIN

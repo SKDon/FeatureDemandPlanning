@@ -1,9 +1,10 @@
-﻿CREATE VIEW [dbo].[OXO_Models_VW]
+﻿
+CREATE VIEW [dbo].[OXO_Models_VW]
 AS
       
    SELECT 
    	DisplayOrder = dbo.OXO_GetVariantDisplayOrder(B.Doors, B.Wheelbase, E.Size,
-												  E.Fuel_Type, E.Power, T.DriveTrain,
+												  E.Fuel_Type, E.Power, T.DriveTrain, T.Type,
 												  TM.Display_Order),	
     V.Name AS VehicleName,
     V.AKA AS VehicleAKA,
@@ -68,7 +69,8 @@ AS
     M.BMC AS BMC,    
     TM.DPCK AS DPCK,
     V.Make,
-    M.KD  
+    M.KD ,
+    TM.Display_Order 
     FROM dbo.OXO_Programme_Model M
     INNER JOIN dbo.OXO_Programme_Body B
     ON M.Body_Id = B.Id

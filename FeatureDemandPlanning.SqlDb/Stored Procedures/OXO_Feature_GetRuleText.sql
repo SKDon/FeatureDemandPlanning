@@ -1,6 +1,6 @@
 ﻿
 
-CREATE PROCEDURE [dbo].[OXO_Feature_GetRuleText]
+CREATE PROCEDURE [OXO_Feature_GetRuleText]
    @p_prog_id int,
    @p_doc_id int,
    @p_feature_id int

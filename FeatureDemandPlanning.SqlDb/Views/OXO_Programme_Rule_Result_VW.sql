@@ -1,15 +1,27 @@
-﻿CREATE VIEW [dbo].[OXO_Programme_Rule_Result_VW]
+﻿CREATE VIEW [OXO_Programme_Rule_Result_VW]
 AS
 SELECT     RE.OXO_Doc_Id, RE.Programme_Id, RE.Object_Level, RE.Object_Id, RE.Rule_Id, RE.Model_Id, M.Name AS Model, M.CoA, ISNULL(L.Description, 
                       N'Unspecified') AS Feature_Group, 
-                      CASE WHEN RU.Rule_Category = 'E' THEN 'Engineering' WHEN RU.Rule_Category = 'M' THEN 'Marketing' WHEN RU.Rule_Category = 'T' THEN 'Territorial'
-                       ELSE 'Other' END AS Rule_Category, RU.Owner, CASE WHEN RU.Rule_Group = 'EFG' THEN REPLACE(RU.Rule_Response, '<efg>', 
-                      '<' + RE.Result_Info + '>') WHEN RU.Rule_Group = 'GEN' THEN REPLACE(RU.Rule_Response, '<gen>', RE.Result_Info) 
-                      ELSE RU.Rule_Response END AS Rule_Response, RE.Rule_Result, RE.Created_By, RE.Created_On
-FROM         dbo.OXO_Programme_Rule_Result AS RE INNER JOIN
-                      dbo.OXO_Programme_Rule AS RU ON RE.Rule_Id = RU.Id INNER JOIN
-                      dbo.OXO_Models_VW AS M ON RE.Model_Id = M.Id LEFT OUTER JOIN
-                      dbo.OXO_Reference_List AS L ON RU.Rule_Group = L.Code AND L.List_Name = 'Feature Group'
+                      CASE WHEN RU.Rule_Category = 'E' THEN 'Engineering' 
+                           WHEN RU.Rule_Category = 'M' THEN 'Marketing' 
+                           WHEN RU.Rule_Category = 'T' THEN 'Territorial'
+                           ELSE 'Other' END AS Rule_Category, 
+                      RU.Owner, 
+						   CASE WHEN RU.Rule_Group = 'EFG' AND RE.Rule_Result = 0
+						        THEN REPLACE(RU.Rule_Response, '<efg>', '<' + RE.Result_Info + '>') 
+						        WHEN RU.Rule_Group = 'GEN' AND RE.Rule_Result = 0
+						        THEN REPLACE(RU.Rule_Response, '<gen>', RE.Result_Info) 
+						        WHEN RU.Rule_Group = 'EFG' AND RE.Rule_Result = 1
+						        THEN RE.Result_Info 
+						        WHEN RU.Rule_Group = 'GEN' AND RE.Rule_Result = 1
+						        THEN RE.Result_Info 
+                                ELSE RU.Rule_Response END AS Rule_Response, 
+                      RE.Rule_Result, RE.Created_By, RE.Created_On,
+                      M.DisplayOrder
+FROM       dbo.OXO_Programme_Rule_Result AS RE INNER JOIN
+          dbo.OXO_Programme_Rule AS RU ON RE.Rule_Id = RU.Id INNER JOIN
+          dbo.OXO_Models_VW AS M ON RE.Model_Id = M.Id LEFT OUTER JOIN
+          dbo.OXO_Reference_List AS L ON RU.Rule_Group = L.Code AND L.List_Name = 'Feature Group'
 
 
 GO

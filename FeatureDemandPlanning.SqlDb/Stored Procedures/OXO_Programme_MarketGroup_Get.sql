@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Programme_MarketGroup_Get] 
+﻿CREATE PROCEDURE [OXO_Programme_MarketGroup_Get] 
   @p_Id int,
   @p_prog_id int,
   @p_doc_id int = 0,

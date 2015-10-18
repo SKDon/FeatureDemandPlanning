@@ -1,6 +1,4 @@
-﻿
-
-CREATE PROCEDURE [dbo].[OXO_ProgrammeFeatureComment_Save] 
+﻿CREATE PROCEDURE [OXO_ProgrammeFeatureComment_Save] 
    @p_progid  int,
    @p_docid  int,   
    @p_featureid  int,  
@@ -16,16 +14,35 @@ AS
   AND Programme_Id = @p_progid;
 	
   IF ISNULL(@p_archived, 0) = 0 	  
-    UPDATE OXO_Programme_Feature_Link 
-      SET Comment = @p_comment,
-          CDSID = @p_CDSID
-    WHERE Programme_Id = @p_progid
-      AND Feature_Id =  @p_featureid
+  BEGIN
+	UPDATE OXO_Programme_Feature_Link 
+	  SET Comment = @p_comment,
+		  CDSID = @p_CDSID
+	WHERE Programme_Id = @p_progid
+	  AND Feature_Id =  @p_featureid;
+	  
+	UPDATE OXO_Pack_Feature_Link 
+	  SET Comment = @p_comment,
+		  CDSID = @p_CDSID
+	WHERE Programme_Id = @p_progid
+	  AND Feature_Id =  @p_featureid;
+  
+  END               
   ELSE
+  BEGIN
     UPDATE OXO_Archived_Programme_Feature_Link 
       SET Comment = @p_comment,
           CDSID = @p_CDSID
     WHERE Programme_Id = @p_progid
       AND Feature_Id =  @p_featureid
-      AND Doc_Id = @p_docid
+      AND Doc_Id = @p_docid;
+    
+    UPDATE OXO_Archived_Pack_Feature_Link 
+      SET Comment = @p_comment,
+          CDSID = @p_CDSID
+    WHERE Programme_Id = @p_progid
+      AND Feature_Id =  @p_featureid
+      AND Doc_Id = @p_docid;  
+      
+  END
 

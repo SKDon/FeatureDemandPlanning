@@ -27,6 +27,6 @@ Q.ImportQueueId = @ImportQueueId;
 
 SET @ChangeSetId = SCOPE_IDENTITY();
 
---UPDATE Fdp_Import SET ChangeSetId = @ChangeSetId
---WHERE
---ImportQueueId = @ImportQueueId;
+UPDATE Fdp_Volume SET ChangeSetId = @ChangeSetId
+WHERE
+ImportQueueId = @ImportQueueId;

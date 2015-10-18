@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[MFD_Clear_Feature_Data] 
+﻿CREATE PROCEDURE [MFD_Clear_Feature_Data] 
 AS
 	
   DELETE FROM dbo.MFD_Brand_Feature;

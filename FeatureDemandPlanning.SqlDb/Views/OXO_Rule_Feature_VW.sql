@@ -1,4 +1,4 @@
-﻿CREATE VIew [dbo].[OXO_Rule_Feature_VW]
+﻿CREATE VIew [OXO_Rule_Feature_VW]
  AS
  SELECT 
     V.Make AS VehicleMake,

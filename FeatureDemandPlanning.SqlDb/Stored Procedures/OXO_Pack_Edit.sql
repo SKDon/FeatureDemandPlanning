@@ -1,6 +1,6 @@
 ﻿
 
-CREATE PROCEDURE [dbo].[OXO_Pack_Edit] 
+CREATE PROCEDURE [OXO_Pack_Edit] 
    @p_doc_id INT
   ,@p_programme_id INT
   ,@p_name nvarchar(500) 

@@ -16,6 +16,6 @@ AS
   	FROM OXO_Reference_List R
 	WHERE R.List_Name = 'Feature Group'
 	AND NOT EXISTS
-	( SELECT 1 FROM dbo.OXO_Feature F WHERE F.Feature_Group = R.Description )
+	( SELECT 1 FROM dbo.OXO_Feature_EXT F WHERE F.OXO_Grp = R.Id )
 	ORDER BY R.Display_Order;
 

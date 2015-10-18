@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_ProgrammePackGetMany]
+﻿CREATE PROCEDURE [OXO_ProgrammePackGetMany]
 	@p_prog_Id INT,
 	@p_doc_Id INT,
 	@p_use_OA_code bit = 0,

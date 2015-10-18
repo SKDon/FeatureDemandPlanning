@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[OXO_Feature] (
+﻿CREATE TABLE [dbo].[OXO_Feature_BCK] (
     [Id]                INT             IDENTITY (1, 1) NOT NULL,
     [Description]       NVARCHAR (500)  NOT NULL,
     [Notes]             NVARCHAR (2000) NULL,

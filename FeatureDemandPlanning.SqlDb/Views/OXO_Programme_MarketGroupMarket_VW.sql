@@ -1,4 +1,4 @@
-﻿CREATE VIEW [dbo].[OXO_Programme_MarketGroupMarket_VW]
+﻿CREATE VIEW [OXO_Programme_MarketGroupMarket_VW]
 AS
 
     SELECT V.Name, V.AKA, P.Model_Year, P.ID AS Programme_Id, 

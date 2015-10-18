@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Programme_Rule_GetMany]
+﻿CREATE PROCEDURE [OXO_Programme_Rule_GetMany]
    @p_prog_id int = NULL
 AS
 	

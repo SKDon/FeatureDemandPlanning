@@ -14,14 +14,14 @@
   @p_Id INT OUTPUT
 AS
 	
-  INSERT INTO dbo.OXO_Feature
+  INSERT INTO dbo.OXO_Feature_Ext
   (
     Description,  
-    Notes,  
-    PROFET_JAG,  
-    Active,  
-    Feature_Group,  
-    Feature_Sub_Group,
+  --  Notes,  
+  --  PROFET_JAG,  
+  --  Active,  
+  --  Feature_Group,  
+  --  Feature_Sub_Group,
     Created_By,  
     Created_On,  
     Updated_By,  
@@ -31,11 +31,11 @@ AS
   VALUES 
   (
     @p_Description,  
-    @p_Notes,  
-    @p_PROFEAT,  
-    @p_Active,  
-    @p_Feature_Group,  
-    @p_feature_Sub_Group,
+  --  @p_Notes,  
+  --  @p_PROFEAT,  
+  --  @p_Active,  
+  --  @p_Feature_Group,  
+   -- @p_feature_Sub_Group,
     @p_Created_By,  
     @p_Created_On,  
     @p_Updated_By,  

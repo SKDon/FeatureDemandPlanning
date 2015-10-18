@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_OXODoc_Bulk_Update] 
+﻿CREATE PROCEDURE [OXO_OXODoc_Bulk_Update] 
   @p_GUID nvarchar(500),
   @p_Doc_Id int,
   @p_Section nvarchar(50) = 'MBM',

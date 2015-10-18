@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[ChangeDiary_Delete] 
+﻿CREATE PROCEDURE [ChangeDiary_Delete] 
   @p_Id int
 AS
 	

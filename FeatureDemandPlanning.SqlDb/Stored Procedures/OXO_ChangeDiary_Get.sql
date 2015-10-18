@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_ChangeDiary_Get] 
+﻿CREATE PROCEDURE [OXO_ChangeDiary_Get] 
   @p_Id int
 AS
 	

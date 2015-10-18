@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_MFD_GetMany]	
+﻿CREATE PROCEDURE [OXO_MFD_GetMany]	
 	@p_section INT = 0	
 AS
 	

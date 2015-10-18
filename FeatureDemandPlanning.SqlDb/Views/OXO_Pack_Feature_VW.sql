@@ -1,4 +1,4 @@
-﻿CREATE VIew [dbo].[OXO_Pack_Feature_VW]
+﻿CREATE VIew [OXO_Pack_Feature_VW]
  AS
  SELECT 
     V.Make AS VehicleMake,
@@ -10,13 +10,17 @@
     K.Pack_Name AS PackName,    
     K.Extra_Info As ExtraInfo,
     K.Feature_Code AS PackFeatureCode,
-    F.Id AS Id,
-    F.Description  AS SystemDescription,  
-    ISNULL(M.Brand_Desc, F.Description) AS BrandDescription,
-    CASE 
-	WHEN ISNULL(P.Use_OA_Code, 0) = 0 THEN F.Feat_Code 
+    ISNULL(F.Id, -1000) AS Id,
+    CASE WHEN F.ID IS NULL THEN 'No Feature Selected' 
+    ELSE F.Description END  AS SystemDescription,  
+    CASE WHEN F.ID IS NULL THEN 'No Feature Selected' 
+    ELSE ISNULL(M.Brand_Desc, F.Description) END AS BrandDescription,
+    CASE WHEN ISNULL(P.Use_OA_Code, 0) = 0 THEN F.Feat_Code 
 	ELSE F.OA_Code END AS FeatureCode,         
     F.OA_Code AS OACode,
+    L.Comment AS FeatureComment,
+    L.Rule_Text AS FeatureRuleText,
+    F.Long_Desc AS LongDescription,
     F.Created_By  AS CreatedBy,  
     F.Created_On  AS CreatedOn,  
     F.Updated_By  AS UpdatedBy,  

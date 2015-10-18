@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Programme_MarketGroup_Edit] 
+﻿CREATE PROCEDURE [OXO_Programme_MarketGroup_Edit] 
    @p_Id INT
   ,@p_prog_id INT 
   ,@p_Group_Name  varchar(500) 

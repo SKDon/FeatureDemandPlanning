@@ -1,7 +1,7 @@
 ﻿
 
 
-CREATE PROCEDURE [dbo].[OXO_Pack_Get] 
+CREATE PROCEDURE [OXO_Pack_Get] 
   @p_ID int,
   @p_doc_Id int,
   @p_deep bit = 0

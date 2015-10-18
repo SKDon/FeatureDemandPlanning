@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Master_MarketGroup_Edit] 
+﻿CREATE PROCEDURE [OXO_Master_MarketGroup_Edit] 
    @p_Id INT OUTPUT
   ,@p_Group_Name  varchar(500) 
   ,@p_Active  bit

@@ -1,6 +1,6 @@
 ﻿
 
-CREATE PROCEDURE [dbo].[OXO_ProgrammeGSFComment_Save] 
+CREATE PROCEDURE [OXO_ProgrammeGSFComment_Save] 
    @p_progid  int,
    @p_docid int,
    @p_featureid  int,  

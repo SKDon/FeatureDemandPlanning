@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_AvailableModel_Market]   
+﻿CREATE PROCEDURE [OXO_AvailableModel_Market]   
    @p_prog_id int,
    @p_doc_id int,
    @p_Market_id int

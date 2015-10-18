@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[OXO_Feature_Group] (
     [Id]             INT            NOT NULL,
     [Group_Name]     NVARCHAR (100) NULL,
-    [Sub_Group_Name] NCHAR (100)    NULL,
+    [Sub_Group_Name] NVARCHAR (100) NULL,
     [Status]         BIT            NULL,
     [Display_Order]  INT            NULL,
     [Created_By]     NVARCHAR (8)   NULL,
@@ -12,6 +12,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IDX_OXO_Feature_Group_Display_Order]
     ON [dbo].[OXO_Feature_Group]([Display_Order] ASC);
@@ -19,11 +21,11 @@ CREATE NONCLUSTERED INDEX [IDX_OXO_Feature_Group_Display_Order]
 
 GO
 CREATE NONCLUSTERED INDEX [IDX_OXO_Feature_Group_Group_Name]
-    ON [dbo].[OXO_Feature_Group]([Group_Name] ASC)
-    INCLUDE([Display_Order]);
+    ON [dbo].[OXO_Feature_Group]([Group_Name] ASC);
+
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [Ix_NC_OXO_Feature_Group_Cover]
-    ON [dbo].[OXO_Feature_Group]([Group_Name] ASC, [Display_Order] ASC);
+
 

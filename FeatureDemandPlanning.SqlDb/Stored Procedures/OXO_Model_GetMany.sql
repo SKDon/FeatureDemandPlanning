@@ -43,7 +43,7 @@ AS
 	           0 AS MarketsCount
 	FROM OXO_Models_VW
 	WHERE (Programme_Id = @p_prog_id OR @p_prog_id IS NULL)
-	AND   (ISNULL(@p_make, '') = '' OR Make = @p_make)
+	AND   (Make = @p_make OR @p_make IS NULL)
 	AND Active = 1
 	ORDER BY COA Desc, Shape, DisplayOrder;
   

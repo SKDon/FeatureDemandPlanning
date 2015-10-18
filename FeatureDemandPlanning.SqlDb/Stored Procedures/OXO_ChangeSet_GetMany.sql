@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_ChangeSet_GetMany]
+﻿CREATE PROCEDURE [OXO_ChangeSet_GetMany]
 	@p_OXODocId int 
 AS
 	
@@ -7,6 +7,7 @@ AS
     OXO_Doc_Id  AS OXODocId,  
     Reminder  AS Reminder, 
     Version_Id AS VersionId,
+    Version_Label AS VersionLabel,
     Is_Important AS IsImportant,
     Is_Starred AS IsStarred,
     Updated_By  AS UpdatedBy,  

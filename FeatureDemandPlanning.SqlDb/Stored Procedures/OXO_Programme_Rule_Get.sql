@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Programme_Rule_Get] 
+﻿CREATE PROCEDURE [OXO_Programme_Rule_Get] 
   @p_Id int
 AS
 	

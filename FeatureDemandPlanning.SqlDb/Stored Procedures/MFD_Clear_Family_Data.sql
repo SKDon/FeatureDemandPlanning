@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[MFD_Clear_Family_Data] 
+﻿CREATE PROCEDURE [MFD_Clear_Family_Data] 
 AS
 	
   DELETE FROM dbo.MFD_Feature_Family;

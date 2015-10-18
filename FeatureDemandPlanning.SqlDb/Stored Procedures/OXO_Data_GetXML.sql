@@ -19,8 +19,8 @@ IF @p_level = 'mg' -- market group
 							B.Shape AS '@shape', B.Doors AS '@doors', B.Wheelbase AS '@wheelbase', E.Size AS '@size', E.Cylinder AS '@cylinders', E.Turbo AS '@turbo', T.Type AS '@transmission', T.Drivetrain AS '@drivetrain', E.Fuel_Type AS '@fuel', E.Power AS '@power', E.Electrification AS '@drive', TM.Name AS '@trim', TM.Level AS '@level',
 				
 								-- level 4 <feat>
-								(SELECT F.Id AS '@id', F.PROFET_JAG AS '@profet_jag', F.PROFET_LR AS '@profet_lr', F.Feature_Group AS '@featGroup', F.MFD_EFG AS '@featEFG', ISNULL(OXO_Code, '') as '@oxoCode'
-								 FROM OXO_Feature F
+								(SELECT F.Id AS '@id', F.OA_Code AS '@profet_jag', F.Feat_Code AS '@profet_lr', F.OXO_Grp AS '@featGroup', F.Feat_EFG AS '@featEFG', ISNULL(OXO_Code, '') as '@oxoCode'
+								 FROM OXO_Feature_Ext F
 									  LEFT OUTER JOIN OXO_Item_Data D -- change to inner join to return only 'set' features
 									  ON F.Id = D.Feature_Id
 								 AND D.OXO_Doc_Id = @p_doc_id
@@ -82,8 +82,8 @@ ELSE -- global generic and market
 							B.Shape AS '@shape', B.Doors AS '@doors', B.Wheelbase AS '@wheelbase', E.Size AS '@size', E.Cylinder AS '@cylinders', E.Turbo AS '@turbo', T.Type AS '@transmission', T.Drivetrain AS '@drivetrain', E.Fuel_Type AS '@fuel', E.Power AS '@power', E.Electrification AS '@drive', TM.Name AS '@trim', TM.Level AS '@level',
 				
 								-- level 4 <feat>
-								(SELECT F.Id AS '@id', F.PROFET_JAG AS '@profet_jag', F.PROFET_LR AS '@profet_lr', F.Feature_Group AS '@featGroup', F.MFD_EFG AS '@featEFG', ISNULL(OXO_Code, '') as '@oxoCode'
-								 FROM OXO_Feature F
+								(SELECT F.Id AS '@id', F.OA_Code AS '@profet_jag', F.Feat_Code AS '@profet_lr', F.OXO_Grp AS '@featGroup', F.Feat_EFG AS '@featEFG', ISNULL(OXO_Code, '') as '@oxoCode'
+								 FROM OXO_Feature_EXT F
 									  LEFT OUTER JOIN OXO_Item_Data D -- change to inner join to return only 'set' features
 									  ON F.Id = D.Feature_Id
 								 AND D.OXO_Doc_Id = @p_doc_id

@@ -1,5 +1,5 @@
 ﻿
-CREATE PROCEDURE [dbo].[OXO_Programme_Get] 
+CREATE PROCEDURE [OXO_Programme_Get] 
   @p_Id int
 AS	
     SELECT 

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Market_Edit] 
+﻿CREATE PROCEDURE [OXO_Market_Edit] 
    @p_Name  varchar(500) 
   ,@p_WHD  varchar(500) 
   ,@p_PAR_X  varchar(500) 

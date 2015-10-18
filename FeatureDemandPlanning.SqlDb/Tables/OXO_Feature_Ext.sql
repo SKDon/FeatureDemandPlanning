@@ -14,6 +14,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IDX_Feature_Code]
     ON [dbo].[OXO_Feature_Ext]([Feat_Code] ASC);
@@ -30,7 +32,5 @@ CREATE NONCLUSTERED INDEX [IDX_OXO_Grp]
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_NC_OXO_Feature_Ext_Cover]
-    ON [dbo].[OXO_Feature_Ext]([Id] ASC)
-    INCLUDE([Feat_Code], [OA_Code], [OXO_Grp], [Description], [Long_Desc]);
+
 

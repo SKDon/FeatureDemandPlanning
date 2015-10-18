@@ -1,4 +1,4 @@
-﻿CREATE VIEW [dbo].[OXO_ITEM_DATA_VW]
+﻿CREATE VIEW [OXO_ITEM_DATA_VW]
 AS
 
 	SELECT Id, Section, OXO_Doc_Id, Model_Id, 

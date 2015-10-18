@@ -39,7 +39,8 @@ RETURNS @result TABLE (
 	CoA nvarchar(10),
 	DPCK nvarchar(10),
 	Make nvarchar(100),
-	KD bit
+	KD bit,
+	Display_Order int
 )  
 AS
 BEGIN
@@ -79,7 +80,7 @@ BEGIN
 	           Transmission_Id, Trim_Id, Active, 
 	           Created_By, Created_On, Updated_By, 
 	           Last_Updated, BMC, CoA, DPCK,
-	           Make, KD
+	           Make, KD, Display_Order
 	FROM OXO_Models_VW
 	WHERE Programme_Id = @p_prog_id
 	AND  Active = 1;
@@ -111,7 +112,7 @@ BEGIN
 			 Id, Programme_Id, Body_Id, Engine_Id, 
 	           Transmission_Id, Trim_Id, Active, 
 	           Created_By, Created_On, Updated_By, 
-	           Last_Updated, BMC, CoA, DPCK, Make, KD
+	           Last_Updated, BMC, CoA, DPCK, Make, KD, Display_Order
 	FROM OXO_Archived_Models_VW
 	WHERE Programme_Id = @p_prog_id
 	AND doc_id = @p_doc_id;

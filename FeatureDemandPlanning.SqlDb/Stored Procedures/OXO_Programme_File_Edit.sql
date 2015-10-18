@@ -1,6 +1,4 @@
-﻿
-
-CREATE PROCEDURE [dbo].[OXO_Programme_File_Edit] 
+﻿CREATE PROCEDURE [OXO_Programme_File_Edit] 
    @p_Id INT
   ,@p_File_Category  nvarchar(100) 
   ,@p_File_Comment  nvarchar(2000) 
@@ -10,6 +8,7 @@ CREATE PROCEDURE [dbo].[OXO_Programme_File_Edit]
   ,@p_File_Size  int 
   ,@p_Gateway nvarchar(100)
   ,@p_PACN nvarchar(10)
+  ,@p_GUID nvarchar(50)
   ,@p_File_Content  image   
   ,@p_Created_By  varchar(8) 
   ,@p_Created_On  datetime 
@@ -29,6 +28,7 @@ AS
   File_Size=@p_File_Size,  
   Gateway = @p_Gateway,
   PACN = @p_PACN,
+  GUID = @p_GUID,
   File_Content=@p_File_Content,  
   Created_By=@p_Created_By,  
   Created_On=@p_Created_On,  

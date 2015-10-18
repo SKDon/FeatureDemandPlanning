@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Programme_Remove_Market] 
+﻿CREATE PROCEDURE [OXO_Programme_Remove_Market] 
   @p_prog_id int,
   @p_market_id int
 AS

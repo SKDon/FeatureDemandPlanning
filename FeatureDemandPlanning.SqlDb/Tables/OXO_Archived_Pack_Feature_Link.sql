@@ -1,13 +1,17 @@
 ﻿CREATE TABLE [dbo].[OXO_Archived_Pack_Feature_Link] (
-    [Id]           INT           IDENTITY (1, 1) NOT NULL,
-    [Doc_Id]       INT           NOT NULL,
-    [Programme_Id] INT           NOT NULL,
-    [Pack_Id]      INT           NOT NULL,
-    [Feature_Id]   INT           NOT NULL,
-    [CDSID]        NVARCHAR (10) NULL,
-    [ChangeSet_Id] INT           NULL,
+    [Id]           INT             IDENTITY (1, 1) NOT NULL,
+    [Doc_Id]       INT             NOT NULL,
+    [Programme_Id] INT             NOT NULL,
+    [Pack_Id]      INT             NOT NULL,
+    [Feature_Id]   INT             NOT NULL,
+    [CDSID]        NVARCHAR (10)   NULL,
+    [ChangeSet_Id] INT             NULL,
+    [Comment]      NVARCHAR (2000) NULL,
+    [Rule_Text]    NVARCHAR (2000) NULL,
     CONSTRAINT [PK_OXO_Archived_Pack_Feature_Link] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_OXODoc_Edit] 
+﻿CREATE PROCEDURE [OXO_OXODoc_Edit] 
    @p_Id INT OUTPUT
   ,@p_Programme_Id int
   ,@p_Gateway    nvarchar(50)

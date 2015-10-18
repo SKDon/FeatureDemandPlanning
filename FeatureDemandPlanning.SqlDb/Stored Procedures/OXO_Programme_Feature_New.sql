@@ -13,11 +13,11 @@ AS
 	
   DECLARE @vehicle_id INT 	
   	
-  INSERT INTO dbo.OXO_Feature
+  INSERT INTO dbo.OXO_Feature_Ext
   (
     Description,  
-    Notes,  
-    Feature_Group,  
+  --  Notes,  
+  --  Feature_Group,  
     Created_By,  
     Created_On,  
     Updated_By,  
@@ -27,8 +27,8 @@ AS
   VALUES 
   (
     @p_Description,  
-    @p_Notes,  
-    @p_Feature_Group,  
+   -- @p_Notes,  
+   -- @p_Feature_Group,  
     @p_Created_By,  
     @p_Created_On,  
     @p_Updated_By,  

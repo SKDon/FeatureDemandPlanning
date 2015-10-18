@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Rule_GetManyByFeature]
+﻿CREATE PROCEDURE [OXO_Rule_GetManyByFeature]
    @p_prog_id int,
    @p_feature_id int
    

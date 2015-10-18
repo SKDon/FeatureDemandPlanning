@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Market_MarketGroup_Delete] 
+﻿CREATE PROCEDURE [OXO_Market_MarketGroup_Delete] 
   @p_GroupId int,
   @p_MarketId int
 AS

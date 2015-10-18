@@ -1,18 +1,21 @@
 ﻿CREATE TABLE [dbo].[OXO_Programme_Feature_Link] (
+    [Id]           INT             IDENTITY (1, 1) NOT NULL,
     [Programme_Id] INT             NOT NULL,
     [Feature_Id]   INT             NOT NULL,
     [CDSID]        NVARCHAR (50)   NULL,
     [Comment]      NVARCHAR (2000) NULL,
     [ChangeSet_Id] INT             NULL,
     [Rule_Text]    NVARCHAR (2000) NULL,
-    CONSTRAINT [PK_OXO_Programme_Feature_Link] PRIMARY KEY CLUSTERED ([Programme_Id] ASC, [Feature_Id] ASC),
+    [Status]       NVARCHAR (50)   NULL,
+    CONSTRAINT [PK_OXO_Programme_Feature_Link_1] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_OXO_Programme_Feature_Link_OXO_Programme] FOREIGN KEY ([Programme_Id]) REFERENCES [dbo].[OXO_Programme] ([Id])
 );
 
 
+
+
 GO
-CREATE NONCLUSTERED INDEX [Ix_NC_OXO_Programme_Feature_Link_ProgrammeId]
-    ON [dbo].[OXO_Programme_Feature_Link]([Programme_Id] ASC);
+
 
 
 GO
@@ -43,3 +46,8 @@ AS BEGIN
 	END
 
 END
+
+GO
+CREATE NONCLUSTERED INDEX [Idx_Prog_Feat]
+    ON [dbo].[OXO_Programme_Feature_Link]([Programme_Id] ASC, [Feature_Id] ASC);
+

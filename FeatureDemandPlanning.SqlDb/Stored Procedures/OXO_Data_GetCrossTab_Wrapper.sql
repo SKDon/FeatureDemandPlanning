@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Data_GetCrossTab_Wrapper] 
+﻿CREATE PROCEDURE [OXO_Data_GetCrossTab_Wrapper] 
   @p_make nvarchar(50),
   @p_doc_id int,
   @p_prog_id int,

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Programme_GetConfiguration] 
+﻿CREATE PROCEDURE [OXO_Programme_GetConfiguration] 
   @p_Id int
 AS	
 	SET NOCOUNT ON;

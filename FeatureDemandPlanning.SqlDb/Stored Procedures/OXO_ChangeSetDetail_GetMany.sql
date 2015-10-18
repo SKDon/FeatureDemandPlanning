@@ -5,9 +5,12 @@
 AS
 	
 	DECLARE @_Use_OA_Code BIT = 0;
+	DECLARE @_make NVARCHAR(500);
 	
-	SELECT @_Use_OA_Code = ISNULL(Use_OA_Code,0) 
-	FROM OXO_Programme WHERE Id = @p_prog_id;
+	SELECT @_Use_OA_Code = ISNULL(UseOACode,0),
+	       @_make = VehicleMake
+	FROM OXO_Programme_VW 
+	WHERE Id = @p_prog_id;
 	
 	SELECT DISTINCT @p_set_id AS SetId, 
 		   CASE WHEN D.Market_Id = -1 THEN 'Global Generic'
@@ -15,7 +18,13 @@ AS
 	             END AS MarketName,
 	       M.Name AS ModelName,  
 		   CASE WHEN D.SECTION = 'MBM' THEN 'Availability'
-		   ELSE ISNULL(F.Description, PP.Pack_Name) END AS FeatureName, 
+		        WHEN D.SECTION = 'PCK' THEN 
+		        ISNULL(F.Description, PP.Pack_Name)
+		        ELSE 		        
+				   '[' + CASE WHEN @_Use_OA_Code = 0 THEN F.Feat_Code
+						 ELSE F.OA_Code END				   
+				   + '] ' + ISNULL(FBD.Brand_Desc, F.Description)
+		     END AS FeatureName, 
 	       ISNULL(H.Prev_Code, '') AS PrevFitment,
 	       ISNULL(H.Item_Code, '') AS CurrFitment
 	FROM OXO_ITEM_DATA_Hist H WITH(NOLOCK)
@@ -32,9 +41,12 @@ AS
 	LEFT OUTER JOIN dbo.FN_Programme_Markets_Get(@p_prog_id, @p_doc_id) MG2
 	ON D.Market_Id = MG2.Market_ID
 	AND OD.Programme_Id = MG2.Programme_Id	
-	LEFT OUTER JOIN OXO_Feature_Ext F
+	LEFT OUTER JOIN OXO_Feature_Ext F WITH(NOLOCK)
 	ON D.Feature_Id = F.ID
-	LEFT OUTER JOIN OXO_Programme_Pack PP
+	LEFT JOIN OXO_Feature_Brand_Desc FBD WITH(NOLOCK)
+	ON F.Feat_Code = FBD.Feat_Code
+	AND FBD.Brand = @_make
+	LEFT OUTER JOIN OXO_Programme_Pack PP WITH(NOLOCK)
 	ON D.Pack_Id = PP.ID
 	AND OD.Programme_Id = PP.Programme_Id
 	WHERE H.Set_Id = @p_set_id
@@ -45,7 +57,7 @@ AS
 	       Event_Type AS ModelName,  
 		   '[' + CASE WHEN @_Use_OA_Code = 0 THEN F.Feat_Code
 		         ELSE F.OA_Code END				   
-		   + '] ' + F.Description   FeatureName, 
+		   + '] ' + ISNULL(FBD.Brand_Desc, F.Description)  FeatureName, 
 	       CASE WHEN Event_Type IN ('Remove Programme Feature', 'Remove Global Standard Feature') THEN 'Misc'	       
 	       ELSE '' END AS PrevFitment,
 	       CASE WHEN Event_Type IN ('Remove Programme Feature', 'Remove Global Standard Feature') THEN 'Nil'	       
@@ -54,6 +66,9 @@ AS
 	INNER JOIN OXO_Feature_Ext F WITH(NOLOCK)
 	ON E.Event_Parent2_Id = F.Id
 	AND E.Event_Parent2_Object = 'Feature'
+	LEFT JOIN OXO_Feature_Brand_Desc FBD WITH(NOLOCK)
+	ON F.Feat_Code = FBD.Feat_Code
+	AND FBD.Brand = @_make
 	WHERE changeset_id = @p_set_id
 	UNION
 	SELECT DISTINCT @p_set_id AS SetId, 
@@ -74,7 +89,7 @@ AS
 	       PK.Pack_Name + 	      	       
 		   ' - [' + CASE WHEN @_Use_OA_Code = 0 THEN PF.Feat_Code
 		         ELSE PF.OA_Code END				   
-		   + '] ' + PF.Description  FeatureName, 
+		   + '] ' + ISNULL(FBD.Brand_Desc, PF.Description) FeatureName, 
 	       '' AS PrevFitment,
 	       '' AS CurrFitment
 	FROM OXO_EVENT_LOG E WITH(NOLOCK)
@@ -86,6 +101,9 @@ AS
 	INNER JOIN OXO_Feature_Ext PF	
 	ON E.Event_Parent3_Id = PF.Id
 	AND E.Event_Parent3_Object = 'Feature'
+	LEFT JOIN OXO_Feature_Brand_Desc FBD WITH(NOLOCK)
+	ON PF.Feat_Code = FBD.Feat_Code
+	AND FBD.Brand = @_make
 	WHERE E.changeset_id = @p_set_id
 	UNION
 	SELECT DISTINCT @p_set_id AS SetId, 
@@ -94,7 +112,7 @@ AS
 	       PK.Pack_Name + 	      	       
 		   ' - [' + CASE WHEN @_Use_OA_Code = 0 THEN PF.Feat_Code
 		         ELSE PF.OA_Code END				   
-		   + '] ' + PF.Description  FeatureName, 
+		   + '] ' + ISNULL(FBD.Brand_Desc, PF.Description)  FeatureName, 
 	       '' AS PrevFitment,
 	       '' AS CurrFitment
 	FROM OXO_EVENT_LOG E WITH(NOLOCK)
@@ -105,6 +123,9 @@ AS
 	AND E.Event_Parent2_Object = 'Pack'
 	INNER JOIN OXO_Feature_Ext PF	
 	ON E.Event_Parent3_Id = PF.Id
-	AND E.Event_Parent3_Object = 'Feature'
+	AND E.Event_Parent3_Object = 'Feature'	
+	LEFT JOIN OXO_Feature_Brand_Desc FBD WITH(NOLOCK)
+	ON PF.Feat_Code = FBD.Feat_Code
+	AND FBD.Brand = @_make
 	WHERE E.changeset_id = @p_set_id
 

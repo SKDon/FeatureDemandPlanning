@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Pack_Remove_Feature] 
+﻿CREATE PROCEDURE [OXO_Pack_Remove_Feature] 
   @p_prog_id int,
   @p_doc_id int,
   @p_pack_id int,

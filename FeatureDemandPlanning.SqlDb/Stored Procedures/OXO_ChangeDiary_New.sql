@@ -1,4 +1,4 @@
-﻿CREATE  PROCEDURE [dbo].[OXO_ChangeDiary_New] 
+﻿CREATE  PROCEDURE [OXO_ChangeDiary_New] 
    @p_OXO_Doc_Id  int, 
    @p_Programme_Id  int, 
    @p_Version_Info  nvarchar(500),    

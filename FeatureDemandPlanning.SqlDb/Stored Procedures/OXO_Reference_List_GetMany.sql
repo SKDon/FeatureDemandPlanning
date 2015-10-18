@@ -18,6 +18,6 @@ AS
 		Last_Updated AS LastUpdated
 		FROM dbo.OXO_Reference_List
 		WHERE List_Name = ISNULL(@p_list_name, List_Name)
-		ORDER By List_Name;
+		ORDER By List_Name, DisplayOrder;
     
 

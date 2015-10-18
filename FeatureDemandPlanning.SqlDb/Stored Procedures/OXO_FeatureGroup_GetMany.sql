@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_FeatureGroup_GetMany]
+﻿CREATE PROCEDURE [OXO_FeatureGroup_GetMany]
 ( @p_all bit = 0)
 AS
 

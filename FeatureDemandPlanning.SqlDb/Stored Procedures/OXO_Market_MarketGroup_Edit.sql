@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Market_MarketGroup_Edit] 
+﻿CREATE PROCEDURE [OXO_Market_MarketGroup_Edit] 
   @p_New_GroupId int,
   @p_Old_GroupId int,
   @p_MarketId int,

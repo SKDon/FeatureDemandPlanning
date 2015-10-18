@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Gateway_GetMany] 
+﻿CREATE PROCEDURE [OXO_Gateway_GetMany] 
 AS	
 	SELECT Gateway AS Name, 
 	       Display_Order AS DisplayOrder      

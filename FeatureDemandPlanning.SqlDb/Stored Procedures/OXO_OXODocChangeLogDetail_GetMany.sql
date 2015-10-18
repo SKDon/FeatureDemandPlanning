@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_OXODocChangeLogDetail_GetMany]
+﻿CREATE PROCEDURE [OXO_OXODocChangeLogDetail_GetMany]
   @p_process_UID INT
 AS
 	SELECT DISTINCT @p_process_UID AS ProcessUID, 
@@ -25,8 +25,6 @@ AS
 	LEFT OUTER JOIN OXO_Programme_Pack PP
 	ON D.Feature_Id = (PP.ID * -1)
 	AND OD.Programme_Id = PP.Programme_Id
-	WHERE 
-	--PROCESS_UID = @p_process_UID
-	--AND 
-	ISNULL(H.Prev_Code, '') != ISNULL(H.Item_Code, '');
+	WHERE PROCESS_UID = @p_process_UID
+	AND ISNULL(H.Prev_Code, '') != ISNULL(H.Item_Code, '');
 

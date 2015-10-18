@@ -1,6 +1,6 @@
 ﻿
 
-CREATE PROCEDURE [dbo].[OXO_SysUser_New] 
+CREATE PROCEDURE [OXO_SysUser_New] 
    @p_cdsid NVARCHAR(10), 
    @p_title NVARCHAR(50),  
    @p_first_names NVARCHAR(100), 

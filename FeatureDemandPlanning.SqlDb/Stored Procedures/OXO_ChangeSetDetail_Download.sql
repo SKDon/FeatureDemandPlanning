@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_ChangeSetDetail_Download]
+﻿CREATE PROCEDURE [OXO_ChangeSetDetail_Download]
   @p_oxo_doc_id INT,
   @p_prog_id INT = 0
 AS
@@ -11,6 +11,7 @@ AS
 
 	SELECT S.Set_ID AS SetId, 
 	       S.Version_Id AS VersionId, 
+	       S.Version_Label AS VersionLabel,
 	       S.Reminder, 
 	       S.Updated_By AS UpdatedBy,
 	       S.Last_Updated AS LastUpdated,
@@ -45,6 +46,7 @@ AS
 	UNION 
 	SELECT DISTINCT S.Set_ID AS SetId, 
 		   s.Version_Id AS VersionId,
+		   S.Version_Label AS VersionLabel,
 		   s.Reminder,
 		   S.Updated_By AS UpdatedBy,
 	       S.Last_Updated AS LastUpdated,	
@@ -66,6 +68,7 @@ AS
 	UNION
 	SELECT DISTINCT S.Set_ID AS SetId, 
 		   s.Version_Id AS VersionId,
+		   S.Version_Label AS VersionLabel,
 		   s.Reminder,
 		   S.Updated_By AS UpdatedBy,
 	       S.Last_Updated AS LastUpdated,		
@@ -86,6 +89,7 @@ AS
     UNION
     SELECT DISTINCT S.Set_Id AS SetId, 
 		   S.Version_Id AS VersionId,
+		   S.Version_Label AS VersionLabel,
 		   s.Reminder,
 		   S.Updated_By AS UpdatedBy,
 	       S.Last_Updated AS LastUpdated,			
@@ -106,6 +110,7 @@ AS
 	UNION
 	SELECT DISTINCT S.Set_Id AS SetId, 
 		   S.Version_Id AS VersionId,
+		   S.Version_Label AS VersionLabel,  
 		   s.Reminder,
 		   S.Updated_By AS UpdatedBy,
 	       S.Last_Updated AS LastUpdated,		
@@ -124,6 +129,7 @@ AS
 	UNION
 	SELECT DISTINCT S.Set_Id AS SetId, 
 		   S.Version_Id AS VersionId,
+		   S.Version_Label AS VersionLabel,
 		   s.Reminder,
 		   S.Updated_By AS UpdatedBy,
 	       S.Last_Updated AS LastUpdated,	
@@ -150,6 +156,7 @@ AS
 	UNION
 	SELECT DISTINCT S.Set_Id AS SetId, 
 		   S.Version_Id AS VersionId,
+		   S.Version_Label AS VersionLabel, 
 		   s.Reminder,
 		   S.Updated_By AS UpdatedBy,
 	       S.Last_Updated AS LastUpdated,	

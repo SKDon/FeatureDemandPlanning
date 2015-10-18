@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_ChangeDiary_Delete] 
+﻿CREATE PROCEDURE [OXO_ChangeDiary_Delete] 
   @p_Id int,
   @p_prog_Id int
 AS

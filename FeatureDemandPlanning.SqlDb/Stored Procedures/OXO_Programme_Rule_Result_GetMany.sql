@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Programme_Rule_Result_GetMany]
+﻿CREATE PROCEDURE [OXO_Programme_Rule_Result_GetMany]
 	@p_oxo_doc_id int,
 	@p_prog_id int = NULL,
 	@p_Level  nvarchar(3) = null, 
@@ -6,7 +6,7 @@
 	@p_show_what bit = null
 AS
 	
-   SELECT
+   SELECT DISTINCT
     V.OXO_Doc_Id  AS OXODocId,  
     V.Programme_Id  AS ProgrammeId,  
     V.Rule_Id  AS RuleId,
@@ -23,7 +23,8 @@ AS
     CASE WHEN V.Object_Level = 'g' THEN 'Global Generic'
 		 WHEN V.Object_Level = 'mg' THEN M.Market_Group_Name
 		 ELSE M.Market_Name
-	END AS ObjectName	 
+	END AS ObjectName,
+	V.DisplayOrder	 
     FROM dbo.OXO_Programme_Rule_Result_VW V
     LEFT OUTER JOIN OXO_Programme_MarketGroupMarket_VW M
     ON V.Programme_Id = M.Programme_Id 
@@ -35,5 +36,6 @@ AS
     AND (@p_Level IS NULL OR  V.Object_Level = @p_Level)
     AND (@p_ObjectId IS NULL OR V.Object_Id = @p_ObjectId)
     AND (@p_show_what IS NULL or V.Rule_Result = @p_show_what)
+    Order by DisplayOrder
     ;
 

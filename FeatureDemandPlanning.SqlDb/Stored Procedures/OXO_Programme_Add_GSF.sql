@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Programme_Add_GSF] 
+﻿CREATE PROCEDURE [OXO_Programme_Add_GSF] 
   @p_prog_id int,
   @p_doc_id int,
   @p_feat_id int,

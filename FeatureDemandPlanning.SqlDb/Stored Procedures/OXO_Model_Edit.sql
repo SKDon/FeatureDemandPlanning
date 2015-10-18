@@ -1,7 +1,7 @@
 ﻿
 
 
-CREATE  PROCEDURE [dbo].[OXO_Model_Edit] 
+CREATE  PROCEDURE [OXO_Model_Edit] 
   @p_Id INT OUTPUT
   ,@p_Programme_Id  int 
   ,@p_Body_Id  int 

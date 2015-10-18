@@ -1,7 +1,7 @@
 ﻿
 
 
-CREATE PROCEDURE [dbo].[OXO_ModelTrim_New] 
+CREATE PROCEDURE [OXO_ModelTrim_New] 
    @p_Programme_Id  int, 
    @p_Name  nvarchar(500), 
    @p_Abbreviation nvarchar(50),  

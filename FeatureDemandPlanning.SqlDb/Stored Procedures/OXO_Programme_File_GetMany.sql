@@ -1,6 +1,4 @@
-﻿
-
-CREATE PROCEDURE [dbo].[OXO_Programme_File_GetMany]
+﻿CREATE PROCEDURE [OXO_Programme_File_GetMany]
 	@p_prog_id int = NULL,
 	@p_category nvarchar(100) = NULL
 AS
@@ -17,6 +15,8 @@ AS
     F.File_Size  AS FileSize,  
     F.Gateway AS Gateway,
     ISNULL(F.PACN, 'N/A') AS PACN,
+    F.GUID AS GUID,
+    F.Status AS Status,
     F.Created_By  AS UploadedBy,  
     CONVERT(NVARCHAR(20), F.Created_On, 120)  AS DateUploaded,  
     F.Updated_By  AS UpdatedBy,  

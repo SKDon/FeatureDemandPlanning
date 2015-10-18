@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Programme_Remove_Feature] 
+﻿CREATE PROCEDURE [OXO_Programme_Remove_Feature] 
   @p_prog_id int,
   @p_doc_id int,
   @p_feat_id int,
@@ -59,6 +59,15 @@ AS
   UPDATE T1
   SET T1.Active = 0
   FROM dbo.OXO_Item_Data_FBM AS T1
+  INNER JOIN dbo.OXO_Doc AS T2
+  ON T1.OXO_Doc_Id = T2.Id
+  WHERE  T1.OXO_Doc_Id = @p_doc_id
+  AND T2.Programme_Id = @p_prog_id
+  AND T1.Feature_Id = @p_feat_id;
+  
+  UPDATE T1
+  SET T1.Active = 0
+  FROM dbo.OXO_Item_Data_FPS AS T1
   INNER JOIN dbo.OXO_Doc AS T2
   ON T1.OXO_Doc_Id = T2.Id
   WHERE  T1.OXO_Doc_Id = @p_doc_id

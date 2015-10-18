@@ -1,4 +1,4 @@
-﻿CREATE VIEW [dbo].[OXO_Programme_Rule_VW]
+﻿CREATE VIEW [OXO_Programme_Rule_VW]
 AS
 SELECT     TOP (100) PERCENT PR.Id, PR.Programme_Id, 
                       CASE PR.Rule_Category WHEN 'E' THEN 'Engineering' WHEN 'M' THEN 'Marketing' WHEN 'T' THEN 'Territorial' END AS Rule_Category, 

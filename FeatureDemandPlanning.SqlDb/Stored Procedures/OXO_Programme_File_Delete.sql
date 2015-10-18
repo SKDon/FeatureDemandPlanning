@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Programme_File_Delete] 
+﻿CREATE PROCEDURE [OXO_Programme_File_Delete] 
   @p_Id int
 AS
 	

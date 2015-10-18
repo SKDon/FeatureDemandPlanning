@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Programme_Rule_Edit] 
+﻿CREATE PROCEDURE [OXO_Programme_Rule_Edit] 
    @p_Id INT
   ,@p_ProgrammeId  int 
   ,@p_RuleCategory  nvarchar(50)

@@ -1,18 +1,22 @@
 ﻿CREATE TABLE [dbo].[OXO_Archived_Programme_Pack] (
-    [Id]           INT            IDENTITY (1, 1) NOT NULL,
-    [Doc_Id]       INT            NOT NULL,
-    [Programme_Id] INT            NOT NULL,
-    [Pack_Name]    NVARCHAR (500) NOT NULL,
-    [Extra_Info]   NVARCHAR (500) NULL,
-    [Clone_Id]     INT            NULL,
-    [Created_By]   NVARCHAR (10)  NULL,
-    [Created_On]   DATETIME       NULL,
-    [Updated_By]   NVARCHAR (10)  NULL,
-    [Last_Updated] DATETIME       NULL,
-    [Feature_Code] NVARCHAR (50)  NULL,
-    [ChangeSet_Id] INT            NULL,
+    [Id]           INT             IDENTITY (1, 1) NOT NULL,
+    [Doc_Id]       INT             NOT NULL,
+    [Programme_Id] INT             NOT NULL,
+    [Pack_Name]    NVARCHAR (500)  NOT NULL,
+    [Extra_Info]   NVARCHAR (2000) NULL,
+    [Clone_Id]     INT             NULL,
+    [Created_By]   NVARCHAR (10)   NULL,
+    [Created_On]   DATETIME        NULL,
+    [Updated_By]   NVARCHAR (10)   NULL,
+    [Last_Updated] DATETIME        NULL,
+    [Feature_Code] NVARCHAR (50)   NULL,
+    [OA_Code]      NVARCHAR (50)   NULL,
+    [ChangeSet_Id] INT             NULL,
+    [Rule_Text]    NVARCHAR (2000) NULL,
     CONSTRAINT [PK_OXO_Archived_Programme_Pack] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

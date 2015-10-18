@@ -3,7 +3,7 @@
     [Programme_Id] INT           NOT NULL,
     [Type]         NVARCHAR (50) NULL,
     [Drivetrain]   NVARCHAR (50) NULL,
-    [Active]       BIT           NULL,
+    [Active]       BIT           CONSTRAINT [DF_OXO_Programme_Transmission_Active] DEFAULT ((1)) NULL,
     [Created_By]   NVARCHAR (8)  NULL,
     [Created_On]   DATETIME      NULL,
     [Updated_By]   NVARCHAR (8)  NULL,
@@ -13,6 +13,8 @@
     CONSTRAINT [PK_OXO_Programme_Transmission] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_OXO_Programme_Transmission_OXO_Programme] FOREIGN KEY ([Programme_Id]) REFERENCES [dbo].[OXO_Programme] ([Id])
 );
+
+
 
 
 GO

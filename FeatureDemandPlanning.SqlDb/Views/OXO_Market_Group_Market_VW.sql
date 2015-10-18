@@ -1,4 +1,4 @@
-﻿CREATE VIEW [dbo].[OXO_Market_Group_Market_VW]
+﻿CREATE VIEW [OXO_Market_Group_Market_VW]
 AS
 
     SELECT MG.Id AS Market_Group_Id,

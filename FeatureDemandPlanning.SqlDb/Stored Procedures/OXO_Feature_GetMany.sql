@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Feature_GetMany]
+﻿CREATE PROCEDURE [OXO_Feature_GetMany]
    @p_vehicle_id INT,
    @p_lookup    NVARCHAR(50)
 AS

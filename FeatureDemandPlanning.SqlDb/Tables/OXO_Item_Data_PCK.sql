@@ -17,6 +17,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [Idx_Doc_Id]
     ON [dbo].[OXO_Item_Data_PCK]([OXO_Doc_Id] ASC, [Active] ASC);
@@ -52,9 +54,11 @@ AS BEGIN
 
   SET NOCOUNT ON;
        
-  INSERT INTO OXO_Change_Set (OXO_Doc_Id, Section, Reminder, Version_Id, Updated_By, Last_Updated)
+  INSERT INTO OXO_Change_Set (OXO_Doc_Id, Section, Reminder, Version_Id, Version_Label, Updated_By, Last_Updated)
   (
-    SELECT DISTINCT I.OXO_Doc_Id, I.Section, I.Reminder, O.Version_Id, I.Updated_By, GETDATE() 
+    SELECT DISTINCT I.OXO_Doc_Id, I.Section, I.Reminder, O.Version_Id, 
+    dbo.OXO_Version_Label_Get(O.Version_Id, O.Status),
+    I.Updated_By, GETDATE() 
     FROM INSERTED I
     INNER JOIN OXO_Doc O
     ON I.OXO_Doc_Id = O.Id   
@@ -81,9 +85,11 @@ AS BEGIN
 
   SET NOCOUNT ON;
        
-  INSERT INTO OXO_Change_Set (OXO_Doc_Id, Section, Reminder, Version_Id, Updated_By, Last_Updated)
+  INSERT INTO OXO_Change_Set (OXO_Doc_Id, Section, Reminder, Version_Id, Version_Label, Updated_By, Last_Updated)
   (
-	   SELECT DISTINCT I.OXO_DOc_Id, I.Section, I.Reminder, O.Version_Id, I.Updated_By, GETDATE() 
+	   SELECT DISTINCT I.OXO_DOc_Id, I.Section, I.Reminder, O.Version_Id, 
+	   dbo.OXO_Version_Label_Get(O.Version_Id, O.Status),
+	   I.Updated_By, GETDATE() 
 	   FROM INSERTED I 
 	   INNER JOIN DELETED D 
 	   ON I.ID = D.ID 	   

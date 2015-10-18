@@ -17,7 +17,7 @@ AS
 			SELECT COUNT(Distinct OD.Model_Id) VariantCount,  
 				   OD.Market_Id
 			FROM OXO_Item_Data_MBM OD WITH(NOLOCK)
-			INNER JOIN OXO_Programme_Model V
+			INNER JOIN OXO_Programme_Model V WITH(NOLOCK)
 			ON V.Id = OD.Model_Id
 			AND V.Active = 1 
 			AND V.Programme_Id = @p_prog_id
@@ -28,6 +28,8 @@ AS
 		), markets AS
 		(
 			SELECT Distinct 
+				Market_Group_Id AS GroupId,
+				Market_Group_Name AS GroupName,
 				Market_Id AS Id,
 				Market_Name AS Name,
 				WHD AS WHD,
@@ -36,10 +38,11 @@ AS
 				Market_Group_Id AS ParentId,
 				SubRegion AS SubRegion,
 				SubRegionOrder
-			FROM OXO_Programme_MarketGroupMarket_VW
+			FROM OXO_Programme_MarketGroupMarket_VW WITH(NOLOCK)
 			WHERE Programme_Id = @p_prog_id	
 		)
-		SELECT MK.Id, MK.Name, MK.WHD AS WHD,
+		SELECT MK.GroupId, MK.GroupName,				
+			   MK.Id, MK.Name, MK.WHD AS WHD,
 			   MK.PAR_X, MK.PAR_L, MK.ParentId,
 			   MK.SubRegion, MK.SubRegionOrder,
 			   ISNULL(M.VariantCount,0) AS VariantCount  
@@ -55,7 +58,7 @@ AS
 			SELECT COUNT(Distinct OD.Model_Id) VariantCount,  
 				   OD.Market_Id
 			FROM OXO_Item_Data_MBM OD WITH(NOLOCK)
-			INNER JOIN OXO_Archived_Programme_Model V
+			INNER JOIN OXO_Archived_Programme_Model V WITH(NOLOCK)
 			ON V.Id = OD.Model_Id
 			AND V.Active = 1 
 			AND V.Programme_Id = @p_prog_id
@@ -67,6 +70,8 @@ AS
 		), markets AS
 		(
 			SELECT Distinct 
+				Market_Group_Id AS GroupId,
+				Market_Group_Name AS GroupName,
 				Market_Id AS Id,
 				Market_Name AS Name,
 				WHD AS WHD,
@@ -75,11 +80,12 @@ AS
 				Market_Group_Id AS ParentId,
 				SubRegion AS SubRegion,
 				SubRegionOrder
-			FROM OXO_Archived_Programme_MarketGroupMarket_VW
+			FROM OXO_Archived_Programme_MarketGroupMarket_VW WITH(NOLOCK)
 			WHERE Programme_Id = @p_prog_id	
 			AND Doc_Id = @p_doc_id
 		)
-		SELECT MK.Id, MK.Name, MK.WHD AS WHD,
+		SELECT MK.GroupId, MK.GroupName,	
+			   MK.Id, MK.Name, MK.WHD AS WHD,
 			   MK.PAR_X, MK.PAR_L, MK.ParentId,
 			   MK.SubRegion, MK.SubRegionOrder,
 			   ISNULL(M.VariantCount,0) AS VariantCount  

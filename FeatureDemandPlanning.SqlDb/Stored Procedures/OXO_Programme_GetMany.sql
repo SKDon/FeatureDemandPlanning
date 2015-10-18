@@ -1,5 +1,5 @@
 ﻿
-CREATE PROCEDURE [dbo].[OXO_Programme_GetMany]
+CREATE PROCEDURE [OXO_Programme_GetMany]
  
 AS
 	

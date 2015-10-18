@@ -7,7 +7,7 @@
     [Fuel_Type]       NVARCHAR (50) NULL,
     [Power]           NVARCHAR (50) NULL,
     [Electrification] NVARCHAR (50) NULL,
-    [Active]          BIT           NULL,
+    [Active]          BIT           CONSTRAINT [DF_OXO_Programme_Engine_Active] DEFAULT ((1)) NULL,
     [Created_By]      NVARCHAR (8)  NULL,
     [Created_On]      DATETIME      NULL,
     [Updated_By]      NVARCHAR (8)  NULL,
@@ -17,6 +17,8 @@
     CONSTRAINT [PK_OXO_Programme_Engine] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_OXO_Programme_Engine_OXO_Programme] FOREIGN KEY ([Programme_Id]) REFERENCES [dbo].[OXO_Programme] ([Id])
 );
+
+
 
 
 GO

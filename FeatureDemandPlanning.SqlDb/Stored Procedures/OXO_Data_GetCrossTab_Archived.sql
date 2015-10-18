@@ -51,15 +51,16 @@ AS
 		BEGIN
 			SET @sql = @sql + 'WITH SET_A AS ( ';
 			SET @sql = @sql + 'SELECT DISTINCT ';
-			SET @sql = @sql + 'PCK.PackId AS PackId, ';
-			SET @sql = @sql + 'PCK.PackName AS PackName, ';
-			SET @sql = @sql + 'PCK.PackFeatureCode AS FeatureCode, ';
-			SET @sql = @sql + 'PCK.PackName AS BrandDescription, ';
+			SET @sql = @sql + 'PCK.Id AS PackId, ';
+			SET @sql = @sql + 'PCK.Pack_Name AS PackName, ';
+			SET @sql = @sql + 'PCK.Feature_Code AS FeatureCode, ';
+			SET @sql = @sql + 'PCK.Pack_Name AS BrandDescription, ';
 			SET @sql = @sql + '-1000 AS Feature_Id, ';
-			SET @sql = @sql + 'PCK.PackName AS SystemDescription, ';
-			SET @sql = @sql + '0 AS RuleCount, ';
+			SET @sql = @sql + 'PCK.Pack_Name AS SystemDescription, ';
+			SET @sql = @sql + 'CASE WHEN LEN(PCK.Rule_Text) > 0 THEN 1 ELSE 0 END AS HasRule, ';
+			SET @sql = @sql + 'CASE WHEN LEN(PCK.Extra_Info)> 0 THEN 1 ELSE 0 END AS HasInfo, ';
 			SET @sql = @sql + 'ODPK.OXO_Code, ODPK.Model_Id ';
-			SET @sql = @sql + 'FROM OXO_Archived_Pack_Feature_VW PCK ';			 
+			SET @sql = @sql + 'FROM OXO_Archived_Programme_Pack PCK ';			 
 			SET @sql = @sql + 'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_PCK_Global(@docId, ''@cols'') ODPK ';			
 			SET @sql = @sql + 'ON PCK.PackId = ODPK.Pack_Id '; 
 			SET @sql = @sql + 'WHERE PCK.Doc_Id = @docId AND PCK.ProgrammeId = @progId) '; 
@@ -75,15 +76,16 @@ AS
 		BEGIN
 			SET @sql = @sql + 'WITH SET_A AS ( ';
 			SET @sql = @sql + 'SELECT DISTINCT ';
-			SET @sql = @sql + 'PCK.PackId AS PackId, ';
-			SET @sql = @sql + 'PCK.PackName AS PackName, ';
-			SET @sql = @sql + 'PCK.PackFeatureCode AS FeatureCode, ';
-			SET @sql = @sql + 'PCK.PackName AS BrandDescription, ';
+			SET @sql = @sql + 'PCK.Id AS PackId, ';
+			SET @sql = @sql + 'PCK.Pack_Name AS PackName, ';
+			SET @sql = @sql + 'PCK.Feature_Code AS FeatureCode, ';
+			SET @sql = @sql + 'PCK.Pack_Name AS BrandDescription, ';
 			SET @sql = @sql + '-1000 AS Feature_Id, ';
-			SET @sql = @sql + 'PCK.PackName AS SystemDescription, ';			
-			SET @sql = @sql + '0 AS RuleCount, ';
+			SET @sql = @sql + 'PCK.Pack_Name AS SystemDescription, ';			
+			SET @sql = @sql + 'CASE WHEN LEN(PCK.Rule_Text) > 0 THEN 1 ELSE 0 END AS HasRule, ';
+			SET @sql = @sql + 'CASE WHEN LEN(PCK.Extra_Info)> 0 THEN 1 ELSE 0 END AS HasInfo, ';			
 			SET @sql = @sql + 'ODPK.OXO_Code, ODPK.Model_Id ';
-			SET @sql = @sql + 'FROM OXO_Archived_Pack_Feature_VW PCK ';
+			SET @sql = @sql + 'FROM OXO_Archived_Programme_Pack PCK ';
 			SET @sql = @sql + 'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_PCK_MarketGroup(@docId,@marketgroupId,''@cols'') ODPK ';
 			SET @sql = @sql + 'ON PCK.PackId = ODPK.Pack_Id '; 
 			SET @sql = @sql + 'WHERE PCK.Doc_Id = @docId AND PCK.ProgrammeId = @progId) '; 
@@ -101,15 +103,16 @@ AS
 		
 			SET @sql = @sql + 'WITH SET_A AS ( ';
 			SET @sql = @sql + 'SELECT DISTINCT ';
-			SET @sql = @sql + 'PCK.PackId AS PackId, ';
-			SET @sql = @sql + 'PCK.PackName AS PackName, ';
-			SET @sql = @sql + 'PCK.PackFeatureCode AS FeatureCode, ';
-			SET @sql = @sql + 'PCK.PackName AS BrandDescription, ';
+			SET @sql = @sql + 'PCK.Id AS PackId, ';
+			SET @sql = @sql + 'PCK.Pack_Name AS PackName, ';
+			SET @sql = @sql + 'PCK.Feature_Code AS FeatureCode, ';
+			SET @sql = @sql + 'PCK.Pack_Name AS BrandDescription, ';
 			SET @sql = @sql + '-1000 AS Feature_Id, ';
-			SET @sql = @sql + 'PCK.PackName AS SystemDescription, ';
-			SET @sql = @sql + '0 AS RuleCount, ';
+			SET @sql = @sql + 'PCK.Pack_Name AS SystemDescription, ';
+			SET @sql = @sql + 'CASE WHEN LEN(PCK.Rule_Text) > 0 THEN 1 ELSE 0 END AS HasRule, ';
+			SET @sql = @sql + 'CASE WHEN LEN(PCK.Extra_Info)> 0 THEN 1 ELSE 0 END AS HasInfo, ';						
 			SET @sql = @sql + 'ODPK.OXO_Code, ODPK.Model_Id ';;
-			SET @sql = @sql + 'FROM OXO_Archived_Pack_Feature_VW PCK ';
+			SET @sql = @sql + 'FROM OXO_Archived_Programme_Pack PCK ';
 			SET @sql = @sql + 'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_PCK_Market(@docId, @marketgroupId, @marketId, ''@cols'') ODPK ';
 			SET @sql = @sql + 'ON PCK.PackId = ODPK.Pack_Id '; 
 			SET @sql = @sql + 'WHERE PCK.Doc_Id = @docId AND PCK.ProgrammeId = @progId) '; 
@@ -135,17 +138,16 @@ AS
 			SET @sql = @sql + 'SELECT DISTINCT ';
 			SET @sql = @sql + 'PCK.PackId, ';
 			SET @sql = @sql + 'PCK.PackName, ';
-		--	SET @sql = @sql + 'PCK.PackFeatureCode, ';
 			SET @sql = @sql + 'PCK.FeatureCode, ';
 			SET @sql = @sql + 'PCK.BrandDescription, ';
 			SET @sql = @sql + 'PCK.ID AS Feature_Id, ';
 			SET @sql = @sql + 'PCK.SystemDescription, ';
-			SET @sql = @sql + '0 AS RuleCount, ';
+			SET @sql = @sql + 'PCK.FeatureComment, ';
+			SET @sql = @sql + 'ISNULL(LEN(PCK.FeatureRuleText),0) AS RuleCount, ';	
+			SET @sql = @sql + 'PCK.LongDescription, ';																
 			SET @sql = @sql + 'ODPF.OXO_Code AS OXO_Code,';
 			SET @sql = @sql + 'ODPF.Model_Id AS Model_Id ';
 			SET @sql = @sql + 'FROM OXO_Archived_Pack_Feature_VW PCK '; 		
-		--	SET @sql = @sql + 'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_FBM_Global(@docId,''@cols'') ODF ';
-		--	SET @sql = @sql + 'ON PCK.Id = ODF.Feature_Id ';  
 			SET @sql = @sql + 'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_FPS_Global(@docId,''@cols'') ODPF ';
 			SET @sql = @sql + 'ON PCK.Id = ODPF.Feature_Id ';
 			SET @sql = @sql + 'AND PCK.PackId = ODPF.Pack_Id '; 
@@ -164,17 +166,16 @@ AS
 			SET @sql = @sql + 'SELECT DISTINCT ';
 			SET @sql = @sql + 'PCK.PackId, ';
 			SET @sql = @sql + 'PCK.PackName, ';
-		--	SET @sql = @sql + 'PCK.PackFeatureCode, ';
 			SET @sql = @sql + 'PCK.FeatureCode, ';
 			SET @sql = @sql + 'PCK.BrandDescription, ';
 			SET @sql = @sql + 'PCK.ID AS Feature_Id, ';
 			SET @sql = @sql + 'PCK.SystemDescription, ';
-			SET @sql = @sql + '0 AS RuleCount, ';
+			SET @sql = @sql + 'PCK.FeatureComment, ';
+			SET @sql = @sql + 'ISNULL(LEN(PCK.FeatureRuleText),0) AS RuleCount, ';	
+			SET @sql = @sql + 'PCK.LongDescription, ';														
 			SET @sql = @sql + 'ODPF.OXO_Code AS OXO_Code,';
 			SET @sql = @sql + 'ODPF.Model_Id AS Model_Id ';
 			SET @sql = @sql + 'FROM OXO_Archived_Pack_Feature_VW PCK '; 
-	--		SET @sql = @sql + 'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_FBM_MarketGroup(@docId,@marketgroupId,''@cols'') ODF ';
-	--		SET @sql = @sql + 'ON PCK.Id = ODF.Feature_Id '; 
 			SET @sql = @sql + 'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_FPS_MarketGroup(@docId,@marketgroupId,''@cols'') ODPF ';
 			SET @sql = @sql + 'ON PCK.Id = ODPF.Feature_Id ';
 			SET @sql = @sql + 'AND PCK.PackId = ODPF.Pack_Id ';
@@ -194,17 +195,16 @@ AS
 			SET @sql = @sql + 'SELECT DISTINCT ';
 			SET @sql = @sql + 'PCK.PackId, ';
 			SET @sql = @sql + 'PCK.PackName, ';
-		--	SET @sql = @sql + 'PCK.PackFeatureCode, ';
 			SET @sql = @sql + 'PCK.FeatureCode, ';
 			SET @sql = @sql + 'PCK.BrandDescription, ';
 			SET @sql = @sql + 'PCK.ID AS Feature_Id, ';
 			SET @sql = @sql + 'PCK.SystemDescription, ';
-			SET @sql = @sql + '0 AS RuleCount, ';
+			SET @sql = @sql + 'PCK.FeatureComment, ';
+			SET @sql = @sql + 'ISNULL(LEN(PCK.FeatureRuleText),0) AS RuleCount, ';	
+			SET @sql = @sql + 'PCK.LongDescription, ';														
 			SET @sql = @sql + 'ODPF.OXO_Code AS OXO_Code,';
 			SET @sql = @sql + 'ODPF.Model_Id AS Model_Id ';
 			SET @sql = @sql + 'FROM OXO_Archived_Pack_Feature_VW PCK '; 						
-		--	SET @sql = @sql + 'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_FBM_Market(@docId,@marketgroupId,@marketid,''@cols'') ODF ';			
-		--	SET @sql = @sql + 'ON PCK.Id = ODF.Feature_Id '; 		
 			SET @sql = @sql + 'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_FPS_Market(@docId,@marketgroupId,@marketid,''@cols'') ODPF ';
 			SET @sql = @sql + 'ON PCK.Id = ODPF.Feature_Id ';
 			SET @sql = @sql + 'AND PCK.PackId = ODPF.Pack_Id ';
@@ -230,7 +230,7 @@ AS
 		SET @sql = @sql + 'WITH SET_A AS ( ';
 	    SET @sql = @sql + 'SELECT Id, ProgrammeId, FeatureGroup, FeatureSubGroup, FeatureCode, '; 
 		SET @sql = @sql + 'SystemDescription, BrandDescription, FeatureComment, FeatureRuleText, ';
-		SET @sql = @sql + 'LongDescription, DisplayOrder FROM OXO_Archived_Programme_Feature_VW ';
+		SET @sql = @sql + 'LongDescription, DisplayOrder, EFGName FROM OXO_Archived_Programme_Feature_VW ';
 		SET @sql = @sql + 'WHERE Doc_Id = @docId AND ProgrammeId = @progId ), '; 
 		SET @sql = @sql + 'SET_B AS (';	
 		SET @sql = @sql + 'SELECT  -1000 AS ID, @progId AS ProgrammeId, Group_Name AS FeatureGroup,'; 
@@ -238,7 +238,7 @@ AS
 	    SET @sql = @sql + '''No Feature Selected'' AS SystemDescription,'; 
 	    SET @sql = @sql + '''No Feature Selected'' AS BrandDescription,'; 
 	    SET @sql = @sql + 'null AS FeatureComment, null AS FeatureRuleText,'; 
-	    SET @sql = @sql + 'null AS LongDescription, MAX(Display_Order) AS DisplayOrder ';
+	    SET @sql = @sql + 'null AS LongDescription, MAX(Display_Order) AS DisplayOrder, null as EFGName ';
 	    SET @sql = @sql + 'FROM OXO_Feature_Group G WHERE Status = 1 ';
 		SET @sql = @sql + 'AND NOT EXISTS (';
 		SET @sql = @sql + ' SELECT 1 FROM SET_A F WHERE F.FeatureGroup = G.Group_Name) GROUP BY Group_Name ';
@@ -247,7 +247,7 @@ AS
 		SET @sql = @sql +	'SELECT DISTINCT FEA.DisplayOrder AS Display_Order, '; 
 		SET @sql = @sql +	'FEA.FeatureGroup,FEA.FeatureSubGroup,FEA.FeatureCode,FEA.BrandDescription,FEA.ID AS Feature_Id, ';	 
 		SET @sql = @sql +	'FEA.FeatureComment, FEA.SystemDescription, ISNULL(LEN(FEA.FeatureRuleText),0) AS RuleCount, FEA.LongDescription, '; 
-		SET @sql = @sql +   'ODG.OXO_Code, ODG.Model_Id ';	  
+		SET @sql = @sql +   'FEA.EFGName, ODG.OXO_Code, ODG.Model_Id ';	  
 	
 		-- control to include the No feature selected rows. Don't want this from export.
 		IF (@p_export = 1)
@@ -262,7 +262,7 @@ AS
 		SET @sql = @sql + 'PIVOT ( ';
 		SET @sql = @sql + 'MAX(OXO_Code) FOR Model_Id ';
 		SET @sql = @sql + 'IN (@cols)) AS DataSet ';	
-		SET @sql = @sql + 'ORDER BY Display_Order, FeatureCode';		
+		SET @sql = @sql + 'ORDER BY Display_Order, EFGName, FeatureCode';		
 		SET @sql = REPLACE(@sql, '@docId', @p_doc_id); 
 		SET @sql = REPLACE(@sql, '@progId', @p_prog_id); 	 
 		SET @sql = REPLACE(@sql, '@cols', @p_model_ids);  		
@@ -275,7 +275,7 @@ AS
 		SET @sql = @sql +	'SELECT DISTINCT FEA.DisplayOrder AS Display_Order, '; 
 		SET @sql = @sql +	'FEA.FeatureGroup,FEA.FeatureSubGroup,FEA.FeatureCode,FEA.BrandDescription,FEA.ID AS Feature_Id, ';	
 		SET @sql = @sql +	'FEA.FeatureComment, FEA.SystemDescription, ISNULL(LEN(FEA.FeatureRuleText),0) AS RuleCount, FEA.LongDescription, ';   
-		SET @sql = @sql +   'ODG.OXO_Code, ODG.Model_Id ';	  	  
+		SET @sql = @sql +   'FEA.EFGName, ODG.OXO_Code, ODG.Model_Id ';	  	  
 		SET @sql = @sql +	'FROM OXO_Archived_Programme_Feature_VW FEA ';
 		SET @sql = @sql +	'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_FBM_MarketGroup(@docId,@marketgroupId,''@cols'') ODG ';	  		
 		SET @sql = @sql +	'ON FEA.Id = ODG.Feature_Id ';
@@ -284,7 +284,7 @@ AS
 		SET @sql = @sql + 'PIVOT ( ';
 		SET @sql = @sql + 'MAX(OXO_Code) FOR Model_Id ';
 		SET @sql = @sql + 'IN (@cols)) AS DataSet ';	
-		SET @sql = @sql + 'ORDER BY Display_Order, FeatureCode';		
+		SET @sql = @sql + 'ORDER BY Display_Order, EFGName, FeatureCode';		
 		SET @sql = REPLACE(@sql, '@docId', @p_doc_id); 
 		SET @sql = REPLACE(@sql, '@marketgroupId', @p_object_id); 
 		SET @sql = REPLACE(@sql, '@progId', @p_prog_id); 	 
@@ -299,7 +299,7 @@ AS
 		SET @sql = @sql +	'SELECT DISTINCT FEA.DisplayOrder AS Display_Order, '; 
 		SET @sql = @sql +	'FEA.FeatureGroup,FEA.FeatureSubGroup,FEA.FeatureCode,FEA.BrandDescription,FEA.ID AS Feature_Id, ';	  				  				  
 		SET @sql = @sql +	'FEA.FeatureComment,FEA.SystemDescription, ISNULL(LEN(FEA.FeatureRuleText),0) AS RuleCount, FEA.LongDescription, ';
-		SET @sql = @sql +   'ODG.OXO_Code, ODG.Model_Id ';	  				  
+		SET @sql = @sql +   'FEA.EFGName, ODG.OXO_Code, ODG.Model_Id ';	  				  
 		SET @sql = @sql +	'FROM OXO_Archived_Programme_Feature_VW FEA ';
 		SET @sql = @sql +	'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_FBM_Market(@docId,@marketgroupId,@marketId,''@cols'') ODG ';	  						
 		SET @sql = @sql +	'ON FEA.Id = ODG.Feature_Id ';
@@ -308,7 +308,7 @@ AS
 		SET @sql = @sql + 'PIVOT ( ';
 		SET @sql = @sql + 'MAX(OXO_Code) FOR Model_Id ';
 		SET @sql = @sql + 'IN (@cols)) AS DataSet ';	
-		SET @sql = @sql + 'ORDER BY Display_Order, FeatureCode';		
+		SET @sql = @sql + 'ORDER BY Display_Order, EFGName, FeatureCode';		
 		SET @sql = REPLACE(@sql, '@docId', @p_doc_id); 
 		SET @sql = REPLACE(@sql, '@marketId', @p_object_id); 
 		SET @sql = REPLACE(@sql, '@marketgroupId', @marketGroupId); 
@@ -325,7 +325,7 @@ AS
 	SET @sql = @sql +	'SELECT FEA.DisplayOrder AS Display_Order, '; 
 	SET @sql = @sql +	'FEA.FeatureGroup,FEA.FeatureSubGroup,FEA.FeatureCode,FEA.BrandDescription,FEA.ID AS Feature_Id, ';	 
 	SET @sql = @sql +	'FEA.FeatureComment, FEA.LongDescription, 0 AS RuleCount,  '; 
-	SET @sql = @sql +   'ODG.OXO_Code, ODG.Model_Id ';	  	  
+	SET @sql = @sql +   'FEA.EFGName, ODG.OXO_Code, ODG.Model_Id ';	  	  
 	SET @sql = @sql +	'FROM OXO_Archived_Programme_GSF_VW FEA ';
 	SET @sql = @sql +	'LEFT OUTER JOIN dbo.FN_OXO_Data_Get_GSF_Global(@docId, ''@cols'') ODG ';	  		
 	SET @sql = @sql +	'ON FEA.Id = ODG.Feature_Id ';	
@@ -334,7 +334,7 @@ AS
 	SET @sql = @sql + 'PIVOT ( ';
 	SET @sql = @sql + 'MAX(OXO_Code) FOR Model_Id ';
 	SET @sql = @sql + 'IN (@cols)) AS DataSet ';	
-	SET @sql = @sql + 'ORDER BY Display_Order, FeatureCode';		
+	SET @sql = @sql + 'ORDER BY Display_Order, EFGName, FeatureCode';		
 	SET @sql = REPLACE(@sql, '@docId', @p_doc_id); 
 	SET @sql = REPLACE(@sql, '@progId', @p_prog_id); 	 
 	SET @sql = REPLACE(@sql, '@cols', @p_model_ids);   			 

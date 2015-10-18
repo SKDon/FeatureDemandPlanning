@@ -5,9 +5,7 @@
 	, @ModelId					INT
 	, @MarketGroupId			INT				= NULL
 	, @MarketId					INT
-	, @FeatureId				INT
-	, @TrimId					INT
-	, @FdpOxoDocId				INT
+	, @OxoDocId					INT
 	, @Volume					INT
 	, @PercentageTakeRate		DECIMAL(5, 4)
 	, @PackId					INT				= NULL
@@ -26,11 +24,9 @@ AS
 		(
 			  Section
 			, ModelId
-			, FeatureId
 			, MarketGroupId
 			, MarketId
-			, TrimId
-			, FdpOxoDocId
+			, OxoDocId
 			, Volume
 			, PercentageTakeRate
 			, CreatedBy
@@ -42,7 +38,7 @@ AS
 			, @ModelId
 			, @MarketGroupId
 			, @MarketId
-			, @FdpOxoDocId
+			, @OxoDocId
 			, @Volume
 			, @PercentageTakeRate
 			, @CDSID

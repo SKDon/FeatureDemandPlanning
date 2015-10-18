@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Doc_Clone_Gateway_Doc] 
+﻿CREATE PROCEDURE [OXO_Doc_Clone_Gateway_Doc] 
    @p_doc_id  int, 
    @p_prog_id  int, 
    @p_gateway  NVARCHAR(50),

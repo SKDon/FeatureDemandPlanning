@@ -1,6 +1,6 @@
 ﻿
 
-CREATE PROCEDURE [dbo].[OXO_GenericFeature_GetMany]
+CREATE PROCEDURE [OXO_GenericFeature_GetMany]
    @p_lookup NVARCHAR(50)
 AS
 

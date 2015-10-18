@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[OXO_Market_MarketGroup_GetMany]
+﻿CREATE PROCEDURE [OXO_Market_MarketGroup_GetMany]
 AS
 	
 	SELECT OXO_Master_MarketGroup.Display_Order AS DisplayOrder, OXO_Master_MarketGroup.Id AS GroupId, 
