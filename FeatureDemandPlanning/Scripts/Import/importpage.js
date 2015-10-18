@@ -19,7 +19,6 @@ page.Page = function (models) {
             this.initialise(me.initialiseCallback);
         });
     }
-
     me.initialiseCallback = function () {
 
         var models = getModels();
@@ -98,8 +97,9 @@ page.Page = function (models) {
                 $(row).attr("data-importQueueId", importQueueId);
             }
         });
-    }
 
+        me.setDataTable(dt);
+    }
     me.registerEvents = function () {
         $(document).on("notifySuccess", function (sender, eventArgs) {
             var subscribers = $(".subscribers-notifySuccess");

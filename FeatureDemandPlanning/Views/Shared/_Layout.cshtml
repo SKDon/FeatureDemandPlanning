@@ -51,12 +51,11 @@
         </div>
     </nav>
 
-    <div class="carousel-overlay">
+    @*<div class="carousel-overlay">
         <div class="carousel-overlay-parent"></div>
-    </div>
+    </div>*@
 
-    <div id="backgroundCarousel" class="carousel slide" data-ride="carousel">
-        <!-- Indicators -->
+    @*<div id="backgroundCarousel" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
             <li data-target="#backgroundCarousel" data-slide-to="0" class="active"></li>
             <li data-target="#backgroundCarousel" data-slide-to="1"></li>
@@ -87,18 +86,24 @@
             <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
             <span class="sr-only">Next</span>
         </a>
+    </div>*@
+
+    <div id="body" class="container body-content-header">
+        <div id="viewport">
+            @RenderSection("PageBody", true)
+        </div>
     </div>
 
-    <div class="container body-content-header">
-
-        @RenderSection("PageBody", true)
-
+    <div id="footer">
+        <div id="h-slider"></div>
+        @RenderSection("PageFooter", false)
     </div>
-
+    <div id="v-slider"></div>
+    @Scripts.Render("~/bundles/shared")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryform")
     @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/bundles/jquery.dataTables")
+    <script src="@Url.Content("~/Scripts/Shared/oxo-master.js")?v=@Model.CurrentVersion"></script>
     @RenderSection("PageScripts", required: false)
 
     <script>

@@ -83,7 +83,10 @@
     <Compile Include="Context\ForecastDataContext.cs" />
     <Compile Include="Context\ImportDataContext.cs" />
     <Compile Include="Context\MarketDataContext.cs" />
+    <Compile Include="Context\ReferenceDataContext.cs" />
+    <Compile Include="Context\VolumeDataContext.cs" />
     <Compile Include="DataStore\ConfigurationDal.cs" />
+    <Compile Include="DataStore\FdpVolumeDataStore.cs" />
     <Compile Include="DataStore\ImportQueueDataStore.cs" />
     <Compile Include="Context\DocumentDataContext.cs" />
     <Compile Include="Context\EmailDataContext.cs" />

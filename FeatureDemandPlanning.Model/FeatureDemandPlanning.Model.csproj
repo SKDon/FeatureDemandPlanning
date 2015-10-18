@@ -92,126 +92,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Schematron\Assert.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\BadSchemaException.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\CompiledExpressions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Config.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\DomMatchedNodes.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\EvaluableExpression.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\EvaluationContextBase.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Formatters\BooleanFormatter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Formatters\FormatterBase.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Formatters\FormattingUtils.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Formatters\IFormatter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Formatters\LogFormatter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Formatters\SimpleFormatter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Formatters\XmlFormatter.cs">
-      <DependentUpon>XmlFormatter.xsd</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\GenericMatchedNodes.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\IMatchedNodes.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Int32Collection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\InvalidExpressionException.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\NavigableType.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\OutputFormatting.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Pattern.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\PatternCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Phase.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\PhaseCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Report.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Rule.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\RuleCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Schema.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\SchemaCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\SchemaLoader.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\StartDelegate.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\SyncEvaluationContext.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\TagExpressions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Test.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\TestCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\ValidationException.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\ValidationResult.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\Validator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schematron\XPathMatchedNodes.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Interfaces\IReferenceDataContext.cs" />
+    <Compile Include="Interfaces\IVolume.cs" />
+    <Compile Include="Interfaces\IVolumeDataContext.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyCustomState.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyImportQueue.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyMarket.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyMarketGroup.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyOxoDocument.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyVehicleList.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyVolume.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyVolumeHeader.cs" />
+    <Compile Include="Toolbox\BusinessObjects\FdpOxoDoc.cs" />
+    <Compile Include="Toolbox\BusinessObjects\FdpOxoVolumeDataItem.cs" />
+    <Compile Include="Toolbox\BusinessObjects\FdpOxoVolumeDataItemHistory.cs" />
+    <Compile Include="Toolbox\BusinessObjects\FdpOxoVolumeDataItemNote.cs" />
+    <Compile Include="Toolbox\BusinessObjects\FdpVolumeHeader.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Filters\PageFilter.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Filters\VolumeFilter.cs" />
+    <Compile Include="Toolbox\Enumerations\ImportExceptionType.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ImportResult.cs" />
     <Compile Include="Toolbox\BusinessObjects\Validators\ComparisonVehicleExtensions.cs" />
     <Compile Include="Toolbox\BusinessObjects\Validators\ExtendedValidationResult.cs" />
     <Compile Include="Interfaces\IConfigurationDataContext.cs" />
@@ -295,6 +195,9 @@
     <Compile Include="Toolbox\BusinessObjects\Validators\ForecastValidator.cs" />
     <Compile Include="Toolbox\BusinessObjects\Validators\ForecastVehicleValidator.cs" />
     <Compile Include="Toolbox\BusinessObjects\Validators\VehicleValidator.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Validators\VolumeValidator.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Volume.cs" />
+    <Compile Include="Toolbox\BusinessObjects\VolumeData.cs" />
     <Compile Include="Toolbox\Comparers\StringArrayIndexComparer.cs" />
     <Compile Include="Toolbox\Comparers\UniqueVehicleByNameComparer.cs" />
     <Compile Include="Toolbox\Enumerations\ForecastValidationSection.cs" />
@@ -302,6 +205,11 @@
     <Compile Include="Toolbox\Enumerations\ImportType.cs" />
     <Compile Include="Toolbox\Enumerations\ProcessStatus.cs" />
     <Compile Include="Toolbox\Enumerations\SortDirection.cs" />
+    <Compile Include="Toolbox\Enumerations\VolumeMarketMode.cs" />
+    <Compile Include="Toolbox\Enumerations\VolumePage.cs" />
+    <Compile Include="Toolbox\Enumerations\VolumeResultMode.cs" />
+    <Compile Include="Toolbox\Enumerations\VolumeValidationSection.cs" />
+    <Compile Include="Toolbox\Extensions\ModelExtensions.cs" />
     <Compile Include="Toolbox\Extensions\StringExtensions.cs" />
     <Compile Include="Toolbox\Helpers\AppHelper.cs" />
     <Compile Include="Toolbox\Helpers\EmailHelper.cs" />
@@ -313,12 +221,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Schematron\Formatters\XmlFormatter.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Schematron\Formatters\XmlFormatter.xsx">
-      <DependentUpon>XmlFormatter.xsd</DependentUpon>
-    </None>
     <None Include="Service References\RADSMailService\SendMail.wsdl" />
   </ItemGroup>
   <ItemGroup>

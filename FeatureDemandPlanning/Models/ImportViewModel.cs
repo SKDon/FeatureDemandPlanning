@@ -10,12 +10,17 @@ namespace FeatureDemandPlanning.Models
 {
     public class ImportViewModel : SharedModelBase
     {
+        public ImportQueue CurrentImport { get; set; }
+        public PagedResults<ImportError> Exceptions { get; set; }
         public PagedResults<ImportQueue> ImportQueue { get; set; }
+        
         public dynamic Configuration { get; set; }
 
         public ImportViewModel(IDataContext dataContext) : base(dataContext)
         {
             Configuration = dataContext.ConfigurationSettings;
         }
+
+        private ImportQueue _currentImport = new EmptyImportQueue();
     }
 }

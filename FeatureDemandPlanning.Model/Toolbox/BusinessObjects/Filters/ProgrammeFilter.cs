@@ -13,6 +13,7 @@ namespace FeatureDemandPlanning.BusinessObjects.Filters
     {
         public int? ProgrammeId { get; set; }
         public int? VehicleId { get; set; }
+        public int? OxoDocId { get; set; }
 
         public string Make { get; set; }
         public string Code { get; set; }

@@ -21,6 +21,8 @@ namespace FeatureDemandPlanning.DataStore
             _forecastContext = new ForecastDataContext(cdsId);
             _importContext = new ImportDataContext(cdsId);
             _marketContext = new MarketDataContext(cdsId);
+            _volumeContext = new VolumeDataContext(cdsId);
+            _referenceDataContext = new ReferenceDataContext("system");
         }
 
         public IDbHelper GetHelper() { return new DbHelperNonSingleton(); }
@@ -33,6 +35,8 @@ namespace FeatureDemandPlanning.DataStore
         public IForecastDataContext Forecast { get { return _forecastContext; } }
         public IImportDataContext Import { get { return _importContext; } }
         public IMarketDataContext Market { get { return _marketContext; } }
+        public IVolumeDataContext Volume { get { return _volumeContext; } }
+        public IReferenceDataContext References { get { return _referenceDataContext; } }
 
         public dynamic ConfigurationSettings { get { return _configurationContext.Configuration; } }
 
@@ -44,5 +48,7 @@ namespace FeatureDemandPlanning.DataStore
         private IForecastDataContext _forecastContext = null;
         private IImportDataContext _importContext = null;
         private IMarketDataContext _marketContext = null;
+        private IVolumeDataContext _volumeContext = null;
+        private IReferenceDataContext _referenceDataContext = null;
     }
 }

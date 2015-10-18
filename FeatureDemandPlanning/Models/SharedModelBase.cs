@@ -1,4 +1,5 @@
 ﻿using FeatureDemandPlanning.BusinessObjects;
+using FeatureDemandPlanning.BusinessObjects.Filters;
 using FeatureDemandPlanning.DataStore;
 using FeatureDemandPlanning.Interfaces;
 using System;
@@ -8,6 +9,8 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Caching;
 using System.Web.Script.Serialization;
 
 namespace FeatureDemandPlanning.Models
@@ -32,7 +35,7 @@ namespace FeatureDemandPlanning.Models
         public int PageSize { get; set; }
         public int TotalRecords { get; set; }
         public int TotalPages { get; set; }
-        public int ViewPage { get; set; }
+        public string CookieKey { get; set; }
 
         public string StatusCode
         {
@@ -75,6 +78,30 @@ namespace FeatureDemandPlanning.Models
         public void SetProcessState(ApplicationException ex)
         {
             _processStates = new List<ProcessState>() { new ProcessState(ex) };
+        }
+
+        protected IVehicle InitialiseVehicle(IVehicle vehicle)
+        {
+            var cacheKey = string.Format("Vehicle_{0}", vehicle.GetHashCode());
+            IVehicle returnValue = (IVehicle)HttpContext.Current.Cache.Get(cacheKey);
+            if (returnValue != null)
+            {
+                returnValue.TrimMappings = vehicle.TrimMappings;
+                return returnValue;
+            }
+
+            returnValue = this.DataContext.Vehicle.GetVehicle(VehicleFilter.FromVehicle(vehicle));
+            returnValue.TrimMappings = vehicle.TrimMappings;
+
+            HttpContext.Current.Cache.Add(
+                cacheKey, 
+                returnValue, 
+                null,
+                DateTime.Now.AddMinutes(60), 
+                Cache.NoSlidingExpiration, 
+                CacheItemPriority.Default, null);
+
+            return returnValue;
         }
 
         private IDataContext _dataContext = null;

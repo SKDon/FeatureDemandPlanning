@@ -19,6 +19,8 @@ namespace FeatureDemandPlanning.Interfaces
         IForecastDataContext Forecast { get; }
         IImportDataContext Import { get; }
         IMarketDataContext Market { get; }
+        IVolumeDataContext Volume { get; }
+        IReferenceDataContext References { get; }
 
         dynamic ConfigurationSettings { get; }
     }

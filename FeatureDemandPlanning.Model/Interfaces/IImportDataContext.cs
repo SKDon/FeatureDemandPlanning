@@ -18,7 +18,16 @@ namespace FeatureDemandPlanning.Interfaces
         Task<PagedResults<ImportQueue>> ListImportQueue(ImportQueueFilter filter);
         Task<ImportQueue> SaveImportQueue(ImportQueue importItem);
         Task<ImportError> SaveError(ImportError importError);
-        Task<bool> ProcessImportQueue(ImportQueue importItem);
-        Task<bool> ProcessImportQueue();
+
+        Task<ImportStatus> GetProcessStatus(ImportQueue importItem);
+        Task<ImportResult> ProcessImportQueue(ImportQueue importItem);
+        Task<ImportResult> ProcessImportQueue();
+
+        /// <summary>
+        /// Lists the exceptions for the specified import
+        /// </summary>
+        /// <param name="filter">The filter defining the import to list exceptions for</param>
+        /// <returns></returns>
+        Task<PagedResults<ImportError>> ListExceptions(ImportQueueFilter filter);
     }
 }

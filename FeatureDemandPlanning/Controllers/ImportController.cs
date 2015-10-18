@@ -13,9 +13,19 @@ using FeatureDemandPlanning.BusinessObjects.Filters;
 using FeatureDemandPlanning.Comparers;
 using enums = FeatureDemandPlanning.Enumerations;
 using FeatureDemandPlanning.Models;
+using FeatureDemandPlanning.Enumerations;
 
 namespace FeatureDemandPlanning.Controllers
 {
+    public class ImportExceptionsParameterModel : JQueryDataTableParamModel
+    {
+        public int? ImportQueueId { get; set; }
+        public ImportExceptionType ExceptionType { get { return _exceptionType; } set { _exceptionType = value; } }
+        public string FilterMessage { get; set; }
+
+        private ImportExceptionType _exceptionType = ImportExceptionType.NotSet;
+    }
+    
     public class ImportController : ControllerBase
     {
         public ImportController()
@@ -129,6 +139,72 @@ namespace FeatureDemandPlanning.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public async Task<ActionResult> ImportExceptions(int importQueueId, 
+                                                         ImportExceptionType exceptionType = ImportExceptionType.NotSet)
+        {
+            try
+            {
+                var filter = new ImportQueueFilter(importQueueId)
+                {
+                    ExceptionType = exceptionType,
+                    PageIndex = 1,
+                    PageSize = 100
+                };
+
+                _importView = await GetFullAndPartialViewModel(filter);
+            } 
+            catch (ApplicationException ex)
+            {
+                _importView.SetProcessState(ex);
+            }
+
+            return View("ImportExceptions", _importView);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ListImportExceptions(ImportExceptionsParameterModel parameters)
+        {
+            try
+            {
+                var js = new JavaScriptSerializer();
+                var filter = new ImportQueueFilter();
+                
+                filter.InitialiseFromJson(parameters);
+                filter.ImportQueueId = parameters.ImportQueueId;
+                filter.ExceptionType = parameters.ExceptionType;
+                filter.FilterMessage = parameters.FilterMessage;
+             
+                var results = await GetFullAndPartialViewModel(filter);
+                var jQueryResult = JQueryDataTableResultModel.GetResultsFromParameters(parameters, results.TotalRecords);
+
+                // Iterate through the results and put them in a format that can be used by jQuery datatables
+                if (results.Exceptions.CurrentPage.Any())
+                {
+                    foreach (var result in results.Exceptions.CurrentPage)
+                    {
+                        var stringResult = new string[] 
+                        { 
+                            result.LineNumber.ToString(), 
+                            result.ErrorTypeDescription,
+                            result.ErrorMessage,
+                            result.ErrorOn.ToString("dd/MM/yyyy HH:mm"),
+                            string.Empty // action column
+                        };
+
+                        jQueryResult.aaData.Add(stringResult);
+                    }
+                }
+
+                return Json(jQueryResult);
+
+            }
+            catch (Exception ex)
+            {
+                return Json(ex);
+            }
+        }
+
         #region "Private Methods"
 
         /// <summary>
@@ -140,16 +216,23 @@ namespace FeatureDemandPlanning.Controllers
             var model = new ImportViewModel(DataContext)
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
-                ImportQueue = await DataContext.Import.ListImportQueue(filter)
+                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue
             };
 
-            // If there are any items queued, get the total pages and record count from the queued items
-            if (model.ImportQueue.TotalRecords > 0)
+            if (!filter.ImportQueueId.HasValue)
             {
+                model.ImportQueue = await DataContext.Import.ListImportQueue(filter);
                 model.TotalPages = model.ImportQueue.TotalPages;
                 model.TotalRecords = model.ImportQueue.TotalRecords;
             }
+            else
+            {
+                model.CurrentImport = await DataContext.Import.GetImportQueue(filter);
+                model.Exceptions = await DataContext.Import.ListExceptions(filter);
+                model.TotalPages = model.Exceptions.TotalPages;
+                model.TotalRecords = model.Exceptions.TotalRecords;
+            };
+
             return model;
         }
 
@@ -178,7 +261,7 @@ namespace FeatureDemandPlanning.Controllers
         /// <summary>
         /// Processes all items in the queue
         /// </summary>
-        private async Task<bool> ProcessQueue()
+        private async Task<ImportResult> ProcessQueue()
         {
             return await DataContext.Import.ProcessImportQueue();
         }
@@ -187,7 +270,7 @@ namespace FeatureDemandPlanning.Controllers
         /// Processes an individual item in the queue
         /// </summary>
         /// <param name="importQueueId">The import queue identifier</param>
-        private async Task<bool> ProcessQueue(int importQueueId)
+        private async Task<ImportResult> ProcessQueue(int importQueueId)
         {
             var filter = new ImportQueueFilter(importQueueId);
             var itemToProcess = DataContext.Import.GetImportQueue(filter);

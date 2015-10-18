@@ -17,7 +17,21 @@ namespace FeatureDemandPlanning.BusinessObjects
         public string DerivativeCode { get; set; }
         public string Gateway { get; set; }
         public string ImageUri { get; set; }
-        public string FullDescription { get; set; }
+        
+        public string FullDescription
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(Gateway))
+                {
+                    return string.Format("{0} ({1}, {2})", Description, ModelYear, Gateway);
+                }
+                else
+                {
+                    return string.Format("{0} ({1})", Description, ModelYear);
+                }
+            }
+        }
         public string Description { get; set; }
         
         public IEnumerable<Programme> Programmes 
@@ -43,6 +57,66 @@ namespace FeatureDemandPlanning.BusinessObjects
                 _trimMappings = value;
             }
         }
+
+        public IEnumerable<OXODoc> AvailableDocuments
+        {
+            get
+            {
+                return _availableDocuments;
+            }
+            set
+            {
+                _availableDocuments = value;
+            }
+        }
+
+        public IEnumerable<FdpVolumeHeader> AvailableImports
+        {
+            get
+            {
+                return _availableImports;
+            }
+            set
+            {
+                _availableImports = value;
+            }
+        }
+
+        public IEnumerable<BusinessObjects.Model> AvailableModels
+        {
+            get
+            {
+                return _availableModels;
+            }
+            set
+            {
+                _availableModels = value;
+            }
+        }
+
+        public IEnumerable<MarketGroup> AvailableMarketGroups
+        {
+            get
+            {
+                return _availableMarketGroups;
+            }
+            set
+            {
+                _availableMarketGroups = value;
+            }
+        }
+
+        //public IEnumerable<Market> AvailableMarkets
+        //{
+        //    get
+        //    {
+        //        return _availableMarkets;
+        //    }
+        //    set
+        //    {
+        //        _availableMarkets = value;
+        //    }
+        //}
 
         public Programme GetProgramme()
         {
@@ -85,8 +159,7 @@ namespace FeatureDemandPlanning.BusinessObjects
 
             return IsMakeEquivalent(other) &&
                 IsCodeEquivalent(other) &&
-                IsModelYearEquivalent(other); //&&
-                //IsGatewayEquivalent(other);
+                IsModelYearEquivalent(other);
         }
 
         public bool Equals(Vehicle x, Vehicle y)
@@ -103,8 +176,8 @@ namespace FeatureDemandPlanning.BusinessObjects
                 hash = hash * 23 + (string.IsNullOrEmpty(Make) ? string.Empty : Make).GetHashCode();
                 hash = hash * 23 + (string.IsNullOrEmpty(Code) ? string.Empty : Code).GetHashCode();
                 hash = hash * 23 + (string.IsNullOrEmpty(ModelYear) ? string.Empty : ModelYear).GetHashCode();
-                //hash = hash * 23 + (string.IsNullOrEmpty(Gateway) ? string.Empty : Gateway).GetHashCode();
-
+                hash = hash * 23 + (string.IsNullOrEmpty(Gateway) ? string.Empty : Gateway).GetHashCode();
+               
                 return hash;
             }
         }
@@ -127,8 +200,11 @@ namespace FeatureDemandPlanning.BusinessObjects
                 Gateway = vehicle.Gateway,
                 ImageUri = vehicle.ImageUri,
                 Description = vehicle.Description,
-                FullDescription = vehicle.FullDescription,
-                Programmes = vehicle.Programmes
+                //FullDescription = vehicle.FullDescription,
+                Programmes = vehicle.Programmes,
+                AvailableDocuments = vehicle.AvailableDocuments,
+                AvailableImports = vehicle.AvailableImports,
+                AvailableModels = vehicle.AvailableModels
             };
         }
 
@@ -166,5 +242,10 @@ namespace FeatureDemandPlanning.BusinessObjects
 
         private IEnumerable<Programme> _programmes = new List<Programme>();
         private IList<TrimMapping> _trimMappings = new List<TrimMapping>();
+        private IEnumerable<OXODoc> _availableDocuments = new List<OXODoc>();
+        private IEnumerable<FdpVolumeHeader> _availableImports = new List<FdpVolumeHeader>();
+        private IEnumerable<BusinessObjects.Model> _availableModels = new List<BusinessObjects.Model>();
+        private IEnumerable<MarketGroup> _availableMarketGroups = new List<MarketGroup>();
+        //private IEnumerable<Market> _availableMarkets = new List<Market>();
     }
 }

@@ -41,7 +41,7 @@ page.Page = function (models)
         var dt = tblEngineCodeMappings.DataTable({
             "bServerSide": true,
             "sAjaxSource": mappingUri,
-            "bProcessing": true,
+            "bProcessing": false,
             "iDisplayLength": 10,
             "sDom": "ltip",
             "aoColumns": [

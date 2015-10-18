@@ -1,4 +1,5 @@
 ﻿using FeatureDemandPlanning.BusinessObjects;
+using FeatureDemandPlanning.BusinessObjects.Filters;
 using FeatureDemandPlanning.Enumerations;
 using FeatureDemandPlanning.Interfaces;
 using FeatureDemandPlanning.Model;
@@ -17,8 +18,9 @@ namespace FeatureDemandPlanning.DataStore
             : base(cdsId)
         {
             _marketDataStore = new MarketDataStore(cdsId);
+            _marketGroupDataStore = new MarketGroupDataStore(cdsId);
+            _documentDataStore = new OXODocDataStore(cdsId);
         }
-
         public IEnumerable<Market> ListAvailableMarkets()
         {
             var topMarkets = ListTopMarkets();
@@ -30,18 +32,55 @@ namespace FeatureDemandPlanning.DataStore
 
             return markets;
         }
-
         public IEnumerable<Market> ListTopMarkets()
         {
             return _marketDataStore.TopMarketGetMany()
                 .OrderBy(m => m.Name);
         }
+        public Market GetMarket(VolumeFilter filter)
+        {
+            if (!filter.MarketId.HasValue)
+                return new EmptyMarket();
 
+            var market =  _marketDataStore.MarketGet(filter.MarketId.Value);
+
+            if (market == null)
+                return new EmptyMarket();
+
+            // Populate the list of available derivatives for that market
+            if (filter.OxoDocId.HasValue && filter.ProgrammeId.HasValue)
+            {
+                var variants = _documentDataStore.OXODocAvailableModelsByMarket(filter.ProgrammeId.Value, filter.OxoDocId.Value, market.Id);
+                market.VariantCount = variants.Count();
+            }
+
+            return market;
+        }
+        public MarketGroup GetMarketGroup(VolumeFilter filter)
+        {
+            if (!filter.MarketGroupId.HasValue || !filter.OxoDocId.HasValue || !filter.ProgrammeId.HasValue)
+                return new EmptyMarketGroup();
+
+            var marketGroup = _marketGroupDataStore.MarketGroupGet(string.Empty, 
+                                                        filter.MarketGroupId.Value, 
+                                                        progid:filter.ProgrammeId.Value, 
+                                                        docid:filter.OxoDocId.Value);
+            if (marketGroup == null)
+                return new EmptyMarketGroup();
+
+            // Populate the list of available derivatives for that market
+            if (filter.OxoDocId.HasValue && filter.ProgrammeId.HasValue)
+            {
+                var variants = _documentDataStore.OXODocAvailableModelsByMarketGroup(filter.ProgrammeId.Value, filter.OxoDocId.Value, marketGroup.Id);
+                marketGroup.VariantCount = variants.Count();
+            }
+
+            return marketGroup;
+        }
         public Market GetTopMarket(int marketId)
         {
             return _marketDataStore.TopMarketGet(marketId);
         }
-
         public Market AddTopMarket(int marketId)
         {
             var market = new Market() {
@@ -50,7 +89,6 @@ namespace FeatureDemandPlanning.DataStore
             
             return _marketDataStore.TopMarketSave(market);
         }
-
         public Market DeleteTopMarket(int marketId)
         {
             var market = new Market()
@@ -60,7 +98,19 @@ namespace FeatureDemandPlanning.DataStore
 
             return _marketDataStore.TopMarketDelete(market);
         }
+        public IEnumerable<BusinessObjects.Model> ListAvailableModelsByMarket(OXODoc forDocument, Market byMarket)
+        {
+            return _documentDataStore.OXODocAvailableModelsByMarket(forDocument.ProgrammeId, forDocument.Id, byMarket.Id)
+                .Where(m => m.Available == true);
+        }
+        public IEnumerable<BusinessObjects.Model> ListAvailableModelsByMarketGroup(OXODoc forDocument, MarketGroup byMarketGroup)
+        {
+            return _documentDataStore.OXODocAvailableModelsByMarketGroup(forDocument.ProgrammeId, forDocument.Id, byMarketGroup.Id)
+                .Where(m => m.Available == true);
+        }
 
         private MarketDataStore _marketDataStore;
+        private MarketGroupDataStore _marketGroupDataStore;
+        private OXODocDataStore _documentDataStore;
     }
 }

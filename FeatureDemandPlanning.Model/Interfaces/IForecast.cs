@@ -9,9 +9,7 @@ namespace FeatureDemandPlanning.Interfaces
     public interface IForecast
     {
         int? ForecastId { get; set; }
-        int VehicleId { get; set; }
-        int ProgrammeId { get; set; }
-        
+       
         DateTime CreatedOn { get; set; }
         string CreatedBy { get; set; }
         DateTime? UpdatedOn { get; set; }
@@ -20,7 +18,5 @@ namespace FeatureDemandPlanning.Interfaces
         Vehicle ForecastVehicle { get; set; }
         IEnumerable<Vehicle> ComparisonVehicles { get; set; }
         IEnumerable<TrimMapping> TrimMapping { get; set; }
-
-        //bool IsValid();
     }
 }

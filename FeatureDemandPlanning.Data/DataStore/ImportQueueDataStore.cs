@@ -84,7 +84,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public ImportQueue ImportQueueGet(int importQueueId)
         {
-            ImportQueue retVal = null;
+            ImportQueue retVal = new EmptyImportQueue();
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
@@ -172,7 +172,7 @@ namespace FeatureDemandPlanning.DataStore
 
                     HydrateImportType(result, conn);
                     HydrateImportStatus(result, conn);
-                    HydrateImportErrors(result, conn);
+                    //HydrateImportErrors(result, conn);
 
                     // As we have used an interim object here and don't want to return some of the elements of that object
                     // create a new ImportQueue instance and return
@@ -189,9 +189,9 @@ namespace FeatureDemandPlanning.DataStore
 
         }
 
-        public bool ImportQueueProcess()
+        public ImportResult ImportQueueProcess()
         {
-            var retVal = false;
+            var result = new ImportResult();
             string procName = "dbo.Fdp_Import_Process";
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
@@ -209,14 +209,12 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
 
-            retVal = true;
-
-            return retVal;
+            return result;
         }
 
-        public bool ImportQueueProcess(ImportQueue importItem)
+        public ImportResult ImportQueueProcess(ImportQueue importItem)
         {
-            var retVal = false;
+            var result = new ImportResult();
             string procName = "dbo.Fdp_Import_Process";
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
@@ -235,7 +233,65 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
 
-            retVal = true;
+            return result;
+        }
+
+        public PagedResults<ImportError> ImportErrorGetMany(ImportQueueFilter filter)
+        {
+            PagedResults<ImportError> retVal = null;
+
+            using (IDbConnection connection = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    var totalRecords = 0;
+
+                    para.Add("@ImportQueueId", filter.ImportQueueId.Value, dbType: DbType.Int32);
+
+                    if (filter.ExceptionType != enums.ImportExceptionType.NotSet)
+                    {
+                        para.Add("@FdpImportExceptionTypeId", (int)filter.ExceptionType, dbType: DbType.Int32);
+                    }
+                    if (!string.IsNullOrEmpty(filter.FilterMessage))
+                    {
+                        para.Add("@FilterMessage", filter.FilterMessage, dbType: DbType.String, size: 50);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                    }
+                    para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 100, dbType: DbType.Int32);
+                    
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    para.Add("@SortDirection", (int)filter.SortDirection, dbType: DbType.Int32);
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = connection.Query<ImportError>("dbo.Fdp_ImportError_GetMany", para, commandType: CommandType.StoredProcedure);
+
+                    if (results.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                    }
+                    retVal = new PagedResults<ImportError>()
+                    {
+                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        TotalRecords = totalRecords,
+                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                    };
+
+                    retVal.CurrentPage = results;
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportErrorGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
 
             return retVal;
         }

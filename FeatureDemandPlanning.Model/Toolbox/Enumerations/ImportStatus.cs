@@ -11,6 +11,7 @@ namespace FeatureDemandPlanning.Enumerations
         Queued = 1,
         Processing = 2,
         Processed = 3,
-        Error = 4
+        Error = 4,
+        Success = 5
     }
 }

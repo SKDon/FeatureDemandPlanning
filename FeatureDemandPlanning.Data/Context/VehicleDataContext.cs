@@ -15,14 +15,19 @@ namespace FeatureDemandPlanning.DataStore
         public VehicleDataContext(string cdsId) : base(cdsId)
         {
             _vehicleDataStore = new VehicleDataStore(cdsId);
+            _documentDataStore = new OXODocDataStore(cdsId);
             _programmeDataStore = new ProgrammeDataStore(cdsId);
+            _volumeDataStore = new FdpVolumeDataStore(cdsId);
+            _modelDataStore = new ModelDataStore(cdsId);
+            _marketDataStore = new MarketDataStore(cdsId);
+            _marketGroupDataStore = new MarketGroupDataStore(cdsId);
         }
 
         public IVehicle GetVehicle(VehicleFilter filter)
         {
             IVehicle vehicle = new EmptyVehicle();
 
-            if (string.IsNullOrEmpty(filter.Code))
+            if (string.IsNullOrEmpty(filter.Code) && !filter.ProgrammeId.HasValue)
             {
                 return vehicle;
             }
@@ -31,13 +36,66 @@ namespace FeatureDemandPlanning.DataStore
             if (programme == null)
                 return vehicle;
 
+            var availableDocuments = ListAvailableOxoDocuments(filter);
+            var availableImports = ListAvailableImports(filter, programme);
+            var availableModels = ListAvailableModels(filter, programme);
+            var availableMarketGroups = ListAvailableMarketGroups(filter, programme);
+            //var availableMarkets = ListAvailableMarkets(filter, programme);
+
             vehicle = HydrateVehicleFromProgramme(programme);
-            vehicle.Gateway = filter.Gateway;
-            vehicle.ModelYear = filter.ModelYear;
+            vehicle.AvailableDocuments = availableDocuments;
+            vehicle.AvailableImports = availableImports;
+            vehicle.AvailableModels = availableModels;
+            vehicle.AvailableMarketGroups = availableMarketGroups;
+            //vehicle.AvailableMarkets = availableMarkets;
+            vehicle.Gateway = !string.IsNullOrEmpty(filter.Gateway) ? filter.Gateway : vehicle.Gateway;
+            vehicle.ModelYear = !string.IsNullOrEmpty(filter.ModelYear) ? filter.ModelYear : vehicle.ModelYear;
 
             return vehicle;
         }
 
+        public IEnumerable<OXODoc> ListAvailableOxoDocuments(VehicleFilter filter)
+        {
+            return _documentDataStore
+                        .OXODocGetManyByUser(this.CDSID)
+                        .Where(d => IsDocumentForVehicle(d, VehicleFilter.ToVehicle(filter)))
+                        .Distinct(new OXODocComparer());
+        }
+
+        public IEnumerable<FdpVolumeHeader> ListAvailableImports(VehicleFilter filter, Programme forProgramme)
+        {
+            var imports = _volumeDataStore
+                            .FdpVolumeHeaderGetManyByUsername(filter)
+                            .ToList();
+
+            foreach (var import in imports) {
+                import.Vehicle = (Vehicle)HydrateVehicleFromProgramme(forProgramme);
+                import.Vehicle.Gateway = import.Gateway;
+            }
+
+            return imports;
+        }
+
+        public IEnumerable<BusinessObjects.Model> ListAvailableModels(VehicleFilter filter, Programme forProgramme)
+        {
+            var models = _modelDataStore
+                            .ModelGetMany(string.Empty, forProgramme.Id, null)
+                            .ToList();
+
+            return models;
+        }
+        public IEnumerable<MarketGroup> ListAvailableMarketGroups(VehicleFilter filter, Programme forProgramme)
+        {
+            IEnumerable<MarketGroup> marketGroups = Enumerable.Empty<MarketGroup>();
+            if (filter.OxoDocId.HasValue) {
+                marketGroups =  _marketGroupDataStore
+                                   .MarketGroupGetMany(forProgramme.Id, filter.OxoDocId.Value, true);
+            } else {
+                marketGroups = _marketGroupDataStore
+                                   .MarketGroupGetMany(true);
+            }
+            return marketGroups;
+        }
         public IEnumerable<string> ListAvailableMakes()
         {
             var programmes = _programmeDataStore.ProgrammeGetMany();
@@ -141,21 +199,32 @@ namespace FeatureDemandPlanning.DataStore
                 ModelYear = programme.ModelYear,
                 Gateway = vehicleIndex.GetValueOrDefault() == 0 ? programme.Gateway : string.Empty,
                 Description = String.Format("{0} - {1}", programme.VehicleName, programme.VehicleAKA),
-                FullDescription = vehicleIndex.GetValueOrDefault() == 0 || string.IsNullOrEmpty(programme.Gateway) ?
-                    string.Format("{0} - {1} ({2}, {3})",
-                        programme.VehicleName,
-                        programme.VehicleAKA,
-                        programme.ModelYear,
-                        programme.Gateway) :
-                    string.Format("{0} - {1} ({2})",
-                        programme.VehicleName,
-                        programme.VehicleAKA,
-                        programme.ModelYear),
+                //FullDescription = vehicleIndex.GetValueOrDefault() == 0 || string.IsNullOrEmpty(programme.Gateway) ?
+                //    string.Format("{0} - {1} ({2}, {3})",
+                //        programme.VehicleName,
+                //        programme.VehicleAKA,
+                //        programme.ModelYear,
+                //        programme.Gateway) :
+                //    string.Format("{0} - {1} ({2})",
+                //        programme.VehicleName,
+                //        programme.VehicleAKA,
+                //        programme.ModelYear),
                 Programmes = new List<Programme>() { programme }
             };
         }
 
+        private bool IsDocumentForVehicle(OXODoc documentToCheck, IVehicle vehicle)
+        {
+            return (!vehicle.ProgrammeId.HasValue || documentToCheck.ProgrammeId == vehicle.ProgrammeId.Value) &&
+                (string.IsNullOrEmpty(vehicle.Gateway) || documentToCheck.Gateway == vehicle.Gateway);
+        }
+
         private VehicleDataStore _vehicleDataStore = null;
         private ProgrammeDataStore _programmeDataStore = null;
+        private OXODocDataStore _documentDataStore = null;
+        private FdpVolumeDataStore _volumeDataStore = null;
+        private ModelDataStore _modelDataStore = null;
+        private MarketDataStore _marketDataStore = null;
+        private MarketGroupDataStore _marketGroupDataStore = null;
     }
 }

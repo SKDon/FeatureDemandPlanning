@@ -14,6 +14,7 @@ namespace FeatureDemandPlanning.BusinessObjects
         public DateTime? UpdatedOn { get; set; }
         public string CreatedBy { get; set; }
         public string FilePath { get; set; }
+        public string Description { get; set; }
 
         public ImportType ImportType { get; set; }
         public ImportStatus ImportStatus { get; set; }

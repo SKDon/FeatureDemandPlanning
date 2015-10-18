@@ -11,13 +11,28 @@ using System.Data.SqlClient;
 using System.Web;
 using ClosedXML.Excel;
 using FeatureDemandPlanning.Dapper;
-using FeatureDemandPlanning.Schematron;
 using FeatureDemandPlanning.Helpers;
 using FeatureDemandPlanning.Interfaces;
 
 namespace FeatureDemandPlanning.BusinessObjects
 {
     public enum OXOSection {MBM, FBM, FRS, FPS, PCK, GSF};
+
+    public class OXODocComparer : IEqualityComparer<OXODoc>
+    {
+        public bool Equals(OXODoc x, OXODoc y)
+        {
+            if (x == null || y == null)
+                return false;
+
+            return x.Id == y.Id; 
+        }
+
+        public int GetHashCode(OXODoc obj)
+        {
+            return obj.Id.GetHashCode();
+        }
+    }
 
     [Serializable]
     public class OXODoc : BusinessObject
@@ -120,14 +135,6 @@ namespace FeatureDemandPlanning.BusinessObjects
             _dataContext = dataContext;
         }
 
-        public IEnumerable<ValidationResult> ValidateDoc(string mode, int progid, int objectId)
-        {
-            IEnumerable<ValidationResult> retVal;
-            MemoryStream ms = PerformSchematron(this.Id, progid, mode, objectId);
-            retVal = FormatValidation(ms);
-            return retVal;
-        }
-
         public int ValidateXCLDoc(string mode, int progid, int objectId, string cdsid)
         {
             return _dataContext.Document.ValidateXclDoc(Id, mode, progid, objectId);
@@ -194,65 +201,6 @@ namespace FeatureDemandPlanning.BusinessObjects
                 sb.Append(sr.ReadToEnd());
             }
             return sb.ToString();
-        }
-
-        private MemoryStream PerformSchematron(int docid, int progid, string mode, int objectid)
-        {
-            MemoryStream result;
-            OutputFormatting format = OutputFormatting.XML;
-            Validator val = new Validator(format);
-            val.AddSchema(new StringReader(LoadSourceXSL(progid)));
-
-            try
-            {
-                IXPathNavigable doc = val.Validate(new StringReader(LoadSourceXML(docid, mode, progid, objectid)));
-                result = new MemoryStream(Encoding.Unicode.GetBytes("<Result>Valid OXO Doc!</Result>"));                                
-            }
-            catch (ValidationException ex)
-            {
-                result = new MemoryStream(Encoding.Unicode.GetBytes(ex.Message));                
-            }
-            return result;
-        }
-
-        private IEnumerable<ValidationResult> FormatValidation(MemoryStream ms)
-        {
-            List<ValidationResult> results = new List<ValidationResult>();
-            XPathDocument xmlDoc = new XPathDocument(ms);
-            XPathNavigator nav = xmlDoc.CreateNavigator();          
-            XPathNodeIterator iter = nav.Select("//rule/message");
-
-            if (iter.Count > 0)
-            {
-                while (iter.MoveNext())
-                {
-                    string docId = "";
-                    string progId = "";
-                    string modelId = iter.Current.SelectSingleNode("model").GetAttribute("id", "");
-                    string modelName = iter.Current.SelectSingleNode("model").GetAttribute("name", "");
-                    string ruleId = iter.Current.GetAttribute("ruleid", "");
-                    string area = iter.Current.GetAttribute("area", "");
-                    string type = iter.Current.GetAttribute("type", "");
-                    string source = iter.Current.GetAttribute("source", "");
-                    string msgText = iter.Current.SelectSingleNode("text").Value;
-                    string owner = iter.Current.GetAttribute("owner", "");
-                    string pass = iter.Current.GetAttribute("type", "");
-                    switch (source)
-                    {
-                        case "E":
-                            source = "Engineering Ruleset";
-                            break;
-                        case "M":
-                            source = "Marketing Ruleset";
-                            break;
-                        case "T":
-                            source = "Territorial Ruleset";
-                            break;
-                    }
-                    results.Add(new ValidationResult(docId, progId, modelId, modelName, source, ruleId, area, msgText, type, owner, pass));
-                }
-            }
-            return results;
         }
 
         public bool Export(string cdsid, string comment,string PACN)

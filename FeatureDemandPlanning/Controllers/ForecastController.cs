@@ -65,12 +65,12 @@ namespace FeatureDemandPlanning.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult Forecast(int? viewPage, int? forecastId)
+		public ActionResult Forecast(int? pageIndex, int? forecastId)
 		{
 			var filter = new ForecastFilter();
 			filter.ForecastId = forecastId;
 			var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(filter);
-			forecastComparisonModel.ViewPage = viewPage.GetValueOrDefault();
+			forecastComparisonModel.PageIndex = pageIndex.GetValueOrDefault();
 
 			ViewBag.PageTitle = "Edit Forecast";
 			

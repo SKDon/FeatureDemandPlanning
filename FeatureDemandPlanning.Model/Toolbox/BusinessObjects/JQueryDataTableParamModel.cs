@@ -48,5 +48,7 @@ namespace FeatureDemandPlanning.BusinessObjects
         public int iSortCol_0 { get; set; }
 
         public string sSortDir_0 { get; set; }
+
+        public object[] aoData { get; set; }
     }
 }

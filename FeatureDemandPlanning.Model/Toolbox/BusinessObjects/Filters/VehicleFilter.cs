@@ -23,5 +23,18 @@ namespace FeatureDemandPlanning.BusinessObjects.Filters
                 Gateway = vehicle.Gateway
             };
         }
+
+        public static IVehicle ToVehicle(VehicleFilter filter)
+        {
+            return new Vehicle()
+            {
+                ProgrammeId = filter.ProgrammeId,
+                VehicleId = filter.VehicleId,
+                Code = filter.Code,
+                Make = filter.Make,
+                ModelYear = filter.ModelYear,
+                Gateway = filter.Gateway
+            };
+        }
     }
 }

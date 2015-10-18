@@ -8,6 +8,7 @@ using System.Text;
 using FeatureDemandPlanning.BusinessObjects.Context;
 using FeatureDemandPlanning.BusinessObjects.Filters;
 using FeatureDemandPlanning.BusinessObjects.Validators;
+using FeatureDemandPlanning.Enumerations;
 
 namespace FeatureDemandPlanning.Models
 {
@@ -23,8 +24,7 @@ namespace FeatureDemandPlanning.Models
             : base(dataContext)
         {
             Configuration = dataContext.ConfigurationSettings;
-            //ForecastVehicleLookup = new Lookup(dataContext);
-            //ComparisonVehicleLookup = new List<Lookup>();
+            CookieKey = cookieKey;
         }
 
         #endregion
@@ -166,7 +166,7 @@ namespace FeatureDemandPlanning.Models
             Forecast.ComparisonVehicles = newComparisonVehicles.Cast<Vehicle>();
         }
 
-        private IVehicle InitialiseVehicle(IVehicle vehicle)
+        private new IVehicle InitialiseVehicle(IVehicle vehicle)
         {
             var returnValue = this.DataContext.Vehicle.GetVehicle(VehicleFilter.FromVehicle(vehicle));
             returnValue.TrimMappings = vehicle.TrimMappings;
@@ -180,6 +180,10 @@ namespace FeatureDemandPlanning.Models
 
         private IForecast _forecast = new EmptyForecast();
         private PagedResults<IForecast> _forecasts = new PagedResults<IForecast>();
+        private VolumeResultMode _resultsMode = VolumeResultMode.Raw;
+        private VolumeMarketMode _marketMode = VolumeMarketMode.MarketGroup;
+        
+        private const string cookieKey = "FdpFbm"; 
 
         #endregion
     }

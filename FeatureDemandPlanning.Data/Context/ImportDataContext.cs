@@ -46,17 +46,42 @@ namespace FeatureDemandPlanning.DataStore
             return await Task.FromResult<ImportError>(_importDataStore.ImportErrorSave(importError));
         }
 
-        public async Task<bool> ProcessImportQueue(ImportQueue importItem)
+        public async Task<ImportQueue> GetProcessStatus(ImportQueue importItem)
         {
-            return await Task.FromResult<bool>(_importDataStore.ImportQueueProcess(importItem));
+            var importQueueId = importItem.ImportQueueId.GetValueOrDefault();
+            //var result = await Task.FromResult<ImportQueue>();
+            //var status = new FeatureDemandPlanning.BusinessObjects.ImportStatus() {
+
+            //}
+
+            return await Task.FromResult<ImportQueue>(_importDataStore.ImportQueueGet(importQueueId));
         }
 
-        public async Task<bool> ProcessImportQueue()
+        public async Task<ImportResult> ProcessImportQueue(ImportQueue importItem)
         {
-            return await Task.FromResult<bool>(_importDataStore.ImportQueueProcess());
+            return await Task.FromResult<ImportResult>(_importDataStore.ImportQueueProcess(importItem));
+        }
+
+        public async Task<ImportResult> ProcessImportQueue()
+        {
+            return await Task.FromResult<ImportResult>(_importDataStore.ImportQueueProcess());
+        }
+
+        public async Task<PagedResults<ImportError>> ListExceptions(ImportQueueFilter filter)
+        {
+            var results = await Task.FromResult<PagedResults<ImportError>>(
+                _importDataStore.ImportErrorGetMany(filter));
+
+            return results;
         }
 
         private ImportQueueDataStore _importDataStore;
 
+
+
+        Task<BusinessObjects.ImportStatus> IImportDataContext.GetProcessStatus(ImportQueue importItem)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

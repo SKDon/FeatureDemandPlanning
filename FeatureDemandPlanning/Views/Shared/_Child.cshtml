@@ -38,10 +38,10 @@
                     </li>
                 </ul>
                 <form class="navbar-form navbar-left" role="search">
-                    <div class="form-group">
+                    @*<div class="form-group">
                         <input class="form-control" placeholder="Search" type="text">
                     </div>
-                    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>*@
                 </form>
                 <div class ="nav navbar-nav navbar-right" style="position:relative;width:230px;height:60px;">
                     <img class="navbar-right" src="~/Content/Images/Brand/jag_logo_transparent.png" style="position:absolute;left:0;bottom:0;"/>
@@ -51,24 +51,29 @@
         </div>
     </nav>
 
-    <div id="carouselOverlay" class="carousel-overlay">
+    @*<div id="carouselOverlay" class="carousel-overlay">
         <div class="carousel-overlay-child"></div>
     </div>
 
-    <img class="banner" src="~/Content/Images/Carousel/multiple.png" />
+    <img class="banner" src="~/Content/Images/Carousel/multiple.png" />*@
     
     <div class="container body-content-header">
         @RenderSection("PageContentHeader", false)
     </div>     
 
-    <div class="container body-content">
+    <div id="body" class="container body-content-header">
         @RenderSection("PageBody", true)
     </div>
 
+    <div id="footer">
+        @RenderSection("PageFooter", false)
+    </div>
+    
+    @Scripts.Render("~/bundles/shared")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryform")
     @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/bundles/jquery.dataTables")
+    <script src="@Url.Content("~/Scripts/Shared/oxo-master.js")?v=@Model.CurrentVersion"></script>
     @RenderSection("PageScripts", required: false)
 </body>
 </html>

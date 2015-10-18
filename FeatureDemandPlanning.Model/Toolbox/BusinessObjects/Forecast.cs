@@ -17,10 +17,7 @@ namespace FeatureDemandPlanning.BusinessObjects
     public class Forecast : BusinessObject, IForecast//, da.IValidatableObject
     {
         public int? ForecastId { get; set; }
-        public int VehicleId { get; set; }
-        public int ProgrammeId { get; set; }
-        public int GatewayId { get; set; }
-
+ 
         public new DateTime CreatedOn { get; set; }
         public DateTime? UpdatedOn { get; set; }
         
