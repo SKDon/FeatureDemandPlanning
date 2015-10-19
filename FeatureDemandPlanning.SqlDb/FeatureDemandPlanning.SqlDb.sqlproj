@@ -103,6 +103,7 @@
     <Folder Include="Security\" />
     <Folder Include="Functions\" />
     <Folder Include="Stored Procedures\" />
+    <Folder Include="DML" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\OXO_Gateway.sql">
@@ -1899,10 +1900,6 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\MN_Check_Removed_Feature_On_OXO.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="Stored Procedures\Fdp_Import_CleanUp_Old.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
