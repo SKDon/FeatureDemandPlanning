@@ -24,6 +24,6 @@ AS
 		
 	FROM Fdp_Forecast_VW AS F
 	WHERE
-	ForecastId = @ForecastId;
+	Id = @ForecastId;
 	
 	
