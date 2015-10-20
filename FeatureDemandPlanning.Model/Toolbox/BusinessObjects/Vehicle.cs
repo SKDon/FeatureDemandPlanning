@@ -46,7 +46,7 @@ namespace FeatureDemandPlanning.BusinessObjects
             }
         }
 
-        public IList<TrimMapping> TrimMappings
+        public IList<ForecastTrimMapping> TrimMappings
         {
             get
             {
@@ -241,7 +241,7 @@ namespace FeatureDemandPlanning.BusinessObjects
         }
 
         private IEnumerable<Programme> _programmes = new List<Programme>();
-        private IList<TrimMapping> _trimMappings = new List<TrimMapping>();
+        private IList<ForecastTrimMapping> _trimMappings = new List<ForecastTrimMapping>();
         private IEnumerable<OXODoc> _availableDocuments = new List<OXODoc>();
         private IEnumerable<FdpVolumeHeader> _availableImports = new List<FdpVolumeHeader>();
         private IEnumerable<BusinessObjects.Model> _availableModels = new List<BusinessObjects.Model>();

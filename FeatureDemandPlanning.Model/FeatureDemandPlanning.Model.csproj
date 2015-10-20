@@ -96,11 +96,15 @@
     <Compile Include="Interfaces\IReferenceDataContext.cs" />
     <Compile Include="Interfaces\IVolume.cs" />
     <Compile Include="Interfaces\IVolumeDataContext.cs" />
+    <Compile Include="Toolbox\BusinessObjects\DerivativeMapping.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyCustomState.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyDerivativeCodeMapping.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyImportError.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyImportQueue.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyMarket.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyMarketGroup.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyOxoDocument.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyTrimMapping.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyVehicleList.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyVolume.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyVolumeHeader.cs" />
@@ -111,6 +115,7 @@
     <Compile Include="Toolbox\BusinessObjects\FdpVolumeHeader.cs" />
     <Compile Include="Toolbox\BusinessObjects\Filters\PageFilter.cs" />
     <Compile Include="Toolbox\BusinessObjects\Filters\VolumeFilter.cs" />
+    <Compile Include="Toolbox\BusinessObjects\TrimMapping.cs" />
     <Compile Include="Toolbox\Enumerations\ImportExceptionType.cs" />
     <Compile Include="Toolbox\BusinessObjects\ImportResult.cs" />
     <Compile Include="Toolbox\BusinessObjects\Validators\ComparisonVehicleExtensions.cs" />
@@ -191,7 +196,7 @@
     <Compile Include="Toolbox\BusinessObjects\Filters\ProgrammeFilter.cs" />
     <Compile Include="Toolbox\BusinessObjects\SystemUser.cs" />
     <Compile Include="Toolbox\BusinessObjects\Test.cs" />
-    <Compile Include="Toolbox\BusinessObjects\TrimMapping.cs" />
+    <Compile Include="Toolbox\BusinessObjects\ForecastTrimMapping.cs" />
     <Compile Include="Toolbox\BusinessObjects\Validators\ComparisonVehicleValidator.cs" />
     <Compile Include="Toolbox\BusinessObjects\Validators\ForecastValidator.cs" />
     <Compile Include="Toolbox\BusinessObjects\Validators\ForecastVehicleValidator.cs" />

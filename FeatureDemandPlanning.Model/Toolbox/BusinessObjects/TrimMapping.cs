@@ -8,13 +8,9 @@ namespace FeatureDemandPlanning.BusinessObjects
 {
     public class TrimMapping
     {
-        public ModelTrim ForecastVehicleTrim { get; set; }
-        public IList<ModelTrim> ComparisonVehicleTrimMappings { get; set; }
-
-        public TrimMapping()
-        {
-            ForecastVehicleTrim = new ModelTrim();
-            ComparisonVehicleTrimMappings = Enumerable.Empty<ModelTrim>().ToList();
-        }
+        public int FdpTrimMappingId { get; set; }
+        public string ImportTrim { get; set; }
+        public int ProgrammeId { get; set; }
+        public int TrimId { get; set; }
     }
 }

@@ -22,7 +22,7 @@ namespace FeatureDemandPlanning.Interfaces
         string Gateway { get; set; }
         string ImageUri { get; set; }
 
-        IList<TrimMapping> TrimMappings { get; set; }
+        IList<ForecastTrimMapping> TrimMappings { get; set; }
         IEnumerable<Programme> Programmes { get; set; }
         IEnumerable<OXODoc> AvailableDocuments { get; set; }
         IEnumerable<FdpVolumeHeader> AvailableImports { get; set; }

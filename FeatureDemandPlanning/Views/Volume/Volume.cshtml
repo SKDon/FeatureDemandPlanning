@@ -5,20 +5,20 @@
 
 @section PageScripts
 {
-    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/cookie.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/pager.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/vehicle.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Volume/volume.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Volume/volumepage.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/cookie.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/pager.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/vehicle.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Volume/volume.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Volume/volumepage.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
 
     <!-- TO DO put these in the bundle -->
-    <script src="@Url.Content("~/Scripts/Editor/oxo-editor-fbm.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Editor/oxo-editor-core.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Editor/oxo-model-filter.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Editor/oxo-change-log.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Editor/oxo-editor-fbm.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Editor/oxo-editor-core.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Editor/oxo-model-filter.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Editor/oxo-change-log.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
 
     <script type="text/javascript">
 
@@ -48,7 +48,7 @@
             @:params.OxoDocId = @Model.Volume.Document.Id;
         }
     </script>
-    <script src="@Url.Content("~/Scripts/Volume/init.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Volume/init.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
 }
 
 @section PageContentHeader

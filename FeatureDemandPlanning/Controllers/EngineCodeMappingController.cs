@@ -49,25 +49,19 @@ namespace FeatureDemandPlanning.Controllers
         }
 
         [HttpGet]
-        public ActionResult EngineCodeMappings(JQueryDataTableParamModel param)
+        public ActionResult EngineCodeMappings(JQueryDataTableParameters param)
         {
             var js = new JavaScriptSerializer();
 
             var filter = new EngineCodeFilter();
-            if (!string.IsNullOrEmpty(param.sSearch))
-            {
-                filter = (EngineCodeFilter)js.Deserialize(param.sSearch, typeof(EngineCodeFilter));
-            }
-            filter.PageSize = param.iDisplayLength;
-            filter.PageIndex = (param.iDisplayStart / PageSize) + 1;
+            filter.InitialiseFromJson(param);
+            //if (!string.IsNullOrEmpty(param.sSearch))
+            //{
+            //    filter = (EngineCodeFilter)js.Deserialize(param.sSearch, typeof(EngineCodeFilter));
+            //}
 
             var results = GetFullAndPartialEngineCodeMappingViewModel(filter).EngineCodeMappings;
-            var jQueryResult = new JQueryDataTableResultModel
-            {
-                sEcho = param.sEcho,
-                iTotalRecords = 0,
-                iTotalDisplayRecords = 0,
-            };
+            var jQueryResult = new JQueryDataTableResultModel(0, 0);
 
             // Iterate through the results and put them in a format that can be used by jQuery datatables
             if (results.CurrentPage.Any())
@@ -95,10 +89,11 @@ namespace FeatureDemandPlanning.Controllers
                 }
 
                 // As we have a simple array of columns, sorting is easier at this point as we can it by array index
-                jQueryResult.aaData.Sort(
-                    new StringArrayIndexComparer(param.iSortCol_0,
-                                                 param.sSortDir_0.Equals("ASC", StringComparison.OrdinalIgnoreCase) ? false : true)
-                );
+                if (param.order != null && param.order.Any())
+                {
+                    var sort = param.order.First();
+                    jQueryResult.aaData.Sort(new StringArrayIndexComparer(sort.column, sort.dir.Equals("ASC", StringComparison.OrdinalIgnoreCase) ? false : true));
+                }
             }
 
             return Json(jQueryResult, JsonRequestBehavior.AllowGet);

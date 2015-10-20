@@ -10,7 +10,7 @@ namespace FeatureDemandPlanning.Models
     public class ForecastTrim
     {
         public Vehicle ForecastVehicle { get; set; }
-        public TrimMapping TrimMapping { get; set; }
+        public ForecastTrimMapping TrimMapping { get; set; }
         public VehicleWithIndex ComparisonVehicle { get; set; }
     }
 }

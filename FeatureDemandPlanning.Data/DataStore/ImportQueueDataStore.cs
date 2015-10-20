@@ -31,6 +31,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     var totalRecords = 0;
+                    var totalDisplayRecords = 0;
 
                     if (filter.PageIndex.HasValue)
                     {
@@ -45,17 +46,20 @@ namespace FeatureDemandPlanning.DataStore
 
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                     var results = conn.Query<ImportQueueDataItem>("dbo.ImportQueue_GetMany", para, commandType: CommandType.StoredProcedure);
                     
                     if (results.Any())
                     {
                         totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
                     retVal = new PagedResults<ImportQueue>() 
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
                         PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
                     };
 
@@ -236,6 +240,33 @@ namespace FeatureDemandPlanning.DataStore
             return result;
         }
 
+        public ImportError ImportErrorGet(ImportQueueFilter filter)
+        {
+            ImportError retVal = new EmptyImportError();
+
+            using (IDbConnection connection = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@ExceptionId", filter.ExceptionId.Value, dbType: DbType.Int32);
+
+                    var results = connection.Query<ImportError>("dbo.Fdp_ImportError_Get", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportErrorGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
+
         public PagedResults<ImportError> ImportErrorGetMany(ImportQueueFilter filter)
         {
             PagedResults<ImportError> retVal = null;
@@ -246,6 +277,9 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     var totalRecords = 0;
+                    var totalDisplayRecords = 0;
+                    var totalImportedRecords = 0;
+                    var totalFailedRecords = 0;
 
                     para.Add("@ImportQueueId", filter.ImportQueueId.Value, dbType: DbType.Int32);
 
@@ -270,17 +304,26 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@SortDirection", (int)filter.SortDirection, dbType: DbType.Int32);
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalImportedRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalFailedRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                     var results = connection.Query<ImportError>("dbo.Fdp_ImportError_GetMany", para, commandType: CommandType.StoredProcedure);
 
                     if (results.Any())
                     {
                         totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                        totalImportedRecords = para.Get<int>("@TotalImportedRecords");
+                        totalFailedRecords = para.Get<int>("@TotalFailedRecords");
                     }
                     retVal = new PagedResults<ImportError>()
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        TotalSuccess = totalImportedRecords,
+                        TotalFail = totalFailedRecords,
                         PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
                     };
 
@@ -289,6 +332,34 @@ namespace FeatureDemandPlanning.DataStore
                 catch (Exception ex)
                 {
                     AppHelper.LogError("ImportQueueDataStore.ImportErrorGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
+
+        public ImportError ImportErrorIgnore(ImportQueueFilter filter)
+        {
+            ImportError retVal = new EmptyImportError();
+
+            using (IDbConnection connection = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@ExceptionId", filter.ExceptionId.Value, dbType: DbType.Int32);
+                    para.Add("@IsExcluded", true, dbType:DbType.Int32);
+
+                    var results = connection.Query<ImportError>("dbo.Fdp_ImportError_Ignore", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportErrorIgnore", ex.Message, CurrentCDSID);
                     throw;
                 }
             }

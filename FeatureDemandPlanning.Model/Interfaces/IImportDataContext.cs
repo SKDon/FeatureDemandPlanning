@@ -23,11 +23,20 @@ namespace FeatureDemandPlanning.Interfaces
         Task<ImportResult> ProcessImportQueue(ImportQueue importItem);
         Task<ImportResult> ProcessImportQueue();
 
-        /// <summary>
-        /// Lists the exceptions for the specified import
-        /// </summary>
-        /// <param name="filter">The filter defining the import to list exceptions for</param>
-        /// <returns></returns>
+        Task<ImportError> GetException(ImportQueueFilter filter);
         Task<PagedResults<ImportError>> ListExceptions(ImportQueueFilter filter);
+
+        Task<ImportError> Ignore(ImportQueueFilter filter);
+
+        Task<ImportError> AddMarket(ImportQueueFilter filter, string market);
+        Task<ImportError> MapMarket(ImportQueueFilter filter, string market, string marketToMapTo);
+
+        Task<ImportError> AddDerivative(ImportQueueFilter filter, BusinessObjects.Model derivativeToAdd);
+        Task<ImportError> MapDerivative(ImportQueueFilter filter,
+                                        BusinessObjects.Model derivativeToMap,
+                                        BusinessObjects.Model derivativeToMapTo);
+
+        Task<ImportError> AddFeature(ImportQueueFilter filter, Feature featureToAdd);
+        Task<ImportError> MapFeature(ImportQueueFilter filter, Feature featureToMap, Feature featureToMapTo);
     }
 }

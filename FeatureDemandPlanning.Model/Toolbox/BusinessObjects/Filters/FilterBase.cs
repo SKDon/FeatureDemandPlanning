@@ -2,6 +2,7 @@
 using FeatureDemandPlanning.Enumerations;
 using System;
 using System.Data;
+using System.Linq;
 
 namespace FeatureDemandPlanning.BusinessObjects.Filters
 {
@@ -22,15 +23,20 @@ namespace FeatureDemandPlanning.BusinessObjects.Filters
         /// Initialises from json search parameters
         /// </summary>
         /// <param name="param">The parameters to initialise with</param>
-        public void InitialiseFromJson(JQueryDataTableParamModel param)
+        public void InitialiseFromJson(JQueryDataTableParameters param)
         {
-            PageSize = param.iDisplayLength;
-            PageIndex = (param.iDisplayStart / PageSize) + 1;
-            SortIndex = param.iSortCol_0;
-            SortDirection =
-                param.sSortDir_0.Equals("ASC", StringComparison.OrdinalIgnoreCase) ?
-                    SortDirection.Ascending :
-                    SortDirection.Descending;
+            PageSize = param.length;
+            PageIndex = (param.start / PageSize) + 1;
+
+            if (param.order != null && param.order.Any())
+            {
+                var sort = param.order.First();
+                SortIndex = sort.column;
+                SortDirection =
+                    sort.dir.Equals("ASC", StringComparison.OrdinalIgnoreCase) ?
+                        SortDirection.Ascending :
+                        SortDirection.Descending;
+            }
         }
 
         /// <summary>

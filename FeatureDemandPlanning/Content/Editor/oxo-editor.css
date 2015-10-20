@@ -143,14 +143,6 @@ div.dataTables_filter input
     width:100px;
 }
 
-div.dataTables_paginate 
-{
-    position: relative;
-    top:14px;
-    left: 934px;
-    float:left; 
-}
-
 a.paginate_enabled_previous,
 a.paginate_disabled_previous,
 a.paginate_enabled_next,

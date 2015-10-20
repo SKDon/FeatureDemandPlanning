@@ -57,6 +57,46 @@ namespace FeatureDemandPlanning.DataStore
             return await Task.FromResult<ImportQueue>(_importDataStore.ImportQueueGet(importQueueId));
         }
 
+        Task<BusinessObjects.ImportStatus> IImportDataContext.GetProcessStatus(ImportQueue importItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ImportError> Ignore(ImportQueueFilter filter)
+        {
+            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorIgnore(filter));
+        }
+
+        public Task<ImportError> AddMarket(ImportQueueFilter filter, string market)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ImportError> MapMarket(ImportQueueFilter filter, string market, string marketToMapTo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ImportError> AddDerivative(ImportQueueFilter filter, BusinessObjects.Model derivativeToAdd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ImportError> MapDerivative(ImportQueueFilter filter, BusinessObjects.Model derivativeToMap, BusinessObjects.Model derivativeToMapTo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ImportError> AddFeature(ImportQueueFilter filter, Feature featureToAdd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ImportError> MapFeature(ImportQueueFilter filter, Feature featureToMap, Feature featureToMapTo)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<ImportResult> ProcessImportQueue(ImportQueue importItem)
         {
             return await Task.FromResult<ImportResult>(_importDataStore.ImportQueueProcess(importItem));
@@ -65,6 +105,11 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<ImportResult> ProcessImportQueue()
         {
             return await Task.FromResult<ImportResult>(_importDataStore.ImportQueueProcess());
+        }
+
+        public async Task<ImportError> GetException(ImportQueueFilter filter)
+        {
+            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
         }
 
         public async Task<PagedResults<ImportError>> ListExceptions(ImportQueueFilter filter)
@@ -78,10 +123,5 @@ namespace FeatureDemandPlanning.DataStore
         private ImportQueueDataStore _importDataStore;
 
 
-
-        Task<BusinessObjects.ImportStatus> IImportDataContext.GetProcessStatus(ImportQueue importItem)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

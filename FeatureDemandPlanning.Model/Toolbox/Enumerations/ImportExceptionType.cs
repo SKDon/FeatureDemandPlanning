@@ -10,6 +10,7 @@ namespace FeatureDemandPlanning.Enumerations
         NotSet = 0,
         MissingMarket,
         MissingFeature,
-        MissingDerivative
+        MissingDerivative,
+        MissingTrim
     }
 }

@@ -15,6 +15,8 @@ namespace FeatureDemandPlanning.BusinessObjects
 
         public int LineNumber { get; set; }
         public int FdpImportErrorTypeId { get; set; }
+        public bool IsExcluded { get; set; }
+
         public ImportExceptionType ErrorType
         {
             get
@@ -25,5 +27,10 @@ namespace FeatureDemandPlanning.BusinessObjects
         public string ErrorTypeDescription { get; set; }
         public DateTime ErrorOn { get; set; }
         public string ErrorMessage { get; set; }
+
+        public string ImportMarket { get; set; }
+        public string ImportDerivativeCode { get; set; }
+        public string ImportTrim { get; set; }
+        public string ImportFeatureCode { get; set; }
     }
 }

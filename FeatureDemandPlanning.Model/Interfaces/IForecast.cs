@@ -17,6 +17,6 @@ namespace FeatureDemandPlanning.Interfaces
 
         Vehicle ForecastVehicle { get; set; }
         IEnumerable<Vehicle> ComparisonVehicles { get; set; }
-        IEnumerable<TrimMapping> TrimMapping { get; set; }
+        IEnumerable<ForecastTrimMapping> TrimMapping { get; set; }
     }
 }

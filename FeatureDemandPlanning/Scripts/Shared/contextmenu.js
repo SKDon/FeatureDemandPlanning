@@ -9,6 +9,14 @@
                 // return native menu if pressing control
                 if (e.ctrlKey) return;
 
+                var id = null;
+                if (settings.contentIdentifier != null) {
+                    id = settings.contentIdentifier(this);
+                }
+                if (id != null && settings.dynamicContent != null) {
+                    settings.dynamicContent(id);
+                }
+
                 //open menu
                 var $menu = $(settings.menuSelector)
                     .data("invokedOn", $(e.target))

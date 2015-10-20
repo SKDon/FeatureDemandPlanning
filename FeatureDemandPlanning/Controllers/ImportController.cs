@@ -17,13 +17,17 @@ using FeatureDemandPlanning.Enumerations;
 
 namespace FeatureDemandPlanning.Controllers
 {
-    public class ImportExceptionsParameterModel : JQueryDataTableParamModel
+    public class ImportExceptionsParameterModel : JQueryDataTableParameters
     {
         public int? ImportQueueId { get; set; }
-        public ImportExceptionType ExceptionType { get { return _exceptionType; } set { _exceptionType = value; } }
+        public ImportExceptionType ExceptionType { get; set; }
         public string FilterMessage { get; set; }
 
-        private ImportExceptionType _exceptionType = ImportExceptionType.NotSet;
+        public ImportExceptionsParameterModel()
+        {
+            ExceptionType = ImportExceptionType.NotSet;
+            FilterMessage = string.Empty;
+        }
     }
     
     public class ImportController : ControllerBase
@@ -46,19 +50,20 @@ namespace FeatureDemandPlanning.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> ListImportQueue(JQueryDataTableParamModel param)
+        public async Task<ActionResult> ListImportQueue(JQueryDataTableParameters param)
         {
             var js = new JavaScriptSerializer();
 
             var filter = new ImportQueueFilter();
-            if (!string.IsNullOrEmpty(param.sSearch))
+            if (param.search != null &&
+                !string.IsNullOrEmpty(param.search.value))
             {
-                filter = (ImportQueueFilter)js.Deserialize(param.sSearch, typeof(ImportQueueFilter));
+                filter = (ImportQueueFilter)js.Deserialize(param.search.value, typeof(ImportQueueFilter));
             }
             filter.InitialiseFromJson(param);
             
             var results = await GetFullAndPartialViewModel(filter);
-            var jQueryResult = JQueryDataTableResultModel.GetResultsFromParameters(param, results.TotalRecords);
+            var jQueryResult = new JQueryDataTableResultModel(results.TotalRecords, results.TotalDisplayRecords);
             
             // Iterate through the results and put them in a format that can be used by jQuery datatables
             if (results.ImportQueue.CurrentPage.Any())
@@ -176,7 +181,7 @@ namespace FeatureDemandPlanning.Controllers
                 filter.FilterMessage = parameters.FilterMessage;
              
                 var results = await GetFullAndPartialViewModel(filter);
-                var jQueryResult = JQueryDataTableResultModel.GetResultsFromParameters(parameters, results.TotalRecords);
+                var jQueryResult = new JQueryDataTableResultModel(results.TotalRecords, results.TotalRecords);
 
                 // Iterate through the results and put them in a format that can be used by jQuery datatables
                 if (results.Exceptions.CurrentPage.Any())
@@ -185,15 +190,18 @@ namespace FeatureDemandPlanning.Controllers
                     {
                         var stringResult = new string[] 
                         { 
+                            result.FdpImportErrorId.ToString(),
                             result.LineNumber.ToString(), 
                             result.ErrorTypeDescription,
                             result.ErrorMessage,
-                            result.ErrorOn.ToString("dd/MM/yyyy HH:mm"),
-                            string.Empty // action column
+                            result.ErrorOn.ToString("dd/MM/yyyy HH:mm")
                         };
 
                         jQueryResult.aaData.Add(stringResult);
                     }
+
+                    jQueryResult.TotalSuccess = results.Exceptions.TotalSuccess;
+                    jQueryResult.TotalFail = results.Exceptions.TotalFail;
                 }
 
                 return Json(jQueryResult);
@@ -204,6 +212,47 @@ namespace FeatureDemandPlanning.Controllers
                 return Json(ex);
             }
         }
+
+        [HttpPost]
+        public async Task<ActionResult> ImportExceptionAction(int exceptionId)
+        {
+            try
+            {
+                var filter = new ImportQueueFilter()
+                {
+                    ExceptionId = exceptionId
+                };
+
+                _importView = await GetFullAndPartialViewModel(filter);
+            }
+            catch (ApplicationException ex)
+            {
+                _importView.SetProcessState(ex);
+            }
+
+            return PartialView("_ImportExceptionAction", _importView);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ImportExceptionIgnore(int exceptionId)
+        {
+            try
+            {
+                var filter = new ImportQueueFilter()
+                {
+                    ExceptionId = exceptionId
+                };
+                _importView = await GetFullAndPartialViewModel(filter);
+                _importView.CurrentException = await DataContext.Import.Ignore(filter);
+            }
+            catch (ApplicationException ex)
+            {
+                _importView.SetProcessState(ex);
+            }
+
+            return Json(_importView.CurrentException);
+        }
+
 
         #region "Private Methods"
 
@@ -219,11 +268,18 @@ namespace FeatureDemandPlanning.Controllers
                 PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue
             };
 
+            if (filter.ExceptionId.HasValue)
+            {
+                model.CurrentException = await DataContext.Import.GetException(filter);
+                return model;
+            }
+
             if (!filter.ImportQueueId.HasValue)
             {
                 model.ImportQueue = await DataContext.Import.ListImportQueue(filter);
                 model.TotalPages = model.ImportQueue.TotalPages;
                 model.TotalRecords = model.ImportQueue.TotalRecords;
+                model.TotalDisplayRecords = model.ImportQueue.TotalDisplayRecords;
             }
             else
             {
@@ -231,6 +287,7 @@ namespace FeatureDemandPlanning.Controllers
                 model.Exceptions = await DataContext.Import.ListExceptions(filter);
                 model.TotalPages = model.Exceptions.TotalPages;
                 model.TotalRecords = model.Exceptions.TotalRecords;
+                model.TotalDisplayRecords = model.Exceptions.TotalDisplayRecords;
             };
 
             return model;

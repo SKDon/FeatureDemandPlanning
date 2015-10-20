@@ -196,6 +196,36 @@
     <Compile Include="Models\VehicleViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ValidateAjaxAttribute.cs" />
+    <Content Include="Content\Bootstrap\css\bootstrap-theme.css" />
+    <Content Include="Content\Bootstrap\css\bootstrap-theme.min.css" />
+    <Content Include="Content\Bootstrap\css\bootstrap.css" />
+    <Content Include="Content\Bootstrap\css\bootstrap.min.css" />
+    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\Bootstrap\js\bootstrap.js" />
+    <Content Include="Content\Bootstrap\js\bootstrap.min.js" />
+    <Content Include="Content\Bootstrap\js\npm.js" />
+    <Content Include="Content\DataTables\css\dataTables.bootstrap.css" />
+    <Content Include="Content\DataTables\css\dataTables.bootstrap.min.css" />
+    <Content Include="Content\DataTables\css\dataTables.foundation.css" />
+    <Content Include="Content\DataTables\css\dataTables.foundation.min.css" />
+    <Content Include="Content\DataTables\css\dataTables.jqueryui.css" />
+    <Content Include="Content\DataTables\css\dataTables.jqueryui.min.css" />
+    <Content Include="Content\DataTables\css\jquery.dataTables.css" />
+    <Content Include="Content\DataTables\css\jquery.dataTables.min.css" />
+    <Content Include="Content\DataTables\css\jquery.dataTables_themeroller.css" />
+    <Content Include="Content\DataTables\images\sort_asc.png" />
+    <Content Include="Content\DataTables\images\sort_asc_disabled.png" />
+    <Content Include="Content\DataTables\images\sort_both.png" />
+    <Content Include="Content\DataTables\images\sort_desc.png" />
+    <Content Include="Content\DataTables\images\sort_desc_disabled.png" />
+    <Content Include="Content\DataTables\js\dataTables.bootstrap.js" />
+    <Content Include="Content\DataTables\js\dataTables.bootstrap.min.js" />
+    <Content Include="Content\DataTables\js\dataTables.foundation.js" />
+    <Content Include="Content\DataTables\js\dataTables.foundation.min.js" />
+    <Content Include="Content\DataTables\js\dataTables.jqueryui.js" />
+    <Content Include="Content\DataTables\js\dataTables.jqueryui.min.js" />
+    <Content Include="Content\DataTables\js\jquery.dataTables.js" />
+    <Content Include="Content\DataTables\js\jquery.dataTables.min.js" />
     <Content Include="Content\Editor\oxo-change-log.css" />
     <Content Include="Content\Editor\oxo-editor-validate.css" />
     <Content Include="Content\Editor\oxo-editor.css" />
@@ -203,6 +233,17 @@
     <Content Include="Content\Editor\oxo-model-filter.css" />
     <Content Include="Content\Editor\oxo-viewer.css" />
     <Content Include="Content\Images\Carousel\multiple.png" />
+    <Content Include="Content\JQuery\js\jquery-2.1.4.min.js" />
+    <Content Include="Content\Reponsive\css\responsive.bootstrap.css" />
+    <Content Include="Content\Reponsive\css\responsive.bootstrap.min.css" />
+    <Content Include="Content\Reponsive\css\responsive.dataTables.css" />
+    <Content Include="Content\Reponsive\css\responsive.dataTables.min.css" />
+    <Content Include="Content\Reponsive\css\responsive.foundation.css" />
+    <Content Include="Content\Reponsive\css\responsive.foundation.min.css" />
+    <Content Include="Content\Reponsive\css\responsive.jqueryui.css" />
+    <Content Include="Content\Reponsive\css\responsive.jqueryui.min.css" />
+    <Content Include="Content\Reponsive\js\dataTables.responsive.js" />
+    <Content Include="Content\Reponsive\js\dataTables.responsive.min.js" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -741,6 +782,12 @@
     <Content Include="Extensions\malihu-custom-scrollbar-plugin-master\package.json" />
     <Content Include="Extensions\malihu-custom-scrollbar-plugin-master\readme.md" />
     <Content Include="Extensions\malihu-custom-scrollbar-plugin-master\source-files\mCSB_buttons.psd" />
+    <Content Include="Content\Bootstrap\css\bootstrap-theme.css.map" />
+    <Content Include="Content\Bootstrap\css\bootstrap.css.map" />
+    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Extensions\dataTables.bootstrap\dataTables.bootstrap.js" />
     <Content Include="Scripts\Forecast\forecast.js" />
@@ -818,10 +865,12 @@
     <Content Include="Views\Volume\_ViewModeSelector.cshtml" />
     <Content Include="Views\Import\ImportExceptions.cshtml" />
     <Content Include="Views\Import\_Modal.cshtml" />
+    <Content Include="Views\Import\_ImportExceptionAction.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="bin\" />
+    <Folder Include="Scripts\DataTables\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

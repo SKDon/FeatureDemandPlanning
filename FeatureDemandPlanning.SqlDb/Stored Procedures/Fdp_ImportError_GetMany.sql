@@ -9,6 +9,7 @@
 	, @SortDirection		VARCHAR(5)		= 'DESC'
 	, @TotalPages			INT OUTPUT
 	, @TotalRecords			INT OUTPUT
+	, @TotalFilteredRecords INT OUTPUT
 AS
 	SET NOCOUNT ON;
 	
@@ -22,6 +23,12 @@ AS
 		  RowIndex INT
 		, FdpImportErrorId INT
 	);
+
+	SELECT @TotalRecords = COUNT(1)
+	FROM Fdp_Import_VW
+	WHERE
+	ImportQueueId = @ImportQueueId;
+
 	INSERT INTO @PageRecords 
 	(
 		  RowIndex
@@ -60,7 +67,7 @@ AS
 				END	
 		END DESC
 	
-	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
+	SELECT @TotalFilteredRecords = COUNT(1) FROM @PageRecords;
 	
 	IF ISNULL(@PageSize, 0) = 0
 		SET @PageSize = @TotalRecords;

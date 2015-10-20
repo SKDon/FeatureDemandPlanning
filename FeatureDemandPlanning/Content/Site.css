@@ -650,9 +650,13 @@ div#innerbody {
 /* Extension to Bootstrap 3.0 to support sub-menus */
 
 .dropdown-menu {
-    font-size: 11px;
+    font-size: 13px;
     color:#061639;
-    background-color:#7788aa;
+    background-color:#fff;
+}
+
+ul.dropdown-menu > li span.glyphicon {
+    width: 24px;
 }
 
 .dropdown-menu > li > a {

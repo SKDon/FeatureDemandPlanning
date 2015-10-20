@@ -9,9 +9,10 @@ namespace FeatureDemandPlanning.BusinessObjects
 {
     public class JQueryDataTableResultModel
     {
-        public string sEcho { get; set; }
         public int iTotalRecords { get; set; }
         public int iTotalDisplayRecords { get; set; }
+        public int TotalSuccess { get; set; }
+        public int TotalFail { get; set; }
         public List<string[]> aaData { get; private set; }
 
         public JQueryDataTableResultModel()
@@ -19,26 +20,23 @@ namespace FeatureDemandPlanning.BusinessObjects
             aaData = new List<string[]>();
         }
 
-        public JQueryDataTableResultModel(string sEcho) : this()
-        {
-            this.sEcho = sEcho;
-        }
-
-        public JQueryDataTableResultModel(string sEcho, int totalRecords) : this(sEcho)
+        
+        public JQueryDataTableResultModel(int totalRecords) : this()
         {
             iTotalRecords = totalRecords;
             iTotalDisplayRecords = totalRecords;
         }
 
-        /// <summary>
-        /// Gets the results based on the parameters, the sEcho flag ensures the request matches the response
-        /// to prevent XSS attacks
-        /// </summary>
-        /// <param name="para">The para.</param>
-        /// <returns></returns>
-        public static JQueryDataTableResultModel GetResultsFromParameters(JQueryDataTableParamModel para, int totalRecords)
+        public JQueryDataTableResultModel(int totalRecords, int totalDisplayRecords) : this(totalRecords)
         {
-            return new JQueryDataTableResultModel(para.sEcho, totalRecords);
+            iTotalDisplayRecords = totalDisplayRecords;
         }
+
+        //public static JQueryDataTableResultModel GetResultsFromParameters(JQueryDataTableParameters para, 
+        //    int totalRecords, 
+        //    int totalDisplayRecords)
+        //{
+        //    return new JQueryDataTableResultModel(totalRecords, totalDisplayRecords);
+        //}
     }
 }

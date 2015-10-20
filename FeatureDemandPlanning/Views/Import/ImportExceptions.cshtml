@@ -5,23 +5,24 @@
 
 @section PageScripts
 {
-    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Import/exceptions.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Import/exceptionspage.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/exceptions.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/exceptionspage.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
 
     <script type="text/javascript">
 
         var exceptions, page, modal;
         var params = {
+            ActionsUri: "@Url.Action("ImportExceptionAction")",
             ExceptionsUri: "@Url.Action("ListImportExceptions")",
             AddFeatureUri: "@Url.Action("AddFeature", "Vehicle")",
             MapFeatureUri: "@Url.Action("MapFeature", "Vehicle")",
             MapMarketUri: "@Url.Action("MapMarket")",
             AddDerivativeUri: "@Url.Action("AddDerivative", "Vehicle")",
             MapDerivativeUri: "@Url.Action("MapDerivative", "Vehicle")",
-            IgnoreUri: "@Url.Action("IgnoreError")",
+            IgnoreUri: "@Url.Action("ImportExceptionIgnore")",
             ModalDialogId: "modal",
             ModalContentId: "modalBody",
             Configuration: {},
@@ -32,7 +33,7 @@
 
         params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
     </script>
-    <script src="@Url.Content("~/Scripts/Import/exceptionsinit.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/exceptionsinit.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
 }
 
 @section PageContentHeader
@@ -42,7 +43,7 @@
             <p style="height:18px" id="lblPageDescription" class="subscribers-notifyPageChanged">
                 <div class="page-description">View the exception information for the selected import and take action as appropriate</div>
             </p>
-            <h3 id="lblVehicleDescription">Import Exception Report</h3>
+            <h3 id="lblVehicleDescription">Import Exception Work Tray</h3>
         </div>
         <div class="col-lg-3 pull-right" style="padding-top: 20px">
             <div class="panel panel-primary" style="margin-bottom: 0px">
@@ -63,7 +64,7 @@
             </div>
         </div>
         <div class="col-lg-4 pull-right" style="padding-top: 20px">
-            <div class="panel panel-primary" style="margin-bottom: 0px">
+            <div id="dvImportSummary" class="panel panel-primary subscribers-notifyResults" style="margin-bottom: 0px">
                 <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Import Summary</div></div>
                 <div class="panel-body" style="padding-left:15px;padding-right:15px;padding-top:5px;padding-bottom:5px">
                     <table class="table table-bordered table-condensed dataTable table-striped" style="font-size:11px">
@@ -95,44 +96,30 @@
 @section PageBody
 {
     <div id="dvFilter" class="subscribers-notifyFilterComplete"></div>
-    <div id="notifier" class="subscribers-notifySuccess subscribers-notifyError subscribers-notifyUpdated col-lg-12" style="float:unset"></div>
+    <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none">
+        <li>Test</li>
+    </ul>
+     
+    <div id="notifier" class="subscribers-notifySuccess subscribers-notifyError subscribers-notifyUpdated subscribers-notifyResults subscribers-notifyAction col-lg-12" style="float:unset"></div>
 
     @Html.Partial("_Modal", Model)
 
     <div class="panel panel-primary">
         <div class="panel-heading">
-            <div class="panel-title"><span id="spnFilteredRecords" class="badge">@Model.Exceptions.TotalRecords</span> Import Exceptions</div>
+            <div class="panel-title"><span id="spnFilteredRecords" class="subscribers-notifyResults"></span> Import Exceptions</div>
         </div>
         <div class="panel-body">
             <table id="tblImportExceptions" class="table table-bordered table-condensed table-striped dataTable">
                 <thead>
                     <tr>
-                        <th class="text-right col-lg-1">Line #</th>
+                        <th></th>
+                        <th class="text-left col-lg-1">Line #</th>
                         <th class="text-left col-lg-2">Error Type</th>
                         <th class="col-lg-5">Message</th>
                         <th class="text-center col-lg-2">Error On</th>
-                        <th class="text-center col-lg-2">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @*@foreach (var exception in Model.Exceptions.CurrentPage)
-                    {
-                        <tr>
-                            <td class="text-right">@exception.LineNumber</td>
-                            <td class="text-center">@exception.ErrorTypeDescription</td>
-                            <td>@exception.ErrorMessage</td>
-                            <td class="text-center">@exception.ErrorOn</td>
-                            <td class="text-center">
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                                        Action
-                                        <span class="caret"></span>
-                                    </button>
-                                    @RenderActionButton(exception)
-                                </div>
-                            </td>
-                        </tr>
-                    }*@
                 </tbody>
             </table>
         </div>

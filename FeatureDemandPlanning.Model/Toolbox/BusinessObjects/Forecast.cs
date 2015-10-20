@@ -71,7 +71,7 @@ namespace FeatureDemandPlanning.BusinessObjects
             get { return _comparisonVehicles.ToVehicleWithIndexList(); }
         }
 
-        public IEnumerable<TrimMapping> TrimMapping
+        public IEnumerable<ForecastTrimMapping> TrimMapping
         {
             get
             {
@@ -148,7 +148,7 @@ namespace FeatureDemandPlanning.BusinessObjects
 
         private Vehicle _forecastVehicle = new EmptyVehicle();
         private IEnumerable<Vehicle> _comparisonVehicles = Enumerable.Empty<Vehicle>();
-        private IEnumerable<TrimMapping> _trimMapping = Enumerable.Empty<TrimMapping>();
+        private IEnumerable<ForecastTrimMapping> _trimMapping = Enumerable.Empty<ForecastTrimMapping>();
         private IEnumerable<ExtendedValidationResult> _extendedValidationResults = Enumerable.Empty<ExtendedValidationResult>();
 
         #endregion

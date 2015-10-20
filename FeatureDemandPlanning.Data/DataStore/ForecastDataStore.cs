@@ -260,7 +260,7 @@ namespace FeatureDemandPlanning.DataStore
         }
 
         public void ForecastComparisonTrimSave( IForecast forecastToSave, 
-												TrimMapping mappingToSave,
+												ForecastTrimMapping mappingToSave,
 												IDbConnection connection,
 												IDbTransaction transaction)
         {
@@ -297,7 +297,7 @@ namespace FeatureDemandPlanning.DataStore
         }
 
         public void ForecastComparisonTrimDelete(   IForecast forecastToSave, 
-												    TrimMapping mappingToDelete,
+												    ForecastTrimMapping mappingToDelete,
 												    IDbConnection connection,
 												    IDbTransaction transaction)
         {
@@ -378,9 +378,9 @@ namespace FeatureDemandPlanning.DataStore
 			return retVal;
 		}
 
-        public IEnumerable<TrimMapping> TrimMappingGetMany(int forecastId)
+        public IEnumerable<ForecastTrimMapping> TrimMappingGetMany(int forecastId)
         {
-            IEnumerable<TrimMapping> retVal = null;
+            IEnumerable<ForecastTrimMapping> retVal = null;
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
@@ -388,7 +388,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
                     para.Add("@ForecastId", forecastId, dbType: DbType.Int32);
 
-                    retVal = conn.Query<TrimMapping>("dbo.Fdp_ForecastComparisonTrim_GetMany", para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<ForecastTrimMapping>("dbo.Fdp_ForecastComparisonTrim_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {

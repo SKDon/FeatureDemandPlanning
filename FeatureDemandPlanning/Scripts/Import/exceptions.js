@@ -16,6 +16,7 @@ model.Exceptions = function (params) {
 
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Config = params.Configuration;
+    privateStore[me.id].ActionsUri = params.ActionsUri;
     privateStore[me.id].ExceptionsUri = params.ExceptionsUri;
     privateStore[me.id].AddFeatureUri = params.AddFeatureUri;
     privateStore[me.id].MapFeatureUri = params.MapFeatureUri;
@@ -26,6 +27,11 @@ model.Exceptions = function (params) {
     privateStore[me.id].ImportQueueId = params.ImportQueueId;
     privateStore[me.id].PageSize = params.PageSize;
     privateStore[me.id].PageIndex = params.PageIndex;
+    privateStore[me.id].TotalPages = 0;
+    privateStore[me.id].TotalRecords = 0;
+    privateStore[me.id].TotalDisplayRecords = 0;
+    privateStore[me.id].TotalSuccessRecords = 0;
+    privateStore[me.id].TotalFailRecords = 0;
 
     me.ModelName = "Exceptions";
 
@@ -45,6 +51,9 @@ model.Exceptions = function (params) {
     me.getPageIndex = function () {
         return privateStore[me.id].PageIndex
     };
+    me.getActionsUri = function () {
+        return privateStore[me.id].ActionsUri;
+    }
     me.getExceptionsUri = function () {
         var importQueueId =  me.getImportQueueId();
         var uri = privateStore[me.id].ExceptionsUri
@@ -71,28 +80,66 @@ model.Exceptions = function (params) {
     me.getIgnoreUri = function () {
         return privateStore[me.id].IgnoreUri;
     };
-    me.getExceptions = function (callback) {
-        //var volume = me.getFilter();
-        //var encodedVolume = JSON.stringify(volume);
-
-        //$.ajax({
-        //    type: "POST",
-        //    url: me.getExceptionsUri(),
-        //    data: encodedVolume,
-        //    context: this,
-        //    contentType: "application/json",
-        //    success: function (response) {
-        //        callback.call(this, response);
-        //    },
-        //    error: function (response) {
-        //        alert(response.responseText);
-        //    },
-        //    async: true
-        //});
-    };
     me.getImportQueueId = function () {
         return privateStore[me.id].ImportQueueId;
-    }
+    };
+    me.getTotalPages = function () {
+        return privateStore[me.id].TotalPages;
+    };
+    me.getTotalRecords = function () {
+        return privateStore[me.id].TotalRecords;
+    };
+    me.getTotalSuccessRecords = function () {
+        return privateStore[me.id].TotalSuccessRecords;
+    };
+    me.getTotalFailRecords = function () {
+        return privateStore[me.id].TotalFailRecords;
+    };
+    me.getTotalDisplayRecords = function () {
+        return privateStore[me.id].TotalDisplayRecords;
+    };
+    me.setPageIndex = function (pageIndex) {
+        privateStore[me.id].PageIndex = pageIndex;
+    };
+    me.setPageSize = function (pageSize) {
+        privateStore[me.id].PageSize = pageSize;
+    };
+    me.setTotalPages = function (totalPages) {
+        privateStore[me.id].TotalPages = totalPages;
+    };
+    me.setTotalRecords = function (totalRecords) {
+        privateStore[me.id].TotalRecords = totalRecords;
+    };
+    me.setTotalSuccessRecords = function (totalSuccessRecords) {
+        privateStore[me.id].TotalSuccessRecords = totalSuccessRecords;
+    };
+    me.setTotalFailRecords = function (totalFailRecords) {
+        privateStore[me.id].TotalFailRecords = totalFailRecords;
+    };
+    me.setTotalDisplayRecords = function (totalDisplayRecords) {
+        privateStore[me.id].TotalDisplayRecords = totalDisplayRecords;
+    };
+    me.processAction = function (action, callback) {
+        var params = { ExceptionId: action.ExceptionId };
+        var uri = "";
+        switch (action.ActionId) {
+            case 8:
+                uri = me.getIgnoreUri();
+                break;
+            default:
+                break;
+        }
+        $.ajax({
+            "dataType": "json",
+            "async": false,
+            "type": "POST",
+            "url": uri,
+            "data": params,
+            "success": function (json) {
+                callback(json);
+            }
+        });
+    };
     function genericErrorCallback(response) {
         if (response.status == 400) {
             var json = JSON.parse(response.responseText);

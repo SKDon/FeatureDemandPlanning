@@ -266,7 +266,7 @@ namespace FeatureDemandPlanning.Controllers
 			var programme = forecast.ForecastVehicle.Programmes.First();
 
 			forecast.ForecastVehicle.TrimMappings = programme.AllTrims
-				.Select(t => new TrimMapping()
+				.Select(t => new ForecastTrimMapping()
 				{
 					ForecastVehicleTrim = t,
 					ComparisonVehicleTrimMappings = new List<ModelTrim>()
@@ -316,12 +316,12 @@ namespace FeatureDemandPlanning.Controllers
                 var comparisonProgramme = comparisonVehicle.Programmes.FirstOrDefault();
                 if (comparisonProgramme == null || !comparisonProgramme.AllTrims.Any())
                 {
-                    comparisonVehicle.TrimMappings = Enumerable.Empty<TrimMapping>().ToList();
+                    comparisonVehicle.TrimMappings = Enumerable.Empty<ForecastTrimMapping>().ToList();
                 }
                 else
                 {
                     comparisonVehicle.TrimMappings = programme.AllTrims
-                        .Select(t => new TrimMapping()
+                        .Select(t => new ForecastTrimMapping()
                         {
                             ForecastVehicleTrim = t,
                             ComparisonVehicleTrimMappings = new List<ModelTrim>()

@@ -4,9 +4,9 @@
 @model FeatureDemandPlanning.Models.ImportViewModel
 
 @section PageScripts{
-    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Import/import.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Import/importpage.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/import.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/importpage.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
     <script language="javascript">
 
         // TO DO, push these parameters out from the model
@@ -32,7 +32,7 @@
 }
 
 @section PageStyles{
-    <link href="@Url.Content("~/Styles/Import/import.css")?v=@Model.CurrentVersion" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Styles/Import/import.css")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion" rel="stylesheet" type="text/css" />
 }
 
 @section PageContentHeader

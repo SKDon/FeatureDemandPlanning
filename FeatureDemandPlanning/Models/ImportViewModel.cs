@@ -11,6 +11,8 @@ namespace FeatureDemandPlanning.Models
     public class ImportViewModel : SharedModelBase
     {
         public ImportQueue CurrentImport { get { return _currentImport; } set { _currentImport = value; } }
+        public ImportError CurrentException { get { return _currentException; } set { _currentException = value; } }
+        public DerivativeMapping CurrentDerivativeMapping { get { return _currentDerivativeMapping; } set { _currentDerivativeMapping = value; } }
         public PagedResults<ImportError> Exceptions { get; set; }
         public PagedResults<ImportQueue> ImportQueue { get; set; }
         
@@ -22,5 +24,8 @@ namespace FeatureDemandPlanning.Models
         }
 
         private ImportQueue _currentImport = new EmptyImportQueue();
+        private ImportError _currentException = new EmptyImportError();
+        private DerivativeMapping _currentDerivativeMapping = new EmptyDerivativeMapping();
+        private ForecastTrimMapping _currentTrimMapping = new EmptyTrimMapping();
     }
 }
