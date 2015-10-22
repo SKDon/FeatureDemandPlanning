@@ -1,6 +1,5 @@
 ﻿using FeatureDemandPlanning.BusinessObjects;
 using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.DataStore;
 using FeatureDemandPlanning.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,7 @@ using System.Web;
 using System.Web.Caching;
 using System.Web.Script.Serialization;
 
-namespace FeatureDemandPlanning.Models
+namespace FeatureDemandPlanning.BusinessObjects
 {
     [DataContract]
     public abstract class SharedModelBase

@@ -115,7 +115,10 @@
     <Compile Include="Toolbox\BusinessObjects\FdpVolumeHeader.cs" />
     <Compile Include="Toolbox\BusinessObjects\Filters\PageFilter.cs" />
     <Compile Include="Toolbox\BusinessObjects\Filters\VolumeFilter.cs" />
+    <Compile Include="Toolbox\BusinessObjects\SharedModelBase.cs" />
+    <Compile Include="Toolbox\BusinessObjects\SpecialFeature.cs" />
     <Compile Include="Toolbox\BusinessObjects\TrimMapping.cs" />
+    <Compile Include="Toolbox\Enumerations\ImportExceptionAction.cs" />
     <Compile Include="Toolbox\Enumerations\ImportExceptionType.cs" />
     <Compile Include="Toolbox\BusinessObjects\ImportResult.cs" />
     <Compile Include="Toolbox\BusinessObjects\Validators\ComparisonVehicleExtensions.cs" />
@@ -216,6 +219,7 @@
     <Compile Include="Toolbox\Enumerations\VolumeResultMode.cs" />
     <Compile Include="Toolbox\Enumerations\VolumeValidationSection.cs" />
     <Compile Include="Toolbox\Extensions\ModelExtensions.cs" />
+    <Compile Include="Toolbox\Extensions\ProgrammeExtensions.cs" />
     <Compile Include="Toolbox\Extensions\StringExtensions.cs" />
     <Compile Include="Toolbox\Helpers\AppHelper.cs" />
     <Compile Include="Toolbox\Helpers\EmailHelper.cs" />

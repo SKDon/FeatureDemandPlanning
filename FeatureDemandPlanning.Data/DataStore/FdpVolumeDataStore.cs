@@ -309,7 +309,6 @@ namespace FeatureDemandPlanning.DataStore
                 return retVal;
             }
         }
-
         public void FdpOxoDocSave(FdpOxoDoc fdpOxoDocumentToSave)
         {
             using (IDbConnection conn = DbHelper.GetDBConnection())
@@ -329,6 +328,25 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
         }
+        public IEnumerable<SpecialFeature> FdpSpecialFeatureTypeGetMany()
+        {
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                IEnumerable<SpecialFeature> retVal = null;
+                try
+                {
+                    var para = new DynamicParameters();
+     
+                    retVal = conn.Query<SpecialFeature>(fdpSpecialFeatureTypeGetManyStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FdpSpecialFeatureTypeGetMany", ex.Message, CurrentCDSID);
+                }
+
+                return retVal;
+            }
+        }
 
         #region "Private Members"
 
@@ -343,6 +361,7 @@ namespace FeatureDemandPlanning.DataStore
         private const string fdpOxoVolumeDataNoteGetManyStoredProcedureName = "Fdp_OxoVolumeDataNote_GetMany";
         private const string fdpOxoVolumeDataNoteSaveStoredProcedureName = "Fdp_OxoVolumeDataNote_Save";
         private const string fdpOxoVolumeDataHistoryGetManyStoredProcedureName = "Fdp_OxoVolumeDataHistory_GetMany";
+        private const string fdpSpecialFeatureTypeGetManyStoredProcedureName = "Fdp_SpecialFeatureType_GetMany";
 
         #endregion
     }

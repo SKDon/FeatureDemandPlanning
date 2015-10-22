@@ -1,62 +1,69 @@
 ﻿"use strict";
 
-var page = namespace("FeatureDemandPlanning.Import.Page");
+var page = namespace("FeatureDemandPlanning.Import");
 
-page.Page = function (models) {
+page.ImportQueuePage = function (models) {
     var uid = 0;
     var privateStore = {};
     var me = this;
 
     privateStore[me.id = uid++] = {};
+    privateStore[me.id].DataTable = null;
     privateStore[me.id].Models = models;
 
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
-        me.configureDataTables();
-
+       
         $(privateStore[me.id].Models).each(function () {
-            this.initialise(me.initialiseCallback);
+            this.initialise();
         });
+        me.loadData();
     }
-    me.initialiseCallback = function () {
-
-        var models = getModels();
-        $(models).each(function () {
-
-            if (this.getPageSize !== undefined &&
-                this.getPageIndex !== undefined &&
-                this.filterResults !== undefined) {
-                var pageSize = this.getPageSize();
-                var pageIndex = this.getPageIndex();
-                var filter = getFilter(pageSize, pageIndex);
-
-                this.filterResults(filter);
-
-                return false;
+    me.setDataTable = function (dataTable) {
+        privateStore[me.id].DataTable = dataTable
+    };
+    me.getDataTable = function () {
+        if (privateStore[me.id].DataTable == null) {
+            me.configureDataTables();
+        }
+        return privateStore[me.id].DataTable;
+    };
+    me.loadData = function () {
+        me.configureDataTables(getFilter());
+    };
+    me.getData = function (data, callback, settings) {
+        var params = me.getParameters(data);
+        var model = getImportQueueModel();
+        var uri = model.getImportQueueUri();
+        settings.jqXHR = $.ajax({
+            "dataType": "json",
+            "type": "POST",
+            "url": uri,
+            "data": params,
+            "success": function (json) {
+                callback(json);
             }
         });
     };
-
+    me.getParameters = function (data) {
+        var filter = getFilter();
+        var params = $.extend({}, data, {
+            "ImportQueueId": filter.ImportQueueId,
+            "ExceptionType": filter.ExceptionType,
+            "FilterMessage": filter.FilterMessage
+        });
+        return params;
+    };
     me.configureDataTables = function () {
 
-        var tblImportQueue = $("#tblImportQueue");
-        var processUri = "";
-        var cancelUri = "";
-        var importQueueUri = "";
-        $(privateStore[me.id].Models).each(function () {
-            if (this.getProcessUri != undefined) {
-                processUri = this.getProcessUri();
-                cancelUri = this.getCancelUri();
-                importQueueUri = this.getImportQueueUri();
-            }
-        });
+        var exceptionsUri = "/FeatureDemandPlanning/Import/ImportExceptions?importQueueId=1";
 
-        var dt = tblImportQueue.DataTable({
-            "bServerSide": true,
-            "sAjaxSource": importQueueUri,
-            "bProcessing": true,
-            "iDisplayLength": 10,
+        $("#tblImportQueue").DataTable({
+            "serverSide": true,
+            "pagingType": "full_numbers",
+            "ajax": me.getData,
+            "processing": true,
             "sDom": "ltip",
             "aoColumns": [
                 {
@@ -84,21 +91,28 @@ page.Page = function (models) {
                     "bSortable": true
                 },
                 {
-                    "sTitle": "Action",
-                    "sName": "ACTION",
+                    "sTitle": "Errors",
+                    "sName": "ERRORS",
                     "bSearchable": false,
-                    "bSortable": false
+                    "bSortable": false,
+                    "render": function ( data, type, full, meta ) {
+                        return "<a href='" + exceptionsUri + "'>View</a>";
+                    }
                 }
             ],
-            "createdRow": function (row, data, index) {
+            "fnCreatedRow": function (row, data, index) {
                 // Don't like hard-coding indexes in this way. Must be a better way
                 var importQueueId = data[0];
 
                 $(row).attr("data-importQueueId", importQueueId);
+            },
+            "fnDrawCallback": function (oSettings) {
+                //$(document).trigger("Results", me.getSummary());
+                //me.bindContextMenu();
             }
         });
 
-        me.setDataTable(dt);
+        //me.setDataTable(dt);
     }
     me.registerEvents = function () {
         $(document).on("notifySuccess", function (sender, eventArgs) {
@@ -193,8 +207,21 @@ page.Page = function (models) {
     function getModels() {
         return privateStore[me.id].Models;
     }
-
+    function getModel(modelName) {
+        var model = null;
+        $(getModels()).each(function () {
+            if (this.ModelName == modelName) {
+                model = this;
+                return false;
+            }
+        });
+        return model;
+    };
+    function getImportQueueModel() {
+        return getModel("ImportQueue");
+    };
     function getFilter(pageSize, pageIndex) {
+        var model = getImportQueueModel();
         var filter = {
             PageIndex: pageIndex,
             PageSize: pageSize

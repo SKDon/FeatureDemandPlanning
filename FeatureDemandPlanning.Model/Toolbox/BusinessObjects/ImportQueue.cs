@@ -15,10 +15,13 @@ namespace FeatureDemandPlanning.BusinessObjects
         public string CreatedBy { get; set; }
         public string FilePath { get; set; }
         public string Description { get; set; }
+        public bool HasErrors { get; set; }
 
         public ImportType ImportType { get; set; }
         public ImportStatus ImportStatus { get; set; }
         public IEnumerable<ImportError> Errors { get; set; }
+        public int ProgrammeId { get; set; }
+        public string Gateway { get; set; }
 
         public int? TotalPages { get; set; }
         public int? TotalRecords { get; set; }
@@ -35,7 +38,6 @@ namespace FeatureDemandPlanning.BusinessObjects
             CreatedBy = cdsId;
             FilePath = filePath;
         }
-
         public void SetStatus(enums.ImportStatus newStatus)
         {
             if (newStatus != ImportStatus.ImportStatusCode)

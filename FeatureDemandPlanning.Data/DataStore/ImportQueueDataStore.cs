@@ -48,7 +48,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                    var results = conn.Query<ImportQueueDataItem>("dbo.ImportQueue_GetMany", para, commandType: CommandType.StoredProcedure);
+                    var results = conn.Query<ImportQueueDataItem>("dbo.Fdp_ImportQueue_GetMany", para, commandType: CommandType.StoredProcedure);
                     
                     if (results.Any())
                     {
@@ -97,7 +97,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
                     para.Add("@ImportQueueId", importQueueId, dbType: DbType.Int32);
                     
-                    var result = conn.Query<ImportQueueDataItem>("dbo.ImportQueue_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    var result = conn.Query<ImportQueueDataItem>("dbo.Fdp_ImportQueue_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
 
                     HydrateImportType(result, conn);
                     HydrateImportStatus(result, conn);
@@ -172,7 +172,7 @@ namespace FeatureDemandPlanning.DataStore
                     para = new DynamicParameters();
                     para.Add("@ImportQueueId", importQueue.ImportQueueId, dbType: DbType.Int32);
 
-                    var result = conn.Query<ImportQueueDataItem>("dbo.ImportQueue_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    var result = conn.Query<ImportQueueDataItem>("dbo.Fdp_ImportQueue_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
 
                     HydrateImportType(result, conn);
                     HydrateImportStatus(result, conn);
@@ -406,7 +406,9 @@ namespace FeatureDemandPlanning.DataStore
                 FilePath = importQueue.FilePath,
                 ImportStatus = importQueue.ImportStatus,
                 ImportType = importQueue.ImportType,
-                Errors = importQueue.Errors
+                Errors = importQueue.Errors,
+                ProgrammeId = importQueue.ProgrammeId,
+                Gateway = importQueue.Gateway
             };
         }
 
@@ -436,6 +438,8 @@ namespace FeatureDemandPlanning.DataStore
             public string StatusCode { get; set; }
             public int ImportTypeId { get; set; }
             public string Type { get; set; }
+            public int ProgrammeId { get; set; }
+            public string Gateway { get; set; }
         }
 
         private class ImportStatusDataItem

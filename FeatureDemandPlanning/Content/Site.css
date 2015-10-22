@@ -761,7 +761,7 @@ ul.dropdown-menu > li span.glyphicon {
     margin-top: -0.3em;
 }
 
-td.standardFeature {
+td.nonApplicableFeature {
     background-color: #fff;
     color: #061639;
 }
@@ -771,7 +771,7 @@ td.packFeature {
     color: #887cb0;
 }
 
-td.nonApplicableFeature {
+td.standardFeature {
     background-color: #7788aa;
     color: #fff;
 }
@@ -781,7 +781,7 @@ td.optionalFeature {
     color: #12073b;
 }
 
-li.standardFeature {
+li.nonApplicableFeature {
     background-color: #fff;
     color: #061639;
 }
@@ -791,7 +791,7 @@ li.packFeature {
     color: #887cb0;
 }
 
-li.nonApplicableFeature {
+li.standardFeature {
     background-color: #7788aa;
     color: #fff;
 }
@@ -850,4 +850,25 @@ button, input, optgroup, select, textarea {
     color: #2e4372;
     font: inherit;
     margin: 0px;
+}
+
+.modal-header {
+    color: #FFF;
+    background-image: linear-gradient(to left, #061639, #152A55 66%, #4E638E);
+    border-color: #152A55;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.modal-title {
+    color: #fff;
+}
+
+button.close {
+    color: #fff;
+}
+
+.modal-content {
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
 }

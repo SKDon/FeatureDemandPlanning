@@ -32,11 +32,10 @@ namespace FeatureDemandPlanning.BusinessObjects
             iTotalDisplayRecords = totalDisplayRecords;
         }
 
-        //public static JQueryDataTableResultModel GetResultsFromParameters(JQueryDataTableParameters para, 
-        //    int totalRecords, 
-        //    int totalDisplayRecords)
-        //{
-        //    return new JQueryDataTableResultModel(totalRecords, totalDisplayRecords);
-        //}
+        public JQueryDataTableResultModel(SharedModelBase viewModel)
+        {
+            iTotalRecords = viewModel.TotalRecords;
+            iTotalDisplayRecords = viewModel.TotalRecords;
+        }
     }
 }

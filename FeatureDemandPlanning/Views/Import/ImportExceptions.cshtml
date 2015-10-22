@@ -5,45 +5,69 @@
 
 @section PageScripts
 {
-    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Import/exceptions.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Import/exceptionspage.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/exceptions.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/exceptionspage.js")?v=@SharedModelBase.CurrentVersion"></script>
 
     <script type="text/javascript">
 
-        var exceptions, page, modal;
-        var params = {
-            ActionsUri: "@Url.Action("ImportExceptionAction")",
-            ExceptionsUri: "@Url.Action("ListImportExceptions")",
-            AddFeatureUri: "@Url.Action("AddFeature", "Vehicle")",
-            MapFeatureUri: "@Url.Action("MapFeature", "Vehicle")",
-            MapMarketUri: "@Url.Action("MapMarket")",
-            AddDerivativeUri: "@Url.Action("AddDerivative", "Vehicle")",
-            MapDerivativeUri: "@Url.Action("MapDerivative", "Vehicle")",
-            IgnoreUri: "@Url.Action("ImportExceptionIgnore")",
-            ModalDialogId: "modal",
-            ModalContentId: "modalBody",
-            Configuration: {},
-            PageSize: @Model.PageSize,
-            PageIndex: @Model.PageIndex,
-            ImportQueueId: @Model.CurrentImport.ImportQueueId.GetValueOrDefault()
-        };
+    var exceptions, page, modal;
+    var params = {
+        ActionsUri: "@Url.Action("ImportExceptionActionContextMenu")",
+        ExceptionsUri: "@Url.Action("ListImportExceptions")",
+        AddFeatureContentUri: "@Url.Action("AddFeatureContent")",
+        AddFeatureActionUri: "@Url.Action("AddFeatureAction")",
+        AddSpecialFeatureContentUri: "@Url.Action("AddSpecialFeatureContent")",
+        AddSpecialFeatureActionUri: "@Url.Action("AddSpecialFeatureAction")",
+        MapFeatureContentUri: "@Url.Action("MapFeatureContent")",
+        MapFeatureActionUri: "@Url.Action("MapFeatureAction")",
+        MapMarketContentUri: "@Url.Action("MapMarketContent")",
+        MapMarketActionUri: "@Url.Action("MapMarketAction")",
+        AddDerivativeContentUri: "@Url.Action("AddDerivativeContent")",
+        AddDerivativeActionUri: "@Url.Action("AddDerivativeAction")",
+        MapDerivativeContentUri: "@Url.Action("MapDerivativeContent")",
+        MapDerivativeActionUri: "@Url.Action("MapDerivativeAction")",
+        AddTrimContentUri: "@Url.Action("AddTrimContent")",
+        AddTrimActionUri: "@Url.Action("AddTrimAction")",
+        MapTrimContentUri: "@Url.Action("MapTrimContent")",
+        MapTrimActionUri: "@Url.Action("MapTrimAction")",
+        IgnoreContentUri: "@Url.Action("ImportExceptionIgnoreContent")",
+        IgnoreActionUri: "@Url.Action("ImportExceptionIgnoreAction")",
+        ModalDialogId: "modal",
+        ModalContentId: "modalBody",
+        Configuration: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        ImportQueueId: @Model.CurrentImport.ImportQueueId.GetValueOrDefault()
+    };
 
-        params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
     </script>
-    <script src="@Url.Content("~/Scripts/Import/exceptionsinit.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/exceptionsinit.js")?v=@SharedModelBase.CurrentVersion"></script>
 }
 
 @section PageContentHeader
 {
     <div class="row">
         <div class="col-lg-5 inverse">
-            <p style="height:18px" id="lblPageDescription" class="subscribers-notifyPageChanged">
-                <div class="page-description">View the exception information for the selected import and take action as appropriate</div>
-            </p>
-            <h3 id="lblVehicleDescription">Import Exception Work Tray</h3>
+            <div class="row">
+                <div class="col-lg-2">
+                    <img src="~/Content/Images/Icons/import64.png" style="margin-top:25px;margin-left:10px" />
+                </div>
+                <div class="col-lg-10">
+                    <h3>Import Exception Work Tray</h3>
+                    <h3 id="lblVehicleDescription">@string.Format("{0} - {1} ({2})", Model.Programme.VehicleName, Model.Programme.ModelYear, Model.Gateway)</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p style="height:18px" id="lblPageDescription" class="subscribers-notifyPageChanged">
+                        <div class="page-description">View the exception information for the selected import and take action as appropriate</div>
+                    </p>
+                </div>
+            </div>
         </div>
         <div class="col-lg-3 pull-right" style="padding-top: 20px">
             <div class="panel panel-primary" style="margin-bottom: 0px">
@@ -55,6 +79,7 @@
                             <option value="0">All</option>
                             <option value="1">Missing Market</option>
                             <option value="3">Missing Derivative</option>
+                            <option value="4">Missing Trim</option>
                             <option value="2">Missing Feature</option>
                         </select>
                         <label for="txtFilterMessage" class="form-label inverse" style="font-size:11px">Message:</label>

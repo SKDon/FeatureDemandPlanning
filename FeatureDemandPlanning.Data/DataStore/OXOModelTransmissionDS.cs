@@ -20,10 +20,7 @@ namespace FeatureDemandPlanning.DataStore
             this.CurrentCDSID = cdsid;
         }
 
-        public IEnumerable<ModelTransmission> ModelTransmissionGetMany
-        (
-            	     
-        )
+        public IEnumerable<ModelTransmission> ModelTransmissionGetMany(int programmeId)
         {
             IEnumerable<ModelTransmission> retVal = null;
 			using (IDbConnection conn = DbHelper.GetDBConnection())
@@ -31,6 +28,7 @@ namespace FeatureDemandPlanning.DataStore
 				try
 				{
 					var para = new DynamicParameters();
+                    para.Add("@p_prog_id", programmeId, dbType: DbType.Int32);
 					    
 					retVal = conn.Query<ModelTransmission>("dbo.OXO_ModelTransmission_GetMany", para, commandType: CommandType.StoredProcedure);
 				}

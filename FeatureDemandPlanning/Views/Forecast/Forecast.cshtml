@@ -5,13 +5,13 @@
 
 @section PageScripts
 {
-    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/pager.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/vehicle.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Forecast/forecast.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Forecast/forecastcomparisonpage.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Forecast/trimmapping.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/pager.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/vehicle.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Forecast/forecast.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Forecast/forecastcomparisonpage.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Forecast/trimmapping.js")?v=@SharedModelBase.CurrentVersion"></script>
     <script type="text/javascript">
 
         var forecast, vehicle, pager, page, modal, trimMapping;
@@ -42,7 +42,7 @@
             @:params.ForecastId = @Model.Forecast.ForecastId.Value;
         }
     </script>
-    <script src="@Url.Content("~/Scripts/Forecast/init.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Forecast/init.js")?v=@SharedModelBase.CurrentVersion"></script>
 }
 
 @section PageContentHeader

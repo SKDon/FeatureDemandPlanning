@@ -11,8 +11,13 @@ namespace FeatureDemandPlanning.Interfaces
     public interface IVehicleDataContext
     {
         IVehicle GetVehicle(VehicleFilter filter);
+
         IEnumerable<IVehicle> ListAvailableVehicles(VehicleFilter filter);
         IEnumerable<Programme> ListProgrammes(ProgrammeFilter filter);
+        IEnumerable<ModelBody> ListBodies(ProgrammeFilter filter);
+        IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter);
+        IEnumerable<ModelEngine> ListEngines(ProgrammeFilter filter);
+        IEnumerable<ModelTrim> ListTrim(ProgrammeFilter filter);
 
         PagedResults<EngineCodeMapping> ListEngineCodeMappings(EngineCodeFilter filter);
         EngineCodeMapping UpdateEngineCodeMapping(EngineCodeMapping mapping);

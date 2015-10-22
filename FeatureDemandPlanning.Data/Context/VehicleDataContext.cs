@@ -21,6 +21,10 @@ namespace FeatureDemandPlanning.DataStore
             _modelDataStore = new ModelDataStore(cdsId);
             _marketDataStore = new MarketDataStore(cdsId);
             _marketGroupDataStore = new MarketGroupDataStore(cdsId);
+            _bodyDataStore = new ModelBodyDataStore(cdsId);
+            _trimDataStore = new ModelTrimDataStore(cdsId);
+            _engineDataStore = new ModelEngineDataStore(cdsId);
+            _transmissionDataStore = new ModelTransmissionDataStore(cdsId);
         }
 
         public IVehicle GetVehicle(VehicleFilter filter)
@@ -149,6 +153,26 @@ namespace FeatureDemandPlanning.DataStore
             return results;
         }
 
+        public IEnumerable<ModelBody> ListBodies(ProgrammeFilter filter)
+        {
+            return _bodyDataStore.ModelBodyGetMany(filter.ProgrammeId.GetValueOrDefault());
+        }
+
+        public IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter)
+        {
+            return _transmissionDataStore.ModelTransmissionGetMany(filter.ProgrammeId.GetValueOrDefault());   
+        }
+
+        public IEnumerable<ModelEngine> ListEngines(ProgrammeFilter filter)
+        {
+            return _engineDataStore.ModelEngineGetMany(filter.ProgrammeId.GetValueOrDefault());
+        }
+
+        public IEnumerable<ModelTrim> ListTrim(ProgrammeFilter filter)
+        {
+            return _trimDataStore.ModelTrimGetMany(filter.ProgrammeId.GetValueOrDefault());
+        }
+
         public EngineCodeMapping UpdateEngineCodeMapping(EngineCodeMapping mapping)
         {
             return _programmeDataStore.EngineCodeMappingSave(mapping);
@@ -226,5 +250,9 @@ namespace FeatureDemandPlanning.DataStore
         private ModelDataStore _modelDataStore = null;
         private MarketDataStore _marketDataStore = null;
         private MarketGroupDataStore _marketGroupDataStore = null;
+        private ModelBodyDataStore _bodyDataStore = null;
+        private ModelTransmissionDataStore _transmissionDataStore = null;
+        private ModelTrimDataStore _trimDataStore = null;
+        private ModelEngineDataStore _engineDataStore = null;
     }
 }

@@ -1,0 +1,52 @@
+﻿@using FeatureDemandPlanning.BusinessObjects
+@using enums = FeatureDemandPlanning.Enumerations
+
+@model FeatureDemandPlanning.Models.ImportViewModel
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-4 text-right">Import Feature Code:</div>
+            <div class="col-xs-8">
+                @Model.CurrentException.ImportFeatureCode
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right">Import Feature:</div>
+            <div class="col-xs-8">
+                @Model.CurrentException.ImportFeature
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right">Programme:</div>
+            <div class="col-xs-8">
+                @Model.Programme.GetDisplayString();
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="panel-title">Special Feature</div>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal">
+            <div class="form-group form-group-sm">
+                <label for="ddlSpecialFeature" class="control-label col-xs-2 text-right">Type:</label>
+                <div class="col-xs-10">
+                    <select id="ddlSpecialFeature" class="form-control">
+                        @foreach (var specialFeature in Model.AvailableSpecialFeatures)
+                        {
+                            <option value="@specialFeature.FdpSpecialFeatureTypeId">@specialFeature.Description</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            
+        </form>
+    </div>
+</div>
+

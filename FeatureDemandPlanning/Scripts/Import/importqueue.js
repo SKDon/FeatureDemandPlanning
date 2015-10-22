@@ -1,4 +1,4 @@
-﻿var model = namespace("FeatureDemandPlanning.Import.Model");
+﻿var model = namespace("FeatureDemandPlanning.Import");
 
 model.ImportQueue = function (params) {
     /* Private members */
@@ -16,6 +16,8 @@ model.ImportQueue = function (params) {
     privateStore[me.id].Configuration = params.Configuration;
     privateStore[me.id].PageSize = params.PageSize;
     privateStore[me.id].PageIndex = params.PageIndex;
+
+    me.ModelName = "ImportQueue";
 
     me.getPageSize = function () {
         return privateStore[me.id].PageSize;

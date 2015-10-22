@@ -20,6 +20,16 @@ namespace FeatureDemandPlanning.BusinessObjects.Filters
         public string ModelYear { get; set; }
         public string Gateway { get; set; }
 
+        public ProgrammeFilter()
+        {
+
+        }
+
+        public ProgrammeFilter(int programmeId)
+        {
+            ProgrammeId = programmeId;
+        }
+
         public override int GetHashCode()
         {
             unchecked

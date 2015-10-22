@@ -86,6 +86,10 @@ namespace FeatureDemandPlanning.DataStore
 
             return dataItem;
         }
+        public IEnumerable<SpecialFeature> ListSpecialFeatures(ProgrammeFilter programmeFilter)
+        {
+            return _volumeDataStore.FdpSpecialFeatureTypeGetMany();
+        }
         public void SaveData(FdpOxoVolumeDataItem dataItemToSave)
         {
             _volumeDataStore.FdpOxoVolumeDataItemSave(dataItemToSave);

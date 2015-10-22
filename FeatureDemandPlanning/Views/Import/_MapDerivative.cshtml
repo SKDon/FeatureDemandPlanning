@@ -1,0 +1,72 @@
+﻿@using FeatureDemandPlanning.BusinessObjects
+@using enums = FeatureDemandPlanning.Enumerations
+
+@model FeatureDemandPlanning.Models.ImportViewModel
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-4 text-right">Import Derivative Code:</div>
+            <div class="col-xs-8">
+                @Model.CurrentException.ImportDerivativeCode
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right">Import Derivative:</div>
+            <div class="col-xs-8">
+                @Model.CurrentException.ImportDerivative
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right">Programme:</div>
+            <div class="col-xs-8">
+                @Model.Programme.GetDisplayString();
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="panel-title">Mapping</div>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal">
+            <div class="form-group form-group-sm">
+                <label for="ddlBody" class="control-label col-xs-2 text-right">Body:</label>
+                <div class="col-xs-10">
+                    <select id="ddlBody" class="form-control">
+                        @foreach (var body in Model.AvailableBodies)
+                        {
+                            <option value="@body.Id">@body.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group form-group-sm">
+                <label for="ddlEngine" class="control-label col-xs-2 text-right">Engine:</label>
+                <div class="col-xs-10">
+                    <select id="ddlEngine" class="form-control">
+                        @foreach (var engine in Model.AvailableEngines)
+                        {
+                            <option value="@engine.Id">@engine.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group form-group-sm">
+                <label for="ddlTransmission" class="control-label col-xs-2 text-right">Transmission:</label>
+                <div class="col-xs-10">
+                    <select id="ddlTransmission" class="form-control">
+                        @foreach (var transmission in Model.AvailableTransmissions)
+                        {
+                            <option value="@transmission.Id">@transmission.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

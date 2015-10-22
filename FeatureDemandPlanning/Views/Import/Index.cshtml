@@ -4,48 +4,60 @@
 @model FeatureDemandPlanning.Models.ImportViewModel
 
 @section PageScripts{
-    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Import/import.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Import/importpage.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@SharedModelBase.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@SharedModelBase.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/importqueue.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/importqueuepage.js")?v=@SharedModelBase.CurrentVersion"></script>
     <script language="javascript">
 
-        // TO DO, push these parameters out from the model
+        var importQueue, page, modal;
         var params = {
             ProcessUri: "@Url.Action("Process")",
             CancelUri: "@Url.Action("Cancel")",
-            Configuration: @Html.Raw(Json.Encode(Model.Configuration)),
             ImportQueue: @Html.Raw(Json.Encode(Model.ImportQueue)),
             ImportQueueUri: "@Url.Action("ListImportQueue")",
+            Configuration: {},
             PageSize: @Model.PageSize,
             PageIndex: @Model.PageIndex
         };
+        params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 
-        var importQueue = new FeatureDemandPlanning.Import.Model.ImportQueue(params);
-        var page = new FeatureDemandPlanning.Import.Page.Page([importQueue]);
-
-        $(document).ready(function ()
-        {
-            page.initialise();
-        });
-    
     </script>
+    <script src="@Url.Content("~/Scripts/Import/importqueueinit.js")?v=@SharedModelBase.CurrentVersion"></script>
 }
 
 @section PageStyles{
-    <link href="@Url.Content("~/Styles/Import/import.css")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Styles/Import/import.css")?v=@SharedModelBase.CurrentVersion" rel="stylesheet" type="text/css" />
 }
 
 @section PageContentHeader
 {
+
 <div class="row">
-    <div class="col-lg-12 text-center inverse">
-        <img src="~/Content/Images/Icons/import128.png" style="opacity:0.9;border:0" />
-
-        <h1 style="height:66px">Import</h1>
-        <p style="height:60px">Import pre-populated OXO data with volume information</p>
-
+    <div class="col-lg-5 inverse">
+        <div class="row">
+            <div class="col-lg-2">
+                <img src="~/Content/Images/Icons/import64.png" style="margin-top:25px;margin-left:10px" />
+            </div>
+            <div class="col-lg-10" style="padding-top:20px">
+                <h3>Import</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <p style="height:18px" id="lblPageDescription" class="subscribers-notifyPageChanged">
+                    <div class="page-description">Import pre-populated OXO data with volume information</div>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5 pull-right" style="padding-top: 20px">
+        <a name="new"></a>
+        @{Html.RenderPartial("Upload", Model);}
     </div>
 </div>
+
 }
 
 @section PageBody
@@ -54,23 +66,15 @@
 
     </div>
 
-    <div class="container">
-
         @{Html.RenderPartial("ProcessState", Model);}
 
-        <div class="row col-lg-6 col-lg-offset-3">
-            <a name="new"></a>
-            @{Html.RenderPartial("Upload", Model);}
-        </div>
-
-        <div class="row col-lg-12">
+        
             <a name="queue"></a>
 
-            <div id="dvImportQueue">
+            <div id="dvImportQueue" class="col-lg-12 pull-left">
                 @{Html.RenderPartial("ImportQueue", Model);}
             </div>
-        </div>
-        </div>
+       
 }
 
 

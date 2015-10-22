@@ -209,14 +209,24 @@ page.ExceptionsPage = function (models) {
         me.redrawDataTable();
     };
     me.onActionEventHandler = function (sender, eventArgs) {
-        getExceptionsModel().processAction(eventArgs, me.onActionCallback);
+        var model = getExceptionsModel();
+        getModal().showModal({
+            title: model.getActionTitle(eventArgs),
+            uri: model.getActionContentUri(eventArgs),
+            data: JSON.stringify(eventArgs),
+            model: model
+        });
     };
     me.onActionCallback = function (response) {
+        
         me.redrawDataTable();
     };
     me.redrawDataTable = function () {
         $("#tblImportExceptions").DataTable().draw();
     }
+    function getModal() {
+        return getModel("Modal");
+    };
     function getModels() {
         return privateStore[me.id].Models;
     };

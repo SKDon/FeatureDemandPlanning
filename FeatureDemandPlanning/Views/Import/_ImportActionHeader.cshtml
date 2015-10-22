@@ -1,0 +1,33 @@
+﻿@using FeatureDemandPlanning.BusinessObjects
+@using enums = FeatureDemandPlanning.Enumerations
+
+@model FeatureDemandPlanning.Models.ImportViewModel
+<div class="panel panel-default">
+    <div class="panel-body">
+
+        @if (Model.CurrentAction == enums.ImportExceptionAction.AddMissingDerivative || Model.CurrentAction == enums.ImportExceptionAction.MapMissingDerivative)
+        { 
+            <div class="row">
+                <div class="col-xs-4 text-right">Import Derivative Code:</div>
+                <div class="col-xs-8">
+                    @Model.CurrentException.ImportDerivativeCode
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4 text-right">Import Derivative:</div>
+                <div class="col-xs-8">
+                    @Model.CurrentException.ImportDerivative
+                </div>
+            </div>
+        }
+        
+
+
+        <div class="row">
+            <div class="col-xs-4 text-right">Programme:</div>
+            <div class="col-xs-8">
+                @Model.Programme.GetDisplayString();
+            </div>
+        </div>
+    </div>
+</div>

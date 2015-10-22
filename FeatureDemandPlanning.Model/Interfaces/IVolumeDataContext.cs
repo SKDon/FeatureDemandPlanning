@@ -28,6 +28,8 @@ namespace FeatureDemandPlanning.Interfaces
         IEnumerable<OXODoc> ListAvailableOxoDocuments(VehicleFilter filter);
 
         void ProcessMappedData(IVolume volumeToProcess);
-        
+
+
+        IEnumerable<SpecialFeature> ListSpecialFeatures(ProgrammeFilter programmeFilter);
     }
 }

@@ -5,20 +5,21 @@
 
 @section PageScripts
 {
-    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/cookie.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/pager.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/vehicle.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Volume/volume.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Volume/volumepage.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/cookie.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/pager.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/vehicle.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Volume/volume.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Volume/volumepage.js")?v=@SharedModelBase.CurrentVersion"></script>
 
     <!-- TO DO put these in the bundle -->
-    <script src="@Url.Content("~/Scripts/Editor/oxo-editor-fbm.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Editor/oxo-editor-core.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Editor/oxo-model-filter.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Editor/oxo-change-log.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/oxo-master.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Editor/oxo-editor-fbm.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Editor/oxo-editor-core.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Editor/oxo-model-filter.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Editor/oxo-change-log.js")?v=@SharedModelBase.CurrentVersion"></script>
 
     <script type="text/javascript">
 
@@ -48,7 +49,7 @@
             @:params.OxoDocId = @Model.Volume.Document.Id;
         }
     </script>
-    <script src="@Url.Content("~/Scripts/Volume/init.js")?v=@FeatureDemandPlanning.Models.SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Volume/init.js")?v=@SharedModelBase.CurrentVersion"></script>
 }
 
 @section PageContentHeader

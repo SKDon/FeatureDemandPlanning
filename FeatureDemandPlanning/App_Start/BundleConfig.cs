@@ -35,29 +35,21 @@ namespace FeatureDemandPlanning
             bundles.Add(new ScriptBundle("~/bundles/shared").Include(
                         "~/Scripts/Shared/taffy.js"));
 
-            //bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
-            //            "~/Scripts/jquery.validate*"));
-
-            //bundles.Add(new ScriptBundle("~/bundles/jqueryform").Include(
-            //            "~/Scripts/jquery.form.min.js"));
-
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
-                "~/Content/Bootstrap/js/bootstrap.min.js"));
+                "~/Content/Bootstrap/js/bootstrap.min.js",
+                "~/Scripts/bootstrap-slider.js"));
 
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap").Include(
                 "~/Content/Bootstrap/css/bootstrap.min.css",
                 //"~/Content/Bootstrap/css/bootstrap-theme.min.css",
-                "~/Content/Responsive/css/responsive.bootstrap.min.css"
-                ));
-
-             //"~/Scripts/respond.js",
-             //         "~/Scripts/bootstrap-slider.js"));
-                     
+                "~/Content/Responsive/css/responsive.bootstrap.min.css",
+                "~/Content/bootstrap-slider.css"
+                ));                     
 
             bundles.Add(new ScriptBundle("~/bundles/Forecast")
                 .Include("~/Scripts/Forecast/vehicle.js",
@@ -67,19 +59,22 @@ namespace FeatureDemandPlanning
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
                       "~/Content/Editor/oxo-editor.css",
-                      "~/Content/BrushedMetal.css"
+                      "~/Content/BrushedMetal.css",
                       //"~/Content/jquery.tipsy.css",
                       //"~/Content/jquery.simplePager.css",
                       //"~/Extensions/dataTables.bootstrap/dataTables.bootstrap.css",
                       //"~/Extensions/malihu-custom-scrollbar-plugin-master/jquery.mCustomScrollbar.css",
-                      //"~/Extensions/nivo-slider/nivo-slider.css",
+                      "~/Extensions/nivo-slider/nivo-slider.css"
                       //"~/Content/bootstrap-slider.css"
                       ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/dataTables").Include(
                     "~/Content/DataTables/js/jquery.dataTables.js",
                     "~/Content/DataTables/js/dataTables.bootstrap.min.js",
-                    "~/Content/Responsive/js/dataTables.responsive.min.js"
+                    "~/Content/Responsive/js/dataTables.responsive.min.js",
+                    "~/Extensions/jquery.dataTables.rowGrouping/jquery.dataTables.rowGrouping.js",
+                    "~/Scripts/jquery.dataTables.grouping.mnh.js",
+                    "~/Scripts/jquery.dataTables.fixColumn.js"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/dataTables").Include(

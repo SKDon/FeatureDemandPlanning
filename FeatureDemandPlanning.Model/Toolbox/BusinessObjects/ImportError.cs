@@ -12,6 +12,8 @@ namespace FeatureDemandPlanning.BusinessObjects
         public int FdpImportId { get; set; }
         public int ImportQueueId { get; set; }
         public int FdpImportErrorId { get; set; }
+        public int ProgrammeId { get; set; }
+        public string Gateway { get; set; }
 
         public int LineNumber { get; set; }
         public int FdpImportErrorTypeId { get; set; }
@@ -30,7 +32,9 @@ namespace FeatureDemandPlanning.BusinessObjects
 
         public string ImportMarket { get; set; }
         public string ImportDerivativeCode { get; set; }
+        public string ImportDerivative { get; set; }
         public string ImportTrim { get; set; }
         public string ImportFeatureCode { get; set; }
+        public string ImportFeature { get; set; }
     }
 }
