@@ -1,4 +1,5 @@
 ﻿
+
 CREATE VIEW [dbo].[ImportQueue_VW] AS
 
 	SELECT 
@@ -11,12 +12,18 @@ CREATE VIEW [dbo].[ImportQueue_VW] AS
 		, S.[Status]
 		, Q.FilePath
 		, Q.UpdatedOn
-		, E.Error
-		, E.ErrorOn
+		, NULL AS Error
+		, E1.ErrorOn
 		
 	FROM ImportQueue			AS Q
 	JOIN ImportType				AS T	ON	Q.ImportTypeId		= T.ImportTypeId
 	JOIN ImportStatus			AS S	ON	Q.ImportStatusId	= S.ImportStatusId
-	LEFT JOIN ImportError_VW	AS E	ON	Q.ImportQueueId		= E.ImportQueueId;
+	LEFT JOIN 
+	(
+		SELECT ImportQueueId, MAX(E.ErrorOn) AS ErrorOn
+		FROM Fdp_ImportError_VW AS E
+		GROUP BY ImportQueueId
+	)
+	AS E1 ON Q.ImportQueueId = E1.ImportQueueId;
 
 

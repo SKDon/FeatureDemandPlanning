@@ -21,23 +21,4 @@ namespace FeatureDemandPlanning.BusinessObjects
         // A blank constructor
         public ModelTrim() {;}
     }
-
-    public static class ModelTrimExtensions
-    {
-        public static string ToCommaSeperatedList(this IEnumerable<ModelTrim> trimList)
-        {
-            var sb = new StringBuilder();
-            foreach (var trim in trimList)
-            {
-                sb.Append(trim.Name);
-                sb.Append(", ");
-            }
-            var result = sb.ToString();
-            if (result.Length > 0)
-            {
-                result = result.Substring(0, result.Length - 2);
-            }
-            return result;
-        }
-    }
 }

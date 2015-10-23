@@ -307,7 +307,9 @@ AS
 		, D.CreatedBy
 		, D.CreatedOn
 		
-	FROM		Fdp_OxoDoc		AS D
+	FROM
+	OXO_Doc						AS D1		
+	LEFT JOIN	Fdp_OxoDoc		AS D	ON	D1.Id = D.OXODocId
 	LEFT JOIN	Fdp_OxoVolume	AS V ON D.FdpOxoDocId = V.FdpOxoDocId
 	WHERE
 	D.FdpOxoDocId = @FdpOxoDocId;

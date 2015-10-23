@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[ImportQueue_UpdateStatus]
+﻿CREATE PROCEDURE [dbo].[Fdp_ImportQueue_UpdateStatus]
 	  @ImportQueueId INT
 	, @ImportStatusId INT = 1
 AS
@@ -13,4 +13,3 @@ UPDATE ImportQueue SET
 	, UpdatedOn = GETDATE() 
 WHERE
 ImportQueueId = @ImportQueueId;
-

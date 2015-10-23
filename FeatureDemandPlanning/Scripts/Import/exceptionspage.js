@@ -21,7 +21,7 @@ page.ExceptionsPage = function (models) {
         me.loadData();
     };
     me.setDataTable = function (dataTable) {
-        privateStore[me.id].DataTable = dataTable
+        privateStore[me.id].DataTable = dataTable;
     };
     me.getDataTable = function () {
         if (privateStore[me.id].DataTable == null)
@@ -60,7 +60,7 @@ page.ExceptionsPage = function (models) {
         var params = { ExceptionId: exceptionId };
         $.ajax({
             "dataType": "html",
-            "async": false,
+            "async": true,
             "type": "POST",
             "url": getExceptionsModel().getActionsUri(),
             "data": params,
@@ -74,12 +74,12 @@ page.ExceptionsPage = function (models) {
         var params = $.extend({}, data, {
             "ImportQueueId": filter.ImportQueueId,
             "ExceptionType": filter.ExceptionType,
-            "FilterMessage": filter.FilterMessage
+            "FilterMessage": filter.FilterMessage,
+            "ProgrammeId": filter.ProgrammeId
         });
         return params;
     };
     me.configureDataTables = function (filter) {
-
         $("#tblImportExceptions").DataTable({
             "serverSide": true,
             "pagingType": "full_numbers",
@@ -124,8 +124,6 @@ page.ExceptionsPage = function (models) {
                 me.bindContextMenu();
             }
         });
-        //me.setDataTable(dt);
-        //return dt;
     };
     me.getExceptionId = function (cell) {
         return $(cell).closest("tr").attr("data-import-exception-id");
@@ -138,13 +136,6 @@ page.ExceptionsPage = function (models) {
                 menuSelected: me.actionTriggered
         });
     };
-    me.actionTriggered = function (invokedOn, action) {
-        var eventArgs = {
-            ExceptionId: parseInt($(action).attr("data-target")),
-            ActionId: parseInt($(action).attr("data-action"))
-        };
-        $(document).trigger("Action", eventArgs);
-    }
     me.getSummary = function () {
         var table = $("#tblImportExceptions").DataTable();
         var info = table.page.info();
@@ -165,6 +156,7 @@ page.ExceptionsPage = function (models) {
             .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notifyResults").trigger("OnResultsDelegate", [eventArgs]); })
             .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notifyUpdated").trigger("OnUpdatedDelegate", [eventArgs]); })
             .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notifyAction").trigger("OnActionDelegate", [eventArgs]); })
+            .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notifyModalLoaded").trigger("OnModalLoadedDelegate", [eventArgs]); })
     };
     me.registerSubscribers = function () {
         $("#notifier")
@@ -172,7 +164,8 @@ page.ExceptionsPage = function (models) {
             .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
             .unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
             .unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
-            .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler);
+            .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
+            .unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
 
         $("#dvImportSummary").on("OnResultsDelegate", me.onImportSummaryEventHandler);
         $("#spnFilteredRecords").on("OnResultsDelegate", me.onFilteredRecordsEventHandler);
@@ -208,22 +201,46 @@ page.ExceptionsPage = function (models) {
     me.onFilterChangedEventHandler = function (sender, eventArgs) {
         me.redrawDataTable();
     };
+    me.actionTriggered = function (invokedOn, action) {
+        var eventArgs = {
+            ExceptionId: parseInt($(action).attr("data-target")),
+            ActionId: parseInt($(action).attr("data-action")),
+            ProgrammeId: getExceptionsModel().getProgrammeId()
+        };
+        $(document).trigger("Action", eventArgs);
+    }
     me.onActionEventHandler = function (sender, eventArgs) {
-        var model = getExceptionsModel();
+        var actionId = eventArgs.ActionId;
+        var model = getModelForAction(actionId);
         getModal().showModal({
-            title: model.getActionTitle(eventArgs),
-            uri: model.getActionContentUri(eventArgs),
-            data: JSON.stringify(eventArgs),
-            model: model
+            Title: model.getActionTitle(actionId),
+            Uri: model.getActionContentUri(actionId),
+            Data: JSON.stringify(eventArgs),
+            Model: model
         });
     };
     me.onActionCallback = function (response) {
-        
         me.redrawDataTable();
+    };
+    me.onModalLoadedEventHandler = function (sender, eventArgs) {
+        var actionId = eventArgs.ActionId;
+        switch (actionId) {
+            case 1: me.initialiseMapMarketModal();
+                break;
+            default:
+                break;
+        }
     };
     me.redrawDataTable = function () {
         $("#tblImportExceptions").DataTable().draw();
-    }
+    };
+    me.initialiseMapMarketModal = function () {
+        var selector = $("#txtMapMarketName").typeahead({
+            source: getMarketModel().getAvailableMarkets(),
+            minLength: 1,
+            items: 10
+        });
+    };
     function getModal() {
         return getModel("Modal");
     };
@@ -243,6 +260,49 @@ page.ExceptionsPage = function (models) {
     function getExceptionsModel() {
         return getModel("Exceptions");
     };
+    function getMarketModel() {
+        return getModel("Market");
+    };
+    function getDerivativeModel() {
+        return getModel("Derivative");
+    }
+    function getTrimModel() {
+        return getModel("Trim");
+    }
+    function getFeatureModel() {
+        return getModel("Feature");
+    }
+    function getIgnoreModel() {
+        return getModel("Ignore");
+    }
+    function getModelForAction(actionId) {
+        var model = null;
+        switch (actionId) {
+            case 1:
+                model = getMarketModel();
+                break;
+            case 2:
+            case 3:
+                model = getDerivativeModel();
+                break;
+            case 4:
+            case 5:
+                model = getFeatureModel();
+                break;
+            case 6:
+            case 7:
+                model = getTrimModel();
+                break;
+            case 8:
+                model = getIgnoreModel();
+                break;
+            case 9:
+                model = getFeatureModel();
+            default:
+                break;
+        };
+        return model;
+    }
     function getFilter() {
         var model = getExceptionsModel();
         var pageSize = model.getPageSize();
@@ -251,7 +311,7 @@ page.ExceptionsPage = function (models) {
 
         filter.ImportQueueId = model.getImportQueueId();
         filter.ExceptionType = me.getExceptionType();
-        filter.FilterMessage = me.getFilterMessage()
+        filter.FilterMessage = me.getFilterMessage();
         filter.PageIndex = pageIndex;
         filter.PageSize = pageSize;
 

@@ -3,30 +3,7 @@
 
 @model FeatureDemandPlanning.Models.ImportViewModel
 
-<div class="panel panel-default">
-    <div class="panel-body">
-        <div class="row">
-            <div class="col-xs-4 text-right">Import Feature Code:</div>
-            <div class="col-xs-8">
-                @Model.CurrentException.ImportFeatureCode
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-4 text-right">Import Feature:</div>
-            <div class="col-xs-8">
-                @Model.CurrentException.ImportFeature
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-4 text-right">Programme:</div>
-            <div class="col-xs-8">
-                @Model.Programme.GetDisplayString();
-            </div>
-        </div>
-    </div>
-</div>
-
-
+@Html.Partial("_ImportActionHeader", Model)
 
 <div class="panel panel-primary">
     <div class="panel-heading">

@@ -1,4 +1,5 @@
-﻿using FeatureDemandPlanning.Models;
+﻿using FeatureDemandPlanning.BusinessObjects.Filters;
+using FeatureDemandPlanning.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +56,6 @@ namespace FeatureDemandPlanning.Controllers
         public ActionResult AddTopMarket(int marketId)
         {
             var marketModel = new MarketViewModel(DataContext);
-
             try
             {
                 marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets();
@@ -108,6 +108,16 @@ namespace FeatureDemandPlanning.Controllers
             {
                 marketModel.SetProcessState(ex);
             }
+
+            return Json(marketModel);
+        }
+
+        [HttpPost]
+        public ActionResult ListAvailableMarkets(ProgrammeFilter filter)
+        {
+            MarketViewModel marketModel = new MarketViewModel(DataContext);
+
+            marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets(filter);
 
             return Json(marketModel);
         }

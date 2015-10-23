@@ -99,11 +99,14 @@
     <Compile Include="Toolbox\BusinessObjects\DerivativeMapping.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyCustomState.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyDerivativeCodeMapping.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyFeature.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyFeatureGroup.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyImportError.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyImportQueue.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyMarket.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyMarketGroup.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyOxoDocument.cs" />
+    <Compile Include="Toolbox\BusinessObjects\Empty\EmptyProgramme.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyTrimMapping.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyVehicleList.cs" />
     <Compile Include="Toolbox\BusinessObjects\Empty\EmptyVolume.cs" />
@@ -219,6 +222,7 @@
     <Compile Include="Toolbox\Enumerations\VolumeResultMode.cs" />
     <Compile Include="Toolbox\Enumerations\VolumeValidationSection.cs" />
     <Compile Include="Toolbox\Extensions\ModelExtensions.cs" />
+    <Compile Include="Toolbox\Extensions\ModelTrimExtensions.cs" />
     <Compile Include="Toolbox\Extensions\ProgrammeExtensions.cs" />
     <Compile Include="Toolbox\Extensions\StringExtensions.cs" />
     <Compile Include="Toolbox\Helpers\AppHelper.cs" />

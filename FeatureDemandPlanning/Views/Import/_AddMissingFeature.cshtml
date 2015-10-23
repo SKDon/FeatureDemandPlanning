@@ -1,0 +1,77 @@
+﻿@using FeatureDemandPlanning.BusinessObjects
+@using enums = FeatureDemandPlanning.Enumerations
+
+@model FeatureDemandPlanning.Models.ImportViewModel
+
+@Html.Partial("_ImportActionHeader", Model)
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="panel-title">Add New</div>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal">
+            <div class="form-group form-group-sm">
+                @*<label for="ddlFeatureGroup" class="control-label col-lg-3 text-right">Feature:</label>*@
+                <div class="col-lg-12">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @if (Model.CurrentFeature is EmptyFeature)
+                        {
+                            @:Select Feature
+                        }
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        @foreach (var featureGroup in Model.FeatureGroups.Where(g => !g.Equals("UNASSIGNED")))
+                        {
+                            <li class="dropdown dropdown-submenu">
+                                <a href="#">@featureGroup</a>
+                                @*<ul class="dropdown-menu">
+
+                                    @foreach (var featureSubGroup in Model.FeatureSubGroups
+                                        .Where(g =>
+                                            g.FeatureGroupName.Equals(featureGroup, StringComparison.InvariantCultureIgnoreCase) &&
+                                            !string.IsNullOrEmpty(g.FeatureSubGroup)
+                                        ))
+                                    {
+                                        <li class="dropdown dropdown-submenu">
+                                            <a href="#">@featureSubGroup.FeatureSubGroup</a>
+                                            <ul class="dropdown-menu">
+                                                @foreach (var feature in Model.Features
+                                                    .Where(f =>
+                                                        f.FeatureGroup.Equals(featureGroup) &&
+                                                        f.FeatureSubGroup != null &&
+                                                        f.FeatureSubGroup.Equals(featureSubGroup.FeatureSubGroup)))
+                                                {
+                                                    <li><a href="#">@string.Format("{0} - {1}", feature.FeatureCode, feature.BrandDescription)</a></li>
+                                                }
+
+                                            </ul>
+                                        </li>
+                                    }*@
+                                </ul>
+                            </li>
+                        }
+                        <li class="divider"></li>
+                        <li class="dropdown-submenu">
+                            <a href="#">UNASSIGNED</a>
+                            <ul class="dropdown-menu">
+                                @*@foreach (var feature in Model.Features.Where(f => f.FeatureGroup.Equals("UNASSIGNED")))
+                                {
+                                    <li><a href="#">@string.Format("{0} - {1}", feature.FeatureCode, feature.BrandDescription)</a></li>
+                                }*@
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-group form-group-sm">
+                <label for="ddlEngine" class="control-label col-xs-2 text-right">Description:</label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" value=""/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[ImportQueue_GetMany]
+﻿CREATE PROCEDURE [dbo].[Fdp_ImportQueue_GetMany]
 	  @ImportQueueId	INT			= NULL
 	, @ImportTypeId		INT			= NULL
 	, @ImportStatusId	INT			= NULL
@@ -8,6 +8,7 @@
 	, @SortDirection	VARCHAR(5)	= 'DESC'
 	, @TotalPages		INT OUTPUT
 	, @TotalRecords		INT OUTPUT
+	, @TotalDisplayRecords INT OUTPUT
 AS
 	SET NOCOUNT ON;
 	
@@ -58,6 +59,7 @@ AS
 		END DESC
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
+	SELECT @TotalDisplayRecords = @TotalRecords;
 	
 	IF ISNULL(@PageSize, 0) = 0
 		SET @PageSize = @TotalRecords;
@@ -78,9 +80,11 @@ AS
 		, Q.UpdatedOn
 		, Q.Error
 		, Q.ErrorOn
+		, I.ProgrammeId
+		, I.Gateway
+		, CAST(CASE WHEN Q.ErrorOn IS NOT NULL THEN 1 ELSE 0 END AS BIT) AS HasErrors
 		
 	FROM @PageRecords	AS P
 	JOIN ImportQueue_VW AS Q	ON	P.ImportQueueId = Q.ImportQueueId
 								AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex
-	
-
+	JOIN Fdp_Import		AS I	ON	Q.ImportQueueId = I.ImportQueueId

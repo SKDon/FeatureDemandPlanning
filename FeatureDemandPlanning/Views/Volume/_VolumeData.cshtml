@@ -177,11 +177,6 @@
                                             {
                                                 @part<br />
                                             }
-                                            @if (carModel.CoA != null)
-                                            {
-                                                string country = Model.Countries.Where(B => B.Code == carModel.CoA).FirstOrDefault().Description;
-                                                <img style="padding-top: 4px;" title="Country of Assembly: @(country)" src="~/Content/Images/flags/@(carModel.CoA).png" />
-                                            }
                                         </th>
                                     }
                                 </tr>

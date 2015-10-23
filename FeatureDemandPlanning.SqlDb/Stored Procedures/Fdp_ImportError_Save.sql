@@ -1,9 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_ImportError_Save]
-	  @ImportQueueId		INT
-	, @LineNumber			INT
-	, @ErrorOn				DATETIME
-	, @FdpImportErrorTypeId INT
-	, @Error				NVARCHAR(MAX)
+	  @ImportQueueId INT
+	, @Error NVARCHAR(MAX)
 AS
 	SET NOCOUNT ON;
 	
@@ -13,16 +10,10 @@ AS
 	INSERT INTO Fdp_ImportError
 	(
 		  ImportQueueId
-		, LineNumber
-		, ErrorOn
-		, FdpImportErrorTypeId
-		, ErrorMessage
+		, Error
 	)
 	VALUES
 	(
 		  @ImportQueueId
-		, @LineNumber
-		, @ErrorOn
-		, @FdpImportErrorTypeId
 		, @Error
 	)

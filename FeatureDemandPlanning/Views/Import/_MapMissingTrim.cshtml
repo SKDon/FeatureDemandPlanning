@@ -1,0 +1,28 @@
+﻿@using FeatureDemandPlanning.BusinessObjects
+@using enums = FeatureDemandPlanning.Enumerations
+
+@model FeatureDemandPlanning.Models.ImportViewModel
+
+@Html.Partial("_ImportActionHeader", Model)
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="panel-title">Mapping</div>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal">
+            <div class="form-group form-group-sm">
+                <label for="ddlTrim" class="control-label col-xs-2 text-right">Trim:</label>
+                <div class="col-xs-10">
+                    <select id="ddlTrim" class="form-control">
+                        <option value="" selected>-- SELECT --</option>
+                        @foreach (var trim in Model.AvailableTrim)
+                        {
+                            <option value="@trim.Id">@trim.GetDisplayString()</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

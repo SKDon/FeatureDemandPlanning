@@ -17,7 +17,6 @@ namespace FeatureDemandPlanning.DataStore
             this.CurrentCDSID = cdsid;
         }
 
-        // TODO: Need checking
         public IEnumerable<Feature> FeatureGetMany(string mode = "generic", int paramId = 0, int docid = 0, string lookup = null, string group = null, int excludeObjId = 0, int excludeDocId = 0, bool useOACode = false)
         {
             IEnumerable<Feature> retVal = new List<Feature>();
@@ -25,7 +24,7 @@ namespace FeatureDemandPlanning.DataStore
             {
                 try
                 {
-                    var para = new DynamicParameters();                    
+                    var para = new DynamicParameters();
                     string sp_name = "";
                     switch (mode)
                     {
@@ -37,13 +36,13 @@ namespace FeatureDemandPlanning.DataStore
                             para.Add("@p_vehicle_id", paramId, dbType: DbType.Int32);
                             para.Add("@p_group", group, dbType: DbType.String, size: 500);
                             para.Add("@p_exclude_progid", excludeObjId, dbType: DbType.Int32);
-                            para.Add("@p_exclude_docid", excludeDocId, dbType: DbType.Int32);                      
+                            para.Add("@p_exclude_docid", excludeDocId, dbType: DbType.Int32);
                             para.Add("@p_use_OA_code", useOACode, dbType: DbType.Boolean);
                             break;
                         case "programme":
                             sp_name = "dbo.OXO_ProgrammeFeature_GetMany";
                             para.Add("@p_prog_id", paramId, dbType: DbType.Int32);
-                            para.Add("@p_doc_id", docid, dbType: DbType.Int32);                        
+                            para.Add("@p_doc_id", docid, dbType: DbType.Int32);
                             para.Add("@p_group", group, dbType: DbType.String, size: 500);
                             para.Add("@p_exclude_packid", excludeObjId, dbType: DbType.Int32);
                             break;
@@ -52,8 +51,13 @@ namespace FeatureDemandPlanning.DataStore
                             para.Add("@p_vehicle_id", paramId, dbType: DbType.Int32);
                             para.Add("@p_group", group, dbType: DbType.String, size: 500);
                             para.Add("@p_exclude_progid", excludeObjId, dbType: DbType.Int32);
-                            para.Add("@p_exclude_docid", excludeDocId, dbType: DbType.Int32); 
+                            para.Add("@p_exclude_docid", excludeDocId, dbType: DbType.Int32);
                             para.Add("@p_use_OA_code", useOACode, dbType: DbType.Boolean);
+                            break;
+                        case "fdp":
+                            sp_name = "dbo.OXO_Feature_GetMany";
+                            para.Add("@p_vehicle_id", paramId, dbType: DbType.Int32);
+                            lookup = "@@@";
                             break;
                     }
 
@@ -66,7 +70,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
 
-            return retVal;   
+            return retVal;
         }
 
         public IEnumerable<Feature> FeatureGetManyBlank()

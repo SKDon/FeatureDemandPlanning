@@ -3,6 +3,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_Import_VW] AS
 
 	SELECT 
@@ -61,18 +62,20 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 		, FP.Id												AS FeaturePackId
 		, ISNULL(FP.Pack_Name, '')							AS FeaturePack
 		, CAST(	CASE 
-					WHEN MARKET.Market_Id IS NULL 
+					WHEN MARKET.Market_Id IS NULL AND SF.FdpImportSpecialFeatureId IS NULL
 					THEN 1 
 					ELSE 0
 				END AS BIT)									AS IsMarketMissing
 		, CAST( CASE 
-					WHEN 
-						MAP.ProgrammeId IS NULL 
-						OR MAP.TrimId IS NULL
-						OR MAP.EngineId IS NULL
+					WHEN DMAP.FdpDerivativeMappingId IS NULL AND SF.FdpImportSpecialFeatureId IS NULL
 					THEN 1 
 					ELSE 0
 				END AS BIT)									AS IsDerivativeMissing
+		, CAST( CASE 
+					WHEN TMAP.FdpTrimMappingId IS NULL AND SF.FdpImportSpecialFeatureId IS NULL
+					THEN 1 
+					ELSE 0
+				END AS BIT)									AS IsTrimMissing
 		, CAST( CASE
 					WHEN F.ID IS NULL AND SF.FdpImportSpecialFeatureId IS NULL
 					THEN 1
@@ -93,19 +96,20 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 	JOIN Fdp_ImportData						AS I		ON	I.FdpImportId				= I.FdpImportId
 	JOIN ImportQueue						AS Q		ON	IH.ImportQueueId			= Q.ImportQueueId
 	JOIN OXO_Programme_VW					AS P		ON	IH.ProgrammeId				= P.Id
-	LEFT JOIN Fdp_TrimMapping				AS MAP		ON	I.[Derivative Code]			= MAP.DerivativeCode
-														AND I.[Trim Pack Description]	= MAP.Trim
-														AND	IH.ProgrammeId				= MAP.ProgrammeId
+	LEFT JOIN Fdp_DerivativeMapping			AS DMAP		ON	I.[Derivative Code]			= DMAP.ImportDerivativeCode
+														AND	IH.ProgrammeId				= DMAP.ProgrammeId
+	LEFT JOIN Fdp_TrimMapping				AS TMAP		ON	I.[Trim Pack Description]	= TMAP.ImportTrim
+														AND IH.ProgrammeId				= TMAP.ProgrammeId
 	LEFT JOIN Fdp_ImportSpecialFeature		AS SF		ON	IH.FdpImportId				= IH.FdpImportId
 														AND I.[Bff Feature Code]		= SF.FeatureCode
 	LEFT JOIN Fdp_SpecialFeatureType		AS SFT		ON	SF.FdpSpecialFeatureTypeId	= SFT.FdpSpecialFeatureTypeId
-	LEFT JOIN OXO_Programme_Trim			AS T		ON	MAP.TrimId					= T.Id
+	LEFT JOIN OXO_Programme_Trim			AS T		ON	TMAP.TrimId					= T.Id
 														AND T.Active					= 1
-	LEFT JOIN OXO_Programme_Body			AS B		ON	MAP.ProgrammeId				= B.Programme_Id
+	LEFT JOIN OXO_Programme_Body			AS B		ON	DMAP.BodyId					= B.Id
 														AND B.Active					= 1
-	LEFT JOIN OXO_Programme_Engine			AS E		ON	MAP.EngineId				= E.Id
+	LEFT JOIN OXO_Programme_Engine			AS E		ON	DMAP.EngineId				= E.Id
 														AND E.Active					= 1
-	LEFT JOIN OXO_Programme_Transmission	AS TM		ON	MAP.ProgrammeId				= TM.Programme_Id
+	LEFT JOIN OXO_Programme_Transmission	AS TM		ON	DMAP.TransmissionId			= TM.Id
 														AND TM.Active					= 1
 	LEFT JOIN OXO_Programme_Model			AS M		ON	P.Id						= M.Programme_Id
 														AND T.Id						= M.Trim_Id

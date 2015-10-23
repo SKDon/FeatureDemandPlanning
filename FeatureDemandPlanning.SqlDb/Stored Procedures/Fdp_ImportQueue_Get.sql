@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[ImportQueue_Get]
+﻿CREATE PROCEDURE [dbo].[Fdp_ImportQueue_Get]
 	  @ImportQueueId	INT
 AS
 	SET NOCOUNT ON;
@@ -19,8 +19,10 @@ AS
 		, Q.UpdatedOn
 		, Q.Error
 		, Q.ErrorOn
+		, I.ProgrammeId
+		, I.Gateway
 		
 	FROM ImportQueue_VW AS Q
+	JOIN Fdp_Import AS I ON Q.ImportQueueId = I.ImportQueueId
 	WHERE
 	(@ImportQueueId IS NULL OR Q.ImportQueueId = @ImportQueueId);
-

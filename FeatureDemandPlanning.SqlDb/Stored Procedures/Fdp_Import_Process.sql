@@ -33,6 +33,10 @@ AS
 	AND
 	I.IsMarketMissing = 0
 	AND 
+	I.IsDerivativeMissing = 0
+	AND
+	I.IsTrimMissing = 0
+	AND 
 	I.IsFeatureMissing = 0
 	AND
 	I.IsSpecialFeatureCode = 0
@@ -92,6 +96,8 @@ AS
 	AND
 	I.IsDerivativeMissing = 0
 	AND 
+	I.IsTrimMissing = 0
+	AND
 	I.IsFeatureMissing = 0
 	AND
 	I.IsSpecialFeatureCode = 0
@@ -240,6 +246,25 @@ AS
 		I.FdpImportId = @FdpImportId
 		AND
 		I.IsFeatureMissing = 1 
+		AND
+		CUR.FdpImportErrorId IS NULL
+		
+		UNION
+		
+		SELECT 
+			  I.ImportQueueId
+			, I.ImportLineNumber
+			, GETDATE() AS ErrorOn
+			, 4 AS FdpImportErrorTypeId -- Missing Trim
+			, 'Missing trim ''' + I.ImportTrim + '''' AS ErrorMessage
+		FROM Fdp_Import_VW			AS I
+		LEFT JOIN Fdp_ImportError	AS CUR	ON	I.ImportQueueId				= CUR.ImportQueueId
+											AND	I.ImportLineNumber			= CUR.LineNumber
+											AND CUR.FdpImportErrorTypeId	= 4
+		WHERE
+		I.FdpImportId = @FdpImportId
+		AND
+		I.IsTrimMissing = 1 
 		AND
 		CUR.FdpImportErrorId IS NULL
 	)

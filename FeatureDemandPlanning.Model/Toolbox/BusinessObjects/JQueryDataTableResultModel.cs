@@ -19,20 +19,16 @@ namespace FeatureDemandPlanning.BusinessObjects
         {
             aaData = new List<string[]>();
         }
-
-        
         public JQueryDataTableResultModel(int totalRecords) : this()
         {
             iTotalRecords = totalRecords;
             iTotalDisplayRecords = totalRecords;
         }
-
         public JQueryDataTableResultModel(int totalRecords, int totalDisplayRecords) : this(totalRecords)
         {
             iTotalDisplayRecords = totalDisplayRecords;
         }
-
-        public JQueryDataTableResultModel(SharedModelBase viewModel)
+        public JQueryDataTableResultModel(SharedModelBase viewModel) : this()
         {
             iTotalRecords = viewModel.TotalRecords;
             iTotalDisplayRecords = viewModel.TotalRecords;

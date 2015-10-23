@@ -5,9 +5,7 @@
 	, @ModelId					INT
 	, @MarketGroupId			INT				= NULL
 	, @MarketId					INT
-	, @FeatureId				INT
-	, @TrimId					INT
-	, @FdpOxoDocId				INT
+	, @OxoDocId					INT
 	, @Volume					INT
 	, @PercentageTakeRate		DECIMAL(5, 4)
 	, @PackId					INT				= NULL
@@ -28,9 +26,7 @@ AS
 			, ModelId
 			, MarketGroupId
 			, MarketId
-			, FeatureId
-			, TrimId
-			, FdpOxoDocId
+			, OxoDocId
 			, Volume
 			, PercentageTakeRate
 			, CreatedBy
@@ -42,15 +38,13 @@ AS
 			, @ModelId
 			, @MarketGroupId
 			, @MarketId
-			, @FeatureId
-			, @TrimId
-			, @FdpOxoDocId
+			, @OxoDocId
 			, @Volume
 			, @PercentageTakeRate
 			, @CDSID
 			, @PackId
 		)
-
+	
 		SET @FdpOxoVolumeDataItemId = SCOPE_IDENTITY();
 	END
 	ELSE

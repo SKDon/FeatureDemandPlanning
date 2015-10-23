@@ -5,7 +5,8 @@
 <div class="panel panel-default">
     <div class="panel-body">
 
-        @if (Model.CurrentAction == enums.ImportExceptionAction.AddMissingDerivative || Model.CurrentAction == enums.ImportExceptionAction.MapMissingDerivative)
+        @if (   Model.CurrentAction == enums.ImportExceptionAction.AddMissingDerivative || 
+                Model.CurrentAction == enums.ImportExceptionAction.MapMissingDerivative)
         { 
             <div class="row">
                 <div class="col-xs-4 text-right">Import Derivative Code:</div>
@@ -21,12 +22,49 @@
             </div>
         }
         
+        @if (   Model.CurrentAction == enums.ImportExceptionAction.AddMissingFeature || 
+                Model.CurrentAction == enums.ImportExceptionAction.MapMissingFeature || 
+                Model.CurrentAction == enums.ImportExceptionAction.AddSpecialFeature)
+        {
+            <div class="row">
+                <div class="col-xs-4 text-right">Import Feature Code:</div>
+                <div class="col-xs-8">
+                    @Model.CurrentException.ImportFeatureCode
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4 text-right">Import Feature:</div>
+                <div class="col-xs-8">
+                    @Model.CurrentException.ImportFeature
+                </div>
+            </div>
+        }
 
+        @if (Model.CurrentAction == enums.ImportExceptionAction.AddMissingTrim ||
+                Model.CurrentAction == enums.ImportExceptionAction.MapMissingTrim)
+        {
+            <div class="row">
+                <div class="col-xs-4 text-right">Import Trim Level:</div>
+                <div class="col-xs-8">
+                    @Model.CurrentException.ImportTrim
+                </div>
+            </div>
+        }
+        
+        @if (Model.CurrentAction == enums.ImportExceptionAction.MapMissingMarket)
+        {
+            <div class="row">
+                <div class="col-xs-4 text-right">Import Market:</div>
+                <div class="col-xs-8">
+                    @Model.CurrentException.ImportMarket
+                </div>
+            </div>
+        }
 
         <div class="row">
             <div class="col-xs-4 text-right">Programme:</div>
             <div class="col-xs-8">
-                @Model.Programme.GetDisplayString();
+                @Model.Programme.GetDisplayString()
             </div>
         </div>
     </div>

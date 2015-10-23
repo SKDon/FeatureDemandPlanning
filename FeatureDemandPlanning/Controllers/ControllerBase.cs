@@ -36,7 +36,6 @@ namespace FeatureDemandPlanning.Controllers
             PageIndex = 1;
             PageSize = DataContext.ConfigurationSettings.DefaultPageSize;
         }
-
         private string GetCdsId()
         {
             var context = System.Web.HttpContext.Current;

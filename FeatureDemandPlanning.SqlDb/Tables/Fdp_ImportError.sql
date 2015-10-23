@@ -5,9 +5,12 @@
     [ErrorOn]              DATETIME       CONSTRAINT [DF_Fdp_ImportError_ErrorOn] DEFAULT (getdate()) NOT NULL,
     [FdpImportErrorTypeId] INT            NOT NULL,
     [ErrorMessage]         NVARCHAR (MAX) NOT NULL,
+    [IsExcluded]           BIT            DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_Fdp_ImportError] PRIMARY KEY CLUSTERED ([FdpImportErrorId] ASC),
     CONSTRAINT [FK_Fdp_ImportError_Fdp_ImportErrorType] FOREIGN KEY ([FdpImportErrorTypeId]) REFERENCES [dbo].[Fdp_ImportErrorType] ([FdpImportErrorTypeId])
 );
+
+
 
 
 GO

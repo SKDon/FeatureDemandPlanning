@@ -25,6 +25,8 @@ namespace FeatureDemandPlanning.DataStore
             _trimDataStore = new ModelTrimDataStore(cdsId);
             _engineDataStore = new ModelEngineDataStore(cdsId);
             _transmissionDataStore = new ModelTransmissionDataStore(cdsId);
+            _vehicleDataStore = new VehicleDataStore(cdsId);
+            _featureDataStore = new FeatureDataStore(cdsId);
         }
 
         public IVehicle GetVehicle(VehicleFilter filter)
@@ -57,7 +59,15 @@ namespace FeatureDemandPlanning.DataStore
 
             return vehicle;
         }
-
+        public IVehicle GetVehicle(ProgrammeFilter filter)
+        {
+            var vehicleFilter = new VehicleFilter()
+            {
+                ProgrammeId = filter.ProgrammeId,
+                Code = filter.Code
+            };
+            return GetVehicle(vehicleFilter);
+        }
         public IEnumerable<OXODoc> ListAvailableOxoDocuments(VehicleFilter filter)
         {
             return _documentDataStore
@@ -173,9 +183,28 @@ namespace FeatureDemandPlanning.DataStore
             return _trimDataStore.ModelTrimGetMany(filter.ProgrammeId.GetValueOrDefault());
         }
 
+        public IEnumerable<Feature> ListFeatures(ProgrammeFilter filter)
+        {
+            return _featureDataStore.FeatureGetMany("fdp", filter.VehicleId.GetValueOrDefault());
+        }
+
+        public IEnumerable<FeatureGroup> ListFeatureGroups(ProgrammeFilter filter)
+        {
+            return _featureDataStore.FeatureGroupGetMany();
+        }
+
         public EngineCodeMapping UpdateEngineCodeMapping(EngineCodeMapping mapping)
         {
             return _programmeDataStore.EngineCodeMappingSave(mapping);
+        }
+
+        public Programme GetProgramme(ProgrammeFilter filter)
+        {
+            var programmes = ListProgrammes(filter);
+            if (!programmes.Any())
+                return new EmptyProgramme();
+
+            return programmes.First();
         }
 
         public IEnumerable<Programme> ListProgrammes(ProgrammeFilter filter)
@@ -191,7 +220,6 @@ namespace FeatureDemandPlanning.DataStore
                 .Where(p => String.IsNullOrEmpty(filter.Make) || p.VehicleMake.Equals(filter.Make, StringComparison.InvariantCultureIgnoreCase))
                 .Where(p => String.IsNullOrEmpty(filter.ModelYear) || p.ModelYear.Equals(filter.ModelYear, StringComparison.InvariantCultureIgnoreCase))
                 .Where(p => String.IsNullOrEmpty(filter.Gateway) || p.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase));
-
 
             return programmes;
         }
@@ -254,5 +282,6 @@ namespace FeatureDemandPlanning.DataStore
         private ModelTransmissionDataStore _transmissionDataStore = null;
         private ModelTrimDataStore _trimDataStore = null;
         private ModelEngineDataStore _engineDataStore = null;
+        private FeatureDataStore _featureDataStore = null;
     }
 }

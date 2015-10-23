@@ -21,12 +21,19 @@ namespace FeatureDemandPlanning.BusinessObjects.Filters
 
         public ImportQueueFilter()
         {
-
         }
 
         public ImportQueueFilter(int importQueueId) : this()
         {
             ImportQueueId = importQueueId;
+        }
+
+        public static ImportQueueFilter FromExceptionId(int exceptionId)
+        {
+            return new ImportQueueFilter()
+            {
+                ExceptionId = exceptionId
+            };
         }
 
         private ImportExceptionType _exceptionType = ImportExceptionType.NotSet;

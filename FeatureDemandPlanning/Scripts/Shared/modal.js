@@ -12,20 +12,26 @@ model.Modal = function (params) {
     privateStore[me.id = uid++] = {};
     privateStore[me.id].ModalDialogId = params.ModalDialogId;
     privateStore[me.id].ModalContentId = params.ModalContentId;
-    privateStore[me.id].ModelConfiguration = {};
+    privateStore[me.id].ModelParameters = {};
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].Model = {};
 
     me.ModelName = "Modal";
 
     me.getData = function () {
-        return JSON.parse(me.getModalConfiguration().data);
+        return JSON.parse(me.getModalParameters().Data);
     };
     me.getModalDialogId = function () {
         return privateStore[me.id].ModalDialogId;
     };
-    me.getModalConfiguration = function () {
-        return privateStore[me.id].ModalConfiguration;
+    me.getConfiguration = function () {
+        return privateStore[me.id].Configuration;
+    };
+    me.getModalParameters = function () {
+        return privateStore[me.id].ModalParameters;
+    };
+    me.setModalParameters = function (parameters) {
+        privateStore[me.id].ModalParameters = parameters;
     };
     me.getModelContent = function (title, contentUri, data) {
         $.ajax({
@@ -53,7 +59,10 @@ model.Modal = function (params) {
         } else {
             $(document).trigger("ModalCancel", [eventArgs]);
         }
-    }
+    };
+    me.raiseLoadedEvent = function () {
+        $(document).trigger("ModalLoaded", me.getData());
+    };
     me.registerEvents = function () {
         var dialog = $("#" + me.getModalDialogId());
         dialog.find(".modal-button").unbind("click").on("click", me.raiseEvents)
@@ -61,25 +70,28 @@ model.Modal = function (params) {
     me.setModel = function (model) {
         privateStore[me.id].Model = model;
     };
-    me.setModalConfiguration = function (modalConfiguration) {
-        privateStore[me.id].ModalConfiguration = modalConfiguration;
-    };
-    me.showModal = function (modalConfiguration) {
+    me.showModal = function (parameters) {
         var dialog = $("#" + me.getModalDialogId());
         dialog.find(".modal-title").html("");
         dialog.find(".modal-body").html("");
-        me.setModalConfiguration(modalConfiguration);
-        me.setModel(modalConfiguration.model);
+        me.setModalParameters(parameters);
+        me.setModel(parameters.Model);
         $("#" + me.getModalDialogId()).unbind("show.bs.modal").on('show.bs.modal', function () {
-            me.getModelContent(modalConfiguration.title, modalConfiguration.uri, modalConfiguration.data);
+            me.getModelContent(parameters.Title, parameters.Uri, parameters.Data);
         }).modal();
     };
     function showModalCallback(response, title) {
         var dialog = $("#" + me.getModalDialogId());
+        var model = me.getModel();
+
         dialog.find(".modal-title").html(title);
         dialog.find(".modal-body").html(response);
-        me.getModel().initialise(me.getData());
+
+        model.setParameters(me.getModalParameters());
+        model.initialise();
+
         me.registerEvents();
+        me.raiseLoadedEvent();
     };
     function showModalError(jqXHR, textStatus, errorThrown) {
         var dialog = $("#" + me.getModalDialogId());

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[ImportQueue_Save]
+﻿CREATE PROCEDURE [dbo].[Fdp_ImportQueue_Save]
 	  @ImportQueueId	INT = NULL OUTPUT
 	, @SystemUser		NVARCHAR(16)
 	, @FilePath			NVARCHAR(MAX)
@@ -48,4 +48,3 @@ AS
 		WHERE
 		ImportQueueId = @ImportQueueId
 	END;
-

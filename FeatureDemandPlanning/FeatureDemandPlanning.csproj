@@ -732,6 +732,10 @@
     <Content Include="Scripts\Forecast\forecastcomparisonpage.js" />
     <Content Include="Scripts\Forecast\init.js" />
     <Content Include="Scripts\Forecast\trimmapping.js" />
+    <Content Include="Scripts\Import\trim.js" />
+    <Content Include="Scripts\Import\derivative.js" />
+    <Content Include="Scripts\Import\feature.js" />
+    <Content Include="Scripts\Import\market.js" />
     <Content Include="Scripts\Import\exceptions.js" />
     <Content Include="Scripts\Import\importqueueinit.js" />
     <Content Include="Scripts\Import\exceptionspage.js" />
@@ -868,19 +872,21 @@
     <Content Include="Views\Import\_Modal.cshtml" />
     <Content Include="Views\Import\_ImportExceptionAction.cshtml" />
     <Content Include="Views\Import\_IgnoreException.cshtml" />
-    <Content Include="Views\Import\_MapMarket.cshtml" />
-    <Content Include="Views\Import\_AddDerivative.cshtml" />
-    <Content Include="Views\Import\_MapDerivative.cshtml" />
-    <Content Include="Views\Import\_AddTrim.cshtml" />
-    <Content Include="Views\Import\_MapTrim.cshtml" />
-    <Content Include="Views\Import\_AddFeature.cshtml" />
-    <Content Include="Views\Import\_MapFeature.cshtml" />
+    <Content Include="Views\Import\_MapMissingMarket.cshtml" />
+    <Content Include="Views\Import\_AddMissingDerivative.cshtml" />
+    <Content Include="Views\Import\_MapMissingDerivative.cshtml" />
+    <Content Include="Views\Import\_AddMissingTrim.cshtml" />
+    <Content Include="Views\Import\_MapMissingTrim.cshtml" />
+    <Content Include="Views\Import\_AddMissingFeature.cshtml" />
+    <Content Include="Views\Import\_MapMissingFeature.cshtml" />
     <Content Include="Views\Import\_AddSpecialFeature.cshtml" />
     <Content Include="Views\Import\_ImportActionHeader.cshtml" />
+    <Content Include="Views\Import\_Scripts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="bin\" />
+    <Folder Include="Content\css\" />
     <Folder Include="Scripts\DataTables\" />
   </ItemGroup>
   <ItemGroup>

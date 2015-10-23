@@ -1,17 +1,14 @@
 ﻿CREATE TABLE [dbo].[Fdp_TrimMapping] (
-    [Id]             INT            IDENTITY (1, 1) NOT NULL,
-    [DerivativeCode] NVARCHAR (10)  NULL,
-    [Trim]           NVARCHAR (100) NULL,
-    [ProgrammeId]    INT            NULL,
-    [TrimId]         INT            NULL,
-    [EngineId]       INT            NULL,
-    CONSTRAINT [PK_Fdp_TrimMapping] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_Fdp_TrimMapping_OXO_Programme] FOREIGN KEY ([ProgrammeId]) REFERENCES [dbo].[OXO_Programme] ([Id]),
-    CONSTRAINT [FK_Fdp_TrimMapping_OXO_Programme_Trim] FOREIGN KEY ([TrimId]) REFERENCES [dbo].[OXO_Programme_Trim] ([Id])
+    [FdpTrimMappingId] INT            IDENTITY (1, 1) NOT NULL,
+    [ImportTrim]       NVARCHAR (200) NULL,
+    [ProgrammeId]      INT            NULL,
+    [TrimId]           INT            NULL,
+    CONSTRAINT [PK__Fdp_Trim__1A7A83F3526F16A8] PRIMARY KEY CLUSTERED ([FdpTrimMappingId] ASC)
 );
 
 
+
+
 GO
-CREATE NONCLUSTERED INDEX [IX_NC_Fdp_TrimMapping_Cover]
-    ON [dbo].[Fdp_TrimMapping]([DerivativeCode] ASC, [Trim] ASC);
+
 

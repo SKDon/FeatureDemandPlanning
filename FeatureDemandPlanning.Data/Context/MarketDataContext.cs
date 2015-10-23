@@ -32,6 +32,11 @@ namespace FeatureDemandPlanning.DataStore
 
             return markets;
         }
+        public IEnumerable<Market> ListAvailableMarkets(ProgrammeFilter filter)
+        {
+            return _marketDataStore.MarketAvailableGetMany(filter.ProgrammeId.GetValueOrDefault())
+                                    .OrderBy(m => m.Name);
+        }
         public IEnumerable<Market> ListTopMarkets()
         {
             return _marketDataStore.TopMarketGetMany()
