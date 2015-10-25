@@ -85,6 +85,10 @@ namespace FeatureDemandPlanning.Models
                     .OrderBy(f => f.BrandDescription);
             }
         }
+        public bool HasExceptions()
+        {
+            return Exceptions != null && Exceptions.CurrentPage.Any();
+        }
         public static async Task<ImportViewModel> GetFullAndPartialViewModel(IDataContext context)
         {
             return await GetFullAndPartialViewModel(context, new ImportQueueFilter());

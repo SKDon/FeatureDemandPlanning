@@ -26,7 +26,7 @@ namespace FeatureDemandPlanning.Controllers
 
         public VolumeController() : base()
         {
-            ControllerType = Controllers.ControllerType.SectionChild;
+            ControllerType = ControllerType.SectionChild;
         }
 
         #endregion

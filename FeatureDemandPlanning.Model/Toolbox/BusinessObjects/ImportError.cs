@@ -36,5 +36,17 @@ namespace FeatureDemandPlanning.BusinessObjects
         public string ImportTrim { get; set; }
         public string ImportFeatureCode { get; set; }
         public string ImportFeature { get; set; }
+
+        public string[] ToJQueryDataTableResult()
+        {
+            return new string[] 
+            { 
+                FdpImportErrorId.ToString(),
+                LineNumber.ToString(), 
+                ErrorTypeDescription,
+                ErrorMessage,
+                ErrorOn.ToString("dd/MM/yyyy HH:mm")
+            };
+        }
     }
 }

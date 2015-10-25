@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.Controllers
     {
         public ImportController() : base()
         {
-            ControllerType = Controllers.ControllerType.SectionChild;
+            ControllerType = ControllerType.SectionChild;
         }
         [HttpGet]
         public async Task<ActionResult> Index()
@@ -32,11 +32,11 @@ namespace FeatureDemandPlanning.Controllers
         [HttpPost]
         public async Task<ActionResult> ListImportQueue(JQueryDataTableParameters param)
         {
+            var js = new JavaScriptSerializer();
+            var filter = new ImportQueueFilter();
+
             try
             {
-                var js = new JavaScriptSerializer();
-
-                var filter = new ImportQueueFilter();
                 filter.InitialiseFromJson(param);
 
                 var results = await ImportViewModel.GetFullAndPartialViewModel(DataContext, filter);
@@ -48,18 +48,16 @@ namespace FeatureDemandPlanning.Controllers
                     foreach (var result in results.ImportQueue.CurrentPage)
                     {
                         var stringResult = new string[] 
-                    { 
-                        result.CreatedOn.ToString("g"), 
-                        result.CreatedBy,
-                        result.FilePath,
-                        result.ImportStatus.Status,
-                        string.Empty // action column
-                    };
+                        { 
+                            result.CreatedOn.ToString("g"), 
+                            result.CreatedBy,
+                            result.FilePath,
+                            result.ImportStatus.Status
+                        };
 
                         jQueryResult.aaData.Add(stringResult);
                     }
                 }
-
                 return Json(jQueryResult);
             }
             catch (ApplicationException ex)
@@ -112,196 +110,11 @@ namespace FeatureDemandPlanning.Controllers
 
             return RedirectToAction("Index");
         }
-        [HttpGet]
-        public async Task<ActionResult> ImportExceptions(int importQueueId, 
-                                                         ImportExceptionType exceptionType = ImportExceptionType.NotSet)
-        {
-            _importView = await ImportViewModel.GetFullAndPartialViewModel(DataContext,
-                                    new ImportQueueFilter(importQueueId)
-                                    {
-                                        ExceptionType = exceptionType,
-                                        PageIndex = 1,
-                                        PageSize = 100
-                                    });
-            
-            return View("ImportExceptions", _importView);
-        }
-        [HttpPost]
-        public async Task<ActionResult> ListImportExceptions(ImportExceptionsParameterModel parameters)
-        {
-            try
-            {
-                var js = new JavaScriptSerializer();
-                var filter = new ImportQueueFilter()
-                {
-                    ImportQueueId = parameters.ImportQueueId,
-                    ExceptionType = parameters.ExceptionType,
-                    FilterMessage = parameters.FilterMessage
-                };
-                filter.InitialiseFromJson(parameters);
-
-                var results = await ImportViewModel.GetFullAndPartialViewModel(DataContext, filter);
-                var jQueryResult = new JQueryDataTableResultModel(results);
-                
-                // Iterate through the results and put them in a format that can be used by jQuery datatables
-                if (results.Exceptions.CurrentPage.Any())
-                {
-                    foreach (var result in results.Exceptions.CurrentPage)
-                    {
-                        var stringResult = new string[] 
-                        { 
-                            result.FdpImportErrorId.ToString(),
-                            result.LineNumber.ToString(), 
-                            result.ErrorTypeDescription,
-                            result.ErrorMessage,
-                            result.ErrorOn.ToString("dd/MM/yyyy HH:mm")
-                        };
-
-                        jQueryResult.aaData.Add(stringResult);
-                    }
-
-                    jQueryResult.TotalSuccess = results.Exceptions.TotalSuccess;
-                    jQueryResult.TotalFail = results.Exceptions.TotalFail;
-                }
-                return Json(jQueryResult);
-            }
-            catch (Exception ex)
-            {
-                return Json(ex);
-            }
-        }
-        [HttpPost]
-        public async Task<ActionResult> ImportExceptionActionContextMenu(int exceptionId)
-        {
-            _importView = await ImportViewModel.GetFullAndPartialViewModel(
-                DataContext,
-                ImportQueueFilter.FromExceptionId(exceptionId));
-           
-            return PartialView("_ImportExceptionAction", _importView);
-        }
-        [HttpPost]
-        public async Task<ActionResult> ModalContent(int exceptionId, ImportExceptionAction actionId)
-        {
-            _importView = await ImportViewModel.GetFullAndPartialViewModel(
-                DataContext,
-                ImportQueueFilter.FromExceptionId(exceptionId),
-                actionId);
-
-            return PartialView(GetContentView(actionId), _importView);
-        }
-        //[HttpPost]
-        //public async Task<ActionResult> ImportExceptionIgnoreContent(int exceptionId)
-        //{
-        //    _importView = await ImportViewModel.GetFullAndPartialViewModel(
-        //        DataContext,
-        //        ImportQueueFilter.FromExceptionId(exceptionId),
-        //        ImportExceptionAction.IgnoreException);
-            
-        //    return PartialView("_IgnoreException", _importView);
-        //}
-        //[HttpPost]
-        //public async Task<ActionResult> MapMarketContent(int exceptionId)
-        //{
-        //    _importView = await ImportViewModel.GetFullAndPartialViewModel(
-        //        DataContext,
-        //        ImportQueueFilter.FromExceptionId(exceptionId), 
-        //        ImportExceptionAction.MapMissingMarket);
-            
-        //    return PartialView("_MapMarket", _importView);
-        //}
-        //[HttpPost]
-        //public async Task<ActionResult> AddDerivativeContent(int exceptionId)
-        //{
-        //    _importView = await ImportViewModel.GetFullAndPartialViewModel(
-        //        DataContext,
-        //        ImportQueueFilter.FromExceptionId(exceptionId),
-        //        ImportExceptionAction.AddMissingDerivative);
-            
-        //    return PartialView("_AddDerivative", _importView);
-        //}
-        //[HttpPost]
-        //public async Task<ActionResult> MapDerivativeContent(int exceptionId)
-        //{
-        //    _importView = await ImportViewModel.GetFullAndPartialViewModel(
-        //        DataContext,
-        //        ImportQueueFilter.FromExceptionId(exceptionId),
-        //        ImportExceptionAction.MapMissingDerivative);
-            
-        //    return PartialView("_MapDerivative", _importView);
-        //}
-        //[HttpPost]
-        //public async Task<ActionResult> AddTrimContent(int exceptionId)
-        //{
-        //    _importView = await ImportViewModel.GetFullAndPartialViewModel(
-        //        DataContext,
-        //        ImportQueueFilter.FromExceptionId(exceptionId),
-        //        ImportExceptionAction.AddMissingTrim);
-            
-        //    return PartialView("_AddTrim", _importView);
-        //}
-        //[HttpPost]
-        //public async Task<ActionResult> MapTrimContent(int exceptionId)
-        //{
-        //    _importView = await ImportViewModel.GetFullAndPartialViewModel(
-        //        DataContext,
-        //        ImportQueueFilter.FromExceptionId(exceptionId),
-        //        ImportExceptionAction.MapMissingTrim);
-
-        //    return PartialView("_MapTrim", _importView);
-        //}
-        //[HttpPost]
-        //public async Task<ActionResult> AddFeatureContent(int exceptionId)
-        //{
-        //    _importView = await ImportViewModel.GetFullAndPartialViewModel(
-        //        DataContext,
-        //        ImportQueueFilter.FromExceptionId(exceptionId), 
-        //        ImportExceptionAction.AddMissingFeature);
-
-        //    return PartialView("_AddFeature", _importView);
-        //}
-        //[HttpPost]
-        //public async Task<ActionResult> AddSpecialFeatureContent(int exceptionId)
-        //{
-        //    _importView = await ImportViewModel.GetFullAndPartialViewModel(
-        //        DataContext,
-        //        ImportQueueFilter.FromExceptionId(exceptionId),
-        //        ImportExceptionAction.AddSpecialFeature);
-            
-        //    return PartialView("_AddSpecialFeature", _importView);
-        //}
-        //[HttpPost]
-        //public async Task<ActionResult> MapFeatureContent(int exceptionId)
-        //{
-        //    _importView = await ImportViewModel.GetFullAndPartialViewModel(
-        //        DataContext,
-        //        ImportQueueFilter.FromExceptionId(exceptionId), 
-        //        ImportExceptionAction.MapMissingFeature);
-
-        //    return PartialView("_MapFeature", _importView);
-        //}
-        [HttpPost]
-        public async Task<ActionResult> ImportExceptionIgnoreAction(int exceptionId)
-        {
-            try
-            {
-                var filter = ImportQueueFilter.FromExceptionId(exceptionId);
-                _importView = await ImportViewModel.GetFullAndPartialViewModel(DataContext, filter);
-                _importView.CurrentException = await DataContext.Import.Ignore(filter);
-            }
-            catch (ApplicationException ex)
-            {
-                _importView.SetProcessState(ex);
-            }
-
-            return Json(_importView.CurrentException);
-        }
+        
 
         #region "Private Methods"
 
-        private string GetContentView(ImportExceptionAction forAction)
-        {
-            return string.Format("_{0}", Enum.GetName(forAction.GetType(), forAction));
-        }
+        
 
         //TODO Move all this to the model / business objects
 

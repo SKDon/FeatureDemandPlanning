@@ -8,24 +8,18 @@ using System.Configuration;
 using FeatureDemandPlanning.BusinessObjects;
 using FeatureDemandPlanning.DataStore;
 using FeatureDemandPlanning.Interfaces;
+using FeatureDemandPlanning.Enumerations;
 
 namespace FeatureDemandPlanning.Controllers
 {
-    /// <summary>
-    /// Determines the type of controller that this represents and therefore which layout is rendered
-    /// </summary>
-    public enum ControllerType
-    {
-        Default = 0,
-        SectionParent = 1,
-        SectionChild = 2
-    }
-
     public class ControllerBase : Controller
     {
-        public IDataContext DataContext { get { return _dataContext; } }
-        public string UserName { get { return _dataContext.User.GetUser().CDSID; } }
+        public dynamic ConfigurationSettings { get { return _dataContext.ConfigurationSettings; } }
         public ControllerType ControllerType { get { return _controllerType; } set { _controllerType = value; } }
+        public IDataContext DataContext { get { return _dataContext; } }
+        
+        public string UserName { get { return _dataContext.User.GetUser().CDSID; } }
+        
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
 
@@ -33,24 +27,18 @@ namespace FeatureDemandPlanning.Controllers
         {
             _dataContext = DataContextFactory.CreateDataContext(GetCdsId());
             
-            PageIndex = 1;
-            PageSize = DataContext.ConfigurationSettings.DefaultPageSize;
+            PageIndex = 0;
+            PageSize = ConfigurationSettings.DefaultPageSize;
         }
         private string GetCdsId()
         {
             var context = System.Web.HttpContext.Current;
-            var userId = String.Empty;
 
             if (context != null && context.User != null && context.User.Identity != null)
             {
-                userId = AppHelper.GetWindowsID(context.User);
+                return AppHelper.GetWindowsID(context.User);
             }
-            else
-            {
-                userId = Request.ServerVariables["REMOTE_USER"];
-            }
-
-            return userId;
+            return Request.ServerVariables["REMOTE_USER"];
         }
 
         private IDataContext _dataContext;

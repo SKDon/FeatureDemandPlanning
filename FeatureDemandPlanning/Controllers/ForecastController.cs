@@ -22,7 +22,7 @@ namespace FeatureDemandPlanning.Controllers
 	{
 		public ForecastController() : base()
 		{
-			ControllerType = Controllers.ControllerType.SectionChild;
+			ControllerType = ControllerType.SectionChild;
 		}
 
 		[HttpGet]

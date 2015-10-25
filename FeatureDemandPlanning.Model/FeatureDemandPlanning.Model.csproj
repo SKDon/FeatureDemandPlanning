@@ -121,6 +121,7 @@
     <Compile Include="Toolbox\BusinessObjects\SharedModelBase.cs" />
     <Compile Include="Toolbox\BusinessObjects\SpecialFeature.cs" />
     <Compile Include="Toolbox\BusinessObjects\TrimMapping.cs" />
+    <Compile Include="Toolbox\Enumerations\ControllerType.cs" />
     <Compile Include="Toolbox\Enumerations\ImportExceptionAction.cs" />
     <Compile Include="Toolbox\Enumerations\ImportExceptionType.cs" />
     <Compile Include="Toolbox\BusinessObjects\ImportResult.cs" />

@@ -1,6 +1,7 @@
 ﻿using FeatureDemandPlanning.BusinessObjects;
 using FeatureDemandPlanning.BusinessObjects.Filters;
 using FeatureDemandPlanning.Comparers;
+using FeatureDemandPlanning.Enumerations;
 using FeatureDemandPlanning.Models;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace FeatureDemandPlanning.Controllers
 
             PageIndex = 1;
             PageSize = DataContext.ConfigurationSettings.DefaultPageSize;
-            ControllerType = Controllers.ControllerType.SectionChild;
+            ControllerType = ControllerType.SectionChild;
         }
 
         [HttpGet]
