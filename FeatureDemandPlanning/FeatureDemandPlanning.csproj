@@ -194,7 +194,7 @@
     <Compile Include="Models\Lookup.cs" />
     <Compile Include="Models\FdpOxoVolumeViewModel.cs" />
     <Compile Include="Models\VehicleViewModel.cs" />
-    <Compile Include="Parameters\ImportExceptionsParameterModel.cs" />
+    <Compile Include="Parameters\ImportExceptionParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ValidateAjaxAttribute.cs" />
     <Content Include="Content\bootstrap-slider.css" />
@@ -1291,7 +1291,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Forecast\Forecast.cshtml" />
     <Content Include="Views\Import\Index.cshtml" />
-    <Content Include="Views\Import\ImportQueue.cshtml" />
+    <Content Include="Views\Import\ImportQueuePage.cshtml" />
     <Content Include="Views\Import\Upload.cshtml" />
     <Content Include="Views\Import\ProcessState.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
@@ -1324,7 +1324,7 @@
     <Content Include="Views\Volume\_VolumeData - Copy.cshtml" />
     <Content Include="Views\Volume\_MarketSelector.cshtml" />
     <Content Include="Views\Volume\_ViewModeSelector.cshtml" />
-    <Content Include="Views\Import\ImportExceptionsPage.cshtml" />
+    <Content Include="Views\Import\ImportExceptions.cshtml" />
     <Content Include="Views\Import\_Modal.cshtml" />
     <Content Include="Views\Import\_ImportExceptionAction.cshtml" />
     <Content Include="Views\Import\_IgnoreException.cshtml" />

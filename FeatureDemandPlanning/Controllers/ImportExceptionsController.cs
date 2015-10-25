@@ -16,6 +16,7 @@ namespace FeatureDemandPlanning.Controllers
     public class ImportExceptionsController : ControllerBase
     {
         [HttpGet]
+        [ActionName("ImportExceptions")]
         public async Task<ActionResult> ImportExceptionsPage(ImportExceptionParameters parameters)
         {
             ValidateImportExceptionParameters(parameters, ImportExceptionParametersValidator.ImportQueueIdentifier);
