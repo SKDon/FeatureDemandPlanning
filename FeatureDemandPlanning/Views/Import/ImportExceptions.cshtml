@@ -36,10 +36,10 @@
                         <label for="ddlExceptionType" class="form-label inverse" style="font-size:11px">Error Type:</label>
                         <select id="ddlExceptionType" class="form-control">
                             <option value="0">All</option>
-                            <option value="1">Missing Market</option>
-                            <option value="3">Missing Derivative</option>
-                            <option value="4">Missing Trim</option>
-                            <option value="2">Missing Feature</option>
+                            @foreach (var availableExceptionType in Model.AvailableExceptionTypes)
+                            {
+                                <option value="@((int)availableExceptionType)">@Enum.GetName(availableExceptionType.GetType(), availableExceptionType)</option>
+                            }
                         </select>
                         <label for="txtFilterMessage" class="form-label inverse" style="font-size:11px">Message:</label>
                     <input type="text" id="txtFilterMessage" class="form-control" />    

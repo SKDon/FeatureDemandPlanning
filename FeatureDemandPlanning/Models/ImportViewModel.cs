@@ -57,6 +57,38 @@ namespace FeatureDemandPlanning.Models
 
         #region "Public Members"
 
+        public IEnumerable<ImportExceptionType> AvailableExceptionTypes
+        {
+            get
+            {
+                if (HasExceptions(ImportExceptionType.MissingMarket))
+                {
+                    yield return ImportExceptionType.MissingMarket;
+                }
+
+                if (HasExceptions(ImportExceptionType.MissingDerivative))
+                {
+                    yield return ImportExceptionType.MissingMarket;
+                    yield return ImportExceptionType.MissingDerivative;
+                }
+
+                if (HasExceptions(ImportExceptionType.MissingTrim))
+                {
+                    yield return ImportExceptionType.MissingMarket;
+                    yield return ImportExceptionType.MissingDerivative;
+                    yield return ImportExceptionType.MissingTrim;
+                }
+
+                if (HasExceptions(ImportExceptionType.MissingFeature))
+                {
+                    yield return ImportExceptionType.MissingMarket;
+                    yield return ImportExceptionType.MissingDerivative;
+                    yield return ImportExceptionType.MissingTrim;
+                    yield return ImportExceptionType.MissingFeature;
+                }
+            }
+        }
+
         public IEnumerable<string> FeatureGroups
         {
             get
@@ -88,6 +120,10 @@ namespace FeatureDemandPlanning.Models
         public bool HasExceptions()
         {
             return Exceptions != null && Exceptions.CurrentPage.Any();
+        }
+        public bool HasExceptions(ImportExceptionType ofType)
+        {
+            return HasExceptions() && Exceptions.CurrentPage.Where(e => e.ErrorType == ofType).Any();
         }
         public static async Task<ImportViewModel> GetFullAndPartialViewModel(IDataContext context)
         {

@@ -36,6 +36,12 @@ namespace FeatureDemandPlanning.BusinessObjects.Filters
             };
         }
 
+        //public static ImportQueueFilter FromImportExceptionParameters(ImportExceptionParameters parameters)
+        //{
+        //    var filter = new ImportQueueFilter(parameters.ImportQueueId);
+        //    if ()
+        //}
+
         private ImportExceptionType _exceptionType = ImportExceptionType.NotSet;
     }
 }
