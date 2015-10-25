@@ -91,18 +91,18 @@ namespace FeatureDemandPlanning.Models
         }
         public static async Task<ImportViewModel> GetFullAndPartialViewModel(IDataContext context)
         {
-            return await GetFullAndPartialViewModel(context, new ImportQueueFilter());
+            return await GetModel(context, new ImportQueueFilter());
         }
-        public static async Task<ImportViewModel> GetFullAndPartialViewModel(IDataContext context, 
+        public static async Task<ImportViewModel> GetModel(IDataContext context, 
                                                                              ImportQueueFilter filter, 
                                                                              ImportExceptionAction action)
         {
-            var model = await GetFullAndPartialViewModel(context, filter);
+            var model = await GetModel(context, filter);
             model.CurrentAction = action;
 
             return model;
         }
-        public static async Task<ImportViewModel> GetFullAndPartialViewModel(IDataContext context, 
+        public static async Task<ImportViewModel> GetModel(IDataContext context, 
                                                                              ImportQueueFilter filter)
         {
             if (filter.ImportQueueId.HasValue)

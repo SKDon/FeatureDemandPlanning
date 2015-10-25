@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.Controllers
         {
             ValidateImportExceptionParameters(parameters, ImportExceptionParametersValidator.ImportQueueIdentifier);
 
-            var importView = await ImportViewModel.GetFullAndPartialViewModel(DataContext,
+            var importView = await ImportViewModel.GetModel(DataContext,
                                     new ImportQueueFilter(parameters.ImportQueueId.Value)
                                     {
                                         ExceptionType = parameters.ExceptionType,
@@ -47,7 +47,7 @@ namespace FeatureDemandPlanning.Controllers
                 };
                 filter.InitialiseFromJson(parameters);
 
-                var results = await ImportViewModel.GetFullAndPartialViewModel(DataContext, filter);
+                var results = await ImportViewModel.GetModel(DataContext, filter);
                 var jQueryResult = new JQueryDataTableResultModel(results);
 
                 // Iterate through the results and put them in a format that can be used by jQuery datatables
@@ -74,7 +74,7 @@ namespace FeatureDemandPlanning.Controllers
         {
             ValidateImportExceptionParameters(parameters, ImportExceptionParametersValidator.ExceptionIdentifier);
 
-            var importView = await ImportViewModel.GetFullAndPartialViewModel(
+            var importView = await ImportViewModel.GetModel(
                 DataContext,
                 ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value));
 
@@ -85,7 +85,7 @@ namespace FeatureDemandPlanning.Controllers
         {
             ValidateImportExceptionParameters(parameters, ImportExceptionParametersValidator.ExceptionIdentifierWithAction);
 
-            var importView = await ImportViewModel.GetFullAndPartialViewModel(
+            var importView = await ImportViewModel.GetModel(
                 DataContext,
                 ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value),
                 parameters.Action);
@@ -103,7 +103,7 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> IgnoreException(ImportExceptionParameters parameters)
         {
             var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value);
-            var importView = await ImportViewModel.GetFullAndPartialViewModel(DataContext, filter);
+            var importView = await ImportViewModel.GetModel(DataContext, filter);
 
             importView.CurrentException = await DataContext.Import.Ignore(filter);
             

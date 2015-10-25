@@ -39,7 +39,7 @@ namespace FeatureDemandPlanning.Controllers
             {
                 filter.InitialiseFromJson(param);
 
-                var results = await ImportViewModel.GetFullAndPartialViewModel(DataContext, filter);
+                var results = await ImportViewModel.GetModel(DataContext, filter);
                 var jQueryResult = new JQueryDataTableResultModel(results.TotalRecords, results.TotalDisplayRecords);
 
                 // Iterate through the results and put them in a format that can be used by jQuery datatables
@@ -94,11 +94,11 @@ namespace FeatureDemandPlanning.Controllers
             {
                 var filter = new ImportQueueFilter(importQueueId);
 
-                _importView = await ImportViewModel.GetFullAndPartialViewModel(DataContext, filter);
+                _importView = await ImportViewModel.GetModel(DataContext, filter);
                 await ProcessQueue(importQueueId);
 
 
-                _importView = await ImportViewModel.GetFullAndPartialViewModel(DataContext, filter);
+                _importView = await ImportViewModel.GetModel(DataContext, filter);
                 _importView.SetProcessState(
                     new ProcessState(enums.ProcessStatus.Success,
                                      "File was processed successfully"));
