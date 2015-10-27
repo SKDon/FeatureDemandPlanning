@@ -122,6 +122,7 @@ page.ExceptionsPage = function (models) {
             "fnDrawCallback": function (oSettings) {
                 $(document).trigger("Results", me.getSummary());
                 me.bindContextMenu();
+                $("#pnlImportExceptions").show();
             }
         });
     };
@@ -130,10 +131,10 @@ page.ExceptionsPage = function (models) {
     };
     me.bindContextMenu = function () {
         $("#tblImportExceptions td").contextMenu({
-                menuSelector: "#contextMenu",
-                dynamicContent: me.getContextMenu,
-                contentIdentifier: me.getExceptionId,
-                menuSelected: me.actionTriggered
+            menuSelector: "#contextMenu",
+            dynamicContent: me.getContextMenu,
+            contentIdentifier: me.getExceptionId,
+            menuSelected: me.actionTriggered
         });
     };
     me.getSummary = function () {
@@ -151,12 +152,13 @@ page.ExceptionsPage = function (models) {
     };
     me.registerEvents = function () {
         $(document)
-            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notifySuccess").trigger("OnSuccessDelegate", [eventArgs]); })
-            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notifyError").trigger("OnErrorDelegate", [eventArgs]); })
-            .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notifyResults").trigger("OnResultsDelegate", [eventArgs]); })
-            .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notifyUpdated").trigger("OnUpdatedDelegate", [eventArgs]); })
-            .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notifyAction").trigger("OnActionDelegate", [eventArgs]); })
-            .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notifyModalLoaded").trigger("OnModalLoadedDelegate", [eventArgs]); })
+            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
+            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
+            .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnResultsDelegate", [eventArgs]); })
+            .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdatedDelegate", [eventArgs]); })
+            .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
+            .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
+            .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
     };
     me.registerSubscribers = function () {
         $("#notifier")
@@ -166,6 +168,7 @@ page.ExceptionsPage = function (models) {
             .unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
             .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
             .unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
+            .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler)
 
         $("#dvImportSummary").on("OnResultsDelegate", me.onImportSummaryEventHandler);
         $("#spnFilteredRecords").on("OnResultsDelegate", me.onFilteredRecordsEventHandler);
@@ -203,27 +206,30 @@ page.ExceptionsPage = function (models) {
     };
     me.actionTriggered = function (invokedOn, action) {
         var eventArgs = {
-            ExceptionId: parseInt($(action).attr("data-target")),
-            ActionId: parseInt($(action).attr("data-action")),
+            ExceptionId: parseInt($(this).attr("data-target")),
+            Action: parseInt($(this).attr("data-role")),
             ProgrammeId: getExceptionsModel().getProgrammeId()
         };
         $(document).trigger("Action", eventArgs);
     }
     me.onActionEventHandler = function (sender, eventArgs) {
-        var actionId = eventArgs.ActionId;
-        var model = getModelForAction(actionId);
+        var action = eventArgs.Action;
+        var model = getModelForAction(action);
+        var actionModel = model.getActionModel(action);
+
         getModal().showModal({
-            Title: model.getActionTitle(actionId),
-            Uri: model.getActionContentUri(actionId),
+            Title: model.getActionTitle(action),
+            Uri: model.getActionContentUri(action),
             Data: JSON.stringify(eventArgs),
-            Model: model
+            Model: model,
+            ActionModel: actionModel
         });
     };
     me.onActionCallback = function (response) {
         me.redrawDataTable();
     };
     me.onModalLoadedEventHandler = function (sender, eventArgs) {
-        var actionId = eventArgs.ActionId;
+        var actionId = eventArgs.Action;
         switch (actionId) {
             case 1: me.initialiseMapMarketModal();
                 break;
@@ -231,9 +237,14 @@ page.ExceptionsPage = function (models) {
                 break;
         }
     };
+    me.onModalOKEventHandler = function (parameters) {
+        alert("Modal OK");
+    };
     me.redrawDataTable = function () {
         $("#tblImportExceptions").DataTable().draw();
     };
+    
+    // TO DO move this to the market.js file
     me.initialiseMapMarketModal = function () {
         var selector = $("#txtMapMarketName").typeahead({
             source: getMarketModel().getAvailableMarkets(),

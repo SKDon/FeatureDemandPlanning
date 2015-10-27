@@ -7,8 +7,16 @@ $(document).ready(function () {
     derivative = new FeatureDemandPlanning.Import.Derivative(params);
     feature = new FeatureDemandPlanning.Import.Feature(params);
     trim = new FeatureDemandPlanning.Import.Trim(params);
-
-    page = new FeatureDemandPlanning.Import.ExceptionsPage([exceptions, modal, market, derivative, trim, feature]);
+   
+    page = new FeatureDemandPlanning.Import.ExceptionsPage(
+        [
+            exceptions,
+            modal,
+            market,
+            derivative,
+            trim,
+            feature
+        ]);
 
     page.initialise();
 });

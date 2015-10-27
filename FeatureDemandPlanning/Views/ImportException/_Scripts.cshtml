@@ -14,15 +14,18 @@
 <script src="@Url.Content("~/Scripts/Import/feature.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Import/derivative.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Import/trim.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/addfeatureaction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/mapfeatureaction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/specialfeatureaction.js")?v=@currentVersion"></script>
 
 <script type="text/javascript">
 
-    var exceptions, page, modal, market, feature, derivative, trim;
+    var exceptions, page, modal, market, feature, derivative, trim, mapfeature;
     var params = {
-        ActionsUri: "@Url.Action("ImportExceptionActionContextMenu")",
+        ActionsUri: "@Url.Action("ContextMenu")",
         ExceptionsUri: "@Url.Action("ListImportExceptions")",
         ModalContentUri: "@Url.Action("ModalContent")",
-        ModalActionUri: "@Url.Action("ModelAction")",
+        ModalActionUri: "@Url.Action("ModalAction")",
         ModalDialogId: "modal",
         ModalContentId: "modalBody",
         Configuration: {},
@@ -31,6 +34,7 @@
         ImportQueueId: @Model.CurrentImport.ImportQueueId.GetValueOrDefault(),
         ProgrammeId: @Model.Programme.Id,
         VehicleId: @Model.Programme.VehicleId,
+        IdentifierPrefix: "@Model.IdentifierPrefix",
         _lastParam: null // Prevent syntax error
     };
 

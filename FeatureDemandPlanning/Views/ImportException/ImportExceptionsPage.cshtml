@@ -81,14 +81,13 @@
 {
     <div id="dvFilter" class="subscribers-notifyFilterComplete"></div>
     <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none">
-        <li>Test</li>
     </ul>
      
-    <div id="notifier" class="subscribers-notifySuccess subscribers-notifyError subscribers-notifyUpdated subscribers-notifyResults subscribers-notifyModalLoaded subscribers-notifyAction col-lg-12" style="float:unset"></div>
+    <div id="notifier" class="subscribers-notify col-lg-12" style="float:unset"></div>
 
     @Html.Partial("_Modal", Model)
 
-    <div class="panel panel-primary">
+    <div id="pnlImportExceptions" class="panel panel-primary" style="display:none;">
         <div class="panel-heading">
             <div class="panel-title"><span id="spnFilteredRecords" class="subscribers-notifyResults"></span> Import Exceptions</div>
         </div>

@@ -1,4 +1,5 @@
 ﻿@using System.Web
+@using FeatureDemandPlanning.Enumerations
 @{
     // Determine the layout page to use depending on the controller in use
     
@@ -7,13 +8,13 @@
     
     switch (controller.ControllerType)
     {
-        case FeatureDemandPlanning.Controllers.ControllerType.SectionChild:
+        case ControllerType.SectionChild:
             Layout = String.Format(path, "Child");
             break;
-        case FeatureDemandPlanning.Controllers.ControllerType.SectionParent:
+        case ControllerType.SectionParent:
             Layout = String.Format(path, "Parent");
             break;
-        case FeatureDemandPlanning.Controllers.ControllerType.Default:
+        case ControllerType.Default:
             Layout = String.Format(path, "Layout");
             break;
     }

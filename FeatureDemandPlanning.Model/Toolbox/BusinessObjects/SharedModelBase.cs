@@ -37,6 +37,8 @@ namespace FeatureDemandPlanning.BusinessObjects
         public int TotalPages { get; set; }
         public string CookieKey { get; set; }
 
+        public string IdentifierPrefix { get; set; }
+
         public string StatusCode
         {
             get

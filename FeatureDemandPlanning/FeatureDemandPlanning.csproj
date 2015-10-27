@@ -165,12 +165,13 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Attributes\HandleJsonError.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\EngineCodeMappingController.cs" />
     <Compile Include="Controllers\ForecastController.cs" />
     <Compile Include="Controllers\ImportController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
-    <Compile Include="Controllers\ImportExceptionsController.cs" />
+    <Compile Include="Controllers\ImportExceptionController.cs" />
     <Compile Include="Controllers\MarketController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\ValidationError.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Models\VehicleViewModel.cs" />
     <Compile Include="Parameters\ImportExceptionParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Results\JsonActionResult.cs" />
     <Compile Include="ValidateAjaxAttribute.cs" />
     <Content Include="Content\bootstrap-slider.css" />
     <Content Include="Content\bootstrap.css" />
@@ -1186,6 +1188,9 @@
     <Content Include="Scripts\Forecast\forecastcomparisonpage.js" />
     <Content Include="Scripts\Forecast\init.js" />
     <Content Include="Scripts\Forecast\trimmapping.js" />
+    <Content Include="Scripts\Import\specialfeatureaction.js" />
+    <Content Include="Scripts\Import\addfeatureaction.js" />
+    <Content Include="Scripts\Import\mapfeatureaction.js" />
     <Content Include="Scripts\Import\trim.js" />
     <Content Include="Scripts\Import\derivative.js" />
     <Content Include="Scripts\Import\feature.js" />
@@ -1324,27 +1329,27 @@
     <Content Include="Views\Volume\_VolumeData - Copy.cshtml" />
     <Content Include="Views\Volume\_MarketSelector.cshtml" />
     <Content Include="Views\Volume\_ViewModeSelector.cshtml" />
-    <Content Include="Views\Import\ImportExceptions.cshtml" />
-    <Content Include="Views\Import\_Modal.cshtml" />
-    <Content Include="Views\Import\_ImportExceptionAction.cshtml" />
-    <Content Include="Views\Import\_IgnoreException.cshtml" />
-    <Content Include="Views\Import\_MapMissingMarket.cshtml" />
-    <Content Include="Views\Import\_AddMissingDerivative.cshtml" />
-    <Content Include="Views\Import\_MapMissingDerivative.cshtml" />
-    <Content Include="Views\Import\_AddMissingTrim.cshtml" />
-    <Content Include="Views\Import\_MapMissingTrim.cshtml" />
-    <Content Include="Views\Import\_AddMissingFeature.cshtml" />
-    <Content Include="Views\Import\_MapMissingFeature.cshtml" />
-    <Content Include="Views\Import\_AddSpecialFeature.cshtml" />
-    <Content Include="Views\Import\_ImportActionHeader.cshtml" />
-    <Content Include="Views\Import\_Scripts.cshtml" />
+    <Content Include="Views\ImportException\ImportExceptionsPage.cshtml" />
+    <Content Include="Views\ImportException\_Modal.cshtml" />
+    <Content Include="Views\ImportException\_ContextMenu.cshtml" />
+    <Content Include="Views\ImportException\_IgnoreException.cshtml" />
+    <Content Include="Views\ImportException\_MapMissingMarket.cshtml" />
+    <Content Include="Views\ImportException\_AddMissingDerivative.cshtml" />
+    <Content Include="Views\ImportException\_MapMissingDerivative.cshtml" />
+    <Content Include="Views\ImportException\_AddMissingTrim.cshtml" />
+    <Content Include="Views\ImportException\_MapMissingTrim.cshtml" />
+    <Content Include="Views\ImportException\_AddMissingFeature.cshtml" />
+    <Content Include="Views\ImportException\_MapMissingFeature.cshtml" />
+    <Content Include="Views\ImportException\_AddSpecialFeature.cshtml" />
+    <Content Include="Views\ImportException\_ImportActionHeader.cshtml" />
+    <Content Include="Views\ImportException\_Scripts.cshtml" />
+    <Content Include="Views\ImportException\_ModalError.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="bin\" />
     <Folder Include="Content\css\" />
     <Folder Include="Scripts\DataTables\" />
-    <Folder Include="Views\ImportExceptions\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

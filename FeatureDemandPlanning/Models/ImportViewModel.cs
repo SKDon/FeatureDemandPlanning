@@ -125,7 +125,7 @@ namespace FeatureDemandPlanning.Models
         {
             return HasExceptions() && Exceptions.CurrentPage.Where(e => e.ErrorType == ofType).Any();
         }
-        public static async Task<ImportViewModel> GetFullAndPartialViewModel(IDataContext context)
+        public static async Task<ImportViewModel> GetModel(IDataContext context)
         {
             return await GetModel(context, new ImportQueueFilter());
         }
@@ -135,6 +135,10 @@ namespace FeatureDemandPlanning.Models
         {
             var model = await GetModel(context, filter);
             model.CurrentAction = action;
+            if (action != ImportExceptionAction.NotSet)
+            {
+                model.IdentifierPrefix = Enum.GetName(action.GetType(), action);
+            }
 
             return model;
         }
@@ -227,6 +231,7 @@ namespace FeatureDemandPlanning.Models
             CurrentTrimMapping = new EmptyTrimMapping();
             CurrentAction = ImportExceptionAction.NotSet;
             CurrentFeatureGroup = string.Empty;
+            CurrentFeatureSubGroup = new EmptyFeatureGroup();
             CurrentFeature = new EmptyFeature();
             CurrentMarket = new EmptyMarket();
 
@@ -238,6 +243,8 @@ namespace FeatureDemandPlanning.Models
             AvailableMarkets = Enumerable.Empty<Market>();
             AvailableFeatures = Enumerable.Empty<Feature>();
             AvailableFeatureGroups = Enumerable.Empty<FeatureGroup>();
+
+            IdentifierPrefix = "Page";
         }
 
         #endregion

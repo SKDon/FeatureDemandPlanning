@@ -15,9 +15,13 @@ model.Modal = function (params) {
     privateStore[me.id].ModelParameters = {};
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].Model = {};
+    privateStore[me.id].ActionModel = {};
 
     me.ModelName = "Modal";
 
+    me.getActionModel = function () {
+        return privateStore[me.id].ActionModel;
+    }
     me.getData = function () {
         return JSON.parse(me.getModalParameters().Data);
     };
@@ -30,6 +34,9 @@ model.Modal = function (params) {
     me.getModalParameters = function () {
         return privateStore[me.id].ModalParameters;
     };
+    me.setActionModel = function (model) {
+        return privateStore[me.id].ActionModel;
+    }
     me.setModalParameters = function (parameters) {
         privateStore[me.id].ModalParameters = parameters;
     };
@@ -54,18 +61,20 @@ model.Modal = function (params) {
     };
     me.raiseEvents = function (sender, eventArgs) {
         var target = $(sender.target);
+        var params = me.getModel().getUpdateParameters();
         if (target.attr("id") == "btnModalOk") {
-            $(document).trigger("ModalOk", [eventArgs]);
+            $(document).trigger("ModalOk", [params]);
         } else {
-            $(document).trigger("ModalCancel", [eventArgs]);
+            $(document).trigger("ModalCancel", []);
         }
     };
     me.raiseLoadedEvent = function () {
         $(document).trigger("ModalLoaded", me.getData());
     };
     me.registerEvents = function () {
-        var dialog = $("#" + me.getModalDialogId());
-        dialog.find(".modal-button").unbind("click").on("click", me.raiseEvents)
+    };
+    me.setActionModel = function (model) {
+        privateStore[me.id].ActionModel = model;
     };
     me.setModel = function (model) {
         privateStore[me.id].Model = model;
@@ -74,8 +83,11 @@ model.Modal = function (params) {
         var dialog = $("#" + me.getModalDialogId());
         dialog.find(".modal-title").html("");
         dialog.find(".modal-body").html("");
+
         me.setModalParameters(parameters);
         me.setModel(parameters.Model);
+        me.setActionModel(parameters.ActionModel);
+
         $("#" + me.getModalDialogId()).unbind("show.bs.modal").on('show.bs.modal', function () {
             me.getModelContent(parameters.Title, parameters.Uri, parameters.Data);
         }).modal();
@@ -83,6 +95,7 @@ model.Modal = function (params) {
     function showModalCallback(response, title) {
         var dialog = $("#" + me.getModalDialogId());
         var model = me.getModel();
+        var actionModel = me.getActionModel();
 
         dialog.find(".modal-title").html(title);
         dialog.find(".modal-body").html(response);
@@ -90,12 +103,15 @@ model.Modal = function (params) {
         model.setParameters(me.getModalParameters());
         model.initialise();
 
+        actionModel.setParameters(me.getModalParameters());
+        actionModel.initialise();
+
         me.registerEvents();
         me.raiseLoadedEvent();
     };
     function showModalError(jqXHR, textStatus, errorThrown) {
         var dialog = $("#" + me.getModalDialogId());
         dialog.find(".modal-title").html("Error");
-        dialog.find(".modal-body").html(errorThrown);
+        dialog.find(".modal-body").html(jqXHR.responseText);
     }
 };

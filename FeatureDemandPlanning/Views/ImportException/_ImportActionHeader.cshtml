@@ -2,6 +2,11 @@
 @using enums = FeatureDemandPlanning.Enumerations
 
 @model FeatureDemandPlanning.Models.ImportViewModel
+
+<form>
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix"/>
+</form>
+
 <div class="panel panel-default">
     <div class="panel-body">
 
@@ -28,9 +33,9 @@
         {
             <div class="row">
                 <div class="col-xs-4 text-right">Import Feature Code:</div>
-                <div class="col-xs-8">
+                <div id="@(Model.IdentifierPrefix)_ImportFeatureCode" class="col-xs-8" data-target="@Model.CurrentException.ImportFeatureCode">
                     @Model.CurrentException.ImportFeatureCode
-                </div>
+</div>
             </div>
             <div class="row">
                 <div class="col-xs-4 text-right">Import Feature:</div>

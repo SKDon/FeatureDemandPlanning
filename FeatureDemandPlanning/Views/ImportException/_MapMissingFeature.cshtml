@@ -12,20 +12,21 @@
     <div class="panel-body">
         <form class="form-horizontal">
             <div class="form-group form-group-sm">
-                @*<label for="ddlFeatureGroup" class="control-label col-lg-3 text-right">Feature:</label>*@
                 <div class="col-lg-12">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        @if (Model.CurrentFeature is EmptyFeature)
+                    <button id="@(Model.IdentifierPrefix)_SelectFeatureCode" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span id="@(Model.IdentifierPrefix)_SelectedFeature">
+                            @if (Model.CurrentFeature is EmptyFeature)
                         {
-                            @:Select Feature
+                                @:Select Feature
                         }
                         else
                         {
-                            <span>@string.Format("{0} - {1}", Model.CurrentFeature.FeatureCode, Model.CurrentFeature.BrandDescription)</span>
-                        } 
+                                <span>@string.Format("{0} - {1}", Model.CurrentFeature.FeatureCode, Model.CurrentFeature.BrandDescription)</span>
+                        }
+                        </span>
                         <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu">
+                    <ul id="@(Model.IdentifierPrefix)_FeatureList" class="dropdown-menu">
                         @foreach (var featureGroup in Model.FeatureGroups.Where(g => !g.Equals("UNASSIGNED")))
                         {
                             <li class="dropdown dropdown-submenu">
@@ -33,7 +34,7 @@
                                 <ul class="dropdown-menu">
 
                                     @foreach (var featureSubGroup in Model.FeatureSubGroups
-                                        .Where(g => 
+                                        .Where(g =>
                                             g.FeatureGroupName.Equals(featureGroup, StringComparison.InvariantCultureIgnoreCase) &&
                                             !string.IsNullOrEmpty(g.FeatureSubGroup)
                                         ))
@@ -42,12 +43,12 @@
                                             <a href="#">@featureSubGroup.FeatureSubGroup</a>
                                             <ul class="dropdown-menu">
                                                 @foreach (var feature in Model.Features
-                                                    .Where(f => 
-                                                        f.FeatureGroup.Equals(featureGroup) && 
+                                                    .Where(f =>
+                                                        f.FeatureGroup.Equals(featureGroup) &&
                                                         f.FeatureSubGroup != null &&
                                                         f.FeatureSubGroup.Equals(featureSubGroup.FeatureSubGroup)))
                                                 {
-                                                    <li><a href="#">@string.Format("{0} - {1}", feature.FeatureCode, feature.BrandDescription)</a></li>
+                                                    <li><a class="feature-item" href="#" data-target="@feature.FeatureCode" data-content="@FeatureDescription(feature)">@FeatureDescription(feature)</a></li>
                                                 }
 
                                             </ul>
@@ -62,47 +63,20 @@
                             <ul class="dropdown-menu">
                                 @foreach (var feature in Model.Features.Where(f => f.FeatureGroup.Equals("UNASSIGNED")))
                                 {
-                                    <li><a href="#">@string.Format("{0} - {1}", feature.FeatureCode, feature.BrandDescription)</a></li>
+                                    <li><a class="feature-item" href="#" data-target="@feature.FeatureCode" data-content="@FeatureDescription(feature)">@FeatureDescription(feature)</a></li>
                                 }
                             </ul>
                         </li>
                     </ul>
                 </div>
             </div>
-            @*<div class="form-group form-group-sm">
-                <label for="ddlFeatureSubGroup" class="control-label col-lg-3 text-right">Feature Sub-group:</label>
-                <div class="col-lg-9">
-                    <select id="ddlFeatureSubGroup" class="form-control">
-                        <option value="">-- SELECT --</option>
-                        @foreach (var featureSubGroup in Model.FeatureSubGroups)
-                        {
-                            <option value="@featureSubGroup.GroupId">
-                                @if (!string.IsNullOrEmpty(featureSubGroup.FeatureSubGroup)) 
-                                {
-                                    @featureSubGroup.FeatureSubGroup
-                                }
-                                else
-                                {
-                                    @:N/A
-                                }
-                            </option>
-                        }
-                    </select>
-                </div>
-            </div>
-            <div class="form-group form-group-sm">
-                <label for="ddlFeature" class="control-label col-lg-3 text-right">Feature:</label>
-                <div class="col-lg-9">
-                    <select id="ddlFeature" class="form-control">
-                        <option value="">-- SELECT --</option>
-                       @foreach (var feature in Model.Features)
-                       {
-                        <option value="@feature.Id">@string.Format("{0} - {1}", feature.FeatureCode, feature.BrandDescription)</option>
-                       }
-                    </select>
-                </div>
-            </div>*@
         </form>
     </div>
 </div>
+
+@helper FeatureDescription(Feature feature)
+{
+    var description = string.Format("{0} - {1}", feature.FeatureCode, feature.BrandDescription);
+    @description
+}
 

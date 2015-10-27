@@ -10,55 +10,38 @@ model.Feature = function (params) {
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].ModalContentUri = params.ModalContentUri;
-    //privateStore[me.id].AddFeatureContentUri = params.AddFeatureContentUri;
-    privateStore[me.id].AddFeatureActionUri = params.AddFeatureActionUri;
-    //privateStore[me.id].AddSpecialFeatureContentUri = params.AddSpecialFeatureContentUri;
-    privateStore[me.id].AddSpecialFeatureActionUri = params.AddSpecialFeatureActionUri;
-    //privateStore[me.id].MapFeatureContentUri = params.MapFeatureContentUri;
-    privateStore[me.id].MapFeatureActionUri = params.MapFeatureActionUri;
+    privateStore[me.id].ModalActionUri = params.ModalActionUri;
     privateStore[me.id].ListAvailableFeaturesUri = params.ListAvailableFeaturesUri;
     privateStore[me.id].AvailableFeatures = [];
-    privateStore[me.id].Parameters = {};
+    privateStore[me.id].Parameters = params;
     
     me.ModelName = "Feature";
 
     me.initialise = function () {
-        me.listAvailableFeatures();
+        //me.listAvailableFeatures();
     };
     me.getActionContentUri = function (action) {
         return privateStore[me.id].ModalContentUri;
-        //var uri = "";
-        //switch (action) {
-        //    case 4:
-        //        uri = me.getAddFeatureContentUri();
-        //        break;
-        //    case 5:
-        //        uri = me.getMapFeatureContentUri();
-        //        break;
-        //    case 9:
-        //        uri = me.getAddSpecialFeatureContentUri();
-        //        break;
-        //    default:
-        //        break;
-        //}
-        //return uri;
     };
-    me.getActionUri = function (action) {
-        var uri = "";
+    me.getActionModel = function (action) {
+        var actionModel = null;
         switch (action) {
             case 4:
-                uri = me.getAddFeatureActionUri();
+                actionModel = new FeatureDemandPlanning.Import.AddFeatureAction(me.getParameters());
                 break;
             case 5:
-                uri = me.getMapFeatureActionUri();
+                actionModel = new FeatureDemandPlanning.Import.MapFeatureAction(me.getParameters());
                 break;
-            case 9:
-                uri = me.getAddSpecialFeatureActionUri();
+            case 6:
+                actionModel = new FeatureDemandPlanning.Import.SpecialFeatureAction(me.getParameters());
                 break;
             default:
                 break;
         }
-        return uri;
+        return actionModel;
+    };
+    me.getActionUri = function (action) {
+        return privateStore[me.id].ModalActionUri;
     };
     me.getActionTitle = function (action) {
         var title = "";
@@ -80,8 +63,8 @@ model.Feature = function (params) {
     me.getAvailableFeatures = function () {
         return privateStore[me.id].AvailableFeatures;
     };
-    me.setAvailableFeatures = function (features) {
-        privateStore[me.id].AvailableFeatures = features.AvailableFeatures;
+    me.getAvailableFeaturesUri = function () {
+        return privateStore[me.id].ListAvailableFeaturesUri;
     };
     me.getConfiguration = function () {
         return privateStore[me.id].Configuration;
@@ -89,35 +72,23 @@ model.Feature = function (params) {
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
     };
-    me.setParameters = function (parameters) {
-        privateStore[me.id].Parameters = parameters;
+    me.getUpdateParameters = function () {
+        return $.extend({}, getData(), {
+            //"FeatureCode": $("#featureCode").val(),
+            "ImportFeatureCode": $("#dvImportFeatureCode").attr("data-id")
+        });
     }
-    //me.getAddFeatureContentUri = function () {
-    //    return privateStore[me.id].AddFeatureContentUri;
-    //};
-    me.getAddFeatureActionUri = function () {
-        return privateStore[me.id].AddFeatureActionUri;
-    };
-    //me.getAddSpecialFeatureContentUri = function () {
-    //    return privateStore[me.id].AddSpecialFeatureContentUri;
-    //};
-    me.getAddSpecialFeatureActionUri = function () {
-        return privateStore[me.id].AddSpecialFeatureActionUri;
-    };
-    //me.getMapFeatureContentUri = function () {
-    //    return privateStore[me.id].MapFeatureContentUri;
-    //};
-    me.getMapFeatureActionUri = function () {
-        return privateStore[me.id].MapFeatureActionUri;
-    };
-    me.getAvailableFeaturesUri = function () {
-        return privateStore[me.id].ListAvailableFeaturesUri;
-    }
-    me.getVehicleId = function() {
+    me.getVehicleId = function () {
         return getData().VehicleId;
     };
     me.listAvailableFeatures = function () {
         sendData(me.getAvailableFeaturesUri(), { VehicleId: me.getVehicleId() }, me.setAvailableFeatures);
+    };
+    me.setAvailableFeatures = function (features) {
+        privateStore[me.id].AvailableFeatures = features.AvailableFeatures;
+    };
+    me.setParameters = function (parameters) {
+        privateStore[me.id].Parameters = parameters;
     };
     function getData() {
         var params = me.getParameters();

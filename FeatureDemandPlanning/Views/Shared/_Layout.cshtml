@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using FeatureDemandPlanning.BusinessObjects
+@{
+    var currentVersion = SharedModelBase.CurrentVersion;
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -103,7 +107,7 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryform")
     @Scripts.Render("~/bundles/bootstrap")
-    <script src="@Url.Content("~/Scripts/Shared/oxo-master.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/oxo-master.js")?v=@currentVersion"></script>
     @RenderSection("PageScripts", required: false)
 
     <script>

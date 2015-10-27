@@ -26,7 +26,7 @@ namespace FeatureDemandPlanning.Controllers
         [HttpGet]
         public async Task<ActionResult> Index()
         {
-            _importView = await ImportViewModel.GetFullAndPartialViewModel(DataContext);
+            _importView = await ImportViewModel.GetModel(DataContext);
             return View(_importView);
         }
         [HttpPost]
@@ -72,7 +72,7 @@ namespace FeatureDemandPlanning.Controllers
 
             try
             {
-                _importView = await ImportViewModel.GetFullAndPartialViewModel(DataContext);
+                _importView = await ImportViewModel.GetModel(DataContext);
 
                 SaveImportFileToFileSystem();
                 await QueueItemForProcessing();
