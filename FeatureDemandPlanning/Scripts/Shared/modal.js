@@ -81,28 +81,38 @@ model.Modal = function (params) {
     };
     me.showModal = function (parameters) {
         var dialog = $("#" + me.getModalDialogId());
-        dialog.find(".modal-title").html("");
-        dialog.find(".modal-body").html("");
+        var content = dialog.find("#Modal_Content");
+        var title = dialog.find("#Modal_Title");
+        var notifier = dialog.find("#Modal_Notify");
+
+        content.html("");
+        title.html("");
+        notifier.html("").hide();
 
         me.setModalParameters(parameters);
         me.setModel(parameters.Model);
         me.setActionModel(parameters.ActionModel);
 
-        $("#" + me.getModalDialogId()).unbind("show.bs.modal").on('show.bs.modal', function () {
-            me.getModelContent(parameters.Title, parameters.Uri, parameters.Data);
-        }).modal();
+        dialog
+            .unbind("show.bs.modal").on('show.bs.modal', function () {
+                me.getModelContent(parameters.Title, parameters.Uri, parameters.Data);
+            })
+            .modal();
+
+        $("#Modal_OK").show();
+        $("#Modal_Cancel").html("Cancel");
     };
     function showModalCallback(response, title) {
         var dialog = $("#" + me.getModalDialogId());
+        var content = dialog.find("#Modal_Content");
+        var tit = dialog.find("#Modal_Title");
         var model = me.getModel();
         var actionModel = me.getActionModel();
 
-        dialog.find(".modal-title").html(title);
-        dialog.find(".modal-body").html(response);
+        tit.html(title);
+        content.html(response);
 
-        model.setParameters(me.getModalParameters());
         model.initialise();
-
         actionModel.setParameters(me.getModalParameters());
         actionModel.initialise();
 
@@ -111,7 +121,7 @@ model.Modal = function (params) {
     };
     function showModalError(jqXHR, textStatus, errorThrown) {
         var dialog = $("#" + me.getModalDialogId());
-        dialog.find(".modal-title").html("Error");
-        dialog.find(".modal-body").html(jqXHR.responseText);
+        dialog.find("#Modal_Title").html("Error");
+        dialog.find("#Modal_Content").html(jqXHR.responseText);
     }
 };

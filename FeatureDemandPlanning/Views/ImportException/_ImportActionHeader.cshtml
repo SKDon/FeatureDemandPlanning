@@ -7,8 +7,9 @@
     <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix"/>
 </form>
 
-<div class="panel panel-default">
-    <div class="panel-body">
+@*<div class="panel panel-default">
+    <div class="panel-body">*@
+<div class="well">
 
         @if (   Model.CurrentAction == enums.ImportExceptionAction.AddMissingDerivative || 
                 Model.CurrentAction == enums.ImportExceptionAction.MapMissingDerivative)
@@ -73,4 +74,4 @@
             </div>
         </div>
     </div>
-</div>
+@*</div>*@

@@ -103,73 +103,64 @@ namespace FeatureDemandPlanning.Controllers
             ValidateImportExceptionParameters(parameters, ImportExceptionParametersValidator.ExceptionIdentifierWithActionAndProgramme);
             ValidateImportExceptionParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
 
-            return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters);
+            return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
-        [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> AddMissingDerivative(ImportExceptionParameters parameters)
         {
             var importView = await GetModelFromParameters(parameters);
 
-            return Json(JsonActionResult.GetSuccess());
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> AddMissingFeature(ImportExceptionParameters parameters)
         {
             var importView = await GetModelFromParameters(parameters);
 
-            return Json(JsonActionResult.GetSuccess());
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> AddMissingTrim(ImportExceptionParameters parameters)
         {
             var importView = await GetModelFromParameters(parameters);
 
-            return Json(JsonActionResult.GetSuccess());
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> AddSpecialFeature(ImportExceptionParameters parameters)
         {
             var importView = await GetModelFromParameters(parameters);
 
-            return Json(JsonActionResult.GetSuccess());
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> MapMissingDerivative(ImportExceptionParameters parameters)
         {
             var importView = await GetModelFromParameters(parameters);
 
-            return Json(JsonActionResult.GetSuccess());
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> MapMissingFeature(ImportExceptionParameters parameters)
         {
             var importView = await GetModelFromParameters(parameters);
 
-            return Json(JsonActionResult.GetSuccess());
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> MapMissingTrim(ImportExceptionParameters parameters)
         {
             var importView = await GetModelFromParameters(parameters);
 
-            return Json(JsonActionResult.GetSuccess());
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> MapMissingMarket(ImportExceptionParameters parameters)
         {
             var importView = await GetModelFromParameters(parameters);
 
-            return Json(JsonActionResult.GetSuccess());
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> IgnoreException(ImportExceptionParameters parameters)
         {
@@ -178,7 +169,7 @@ namespace FeatureDemandPlanning.Controllers
 
             importView.CurrentException = await DataContext.Import.Ignore(filter);
 
-            return Json(JsonActionResult.GetSuccess());
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
 
         #region "Private Methods"
@@ -248,6 +239,7 @@ namespace FeatureDemandPlanning.Controllers
             {
                 RuleFor(p => p.FeatureCode).NotEmpty().WithMessage("'FeatureCode' not specified");
                 RuleFor(p => p.FeatureDescription).NotNull().WithMessage("'FeatureDescription' not specified");
+                RuleFor(p => p.FeatureGroupId).NotNull().WithMessage("'FeatureGroupId' not specified");
             });
             RuleSet(Enum.GetName(typeof(ImportExceptionAction), ImportExceptionAction.AddMissingTrim), () =>
             {

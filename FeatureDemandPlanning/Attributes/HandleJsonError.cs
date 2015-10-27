@@ -19,7 +19,7 @@ namespace FeatureDemandPlanning.Attributes
             {
                 return;
             }
-            if (filterContext.HttpContext.Request.IsAjaxRequest())
+            if (!filterContext.HttpContext.Request.IsAjaxRequest())
             {
                 base.OnException(filterContext);
                 return;
