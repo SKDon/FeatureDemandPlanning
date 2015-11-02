@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Interfaces;
+using FeatureDemandPlanning.Model.Interfaces;
 
-namespace FeatureDemandPlanning.Interfaces
+namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IDataContext
     {
@@ -21,6 +21,7 @@ namespace FeatureDemandPlanning.Interfaces
         IMarketDataContext Market { get; }
         IVolumeDataContext Volume { get; }
         IReferenceDataContext References { get; }
+        INewsDataContext News { get; }
 
         dynamic ConfigurationSettings { get; }
     }

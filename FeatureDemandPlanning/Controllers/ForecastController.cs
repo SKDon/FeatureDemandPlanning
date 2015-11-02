@@ -1,20 +1,23 @@
-﻿using FeatureDemandPlanning.Interfaces;
-using FeatureDemandPlanning.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using FeatureDemandPlanning.Model;
+using System.Web.Script.Serialization;
 using System.Web.Caching;
-using enums = FeatureDemandPlanning.Enumerations;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.BusinessObjects;
-using System.Net;
-using FeatureDemandPlanning.BusinessObjects.Validators;
-using FeatureDemandPlanning.Enumerations;
+using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Attributes;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Parameters;
+using FeatureDemandPlanning.Model.Results;
+using FeatureDemandPlanning.Model.Validators;
+using FeatureDemandPlanning.Model.ViewModel;
 using FluentValidation;
-using FluentValidation.Internal;
+using System.Net;
+
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -26,13 +29,44 @@ namespace FeatureDemandPlanning.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult Index()
+        [ActionName("Index")]
+		public ActionResult ForecastPage(int? forecastId)
 		{
-			ViewBag.Title = "Forecasts";
-
-			return RedirectToAction("Forecast");
+            return RedirectToAction("ForecastPage", new ForecastParameters() { ForecastId = forecastId });
 		}
+        [HttpGet]
+        public async Task<ActionResult> ForecastPage(ForecastParameters parameters)
+        {
+            ValidateForecastParameters(parameters, ForecastParametersValidator.NoValidation);
 
+            var forecastView = await ForecastComparisonViewModel.GetModel(DataContext, 
+                new ForecastFilter(parameters.ForecastId));
+
+            return View(forecastView);
+        }
+        [HttpPost]
+        [HandleErrorWithJson]
+        public async Task<ActionResult> ListForecasts(ForecastParameters parameters)
+        {
+            ValidateForecastParameters(parameters, ForecastParametersValidator.NoValidation);
+
+            var js = new JavaScriptSerializer();
+            var filter = new ForecastFilter()
+            {
+                FilterMessage = parameters.FilterMessage
+            };
+            filter.InitialiseFromJson(parameters);
+
+            var results = await ForecastComparisonViewModel.GetModel(DataContext, filter);
+            var jQueryResult = new JQueryDataTableResultModel(results);
+
+            foreach (var result in results.Forecasts.CurrentPage)
+            {
+                jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
+            }
+
+            return Json(jQueryResult);
+        }
 		[HttpPost]
 		public ActionResult ForecastComparisonPage(Forecast forecast, int pageIndex)
 		{
@@ -65,11 +99,11 @@ namespace FeatureDemandPlanning.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult Forecast(int? pageIndex, int? forecastId)
+		public async Task<ActionResult> Forecast(int? pageIndex, int? forecastId)
 		{
 			var filter = new ForecastFilter();
 			filter.ForecastId = forecastId;
-			var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(filter);
+			var forecastComparisonModel = await GetFullAndPartialForecastComparisonViewModel(filter);
 			forecastComparisonModel.PageIndex = pageIndex.GetValueOrDefault();
 
 			ViewBag.PageTitle = "Edit Forecast";
@@ -78,14 +112,14 @@ namespace FeatureDemandPlanning.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult ForecastComparison(ForecastFilter filter)
+		public async Task<ActionResult> ForecastComparison(ForecastFilter filter)
 		{
-			var forecastComparisonModel = GetFullAndPartialForecastComparisonViewModel(filter);
+			var forecastComparisonModel = await GetFullAndPartialForecastComparisonViewModel(filter);
 
 			if (forecastComparisonModel.Forecast.ForecastVehicle == null)
 			{
 				forecastComparisonModel.SetProcessState(
-					new BusinessObjects.ProcessState(Enumerations.ProcessStatus.Warning, "No programmes available matching search criteria"));
+					new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Warning, "No programmes available matching search criteria"));
 			}
 
 			return View("ForecastComparison", forecastComparisonModel);
@@ -185,61 +219,61 @@ namespace FeatureDemandPlanning.Controllers
 			return jsonResult;
 		}
 		
-		[HttpPost]
-		[ValidateAjax]
-		public JsonResult SaveForecast(Forecast forecastToSave)
-		{
-			var processState = new ProcessState();
-			var model = GetFullAndPartialForecastComparisonViewModel();
-			var result = GetResult(processState, model);
+        //[HttpPost]
+        //[ValidateAjax]
+        //public JsonResult SaveForecast(Forecast forecastToSave)
+        //{
+        //    var processState = new ProcessState();
+        //    var model = GetFullAndPartialForecastComparisonViewModel();
+        //    var result = GetResult(processState, model);
 			
-			try
-			{
-				if (!ModelState.IsValid)
-				{
-					return GetResult(processState, model);
-				}
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return GetResult(processState, model);
+        //        }
 				
-				forecastToSave = (Forecast)DataContext.Forecast.SaveForecast(forecastToSave);
-				if (!forecastToSave.IsPersisted(processState))
-				{
-					return GetResult(processState, model);
-				}
+        //        forecastToSave = (Forecast)DataContext.Forecast.SaveForecast(forecastToSave);
+        //        if (!forecastToSave.IsPersisted(processState))
+        //        {
+        //            return GetResult(processState, model);
+        //        }
 			   
-				model = GetFullAndPartialForecastComparisonViewModel(forecastToSave);
-				processState.AddMessage("Forecast saved successfully");
-			}
-			catch (ApplicationException ex)
-			{
-				processState = ProcessState.FromException("An error occurred saving the forecast", ex);
-			}
-			finally
-			{
-				if (processState.Status == enums.ProcessStatus.Failure)
-				{
-					Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-				}
-				result = GetResult(processState, model);
-			}
+        //        model = GetFullAndPartialForecastComparisonViewModel(forecastToSave);
+        //        processState.AddMessage("Forecast saved successfully");
+        //    }
+        //    catch (ApplicationException ex)
+        //    {
+        //        processState = ProcessState.FromException("An error occurred saving the forecast", ex);
+        //    }
+        //    finally
+        //    {
+        //        if (processState.Status == FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Failure)
+        //        {
+        //            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        //        }
+        //        result = GetResult(processState, model);
+        //    }
 
-			return result;
-		}
+        //    return result;
+        //}
 
 		private JsonResult GetResult(ProcessState processState, ForecastComparisonViewModel model)
 		{
 			model.SetProcessState(processState);
 			return Json(model);
 		}
-		private ForecastComparisonViewModel GetFullAndPartialForecastComparisonViewModel()
+		private async Task<ForecastComparisonViewModel> GetFullAndPartialForecastComparisonViewModel()
 		{
-			return GetFullAndPartialForecastComparisonViewModel(new ForecastFilter());
+			return await GetFullAndPartialForecastComparisonViewModel(new ForecastFilter());
 		}
-		private ForecastComparisonViewModel GetFullAndPartialForecastComparisonViewModel(ForecastFilter filter)
+		private async Task<ForecastComparisonViewModel> GetFullAndPartialForecastComparisonViewModel(ForecastFilter filter)
 		{
 			IForecast forecast = new EmptyForecast();
 			if (filter.ForecastId.HasValue)
 			{
-				forecast = DataContext.Forecast.GetForecast(filter);
+				forecast = await DataContext.Forecast.GetForecast(filter);
 			}
 			return GetFullAndPartialForecastComparisonViewModel(forecast);
 		}
@@ -334,25 +368,52 @@ namespace FeatureDemandPlanning.Controllers
 		private void HydrateLookups(IForecast forecast, ForecastComparisonViewModel forecastComparisonModel)
 		{
 			forecastComparisonModel.ForecastVehicleLookup = GetLookup(forecast.ForecastVehicle, HttpContext.Cache, DataContext);
-            forecastComparisonModel.ComparisonVehicleLookup = new List<Lookup>();
+            forecastComparisonModel.ComparisonVehicleLookup = new List<LookupViewModel>();
 			foreach (var comparisonVehicle in forecast.ComparisonVehicles)
 			{
 				forecastComparisonModel.ComparisonVehicleLookup.Add(GetLookup(comparisonVehicle, HttpContext.Cache, DataContext));
 			}
 		}
-		private static Lookup GetLookup(IVehicle forVehicle, Cache cache, IDataContext dataContext)
+		private static LookupViewModel GetLookup(IVehicle forVehicle, Cache cache, IDataContext dataContext)
 		{
-			Lookup lookup = null;
+            LookupViewModel lookup = null;
 			var cacheKey = string.Format("ProgrammeLookup_{0}", forVehicle.GetHashCode());
 			var cachedLookup = cache.Get(cacheKey);
 			if (cachedLookup != null) {
-				lookup = (Lookup) cachedLookup;
+                lookup = (LookupViewModel)cachedLookup;
 			}
 			else {
-				lookup = new Lookup(dataContext, forVehicle);
+                lookup = new LookupViewModel(dataContext, forVehicle);
 				cache.Add(cacheKey, lookup, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
 			}
 			return lookup;
 		}
+        private void ValidateForecastParameters(ForecastParameters parameters, string ruleSetName)
+        {
+            var validator = new ForecastParametersValidator();
+            var result = validator.Validate(parameters, ruleSet: ruleSetName);
+            if (!result.IsValid)
+            {
+                throw new ValidationException(result.Errors);
+            }
+        }
 	}
+
+    internal class ForecastParametersValidator : AbstractValidator<ForecastParameters>
+    {
+        public const string ForecastIdentifier = "FORECAST_ID";
+        public const string NoValidation = "NO_VALIDATION";
+
+        public ForecastParametersValidator()
+        {
+            RuleSet(NoValidation, () =>
+            {
+
+            });
+            RuleSet(ForecastIdentifier, () =>
+            {
+                RuleFor(p => p.ForecastId).NotNull().WithMessage("'ForecastId' not specified");
+            });
+        }
+    }
 }

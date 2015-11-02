@@ -1,7 +1,20 @@
-﻿@using FeatureDemandPlanning.BusinessObjects
-@using enums = FeatureDemandPlanning.Enumerations
+﻿@using FeatureDemandPlanning.Model
+@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Models.ImportViewModel
+@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
+
+<div class="alert alert-info">
+    <div class="row">
+        <div class="col-lg-1 text-center">
+            <span class="glyphicon glyphicon-info-sign"></span>
+        </div>
+        <div class="col-lg-11">
+            <p>Map the imported feature code to a special feature.</p>
+            <p>Special features typically contain additional volume information for derivatives.</p>
+            <p>Click <strong>'OK'</strong> to continue.</p>
+        </div>
+    </div>
+</div>
 
 @Html.Partial("_ImportActionHeader", Model)
 

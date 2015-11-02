@@ -1,8 +1,8 @@
-﻿@using FeatureDemandPlanning.BusinessObjects
+﻿@using FeatureDemandPlanning.Model
 @using FeatureDemandPlanning.Helpers
-@using enums = FeatureDemandPlanning.Enumerations
+@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Models.FdpOxoVolumeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
 
 <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     @if (Model.Volume.Mode == enums.VolumeResultMode.PercentageTakeRate)

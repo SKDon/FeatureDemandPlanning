@@ -1,10 +1,10 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Interfaces;
-using FeatureDemandPlanning.Model;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Interfaces;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -27,7 +27,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public void SaveVolume(IVolume volumeToSave)
         {
-            foreach(var header in volumeToSave.FdpVolumeHeaders) {
+            foreach(var header in volumeToSave.VolumeSummary) {
 
                 var fdpOxoDoc = new FdpOxoDoc() {
                     Header = header,
@@ -36,19 +36,20 @@ namespace FeatureDemandPlanning.DataStore
                 _volumeDataStore.FdpOxoDocSave(fdpOxoDoc);
             }
         }
-        public FdpVolumeHeader GetVolumeHeader(VolumeFilter filter)
+        public VolumeSummary GetVolumeHeader(VolumeFilter filter)
         {
             if (filter.FdpVolumeHeaderId.GetValueOrDefault() == 0)
                 return new EmptyVolumeHeader();
 
             return _volumeDataStore.FdpVolumeHeaderGet(filter.FdpVolumeHeaderId.Value);
         }
-        public IEnumerable<FdpVolumeHeader> ListVolumeHeaders(VolumeFilter filter)
+        public async Task<IEnumerable<VolumeSummary>> ListLatestTakeRateData()
         {
-            if (!filter.OxoDocId.HasValue)
-                return Enumerable.Empty<FdpVolumeHeader>();
-
-            return _volumeDataStore.FdpVolumeHeaderGetManyByOxoDocIdAndUsername(filter);
+            return await Task.FromResult<IEnumerable<VolumeSummary>>(_volumeDataStore.FdpVolumeHeaderGetManyByUsername(new TakeRateFilter()).Take(2));
+        }
+        public async Task<IEnumerable<VolumeSummary>> ListTakeRateData(TakeRateFilter filter)
+        {
+            return await Task.FromResult<IEnumerable<VolumeSummary>>(_volumeDataStore.FdpVolumeHeaderGetManyByUsername(filter));
         }
         public void SaveVolumeHeader(FdpVolumeHeader header)
         {

@@ -1,7 +1,7 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Interfaces;
-using FeatureDemandPlanning.Models;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

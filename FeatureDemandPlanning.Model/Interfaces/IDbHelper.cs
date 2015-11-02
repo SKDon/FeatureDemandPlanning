@@ -1,11 +1,11 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
+﻿using FeatureDemandPlanning.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace FeatureDemandPlanning.Interfaces
+namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IDbHelper
     {

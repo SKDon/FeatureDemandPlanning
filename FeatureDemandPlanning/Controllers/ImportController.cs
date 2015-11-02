@@ -7,13 +7,14 @@ using System.Web.Mvc;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
-using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Context;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Comparers;
-using enums = FeatureDemandPlanning.Enumerations;
-using FeatureDemandPlanning.Models;
-using FeatureDemandPlanning.Enumerations;
+using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Comparers;
+using enums = FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.ViewModel;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Parameters;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -24,10 +25,24 @@ namespace FeatureDemandPlanning.Controllers
             ControllerType = ControllerType.SectionChild;
         }
         [HttpGet]
-        public async Task<ActionResult> Index()
+        [ActionName("Index")]
+        public ActionResult ImportPage()
         {
-            _importView = await ImportViewModel.GetModel(DataContext);
-            return View(_importView);
+            return RedirectToAction("ImportPage");
+        }
+        [HttpGet]
+        public async Task<ActionResult> ImportPage(ImportParameters parameters)
+        {
+            //ValidateImportParameters(parameters, ImportParametersValidator.ImportQueueIdentifier);
+            var filter = new ImportQueueFilter()
+            {
+                ImportQueueId = parameters.ImportQueueId,
+                PageIndex = PageIndex,
+                PageSize = PageSize
+            };
+            var importView = await ImportViewModel.GetModel(DataContext, filter);
+
+            return View(importView);
         }
         [HttpPost]
         public async Task<ActionResult> ListImportQueue(JQueryDataTableParameters param)

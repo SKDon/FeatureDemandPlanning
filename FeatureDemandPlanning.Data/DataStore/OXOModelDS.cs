@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using FeatureDemandPlanning.Dapper;
-using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.Helpers;
+using FeatureDemandPlanning.Model.Dapper;
+using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -25,9 +25,9 @@ namespace FeatureDemandPlanning.DataStore
         /// <param name="prog_Id">The prog_ identifier.</param>
         /// <param name="doc_id">The doc_id.</param>
         /// <returns></returns>
-        public IEnumerable<BusinessObjects.Model> ModelGetMany(string make, int? prog_Id, int? doc_id)
+        public IEnumerable<Model.Model> ModelGetMany(string make, int? prog_Id, int? doc_id)
         {
-            IEnumerable<BusinessObjects.Model> retVal = null;
+            IEnumerable<Model.Model> retVal = null;
 			using (IDbConnection conn = DbHelper.GetDBConnection())
             {
 				try
@@ -36,7 +36,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@p_make", make, dbType: DbType.String, size: 50);					    
 					para.Add("@p_prog_Id", prog_Id, dbType: DbType.Int32);
                     para.Add("@p_doc_Id", doc_id, dbType: DbType.Int32);
-                    retVal = conn.Query<BusinessObjects.Model>("dbo.OXO_Model_GetMany", para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<Model.Model>("dbo.OXO_Model_GetMany", para, commandType: CommandType.StoredProcedure);
 				}
 				catch (Exception ex)
 				{
@@ -47,16 +47,16 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;   
         }
 
-        public IEnumerable<BusinessObjects.Model> ModelGetManyBlank(string make)
+        public IEnumerable<Model.Model> ModelGetManyBlank(string make)
         {
-            IEnumerable<BusinessObjects.Model> retVal = null;
+            IEnumerable<Model.Model> retVal = null;
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
                     para.Add("@p_make", make, dbType: DbType.String, size: 50);
-                    retVal = conn.Query<BusinessObjects.Model>("dbo.OXO_Model_GetManyBlank", para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<Model.Model>("dbo.OXO_Model_GetManyBlank", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
@@ -67,9 +67,9 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
-        public BusinessObjects.Model ModelGet(int id)
+        public Model.Model ModelGet(int id)
         {
-            BusinessObjects.Model retVal = null;
+            Model.Model retVal = null;
 
 			using (IDbConnection conn = DbHelper.GetDBConnection())
 			{
@@ -77,7 +77,7 @@ namespace FeatureDemandPlanning.DataStore
 				{
 					var para = new DynamicParameters();
 					para.Add("@p_Id", id, dbType: DbType.Int32);
-                    retVal = conn.Query<BusinessObjects.Model>("dbo.OXO_Model_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    retVal = conn.Query<Model.Model>("dbo.OXO_Model_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
 				}
 				catch (Exception ex)
 				{
@@ -88,7 +88,7 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
-        public bool ModelSave(BusinessObjects.Model obj)
+        public bool ModelSave(Model.Model obj)
         {
             bool retVal = true;
             string procName = (obj.IsNew ? "dbo.OXO_Model_New" : "dbo.OXO_Model_Edit");
@@ -182,9 +182,9 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
-        public IEnumerable<BusinessObjects.Model> GSFModelGetMany(int prog_Id, int doc_id)
+        public IEnumerable<Model.Model> GSFModelGetMany(int prog_Id, int doc_id)
         {
-            IEnumerable<BusinessObjects.Model> retVal = null;
+            IEnumerable<Model.Model> retVal = null;
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
@@ -192,7 +192,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
                     para.Add("@p_prog_Id", prog_Id, dbType: DbType.Int32);
                     para.Add("@p_doc_Id", doc_id, dbType: DbType.Int32);
-                    retVal = conn.Query<BusinessObjects.Model>("dbo.OXO_GSF_Model_GetMany", para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<Model.Model>("dbo.OXO_GSF_Model_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using FeatureDemandPlanning.Helpers;
+using FeatureDemandPlanning.Model.Helpers;
 using System.Configuration;
-using FeatureDemandPlanning.BusinessObjects;
+using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.DataStore;
-using FeatureDemandPlanning.Interfaces;
-using FeatureDemandPlanning.Enumerations;
+using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Controllers
 {

@@ -1,9 +1,9 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.BusinessObjects.Validators;
-using FeatureDemandPlanning.Enumerations;
-using FeatureDemandPlanning.Interfaces;
-using FeatureDemandPlanning.Models;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Validators;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.ViewModel;
 using FluentValidation;
 using FluentValidation.Internal;
 using System;
@@ -13,13 +13,14 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
+using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Parameters;
 
 namespace FeatureDemandPlanning.Controllers
 {
     /// <summary>
     /// Primary controller for handling viewing / editing and updating of volume (take rate information)
     /// </summary>
-    [System.Runtime.InteropServices.GuidAttribute("F9C8183E-8411-4528-A4A6-E9B7AD75CA0B")]
     public class VolumeController : ControllerBase
     {
         #region "Constructors"
@@ -37,6 +38,21 @@ namespace FeatureDemandPlanning.Controllers
 
         #endregion
 
+        [HttpGet]
+        [ActionName("Index")]
+        public ActionResult TakeRatePage()
+        {
+            return RedirectToAction("TakeRatePage", new TakeRateParameters());
+        }
+        [HttpGet]
+        public async Task<ActionResult> TakeRatePage(TakeRateParameters parameters)
+        {
+            ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
+
+            var takeRateView = await TakeRateViewModel.GetModel(DataContext, new TakeRateFilter());
+
+            return View(takeRateView);
+        }
         [HttpPost]
         public ActionResult VolumePage(Volume volume, int pageIndex)
         {
@@ -47,19 +63,19 @@ namespace FeatureDemandPlanning.Controllers
 
             switch ((VolumePage)pageIndex)
             {
-                case FeatureDemandPlanning.Enumerations.VolumePage.Vehicle:
+                case FeatureDemandPlanning.Model.Enumerations.VolumePage.Vehicle:
                     view = "_Vehicle";
                     break;
-                case FeatureDemandPlanning.Enumerations.VolumePage.ImportedData:
+                case FeatureDemandPlanning.Model.Enumerations.VolumePage.ImportedData:
                     view = "_ImportedData";
                     break;
-                case FeatureDemandPlanning.Enumerations.VolumePage.OxoDocument:
+                case FeatureDemandPlanning.Model.Enumerations.VolumePage.OxoDocument:
                     view = "_OXODocuments";
                     break;
-                case FeatureDemandPlanning.Enumerations.VolumePage.Confirm:
+                case FeatureDemandPlanning.Model.Enumerations.VolumePage.Confirm:
                     view = "_Confirm";
                     break;
-                case FeatureDemandPlanning.Enumerations.VolumePage.VolumeData:
+                case FeatureDemandPlanning.Model.Enumerations.VolumePage.VolumeData:
                     view = "_VolumeData";
                     ProcessVolumeData(model.Volume);
                     break;
@@ -113,7 +129,7 @@ namespace FeatureDemandPlanning.Controllers
         public ActionResult Document(int? oxoDocId, 
                                      int? marketGroupId, 
                                      int? marketId,
-                                     VolumeResultMode resultsMode = VolumeResultMode.Raw)
+                                     TakeRateResultMode resultsMode = TakeRateResultMode.Raw)
         {
             ViewBag.PageTitle = "OXO Volume";
 
@@ -124,7 +140,7 @@ namespace FeatureDemandPlanning.Controllers
                 MarketId = marketId,
                 Mode = resultsMode,
             };
-            return View("Volume", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, filter, PageFilter));
+            return View("Document", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, filter, PageFilter));
         }
 
         [HttpPost]
@@ -147,6 +163,16 @@ namespace FeatureDemandPlanning.Controllers
             DataContext.Volume.ProcessMappedData(volume);
         }
 
+        private static void ValidateTakeRateParameters(TakeRateParameters parameters, string ruleSetName)
+        {
+            var validator = new TakeRateParametersValidator();
+            var result = validator.Validate(parameters, ruleSet: ruleSetName);
+            if (!result.IsValid)
+            {
+                throw new ValidationException(result.Errors);
+            }
+        }
+
         #endregion
 
         #region "Private Members"
@@ -154,5 +180,23 @@ namespace FeatureDemandPlanning.Controllers
         private PageFilter _pageFilter = new PageFilter();
 
         #endregion
+    }
+
+    internal class TakeRateParametersValidator : AbstractValidator<TakeRateParameters>
+    {
+        public const string TakeRateIdentifier = "TAKE_RATE_ID";
+        public const string NoValidation = "NO_VALIDATION";
+
+        public TakeRateParametersValidator()
+        {
+            RuleSet(NoValidation, () =>
+            {
+
+            });
+            RuleSet(TakeRateIdentifier, () =>
+            {
+                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'TakeRateId' not specified");
+            });
+        }
     }
 }

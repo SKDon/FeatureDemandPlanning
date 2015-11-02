@@ -13,12 +13,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using FeatureDemandPlanning.Dapper;
-using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.Helpers;
-using FeatureDemandPlanning.Interfaces;
+using FeatureDemandPlanning.Model.Dapper;
+using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Helpers;
+using FeatureDemandPlanning.Model.Interfaces;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Filters;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -30,47 +32,84 @@ namespace FeatureDemandPlanning.DataStore
 			this.CurrentCDSID = cdsid;
 		}
 
-		public IEnumerable<Forecast> ForecastGetMany()
-		{
-			IEnumerable<Forecast> retVal = null;
-			using (IDbConnection conn = DbHelper.GetDBConnection())
-			{
-				try
-				{
-					var para = new DynamicParameters();
-						
-					retVal = conn.Query<Forecast>("dbo.Fdp_Forecast_GetMany", para, commandType: CommandType.StoredProcedure);
-				}
-				catch (Exception ex)
-				{
-					AppHelper.LogError("ForecastDataStore.ForecastGetMany", ex.Message, CurrentCDSID);
-				}
-			}
-
-			return retVal;   
-		}
-
-        public async Task<IEnumerable<Forecast>> ForecastGetManyAsync()
+        public PagedResults<ForecastSummary> ForecastGetMany(ForecastFilter filter)
         {
-            IEnumerable<Forecast> retVal = null;
+            var retVal = new PagedResults<ForecastSummary>();
+
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
+                    var totalRecords = 0;
+                    var totalDisplayRecords = 0;
 
-                    retVal = conn.Query<Forecast>("dbo.Fdp_Forecast_GetMany", para, commandType: CommandType.StoredProcedure);
+                    if (filter.ForecastId.HasValue)
+                    {
+                        para.Add("@ForecastId", filter.ForecastId.Value, dbType: DbType.Int32);
+                    }
+                    if (!string.IsNullOrEmpty(filter.FilterMessage))
+                    {
+                        para.Add("@FilterMessage", filter.FilterMessage, dbType: DbType.String, size: 50);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                    }
+
+                    // TODO implement the CDSId to get only those forecasts the user has permissions for
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = conn.Query<ForecastSummary>("dbo.Fdp_Forecast_GetMany", para, commandType: CommandType.StoredProcedure);
+
+                    if (results.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                    }
+                    retVal = new PagedResults<ForecastSummary>()
+                    {
+                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                    };
+
+                    var currentPage = new List<ForecastSummary>();
+                    foreach (var result in results)
+                    {
+                        currentPage.Add(result);
+                    }
+
+                    retVal.CurrentPage = currentPage;
                 }
                 catch (Exception ex)
                 {
                     AppHelper.LogError("ForecastDataStore.ForecastGetMany", ex.Message, CurrentCDSID);
+                    throw;
                 }
             }
 
             return retVal;
         }
 
-        public Forecast ForecastGet(int id)
+        public IForecast ForecastGet(int id)
         {
             Forecast forecast = null;
 
@@ -110,48 +149,6 @@ namespace FeatureDemandPlanning.DataStore
 
             return forecast;
         }
-
-		public async Task<Forecast> ForecastGetAsync(int id)
-		{
-			Forecast forecast = null;
-
-			using (IDbConnection conn = DbHelper.GetDBConnection())
-			{
-				try
-				{
-					var para = new DynamicParameters();
-					para.Add("@ForecastId", id, dbType: DbType.Int32);
-
-					var results = conn.QueryMultiple("dbo.Fdp_Forecast_Get", para, commandType: CommandType.StoredProcedure);
-
-					// First resultset represents basic forecast information
-
-					forecast = results.Read<Forecast>().FirstOrDefault();
-
-					// Second resultset represents the forecast vehicle
-
-					if (forecast != null)
-					{
-                        forecast.ForecastVehicle = results.Read<Vehicle>().FirstOrDefault();
-					}
-
-					// Final resultset represents the comparison vehicles
-
-					if (forecast != null)
-					{
-						forecast.ComparisonVehicles = results.Read<Vehicle>();
-					}
-				}
-				catch (Exception ex)
-				{
-				   AppHelper.LogError("ForecastDataStore.ForecastGet", ex.Message, CurrentCDSID);
-				   throw;
-				}
-			}
-
-			return forecast;
-		}
-
 		//public Forecast ForecastTrimMappingGet(int forecastId)
 		//{
 		//    using (IDbConnection conn = DbHelper.GetDBConnection())

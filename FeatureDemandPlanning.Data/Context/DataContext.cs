@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Interfaces;
-using FeatureDemandPlanning.Helpers;
+using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -23,6 +23,7 @@ namespace FeatureDemandPlanning.DataStore
             _marketContext = new MarketDataContext(cdsId);
             _volumeContext = new VolumeDataContext(cdsId);
             _referenceDataContext = new ReferenceDataContext("system");
+            _newsDataContext = new NewsDataContext(cdsId);
         }
 
         public IDbHelper GetHelper() { return new DbHelperNonSingleton(); }
@@ -37,6 +38,7 @@ namespace FeatureDemandPlanning.DataStore
         public IMarketDataContext Market { get { return _marketContext; } }
         public IVolumeDataContext Volume { get { return _volumeContext; } }
         public IReferenceDataContext References { get { return _referenceDataContext; } }
+        public INewsDataContext News { get { return _newsDataContext; } }
 
         public dynamic ConfigurationSettings { get { return _configurationContext.Configuration; } }
 
@@ -50,5 +52,6 @@ namespace FeatureDemandPlanning.DataStore
         private IMarketDataContext _marketContext = null;
         private IVolumeDataContext _volumeContext = null;
         private IReferenceDataContext _referenceDataContext = null;
+        private INewsDataContext _newsDataContext = null;
     }
 }

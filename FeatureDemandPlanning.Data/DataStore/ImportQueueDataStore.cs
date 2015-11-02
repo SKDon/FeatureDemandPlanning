@@ -1,7 +1,7 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.Dapper;
-using enums = FeatureDemandPlanning.Enumerations;
-using FeatureDemandPlanning.Helpers;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Dapper;
+using enums = FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,8 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.DataStore.DataStore;
-using FeatureDemandPlanning.BusinessObjects.Context;
-using FeatureDemandPlanning.BusinessObjects.Filters;
+using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Filters;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -42,7 +42,6 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
                     }
-
 
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -301,7 +300,15 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
                     }
-                    para.Add("@SortDirection", (int)filter.SortDirection, dbType: DbType.Int32);
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                    }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -339,7 +346,7 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
-        public ImportError ImportErrorIgnore(ImportQueueFilter filter)
+        public ImportError ImportExceptionIgnore(ImportQueueFilter filter)
         {
             ImportError retVal = new EmptyImportError();
 
@@ -350,8 +357,9 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
                     para.Add("@ExceptionId", filter.ExceptionId.Value, dbType: DbType.Int32);
                     para.Add("@IsExcluded", true, dbType:DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
 
-                    var results = connection.Query<ImportError>("dbo.Fdp_ImportError_Ignore", para, commandType: CommandType.StoredProcedure);
+                    var results = connection.Query<ImportError>("dbo.Fdp_ImportErrorExclusion_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
                     {
                         retVal = results.First();
@@ -359,7 +367,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ImportQueueDataStore.ImportErrorIgnore", ex.Message, CurrentCDSID);
+                    AppHelper.LogError("ImportQueueDataStore.ImportExceptionIgnore", ex.Message, CurrentCDSID);
                     throw;
                 }
             }
@@ -438,8 +446,8 @@ namespace FeatureDemandPlanning.DataStore
             public string StatusCode { get; set; }
             public int ImportTypeId { get; set; }
             public string Type { get; set; }
-            public int ProgrammeId { get; set; }
-            public string Gateway { get; set; }
+            public new int ProgrammeId { get; set; }
+            public new string Gateway { get; set; }
         }
 
         private class ImportStatusDataItem

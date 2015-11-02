@@ -1,0 +1,36 @@
+﻿using System;
+
+namespace FeatureDemandPlanning.Model
+{
+    public class FdpOxoDoc
+    {
+        public int? FdpOxoDocId { get; set; }
+
+        public VolumeSummary Header 
+        { 
+            get 
+            { 
+                return _header; 
+            } 
+            set 
+            { 
+                _header = value; 
+            } 
+        }
+
+        public OXODoc Document
+        {
+            get
+            {
+                return _document;
+            }
+            set
+            {
+                _document = value;
+            }
+        }
+
+        private VolumeSummary _header = new EmptyVolumeHeader();
+        private OXODoc _document = new EmptyOxoDocument();
+    }
+}

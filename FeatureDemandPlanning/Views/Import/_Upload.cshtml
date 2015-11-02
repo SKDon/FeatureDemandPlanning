@@ -1,0 +1,39 @@
+﻿@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
+
+@using (Html.BeginForm("Upload", "Import", FormMethod.Post, new { enctype = "multipart/form-data", id = "uploadForm" }))
+{
+    <div class="panel panel-primary" style="margin-right:18px">
+        <div class="panel-heading">
+            Import File
+        </div>
+       <div class="panel-body">
+
+			<div class="row">
+           <form class="form-horizontal">
+               <div class="form-group form-group-sm">
+                   <div class="col-xs-8">
+                       <input type="text" id="txtFilename" class="form-control" readonly />
+                   </div>
+                   <div class="col-xs-2">
+                       <span class="btn btn-sm btn-default btn-file">
+                           Browse&hellip; <input id="fileToUpload" name="fileToUpload" class="form-control" type="file" />
+                       </span>
+                   </div>
+                   <div class="col-xs-2">
+                       <button type="submit" class="btn btn-sm btn-primary btn-default">Import</button>
+                   </div>
+               </div>
+           </form> 
+           </div>
+		   <div class="row">
+			<div class="col-xs-10 inverse">
+			<br/>
+				[TODO Allow user to pick programme and gateway]
+			</div>
+		   </div>
+		   </div>
+		   
+
+    </div>
+
+}

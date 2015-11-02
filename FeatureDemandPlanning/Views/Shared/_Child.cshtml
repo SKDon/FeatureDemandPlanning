@@ -9,8 +9,6 @@
     @Styles.Render("~/bundles/css/bootstrap")
     @Styles.Render("~/bundles/site/css")
 
-    @Scripts.Render("~/bundles/modernizr")
-
     @RenderSection("PageStyles", false)
 </head>
 <body>
@@ -33,9 +31,7 @@
             </div>
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="~/Import"><span class="glyphicon glyphicon-import"></span> Import</a></li>
-                    <li><a href="#"><span class="glyphicon glyphicon-file"></span> Reports</a></li>
+                <ul class="nav navbar-nav pull-right">
                     <li>
                         <a href=" #">
                             <span class="glyphicon glyphicon-cog"></span> Settings
@@ -43,11 +39,16 @@
                     </li>
                 </ul>
                 <form class="navbar-form navbar-left" role="search">
-                    @*<div class="form-group">
+                    <div class="form-group">
                         <input class="form-control" placeholder="Search" type="text">
                     </div>
-                    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>*@
+                    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
                 </form>
+                
+                <div class="pull-left breadcrumb">
+                    @Html.MvcSiteMap().SiteMapPath()
+                </div>
+                    
                 <div class ="nav navbar-nav navbar-right" style="position:relative;width:230px;height:60px;">
                     <img class="navbar-right" src="~/Content/Images/Brand/jag_logo_transparent.png" style="position:absolute;left:0;bottom:0;"/>
                     <img class="navbar-right" src="~/Content/Images/Brand/lr_logo_v2_transparent.png" style="position:absolute;left:108px;bottom:0;"/>
@@ -56,11 +57,11 @@
         </div>
     </nav>
 
-    @*<div id="carouselOverlay" class="carousel-overlay">
+    <div id="carouselOverlay" class="carousel-overlay">
         <div class="carousel-overlay-child"></div>
     </div>
 
-    <img class="banner" src="~/Content/Images/Carousel/multiple.png" />*@
+    <img class="banner" src="~/Content/Images/Carousel/multiple.png" />
     
     <div class="container body-content-header">
         @RenderSection("PageContentHeader", false)
@@ -75,8 +76,6 @@
     </div>
     
     @Scripts.Render("~/bundles/shared")
-    @*@Scripts.Render("~/bundles/jquery")*@
-    @*@Scripts.Render("~/bundles/jqueryform")*@
 
     <script src="~/Content/jquery/js/jquery-2.1.4.min.js"></script>
     <script src="~/Scripts/jquery-ui-1.11.4.min.js"></script>
@@ -88,11 +87,10 @@
     <script src="~/Scripts/jquery.mouseWheel.js"></script>
     <script src="~/Scripts/jqueryFileTree.js"></script>
     <script src="~/Extensions/jquery.nivo.slider/jquery.nivo.slider.js"></script>
-
-            @Scripts.Render("~/bundles/js/dataTables")
-            @Scripts.Render("~/bundles/js/bootstrap")
-            @*<script type="text/javascript" src="https://cdn.datatables.net/r/bs-3.3.5/jq-2.1.4,dt-1.10.9,fc-3.1.0,fh-3.0.0,r-1.0.7,sc-1.3.0/datatables.js"></script>*@
-            @*<script src="@Url.Content("~/Scripts/Shared/oxo-master.js")?v=@SharedModelBase.CurrentVersion"></script>*@
-            @RenderSection("PageScripts", required: false)
+    <script src="~/Content/Spin/js/spin.min.js"></script>
+    
+    @Scripts.Render("~/bundles/js/dataTables")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @RenderSection("PageScripts", required: false)
 </body>
 </html>

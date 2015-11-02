@@ -1,27 +1,26 @@
-﻿@using FeatureDemandPlanning.BusinessObjects
-@using enums = FeatureDemandPlanning.Enumerations
+﻿@using FeatureDemandPlanning.Model
+@using FeatureDemandPlanning.Model.Extensions
+@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Models.ImportViewModel
+@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
 
 <form>
     <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix"/>
 </form>
 
-@*<div class="panel panel-default">
-    <div class="panel-body">*@
 <div class="well">
 
         @if (   Model.CurrentAction == enums.ImportExceptionAction.AddMissingDerivative || 
                 Model.CurrentAction == enums.ImportExceptionAction.MapMissingDerivative)
         { 
             <div class="row">
-                <div class="col-xs-4 text-right">Import Derivative Code:</div>
-                <div class="col-xs-8">
+                <div class="col-xs-4 text-right"><strong>Import Derivative Code:</strong></div>
+                <div id="@(Model.IdentifierPrefix)_ImportDerivativeCode" data-target="@Model.CurrentException.ImportDerivativeCode" class="col-xs-8">
                     @Model.CurrentException.ImportDerivativeCode
                 </div>
             </div>
             <div class="row">
-                <div class="col-xs-4 text-right">Import Derivative:</div>
+                <div class="col-xs-4 text-right"><strong>Import Derivative:</strong></div>
                 <div class="col-xs-8">
                     @Model.CurrentException.ImportDerivative
                 </div>
@@ -33,13 +32,13 @@
                 Model.CurrentAction == enums.ImportExceptionAction.AddSpecialFeature)
         {
             <div class="row">
-                <div class="col-xs-4 text-right">Import Feature Code:</div>
+                <div class="col-xs-4 text-right"><strong>Import Feature Code:</strong></div>
                 <div id="@(Model.IdentifierPrefix)_ImportFeatureCode" class="col-xs-8" data-target="@Model.CurrentException.ImportFeatureCode">
                     @Model.CurrentException.ImportFeatureCode
 </div>
             </div>
             <div class="row">
-                <div class="col-xs-4 text-right">Import Feature:</div>
+                <div class="col-xs-4 text-right"><strong>Import Feature:</strong></div>
                 <div class="col-xs-8">
                     @Model.CurrentException.ImportFeature
                 </div>
@@ -50,7 +49,7 @@
                 Model.CurrentAction == enums.ImportExceptionAction.MapMissingTrim)
         {
             <div class="row">
-                <div class="col-xs-4 text-right">Import Trim Level:</div>
+                <div class="col-xs-4 text-right"><strong>Import Trim Level:</strong></div>
                 <div class="col-xs-8">
                     @Model.CurrentException.ImportTrim
                 </div>
@@ -60,18 +59,33 @@
         @if (Model.CurrentAction == enums.ImportExceptionAction.MapMissingMarket)
         {
             <div class="row">
-                <div class="col-xs-4 text-right">Import Market:</div>
+                <div class="col-xs-4 text-right" id="@(Model.IdentifierPrefix)_ImportMarket" data-target="@Model.CurrentException.ImportMarket"><strong>Import Market:</strong></div>
                 <div class="col-xs-8">
                     @Model.CurrentException.ImportMarket
                 </div>
             </div>
         }
+        
+        @if (Model.CurrentAction == enums.ImportExceptionAction.IgnoreException)
+        {
+            <div class="row">
+                <div class="col-xs-4 text-right"><strong>Error Type:</strong></div>
+                <div class="col-xs-8">
+                    @Model.CurrentException.ErrorTypeDescription
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4 text-right"><strong>Message:</strong></div>
+                <div id="@(Model.IdentifierPrefix)_ErrorMessage" class=" col-xs-8">
+                    @Model.CurrentException.ErrorMessage
+                </div>
+            </div>
+        }
 
         <div class="row">
-            <div class="col-xs-4 text-right">Programme:</div>
+            <div class="col-xs-4 text-right"><strong>Programme:</strong></div>
             <div class="col-xs-8">
                 @Model.Programme.GetDisplayString()
             </div>
         </div>
     </div>
-@*</div>*@

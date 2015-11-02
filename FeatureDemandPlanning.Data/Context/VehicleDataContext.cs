@@ -1,7 +1,7 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Context;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Interfaces;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model;
 using System;
 using System.Collections.Generic;
@@ -27,6 +27,7 @@ namespace FeatureDemandPlanning.DataStore
             _transmissionDataStore = new ModelTransmissionDataStore(cdsId);
             _vehicleDataStore = new VehicleDataStore(cdsId);
             _featureDataStore = new FeatureDataStore(cdsId);
+            _derivativeDataStore = new DerivativeDataStore(cdsId);
         }
 
         public IVehicle GetVehicle(VehicleFilter filter)
@@ -76,21 +77,25 @@ namespace FeatureDemandPlanning.DataStore
                         .Distinct(new OXODocComparer());
         }
 
-        public IEnumerable<FdpVolumeHeader> ListAvailableImports(VehicleFilter filter, Programme forProgramme)
+        public IEnumerable<VolumeSummary> ListAvailableImports(VehicleFilter filter, Programme forProgramme)
         {
             var imports = _volumeDataStore
-                            .FdpVolumeHeaderGetManyByUsername(filter)
+                            .FdpVolumeHeaderGetManyByUsername(new TakeRateFilter()
+                            {
+                                ProgrammeId = filter.ProgrammeId,
+                                Gateway = filter.Gateway
+                            })
                             .ToList();
 
             foreach (var import in imports) {
-                import.Vehicle = (Vehicle)HydrateVehicleFromProgramme(forProgramme);
-                import.Vehicle.Gateway = import.Gateway;
+                //import.Vehicle = (Vehicle)HydrateVehicleFromProgramme(forProgramme);
+                //import.Vehicle.Gateway = import.Gateway;
             }
 
             return imports;
         }
 
-        public IEnumerable<BusinessObjects.Model> ListAvailableModels(VehicleFilter filter, Programme forProgramme)
+        public IEnumerable<Model.Model> ListAvailableModels(VehicleFilter filter, Programme forProgramme)
         {
             var models = _modelDataStore
                             .ModelGetMany(string.Empty, forProgramme.Id, null)
@@ -167,37 +172,46 @@ namespace FeatureDemandPlanning.DataStore
         {
             return _bodyDataStore.ModelBodyGetMany(filter.ProgrammeId.GetValueOrDefault());
         }
+        public IEnumerable<Derivative> ListDerivatives(ProgrammeFilter filter)
+        {
+            var derivatives =_derivativeDataStore.DerivativeGetMany(filter.ProgrammeId.GetValueOrDefault());
+            foreach (var derivative in derivatives)
+            {
+                if (derivative.BodyId.HasValue)
+                    derivative.Body = _bodyDataStore.ModelBodyGet(derivative.BodyId.Value);
 
+                if (derivative.EngineId.HasValue)
+                    derivative.Engine = _engineDataStore.ModelEngineGet(derivative.EngineId.Value);
+
+                if (derivative.TransmissionId.HasValue)
+                    derivative.Transmission = _transmissionDataStore.ModelTransmissionGet(derivative.TransmissionId.Value);
+            }
+            return derivatives;
+        }
         public IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter)
         {
             return _transmissionDataStore.ModelTransmissionGetMany(filter.ProgrammeId.GetValueOrDefault());   
         }
-
         public IEnumerable<ModelEngine> ListEngines(ProgrammeFilter filter)
         {
             return _engineDataStore.ModelEngineGetMany(filter.ProgrammeId.GetValueOrDefault());
         }
-
         public IEnumerable<ModelTrim> ListTrim(ProgrammeFilter filter)
         {
             return _trimDataStore.ModelTrimGetMany(filter.ProgrammeId.GetValueOrDefault());
         }
-
         public IEnumerable<Feature> ListFeatures(ProgrammeFilter filter)
         {
             return _featureDataStore.FeatureGetMany("fdp", filter.VehicleId.GetValueOrDefault());
         }
-
         public IEnumerable<FeatureGroup> ListFeatureGroups(ProgrammeFilter filter)
         {
             return _featureDataStore.FeatureGroupGetMany();
         }
-
         public EngineCodeMapping UpdateEngineCodeMapping(EngineCodeMapping mapping)
         {
             return _programmeDataStore.EngineCodeMappingSave(mapping);
         }
-
         public Programme GetProgramme(ProgrammeFilter filter)
         {
             var programmes = ListProgrammes(filter);
@@ -233,12 +247,12 @@ namespace FeatureDemandPlanning.DataStore
             return programmes.Select(p => HydrateVehicleFromProgramme(p, filter.VehicleIndex));
         }
 
-        private IVehicle HydrateVehicleFromProgramme(BusinessObjects.Programme programme)
+        private IVehicle HydrateVehicleFromProgramme(Programme programme)
         {
             return HydrateVehicleFromProgramme(programme, null);
         }
 
-        private IVehicle HydrateVehicleFromProgramme(BusinessObjects.Programme programme, int? vehicleIndex)
+        private IVehicle HydrateVehicleFromProgramme(Programme programme, int? vehicleIndex)
         {
             if (programme == null)
                 return new EmptyVehicle();
@@ -283,5 +297,6 @@ namespace FeatureDemandPlanning.DataStore
         private ModelTrimDataStore _trimDataStore = null;
         private ModelEngineDataStore _engineDataStore = null;
         private FeatureDataStore _featureDataStore = null;
+        private DerivativeDataStore _derivativeDataStore = null;
     }
 }

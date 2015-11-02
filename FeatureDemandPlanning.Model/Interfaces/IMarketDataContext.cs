@@ -1,12 +1,12 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Filters;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FeatureDemandPlanning.Interfaces
+namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IMarketDataContext
     {
@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.Interfaces
         Market AddTopMarket(int marketId);
         Market DeleteTopMarket(int marketId);
 
-        IEnumerable<BusinessObjects.Model> ListAvailableModelsByMarket(OXODoc forDocument, Market byMarket);
-        IEnumerable<BusinessObjects.Model> ListAvailableModelsByMarketGroup(OXODoc forDocument, MarketGroup byMarketGroup);
+        IEnumerable<Model> ListAvailableModelsByMarket(OXODoc forDocument, Market byMarket);
+        IEnumerable<Model> ListAvailableModelsByMarketGroup(OXODoc forDocument, MarketGroup byMarketGroup);
     }
 }

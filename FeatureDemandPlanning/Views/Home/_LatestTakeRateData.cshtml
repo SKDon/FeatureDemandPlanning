@@ -1,0 +1,18 @@
+﻿@model FeatureDemandPlanning.Model.ViewModel.HomeViewModel
+
+@foreach (var summary in Model.LatestTakeRateData)
+{
+    <div class="row inverse" style="font-size:0.8em;">
+        <div class="col-lg-12">
+            <blockquote style="padding:0px 20px;margin:0px 0px 10px">
+                <h5>@Html.ActionLink(
+                    string.Format("{0} - {1}, {2}", summary.Code, summary.ModelYear, summary.Gateway),
+                    "Document",
+                    "Volume",
+                    new { OxoDocId = summary.OxoDocId },
+                    new { @class = "inverse" })</h5>
+                <footer style="font-size:10px;">Created on @(summary.CreatedOn.ToString("D")) by @summary.CreatedBy </footer>
+            </blockquote>
+        </div>
+    </div>
+}

@@ -5,11 +5,11 @@ using System.Web;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using FeatureDemandPlanning.BusinessObjects;
+using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.DataStore;
-using FeatureDemandPlanning.Interfaces;
+using FeatureDemandPlanning.Model.Interfaces;
 
-namespace FeatureDemandPlanning.Helpers
+namespace FeatureDemandPlanning.Model.Helpers
 {
     public static class DbHelper
     {

@@ -1,7 +1,19 @@
-﻿@using FeatureDemandPlanning.BusinessObjects
-@using enums = FeatureDemandPlanning.Enumerations
+﻿@using FeatureDemandPlanning.Model
+@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Models.ImportViewModel
+@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
+
+<div class="alert alert-info">
+    <div class="row">
+        <div class="col-lg-1 text-center">
+            <span class="glyphicon glyphicon-info-sign"></span>
+        </div>
+        <div class="col-lg-11">
+            <p>Map imported market to an existing OXO market.</p>
+            <p>Click <strong>'OK'</strong> to continue.</p>
+        </div>
+    </div>
+</div>
 
 @Html.Partial("_ImportActionHeader", Model)
 
@@ -10,10 +22,42 @@
         <div class="panel-title">Mapping</div>
     </div>
     <div class="panel-body">
-        <div class="form-group form-group-sm">
-            <div class="col-lg-12">
-               <input id="txtMapMarketName" type="text" data-provide="typeahead" class="form-control" placeholder="Enter Market Name"/>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_SelectMarket">Market Group:</label>
+                <div class="col-sm-8">
+                    <button id="@(Model.IdentifierPrefix)_SelectMarketGroup" type="button" class="btn btn-sm btn-default dropdown-toggle col-sm-12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span id="@(Model.IdentifierPrefix)_SelectedMarketGroup">Select Market Group</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul id="@(Model.IdentifierPrefix)_MarketGroupList" class="dropdown-menu">
+                        @foreach (var group in Model.AvailableMarkets.Where(m => !string.IsNullOrEmpty(m.GroupName)).Select(m => m.GroupName).OrderBy(m => m).Distinct())
+                        {
+                            <li><a class="market-group-item" href="#" data-target="@group">@group</a></li>
+                        }
+                        <li class="divider"></li>
+                        <li><a class="market-group-item" href="#" data-target="">No Group</a></li>
+                    </ul>
+                </div>
             </div>
-        </div>
+        </form>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_SelectMarket">Market:</label>
+                <div class="col-sm-8">
+                    <button id="@(Model.IdentifierPrefix)_SelectMarket" type="button" class="btn btn-sm btn-default dropdown-toggle col-sm-12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span id="@(Model.IdentifierPrefix)_SelectedMarket">Select Market</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul id="@(Model.IdentifierPrefix)_MarketList" class="dropdown-menu">
+                        @foreach (var market in Model.AvailableMarkets)
+                        {
+                            <li><a class="market-item" href="#" data-target="@market.Id" data-content="@market.Name" data-filter="@market.GroupName">@market.Name</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
+

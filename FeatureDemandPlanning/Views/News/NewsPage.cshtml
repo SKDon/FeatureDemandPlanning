@@ -1,0 +1,51 @@
+﻿@using FeatureDemandPlanning.Model
+@using FeatureDemandPlanning.Model.Extensions
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.NewsViewModel
+
+@*@section PageContentHeader
+    {
+    <div class="row">
+        <div class="col-lg-5 inverse" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:160px">
+                <div class="panel-body" style="background:none !important">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <img src="~/Content/Images/Icons/news64.png" style="margin-top:15px" />
+                        </div>
+                        <div class="col-lg-10">
+                            <h3 style="margin-top:5px">News</h3>
+                            <h4 id="lblVehicleDescription">Latest news for Feature Demand Planning</h4>
+
+                            <p class="page-description">View the latest news articles for feature demand planning</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}*@
+
+@section PageBody
+{
+<div class="row" style="height:20px"></div>
+    @foreach (var newsArticle in Model.News)
+    {
+        <div class="panel panel-primary">
+            <div class="panel-body inverse">
+                <blockquote>
+                    <h4>@newsArticle.Headline</h4>
+                    <p>@newsArticle.Body</p>
+                    <footer>Posted on @(newsArticle.CreatedOn.Value.ToString("D")) by @newsArticle.CreatedBy </footer>
+                </blockquote>
+            </div>
+        </div>
+    }
+
+}
+
+
+
+
+

@@ -7,6 +7,7 @@ $(document).ready(function () {
     derivative = new FeatureDemandPlanning.Import.Derivative(params);
     feature = new FeatureDemandPlanning.Import.Feature(params);
     trim = new FeatureDemandPlanning.Import.Trim(params);
+    ignore = new FeatureDemandPlanning.Import.Ignore(params);
    
     page = new FeatureDemandPlanning.Import.ExceptionsPage(
         [
@@ -15,7 +16,8 @@ $(document).ready(function () {
             market,
             derivative,
             trim,
-            feature
+            feature,
+            ignore
         ]);
 
     page.initialise();

@@ -1,12 +1,12 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.BusinessObjects.Context;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FeatureDemandPlanning.Interfaces
+namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IVehicleDataContext
     {
@@ -19,6 +19,7 @@ namespace FeatureDemandPlanning.Interfaces
         Programme GetProgramme(ProgrammeFilter filter);
 
         IEnumerable<ModelBody> ListBodies(ProgrammeFilter filter);
+        IEnumerable<Derivative> ListDerivatives(ProgrammeFilter filter);
         IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter);
         IEnumerable<ModelEngine> ListEngines(ProgrammeFilter filter);
         IEnumerable<ModelTrim> ListTrim(ProgrammeFilter filter);

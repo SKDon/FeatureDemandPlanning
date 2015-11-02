@@ -9,61 +9,25 @@ model.Market = function (params) {
 
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Config = params.Configuration;
-    privateStore[me.id].MapMarketContentUri = params.MapMarketContentUri;
-    privateStore[me.id].MapMarketActionUri = params.MapMarketContentUri;
-    privateStore[me.id].ListAvailableMarketsUri = params.ListAvailableMarketsUri;
-    privateStore[me.id].CurrentMarket = null;
-    privateStore[me.id].AvailableMarkets = [];
-    privateStore[me.id].Parameters = {};
-    
+    privateStore[me.id].ModalContentUri = params.ModalContentUri;
+    privateStore[me.id].ModalActionUri = params.ModalActionUri;
+    privateStore[me.id].Parameters = params;
+
     me.ModelName = "Market";
 
     me.initialise = function () {
-        me.listAvailableMarkets();
     };
-    me.getActionUri = function (actionId) {
-        var uri = "";
-        switch (actionId) {
-            case 1:
-                uri = me.getMapMarketActionUri();
-                break;
-            default:
-                break;
-        }
-        return uri;
+    me.getActionContentUri = function (action) {
+        return privateStore[me.id].ModalContentUri;
     };
-    me.getActionContentUri = function (actionId) {
-        var uri = "";
-        switch (actionId) {
-            case 1:
-                uri = me.getMapMarketContentUri();
-                break;
-            default:
-                break;
-        }
-        return uri;
+    me.getActionModel = function (action) {
+        return new FeatureDemandPlanning.Import.MapMarketAction(me.getParameters());
     };
-    me.getActionTitle = function (actionId) {
-        var title = "";
-        switch (actionId) {
-            case 1:
-                title = "Map Market to OXO";
-                break;
-            default:
-                break;
-        }
-        return title;
+    me.getActionUri = function (action) {
+        return privateStore[me.id].ModalActionUri;
     };
-    me.getAvailableMarkets = function () {
-        var availableMarkets = [];
-        for (var i = 0; i < privateStore[me.id].AvailableMarkets.length; i++)
-        {
-            availableMarkets.push(privateStore[me.id].AvailableMarkets[i].Name);
-        }
-        return availableMarkets;
-    };
-    me.setAvailableMarkets = function (markets) {
-        privateStore[me.id].AvailableMarkets = markets.AvailableMarkets;
+    me.getActionTitle = function (action) {
+        return "Map Market to OXO";
     };
     me.getConfiguration = function () {
         return privateStore[me.id].Configuration;
@@ -71,36 +35,11 @@ model.Market = function (params) {
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
     };
+    me.getVehicleId = function () {
+        return getData().VehicleId;
+    };
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;
-    }
-    me.getMapMarketContentUri = function () {
-        return privateStore[me.id].MapMarketContentUri;
-    };
-    me.getMapMarketActionUri = function () {
-        return privateStore[me.id].MapMarketActionUri;
-    };
-    me.getAvailableMarketsUri = function () {
-        return privateStore[me.id].ListAvailableMarketsUri;
-    };
-    me.getMarketIdFromName = function (marketName) {
-        var availableMarketId = 0;
-        for (var i = 0; i < privateStore[me.id].AvailableMarkets; i++) {
-            if (marketName == privateStore[me.id].AvailableMarkets[i].Name) {
-                availableMarketId = privateStore[me.id].AvailableMarkets[i].Id;
-                break;
-            }
-        }
-        return availableMarketId;
-    };
-    me.getProgrammeId = function() {
-        return getData().ProgrammeId;
-    };
-    me.listAvailableMarkets = function () {
-        sendData(me.getAvailableMarketsUri(), { ProgrammeId: me.getProgrammeId() }, me.setAvailableMarkets);
-    };
-    me.mapMarket = function (importMarket, mapMarketId, callback) {
-        sendData(me.getMapMarketActionUri(), { ImportMarket: importMarket, MapMarketId: mapMarketId }, callback);
     };
     function getData() {
         var params = me.getParameters();

@@ -1,4 +1,4 @@
-﻿using FeatureDemandPlanning.Interfaces;
+﻿using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model;
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace FeatureDemandPlanning.DataStore
             _referenceDataStore = new ReferenceListDataStore(cdsId);
         }
 
-        public IEnumerable<BusinessObjects.ReferenceList> ListReferencesByKey(string key)
+        public IEnumerable<ReferenceList> ListReferencesByKey(string key)
         {
             return _referenceDataStore.ReferenceListGetMany(key);
         }

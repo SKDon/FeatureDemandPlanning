@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using FeatureDemandPlanning.BusinessObjects;
+using FeatureDemandPlanning.Model;
 using System.Data;
-using FeatureDemandPlanning.Helpers;
-using FeatureDemandPlanning.Dapper;
+using FeatureDemandPlanning.Model.Helpers;
+using FeatureDemandPlanning.Model.Dapper;
 
 namespace FeatureDemandPlanning.DataStore
 {

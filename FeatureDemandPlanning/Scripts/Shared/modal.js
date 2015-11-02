@@ -41,6 +41,10 @@ model.Modal = function (params) {
         privateStore[me.id].ModalParameters = parameters;
     };
     me.getModelContent = function (title, contentUri, data) {
+        var dialog = $("#" + me.getModalDialogId());
+        var tit = dialog.find("#Modal_Title");
+        tit.html(title);
+        
         $.ajax({
             url: contentUri,
             method: "POST",
@@ -94,7 +98,7 @@ model.Modal = function (params) {
         me.setActionModel(parameters.ActionModel);
 
         dialog
-            .unbind("show.bs.modal").on('show.bs.modal', function () {
+            .unbind("shown.bs.modal").on('shown.bs.modal', function () {
                 me.getModelContent(parameters.Title, parameters.Uri, parameters.Data);
             })
             .modal();
@@ -105,11 +109,10 @@ model.Modal = function (params) {
     function showModalCallback(response, title) {
         var dialog = $("#" + me.getModalDialogId());
         var content = dialog.find("#Modal_Content");
-        var tit = dialog.find("#Modal_Title");
+        
         var model = me.getModel();
         var actionModel = me.getActionModel();
 
-        tit.html(title);
         content.html(response);
 
         model.initialise();

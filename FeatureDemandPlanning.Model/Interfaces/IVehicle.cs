@@ -1,11 +1,11 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
+﻿using FeatureDemandPlanning.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FeatureDemandPlanning.Interfaces
+namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IVehicle
     {
@@ -25,8 +25,8 @@ namespace FeatureDemandPlanning.Interfaces
         IList<ForecastTrimMapping> TrimMappings { get; set; }
         IEnumerable<Programme> Programmes { get; set; }
         IEnumerable<OXODoc> AvailableDocuments { get; set; }
-        IEnumerable<FdpVolumeHeader> AvailableImports { get; set; }
-        IEnumerable<BusinessObjects.Model> AvailableModels { get; set; }
+        IEnumerable<VolumeSummary> AvailableImports { get; set; }
+        IEnumerable<Model> AvailableModels { get; set; }
         IEnumerable<MarketGroup> AvailableMarketGroups { get; set; }
         //IEnumerable<Market> AvailableMarkets { get; set; }
 

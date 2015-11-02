@@ -1,9 +1,10 @@
-﻿using FeatureDemandPlanning.Attributes;
-using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Enumerations;
-using FeatureDemandPlanning.Models;
-using FeatureDemandPlanning.Results;
+﻿using FeatureDemandPlanning.Model.Attributes;
+using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.ViewModel;
+using FeatureDemandPlanning.Model.Parameters;
+using FeatureDemandPlanning.Model.Results;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -165,9 +166,9 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> IgnoreException(ImportExceptionParameters parameters)
         {
             var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value);
-            var importView = await ImportViewModel.GetModel(DataContext, filter);
+            var importView = await GetModelFromParameters(parameters);
 
-            importView.CurrentException = await DataContext.Import.Ignore(filter);
+            importView.CurrentException = await DataContext.Import.IgnoreException(filter);
 
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
@@ -206,9 +207,14 @@ namespace FeatureDemandPlanning.Controllers
         public const string ExceptionIdentifierWithAction = "EXCEPTION_ID_WITH_ACTION";
         public const string ImportQueueIdentifier = "IMPORT_QUEUE_ID";
         public const string ExceptionIdentifierWithActionAndProgramme = "EXCEPTION_ID_WITH_ACTION_AND_PROGRAMME";
+        public const string NoValidation = "NO_VALIDATION";
 
         public ImportExceptionParametersValidator()
         {
+            RuleSet(NoValidation, () =>
+            {
+
+            });
             RuleSet(ImportQueueIdentifier, () =>
             {
                 RuleFor(p => p.ImportQueueId).NotNull().WithMessage("'ImportQueueId' not specified");
@@ -230,44 +236,41 @@ namespace FeatureDemandPlanning.Controllers
             });
             RuleSet(Enum.GetName(typeof(ImportExceptionAction), ImportExceptionAction.AddMissingDerivative), () =>
             {
-                RuleFor(p => p.DerivativeCode).NotEmpty().WithMessage("'DerivateCode' not specified");
-                RuleFor(p => p.BodyId).NotNull().WithMessage("'BodyId' not specified");
-                RuleFor(p => p.EngineId).NotNull().WithMessage("'EngineId' not specified");
-                RuleFor(p => p.TransmissionId).NotNull().WithMessage("'TransmissionId' not specified");
+                RuleFor(p => p.DerivativeCode).NotEmpty().WithMessage("'Derivative Code' not specified");
+                RuleFor(p => p.BodyId).NotNull().WithMessage("'Body' not specified");
+                RuleFor(p => p.EngineId).NotNull().WithMessage("'Engine' not specified");
+                RuleFor(p => p.TransmissionId).NotNull().WithMessage("'Transmission' not specified");
             });
             RuleSet(Enum.GetName(typeof(ImportExceptionAction), ImportExceptionAction.AddMissingFeature), () =>
             {
-                RuleFor(p => p.FeatureCode).NotEmpty().WithMessage("'FeatureCode' not specified");
-                RuleFor(p => p.FeatureDescription).NotNull().WithMessage("'FeatureDescription' not specified");
-                RuleFor(p => p.FeatureGroupId).NotNull().WithMessage("'FeatureGroupId' not specified");
+                RuleFor(p => p.FeatureCode).NotEmpty().WithMessage("'Feature Code' not specified");
+                RuleFor(p => p.FeatureDescription).NotNull().WithMessage("'Feature Description' not specified");
+                RuleFor(p => p.FeatureGroupId).NotNull().WithMessage("'Feature Group' not specified");
             });
             RuleSet(Enum.GetName(typeof(ImportExceptionAction), ImportExceptionAction.AddMissingTrim), () =>
             {
-                RuleFor(p => p.TrimName).NotEmpty().WithMessage("'TrimName' not specified");
-                RuleFor(p => p.TrimAbbreviation).NotEmpty().WithMessage("'TrimAbbreviation' not specified");
-                RuleFor(p => p.TrimLevel).NotEmpty().WithMessage("'TrimLevel' not specified");
+                RuleFor(p => p.TrimName).NotEmpty().WithMessage("'Name' not specified");
+                RuleFor(p => p.TrimAbbreviation).NotEmpty().WithMessage("'Abbreviation' not specified");
+                RuleFor(p => p.TrimLevel).NotEmpty().WithMessage("'Level' not specified");
                 RuleFor(p => p.DPCK).NotEmpty().WithMessage("'DPCK' not specified");
             });
             RuleSet(Enum.GetName(typeof(ImportExceptionAction), ImportExceptionAction.AddSpecialFeature), () =>
             {
-                RuleFor(p => p.FeatureCode).NotEmpty().WithMessage("'FeatureCode' not specified");
-                RuleFor(p => p.SpecialFeatureTypeId).NotEmpty().WithMessage("'SpecialFeatureId' not specified");
+                RuleFor(p => p.FeatureCode).NotEmpty().WithMessage("'Feature Code' not specified");
+                RuleFor(p => p.SpecialFeatureTypeId).NotEmpty().WithMessage("'Special Feature' not specified");
             });
             RuleSet(Enum.GetName(typeof(ImportExceptionAction), ImportExceptionAction.IgnoreException), () =>
             {
             });
             RuleSet(Enum.GetName(typeof(ImportExceptionAction), ImportExceptionAction.MapMissingDerivative), () =>
             {
-                RuleFor(p => p.ImportDerivativeCode).NotEmpty().WithMessage("'ImportDerivativeCode' not specified");
-                RuleFor(p => p.DerivativeCode).NotEmpty().WithMessage("'DerivateCode' not specified");
-                RuleFor(p => p.BodyId).NotNull().WithMessage("'BodyId' not specified");
-                RuleFor(p => p.EngineId).NotNull().WithMessage("'EngineId' not specified");
-                RuleFor(p => p.TransmissionId).NotNull().WithMessage("'TransmissionId' not specified");
+                RuleFor(p => p.ImportDerivativeCode).NotEmpty().WithMessage("'Import Derivative Code' not specified");
+                RuleFor(p => p.DerivativeCode).NotEmpty().WithMessage("'Derivative Code' not specified");
             });
             RuleSet(Enum.GetName(typeof(ImportExceptionAction), ImportExceptionAction.MapMissingFeature), () =>
             {
-                RuleFor(p => p.ImportFeatureCode).NotEmpty().WithMessage("'ImportFeatureCode' not specified");
-                RuleFor(p => p.FeatureCode).NotEmpty().WithMessage("'FeatureCode' not specified");
+                RuleFor(p => p.ImportFeatureCode).NotEmpty().WithMessage("'Import Feature Code' not specified");
+                RuleFor(p => p.FeatureCode).NotEmpty().WithMessage("'Feature Code' not specified");
             });
         }
     }

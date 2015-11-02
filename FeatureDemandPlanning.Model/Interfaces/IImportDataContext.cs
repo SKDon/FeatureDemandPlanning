@@ -1,13 +1,13 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Context;
-using FeatureDemandPlanning.BusinessObjects.Filters;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FeatureDemandPlanning.Interfaces
+namespace FeatureDemandPlanning.Model.Interfaces
 {
     /// <summary>
     /// Contract defining the methods available on the import data context
@@ -26,15 +26,15 @@ namespace FeatureDemandPlanning.Interfaces
         Task<ImportError> GetException(ImportQueueFilter filter);
         Task<PagedResults<ImportError>> ListExceptions(ImportQueueFilter filter);
 
-        Task<ImportError> Ignore(ImportQueueFilter filter);
+        Task<ImportError> IgnoreException(ImportQueueFilter filter);
 
         Task<ImportError> AddMarket(ImportQueueFilter filter, string market);
         Task<ImportError> MapMarket(ImportQueueFilter filter, string market, string marketToMapTo);
 
-        Task<ImportError> AddDerivative(ImportQueueFilter filter, BusinessObjects.Model derivativeToAdd);
+        Task<ImportError> AddDerivative(ImportQueueFilter filter, Model derivativeToAdd);
         Task<ImportError> MapDerivative(ImportQueueFilter filter,
-                                        BusinessObjects.Model derivativeToMap,
-                                        BusinessObjects.Model derivativeToMapTo);
+                                        Model derivativeToMap,
+                                        Model derivativeToMapTo);
 
         Task<ImportError> AddFeature(ImportQueueFilter filter, Feature featureToAdd);
         Task<ImportError> MapFeature(ImportQueueFilter filter, Feature featureToMap, Feature featureToMapTo);

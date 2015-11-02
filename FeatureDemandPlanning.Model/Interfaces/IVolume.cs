@@ -1,5 +1,5 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.Enumerations;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FeatureDemandPlanning.Interfaces
+namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IVolume
     {
@@ -17,11 +17,11 @@ namespace FeatureDemandPlanning.Interfaces
         Market Market { get; set; }
         MarketGroup MarketGroup { get; set; }
 
-        VolumeResultMode Mode { get; set; }
+        TakeRateResultMode Mode { get; set; }
 
         int TotalDerivatives { get; set; }
 
-        IEnumerable<FdpVolumeHeader> FdpVolumeHeaders { get; set; }
+        IEnumerable<VolumeSummary> VolumeSummary { get; set; }
         VolumeData VolumeData { get; set; }
     }
 }

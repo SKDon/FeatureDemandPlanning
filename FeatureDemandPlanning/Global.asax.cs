@@ -6,7 +6,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using FeatureDemandPlanning.Helpers;
+using FeatureDemandPlanning.Model.Helpers;
 using FluentValidation.Mvc;
 
 namespace FeatureDemandPlanning

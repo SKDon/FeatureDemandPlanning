@@ -1,8 +1,7 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Context;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Interfaces;
-using FeatureDemandPlanning.Model;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,35 +18,10 @@ namespace FeatureDemandPlanning.DataStore
             _programmeDataStore = new ProgrammeDataStore(cdsId);
             _modelTrimDataStore = new ModelTrimDataStore(cdsId);
             _transmissionDataStore = new ModelTransmissionDataStore(cdsId);
-        }
-        
-        public IForecast GetForecast(ForecastFilter filter)
-        {
-            IForecast forecast = null;
-
-            if (!filter.ForecastId.HasValue)
-            {
-                throw new ArgumentNullException("filter.ForecastId not specified");
-            }
-
-            forecast = _forecastDataStore.ForecastGet(filter.ForecastId.Value);
-
-            if (forecast == null)
-            {
-                throw new ArgumentException(string.Format("Forecast {0} not found", filter.ForecastId.Value));
-            }
-
-            //HydrateForecastAsync(forecast);           
-            //HydrateVehicleProgrammeAsync(forecast.ForecastVehicle);
-            //HydrateComparisonVehicleProgrammesAsync(forecast);
-            //HydrateVehicleTrimLevelsAsync(forecast.ForecastVehicle);
-            //HydrateComparisonVehicleTrimLevelsAsync(forecast);
-            //HydrateComparisonVehicleTrimMappingsAsync(forecast);
-
-            return forecast;
+            _vehicleDataStore = new VehicleDataStore(cdsId);
         }
 
-        public async Task<IForecast> GetForecastAsync(ForecastFilter filter)
+        public async Task<IForecast> GetForecast(ForecastFilter filter)
         {
             IForecast forecast = null;
 
@@ -56,7 +30,7 @@ namespace FeatureDemandPlanning.DataStore
                 throw new ArgumentNullException("ForecastId not specified");
             }
 
-            forecast = await _forecastDataStore.ForecastGetAsync(filter.ForecastId.Value);
+            forecast = await Task.FromResult<IForecast>(_forecastDataStore.ForecastGet(filter.ForecastId.Value));
 
             if (forecast == null)
             {
@@ -68,16 +42,18 @@ namespace FeatureDemandPlanning.DataStore
             return forecast;
         }
 
-        public PagedResults<IForecast> ListForecasts(ForecastFilter filter)
+        public async Task<PagedResults<ForecastSummary>> ListLatestForecasts()
         {
-            throw new NotImplementedException();
+            var forecasts = await ListForecasts(new ForecastFilter());
+
+            forecasts.CurrentPage = forecasts.CurrentPage.Take(5);
+
+            return forecasts;
         }
-
-        public async Task<PagedResults<IForecast>> ListForecastsAsync(ForecastFilter filter)
+        public async Task<PagedResults<ForecastSummary>> ListForecasts(ForecastFilter filter)
         {
-            var forecasts = _forecastDataStore.ForecastGetManyAsync().Result.Select(f => HydrateForecast(f));
-
-            return new PagedResults<IForecast>(forecasts);
+            return await Task.FromResult<PagedResults<ForecastSummary>>(
+                _forecastDataStore.ForecastGetMany(filter));
         }
 
         public IForecast SaveForecast(IForecast forecastToSave)
@@ -102,26 +78,17 @@ namespace FeatureDemandPlanning.DataStore
             throw new NotImplementedException();
         }
 
-        private IForecast HydrateForecast(IForecast forecast)
+        private async Task<IForecast> HydrateForecast(ForecastSummary forecast)
         {
-            //await HydrateVehicleProgrammeAsync(forecast.ForecastVehicle);
-            //await HydrateComparisonVehicleProgrammesAsync(forecast);
-            //await HydrateVehicleTrimLevelsAsync(forecast.ForecastVehicle);
-            //await HydrateComparisonVehicleTrimLevelsAsync(forecast);
-            //await HydrateComparisonVehicleTrimMappingsAsync(forecast);
+            var programme = _programmeDataStore.ProgrammeGet(forecast.ProgrammeId);
 
-            return forecast;
-        }
-
-        private void HydrateComparisonVehicleProgrammesAsync(IForecast forecast)
-        {
-            if (forecast.ComparisonVehicles == null || !forecast.ComparisonVehicles.Any())
-                return;
-
-            foreach (var comparisonVehicle in forecast.ComparisonVehicles)
+            return await Task.FromResult<Forecast>(new Forecast()
             {
-                HydrateVehicleProgrammeAsync(comparisonVehicle);
-            }
+                ForecastId = forecast.ForecastId,
+                CreatedOn = forecast.CreatedOn,
+                CreatedBy = forecast.CreatedBy,
+                ForecastVehicle = new Vehicle() { ProgrammeId = forecast.ProgrammeId, Gateway = forecast.Gateway }
+            });
         }
 
         public void HydrateComparisonVehiclesTrimMappings(IForecast forecast)
@@ -178,5 +145,6 @@ namespace FeatureDemandPlanning.DataStore
         private ProgrammeDataStore _programmeDataStore = null;
         private ModelTrimDataStore _modelTrimDataStore = null;
         private ModelTransmissionDataStore _transmissionDataStore = null;
+        private VehicleDataStore _vehicleDataStore = null;
     }
 }

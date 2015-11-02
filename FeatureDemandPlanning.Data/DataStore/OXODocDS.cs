@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using FeatureDemandPlanning.Dapper;
-using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.Helpers;
+using FeatureDemandPlanning.Model.Dapper;
+using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Helpers;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using FeatureDemandPlanning.DataStore;
@@ -419,9 +419,9 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
-        public IEnumerable<BusinessObjects.Model> OXODocAvailableModelsByMarketGroup(int progId, int docId, int marketGroupId)
+        public IEnumerable<Model.Model> OXODocAvailableModelsByMarketGroup(int progId, int docId, int marketGroupId)
         {
-            IEnumerable<BusinessObjects.Model> retVal = null;
+            IEnumerable<Model.Model> retVal = null;
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
@@ -430,7 +430,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@p_prog_id", progId, dbType: DbType.Int32);
                     para.Add("@p_doc_id", docId, dbType: DbType.Int32);
                     para.Add("@p_group_id", marketGroupId, dbType: DbType.Int32);
-                    retVal = conn.Query<BusinessObjects.Model>("dbo.OXO_AvailableModel_MarketGroup", para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<Model.Model>("dbo.OXO_AvailableModel_MarketGroup", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
@@ -442,9 +442,9 @@ namespace FeatureDemandPlanning.DataStore
 
         }
 
-        public IEnumerable<BusinessObjects.Model> OXODocAvailableModelsByMarket(int progId, int docId, int marketId)
+        public IEnumerable<Model.Model> OXODocAvailableModelsByMarket(int progId, int docId, int marketId)
         {
-            IEnumerable<BusinessObjects.Model> retVal = null;
+            IEnumerable<Model.Model> retVal = null;
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
@@ -453,7 +453,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@p_prog_id", progId, dbType: DbType.Int32);
                     para.Add("@p_doc_id", docId, dbType: DbType.Int32);
                     para.Add("@p_market_id", marketId, dbType: DbType.Int32);
-                    retVal = conn.Query<BusinessObjects.Model>("dbo.OXO_AvailableModel_Market", para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<Model.Model>("dbo.OXO_AvailableModel_Market", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {

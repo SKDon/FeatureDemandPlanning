@@ -1,8 +1,8 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Context;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Interfaces;
-using FeatureDemandPlanning.Models;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,25 +63,25 @@ namespace FeatureDemandPlanning.Controllers
             }
         }
 
-        public async Task<ActionResult> SaveForecast(Forecast forecastToSave)
-        {
-            try
-            {
-                var result = this.DataContext.Forecast.SaveForecast(forecastToSave);
-                var model = await GetFullOrPartialViewModelAsync(new ForecastFilter(result.ForecastId));
+        //public async Task<ActionResult> SaveForecast(Forecast forecastToSave)
+        //{
+        //    try
+        //    {
+        //        var result = this.DataContext.Forecast.SaveForecast(forecastToSave);
+        //        var model = await GetFullOrPartialViewModelAsync(new ForecastFilter(result.ForecastId));
 
-                if (Request.IsAjaxRequest())
-                {
-                    return Json(model.Forecast, JsonRequestBehavior.AllowGet);           
-                }
+        //        if (Request.IsAjaxRequest())
+        //        {
+        //            return Json(model.Forecast, JsonRequestBehavior.AllowGet);           
+        //        }
 
-                return View("Forecast", model.Forecast);
-            }
-            catch (ApplicationException ex)
-            {
-                throw ex;
-            }
-        }
+        //        return View("Forecast", model.Forecast);
+        //    }
+        //    catch (ApplicationException ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
 
         public async Task<ActionResult> DeleteForecast(Forecast forecastToDelete)
         {
@@ -107,15 +107,15 @@ namespace FeatureDemandPlanning.Controllers
         private async Task<ForecastComparisonViewModel> GetFullOrPartialViewModelAsync(ForecastFilter filter)
         {
             IForecast forecast = new EmptyForecast();
-            PagedResults<IForecast> forecasts = new PagedResults<IForecast>();
+            PagedResults<ForecastSummary> forecasts = new PagedResults<ForecastSummary>();
 
             if (filter.ForecastId.HasValue)
             {
-                forecast = await this.DataContext.Forecast.GetForecastAsync(filter);
+                forecast = await this.DataContext.Forecast.GetForecast(filter);
             }
             else
             {
-                forecasts = await this.DataContext.Forecast.ListForecastsAsync(filter);
+                forecasts = await this.DataContext.Forecast.ListForecasts(filter);
             }
 
             var forecastComparisonModel = new ForecastComparisonViewModel(this.DataContext)

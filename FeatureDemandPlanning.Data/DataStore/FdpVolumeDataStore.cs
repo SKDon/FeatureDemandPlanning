@@ -1,7 +1,9 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Dapper;
-using FeatureDemandPlanning.Helpers;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Extensions;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Dapper;
+using FeatureDemandPlanning.Model.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -81,7 +83,7 @@ namespace FeatureDemandPlanning.DataStore
                         cmd.Parameters.Add(new SqlParameter("@Mode", SqlDbType.NVarChar, 2) { Value = "MG" });
                     }
 
-                    if (filter.Mode == Enumerations.VolumeResultMode.PercentageTakeRate)
+                    if (filter.Mode == FeatureDemandPlanning.Model.Enumerations.TakeRateResultMode.PercentageTakeRate)
                     {
                         cmd.Parameters.Add(new SqlParameter("@ShowPercentage", SqlDbType.Bit) { Value = true });
                     }
@@ -218,9 +220,9 @@ namespace FeatureDemandPlanning.DataStore
                 return retVal;
             }
         }
-        public FdpVolumeHeader FdpVolumeHeaderGet(int fdpVolumeHeaderId)
+        public VolumeSummary FdpVolumeHeaderGet(int fdpVolumeHeaderId)
         {
-            var volumeHeaders = FdpVolumeHeaderGetManyByUsername(new VehicleFilter());
+            var volumeHeaders = FdpVolumeHeaderGetManyByUsername(new TakeRateFilter());
             if (volumeHeaders == null || !volumeHeaders.Any())
                 return null;
 
@@ -253,11 +255,11 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
         }
-        public IEnumerable<FdpVolumeHeader> FdpVolumeHeaderGetManyByUsername(VehicleFilter filter)
+        public IEnumerable<VolumeSummary> FdpVolumeHeaderGetManyByUsername(TakeRateFilter filter)
         {
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
-                IEnumerable<FdpVolumeHeader> retVal = null;
+                IEnumerable<VolumeSummary> retVal = null;
                 try
                 {
                     var para = new DynamicParameters();
@@ -278,7 +280,7 @@ namespace FeatureDemandPlanning.DataStore
                         para.Add("@Gateway", filter.Gateway, dbType: DbType.String, size: 50);
                     }
 
-                    retVal = conn.Query<FdpVolumeHeader>(fdpVolumeHeaderStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<VolumeSummary>(fdpVolumeHeaderStoredProcedureName, para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
@@ -288,18 +290,18 @@ namespace FeatureDemandPlanning.DataStore
                 return retVal;
             }
         }
-        public IEnumerable<FdpVolumeHeader> FdpVolumeHeaderGetManyByOxoDocIdAndUsername(VolumeFilter filter)
+        public IEnumerable<VolumeSummary> FdpVolumeHeaderGetManyByOxoDocIdAndUsername(TakeRateFilter filter)
         {
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
-                IEnumerable<FdpVolumeHeader> retVal = null;
+                IEnumerable<VolumeSummary> retVal = null;
                 try
                 {
                     var para = new DynamicParameters();
                     para.Add("@CDSID", this.CurrentCDSID, dbType: DbType.String, size: 16);
-                    para.Add("@OxoDocId", filter.OxoDocId, dbType: DbType.Int32);
+                    //para.Add("@OxoDocId", filter.OxoDocId, dbType: DbType.Int32);
                     
-                    retVal = conn.Query<FdpVolumeHeader>(fdpVolumeHeaderByOxoDocumentStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<VolumeSummary>(fdpVolumeHeaderByOxoDocumentStoredProcedureName, para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {

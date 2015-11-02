@@ -1,10 +1,10 @@
-﻿@using FeatureDemandPlanning.BusinessObjects;
-@using FeatureDemandPlanning.BusinessObjects.Validators;
+﻿@using FeatureDemandPlanning.Model;
+@using FeatureDemandPlanning.Model.Validators;
 @using FeatureDemandPlanning.Extensions;
 @using FeatureDemandPlanning.Helpers
-@using enums = FeatureDemandPlanning.Enumerations;
+@using enums = FeatureDemandPlanning.Model.Enumerations;
 
-@model FeatureDemandPlanning.Models.ForecastComparisonViewModel
+@model FeatureDemandPlanning.Model.ViewModel.ForecastComparisonViewModel
 
 @{
     var comparisonVehicle = (VehicleWithIndex)ViewData["ComparisonVehicle"];

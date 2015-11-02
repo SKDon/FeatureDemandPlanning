@@ -1,5 +1,5 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Filters;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FeatureDemandPlanning.Interfaces
+namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IVolumeDataContext
     {
-        FdpVolumeHeader GetVolumeHeader(VolumeFilter filter);
-        IEnumerable<FdpVolumeHeader> ListVolumeHeaders(VolumeFilter filter);
+        VolumeSummary GetVolumeHeader(VolumeFilter filter);
+        Task<IEnumerable<VolumeSummary>> ListTakeRateData(TakeRateFilter filter);
+        Task<IEnumerable<VolumeSummary>> ListLatestTakeRateData();
         void SaveVolumeHeader(FdpVolumeHeader headerToSave);
         
         IVolume GetVolume(VolumeFilter filter);

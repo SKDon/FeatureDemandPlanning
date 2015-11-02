@@ -1,6 +1,6 @@
-﻿using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Enumerations;
-using FeatureDemandPlanning.Models;
+﻿using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,12 +30,12 @@ namespace FeatureDemandPlanning.Controllers
             if (!marketModel.TopMarkets.Any())
             {
                 marketModel.SetProcessState(
-                    new BusinessObjects.ProcessState(Enumerations.ProcessStatus.Warning, "No markets configured"));
+                    new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Warning, "No markets configured"));
             }
             else
             {
                 marketModel.SetProcessState(
-                    new BusinessObjects.ProcessState(Enumerations.ProcessStatus.Information, String.Format("{0} markets configured", marketModel.TopMarkets.Count())));
+                    new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Information, String.Format("{0} markets configured", marketModel.TopMarkets.Count())));
             }
 
             return View("Market", marketModel);
@@ -67,7 +67,7 @@ namespace FeatureDemandPlanning.Controllers
                 marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets();
                 marketModel.TopMarkets = DataContext.Market.ListTopMarkets();
 
-                marketModel.SetProcessState(new BusinessObjects.ProcessState(Enumerations.ProcessStatus.Success,
+                marketModel.SetProcessState(new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Success,
                 String.Format("Market '{0}' was added successfully", addedMarket.Name)));
             }
             catch (ApplicationException ex)
@@ -95,12 +95,12 @@ namespace FeatureDemandPlanning.Controllers
 
                 if (!marketModel.TopMarkets.Any())
                 {
-                    marketModel.SetProcessState(new BusinessObjects.ProcessState(Enumerations.ProcessStatus.Warning,
+                    marketModel.SetProcessState(new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Warning,
                      "No markets configured"));
                 }
                 else
                 {
-                    marketModel.SetProcessState(new BusinessObjects.ProcessState(Enumerations.ProcessStatus.Success,
+                    marketModel.SetProcessState(new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Success,
                     String.Format("Market '{0}' was deleted successfully", deletedMarket.Name)));
                 }
 

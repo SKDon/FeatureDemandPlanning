@@ -1,8 +1,7 @@
 ﻿using ClosedXML.Excel;
-using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.Helpers;
 using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Interfaces;
+using FeatureDemandPlanning.Model.Helpers;
+using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;

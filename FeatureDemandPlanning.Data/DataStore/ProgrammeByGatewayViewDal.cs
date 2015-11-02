@@ -13,9 +13,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using FeatureDemandPlanning.Dapper;
-using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.Helpers;
+using FeatureDemandPlanning.Model.Dapper;
+using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
 {

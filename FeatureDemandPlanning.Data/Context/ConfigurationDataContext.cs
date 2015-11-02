@@ -1,11 +1,10 @@
-﻿using FeatureDemandPlanning.Interfaces;
-using FeatureDemandPlanning.Extensions;
-using FeatureDemandPlanning.BusinessObjects;
+﻿using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Extensions;
+using FeatureDemandPlanning.Model;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using FeatureDemandPlanning.Model;
 
 namespace FeatureDemandPlanning.DataStore
 {

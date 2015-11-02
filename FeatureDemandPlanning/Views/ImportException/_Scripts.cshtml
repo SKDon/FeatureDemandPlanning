@@ -1,5 +1,5 @@
-﻿@using FeatureDemandPlanning.BusinessObjects
-@model FeatureDemandPlanning.Models.ImportViewModel
+﻿@using FeatureDemandPlanning.Model
+@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
 
 @{
     var currentVersion = SharedModelBase.CurrentVersion;
@@ -14,13 +14,20 @@
 <script src="@Url.Content("~/Scripts/Import/feature.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Import/derivative.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Import/trim.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/ignore.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/addderivativeaction.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Import/addfeatureaction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/addtrimaction.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Import/mapfeatureaction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/mapderivativeaction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/mapmarketaction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/maptrimaction.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Import/specialfeatureaction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/ignoreaction.js")?v=@currentVersion"></script>
 
 <script type="text/javascript">
 
-    var exceptions, page, modal, market, feature, derivative, trim, mapfeature;
+    var exceptions, page, modal, market, feature, derivative, trim, ignore;
     var params = {
         ActionsUri: "@Url.Action("ContextMenu")",
         ExceptionsUri: "@Url.Action("ListImportExceptions")",

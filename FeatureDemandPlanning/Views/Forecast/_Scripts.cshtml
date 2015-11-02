@@ -1,0 +1,34 @@
+﻿@using FeatureDemandPlanning.Model
+@model FeatureDemandPlanning.Model.ViewModel.ForecastComparisonViewModel
+
+@{
+    var currentVersion = SharedModelBase.CurrentVersion;
+}
+
+<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Forecast/forecasts.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Forecast/forecastspage.js")?v=@currentVersion"></script>
+
+<script type="text/javascript">
+
+    var forecasts, page, modal;
+    var params = {
+        ActionsUri: "@Url.Action("ContextMenu")",
+        ForecastsUri: "@Url.Action("ListForecasts")",
+        ModalContentUri: "@Url.Action("ModalContent")",
+        ModalActionUri: "@Url.Action("ModalAction")",
+        ModalDialogId: "modal",
+        ModalContentId: "modalBody",
+        Configuration: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        ForecastId: @Model.Forecast.ForecastId.GetValueOrDefault(),
+        IdentifierPrefix: "@Model.IdentifierPrefix",
+        _lastParam: null // Prevent syntax error
+    };
+
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+</script>
+<script src="@Url.Content("~/Scripts/Forecast/forecastsinit.js")?v=@currentVersion"></script>

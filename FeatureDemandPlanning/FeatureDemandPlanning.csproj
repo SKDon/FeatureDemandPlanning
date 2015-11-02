@@ -61,6 +61,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\Microsoft.SqlServer.ManagedDTS\v4.0_12.0.0.0__89845dcd8080cc91\Microsoft.SqlServer.ManagedDTS.dll</HintPath>
     </Reference>
+    <Reference Include="MvcSiteMapProvider, Version=4.6.20.0, Culture=neutral, PublicKeyToken=1923abe4657913cc, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvcSiteMapProvider.MVC5.Core.4.6.20\lib\net45\MvcSiteMapProvider.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MvcSiteMapProvider.WebActivator, Version=4.6.20.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvcSiteMapProvider.MVC5.4.6.20\lib\net45\MvcSiteMapProvider.WebActivator.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -131,6 +139,10 @@
     <Reference Include="System.Web.Optimization">
       <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
     </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.0.1\lib\net40\WebActivatorEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
@@ -165,7 +177,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Attributes\HandleJsonError.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\EngineCodeMappingController.cs" />
     <Compile Include="Controllers\ForecastController.cs" />
@@ -173,6 +184,7 @@
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\ImportExceptionController.cs" />
     <Compile Include="Controllers\MarketController.cs" />
+    <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\ValidationError.cs" />
     <Compile Include="Controllers\ValidationErrorItem.cs" />
@@ -180,25 +192,12 @@
     <Compile Include="Controllers\VehicleController.cs" />
     <Compile Include="Controllers\VolumeController.cs" />
     <Compile Include="Helpers\HtmlHelperExtensions.cs" />
-    <Compile Include="Models\AdminViewModel.cs" />
-    <Compile Include="Models\EngineCodeMappingViewModel.cs" />
-    <Compile Include="Models\ForecastComparisonViewModel.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="DataContextFactory.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\ConfigurationModel.cs" />
-    <Compile Include="Models\ForecastTrim.cs" />
-    <Compile Include="Models\ImportViewModel.cs" />
-    <Compile Include="Models\MarketViewModel.cs" />
-    <Compile Include="Models\Lookup.cs" />
-    <Compile Include="Models\FdpOxoVolumeViewModel.cs" />
-    <Compile Include="Models\VehicleViewModel.cs" />
-    <Compile Include="Parameters\ImportExceptionParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Results\JsonActionResult.cs" />
-    <Compile Include="ValidateAjaxAttribute.cs" />
     <Content Include="Content\bootstrap-slider.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -749,6 +748,7 @@
     <Content Include="Content\Reponsive\js\dataTables.responsive.js" />
     <Content Include="Content\Reponsive\js\dataTables.responsive.min.js" />
     <Content Include="Content\Site.css" />
+    <Content Include="Content\Spin\js\spin.min.js" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -1186,8 +1186,16 @@
     <Content Include="Scripts\Admin\market.js" />
     <Content Include="Scripts\Admin\model.js" />
     <Content Include="Scripts\Forecast\forecastcomparisonpage.js" />
+    <Content Include="Scripts\Forecast\forecasts.js" />
+    <Content Include="Scripts\Forecast\forecastsinit.js" />
+    <Content Include="Scripts\Forecast\forecastspage.js" />
     <Content Include="Scripts\Forecast\init.js" />
     <Content Include="Scripts\Forecast\trimmapping.js" />
+    <Content Include="Scripts\Import\mapmarketaction.js" />
+    <Content Include="Scripts\Import\mapderivativeaction.js" />
+    <Content Include="Scripts\Import\addderivativeaction.js" />
+    <Content Include="Scripts\Import\ignore.js" />
+    <Content Include="Scripts\Import\ignoreaction.js" />
     <Content Include="Scripts\Import\specialfeatureaction.js" />
     <Content Include="Scripts\Import\addfeatureaction.js" />
     <Content Include="Scripts\Import\mapfeatureaction.js" />
@@ -1254,6 +1262,10 @@
     <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Content\Images\Carousel\multiple.xcf" />
     <Content Include="Content\Images\Icons\Thumbs.db" />
+    <Content Include="Mvc.sitemap" />
+    <None Include="MvcSiteMapSchema.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Extensions\dataTables.bootstrap\dataTables.bootstrap.js" />
     <Content Include="Scripts\Forecast\forecast.js" />
@@ -1271,6 +1283,9 @@
     <Content Include="Scripts\Shared\namespace.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\Volume\takerates.js" />
+    <Content Include="Scripts\Volume\takeratesinit.js" />
+    <Content Include="Scripts\Volume\takeratespage.js" />
     <Content Include="Scripts\Volume\init.js" />
     <Content Include="Scripts\Volume\volume.js" />
     <Content Include="Scripts\Volume\volumepage.js" />
@@ -1294,11 +1309,10 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Forecast\Forecast.cshtml" />
-    <Content Include="Views\Import\Index.cshtml" />
-    <Content Include="Views\Import\ImportQueuePage.cshtml" />
-    <Content Include="Views\Import\Upload.cshtml" />
-    <Content Include="Views\Import\ProcessState.cshtml" />
+    <Content Include="Views\Forecast\ForecastComparison.cshtml" />
+    <Content Include="Views\Import\ImportPage.cshtml" />
+    <Content Include="Views\Import\_Upload.cshtml" />
+    <Content Include="Views\Import\_ProcessState.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Market\Market.cshtml" />
     <Content Include="Views\Admin\Derivatives.cshtml" />
@@ -1315,7 +1329,7 @@
     <Content Include="Views\Forecast\_ValidationMessage.cshtml" />
     <Content Include="Views\Forecast\_Modal.cshtml" />
     <Content Include="Views\Forecast\_ForecastTrimMapping.cshtml" />
-    <Content Include="Views\Volume\Volume.cshtml" />
+    <Content Include="Views\Volume\Document.cshtml" />
     <Content Include="Views\Volume\_Modal.cshtml" />
     <Content Include="Views\Volume\_VolumePages.cshtml" />
     <Content Include="Views\Volume\_Vehicle.cshtml" />
@@ -1326,7 +1340,6 @@
     <Content Include="Views\Volume\_Confirm.cshtml" />
     <Content Include="Views\Volume\_Process.cshtml" />
     <Content Include="Views\Volume\_VolumeData.cshtml" />
-    <Content Include="Views\Volume\_VolumeData - Copy.cshtml" />
     <Content Include="Views\Volume\_MarketSelector.cshtml" />
     <Content Include="Views\Volume\_ViewModeSelector.cshtml" />
     <Content Include="Views\ImportException\ImportExceptionsPage.cshtml" />
@@ -1344,6 +1357,26 @@
     <Content Include="Views\ImportException\_ImportActionHeader.cshtml" />
     <Content Include="Views\ImportException\_Scripts.cshtml" />
     <Content Include="Views\ImportException\_ModalError.cshtml" />
+    <Content Include="Views\Shared\_Alert.cshtml" />
+    <Content Include="Views\Import\_ImportQueue.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\Home\_LatestNews.cshtml" />
+    <Content Include="Views\Home\_LatestForecasts.cshtml" />
+    <Content Include="Views\Home\_LatestTakeRateData.cshtml" />
+    <Content Include="Views\Forecast\ForecastPage.cshtml" />
+    <Content Include="Views\Forecast\_Scripts.cshtml" />
+    <Content Include="Views\News\NewsPage.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\SiteMapTitleHelperModel.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\SiteMapPathHelperModel.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\SiteMapNodeModelList.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\SiteMapNodeModel.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\SiteMapHelperModel.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\MetaRobotsHelperModel.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\MenuHelperModel.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\CanonicalHelperModel.cshtml" />
+    <Content Include="Views\Volume\TakeRatePage.cshtml" />
+    <Content Include="Views\Volume\_Scripts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ClosedXML.Excel;
-using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.BusinessObjects;
 using FeatureDemandPlanning.DataStore;
-using FeatureDemandPlanning.Helpers;
-using System.Diagnostics;
+using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Helpers;
 
-namespace FeatureDemandPlanning.Helpers
+namespace FeatureDemandPlanning.Model.Helpers
 {
     public class ExcelResult : ActionResult
     {
@@ -348,7 +347,7 @@ namespace FeatureDemandPlanning.Helpers
             return workbook;
         }
 
-        public static XLWorkbook GenerateExcelMBM(XLWorkbook workbook, int progid, int docid, string cdsid, OXODoc OXODoc, OXODocDataStore ods, IEnumerable<BusinessObjects.Model> carModels, bool popDoc)
+        public static XLWorkbook GenerateExcelMBM(XLWorkbook workbook, int progid, int docid, string cdsid, OXODoc OXODoc, OXODocDataStore ods, IEnumerable<Model> carModels, bool popDoc)
         {
             Stopwatch stopWatch = new Stopwatch();
 
@@ -529,7 +528,7 @@ namespace FeatureDemandPlanning.Helpers
             return workbook;
         }
 
-        public static XLWorkbook GenerateExcelFBM(XLWorkbook workbook, string sheetName, string marketName, int progid, int docid, string level, int objid, string cdsid, OXODoc OXODoc, OXODocDataStore ods, IEnumerable<BusinessObjects.Model> carModels, string option, bool popDoc)
+        public static XLWorkbook GenerateExcelFBM(XLWorkbook workbook, string sheetName, string marketName, int progid, int docid, string level, int objid, string cdsid, OXODoc OXODoc, OXODocDataStore ods, IEnumerable<Model> carModels, string option, bool popDoc)
         {      
             Stopwatch stopWatch = new Stopwatch();
             

@@ -1,0 +1,67 @@
+﻿@using FeatureDemandPlanning.Model
+@using FeatureDemandPlanning.Model.Extensions
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.ForecastComparisonViewModel
+@section PageScripts
+{
+    @Html.Partial("_Scripts", Model)
+}
+
+@section PageContentHeader
+{
+    <div class="row">
+        <div class="col-lg-5 inverse" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-body" style="background:none !important">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <img src="~/Content/Images/Icons/forecast64.png" style="margin-top:15px" />
+                        </div>
+                        <div class="col-lg-10">
+                            <h3 style="margin-top:5px">Forecasts</h3>
+                            <h5 id="lblVehicleDescription">All Forecasts for @Model.CurrentUser.CDSID</h5>
+
+                            <p class="page-description">Edit and view entered forecast information</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section PageBody
+{
+    <div id="dvFilter" class="subscribers-notifyFilterComplete"></div>
+    <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none"></ul>
+
+    <div id="notifier" class="subscribers-notify col-lg-12" style="float:unset"></div>
+
+    @Html.Partial("_Modal", Model)
+
+    <div id="pnlForecasts" class="panel panel-primary" style="display:none;">
+        <div class="panel-heading">
+            <div class="panel-title"><span id="spnFilteredRecords" class="subscribers-notifyResults"></span> Forecasts</div>
+        </div>
+        <div class="panel-body">
+            <table id="tblForecasts" class="table table-bordered table-condensed table-striped dataTable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="text-center col-lg-2">Created On</th>
+                        <th class="text-center col-lg-1">Created By</th>
+                        <th class="col-lg-5 text-left">Programme</th>
+                        <th class="text-center col-lg-2">Model Year</th>
+                        <th class="text-center col-lg-2">Gateway</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+}
+
+
+

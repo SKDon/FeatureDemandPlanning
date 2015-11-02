@@ -81,6 +81,8 @@
   <ItemGroup>
     <Compile Include="Context\ConfigurationDataContext.cs" />
     <Compile Include="Context\DataContext.cs" />
+    <Compile Include="Context\NewsDataContext.cs" />
+    <Compile Include="DataStore\DerivativeDataStore.cs" />
     <Compile Include="Context\ForecastDataContext.cs" />
     <Compile Include="Context\ImportDataContext.cs" />
     <Compile Include="Context\MarketDataContext.cs" />
@@ -96,6 +98,7 @@
     <Compile Include="DataStore\ForecastComparisonViewDal.cs" />
     <Compile Include="DataStore\ForecastDataStore.cs" />
     <Compile Include="DataStore\ForecastViewDal.cs" />
+    <Compile Include="DataStore\NewsDataStore.cs" />
     <Compile Include="DataStore\OXOVehicleDS.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -138,7 +141,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

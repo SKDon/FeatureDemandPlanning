@@ -1,15 +1,14 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Context;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Enumerations;
-using FeatureDemandPlanning.Interfaces;
-using FeatureDemandPlanning.Model;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using enums = FeatureDemandPlanning.Enumerations;
+using enums = FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -50,21 +49,21 @@ namespace FeatureDemandPlanning.DataStore
         {
             var importQueueId = importItem.ImportQueueId.GetValueOrDefault();
             //var result = await Task.FromResult<ImportQueue>();
-            //var status = new FeatureDemandPlanning.BusinessObjects.ImportStatus() {
+            //var status = new FeatureDemandPlanning..ImportStatus() {
 
             //}
 
             return await Task.FromResult<ImportQueue>(_importDataStore.ImportQueueGet(importQueueId));
         }
 
-        Task<BusinessObjects.ImportStatus> IImportDataContext.GetProcessStatus(ImportQueue importItem)
+        Task<Model.ImportStatus> IImportDataContext.GetProcessStatus(ImportQueue importItem)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<ImportError> Ignore(ImportQueueFilter filter)
+        public async Task<ImportError> IgnoreException(ImportQueueFilter filter)
         {
-            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorIgnore(filter));
+            return await Task.FromResult<ImportError>(_importDataStore.ImportExceptionIgnore(filter));
         }
 
         public Task<ImportError> AddMarket(ImportQueueFilter filter, string market)
@@ -77,12 +76,12 @@ namespace FeatureDemandPlanning.DataStore
             throw new NotImplementedException();
         }
 
-        public Task<ImportError> AddDerivative(ImportQueueFilter filter, BusinessObjects.Model derivativeToAdd)
+        public Task<ImportError> AddDerivative(ImportQueueFilter filter, Model.Model derivativeToAdd)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ImportError> MapDerivative(ImportQueueFilter filter, BusinessObjects.Model derivativeToMap, BusinessObjects.Model derivativeToMapTo)
+        public Task<ImportError> MapDerivative(ImportQueueFilter filter, Model.Model derivativeToMap, Model.Model derivativeToMapTo)
         {
             throw new NotImplementedException();
         }

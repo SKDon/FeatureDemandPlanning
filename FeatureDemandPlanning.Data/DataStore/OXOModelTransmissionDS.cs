@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using FeatureDemandPlanning.DataStore;
-using FeatureDemandPlanning.Dapper;
-using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.Helpers;
+using FeatureDemandPlanning.Model.Dapper;
+using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Helpers;
 using System.Web.Script.Serialization;
 
 namespace FeatureDemandPlanning.DataStore

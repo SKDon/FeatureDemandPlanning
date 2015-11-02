@@ -1,14 +1,14 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Enumerations;
-using FeatureDemandPlanning.Interfaces;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using enums = FeatureDemandPlanning.Enumerations;
+using enums = FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -103,12 +103,12 @@ namespace FeatureDemandPlanning.DataStore
 
             return _marketDataStore.TopMarketDelete(market);
         }
-        public IEnumerable<BusinessObjects.Model> ListAvailableModelsByMarket(OXODoc forDocument, Market byMarket)
+        public IEnumerable<Model.Model> ListAvailableModelsByMarket(OXODoc forDocument, Market byMarket)
         {
             return _documentDataStore.OXODocAvailableModelsByMarket(forDocument.ProgrammeId, forDocument.Id, byMarket.Id)
                 .Where(m => m.Available == true);
         }
-        public IEnumerable<BusinessObjects.Model> ListAvailableModelsByMarketGroup(OXODoc forDocument, MarketGroup byMarketGroup)
+        public IEnumerable<Model.Model> ListAvailableModelsByMarketGroup(OXODoc forDocument, MarketGroup byMarketGroup)
         {
             return _documentDataStore.OXODocAvailableModelsByMarketGroup(forDocument.ProgrammeId, forDocument.Id, byMarketGroup.Id)
                 .Where(m => m.Available == true);

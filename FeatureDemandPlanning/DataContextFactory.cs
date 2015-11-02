@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using FeatureDemandPlanning.Interfaces;
+using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning
 {

@@ -1,8 +1,8 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Comparers;
-using FeatureDemandPlanning.Enumerations;
-using FeatureDemandPlanning.Models;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Comparers;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +33,7 @@ namespace FeatureDemandPlanning.Controllers
             if (!engineCodeMappingModel.EngineCodeMappings.CurrentPage.Any())
             {
                 engineCodeMappingModel.SetProcessState(
-                    new BusinessObjects.ProcessState(Enumerations.ProcessStatus.Warning, "No programmes available matching search criteria"));
+                    new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Warning, "No programmes available matching search criteria"));
             }
             else
             {
@@ -43,7 +43,7 @@ namespace FeatureDemandPlanning.Controllers
                 var numberOfMappings = engineCodeMappingModel.EngineCodeMappings.CurrentPage.Where(e => !String.IsNullOrEmpty(e.ExternalEngineCode));
 
                 engineCodeMappingModel.SetProcessState(
-                    new BusinessObjects.ProcessState(Enumerations.ProcessStatus.Information, String.Format("{0} programmes, {1} mapped engine codes matching search criteria", numberOfProgrammes, numberOfMappings)));
+                    new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Information, String.Format("{0} programmes, {1} mapped engine codes matching search criteria", numberOfProgrammes, numberOfMappings)));
             }
 
             return View("EngineCodeMapping", engineCodeMappingModel);

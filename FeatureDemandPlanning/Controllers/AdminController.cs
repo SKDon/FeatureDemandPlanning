@@ -1,8 +1,8 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
-using FeatureDemandPlanning.BusinessObjects.Filters;
-using FeatureDemandPlanning.Comparers;
-using FeatureDemandPlanning.Enumerations;
-using FeatureDemandPlanning.Models;
+﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Comparers;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

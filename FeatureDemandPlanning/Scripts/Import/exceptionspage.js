@@ -208,13 +208,14 @@ page.ExceptionsPage = function (models) {
         var eventArgs = {
             ExceptionId: parseInt($(this).attr("data-target")),
             Action: parseInt($(this).attr("data-role")),
-            ProgrammeId: getExceptionsModel().getProgrammeId()
+            ProgrammeId: getExceptionsModel().getProgrammeId(),
+            ErrorMessage: $(this).attr("data-content")
         };
         $(document).trigger("Action", eventArgs);
     }
     me.onActionEventHandler = function (sender, eventArgs) {
         var action = eventArgs.Action;
-        var model = getModelForAction(action);
+        var model = getModelForExceptionTypeAndAction(action);
         var actionModel = model.getActionModel(action);
 
         getModal().showModal({
@@ -286,7 +287,7 @@ page.ExceptionsPage = function (models) {
     function getIgnoreModel() {
         return getModel("Ignore");
     }
-    function getModelForAction(actionId) {
+    function getModelForExceptionTypeAndAction(actionId) {
         var model = null;
         switch (actionId) {
             case 1:

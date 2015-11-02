@@ -1,4 +1,4 @@
-﻿using FeatureDemandPlanning.Enumerations;
+﻿using FeatureDemandPlanning.Model.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +14,11 @@ namespace FeatureDemandPlanning
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapRoute(
-                name: "Forecast",
-                url: "Forecast/{action}/{forecastId}",
-                defaults: new { controller = "Forecast", action = "Forecast", forecastId = UrlParameter.Optional }
-                );
+            //routes.MapRoute(
+            //    name: "Forecast",
+            //    url: "Forecast/{action}/{forecastId}",
+            //    defaults: new { controller = "Forecast", action = "Forecast", forecastId = UrlParameter.Optional }
+            //    );
 
             //routes.MapRoute(name: "VolumeByMarketGroup",
             //                url: "Document/{oxoDocId}/VolumeByMarketGroup/{marketGroupId}",

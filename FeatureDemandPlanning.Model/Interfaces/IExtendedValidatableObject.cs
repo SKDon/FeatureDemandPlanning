@@ -1,9 +1,9 @@
-﻿using FeatureDemandPlanning.BusinessObjects.Validators;
+﻿using FeatureDemandPlanning.Model.Validators;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace FeatureDemandPlanning.Interfaces
+namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IExtendedValidatableObject : IValidatableObject
     {

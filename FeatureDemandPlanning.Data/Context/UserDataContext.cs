@@ -1,6 +1,6 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
+﻿using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Interfaces;
+using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +26,7 @@ namespace FeatureDemandPlanning.DataStore
             return _userDataStore.SystemUserGet(CDSID);
         }
 
-        public IEnumerable<BusinessObjects.Permission> ListPermissions()
+        public IEnumerable<Permission> ListPermissions()
         {
             return _permissions.PermissionGetMany(CDSID, null);
         }
@@ -36,12 +36,12 @@ namespace FeatureDemandPlanning.DataStore
             yield return null;
         }
 
-        public IEnumerable<BusinessObjects.Programme> ListAllowedProgrammes()
+        public IEnumerable<Programme> ListAllowedProgrammes()
         {
             return _userDataStore.SystemUserProgrammes(CDSID, true);
         }
 
-        public IEnumerable<BusinessObjects.Programme> ListAvailableProgrammes()
+        public IEnumerable<Programme> ListAvailableProgrammes()
         {
             return _userDataStore.SystemUserProgrammes(CDSID, false);
         }

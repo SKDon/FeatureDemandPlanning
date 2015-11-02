@@ -1,0 +1,34 @@
+﻿@using FeatureDemandPlanning.Model
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+@{
+    var currentVersion = SharedModelBase.CurrentVersion;
+}
+
+<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Volume/takerates.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Volume/takeratespage.js")?v=@currentVersion"></script>
+
+<script type="text/javascript">
+
+    var forecasts, page, modal;
+    var params = {
+        ActionsUri: "@Url.Action("ContextMenu")",
+        ForecastsUri: "@Url.Action("ListTakeRates")",
+        ModalContentUri: "@Url.Action("ModalContent")",
+        ModalActionUri: "@Url.Action("ModalAction")",
+        ModalDialogId: "modal",
+        ModalContentId: "modalBody",
+        Configuration: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        TakeRateId: @Model.TakeRate.FdpVolumeHeaderId,
+        IdentifierPrefix: "@Model.IdentifierPrefix",
+        _lastParam: null // Prevent syntax error
+    };
+
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+</script>
+<script src="@Url.Content("~/Scripts/Volume/takeratesinit.js")?v=@currentVersion"></script>

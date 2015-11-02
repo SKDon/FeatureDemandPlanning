@@ -1,9 +1,9 @@
 ﻿@using System.Data
-@using FeatureDemandPlanning.BusinessObjects
+@using FeatureDemandPlanning.Model
 @using FeatureDemandPlanning.Helpers
-@using enums = FeatureDemandPlanning.Enumerations
+@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Models.FdpOxoVolumeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
 @{
     var selectedModels = Model.Volume.Vehicle.AvailableModels;
     var rightPaneWidth = "" + selectedModels.Count() * 80 + "px";

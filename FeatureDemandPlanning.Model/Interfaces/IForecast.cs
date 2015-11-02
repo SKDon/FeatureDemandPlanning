@@ -1,10 +1,10 @@
-﻿using FeatureDemandPlanning.BusinessObjects;
+﻿using FeatureDemandPlanning.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FeatureDemandPlanning.Interfaces
+namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IForecast
     {
@@ -18,5 +18,7 @@ namespace FeatureDemandPlanning.Interfaces
         Vehicle ForecastVehicle { get; set; }
         IEnumerable<Vehicle> ComparisonVehicles { get; set; }
         IEnumerable<ForecastTrimMapping> TrimMapping { get; set; }
+
+        string[] ToJQueryDataTableResult();
     }
 }

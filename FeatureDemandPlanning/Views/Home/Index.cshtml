@@ -1,74 +1,126 @@
-﻿@using FeatureDemandPlanning.BusinessObjects
-@using enums = FeatureDemandPlanning.Enumerations
+﻿@using FeatureDemandPlanning.Model
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.HomeViewModel
 
 @*@section PageScripts{
-    <script src="@Url.Content("~/Scripts/Import/home.js")?v=@SharedModelBase.CurrentVersion"></script>
-}
+        <script src="@Url.Content("~/Scripts/Import/home.js")?v=@SharedModelBase.CurrentVersion"></script>
+    }
 
-@section PageStyles{
-    <link href="@Url.Content("~/Styles/Import/home.css")?v=@SharedModelBase.CurrentVersion" rel="stylesheet" type="text/css" />
-}*@
+    @section PageStyles{
+        <link href="@Url.Content("~/Styles/Import/home.css")?v=@SharedModelBase.CurrentVersion" rel="stylesheet" type="text/css" />
+    }*@
 
 @section PageBody
 {
     <div class="row" style="margin-top:20px">
-        
-        
-        <div class="col-lg-2 col-lg-offset-2 text-center inverse">
-            <img src="~/Content/Images/Icons/create128.png" style="opacity:0.9;border:0" />
-            <h2 style="height:66px">Create</h2>
-            <p style="height:60px">Create new forecast from current volume data</p>
-            <p><a class="btn btn-default" href="~/Forecast" role="button">Create</a></p>
+
+    <div class="col-lg-3">
+        <div class="row" style="height:20px">
+
         </div>
-        <div class="col-lg-2 text-center inverse">
-            <img src="~/Content/Images/Icons/edit128.png" style="opacity:0.9;border:0" />
-            <h2 style="height:66px">Edit</h2>
-            <p style="height:60px">Edit an existing forecast</p>
-            <p><a class="btn btn-default" href="#edit" role="button">Edit</a></p>
+        <div class="row">
+            
+                <div class="panel panel-primary" style="margin-left:20px">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            <span class="glyphicon glyphicon-comment pull-right"></span>
+                            @Html.ActionLink("Latest News", "Index", "News")
+                        </div>
+                        
+                    </div>
+                    <div class="panel-body" style="overflow:auto">
+                        @Html.Partial("_LatestNews")
+                    </div>
+                </div>
+            
         </div>
-        <div class="col-lg-2 text-center inverse">
-            <img src="~/Content/Images/Icons/chat128.png" style="opacity:0.9;border:0" />
-            <h2 style="height:66px">Market Review</h2>
-            <p style="height:60px">Submit forecast to markets for further input and review</p>
-            <p><a class="btn btn-default" href="#create" role="button">Review</a></p>
+        <div class="row">
+            
+            <div class="panel panel-primary" style="margin-left:20px">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        <span class="glyphicon glyphicon-tasks pull-right"></span>
+                        @Html.ActionLink("Latest Take Rate Data",
+                                         "Index",
+                                         "Volume") 
+                    </div>
+                </div>
+                <div class="panel-body">
+                    @Html.Partial("_LatestTakeRateData")
+                </div>
+            </div>
+            
         </div>
-        <div class="col-lg-2 text-center inverse">
-            <img src="~/Content/Images/Icons/publish128.png" style="opacity:0.9;border:0" />
-            <h2 style="height:66px">Publish &amp; Share</h2>
-            <p style="height:60px">Publish the forecast information and share with interested parties</p>
-            <p><a class="btn btn-default" href="#edir" role="button">Publish</a></p>
+        <div class="row">
+
+            <div class="panel panel-primary" style="margin-left:20px">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                    <span class="glyphicon glyphicon-blackboard pull-right"></span> 
+                    @Html.ActionLink("Latest Forecasts",
+                                     "Index",
+                                     "Forecast")
+                    </div>
+                </div>
+                <div class="panel-body">
+                    @Html.Partial("_LatestForecasts")
+                </div>
+            </div>
+
         </div>
-        
     </div>
-    <div class="row" style="margin-top:25px">
-    <div class="col-lg-1"></div>
-    
-   
-    <div class="col-lg-1"></div>
-</div>
-<div class="row">
-   
-    <div class="col-lg-2 col-lg-offset-3 text-center inverse">
-        <a href="~/Import">
-            <img src="~/Content/Images/Icons/import64.png" style="opacity:0.9;border:0" />
-            </a>
-            <h3>Import</h3>
-            <p>Import volume data from external source</p>
-            <p><a class="btn btn-default" href="~/Import" role="button">Import</a></p>
-</div>
-    <div class="col-lg-2 text-center inverse">
-        <a href="~/Reports"><img src="~/Content/Images/Icons/reports64.png" style="opacity:0.9;border:0" /></a>
-        <h3>Reports</h3>
-        <p>Produce reports from FDP</p>
-        <p><a class="btn btn-default" href="~/Reports" role="button">Reports</a></p>
+    <div class="col-lg-9">
+        <div class="row" style="margin-bottom:30px">
+            <div class="col-lg-11 inverse text-center">
+            <h1 class="text-capitalize">Feature Demand Planning</h1>
+                </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-sm-3 col-sm-offset-1 text-center inverse">
+                <img src="~/Content/Images/Icons/import64.png" style="opacity:0.9;border:0" />
+                <h2 style="height:66px">Import</h2>
+                <p style="height:40px">Import volume data from external source</p>
+                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="@Url.Action("Index", "Import")" role="button">Import</a></p>
+            </div>
+            <div class="col-sm-3 text-center inverse">
+                <img src="~/Content/Images/Icons/edit64.png" style="opacity:0.9;border:0" />
+                <h2 style="height:66px">View / Edit</h2>
+                <p style="height:40px">View or edit take rate details for a car line</p>
+                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="@Url.Action("Index", "Volume")" role="button">View / Edit</a></p>
+            </div>
+            <div class="col-sm-3 text-center inverse">
+                <img src="~/Content/Images/Icons/chat64.png" style="opacity:0.9;border:0" />
+                <h2 style="height:66px">Market Review</h2>
+                <p style="height:40px">Submit take rate details to markets for further input and review</p>
+                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="#create" role="button">Review</a></p>
+            </div>
+        </div>
+        <div class="row" style="margin-top:20px">
+            <div class="col-sm-3 col-sm-offset-1 text-center inverse">
+                <img src="~/Content/Images/Icons/publish64.png" style="opacity:0.9;border:0" />
+                <h2 style="height:66px">Publish &amp; Share</h2>
+                <p style="height:40px">Publish the take rate details and share with interested parties</p>
+                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="#publish" role="button">Publish</a></p>
+            </div>
+            <div class="col-sm-3 text-center inverse">
+                <img src="~/Content/Images/Icons/forecast64.png" style="opacity:0.9;border:0" />
+                <h2 style="height:66px">Forecast</h2>
+                <p style="height:40px">Forecast take rate for a specific car line</p>
+                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="@Url.Action("Index", "Forecast")" role="button">Forecast</a></p>
+            </div>
+            <div class="col-sm-3 text-center inverse">
+                <img src="~/Content/Images/Icons/reports64.png" style="opacity:0.9;border:0" />
+                <h2 style="height:66px">Reports</h2>
+                <p style="height:40px">Produce reports based on take rate / forecast information</p>
+                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="#forecast" role="button">Reports</a></p>
+            </div>
+        </div>
     </div>
-    <div class="col-lg-2 text-center inverse">
-        <a href="~/Admin"><img src="~/Content/Images/Icons/admin64.png" style="opacity:0.9;border:0" /></a>
-        <h3>Administration</h3>
-        <p>Perform administration activities within FDP</p>
-        <p><a class="btn btn-default" href="~/Admin" role="button">Admin</a></p>
-    </div>
 </div>
+
 }
 
 

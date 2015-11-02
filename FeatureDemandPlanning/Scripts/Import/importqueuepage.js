@@ -57,7 +57,7 @@ page.ImportQueuePage = function (models) {
     };
     me.configureDataTables = function () {
 
-        var exceptionsUri = "/FeatureDemandPlanning/Import/ImportExceptions?importQueueId=1";
+        var exceptionsUri = "/FeatureDemandPlanning/ImportException/?importQueueId=1";
 
         $("#tblImportQueue").DataTable({
             "serverSide": true,
@@ -70,7 +70,8 @@ page.ImportQueuePage = function (models) {
                     "sTitle": "Uploaded On",
                     "sName": "UPLOADED_ON",
                     "bSearchable": true,
-                    "bSortable": true
+                    "bSortable": true,
+                    "sClass": "text-center"
                 },
                 {
                     "sTitle": "Uploaded By",
@@ -88,13 +89,15 @@ page.ImportQueuePage = function (models) {
                     "sTitle": "Status",
                     "sName": "STATUS",
                     "bSearchable": true,
-                    "bSortable": true
+                    "bSortable": true,
+                    "sClass": "text-center",
                 },
                 {
                     "sTitle": "Errors",
                     "sName": "ERRORS",
                     "bSearchable": false,
                     "bSortable": false,
+                    "sClass": "text-center",
                     "render": function ( data, type, full, meta ) {
                         return "<a href='" + exceptionsUri + "'>View</a>";
                     }
