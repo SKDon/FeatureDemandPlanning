@@ -25,7 +25,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IList<ForecastTrimMapping> TrimMappings { get; set; }
         IEnumerable<Programme> Programmes { get; set; }
         IEnumerable<OXODoc> AvailableDocuments { get; set; }
-        IEnumerable<VolumeSummary> AvailableImports { get; set; }
+        IEnumerable<TakeRateSummary> AvailableImports { get; set; }
         IEnumerable<Model> AvailableModels { get; set; }
         IEnumerable<MarketGroup> AvailableMarketGroups { get; set; }
         //IEnumerable<Market> AvailableMarkets { get; set; }

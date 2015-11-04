@@ -17,6 +17,7 @@ model.TakeRates = function (params) {
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].ActionsUri = params.ActionsUri;
     privateStore[me.id].TakeRatesUri = params.TakeRatesUri;
+    privateStore[me.id].TakeRateUri = params.TakeRateUri;
     privateStore[me.id].TakeRateId = params.TakeRateId;
     privateStore[me.id].PageSize = params.PageSize;
     privateStore[me.id].PageIndex = params.PageIndex;
@@ -52,7 +53,10 @@ model.TakeRates = function (params) {
         return "";
     };
     me.getActionTitle = function (action) {
-        return "TakeRate Action";
+        return "Take Rate Action";
+    };
+    me.getTakeRateUri = function () {
+        return privateStore[me.id].TakeRateUri;
     };
     me.getTakeRatesUri = function () {
         return privateStore[me.id].TakeRatesUri;

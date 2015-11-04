@@ -15,6 +15,9 @@ using System.Web.Caching;
 using System.Web.Mvc;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Parameters;
+using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Attributes;
+using System.Web.Script.Serialization;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -53,6 +56,31 @@ namespace FeatureDemandPlanning.Controllers
 
             return View(takeRateView);
         }
+        [HttpPost]
+        [HandleErrorWithJson]
+        public async Task<ActionResult> ListTakeRateData(TakeRateParameters parameters)
+        {
+            ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
+
+            var js = new JavaScriptSerializer();
+            var filter = new TakeRateFilter()
+            {
+                FilterMessage = parameters.FilterMessage
+            };
+            filter.InitialiseFromJson(parameters);
+
+            var results = await TakeRateViewModel.GetModel(DataContext, filter);
+            var jQueryResult = new JQueryDataTableResultModel(results);
+
+            foreach (var result in results.TakeRates.CurrentPage)
+            {
+                jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
+            }
+
+            return Json(jQueryResult);
+        }
+
+
         [HttpPost]
         public ActionResult VolumePage(Volume volume, int pageIndex)
         {

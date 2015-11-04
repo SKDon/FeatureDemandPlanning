@@ -2,7 +2,6 @@
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
-using FeatureDemandPlanning.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,7 +76,7 @@ namespace FeatureDemandPlanning.DataStore
                         .Distinct(new OXODocComparer());
         }
 
-        public IEnumerable<VolumeSummary> ListAvailableImports(VehicleFilter filter, Programme forProgramme)
+        public IEnumerable<TakeRateSummary> ListAvailableImports(VehicleFilter filter, Programme forProgramme)
         {
             var imports = _volumeDataStore
                             .FdpVolumeHeaderGetManyByUsername(new TakeRateFilter()
@@ -85,6 +84,7 @@ namespace FeatureDemandPlanning.DataStore
                                 ProgrammeId = filter.ProgrammeId,
                                 Gateway = filter.Gateway
                             })
+                            .CurrentPage
                             .ToList();
 
             foreach (var import in imports) {
@@ -233,7 +233,8 @@ namespace FeatureDemandPlanning.DataStore
                 .Where(p => String.IsNullOrEmpty(filter.Code) || p.VehicleName.Equals(filter.Code, StringComparison.InvariantCultureIgnoreCase))
                 .Where(p => String.IsNullOrEmpty(filter.Make) || p.VehicleMake.Equals(filter.Make, StringComparison.InvariantCultureIgnoreCase))
                 .Where(p => String.IsNullOrEmpty(filter.ModelYear) || p.ModelYear.Equals(filter.ModelYear, StringComparison.InvariantCultureIgnoreCase))
-                .Where(p => String.IsNullOrEmpty(filter.Gateway) || p.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase));
+                .Where(p => String.IsNullOrEmpty(filter.Gateway) || p.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase))
+                .Select(p => p);
 
             return programmes;
         }

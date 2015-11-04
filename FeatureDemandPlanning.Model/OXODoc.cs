@@ -302,12 +302,6 @@ namespace FeatureDemandPlanning.Model
 
     }
 
-    public class Gateway
-    {
-        public string Name { get; set; }
-        public int DisplayOrder { get; set; }
-    }
-
     /// <summary>
     /// Allows the comparison of documents to determine unique gateways
     /// </summary>

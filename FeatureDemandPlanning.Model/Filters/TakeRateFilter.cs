@@ -10,12 +10,9 @@ namespace FeatureDemandPlanning.Model.Filters
 {
     public class TakeRateFilter : ProgrammeFilter
     {
-        public int? OxoDocId { get; set; }
-        public int? FdpVolumeHeaderId { get; set; }
-        public int? ProgrammeId { get; set; }
+        public int? TakeRateId { get; set; }
         public int? MarketId { get; set; }
         public int? MarketGroupId { get; set; }
-        public string Gateway { get; set; }
 
         public TakeRateResultMode Mode
         {

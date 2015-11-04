@@ -5,19 +5,30 @@
 
 @section PageScripts
 {
-    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Import/importqueue.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Import/importqueuepage.js")?v=@SharedModelBase.CurrentVersion"></script>
+    @{
+        var currentVersion = SharedModelBase.CurrentVersion;
+    }
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/importqueue.js")?v=@currentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/exceptions.js")?v=@currentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/upload.js")?v=@currentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/uploadaction.js")?v=@currentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Import/importqueuepage.js")?v=@currentVersion"></script>
     <script language="javascript">
 
-        var importQueue, page, modal;
+        var importQueue, exceptions, page, modal, upload;
         var params = {
             ProcessUri: "@Url.Action("Process")",
             CancelUri: "@Url.Action("Cancel")",
             ImportQueue: @Html.Raw(Json.Encode(Model.ImportQueue)),
             ImportQueueUri: "@Url.Action("ListImportQueue")",
+            ExceptionsUri: "@Url.Action("Index", "ImportException")",
+            ModalContentUri: "@Url.Action("ModalContent")",
+            ModalActionUri: "@Url.Action("ModalAction")",
+            ModalDialogId: "modal",
+            ModalContentId: "modalBody",
             Configuration: {},
             PageSize: @Model.PageSize,
             PageIndex: @Model.PageIndex,
@@ -35,48 +46,57 @@
 
 @section PageContentHeader
 {
+    <form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
+    <div class="row">
+        <div class="col-lg-5 inverse" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-body" style="background:none !important">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <img src="~/Content/Images/Icons/import64.png" style="margin-top:15px" />
+                        </div>
+                        <div class="col-lg-10">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                <h3 style="margin-top:5px">Import</h3>
+                                <h4 id="lblVehicleDescription">&nbsp;</h4>
+                                    </div>
+                            </div>
+                            <div class="row vertical-spacer">
+                                <div class="col-lg-6 vertical-align">
+                                    <p class="page-description">Import pre-populated OXO volume information into a specified car line</p>
+                                </div>
+                                <div class="col-lg-6 vertical-align">
+                                    <button id="@(Model.IdentifierPrefix)_UploadButton" class="btn btn-primary pull-left" data-role="@((int)enums.ImportAction.Upload)"><span class="glyphicon glyphicon-plus-sign"></span> Import PPO File...</button>
+                                </div>
+                            </div>
+                        </div>
 
-<div class="row">
-    <div class="col-lg-5 inverse" style="padding-top: 20px">
-        <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
-            <div class="panel-body" style="background:none !important">
-                <div class="row">
-                    <div class="col-lg-2">
-                        <img src="~/Content/Images/Icons/import64.png" style="margin-top:15px" />
-                    </div>
-                    <div class="col-lg-10">
-                        <h3 style="margin-top:5px">Import</h3>
-                        <h4 id="lblVehicleDescription">&nbsp;</h4>
-
-                        <p class="page-description">Import pre-populated OXO volume information into a specified car line</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-5 pull-right" style="padding-top: 20px">
-        <a name="new"></a>
-        @{Html.RenderPartial("_Upload", Model);}
-    </div>
-</div>
 
 }
 
 @section PageBody
 {
-    <div id="notifier" class="subscribers-notifySuccess subscribers-notifyError col-lg-8 col-lg-offset-2">
+    <div id="notifier" class="subscribers-notify col-lg-8 col-lg-offset-2"></div>
+
+    @Html.Partial("_Modal", Model)
+
+    @{Html.RenderPartial("_ProcessState", Model);}
+
+    <div class="row">
+        <div id="dvImportQueue" class="col-lg-12">
+            @{Html.RenderPartial("_ImportQueue", Model);}
+        </div>
 
     </div>
 
-        @{Html.RenderPartial("_ProcessState", Model);}
-
-        
-            <a name="queue"></a>
-
-            <div id="dvImportQueue" class="col-lg-12 pull-left">
-                @{Html.RenderPartial("_ImportQueue", Model);}
-            </div>
-       
 }
 
 

@@ -37,7 +37,7 @@ page.TakeRatesPage = function (models) {
     };
     me.getData = function (data, callback, settings) {
         var params = me.getParameters(data);
-        var model = getTakeRates;
+        var model = getTakeRatesModel();
         var uri = model.getTakeRatesUri();
         settings.jqXHR = $.ajax({
             "dataType": "json",
@@ -71,6 +71,10 @@ page.TakeRatesPage = function (models) {
         return params;
     };
     me.configureDataTables = function (filter) {
+
+        var takeRateUri = getTakeRatesModel().getTakeRateUri();
+        var oxoDocIndex = 7;
+
         $("#tblTakeRates").DataTable({
             "serverSide": true,
             "pagingType": "full_numbers",
@@ -79,38 +83,62 @@ page.TakeRatesPage = function (models) {
             "sDom": "ltip",
             "aoColumns": [
                 {
-                    "sName": "FORECAST_ID",
+                    "sName": "TAKE_RATE_ID",
                     "bVisible": false
                 },
                 {
                     "sName": "CREATED_ON",
                     "bSearchable": true,
                     "bSortable": true,
-                    "sClass": "text-center"
+                    "sClass": "text-center",
+                    "render": function (data, type, full, meta) {
+                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    }
                 }
                 ,
                 {
                     "sName": "CREATED_BY",
                     "bSearchable": true,
                     "bSortable": true,
-                    "sClass": "text-center"
+                    "sClass": "text-center",
+                    "render": function (data, type, full, meta) {
+                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    }
                 },
                 {
-                    "sName": "CAR_LINE",
+                    "sName": "OXO_DOCUMENT",
                     "bSearchable": true,
                     "bSortable": true,
+                    "render": function (data, type, full, meta) {
+                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    }
                 },
                 {
-                    "sName": "MODEL_YEAR",
+                    "sName": "STATUS",
                     "bSearchable": true,
                     "bSortable": true,
-                    "sClass": "text-center"
+                    "sClass": "text-center",
+                    "render": function (data, type, full, meta) {
+                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    }
                 },
                 {
-                    "sName": "GATEWAY",
+                    "sName": "UPDATED_ON",
                     "bSearchable": true,
                     "bSortable": true,
-                    "sClass": "text-center"
+                    "sClass": "text-center",
+                    "render": function (data, type, full, meta) {
+                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    }
+                },
+                {
+                    "sName": "UPDATED_BY",
+                    "bSearchable": true,
+                    "bSortable": true,
+                    "sClass": "text-center",
+                    "render": function (data, type, full, meta) {
+                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    }
                 }
             ],
             "fnCreatedRow": function (row, data, index) {
@@ -259,9 +287,9 @@ page.TakeRatesPage = function (models) {
         var model = getTakeRatesModel();
         var pageSize = model.getPageSize();
         var pageIndex = model.getPageIndex();
-        var filter = new FeatureDemandPlanning.TakeRate.ForecastFilter();
+        var filter = new FeatureDemandPlanning.TakeRate.TakeRateFilter();
 
-        filter.ForecastId = model.getForecastId();
+        filter.ForecastId = model.getTakeRateId();
         filter.FilterMessage = me.getFilterMessage();
         filter.PageIndex = pageIndex;
         filter.PageSize = pageSize;

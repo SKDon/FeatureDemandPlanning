@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model
 {
-    public class EmptyVolumeHeader : VolumeSummary
+    public class EmptyVolumeHeader : TakeRateSummary
     {
     }
 }

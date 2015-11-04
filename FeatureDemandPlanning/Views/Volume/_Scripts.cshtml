@@ -13,10 +13,11 @@
 
 <script type="text/javascript">
 
-    var forecasts, page, modal;
+    var takeRates, page, modal;
     var params = {
         ActionsUri: "@Url.Action("ContextMenu")",
-        ForecastsUri: "@Url.Action("ListTakeRates")",
+        TakeRateUri: "@Url.Action("Document")",
+        TakeRatesUri: "@Url.Action("ListTakeRateData")",
         ModalContentUri: "@Url.Action("ModalContent")",
         ModalActionUri: "@Url.Action("ModalAction")",
         ModalDialogId: "modal",
@@ -24,7 +25,7 @@
         Configuration: {},
         PageSize: @Model.PageSize,
         PageIndex: @Model.PageIndex,
-        TakeRateId: @Model.TakeRate.FdpVolumeHeaderId,
+        TakeRateId: @Model.TakeRate.TakeRateId,
         IdentifierPrefix: "@Model.IdentifierPrefix",
         _lastParam: null // Prevent syntax error
     };

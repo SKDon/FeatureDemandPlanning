@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.Controllers
 
             PageIndex = 1;
             PageSize = DataContext.ConfigurationSettings.DefaultPageSize;
-            ControllerType = ControllerType.SectionChild;
+            ControllerType = ControllerType.Default;
         }
 
         [HttpGet]

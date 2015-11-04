@@ -113,10 +113,15 @@ namespace FeatureDemandPlanning.DataStore
 
         public async Task<PagedResults<ImportError>> ListExceptions(ImportQueueFilter filter)
         {
-            var results = await Task.FromResult<PagedResults<ImportError>>(
+            return await Task.FromResult<PagedResults<ImportError>>(
                 _importDataStore.ImportErrorGetMany(filter));
 
-            return results;
+        }
+
+        public async Task<IEnumerable<FeatureDemandPlanning.Model.ImportExceptionType>> ListExceptionTypes(ImportQueueFilter filter)
+        {
+            return await Task.FromResult<IEnumerable<FeatureDemandPlanning.Model.ImportExceptionType>>(
+                _importDataStore.ImportExceptionTypeGetMany(filter));
         }
 
         private ImportQueueDataStore _importDataStore;

@@ -58,4 +58,17 @@ namespace FeatureDemandPlanning.Model
         public int TotalRecords { get; set; }
         public int TotalPages { get; set; }
     }
+
+    public class ProgrammeComparer : IEqualityComparer<Programme>
+    {
+        public bool Equals(Programme x, Programme y)
+        {
+            return x.Id == y.Id;
+        }
+
+        public int GetHashCode(Programme obj)
+        {
+            return obj.Id.GetHashCode();
+        }
+    }
 }

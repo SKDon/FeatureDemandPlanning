@@ -6,7 +6,7 @@ namespace FeatureDemandPlanning.Model
     {
         public int? FdpOxoDocId { get; set; }
 
-        public VolumeSummary Header 
+        public TakeRateSummary Header 
         { 
             get 
             { 
@@ -30,7 +30,7 @@ namespace FeatureDemandPlanning.Model
             }
         }
 
-        private VolumeSummary _header = new EmptyVolumeHeader();
+        private TakeRateSummary _header = new EmptyVolumeHeader();
         private OXODoc _document = new EmptyOxoDocument();
     }
 }

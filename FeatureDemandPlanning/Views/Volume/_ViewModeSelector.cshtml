@@ -5,7 +5,7 @@
 @model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
 
 <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    @if (Model.Volume.Mode == enums.VolumeResultMode.PercentageTakeRate)
+    @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
     {
         @:Take Rate by %
         }
@@ -18,18 +18,18 @@
 <ul class="dropdown-menu">
     @if (!(Model.Volume.Market is EmptyMarket))
     {
-        <li>@Html.ActionLink("Take Rate by Volume", "Document", new { oxoDocId = Model.Volume.Document.Id, marketId = Model.Volume.Market.Id, resultsMode = enums.VolumeResultMode.Raw })</li>
-        <li>@Html.ActionLink("Take Rate by %", "Document", new { oxoDocId = Model.Volume.Document.Id, marketId = Model.Volume.Market.Id, resultsMode = enums.VolumeResultMode.PercentageTakeRate })</li>
+        <li>@Html.ActionLink("Take Rate by Volume", "Document", new { oxoDocId = Model.Volume.Document.Id, marketId = Model.Volume.Market.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
+        <li>@Html.ActionLink("Take Rate by %", "Document", new { oxoDocId = Model.Volume.Document.Id, marketId = Model.Volume.Market.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
     }
     else if (!(Model.Volume.MarketGroup is EmptyMarketGroup))
     {
-        <li>@Html.ActionLink("Take Rate by Volume", "Document", new { oxoDocId = Model.Volume.Document.Id, marketGroupId = Model.Volume.MarketGroup.Id, resultsMode = enums.VolumeResultMode.Raw })</li>
-        <li>@Html.ActionLink("Take Rate by %", "Document", new { oxoDocId = Model.Volume.Document.Id, marketGroupId = Model.Volume.MarketGroup.Id, resultsMode = enums.VolumeResultMode.PercentageTakeRate })</li>
+        <li>@Html.ActionLink("Take Rate by Volume", "Document", new { oxoDocId = Model.Volume.Document.Id, marketGroupId = Model.Volume.MarketGroup.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
+        <li>@Html.ActionLink("Take Rate by %", "Document", new { oxoDocId = Model.Volume.Document.Id, marketGroupId = Model.Volume.MarketGroup.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
     }
     else
     {
-        <li>@Html.ActionLink("Take Rate by Volume", "Document", new { oxoDocId = Model.Volume.Document.Id, resultsMode = enums.VolumeResultMode.Raw })</li>
-        <li>@Html.ActionLink("Take Rate by %", "Document", new { oxoDocId = Model.Volume.Document.Id, resultsMode = enums.VolumeResultMode.PercentageTakeRate })</li>
+        <li>@Html.ActionLink("Take Rate by Volume", "Document", new { oxoDocId = Model.Volume.Document.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
+        <li>@Html.ActionLink("Take Rate by %", "Document", new { oxoDocId = Model.Volume.Document.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
     }
 </ul>
 

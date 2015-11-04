@@ -10,8 +10,8 @@
 
 <div class="well">
 
-        @if (   Model.CurrentAction == enums.ImportExceptionAction.AddMissingDerivative || 
-                Model.CurrentAction == enums.ImportExceptionAction.MapMissingDerivative)
+        @if (   Model.CurrentAction == enums.ImportAction.AddMissingDerivative || 
+                Model.CurrentAction == enums.ImportAction.MapMissingDerivative)
         { 
             <div class="row">
                 <div class="col-xs-4 text-right"><strong>Import Derivative Code:</strong></div>
@@ -27,9 +27,9 @@
             </div>
         }
         
-        @if (   Model.CurrentAction == enums.ImportExceptionAction.AddMissingFeature || 
-                Model.CurrentAction == enums.ImportExceptionAction.MapMissingFeature || 
-                Model.CurrentAction == enums.ImportExceptionAction.AddSpecialFeature)
+        @if (   Model.CurrentAction == enums.ImportAction.AddMissingFeature || 
+                Model.CurrentAction == enums.ImportAction.MapMissingFeature || 
+                Model.CurrentAction == enums.ImportAction.AddSpecialFeature)
         {
             <div class="row">
                 <div class="col-xs-4 text-right"><strong>Import Feature Code:</strong></div>
@@ -45,8 +45,8 @@
             </div>
         }
 
-        @if (Model.CurrentAction == enums.ImportExceptionAction.AddMissingTrim ||
-                Model.CurrentAction == enums.ImportExceptionAction.MapMissingTrim)
+        @if (Model.CurrentAction == enums.ImportAction.AddMissingTrim ||
+                Model.CurrentAction == enums.ImportAction.MapMissingTrim)
         {
             <div class="row">
                 <div class="col-xs-4 text-right"><strong>Import Trim Level:</strong></div>
@@ -56,7 +56,7 @@
             </div>
         }
         
-        @if (Model.CurrentAction == enums.ImportExceptionAction.MapMissingMarket)
+        @if (Model.CurrentAction == enums.ImportAction.MapMissingMarket)
         {
             <div class="row">
                 <div class="col-xs-4 text-right" id="@(Model.IdentifierPrefix)_ImportMarket" data-target="@Model.CurrentException.ImportMarket"><strong>Import Market:</strong></div>
@@ -66,7 +66,7 @@
             </div>
         }
         
-        @if (Model.CurrentAction == enums.ImportExceptionAction.IgnoreException)
+        @if (Model.CurrentAction == enums.ImportAction.IgnoreException)
         {
             <div class="row">
                 <div class="col-xs-4 text-right"><strong>Error Type:</strong></div>

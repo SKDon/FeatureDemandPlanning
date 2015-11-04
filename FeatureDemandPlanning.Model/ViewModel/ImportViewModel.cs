@@ -1,7 +1,7 @@
 ﻿using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Enumerations;
+using enums = FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,11 +19,13 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public ImportError CurrentException { get; set; }
         public DerivativeMapping CurrentDerivativeMapping { get; set; }
         public TrimMapping CurrentTrimMapping { get; set; }
-        public ImportExceptionAction CurrentAction { get; set; }
+        public enums.ImportAction CurrentAction { get; set; }
+        public enums.ImportAction CurrentImportAction { get; set; }
         public string CurrentFeatureGroup { get; set; }
         public FeatureGroup CurrentFeatureSubGroup { get; set; }
         public Feature CurrentFeature { get; set; }
         public Market CurrentMarket { get; set; }
+        public Programme CurrentProgramme { get; set; }
 
         public PagedResults<ImportError> Exceptions { get; set; }
         public PagedResults<ImportQueue> ImportQueue { get; set; }
@@ -31,6 +33,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public Programme Programme { get; set; }
         public string Gateway { get; set; }
 
+        public IEnumerable<Programme> AvailableProgrammes { get; set; }
         public IEnumerable<ModelEngine> AvailableEngines { get; set; }
         public IEnumerable<ModelTransmission> AvailableTransmissions { get; set; }
         public IEnumerable<ModelBody> AvailableBodies { get; set; }
@@ -40,6 +43,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<Feature> AvailableFeatures { get; set; }
         public IEnumerable<FeatureGroup> AvailableFeatureGroups { get; set; }
         public IEnumerable<Derivative> AvailableDerivatives { get; set; }
+        public IEnumerable<ImportExceptionType> AvailableExceptionTypes { get; set; }
         
         public dynamic Configuration { get; set; }
 
@@ -57,35 +61,45 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         #region "Public Members"
 
-        public IEnumerable<ImportExceptionType> AvailableExceptionTypes
+        public IEnumerable<CarLine> CarLines
         {
             get
             {
-                //if (HasExceptions(ImportExceptionType.MissingMarket))
-                //{
-                //    yield return ImportExceptionType.MissingMarket;
-                //}
+                return AvailableProgrammes.Select(p => new CarLine()
+                {
+                    VehicleId = p.VehicleId,
+                    VehicleName = p.VehicleName,
+                    VehicleAKA = p.VehicleAKA
+                })
+                .Distinct(new CarLineComparer())
+                .OrderBy(c => c.VehicleName);
+            }
+        }
 
-                //if (HasExceptions(ImportExceptionType.MissingDerivative))
-                //{
-                //    yield return ImportExceptionType.MissingMarket;
-                //    yield return ImportExceptionType.MissingDerivative;
-                //}
+        public IEnumerable<Gateway> Gateways
+        {
+            get
+            {
+                return AvailableProgrammes.Select(p => new Gateway()
+                    {
+                        VehicleName = p.VehicleName,
+                        Name = p.Gateway
+                    })
+                    .Distinct(new GatewayComparer())
+                    .OrderBy(p => p.Name);
+            }
+        }
 
-                //if (HasExceptions(ImportExceptionType.MissingTrim))
-                //{
-                //    yield return ImportExceptionType.MissingMarket;
-                //    yield return ImportExceptionType.MissingDerivative;
-                //    yield return ImportExceptionType.MissingTrim;
-                //}
-
-                //if (HasExceptions(ImportExceptionType.MissingFeature))
-                //{
-                    yield return ImportExceptionType.MissingMarket;
-                    yield return ImportExceptionType.MissingDerivative;
-                    yield return ImportExceptionType.MissingTrim;
-                    yield return ImportExceptionType.MissingFeature;
-                //}
+        public IEnumerable<ModelYear> ModelYears
+        {
+            get
+            {
+                return AvailableProgrammes.Select(p => new ModelYear()
+                    {
+                        VehicleName = p.VehicleName,
+                        Name = p.ModelYear
+                    })
+                    .Distinct(new ModelYearComparer());
             }
         }
 
@@ -121,7 +135,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             return Exceptions != null && Exceptions.CurrentPage.Any();
         }
-        public bool HasExceptions(ImportExceptionType ofType)
+        public bool HasExceptions(enums.ImportExceptionType ofType)
         {
             return HasExceptions() && Exceptions.CurrentPage.Where(e => e.ErrorType == ofType).Any();
         }
@@ -130,12 +144,12 @@ namespace FeatureDemandPlanning.Model.ViewModel
             return await GetModel(context, new ImportQueueFilter());
         }
         public static async Task<ImportViewModel> GetModel(IDataContext context, 
-                                                                             ImportQueueFilter filter, 
-                                                                             ImportExceptionAction action)
+                                                           ImportQueueFilter filter,
+                                                           enums.ImportAction action)
         {
             var model = await GetModel(context, filter);
             model.CurrentAction = action;
-            if (action != ImportExceptionAction.NotSet)
+            if (action != enums.ImportAction.NotSet)
             {
                 model.IdentifierPrefix = Enum.GetName(action.GetType(), action);
             }
@@ -143,7 +157,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             return model;
         }
         public static async Task<ImportViewModel> GetModel(IDataContext context, 
-                                                                             ImportQueueFilter filter)
+                                                           ImportQueueFilter filter)
         {
             if (filter.ImportQueueId.HasValue)
             {
@@ -172,6 +186,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.TotalPages = model.ImportQueue.TotalPages;
             model.TotalRecords = model.ImportQueue.TotalRecords;
             model.TotalDisplayRecords = model.ImportQueue.TotalDisplayRecords;
+
+            model.AvailableProgrammes = context.Vehicle.ListProgrammes(new ProgrammeFilter());
 
             return model;
         }
@@ -212,6 +228,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue
             };
             model.CurrentImport = await context.Import.GetImportQueue(filter);
+            model.AvailableExceptionTypes = await context.Import.ListExceptionTypes(filter);
 
             var programmeFilter = new ProgrammeFilter(model.CurrentImport.ProgrammeId);
             model.Exceptions = await context.Import.ListExceptions(filter);
@@ -230,7 +247,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             CurrentException = new EmptyImportError();
             CurrentDerivativeMapping = new EmptyDerivativeMapping();
             CurrentTrimMapping = new EmptyTrimMapping();
-            CurrentAction = ImportExceptionAction.NotSet;
+            CurrentAction = enums.ImportAction.NotSet;
             CurrentFeatureGroup = string.Empty;
             CurrentFeatureSubGroup = new EmptyFeatureGroup();
             CurrentFeature = new EmptyFeature();
@@ -245,6 +262,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             AvailableFeatures = Enumerable.Empty<Feature>();
             AvailableFeatureGroups = Enumerable.Empty<FeatureGroup>();
             AvailableDerivatives = Enumerable.Empty<Derivative>();
+            AvailableExceptionTypes = Enumerable.Empty<ImportExceptionType>();
 
             IdentifierPrefix = "Page";
         }

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Context;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {
@@ -129,7 +130,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         }
         private static void HydrateFdpVolumeHeaders(IDataContext context, FdpOxoVolumeViewModel volumeModel)
         {
-            var volumeSummary = new List<VolumeSummary>();
+            var volumeSummary = new List<TakeRateSummary>();
             foreach (var header in volumeModel.Volume.VolumeSummary)
             {
                 var newHeader = GetVolumeHeader(context, header);
@@ -145,7 +146,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
             if (volumeModel.Volume.VolumeSummary.Any())
                 return;
 
-            volumeModel.Volume.VolumeSummary = await ListVolumeSummary(context, volumeModel.Volume);
+            var volumeHeaders = await ListVolumeSummary(context, volumeModel.Volume);
+            volumeModel.Volume.VolumeSummary = volumeHeaders.CurrentPage;
         }
         private static void HydrateOxoDocument(IDataContext context, FdpOxoVolumeViewModel volumeModel)
         {
@@ -242,18 +244,18 @@ namespace FeatureDemandPlanning.Model.ViewModel
             }
             return marketGroup;
         }
-        private static VolumeSummary GetVolumeHeader(IDataContext context, VolumeSummary forHeader)
+        private static TakeRateSummary GetVolumeHeader(IDataContext context, TakeRateSummary forHeader)
         {
-            VolumeSummary header = null;
-            var cacheKey = string.Format("FdpVolumeHeader_{0}", forHeader.FdpVolumeHeaderId);
+            TakeRateSummary header = null;
+            var cacheKey = string.Format("FdpVolumeHeader_{0}", forHeader.TakeRateId);
             var cachedLookup = HttpContext.Current.Cache.Get(cacheKey);
             if (cachedLookup != null)
             {
-                header = (VolumeSummary)cachedLookup;
+                header = (TakeRateSummary)cachedLookup;
             }
             else
             {
-                header = context.Volume.GetVolumeHeader(new VolumeFilter() { FdpVolumeHeaderId = forHeader.FdpVolumeHeaderId });
+                header = context.Volume.GetVolumeHeader(new VolumeFilter() { FdpVolumeHeaderId = forHeader.TakeRateId });
                 HttpContext.Current.Cache.Add(cacheKey, header, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             }
 
@@ -266,10 +268,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return header;
         }
-        private async static Task<IEnumerable<VolumeSummary>> ListVolumeSummary(IDataContext context, Volume forVolume)
+        private async static Task<PagedResults<TakeRateSummary>> ListVolumeSummary(IDataContext context, Volume forVolume)
         {
             if (forVolume.Document is EmptyOxoDocument)
-                return Enumerable.Empty<VolumeSummary>();
+                return new PagedResults<TakeRateSummary>();
 
             return await context.Volume.ListTakeRateData(TakeRateFilter.FromVolume(forVolume));
         }

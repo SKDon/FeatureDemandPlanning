@@ -375,6 +375,30 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
+        public IEnumerable<ImportExceptionType> ImportExceptionTypeGetMany(ImportQueueFilter filter)
+        {
+            var results = Enumerable.Empty<ImportExceptionType>();
+
+            using (IDbConnection connection = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@ImportQueueId", filter.ImportQueueId.Value, dbType: DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+
+                    results = connection.Query<ImportExceptionType>("dbo.Fdp_ImportErrorType_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportExceptionTypeGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return results;
+        }
+
         private void HydrateImportErrors(ImportQueueDataItem importQueue, IDbConnection connection)
         {
             var para = new DynamicParameters();
@@ -416,7 +440,10 @@ namespace FeatureDemandPlanning.DataStore
                 ImportType = importQueue.ImportType,
                 Errors = importQueue.Errors,
                 ProgrammeId = importQueue.ProgrammeId,
-                Gateway = importQueue.Gateway
+                Gateway = importQueue.Gateway,
+                VehicleName = importQueue.VehicleName,
+                VehicleAKA = importQueue.VehicleAKA,
+                ModelYear = importQueue.ModelYear
             };
         }
 
@@ -446,8 +473,6 @@ namespace FeatureDemandPlanning.DataStore
             public string StatusCode { get; set; }
             public int ImportTypeId { get; set; }
             public string Type { get; set; }
-            public new int ProgrammeId { get; set; }
-            public new string Gateway { get; set; }
         }
 
         private class ImportStatusDataItem

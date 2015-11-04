@@ -122,9 +122,9 @@ namespace FeatureDemandPlanning.Model
             return volume;
         }
 
-        public IEnumerable<VolumeSummary> VolumeSummary { get { return _summary; } set { _summary = value; } }
+        public IEnumerable<TakeRateSummary> VolumeSummary { get { return _summary; } set { _summary = value; } }
         
-        private IEnumerable<VolumeSummary> _summary = new List<VolumeSummary>();
+        private IEnumerable<TakeRateSummary> _summary = new List<TakeRateSummary>();
         private Vehicle _vehicle = new EmptyVehicle();
         private OXODoc _document = new EmptyOxoDocument();
         private Market _market = new EmptyMarket();

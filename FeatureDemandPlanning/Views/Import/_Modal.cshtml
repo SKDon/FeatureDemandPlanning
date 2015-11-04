@@ -1,0 +1,23 @@
+﻿@using FeatureDemandPlanning.Model
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
+
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="Modal_Title">[Title]</h4>
+            </div>
+            <div class="modal-body">
+                <div id="Modal_Notify" class="subscribers-notify alert" style="display:none;"></div>
+                <div id="Modal_Content"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="Modal_OK" class="btn btn-primary modal-button">OK</button>
+                <button type="button" id="Modal_Cancel" class="btn btn-default modal-button" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

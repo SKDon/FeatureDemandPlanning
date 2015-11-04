@@ -38,5 +38,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<ImportError> AddFeature(ImportQueueFilter filter, Feature featureToAdd);
         Task<ImportError> MapFeature(ImportQueueFilter filter, Feature featureToMap, Feature featureToMapTo);
+
+        Task<IEnumerable<ImportExceptionType>> ListExceptionTypes(ImportQueueFilter filter);
     }
 }

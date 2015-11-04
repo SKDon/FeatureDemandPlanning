@@ -1,4 +1,5 @@
 ﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
 using System.Collections.Generic;
@@ -36,20 +37,25 @@ namespace FeatureDemandPlanning.DataStore
                 _volumeDataStore.FdpOxoDocSave(fdpOxoDoc);
             }
         }
-        public VolumeSummary GetVolumeHeader(VolumeFilter filter)
+        public TakeRateSummary GetVolumeHeader(VolumeFilter filter)
         {
             if (filter.FdpVolumeHeaderId.GetValueOrDefault() == 0)
                 return new EmptyVolumeHeader();
 
             return _volumeDataStore.FdpVolumeHeaderGet(filter.FdpVolumeHeaderId.Value);
         }
-        public async Task<IEnumerable<VolumeSummary>> ListLatestTakeRateData()
+        public async Task<PagedResults<TakeRateSummary>> ListLatestTakeRateData()
         {
-            return await Task.FromResult<IEnumerable<VolumeSummary>>(_volumeDataStore.FdpVolumeHeaderGetManyByUsername(new TakeRateFilter()).Take(2));
+            var takeRates = await ListTakeRateData(new TakeRateFilter());
+
+            takeRates.CurrentPage = takeRates.CurrentPage.Take(2);
+
+            return takeRates;
         }
-        public async Task<IEnumerable<VolumeSummary>> ListTakeRateData(TakeRateFilter filter)
+        public async Task<PagedResults<TakeRateSummary>> ListTakeRateData(TakeRateFilter filter)
         {
-            return await Task.FromResult<IEnumerable<VolumeSummary>>(_volumeDataStore.FdpVolumeHeaderGetManyByUsername(filter));
+            return await Task.FromResult<PagedResults<TakeRateSummary>>(
+                _volumeDataStore.FdpVolumeHeaderGetManyByUsername(filter));
         }
         public void SaveVolumeHeader(FdpVolumeHeader header)
         {

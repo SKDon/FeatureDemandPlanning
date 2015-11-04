@@ -17,7 +17,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         public IEnumerable<News> LatestNews { get; set; }
         public IEnumerable<ForecastSummary> LatestForecasts { get; set; }
-        public IEnumerable<VolumeSummary> LatestTakeRateData { get; set; }
+        public IEnumerable<TakeRateSummary> LatestTakeRateData { get; set; }
         
         public dynamic Configuration { get; set; }
 
@@ -45,7 +45,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             
             model.LatestNews = await context.News.ListLatestNews();
             model.LatestForecasts = latestForecasts.CurrentPage;
-            model.LatestTakeRateData = await context.Volume.ListLatestTakeRateData();
+            model.LatestTakeRateData = latestTakeRateData.CurrentPage;
             //model.LatestTakeRateData = latestTakeRateData.CurrentPage;
 
             return model;
@@ -59,7 +59,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             LatestForecasts = Enumerable.Empty<ForecastSummary>();
             LatestNews = Enumerable.Empty<News>();
-            LatestTakeRateData = Enumerable.Empty<VolumeSummary>();
+            LatestTakeRateData = Enumerable.Empty<TakeRateSummary>();
 
             IdentifierPrefix = "Page";
         }

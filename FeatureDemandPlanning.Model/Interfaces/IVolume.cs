@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         int TotalDerivatives { get; set; }
 
-        IEnumerable<VolumeSummary> VolumeSummary { get; set; }
+        IEnumerable<TakeRateSummary> VolumeSummary { get; set; }
         VolumeData VolumeData { get; set; }
     }
 }

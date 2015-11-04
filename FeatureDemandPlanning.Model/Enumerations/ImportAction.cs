@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Enumerations
 {
-    public enum ImportExceptionAction
+    public enum ImportAction
     {
         NotSet = 0,
         MapMissingMarket = 1,
@@ -17,6 +17,8 @@ namespace FeatureDemandPlanning.Model.Enumerations
         AddSpecialFeature = 9,
         AddMissingTrim = 6,
         MapMissingTrim = 7,
-        IgnoreException = 8
+        IgnoreException = 8,
+
+        Upload = 100
     }
 }

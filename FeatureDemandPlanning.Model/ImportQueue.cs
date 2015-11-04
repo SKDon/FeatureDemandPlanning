@@ -21,7 +21,21 @@ namespace FeatureDemandPlanning.Model
         public ImportStatus ImportStatus { get; set; }
         public IEnumerable<ImportError> Errors { get; set; }
         public int ProgrammeId { get; set; }
+        public string VehicleName { get; set; }
+        public string VehicleAKA { get; set; }
+        public string ModelYear { get; set; }
         public string Gateway { get; set; }
+        public string VehicleDescription
+        {
+            get
+            {
+                return string.Format("{0} - {1} ({2}, {3})", 
+                    VehicleName, 
+                    VehicleAKA, 
+                    ModelYear, 
+                    Gateway);
+            }
+        }
 
         public int? TotalPages { get; set; }
         public int? TotalRecords { get; set; }

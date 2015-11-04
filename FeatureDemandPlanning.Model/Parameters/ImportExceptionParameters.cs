@@ -1,14 +1,12 @@
 ﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Enumerations;
+using enums = FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.Parameters
 {
     public class ImportExceptionParameters : ImportParameters
     {
         public int? ExceptionId { get; set; }
-        public ImportExceptionType ExceptionType { get; set; }
-        public ImportExceptionAction Action { get; set; }
-        public string FilterMessage { get; set; }
+        public enums.ImportExceptionType ExceptionType { get; set; }
 
         public string ImportMarket { get; set; }
         public int? MarketId { get; set; }
@@ -35,8 +33,8 @@ namespace FeatureDemandPlanning.Model.Parameters
 
         public ImportExceptionParameters() : base()
         {
-            ExceptionType = ImportExceptionType.NotSet;
-            Action = ImportExceptionAction.NotSet;
+            ExceptionType = enums.ImportExceptionType.NotSet;
+            Action = enums.ImportAction.NotSet;
             FilterMessage = string.Empty;
         }
         public bool HasExceptionId()
@@ -45,15 +43,15 @@ namespace FeatureDemandPlanning.Model.Parameters
         }
         public bool HasAction()
         {
-            return Action != ImportExceptionAction.NotSet;
+            return Action != enums.ImportAction.NotSet;
         }
         public bool HasExceptionType()
         {
-            return ExceptionType != ImportExceptionType.NotSet;
+            return ExceptionType != enums.ImportExceptionType.NotSet;
         }
         public object GetActionSpecificParameters()
         {
-            if (Action == ImportExceptionAction.MapMissingFeature || Action == ImportExceptionAction.AddMissingFeature)
+            if (Action == enums.ImportAction.MapMissingFeature || Action == enums.ImportAction.AddMissingFeature)
             {
                 return new {
                     ImportQueueId = ImportQueueId,
@@ -67,7 +65,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                 };
             }
 
-            if (Action == ImportExceptionAction.MapMissingDerivative || Action == ImportExceptionAction.AddMissingDerivative)
+            if (Action == enums.ImportAction.MapMissingDerivative || Action == enums.ImportAction.AddMissingDerivative)
             {
                 return new {
                     ImportQueueId = ImportQueueId,
@@ -83,7 +81,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                 };
             }
 
-            if (Action == ImportExceptionAction.MapMissingMarket)
+            if (Action == enums.ImportAction.MapMissingMarket)
             {
                 return new {
                     ImportQueueId = ImportQueueId,
@@ -96,7 +94,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                 };
             }
 
-            if (Action == ImportExceptionAction.AddMissingTrim || Action == ImportExceptionAction.MapMissingTrim) 
+            if (Action == enums.ImportAction.AddMissingTrim || Action == enums.ImportAction.MapMissingTrim) 
             {
                 return new {
                     ImportQueueId = ImportQueueId,
@@ -113,7 +111,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                 };
             }
 
-            if (Action == ImportExceptionAction.AddSpecialFeature)
+            if (Action == enums.ImportAction.AddSpecialFeature)
             {
                 return new {
                     ImportQueueId = ImportQueueId,
@@ -126,7 +124,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                 };
             }
 
-            if (Action == ImportExceptionAction.IgnoreException)
+            if (Action == enums.ImportAction.IgnoreException)
             {
                 return new
                 {

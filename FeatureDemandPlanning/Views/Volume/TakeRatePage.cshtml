@@ -19,10 +19,10 @@
                             <img src="~/Content/Images/Icons/edit64.png" style="margin-top:15px" />
                         </div>
                         <div class="col-lg-10">
-                            <h3 style="margin-top:5px">Take Rates</h3>
-                            <h5 id="lblVehicleDescription">All Take Rate data for @Model.CurrentUser.CDSID</h5>
+                            <h3 style="margin-top:5px">Take Rate Files for @Model.CurrentUser.CDSID </h3>
 
-                            <p class="page-description">Select a take rate file to view or edit</p>
+                            <p class="page-description">Below is a list of take rate files that have been applied to published OXO documents. </p>
+                            <p>Select a take rate file to view or edit the information</p>
                         </div>
                     </div>
                 </div>
@@ -40,20 +40,21 @@
 
     @Html.Partial("_Modal", Model)
 
-    <div id="pnlForecasts" class="panel panel-primary" style="display:none;">
+    <div id="pnlTakeRates" class="panel panel-primary" style="display:none;">
         <div class="panel-heading">
             <div class="panel-title"><span id="spnFilteredRecords" class="subscribers-notifyResults"></span> Take Rate Files</div>
         </div>
         <div class="panel-body">
-            <table id="tblForecasts" class="table table-bordered table-condensed table-striped dataTable">
+            <table id="tblTakeRates" class="table table-bordered table-condensed table-striped dataTable">
                 <thead>
                     <tr>
                         <th></th>
-                        <th class="text-center col-lg-2">Created On</th>
+                        <th class="text-center col-lg-1">Created On</th>
                         <th class="text-center col-lg-1">Created By</th>
-                        <th class="col-lg-5 text-left">Programme</th>
-                        <th class="text-center col-lg-2">Model Year</th>
-                        <th class="text-center col-lg-2">Gateway</th>
+                        <th class="col-lg-6 text-left">OXO Document</th>
+                        <th class="text-center col-lg-2">Take Rate Status</th>
+                        <th class="text-center col-lg-1">Updated On</th>
+                        <th class="text-center col-lg-1">Updated By</th>
                     </tr>
                 </thead>
                 <tbody></tbody>

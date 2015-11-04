@@ -550,9 +550,9 @@ div.text-center-insets {
     background-color: rgba(119, 136, 170, 0.6) !important; 
 }
 
-.form-control {
+/*.form-control {
     color: #2e4372;
-}
+}*/
 
 div.dataTables_length label {
     color: #FFF0AA;
@@ -712,12 +712,12 @@ ul.dropdown-menu > li span.glyphicon {
 }
 
 .dropdown-menu > li > a {
-    color: #061639;
+    color: #061639 !important;
 }
 
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
     text-decoration: none;
-    color: #fff0aa;
+    color: #fff0aa !important;
     background-color: #403075;
 }
 
@@ -968,4 +968,8 @@ button.close {
     color:white;
     font-family: "Times New Roman", Georgia, Serif;
     
+}
+
+.control-label {
+    margin-top: 5px;
 }

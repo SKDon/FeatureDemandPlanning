@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Parameters
 {
-    public class TakeRateParameters
+    public class TakeRateParameters : JQueryDataTableParameters
     {
         public int? TakeRateId { get; set; }
+        public string FilterMessage { get; set; }
     }
 }

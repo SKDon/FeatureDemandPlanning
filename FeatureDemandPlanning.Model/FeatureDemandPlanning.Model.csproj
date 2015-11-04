@@ -95,9 +95,12 @@
   <ItemGroup>
     <Compile Include="Attributes\HandleJsonError.cs" />
     <Compile Include="Attributes\ValidateAjaxAttribute.cs" />
-    <Compile Include="Empty\EmptyVolumeSummary.cs" />
+    <Compile Include="CarLine.cs" />
+    <Compile Include="Empty\EmptyTakeRateSummary.cs" />
     <Compile Include="Filters\TakeRateFilter.cs" />
     <Compile Include="ForecastSummary.cs" />
+    <Compile Include="Gateway.cs" />
+    <Compile Include="ImportExceptionType.cs" />
     <Compile Include="Interfaces\INewsDataContext.cs" />
     <Compile Include="Interfaces\IReferenceDataContext.cs" />
     <Compile Include="Interfaces\IVolume.cs" />
@@ -129,6 +132,7 @@
     <Compile Include="FdpVolumeHeader.cs" />
     <Compile Include="Filters\PageFilter.cs" />
     <Compile Include="Filters\VolumeFilter.cs" />
+    <Compile Include="ModelYear.cs" />
     <Compile Include="Parameters\ForecastParameters.cs" />
     <Compile Include="Parameters\ImportExceptionParameters.cs" />
     <Compile Include="Parameters\ImportParameters.cs" />
@@ -138,7 +142,7 @@
     <Compile Include="SpecialFeature.cs" />
     <Compile Include="TrimMapping.cs" />
     <Compile Include="Enumerations\ControllerType.cs" />
-    <Compile Include="Enumerations\ImportExceptionAction.cs" />
+    <Compile Include="Enumerations\ImportAction.cs" />
     <Compile Include="Enumerations\ImportExceptionType.cs" />
     <Compile Include="ImportResult.cs" />
     <Compile Include="Validators\ComparisonVehicleExtensions.cs" />
@@ -262,7 +266,7 @@
     <Compile Include="Attributes\LogonAuthorize.cs" />
     <Compile Include="Dapper\sqlMapper.cs" />
     <Compile Include="Vehicle.cs" />
-    <Compile Include="VolumeSummary.cs" />
+    <Compile Include="TakeRateSummary.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

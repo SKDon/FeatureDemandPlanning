@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FeatureDemandPlanning.Model.Enumerations;
+using enums = FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -19,11 +19,11 @@ namespace FeatureDemandPlanning.Model
         public int FdpImportErrorTypeId { get; set; }
         public bool IsExcluded { get; set; }
 
-        public ImportExceptionType ErrorType
+        public enums.ImportExceptionType ErrorType
         {
             get
             {
-                return (ImportExceptionType)FdpImportErrorTypeId;
+                return (enums.ImportExceptionType)FdpImportErrorTypeId;
             }
         }
         public string ErrorTypeDescription { get; set; }

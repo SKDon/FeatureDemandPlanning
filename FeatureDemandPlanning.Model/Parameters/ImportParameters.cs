@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FeatureDemandPlanning.Model.Enumerations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public int? ImportQueueId { get; set; }
         public int? ProgrammeId { get; set; }
         public string FilterMessage { get; set; }
+        public ImportAction Action { get; set; }
 
         public ImportParameters()
         {

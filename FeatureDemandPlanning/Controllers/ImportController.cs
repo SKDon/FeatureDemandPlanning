@@ -15,6 +15,7 @@ using enums = FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.ViewModel;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Parameters;
+using FeatureDemandPlanning.Model.Attributes;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -66,8 +67,10 @@ namespace FeatureDemandPlanning.Controllers
                         { 
                             result.CreatedOn.ToString("g"), 
                             result.CreatedBy,
-                            result.FilePath,
-                            result.ImportStatus.Status
+                            result.VehicleDescription,
+                            Path.GetFileName(result.FilePath),
+                            result.ImportStatus.Status,
+                            result.ImportQueueId.ToString()
                         };
 
                         jQueryResult.aaData.Add(stringResult);
@@ -79,6 +82,26 @@ namespace FeatureDemandPlanning.Controllers
             {
                 return Json(ex);
             }
+        }
+        [HttpPost]
+        [HandleError(View = "_ModalError")]
+        [OutputCache(Duration = 600, VaryByParam = "ImportParameter.Action")]
+        public async Task<ActionResult> ModalContent(ImportParameters parameters)
+        {
+            //ValidateImportParameters(parameters, ImportExceptionParametersValidator.ExceptionIdentifierWithAction);
+
+            var importView = await GetModelFromParameters(parameters);
+
+            return PartialView(GetContentPartialViewName(parameters.Action), importView);
+        }
+        [HttpPost]
+        [HandleErrorWithJson]
+        public ActionResult ModalAction(ImportExceptionParameters parameters)
+        {
+            //ValidateImportParameters(parameters, ImportExceptionParametersValidator.ExceptionIdentifierWithActionAndProgramme);
+            //ValidateImportParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+
+            return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
         [HttpPost]
         public async Task<ActionResult> Upload(HttpPostedFileBase fileToUpload)
@@ -129,7 +152,17 @@ namespace FeatureDemandPlanning.Controllers
 
         #region "Private Methods"
 
-        
+        private string GetContentPartialViewName(ImportAction forAction)
+        {
+            return string.Format("_{0}", Enum.GetName(forAction.GetType(), forAction));
+        }
+        private async Task<ImportViewModel> GetModelFromParameters(ImportParameters parameters)
+        {
+            return await ImportViewModel.GetModel(
+                DataContext,
+                new ImportQueueFilter(),
+                parameters.Action);
+        }
 
         //TODO Move all this to the model / business objects
 

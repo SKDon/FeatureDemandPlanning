@@ -10,16 +10,19 @@ page.ImportQueuePage = function (models) {
     privateStore[me.id = uid++] = {};
     privateStore[me.id].DataTable = null;
     privateStore[me.id].Models = models;
-
+    
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
-       
+
         $(privateStore[me.id].Models).each(function () {
             this.initialise();
         });
         me.loadData();
-    }
+    };
+    me.getIdentifierPrefix = function () {
+        return $("#Page_IdentifierPrefix").val();
+    };
     me.setDataTable = function (dataTable) {
         privateStore[me.id].DataTable = dataTable
     };
@@ -57,7 +60,8 @@ page.ImportQueuePage = function (models) {
     };
     me.configureDataTables = function () {
 
-        var exceptionsUri = "/FeatureDemandPlanning/ImportException/?importQueueId=1";
+        var exceptionsUri = getExceptionsModel().getExceptionsUri();
+        var importQueueIndex = 5;
 
         $("#tblImportQueue").DataTable({
             "serverSide": true,
@@ -72,34 +76,41 @@ page.ImportQueuePage = function (models) {
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center"
-                },
-                {
+                }
+                ,{
                     "sTitle": "Uploaded By",
                     "sName": "UPLOADED_BY",
                     "bSearchable": true,
                     "bSortable": true
-                },
-                {
+                }
+                ,{
+                    "sTitle": "Vehicle",
+                    "sName": "VEHICLE_DESCRIPTION",
+                    "bSearchable": true,
+                    "bSortable": true
+                }
+                ,{
                     "sTitle": "File Path",
                     "sName": "FILE_PATH",
                     "bSearchable": true,
                     "bSortable": true
-                },
-                {
+                }
+                ,{
                     "sTitle": "Status",
                     "sName": "STATUS",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center",
-                },
-                {
+                }
+                ,{
                     "sTitle": "Errors",
                     "sName": "ERRORS",
                     "bSearchable": false,
                     "bSortable": false,
                     "sClass": "text-center",
-                    "render": function ( data, type, full, meta ) {
-                        return "<a href='" + exceptionsUri + "'>View</a>";
+                    "render": function (data, type, full, meta) {
+                        var uri = exceptionsUri + "?importQueueId=" + full[importQueueIndex];
+                        return "<a href='" + uri + "'>View</a>";
                     }
                 }
             ],
@@ -118,98 +129,70 @@ page.ImportQueuePage = function (models) {
         //me.setDataTable(dt);
     }
     me.registerEvents = function () {
-        $(document).on("notifySuccess", function (sender, eventArgs) {
-            var subscribers = $(".subscribers-notifySuccess");
-            subscribers.trigger("notifySuccessEventHandler", [eventArgs]);
-        });
+        var prefix = me.getIdentifierPrefix();
 
-        $(document).on("notifyError", function (sender, eventArgs) {
-            var subscribers = $(".subscribers-notifyError");
-            subscribers.trigger("notifyErrorEventHandler", [eventArgs]);
-        });
+        $(document)
+            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
+            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
+            .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnResultsDelegate", [eventArgs]); })
+            .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdatedDelegate", [eventArgs]); })
+            .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
+            .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
+            .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
 
-        $(document).on("notifyResults", function (sender, eventArgs) {
-            var subscribers = $(".subscribers-notifyResults");
-            subscribers.trigger("notifyResultsEventHandler", [eventArgs]);
-        });
-
-        $(document).on("notifyProcessed", function (sender, eventArgs) {
-            var subscribers = $(".subscribers-notifyProcessed");
-            subscribers.trigger("notifyProcessedEventHandler", [eventArgs]);
-        })
-
-        $(document).on("notifyFilterComplete", function (sender, eventArgs) {
-            var subscribers = $(".subscribers-notifyFilterComplete");
-            subscribers.trigger("notifyFilterCompleteEventHandler", [eventArgs]);
-        });
-
-        $("#uploadForm").submit(function () {
-            $("#uploadForm").ajaxSubmit();
-            return false; // Prevent the submit handler from refreshing the page
-        });
-
-        $(document).on('change', '.btn-file :file', function () {
-            var input = $(this),
-                numFiles = input.get(0).files ? input.get(0).files.length : 1,
-                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-            $("#txtFilename").val(label);
-            input.trigger('fileselect', [numFiles, label]);
+        $("#" + prefix + "_UploadButton").on("click", function (e) {
+            var eventArgs = {
+                Action: parseInt($(this).attr("data-role")),
+            };
+            $(document).trigger("Action", eventArgs);
         });
     };
 
     me.registerSubscribers = function () {
-        $("#notifier").on("notifySuccessEventHandler", function (sender, eventArgs) {
-
-            var notifier = $("#notifier");
-
-            switch (eventArgs.StatusCode) {
-                case "Success":
-                    notifier.html("<div class=\"alert alert-dismissible alert-success\">" + eventArgs.StatusMessage + "</div>");
-                    break;
-                case "Warning":
-                    notifier.html("<div class=\"alert alert-dismissible alert-warning\">" + eventArgs.StatusMessage + "</div>");
-                    break;
-                case "Failure":
-                    notifier.html("<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.StatusMessage + "</div>");
-                    break;
-                case "Information":
-                    notifier.html("<div class=\"alert alert-dismissible alert-info\">" + eventArgs.StatusMessage + "</div>");
-                    break;
-                default:
-                    break;
-            }
-
-            return true;
-        });
-
-        $("#notifier").on("notifyErrorEventHandler", function (sender, eventArgs) {
-
-            var notifier = $("#notifier");
-
-            notifier.html("<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.statusText + "</div>");
-
-            return true;
-        });
-
-        $("#dvImportQueue").on("notifyFiterCompleteEventHandler", function (sender, eventArgs) {
-
-        });
-
-        $("#dvImportQueue").on("notifyResultsEventHandler", function (sender, eventArgs) {
-        });
-
-        $("#dvImportQueue").on("notifyProcessedEventHandler", function (sender, eventArgs) {
-        });
+        $("#notifier")
+            .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
+            .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
+            .unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
+            .unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
+            .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
+            .unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
+            .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler)
     };
 
     me.loadImportQueue = function (pageSize, pageIndex) {
         var filter = getFilter(pageSize, pageIndex);
         $(document).trigger("notifyFilterComplete", filter)
     };
+    me.onActionEventHandler = function (sender, eventArgs) {
+        var action = eventArgs.Action;
+        var model = getModelForAction(action);
+        var actionModel = model.getActionModel(action);
 
+        getModal().showModal({
+            Title: model.getActionTitle(action),
+            Uri: model.getActionContentUri(action),
+            Data: JSON.stringify(eventArgs),
+            Model: model,
+            ActionModel: actionModel
+        });
+    };
+    function getModal() {
+        return getModel("Modal");
+    };
+    function getModelForAction(actionId) {
+        var model = null;
+        switch (actionId) {
+            case 100:
+                model = getUploadModel();
+                break;
+            default:
+                break;
+        }
+        return model;
+    }
     function getModels() {
         return privateStore[me.id].Models;
-    }
+    };
     function getModel(modelName) {
         var model = null;
         $(getModels()).each(function () {
@@ -222,6 +205,12 @@ page.ImportQueuePage = function (models) {
     };
     function getImportQueueModel() {
         return getModel("ImportQueue");
+    };
+    function getExceptionsModel() {
+        return getModel("Exceptions");
+    };
+    function getUploadModel() {
+        return getModel("Upload");
     };
     function getFilter(pageSize, pageIndex) {
         var model = getImportQueueModel();

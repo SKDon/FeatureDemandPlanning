@@ -1207,6 +1207,8 @@
     <Content Include="Scripts\Import\importqueueinit.js" />
     <Content Include="Scripts\Import\exceptionspage.js" />
     <Content Include="Scripts\Import\exceptionsinit.js" />
+    <Content Include="Scripts\Import\upload.js" />
+    <Content Include="Scripts\Import\uploadaction.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\jquery.cookie.js" />
@@ -1356,7 +1358,6 @@
     <Content Include="Views\ImportException\_AddSpecialFeature.cshtml" />
     <Content Include="Views\ImportException\_ImportActionHeader.cshtml" />
     <Content Include="Views\ImportException\_Scripts.cshtml" />
-    <Content Include="Views\ImportException\_ModalError.cshtml" />
     <Content Include="Views\Shared\_Alert.cshtml" />
     <Content Include="Views\Import\_ImportQueue.cshtml">
       <SubType>Code</SubType>
@@ -1377,6 +1378,8 @@
     <Content Include="Views\Shared\DisplayTemplates\CanonicalHelperModel.cshtml" />
     <Content Include="Views\Volume\TakeRatePage.cshtml" />
     <Content Include="Views\Volume\_Scripts.cshtml" />
+    <Content Include="Views\Import\_Modal.cshtml" />
+    <Content Include="Views\Shared\_ModalError.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

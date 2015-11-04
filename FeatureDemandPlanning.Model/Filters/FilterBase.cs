@@ -14,6 +14,8 @@ namespace FeatureDemandPlanning.Model.Filters
         public int? PageSize { get; set; }
         public int? PageIndex { get; set; }
 
+        public string FilterMessage { get; set; }
+
         public int? SortIndex { get; set; }
         public SortDirection SortDirection { get { return _direction; } set { _direction = value; } }
 

@@ -11,6 +11,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using FeatureDemandPlanning.DataStore.DataStore;
+using FeatureDemandPlanning.Model.Context;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -220,13 +221,13 @@ namespace FeatureDemandPlanning.DataStore
                 return retVal;
             }
         }
-        public VolumeSummary FdpVolumeHeaderGet(int fdpVolumeHeaderId)
+        public TakeRateSummary FdpVolumeHeaderGet(int fdpVolumeHeaderId)
         {
             var volumeHeaders = FdpVolumeHeaderGetManyByUsername(new TakeRateFilter());
-            if (volumeHeaders == null || !volumeHeaders.Any())
+            if (volumeHeaders == null || !volumeHeaders.CurrentPage.Any())
                 return null;
 
-            return volumeHeaders.Where(v => v.FdpVolumeHeaderId == fdpVolumeHeaderId).FirstOrDefault();
+            return volumeHeaders.CurrentPage.Where(v => v.TakeRateId == fdpVolumeHeaderId).FirstOrDefault();
         }
         public void FdpVolumeHeaderSave(FdpVolumeHeader header)
         {
@@ -255,53 +256,94 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
         }
-        public IEnumerable<VolumeSummary> FdpVolumeHeaderGetManyByUsername(TakeRateFilter filter)
+        public PagedResults<TakeRateSummary> FdpVolumeHeaderGetManyByUsername(TakeRateFilter filter)
         {
+            var retVal = new PagedResults<TakeRateSummary>();
+
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
-                IEnumerable<VolumeSummary> retVal = null;
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@CDSID", this.CurrentCDSID, dbType: DbType.String, size: 16);
+                    var totalRecords = 0;
+                    var totalDisplayRecords = 0;
 
-                    if (!string.IsNullOrEmpty(filter.Code))
+                    if (filter.TakeRateId.HasValue)
                     {
-                        para.Add("@VehicleName", filter.Code, dbType: DbType.String, size: 1000);
+                        para.Add("@TakeRateId", filter.TakeRateId.Value, dbType: DbType.Int32);
+                    }
+                    if (!string.IsNullOrEmpty(filter.FilterMessage))
+                    {
+                        para.Add("@FilterMessage", filter.FilterMessage, dbType: DbType.String, size: 50);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, dbType: DbType.String);
                     }
 
-                    if (!string.IsNullOrEmpty(filter.ModelYear))
+                    // TODO implement the CDSId to get only those forecasts the user has permissions for
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = conn.Query<TakeRateSummary>("dbo.Fdp_VolumeHeader_GetManyByUsername", para, commandType: CommandType.StoredProcedure);
+
+                    if (results.Any())
                     {
-                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String, size: 100);
+                        totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                    }
+                    retVal = new PagedResults<TakeRateSummary>()
+                    {
+                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                    };
+
+                    var currentPage = new List<TakeRateSummary>();
+                    foreach (var result in results)
+                    {
+                        currentPage.Add(result);
                     }
 
-                    if (!string.IsNullOrEmpty(filter.Gateway))
-                    {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String, size: 50);
-                    }
-
-                    retVal = conn.Query<VolumeSummary>(fdpVolumeHeaderStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                    retVal.CurrentPage = currentPage;
                 }
                 catch (Exception ex)
                 {
                     AppHelper.LogError("FdpVolumeDataStore.FdpVolumeHeaderGetManyByUsername", ex.Message, CurrentCDSID);
+                    throw;
                 }
 
                 return retVal;
             }
         }
-        public IEnumerable<VolumeSummary> FdpVolumeHeaderGetManyByOxoDocIdAndUsername(TakeRateFilter filter)
+        public IEnumerable<TakeRateSummary> FdpVolumeHeaderGetManyByOxoDocIdAndUsername(TakeRateFilter filter)
         {
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
-                IEnumerable<VolumeSummary> retVal = null;
+                IEnumerable<TakeRateSummary> retVal = null;
                 try
                 {
                     var para = new DynamicParameters();
                     para.Add("@CDSID", this.CurrentCDSID, dbType: DbType.String, size: 16);
                     //para.Add("@OxoDocId", filter.OxoDocId, dbType: DbType.Int32);
                     
-                    retVal = conn.Query<VolumeSummary>(fdpVolumeHeaderByOxoDocumentStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<TakeRateSummary>(fdpVolumeHeaderByOxoDocumentStoredProcedureName, para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
@@ -319,7 +361,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     para.Add("@CDSID", this.CurrentCDSID, dbType: DbType.String, size: 16);
-                    para.Add("@FdpVolumeHeaderId", fdpOxoDocumentToSave.Header.FdpVolumeHeaderId, dbType: DbType.Int32);
+                    para.Add("@FdpVolumeHeaderId", fdpOxoDocumentToSave.Header.TakeRateId, dbType: DbType.Int32);
                     para.Add("@OxoDocId", fdpOxoDocumentToSave.Document.Id, dbType: DbType.Int32);
 
                     var rows = conn.Execute(fdpOxoDocSaveStoredProcedureName, para, commandType: CommandType.StoredProcedure);

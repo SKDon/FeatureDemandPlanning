@@ -70,7 +70,7 @@ namespace FeatureDemandPlanning.Model
             }
         }
 
-        public IEnumerable<VolumeSummary> AvailableImports
+        public IEnumerable<TakeRateSummary> AvailableImports
         {
             get
             {
@@ -243,7 +243,7 @@ namespace FeatureDemandPlanning.Model
         private IEnumerable<Programme> _programmes = new List<Programme>();
         private IList<ForecastTrimMapping> _trimMappings = new List<ForecastTrimMapping>();
         private IEnumerable<OXODoc> _availableDocuments = new List<OXODoc>();
-        private IEnumerable<VolumeSummary> _availableImports = new List<VolumeSummary>();
+        private IEnumerable<TakeRateSummary> _availableImports = new List<TakeRateSummary>();
         private IEnumerable<Model> _availableModels = new List<Model>();
         private IEnumerable<MarketGroup> _availableMarketGroups = new List<MarketGroup>();
         //private IEnumerable<Market> _availableMarkets = new List<Market>();

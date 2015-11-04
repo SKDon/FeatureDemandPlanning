@@ -12,9 +12,9 @@ namespace FeatureDemandPlanning.Model.ViewModel
 {
     public class TakeRateViewModel : SharedModelBase
     {
-        public VolumeSummary TakeRate { get; set; }
+        public TakeRateSummary TakeRate { get; set; }
 
-        public IEnumerable<VolumeSummary> TakeRates 
+        public PagedResults<TakeRateSummary> TakeRates 
         {
             get
             {
@@ -35,7 +35,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             : base(dataContext)
         {
             Configuration = dataContext.ConfigurationSettings;
-            TakeRate = new EmptyVolumeSummary();
+            TakeRate = new EmptyTakeRateSummary();
         }
 
         public static async Task<TakeRateViewModel> GetModel(IDataContext context, TakeRateFilter filter)
@@ -50,6 +50,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
             return model;
         }
 
-        private IEnumerable<VolumeSummary> _takeRates = Enumerable.Empty<VolumeSummary>();
+        private PagedResults<TakeRateSummary> _takeRates = new PagedResults<TakeRateSummary>();
     }
 }
