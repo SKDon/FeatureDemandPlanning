@@ -15,6 +15,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
         TakeRateSummary GetVolumeHeader(VolumeFilter filter);
         Task<PagedResults<TakeRateSummary>> ListTakeRateData(TakeRateFilter filter);
         Task<PagedResults<TakeRateSummary>> ListLatestTakeRateData();
+        Task<IEnumerable<TakeRateStatus>> ListTakeRateStatuses();
+
         void SaveVolumeHeader(FdpVolumeHeader headerToSave);
         
         IVolume GetVolume(VolumeFilter filter);
@@ -33,5 +35,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
 
         IEnumerable<SpecialFeature> ListSpecialFeatures(ProgrammeFilter programmeFilter);
+
+        
     }
 }

@@ -10,9 +10,12 @@
 
 @section PageContentHeader
 {
+    <form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
     <div class="row">
         <div class="col-lg-5 inverse" style="padding-top: 20px">
-            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+            <div class="panel panel-primary" style="height:130px;margin-top:15px;background-color: rgba(18, 7, 59, 0.75);">
                 <div class="panel-body" style="background:none !important">
                     <div class="row">
                         <div class="col-lg-2">
@@ -20,11 +23,27 @@
                         </div>
                         <div class="col-lg-10">
                             <h3 style="margin-top:5px">Forecasts</h3>
-                            <h5 id="lblVehicleDescription">All Forecasts for @Model.CurrentUser.CDSID</h5>
+                            <h5 id="lblVehicleDescription">All Forecasts for @Model.CurrentUser.CDSId</h5>
 
                             <p class="page-description">Edit and view entered forecast information</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-5 inverse pull-right" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:130px;margin-top:15px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-heading">
+                    <div class="panel-title">Filter Forecasts</div>
+                </div>
+                <div class="panel-body" style="background:none !important">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="@(Model.IdentifierPrefix)_FilterMessage" class="form-label col-lg-3 text-right" style="margin-top:10px">Filter:</label>
+                            <input type="text" id="@(Model.IdentifierPrefix)_FilterMessage" placeholder="Enter search filter" class="form-control col-lg-6" />
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -40,7 +59,7 @@
 
     @Html.Partial("_Modal", Model)
 
-    <div id="pnlForecasts" class="panel panel-primary" style="display:none;">
+    <div id="pnlForecasts" class="panel panel-primary" style="display:none;margin-top:15px">
         <div class="panel-heading">
             <div class="panel-title"><span id="spnFilteredRecords" class="subscribers-notifyResults"></span> Forecasts</div>
         </div>

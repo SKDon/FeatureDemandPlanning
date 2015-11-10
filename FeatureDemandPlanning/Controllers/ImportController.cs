@@ -16,11 +16,15 @@ using FeatureDemandPlanning.Model.ViewModel;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.Attributes;
+using FluentValidation;
+using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.Controllers
 {
     public class ImportController : ControllerBase
     {
+        public ImportParameters Parameters { get; set; }
+
         public ImportController() : base()
         {
             ControllerType = ControllerType.SectionChild;
@@ -34,188 +38,207 @@ namespace FeatureDemandPlanning.Controllers
         [HttpGet]
         public async Task<ActionResult> ImportPage(ImportParameters parameters)
         {
-            //ValidateImportParameters(parameters, ImportParametersValidator.ImportQueueIdentifier);
-            var filter = new ImportQueueFilter()
-            {
-                ImportQueueId = parameters.ImportQueueId,
-                PageIndex = PageIndex,
-                PageSize = PageSize
-            };
-            var importView = await ImportViewModel.GetModel(DataContext, filter);
+            Parameters = parameters;
+            var importView = await GetModelFromParameters();
 
             return View(importView);
         }
         [HttpPost]
-        public async Task<ActionResult> ListImportQueue(JQueryDataTableParameters param)
+        [HandleErrorWithJson]
+        public async Task<ActionResult> ListImportQueue(ImportParameters parameters)
         {
             var js = new JavaScriptSerializer();
-            var filter = new ImportQueueFilter();
-
-            try
+            var filter = new ImportQueueFilter()
             {
-                filter.InitialiseFromJson(param);
+                FilterMessage = parameters.FilterMessage,
+                ImportStatus = (enums.ImportStatus)parameters.ImportStatusId.GetValueOrDefault(),
+                Action = ImportAction.ImportQueue
+            };
+            filter.InitialiseFromJson(parameters);
+            
+            var results = await ImportViewModel.GetModel(DataContext, filter);
+            var jQueryResult = new JQueryDataTableResultModel(results.TotalRecords, results.TotalDisplayRecords);
 
-                var results = await ImportViewModel.GetModel(DataContext, filter);
-                var jQueryResult = new JQueryDataTableResultModel(results.TotalRecords, results.TotalDisplayRecords);
-
-                // Iterate through the results and put them in a format that can be used by jQuery datatables
-                if (results.ImportQueue.CurrentPage.Any())
+            // Iterate through the results and put them in a format that can be used by jQuery datatables
+            if (results.ImportQueue.CurrentPage.Any())
+            {
+                foreach (var result in results.ImportQueue.CurrentPage)
                 {
-                    foreach (var result in results.ImportQueue.CurrentPage)
-                    {
-                        var stringResult = new string[] 
-                        { 
-                            result.CreatedOn.ToString("g"), 
-                            result.CreatedBy,
-                            result.VehicleDescription,
-                            Path.GetFileName(result.FilePath),
-                            result.ImportStatus.Status,
-                            result.ImportQueueId.ToString()
-                        };
-
-                        jQueryResult.aaData.Add(stringResult);
-                    }
+                    jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
                 }
-                return Json(jQueryResult);
             }
-            catch (ApplicationException ex)
-            {
-                return Json(ex);
-            }
+            return Json(jQueryResult);
         }
         [HttpPost]
         [HandleError(View = "_ModalError")]
         [OutputCache(Duration = 600, VaryByParam = "ImportParameter.Action")]
         public async Task<ActionResult> ModalContent(ImportParameters parameters)
         {
-            //ValidateImportParameters(parameters, ImportExceptionParametersValidator.ExceptionIdentifierWithAction);
-
-            var importView = await GetModelFromParameters(parameters);
+            Parameters = parameters;
+            var importView = await GetModelFromParameters();
 
             return PartialView(GetContentPartialViewName(parameters.Action), importView);
         }
         [HttpPost]
         [HandleErrorWithJson]
-        public ActionResult ModalAction(ImportExceptionParameters parameters)
+        public ActionResult ModalAction(ImportParameters parameters)
         {
-            //ValidateImportParameters(parameters, ImportExceptionParametersValidator.ExceptionIdentifierWithActionAndProgramme);
-            //ValidateImportParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+            Parameters = parameters;
+            ValidateImportParameters(Enum.GetName(Parameters.Action.GetType(), Parameters.Action));
 
-            return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
+            return RedirectToAction(Enum.GetName(Parameters.Action.GetType(), Parameters.Action), 
+                                    ImportParameters.GetActionSpecificParameters(Parameters));
         }
         [HttpPost]
-        public async Task<ActionResult> Upload(HttpPostedFileBase fileToUpload)
+        [HandleErrorWithJson]
+        [ActionName("UploadEx")]
+        public async Task<ActionResult> Upload(ImportParameters parameters)
         {
-            _fileToUpload = fileToUpload;
+            Parameters = parameters;
+            ValidateImportParameters(ImportParametersValidator.Upload);
 
-            try
-            {
-                _importView = await ImportViewModel.GetModel(DataContext);
+            SetProgrammeId();
+            SetUploadFilePath();
+            SaveImportFileToFileSystem();
+            await QueueItemForProcessing();
 
-                SaveImportFileToFileSystem();
-                await QueueItemForProcessing();
-
-                _importView.SetProcessState(new ProcessState(enums.ProcessStatus.Success,
-                    String.Format("File '{0}' was uploaded successfully", _fileToUpload.FileName)));
-            }
-            catch (ApplicationException ex)
-            {
-                _importView.SetProcessState(ex);
-            }
-
-            return View(_importView);
+            return JsonGetSuccess();
         }
-        [HttpGet]
-        public async Task<ActionResult> Process(int importQueueId)
+        [HttpPost]
+        [HandleErrorWithJson]
+        public async Task<ActionResult> Upload(HttpPostedFileBase fileToUpload,
+                                                string carLine,
+                                                string modelYear,
+                                                string gateway)
         {
-            try
+            return await Upload(new ImportParameters()
             {
-                var filter = new ImportQueueFilter(importQueueId);
-
-                _importView = await ImportViewModel.GetModel(DataContext, filter);
-                await ProcessQueue(importQueueId);
-
-
-                _importView = await ImportViewModel.GetModel(DataContext, filter);
-                _importView.SetProcessState(
-                    new ProcessState(enums.ProcessStatus.Success,
-                                     "File was processed successfully"));
-            }
-            catch (ApplicationException ex)
-            {
-                _importView.SetProcessState(ex);
-            }
-
-            return RedirectToAction("Index");
+                Action = ImportAction.Upload,
+                UploadFile = fileToUpload,
+                CarLine = carLine,
+                ModelYear = modelYear,
+                Gateway = gateway
+            });
         }
-        
-
+     
         #region "Private Methods"
 
         private string GetContentPartialViewName(ImportAction forAction)
         {
             return string.Format("_{0}", Enum.GetName(forAction.GetType(), forAction));
         }
-        private async Task<ImportViewModel> GetModelFromParameters(ImportParameters parameters)
+        private async Task<ImportViewModel> GetModelFromParameters()
         {
             return await ImportViewModel.GetModel(
                 DataContext,
                 new ImportQueueFilter(),
-                parameters.Action);
+                Parameters.Action);
         }
-
-        //TODO Move all this to the model / business objects
-
-        /// <summary>
-        /// Saves the import file to file system.
-        /// </summary>
         private void SaveImportFileToFileSystem()
         {
-            var extension = Path.GetExtension(_fileToUpload.FileName);
-            var uploadPath = DataContext.Configuration.Configuration.FdpUploadFilePath;
-
-            _fileName = Path.Combine(uploadPath, String.Format("{0}{1}", Guid.NewGuid().ToString(), extension));
-
-            _fileToUpload.SaveAs(_fileName);
+            Parameters.UploadFile.SaveAs(Parameters.UploadFilePath);
         }
-
-        /// <summary>
-        /// Adds an entry to the import queue indicating that the uploaded file is to be processed
-        /// </summary>
+        private void SetProgrammeId()
+        {
+            var importView = GetModelFromParameters().Result;
+            Parameters.ProgrammeId =
+                importView.AvailableProgrammes
+                    .Where(p => p.VehicleName.Equals(Parameters.CarLine, StringComparison.InvariantCultureIgnoreCase) &&
+                                p.ModelYear.Equals(Parameters.ModelYear, StringComparison.InvariantCultureIgnoreCase))
+                    .First().Id;
+        }
+        private void SetUploadFilePath()
+        {
+            var extension = Path.GetExtension(Parameters.UploadFile.FileName);
+            Parameters.UploadFilePath = Path.Combine(DataContext.Configuration.Configuration.FdpUploadFilePath,
+                                          String.Format("{0}{1}", Guid.NewGuid().ToString(), extension));
+        }
         private async Task<ImportQueue> QueueItemForProcessing()
         {
-            var itemToQueue = new ImportQueue(UserName, _fileName);
+            var itemToQueue = ImportQueue.FromImportParameters(Parameters);
             return await DataContext.Import.SaveImportQueue(itemToQueue);
         }
-
-        /// <summary>
-        /// Processes all items in the queue
-        /// </summary>
-        private async Task<ImportResult> ProcessQueue()
+        private void ValidateImportParameters(string ruleSetName)
         {
-            return await DataContext.Import.ProcessImportQueue();
+            var validator = new ImportParametersValidator(DataContext);
+            var result = validator.Validate(Parameters, ruleSet: ruleSetName);
+            if (!result.IsValid)
+            {
+                throw new ValidationException(result.Errors);
+            }
         }
 
-        /// <summary>
-        /// Processes an individual item in the queue
-        /// </summary>
-        /// <param name="importQueueId">The import queue identifier</param>
-        private async Task<ImportResult> ProcessQueue(int importQueueId)
-        {
-            var filter = new ImportQueueFilter(importQueueId);
-            var itemToProcess = DataContext.Import.GetImportQueue(filter);
-            
-            return await DataContext.Import.ProcessImportQueue(itemToProcess.Result);
-        }
-
-        #endregion
-
-        #region "Private members"
-
-        private HttpPostedFileBase _fileToUpload = null;
-        private string _fileName = String.Empty;
-        private ImportViewModel _importView = null;
-      
         #endregion
     }
+
+    #region "Validation Classes"
+
+    internal class ImportParametersValidator : AbstractValidator<ImportParameters>
+    {
+        public const string Upload = "UPLOAD";
+        public const string NoValidation = "NO_VALIDATION";
+
+        public IDataContext DataContext { get; set; }
+        public IEnumerable<Programme> AvailableProgrammes { get; set; }
+
+        public ImportParametersValidator(IDataContext context)
+        {
+            DataContext = context;
+            AvailableProgrammes = DataContext.Vehicle.ListProgrammes(new ProgrammeFilter());
+
+            RuleSet(NoValidation, () =>
+            {
+
+            });
+            RuleSet(Upload, () =>
+            {
+                RuleFor(p => p.UploadFile)
+                    .Cascade(CascadeMode.StopOnFirstFailure)
+                    .NotNull()
+                    .Must(NotBeEmpty)
+                    .WithMessage("'File to import' not specified")
+                    .Must(BeAnExcelFile)
+                    .WithMessage("'File to import' is not a valid Excel file");
+                RuleFor(p => p.CarLine).NotEmpty().WithMessage("'Car Line' not specified");
+                RuleFor(p => p.ModelYear).NotEmpty().WithMessage("'Model Year' not specified");
+                RuleFor(p => p.Gateway).NotEmpty().WithMessage("'Gateway' not specified");
+                    
+                RuleFor(p => p)
+                    .Cascade(CascadeMode.StopOnFirstFailure)
+                    .Must(BeAValidCarLine)
+                    .WithMessage("Selected car line not found or you do not have permissions to upload data to it")
+                    .Must(BeAValidModelYear)
+                    .WithMessage("Model year not valid for the selected car line or you do not have permissions to upload data to it")
+                    .Must(BeAValidGateway)
+                    .WithMessage("Gateway not valid for the selected car line / model year or you do not have permissions to upload data to it");
+
+            });
+        }
+
+        private bool BeAValidGateway(ImportParameters parameters)
+        {
+            return AvailableProgrammes.Where(p => p.VehicleName.Equals(parameters.CarLine, StringComparison.InvariantCultureIgnoreCase) &&
+                                                  p.ModelYear.Equals(parameters.ModelYear, StringComparison.InvariantCultureIgnoreCase) &&
+                                                  p.Gateway.Equals(parameters.Gateway, StringComparison.InvariantCultureIgnoreCase)).Any();
+        }
+        private bool BeAValidModelYear(ImportParameters parameters)
+        {
+            return AvailableProgrammes.Where(p => p.VehicleName.Equals(parameters.CarLine, StringComparison.InvariantCultureIgnoreCase) &&
+                                                  p.ModelYear.Equals(parameters.ModelYear, StringComparison.InvariantCultureIgnoreCase)).Any();
+        }
+        private bool BeAValidCarLine(ImportParameters parameters)
+        {
+            return AvailableProgrammes.Where(p => p.VehicleName.Equals(parameters.CarLine, StringComparison.InvariantCultureIgnoreCase)).Any();
+        }
+        private bool BeAnExcelFile(HttpPostedFileBase arg)
+        {
+            return arg.FileName.EndsWith(".xls") || arg.FileName.EndsWith(".xlsx");
+        }
+        private bool NotBeEmpty(HttpPostedFileBase arg)
+        {
+            return arg != null && arg.ContentLength > 0;
+        }
+    }
+
+    #endregion
 }

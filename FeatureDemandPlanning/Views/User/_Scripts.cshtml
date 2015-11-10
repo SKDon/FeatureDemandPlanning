@@ -1,0 +1,39 @@
+﻿@using FeatureDemandPlanning.Model
+@model FeatureDemandPlanning.Model.ViewModel.UserViewModel
+
+@{
+    var currentVersion = Model.CurrentVersion;
+}
+<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/User/user.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/User/addnewuseraction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/User/enableuseraction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/User/disableuseraction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/User/setadministratoraction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/User/unsetadministratoraction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/User/manageprogrammesaction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/User/userspage.js")?v=@currentVersion"></script>
+<script language="javascript">
+
+    var user, page, modal;
+    var params = {
+        ActionsUri: "@Url.Action("ContextMenu")",
+        ProcessUri: "@Url.Action("Process")",
+        CancelUri: "@Url.Action("Cancel")",
+        Users: @Html.Raw(Json.Encode(Model.Users)),
+        UsersUri: "@Url.Action("ListUsers")",
+        ModalContentUri: "@Url.Action("ModalContent")",
+        ModalActionUri: "@Url.Action("ModalAction")",
+        ModalDialogId: "modal",
+        ModalContentId: "modalBody",
+        Configuration: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        _lastParam: null
+    };
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+
+</script>
+<script src="@Url.Content("~/Scripts/User/usersinit.js")?v=@currentVersion"></script>

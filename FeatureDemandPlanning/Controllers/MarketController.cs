@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.Controllers
         [HttpGet]
         public ActionResult Market()
         {
-            MarketViewModel marketModel = new MarketViewModel(DataContext)
+            MarketViewModel marketModel = new MarketViewModel()
             {
                 AvailableMarkets = DataContext.Market.ListAvailableMarkets(),
                 TopMarkets = DataContext.Market.ListTopMarkets()
@@ -44,7 +44,7 @@ namespace FeatureDemandPlanning.Controllers
         [HttpGet]
         public PartialViewResult TopMarkets()
         {
-            var marketModel = new MarketViewModel(DataContext)
+            var marketModel = new MarketViewModel()
             {
                 AvailableMarkets = DataContext.Market.ListAvailableMarkets(),
                 TopMarkets = DataContext.Market.ListTopMarkets()
@@ -56,7 +56,7 @@ namespace FeatureDemandPlanning.Controllers
         [HttpPost]
         public ActionResult AddTopMarket(int marketId)
         {
-            var marketModel = new MarketViewModel(DataContext);
+            var marketModel = new MarketViewModel();
             try
             {
                 marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets();
@@ -81,7 +81,7 @@ namespace FeatureDemandPlanning.Controllers
         [HttpPost]
         public ActionResult DeleteTopMarket(int marketId)
         {
-            MarketViewModel marketModel = new MarketViewModel(DataContext);
+            MarketViewModel marketModel = new MarketViewModel();
 
             try
             {
@@ -116,7 +116,7 @@ namespace FeatureDemandPlanning.Controllers
         [HttpPost]
         public ActionResult ListAvailableMarkets(ProgrammeFilter filter)
         {
-            MarketViewModel marketModel = new MarketViewModel(DataContext);
+            MarketViewModel marketModel = new MarketViewModel();
 
             marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets(filter);
 

@@ -65,7 +65,8 @@ namespace FeatureDemandPlanning.Controllers
             var js = new JavaScriptSerializer();
             var filter = new TakeRateFilter()
             {
-                FilterMessage = parameters.FilterMessage
+                FilterMessage = parameters.FilterMessage,
+                TakeRateStatusId = parameters.TakeRateStatusId
             };
             filter.InitialiseFromJson(parameters);
 
@@ -79,8 +80,6 @@ namespace FeatureDemandPlanning.Controllers
 
             return Json(jQueryResult);
         }
-
-
         [HttpPost]
         public ActionResult VolumePage(Volume volume, int pageIndex)
         {
@@ -157,7 +156,7 @@ namespace FeatureDemandPlanning.Controllers
         public ActionResult Document(int? oxoDocId, 
                                      int? marketGroupId, 
                                      int? marketId,
-                                     TakeRateResultMode resultsMode = TakeRateResultMode.Raw)
+                                     TakeRateResultMode resultsMode = TakeRateResultMode.PercentageTakeRate)
         {
             ViewBag.PageTitle = "OXO Volume";
 

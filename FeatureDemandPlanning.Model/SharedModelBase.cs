@@ -15,19 +15,13 @@ using System.Web.Script.Serialization;
 namespace FeatureDemandPlanning.Model
 {
     [DataContract]
-    public abstract class SharedModelBase
+    public class SharedModelBase
     {
-        public SharedModelBase(IDataContext dataContext)
-        {
-            _dataContext = dataContext;
-        }
-
+        public dynamic Configuration { get; set; }
         public string CurrentPage { get; set; }
-        
-        [IgnoreDataMember]
-        public SystemUser CurrentUser { get { return _dataContext.User.GetUser(); } }
-        public IDataContext DataContext { get { return _dataContext; } }
-        public static string CurrentVersion { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
+        public User CurrentUser { get; set; }
+
+        public string CurrentVersion { get; set; }
         public string HTMLTitle { get; set; }
 
         public int PageIndex { get; set; }
@@ -82,31 +76,48 @@ namespace FeatureDemandPlanning.Model
             _processStates = new List<ProcessState>() { new ProcessState(ex) };
         }
 
-        protected IVehicle InitialiseVehicle(IVehicle vehicle)
+        //protected IVehicle InitialiseVehicle(IVehicle vehicle)
+        //{
+        //    var cacheKey = string.Format("Vehicle_{0}", vehicle.GetHashCode());
+        //    IVehicle returnValue = (IVehicle)HttpContext.Current.Cache.Get(cacheKey);
+        //    if (returnValue != null)
+        //    {
+        //        returnValue.TrimMappings = vehicle.TrimMappings;
+        //        return returnValue;
+        //    }
+
+        //    returnValue = this.DataContext.Vehicle.GetVehicle(VehicleFilter.FromVehicle(vehicle));
+        //    returnValue.TrimMappings = vehicle.TrimMappings;
+
+        //    HttpContext.Current.Cache.Add(
+        //        cacheKey, 
+        //        returnValue, 
+        //        null,
+        //        DateTime.Now.AddMinutes(60), 
+        //        Cache.NoSlidingExpiration, 
+        //        CacheItemPriority.Default, null);
+
+        //    return returnValue;
+        //}
+
+        public SharedModelBase()
         {
-            var cacheKey = string.Format("Vehicle_{0}", vehicle.GetHashCode());
-            IVehicle returnValue = (IVehicle)HttpContext.Current.Cache.Get(cacheKey);
-            if (returnValue != null)
+
+        }
+        public SharedModelBase(SharedModelBase baseModel)
+        {
+            CurrentUser = baseModel.CurrentUser;
+            CurrentVersion = baseModel.CurrentVersion;
+        }
+        public static SharedModelBase GetBaseModel(IDataContext context)
+        {
+            return new SharedModelBase()
             {
-                returnValue.TrimMappings = vehicle.TrimMappings;
-                return returnValue;
-            }
-
-            returnValue = this.DataContext.Vehicle.GetVehicle(VehicleFilter.FromVehicle(vehicle));
-            returnValue.TrimMappings = vehicle.TrimMappings;
-
-            HttpContext.Current.Cache.Add(
-                cacheKey, 
-                returnValue, 
-                null,
-                DateTime.Now.AddMinutes(60), 
-                Cache.NoSlidingExpiration, 
-                CacheItemPriority.Default, null);
-
-            return returnValue;
+                CurrentUser = context.User.GetUser().Result,
+                CurrentVersion =  Assembly.GetExecutingAssembly().GetName().Version.ToString()
+            };
         }
 
-        private IDataContext _dataContext = null;
         private IList<ProcessState> _processStates = new List<ProcessState>();
     }
 }

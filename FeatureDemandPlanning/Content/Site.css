@@ -1,8 +1,13 @@
-﻿body {
+﻿html {
+    height:100%;
+}
+
+body {
     /*padding-bottom: 20px;*/
     padding-top:65px;
     background-color: #061639;
     color: #2e4372;
+    height:100%;
     /*overflow:hidden;*/
 }
 
@@ -20,22 +25,52 @@ a:hover {
     top: -45px; /*70px;*/
     left: 0px;
     height:300px;
-    /*width:100%;*/
+    width:100%;
     z-index:-10;
     border-bottom: solid 1px #4e638e;
 }
 
 .carousel {
-    position: absolute;
+    /*position: absolute;
     top: 70px;
-    left: 0px;
+    left: 0px;*/
     z-index: -2;
-    border-bottom: solid 1px #4e638e;
+    /*border-bottom: solid 1px #4e638e;*/
+    height:100%;
 }
 
-.carousel .item {
-    /*width: 100%;*/ /*slider width*/
-    max-height: 699px /*slider height*/
+.item,.active {
+    height:100%;
+}
+
+.carousel-outer {
+    z-index: -2;
+    position: absolute;
+    left: 0px;
+    top: 70px;
+}
+
+.carousel-inner {
+    height:100%;
+}
+
+/* faster sliding speed */
+.carousel-inner > .item {
+    -webkit-transition: 0.3s ease-in-out left;
+    -moz-transition: 0.3s ease-in-out left;
+    -o-transition: 0.3s ease-in-out left;
+    transition: 0.3s ease-in-out left;
+}
+
+.fill {
+    width:100%;
+    height:100%;
+    background-position:center;
+    background-size:cover;
+}
+
+.nopadding {
+    padding:0px;
 }
 
 .carousel-indicators {
@@ -56,6 +91,7 @@ a:hover {
     top:69px;
     left:0px;
     width:100%;
+    height:100%;
     z-index:-1;
 
     background: rgba(21,42,85,0.85);
@@ -148,6 +184,10 @@ textarea {
     margin-top:5px;
 }
 
+.navbar-header h1 {
+    margin-left:0px !important;
+}
+
 /*.navbar-brand img {
     border: solid 1px #4e638e;
     border-radius:4px;
@@ -216,6 +256,11 @@ textarea {
         margin-left: -20px;
         margin-right: -20px;
     }
+
+    body {
+		padding-left: 0;
+		padding-right: 0;
+	}
 }
 
 .inverse {
@@ -972,4 +1017,12 @@ button.close {
 
 .control-label {
     margin-top: 5px;
+}
+
+.context-menu {
+    border-color: #061639;
+}
+
+.home-button {
+    margin-bottom:10px
 }

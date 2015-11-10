@@ -13,9 +13,16 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public PagedResults<EngineCodeMapping> EngineCodeMappings { get; set; }
         public dynamic Configuration { get; set; }
 
-        public EngineCodeMappingViewModel(IDataContext dataContext) : base(dataContext)
+        public EngineCodeMappingViewModel() : base()
         {
-            Configuration = dataContext.ConfigurationSettings;
+        }
+
+        public static EngineCodeMappingViewModel GetModel(IDataContext context)
+        {
+            return new EngineCodeMappingViewModel()
+            {
+                Configuration = context.ConfigurationSettings
+            };
         }
     }
 }

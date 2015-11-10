@@ -4,7 +4,7 @@
     <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
 </form>
 
-@using (Html.BeginForm("Upload", "Import", FormMethod.Post, new { enctype = "multipart/form-data", id = "uploadForm" }))
+@using (Html.BeginForm("Upload", "Import", FormMethod.Post, new { enctype = "multipart/form-data", id = Model.IdentifierPrefix + "_UploadForm" }))
 {
 
 

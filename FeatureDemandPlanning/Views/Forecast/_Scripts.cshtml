@@ -2,20 +2,22 @@
 @model FeatureDemandPlanning.Model.ViewModel.ForecastComparisonViewModel
 
 @{
-    var currentVersion = SharedModelBase.CurrentVersion;
+    var currentVersion = Model.CurrentVersion;
 }
 
 <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Forecast/forecast.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Forecast/forecasts.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Forecast/forecastspage.js")?v=@currentVersion"></script>
 
 <script type="text/javascript">
 
-    var forecasts, page, modal;
+    var forecast, forecasts, page, modal;
     var params = {
         ActionsUri: "@Url.Action("ContextMenu")",
+        PageUri: "@Url.Action("Forecast")",
         ForecastsUri: "@Url.Action("ListForecasts")",
         ModalContentUri: "@Url.Action("ModalContent")",
         ModalActionUri: "@Url.Action("ModalAction")",

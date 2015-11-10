@@ -18,7 +18,10 @@ namespace FeatureDemandPlanning.Model.Enumerations
         AddMissingTrim = 6,
         MapMissingTrim = 7,
         IgnoreException = 8,
+        Exception = 9,
+        ImportQueue = 10,
+        ImportQueueItem = 11,
 
-        Upload = 100
+        Upload = 100,
     }
 }

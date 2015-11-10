@@ -10,7 +10,21 @@ page.ImportQueuePage = function (models) {
     privateStore[me.id = uid++] = {};
     privateStore[me.id].DataTable = null;
     privateStore[me.id].Models = models;
+    privateStore[me.id].Timer = null;
     
+    me.cancelTimer = function () {
+        var timer = me.getTimer();
+        if (timer != null) {
+            clearTimeout(timer);
+            timer = null;
+        }
+    };
+    me.getTimer = function () {
+        return privateStore[me.id].Timer;
+    };
+    me.setTimer = function (timer) {
+        privateStore[me.id].Timer = timer;
+    };
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
@@ -39,6 +53,9 @@ page.ImportQueuePage = function (models) {
         var params = me.getParameters(data);
         var model = getImportQueueModel();
         var uri = model.getImportQueueUri();
+        
+        me.cancelTimer();
+
         settings.jqXHR = $.ajax({
             "dataType": "json",
             "type": "POST",
@@ -46,15 +63,24 @@ page.ImportQueuePage = function (models) {
             "data": params,
             "success": function (json) {
                 callback(json);
+                me.setTimer(setTimeout(function () {
+                    me.redrawDataTable();
+                }, 10000));
             }
         });
     };
+    me.getFilterMessage = function () {
+        return $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
+    };
+    me.getSelectedImportStatus = function () {
+        return parseInt($("#" + me.getIdentifierPrefix() + "_SelectImportStatus").val());
+    }
     me.getParameters = function (data) {
         var filter = getFilter();
         var params = $.extend({}, data, {
             "ImportQueueId": filter.ImportQueueId,
-            "ExceptionType": filter.ExceptionType,
-            "FilterMessage": filter.FilterMessage
+            "ImportStatusId": me.getSelectedImportStatus(),
+            "FilterMessage": me.getFilterMessage()
         });
         return params;
     };
@@ -62,9 +88,12 @@ page.ImportQueuePage = function (models) {
 
         var exceptionsUri = getExceptionsModel().getExceptionsUri();
         var importQueueIndex = 5;
+        var hasErrorsIndex = 6;
+        var errorCountIndex = 7;
 
         $("#tblImportQueue").DataTable({
             "serverSide": true,
+            "responsive": true,
             "pagingType": "full_numbers",
             "ajax": me.getData,
             "processing": true,
@@ -90,7 +119,7 @@ page.ImportQueuePage = function (models) {
                     "bSortable": true
                 }
                 ,{
-                    "sTitle": "File Path",
+                    "sTitle": "File Name",
                     "sName": "FILE_PATH",
                     "bSearchable": true,
                     "bSortable": true
@@ -109,8 +138,13 @@ page.ImportQueuePage = function (models) {
                     "bSortable": false,
                     "sClass": "text-center",
                     "render": function (data, type, full, meta) {
+                        var hasErrors = full[hasErrorsIndex];
+                        var errorCount = parseInt(full[errorCountIndex]);
+                        if (hasErrors == "NO") {
+                            return "-";
+                        }
                         var uri = exceptionsUri + "?importQueueId=" + full[importQueueIndex];
-                        return "<a href='" + uri + "'>View</a>";
+                        return "<a href='" + uri + "'>" + errorCount + " Errors</a>";
                     }
                 }
             ],
@@ -130,7 +164,6 @@ page.ImportQueuePage = function (models) {
     }
     me.registerEvents = function () {
         var prefix = me.getIdentifierPrefix();
-
         $(document)
             .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
             .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
@@ -147,8 +180,8 @@ page.ImportQueuePage = function (models) {
             $(document).trigger("Action", eventArgs);
         });
     };
-
     me.registerSubscribers = function () {
+        var prefix = me.getIdentifierPrefix();
         $("#notifier")
             .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
             .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
@@ -156,9 +189,11 @@ page.ImportQueuePage = function (models) {
             .unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
             .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
             .unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
-            .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler)
-    };
+            .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler);
 
+        $("#" + prefix + "_FilterMessage").on("keyup", me.onFilterChangedEventHandler);
+        $("#" + prefix + "_SelectImportStatus").on("change", me.onFilterChangedEventHandler);
+    };
     me.loadImportQueue = function (pageSize, pageIndex) {
         var filter = getFilter(pageSize, pageIndex);
         $(document).trigger("notifyFilterComplete", filter)
@@ -175,6 +210,19 @@ page.ImportQueuePage = function (models) {
             Model: model,
             ActionModel: actionModel
         });
+    };
+    me.onFilterChangedEventHandler = function (sender, eventArgs) {
+        var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
+        var filterLength = filter.length;
+        if (filterLength === 0 || filterLength > 2) {
+            me.redrawDataTable();
+        }
+    };
+    me.onSuccessEventHandler = function (sender, eventArgs) {
+        me.redrawDataTable();
+    };
+    me.redrawDataTable = function () {
+        $(".dataTable").DataTable().draw();
     };
     function getModal() {
         return getModel("Modal");

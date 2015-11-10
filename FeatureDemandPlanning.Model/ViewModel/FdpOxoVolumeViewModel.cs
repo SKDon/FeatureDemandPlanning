@@ -23,19 +23,19 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         #region "Constructors"
 
-        public FdpOxoVolumeViewModel(IDataContext dataContext)
-            : base(dataContext)
+        public FdpOxoVolumeViewModel() : base()
         {
-            Configuration = dataContext.ConfigurationSettings;
-            Volume = new EmptyVolume();
-            Countries = dataContext.References.ListReferencesByKey(countryKey);
+            InitialiseMembers();
+        }
+        public FdpOxoVolumeViewModel(SharedModelBase modelBase) : base(modelBase)
+        {
+            InitialiseMembers();
         }
 
         #endregion
 
         #region "Public Properties"
 
-        public dynamic Configuration { get; set; }
         public IEnumerable<ReferenceList> Countries { get; set; }
         public LookupViewModel VehicleLookup { get; set; }
         public Volume Volume
@@ -61,7 +61,14 @@ namespace FeatureDemandPlanning.Model.ViewModel
         }
         public static FdpOxoVolumeViewModel GetFullAndPartialViewModel(IDataContext context, IVolume forVolume, PageFilter pageFilter)
         {
-            var volumeModel = new FdpOxoVolumeViewModel(context) { Volume = (Volume)forVolume, PageSize = pageFilter.PageSize };
+            var modelBase = SharedModelBase.GetBaseModel(context);
+            var volumeModel = new FdpOxoVolumeViewModel(modelBase) 
+            { 
+                Volume = (Volume)forVolume, 
+                PageSize = pageFilter.PageSize,
+                Configuration = context.ConfigurationSettings,
+                Countries = context.References.ListReferencesByKey(countryKey)
+            };
                
             HydrateOxoDocument(context, volumeModel);
             HydrateFdpVolumeHeaders(context, volumeModel);
@@ -87,6 +94,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         #region "Private Methods"
 
+        private void InitialiseMembers()
+        {
+            Volume = new EmptyVolume();
+        }
         private void InitialiseVolume()
         {
             InitialiseVehicle();
@@ -98,7 +109,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 return;
             }
 
-            Volume.Vehicle = (Vehicle)InitialiseVehicle(Volume.Vehicle);
+            //Volume.Vehicle = (Vehicle)InitialiseVehicle(Volume.Vehicle);
         }
         private static void HydrateLookups(IDataContext context, IVolume volume, FdpOxoVolumeViewModel volumeModel)
         {
@@ -180,7 +191,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             }
             else
             {
-                lookup = new LookupViewModel(context, forVehicle);
+                lookup = LookupViewModel.GetModelForVehicle(forVehicle, context);
                 HttpContext.Current.Cache.Add(cacheKey, lookup, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             }
             return lookup;

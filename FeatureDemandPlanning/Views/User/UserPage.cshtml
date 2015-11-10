@@ -1,0 +1,85 @@
+﻿@using FeatureDemandPlanning.Model
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.UserViewModel
+
+@section PageScripts
+{
+    @Html.Partial("_Scripts", Model)
+}
+
+@section PageContentHeader
+{
+    <form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
+    <div class="row">
+        <div class="col-lg-5 inverse" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-body" style="background:none !important">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <img src="~/Content/Images/Icons/users64.png" style="margin-top:15px" />
+                        </div>
+                        <div class="col-lg-10">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                <h3 style="margin-top:5px">User Management</h3>
+                                <h4 id="lblVehicleDescription">&nbsp;</h4>
+                                    </div>
+                            </div>
+                            <div class="row vertical-spacer">
+                                <div class="col-lg-6 vertical-align">
+                                    <p class="page-description">Manage users and permissions for the FDP application</p>
+                                </div>
+                                <div class="col-lg-6 vertical-align">
+                                    <button id="@(Model.IdentifierPrefix)_AddUserButton" class="btn btn-primary pull-left" data-role="@((int)enums.UserAction.AddUser)"><span class="glyphicon glyphicon-plus-sign"></span> Add New User...</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-5 inverse pull-right" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-heading">
+                    <div class="panel-title">Filter Users</div>
+                </div>
+                <div class="panel-body" style="background:none !important">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="@(Model.IdentifierPrefix)_FilterMessage" class="form-label col-lg-3 text-right" style="margin-top:10px">Username:</label>
+                            <input type="text" id="@(Model.IdentifierPrefix)_FilterMessage" placeholder="Enter username" class="form-control col-lg-9" />
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-offset-3 col-lg-9">
+                                <label><input type="checkbox" id="@(Model.IdentifierPrefix)_HideInactiveUsers" checked="checked"/> Hide inactive users</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section PageBody
+{
+    <div id="notifier" class="subscribers-notify col-lg-8 col-lg-offset-2"></div>
+    <ul id="contextMenu" class="dropdown-menu context-menu" role="menu" style="display:none"></ul>
+
+    @Html.Partial("_Modal", Model)
+
+    <div class="row">
+        <div id="dvUsers" class="col-lg-12">
+            @Html.Partial("_Users", Model)
+        </div>
+
+    </div>
+
+}
+
+

@@ -48,7 +48,7 @@
             </div>
         </div>
         <div class="col-lg-4 pull-right" style="padding-top: 20px">
-            <div id="dvImportSummary" class="panel panel-primary subscribers-notifyResults" style="margin-bottom: 0px;height:160px">
+            <div id="dvImportSummary" class="panel panel-primary subscribers-notify" style="margin-bottom: 0px;height:160px">
                 <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Exception Summary</div></div>
                 <div class="panel-body" style="padding-left:15px;padding-right:15px;padding-top:5px;padding-bottom:5px">
                     <table class="table table-bordered table-condensed dataTable table-striped" style="font-size:11px">
@@ -67,7 +67,7 @@
                             </tr>
                             <tr>
                                 <td>Import Filename:</td>
-                                <td>@System.IO.Path.GetFileName(Model.CurrentImport.FilePath)</td>
+                                <td>@System.IO.Path.GetFileName(Model.CurrentImport.OriginalFileName)</td>
                             </tr>
                         </tbody>
                     </table>
@@ -80,7 +80,7 @@
 @section PageBody
 {
     <div id="dvFilter" class="subscribers-notifyFilterComplete"></div>
-    <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none">
+    <ul id="contextMenu" class="dropdown-menu context-menu" role="menu" style="display:none">
     </ul>
      
     <div id="notifier" class="subscribers-notify col-lg-12" style="float:unset"></div>

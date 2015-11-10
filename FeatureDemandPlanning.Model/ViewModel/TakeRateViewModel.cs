@@ -13,6 +13,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
     public class TakeRateViewModel : SharedModelBase
     {
         public TakeRateSummary TakeRate { get; set; }
+        public IEnumerable<TakeRateStatus> Statuses { get; set; }
 
         public PagedResults<TakeRateSummary> TakeRates 
         {
@@ -25,29 +26,37 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 _takeRates = value;
             } 
         }
-        public dynamic Configuration { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ForecastComparisonViewModel"/> class.
         /// </summary>
         /// <param name="dataContext">The data context.</param>
-        public TakeRateViewModel(IDataContext dataContext)
-            : base(dataContext)
+        public TakeRateViewModel() : base()
         {
-            Configuration = dataContext.ConfigurationSettings;
-            TakeRate = new EmptyTakeRateSummary();
+            InitialiseMembers();
         }
-
+        public TakeRateViewModel(SharedModelBase baseModel) : base(baseModel)
+        {
+            InitialiseMembers();
+        }
         public static async Task<TakeRateViewModel> GetModel(IDataContext context, TakeRateFilter filter)
         {
-            var model = new TakeRateViewModel(context)
+            var model = new TakeRateViewModel(SharedModelBase.GetBaseModel(context))
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue
+                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
+                Configuration = context.ConfigurationSettings
             };
             model.TakeRates = await context.Volume.ListTakeRateData(filter);
+            model.Statuses = await context.Volume.ListTakeRateStatuses();
 
             return model;
+        }
+
+        private void InitialiseMembers()
+        {
+            TakeRate = new EmptyTakeRateSummary();
+            Statuses = Enumerable.Empty<TakeRateStatus>();
+            IdentifierPrefix = "Page";
         }
 
         private PagedResults<TakeRateSummary> _takeRates = new PagedResults<TakeRateSummary>();

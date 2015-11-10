@@ -9,6 +9,7 @@ using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.DataStore;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Results;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -18,7 +19,13 @@ namespace FeatureDemandPlanning.Controllers
         public ControllerType ControllerType { get { return _controllerType; } set { _controllerType = value; } }
         public IDataContext DataContext { get { return _dataContext; } }
         
-        public string UserName { get { return _dataContext.User.GetUser().CDSID; } }
+        public string UserName 
+        { 
+            get 
+            {
+                return GetCdsId();
+            } 
+        }
         
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
@@ -29,6 +36,18 @@ namespace FeatureDemandPlanning.Controllers
             
             PageIndex = 0;
             PageSize = ConfigurationSettings.DefaultPageSize;
+        }
+        public JsonResult JsonGet(object data)
+        {
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult JsonGetSuccess()
+        {
+            return JsonGet(JsonActionResult.GetSuccess());
+        }
+        public JsonResult JsonGetFailure(string message)
+        {
+            return JsonGet(JsonActionResult.GetFailure(message));
         }
         private string GetCdsId()
         {

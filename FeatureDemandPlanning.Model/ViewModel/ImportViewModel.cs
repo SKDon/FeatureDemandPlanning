@@ -1,5 +1,6 @@
 ﻿using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Extensions;
 using FeatureDemandPlanning.Model.Filters;
 using enums = FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {
@@ -44,16 +46,18 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<FeatureGroup> AvailableFeatureGroups { get; set; }
         public IEnumerable<Derivative> AvailableDerivatives { get; set; }
         public IEnumerable<ImportExceptionType> AvailableExceptionTypes { get; set; }
-        
-        public dynamic Configuration { get; set; }
+        public IEnumerable<ImportStatus> AvailableImportStatuses { get; set; }
 
         #endregion
 
         #region "Constructors"
 
-        public ImportViewModel(IDataContext dataContext) : base(dataContext)
+        public ImportViewModel() : base()
         {
-            Configuration = dataContext.ConfigurationSettings;
+            InitialiseMembers();
+        }
+        public ImportViewModel(SharedModelBase baseModel) : base(baseModel)
+        {
             InitialiseMembers();
         }
 
@@ -65,14 +69,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             get
             {
-                return AvailableProgrammes.Select(p => new CarLine()
-                {
-                    VehicleId = p.VehicleId,
-                    VehicleName = p.VehicleName,
-                    VehicleAKA = p.VehicleAKA
-                })
-                .Distinct(new CarLineComparer())
-                .OrderBy(c => c.VehicleName);
+                return AvailableProgrammes.ListCarLines();
             }
         }
 
@@ -87,6 +84,14 @@ namespace FeatureDemandPlanning.Model.ViewModel
                     })
                     .Distinct(new GatewayComparer())
                     .OrderBy(p => p.Name);
+            }
+        }
+        public IEnumerable<ImportStatus> ImportStatuses
+        {
+            get {
+                return AvailableImportStatuses
+                    .Where(s => s.ImportStatusCode != enums.ImportStatus.NotSet)
+                    .OrderBy(s => s.Status);
             }
         }
 
@@ -159,28 +164,53 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public static async Task<ImportViewModel> GetModel(IDataContext context, 
                                                            ImportQueueFilter filter)
         {
-            if (filter.ImportQueueId.HasValue)
+            ImportViewModel model = null;
+
+            if (filter.Action == ImportAction.ImportQueue)
             {
-                return await GetFullAndPartialViewModelForImportQueueItem(context, filter);
+                model = await GetFullAndPartialViewModelForImportQueue(context, filter);
             }
-            if (filter.ExceptionId.HasValue)
+            else if (filter.Action == ImportAction.Exception)
             {
-                return await GetFullAndPartialViewModelForException(context, filter);
+                model = await GetFullAndPartialViewModelForException(context, filter);
             }
-            return await GetFullAndPartialViewModelForImportQueue(context, filter);
+            else if (filter.Action == ImportAction.ImportQueueItem)
+            {
+                model = await GetFullAndPartialViewModelForImportQueueItem(context, filter);
+            }
+            else
+            {
+                model = await GetFullAndPartialViewModel(context, filter);
+            }
+            return model;
         }
 
         #endregion
 
         #region "Private Members"
 
+        private static async Task<ImportViewModel> GetFullAndPartialViewModel(IDataContext context,
+                                                                              ImportQueueFilter filter)
+        {
+            var model = new ImportViewModel(SharedModelBase.GetBaseModel(context))
+            {
+                Configuration = context.ConfigurationSettings
+            };
+ 
+            model.AvailableProgrammes = await
+                Task.FromResult<IEnumerable<Programme>>(context.Vehicle.ListProgrammes(new ProgrammeFilter()));
+            model.AvailableImportStatuses = await context.Import.ListImportStatuses();
+
+            return model;
+        }
         private static async Task<ImportViewModel> GetFullAndPartialViewModelForImportQueue(IDataContext context,
                                                                                             ImportQueueFilter filter)
         {
-            var model = new ImportViewModel(context)
+            var model = new ImportViewModel(SharedModelBase.GetBaseModel(context))
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue
+                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
+                Configuration = context.ConfigurationSettings
             };
             model.ImportQueue = await context.Import.ListImportQueue(filter);
             model.TotalPages = model.ImportQueue.TotalPages;
@@ -194,10 +224,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static async Task<ImportViewModel> GetFullAndPartialViewModelForException(IDataContext context,
                                                                                           ImportQueueFilter filter)
         {
-            var model = new ImportViewModel(context)
+            var model = new ImportViewModel(SharedModelBase.GetBaseModel(context))
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue
+                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
+                Configuration = context.ConfigurationSettings
             };
             model.CurrentException = await context.Import.GetException(filter);
 
@@ -222,10 +253,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static async Task<ImportViewModel> GetFullAndPartialViewModelForImportQueueItem(IDataContext context,
                                                                                                 ImportQueueFilter filter)
         {
-            var model = new ImportViewModel(context)
+            var model = new ImportViewModel(SharedModelBase.GetBaseModel(context))
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue
+                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
+                Configuration = context.ConfigurationSettings
             };
             model.CurrentImport = await context.Import.GetImportQueue(filter);
             model.AvailableExceptionTypes = await context.Import.ListExceptionTypes(filter);
@@ -263,6 +295,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             AvailableFeatureGroups = Enumerable.Empty<FeatureGroup>();
             AvailableDerivatives = Enumerable.Empty<Derivative>();
             AvailableExceptionTypes = Enumerable.Empty<ImportExceptionType>();
+            AvailableImportStatuses = Enumerable.Empty<ImportStatus>();
 
             IdentifierPrefix = "Page";
         }

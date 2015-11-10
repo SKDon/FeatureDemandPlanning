@@ -125,7 +125,7 @@
     <Compile Include="DataStore\OXORuleDS.cs" />
     <Compile Include="DataStore\OXORuleFeatureDS.cs" />
     <Compile Include="DataStore\OXORuleResultDS.cs" />
-    <Compile Include="DataStore\OXOSystemUserDS.cs" />
+    <Compile Include="DataStore\UserDataStore.cs" />
     <Compile Include="DataStore\ProgrammeDataStore.cs" />
     <Compile Include="DataStore\PermissionObjectTypeDal.cs" />
     <Compile Include="DataStore\PermissionOperationDal.cs" />

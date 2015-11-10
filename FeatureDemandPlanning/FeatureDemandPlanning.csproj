@@ -186,14 +186,15 @@
     <Compile Include="Controllers\MarketController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ValidationError.cs" />
     <Compile Include="Controllers\ValidationErrorItem.cs" />
     <Compile Include="Controllers\ValidationMessage.cs" />
     <Compile Include="Controllers\VehicleController.cs" />
     <Compile Include="Controllers\VolumeController.cs" />
+    <Compile Include="DataContextFactory.cs" />
     <Compile Include="Helpers\HtmlHelperExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="DataContextFactory.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -733,7 +734,6 @@
     <Content Include="Content\Images\Icons\users64.png" />
     <Content Include="Content\Images\Icons\validate.png" />
     <Content Include="Content\Images\Icons\viewer-small.png" />
-    <Content Include="Content\import.css" />
     <Content Include="Content\jquery.simplePager.css" />
     <Content Include="Content\jquery.tipsy.css" />
     <Content Include="Content\JQuery\js\jquery-2.1.4.min.js" />
@@ -1285,6 +1285,15 @@
     <Content Include="Scripts\Shared\namespace.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\User\addnewuseraction.js" />
+    <Content Include="Scripts\User\disableuseraction.js" />
+    <Content Include="Scripts\User\manageprogrammesaction.js" />
+    <Content Include="Scripts\User\unsetadministratoraction.js" />
+    <Content Include="Scripts\User\setadministratoraction.js" />
+    <Content Include="Scripts\User\enableuseraction.js" />
+    <Content Include="Scripts\User\user.js" />
+    <Content Include="Scripts\User\usersinit.js" />
+    <Content Include="Scripts\User\userspage.js" />
     <Content Include="Scripts\Volume\takerates.js" />
     <Content Include="Scripts\Volume\takeratesinit.js" />
     <Content Include="Scripts\Volume\takeratespage.js" />
@@ -1380,6 +1389,14 @@
     <Content Include="Views\Volume\_Scripts.cshtml" />
     <Content Include="Views\Import\_Modal.cshtml" />
     <Content Include="Views\Shared\_ModalError.cshtml" />
+    <Content Include="Views\User\_Users.cshtml" />
+    <Content Include="Views\User\_Modal.cshtml" />
+    <Content Include="Views\User\UserPage.cshtml" />
+    <Content Include="Views\User\_Scripts.cshtml" />
+    <Content Include="Views\Import\_Scripts.cshtml" />
+    <Content Include="Views\User\_ContextMenu.cshtml" />
+    <Content Include="Views\User\_AddUser.cshtml" />
+    <Content Include="Views\User\_ManageProgrammes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

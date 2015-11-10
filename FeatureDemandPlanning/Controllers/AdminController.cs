@@ -17,29 +17,15 @@ namespace FeatureDemandPlanning.Controllers
     {  
         public AdminController()
         {
-            _adminModel = new AdminViewModel(DataContext);
-
-            PageIndex = 1;
-            PageSize = DataContext.ConfigurationSettings.DefaultPageSize;
-            ControllerType = ControllerType.Default;
+           ControllerType = ControllerType.Default;
         }
 
         [HttpGet]
+        //[OutputCache(Duration=600, VaryByParam="")]
         public ActionResult Index()
         {
-            return View(_adminModel);
+            var model = AdminViewModel.GetModel(DataContext);
+            return View(model);
         }
-
-        public ActionResult Derivative()
-        {
-            return View("Derivatives", _adminModel);
-        }
-
-        public ActionResult Users()
-        {
-            return View("Users", _adminModel);
-        }
-
-        private AdminViewModel _adminModel;
    }
 }

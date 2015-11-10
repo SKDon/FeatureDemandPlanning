@@ -2,6 +2,15 @@
 
 var model = namespace("FeatureDemandPlanning.Import");
 
+model.UploadParameters = function () {
+    var me = this;
+    me.Action = 0;
+    me.UploadFile = null;
+    me.CarLine = "";
+    me.ModelYear = "";
+    me.Gateway = "";
+}
+
 model.Upload = function (params) {
     var uid = 0;
     var privateStore = {};
@@ -11,6 +20,7 @@ model.Upload = function (params) {
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].ModalContentUri = params.ModalContentUri;
     privateStore[me.id].ModalActionUri = params.ModalActionUri;
+    privateStore[me.id].UploadUri = params.UploadUri;
     privateStore[me.id].SelectedCarLine = ""
     privateStore[me.id].SelectedCarLineDescription = "";
     privateStore[me.id].SelectedModelYear = "";
@@ -91,10 +101,10 @@ model.Upload = function (params) {
         return privateStore[me.id].ModalContentUri;
     };
     me.getActionModel = function (action) {
-        return new FeatureDemandPlanning.Import.UploadAction(me.getParameters());
+        return new FeatureDemandPlanning.Import.UploadAction(me.getParameters(), me);
     };
     me.getActionUri = function (action) {
-        return privateStore[me.id].ModalActionUri;
+        return privateStore[me.id].UploadActionUri;
     };
     me.getActionTitle = function (action) {
         return "Import PPO File";
@@ -114,6 +124,9 @@ model.Upload = function (params) {
     me.getSelectedCarLineDescription = function () {
         return privateStore[me.id].SelectedCarLineDescription;
     };
+    me.getSelectedFile = function () {
+        return $('input[type=file]')[0].files[0];
+    };
     me.getSelectedModelYear = function () {
         return privateStore[me.id].SelectedModelYear;
     };
@@ -121,13 +134,12 @@ model.Upload = function (params) {
         return privateStore[me.id].SelectedGateway;
     };
     me.getUpdateParameters = function () {
-        return $.extend({}, getData(), {
-            //"FeatureCode": $("#featureCode").val(),
-            "ImportFeatureCode": $("#dvImportFeatureCode").attr("data-id")
-        });
-    }
-    me.getVehicleId = function () {
-        return getData().VehicleId;
+        var uploadParameters = new FeatureDemandPlanning.Import.UploadParameters();
+        uploadParameters.CarLine = me.getSelectedCarLine();
+        uploadParameters.ModelYear = me.getSelectedModelYear();
+        uploadParameters.Gateway = me.getSelectedGateway();
+
+        return uploadParameters;
     };
     me.initialise = function () {
         me.registerEvents();
@@ -184,25 +196,6 @@ model.Upload = function (params) {
     };
     me.setSelectedGateway = function (gateway) {
         privateStore[me.id].SelectedGateway = gateway;
-    };
-    function getData() {
-        var params = me.getParameters();
-        if (params.Data != undefined)
-            return JSON.parse(me.getParameters().Data);
-
-        return {};
-    };
-    function sendData(uri, params, callback) {
-        $.ajax({
-            "dataType": "json",
-            "async": true,
-            "type": "POST",
-            "url": uri,
-            "data": params,
-            "success": function (json) {
-                callback(json)
-            }
-        });
     };
 }
 

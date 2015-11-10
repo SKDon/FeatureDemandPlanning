@@ -6,7 +6,6 @@
   <mvcSiteMapNode title="Home" controller="Home" action="Index">
     
     <mvcSiteMapNode title="News" controller="News" action="Index"/>
-    <mvcSiteMapNode title="Settings" controller="Admin" action="Index"/>
 
     <mvcSiteMapNode title="Import" controller="Import" action="Index">
       <mvcSiteMapNode title="Import Exceptions" controller="ImportException" action="Index"/>
@@ -25,6 +24,11 @@
     <mvcSiteMapNode title="Take Rates" controller="Volume" action="TakeRatePage">
       <mvcSiteMapNode title="Take Rate" controller="Volume" action="Document"/>
     </mvcSiteMapNode>
+    
+  <mvcSiteMapNode title="Settings" controller="Admin" action="Index">
+    <mvcSiteMapNode title="Users" controller="User" action="Index"/>
+    <mvcSiteMapNode title="Users" controller="User" action="UserPage"/>
+  </mvcSiteMapNode>
     
   </mvcSiteMapNode>
 

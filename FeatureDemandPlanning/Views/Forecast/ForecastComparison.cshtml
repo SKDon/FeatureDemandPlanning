@@ -5,13 +5,13 @@
 
 @section PageScripts
 {
-    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/pager.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/vehicle.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Forecast/forecast.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Forecast/forecastcomparisonpage.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Forecast/trimmapping.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/pager.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/vehicle.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Forecast/forecast.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Forecast/forecastcomparisonpage.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Forecast/trimmapping.js")?v=@Model.CurrentVersion"></script>
     <script type="text/javascript">
 
         var forecast, vehicle, pager, page, modal, trimMapping;
@@ -42,7 +42,7 @@
             @:params.ForecastId = @Model.Forecast.ForecastId.Value;
         }
     </script>
-    <script src="@Url.Content("~/Scripts/Forecast/init.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Forecast/init.js")?v=@Model.CurrentVersion"></script>
 }
 
 @section PageContentHeader

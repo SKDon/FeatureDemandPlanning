@@ -11,29 +11,18 @@ page.ForecastsPage = function (models) {
     privateStore[me.id].DataTable = null;
     privateStore[me.id].Models = models;
 
-    me.initialise = function () {
-        me.registerEvents();
-        me.registerSubscribers();
-
-        $(privateStore[me.id].Models).each(function () {
-            this.initialise();
+    me.getContextMenu = function (forecastId) {
+        var params = { ForecastId: forecastId };
+        $.ajax({
+            "dataType": "html",
+            "async": true,
+            "type": "POST",
+            "url": getForecastsModel().getActionsUri(),
+            "data": params,
+            "success": function (response) {
+                $("#contextMenu").html(response);
+            }
         });
-        me.loadData();
-    };
-    me.setDataTable = function (dataTable) {
-        privateStore[me.id].DataTable = dataTable;
-    };
-    me.getDataTable = function () {
-        if (privateStore[me.id].DataTable == null) {
-            me.configureDataTables();
-        }
-        return privateStore[me.id].DataTable;
-    };
-    me.getFilterMessage = function () {
-        return $("#txtFilterMessage").val();
-    };
-    me.loadData = function () {
-        me.configureDataTables(getFilter());
     };
     me.getData = function (data, callback, settings) {
         var params = me.getParameters(data);
@@ -49,28 +38,48 @@ page.ForecastsPage = function (models) {
             }
         });
     };
-    me.getContextMenu = function (forecastId) {
-        var params = { ForecastId: forecastId };
-        $.ajax({
-            "dataType": "html",
-            "async": true,
-            "type": "POST",
-            "url": getForecastsModel().getActionsUri(),
-            "data": params,
-            "success": function (response) {
-                $("#contextMenu").html(response);
-            }
+    me.getDataTable = function () {
+        if (privateStore[me.id].DataTable == null) {
+            me.configureDataTables();
+        }
+        return privateStore[me.id].DataTable;
+    };
+    me.getFilterMessage = function () {
+        return $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
+    };
+    me.getForecastId = function () {
+        return null;
+    };
+    me.getIdentifierPrefix = function () {
+        return $("#Page_IdentifierPrefix").val();
+    };
+    me.initialise = function () {
+        me.registerEvents();
+        me.registerSubscribers();
+
+        $(privateStore[me.id].Models).each(function () {
+            this.initialise();
         });
+        me.loadData();
+    };
+    me.setDataTable = function (dataTable) {
+        privateStore[me.id].DataTable = dataTable;
+    };
+    me.loadData = function () {
+        me.configureDataTables(getFilter());
     };
     me.getParameters = function (data) {
         var filter = getFilter();
         var params = $.extend({}, data, {
-            "ForecastId": filter.ForecastId,
-            "FilterMessage": filter.FilterMessage
+            "ForecastId": me.getForecastId(),
+            "FilterMessage": me.getFilterMessage()
         });
         return params;
     };
     me.configureDataTables = function (filter) {
+        var forecastUri = getForecastModel().getForecastUri();
+        var forecastIndex = 0;
+
         $("#tblForecasts").DataTable({
             "serverSide": true,
             "pagingType": "full_numbers",
@@ -86,31 +95,51 @@ page.ForecastsPage = function (models) {
                     "sName": "CREATED_ON",
                     "bSearchable": true,
                     "bSortable": true,
-                    "sClass": "text-center"
+                    "sClass": "text-center",
+                    "render": function (data, type, full, meta) {
+                        var uri = forecastUri + "?ForecastId=" + full[forecastIndex];
+                        return "<a href='" + uri + "'>" + data + "</a>";
+                    }
                 }
                 ,
                 {
                     "sName": "CREATED_BY",
                     "bSearchable": true,
                     "bSortable": true,
-                    "sClass": "text-center"
+                    "sClass": "text-center",
+                    "render": function (data, type, full, meta) {
+                        var uri = forecastUri + "?ForecastId=" + full[forecastIndex];
+                        return "<a href='" + uri + "'>" + data + "</a>";
+                    }
                 },
                 {
                     "sName": "CAR_LINE",
                     "bSearchable": true,
                     "bSortable": true,
+                    "render": function (data, type, full, meta) {
+                        var uri = forecastUri + "?ForecastId=" + full[forecastIndex];
+                        return "<a href='" + uri + "'>" + data + "</a>";
+                    }
                 },
                 {
                     "sName": "MODEL_YEAR",
                     "bSearchable": true,
                     "bSortable": true,
-                    "sClass": "text-center"
+                    "sClass": "text-center",
+                    "render": function (data, type, full, meta) {
+                        var uri = forecastUri + "?ForecastId=" + full[forecastIndex];
+                        return "<a href='" + uri + "'>" + data + "</a>";
+                    }
                 },
                 {
                     "sName": "GATEWAY",
                     "bSearchable": true,
                     "bSortable": true,
-                    "sClass": "text-center"
+                    "sClass": "text-center",
+                    "render": function (data, type, full, meta) {
+                        var uri = forecastUri + "?ForecastId=" + full[forecastIndex];
+                        return "<a href='" + uri + "'>" + data + "</a>";
+                    }
                 }
             ],
             "fnCreatedRow": function (row, data, index) {
@@ -159,6 +188,7 @@ page.ForecastsPage = function (models) {
             .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
     };
     me.registerSubscribers = function () {
+        var prefix = me.getIdentifierPrefix();
         $("#notifier")
             .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
             .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
@@ -168,16 +198,7 @@ page.ForecastsPage = function (models) {
             .unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
             .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler)
 
-        $("#dvForecastSummary").on("OnResultsDelegate", me.onForecastSummaryEventHandler);
-        $("#spnFilteredRecords").on("OnResultsDelegate", me.onFilteredRecordsEventHandler);
-        $("#dvFilter").on("FilterCompleteEventHandler", me.onFilterCompleteEventHandler);
-        $("#ddlExceptionType").on("change", me.onFilterChangedEventHandler);
-        $("#txtFilterMessage").on("keyup", function (sender, eventArgs) {
-            var length = $("#txtFilterMessage").val().length;
-            if (length == 0 || length > 2) {
-                me.onFilterChangedEventHandler(sender, eventArgs);
-            }
-        });
+        $("#" + prefix + "_FilterMessage").on("keyup", me.onFilterChangedEventHandler)
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
     };
@@ -198,7 +219,11 @@ page.ForecastsPage = function (models) {
         }
     };
     me.onFilterChangedEventHandler = function (sender, eventArgs) {
-        me.redrawDataTable();
+        var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
+        var filterLength = filter.length;
+        if (filterLength === 0 || filterLength > 1) {
+            me.redrawDataTable();
+        }
     };
     me.actionTriggered = function (invokedOn, action) {
         var eventArgs = {

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/FeatureDemandPlanning.Model" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/FeatureDemandPlanning.Model" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/FeatureDemandPlanning.Model.Enumerations" />
+  <xs:complexType name="ImportQueue">
+    <xs:sequence>
+      <xs:element name="_x003C_CreatedBy_x003E_k__BackingField" nillable="true" type="xs:string" />
+      <xs:element name="_x003C_CreatedOn_x003E_k__BackingField" type="xs:dateTime" />
+      <xs:element name="_x003C_Description_x003E_k__BackingField" nillable="true" type="xs:string" />
+      <xs:element name="_x003C_ErrorCount_x003E_k__BackingField" type="xs:int" />
+      <xs:element name="_x003C_FilePath_x003E_k__BackingField" nillable="true" type="xs:string" />
+      <xs:element name="_x003C_Gateway_x003E_k__BackingField" nillable="true" type="xs:string" />
+      <xs:element name="_x003C_HasErrors_x003E_k__BackingField" type="xs:boolean" />
+      <xs:element name="_x003C_ImportQueueId_x003E_k__BackingField" nillable="true" type="xs:int" />
+      <xs:element name="_x003C_ImportStatus_x003E_k__BackingField" nillable="true" type="tns:ImportStatus" />
+      <xs:element name="_x003C_ImportType_x003E_k__BackingField" nillable="true" type="tns:ImportType" />
+      <xs:element name="_x003C_ModelYear_x003E_k__BackingField" nillable="true" type="xs:string" />
+      <xs:element name="_x003C_OriginalFileName_x003E_k__BackingField" nillable="true" type="xs:string" />
+      <xs:element name="_x003C_ProgrammeId_x003E_k__BackingField" type="xs:int" />
+      <xs:element name="_x003C_TotalPages_x003E_k__BackingField" nillable="true" type="xs:int" />
+      <xs:element name="_x003C_TotalRecords_x003E_k__BackingField" nillable="true" type="xs:int" />
+      <xs:element name="_x003C_UpdatedOn_x003E_k__BackingField" nillable="true" type="xs:dateTime" />
+      <xs:element name="_x003C_VehicleAKA_x003E_k__BackingField" nillable="true" type="xs:string" />
+      <xs:element name="_x003C_VehicleName_x003E_k__BackingField" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ImportQueue" nillable="true" type="tns:ImportQueue" />
+  <xs:complexType name="ImportStatus">
+    <xs:sequence>
+      <xs:element name="_x003C_Description_x003E_k__BackingField" nillable="true" type="xs:string" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/FeatureDemandPlanning.Model.Enumerations" name="_x003C_ImportStatusCode_x003E_k__BackingField" type="q1:ImportStatus" />
+      <xs:element name="_x003C_NumberOfRecordsFailed_x003E_k__BackingField" type="xs:int" />
+      <xs:element name="_x003C_NumberOfRecordsProcessed_x003E_k__BackingField" type="xs:int" />
+      <xs:element name="_x003C_Status_x003E_k__BackingField" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ImportStatus" nillable="true" type="tns:ImportStatus" />
+  <xs:complexType name="ImportType">
+    <xs:sequence>
+      <xs:element name="_x003C_Description_x003E_k__BackingField" nillable="true" type="xs:string" />
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/FeatureDemandPlanning.Model.Enumerations" name="_x003C_ImportTypeDefinition_x003E_k__BackingField" type="q2:ImportType" />
+      <xs:element name="_x003C_Type_x003E_k__BackingField" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ImportType" nillable="true" type="tns:ImportType" />
+</xs:schema>

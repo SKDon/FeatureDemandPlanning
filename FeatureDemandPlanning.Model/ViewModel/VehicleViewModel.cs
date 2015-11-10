@@ -44,10 +44,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             get { return AvailableVehicles.Select(v => v.Gateway).Distinct(); }
         }
 
-        public dynamic Configuration { get; set; }
-
-        public VehicleViewModel(IDataContext dataContext)
-            : base(dataContext)
+        public VehicleViewModel() : base()
         {
 
         }

@@ -10,5 +10,6 @@ namespace FeatureDemandPlanning.Model.Parameters
     {
         public int? TakeRateId { get; set; }
         public string FilterMessage { get; set; }
+        public int? TakeRateStatusId { get; set; }
     }
 }

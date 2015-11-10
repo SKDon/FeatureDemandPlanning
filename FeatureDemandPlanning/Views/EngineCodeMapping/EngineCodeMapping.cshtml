@@ -4,10 +4,10 @@
 @model FeatureDemandPlanning.Model.ViewModel.EngineCodeMappingViewModel
 
 @section PageScripts{
-    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/vehicle.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Admin/enginecodemapping.js")?v=@SharedModelBase.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Admin/enginecodemappingpage.js")?v=@SharedModelBase.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Shared/vehicle.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Admin/enginecodemapping.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Admin/enginecodemappingpage.js")?v=@Model.CurrentVersion"></script>
     <script type="text/javascript">
 
     var params = {

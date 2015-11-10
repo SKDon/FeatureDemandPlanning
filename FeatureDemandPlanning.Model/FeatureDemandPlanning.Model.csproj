@@ -97,7 +97,10 @@
     <Compile Include="Attributes\ValidateAjaxAttribute.cs" />
     <Compile Include="CarLine.cs" />
     <Compile Include="Empty\EmptyTakeRateSummary.cs" />
+    <Compile Include="Empty\EmptyUser.cs" />
+    <Compile Include="Enumerations\UserAction.cs" />
     <Compile Include="Filters\TakeRateFilter.cs" />
+    <Compile Include="Filters\UserFilter.cs" />
     <Compile Include="ForecastSummary.cs" />
     <Compile Include="Gateway.cs" />
     <Compile Include="ImportExceptionType.cs" />
@@ -137,14 +140,17 @@
     <Compile Include="Parameters\ImportExceptionParameters.cs" />
     <Compile Include="Parameters\ImportParameters.cs" />
     <Compile Include="Parameters\TakeRateParameters.cs" />
+    <Compile Include="Parameters\UserParameters.cs" />
     <Compile Include="Results\JsonActionResult.cs" />
     <Compile Include="SharedModelBase.cs" />
     <Compile Include="SpecialFeature.cs" />
+    <Compile Include="TakeRateStatus.cs" />
     <Compile Include="TrimMapping.cs" />
     <Compile Include="Enumerations\ControllerType.cs" />
     <Compile Include="Enumerations\ImportAction.cs" />
     <Compile Include="Enumerations\ImportExceptionType.cs" />
     <Compile Include="ImportResult.cs" />
+    <Compile Include="User.cs" />
     <Compile Include="Validators\ComparisonVehicleExtensions.cs" />
     <Compile Include="Validators\ExtendedValidationResult.cs" />
     <Compile Include="Interfaces\IConfigurationDataContext.cs" />
@@ -221,7 +227,6 @@
     <Compile Include="ProcessState.cs" />
     <Compile Include="ProgrammeByGatewayView.cs" />
     <Compile Include="Filters\ProgrammeFilter.cs" />
-    <Compile Include="SystemUser.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="ForecastTrimMapping.cs" />
     <Compile Include="Validators\ComparisonVehicleValidator.cs" />
@@ -242,6 +247,7 @@
     <Compile Include="News.cs" />
     <Compile Include="ViewModel\NewsViewModel.cs" />
     <Compile Include="ViewModel\TakeRateViewModel.cs" />
+    <Compile Include="ViewModel\UserViewModel.cs" />
     <Compile Include="ViewModel\VehicleViewModel.cs" />
     <Compile Include="Volume.cs" />
     <Compile Include="VolumeData.cs" />

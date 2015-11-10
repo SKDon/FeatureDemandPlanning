@@ -23,7 +23,5 @@ namespace FeatureDemandPlanning.Model.Filters
         {
             ForecastId = forecastId;
         }
-
-        public string FilterMessage { get; set; }
     }
 }

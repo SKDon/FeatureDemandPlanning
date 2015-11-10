@@ -276,6 +276,10 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@FilterMessage", filter.FilterMessage, dbType: DbType.String, size: 50);
                     }
+                    if (filter.TakeRateStatusId.HasValue)
+                    {
+                        para.Add("@FdpTakeRateStatusId", filter.TakeRateStatusId, dbType: DbType.Int32);
+                    }
                     if (filter.PageIndex.HasValue)
                     {
                         para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
@@ -390,6 +394,25 @@ namespace FeatureDemandPlanning.DataStore
 
                 return retVal;
             }
+        }
+
+        public IEnumerable<TakeRateStatus> FdpTakeRateStatusGetMany()
+        {
+            var retVal = Enumerable.Empty<TakeRateStatus>();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    retVal = conn.Query<TakeRateStatus>("dbo.Fdp_TakeRateStatus_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FdpSpecialFeatureTypeGetMany", ex.Message, CurrentCDSID);
+                }
+            }
+            return retVal;
         }
 
         #region "Private Members"

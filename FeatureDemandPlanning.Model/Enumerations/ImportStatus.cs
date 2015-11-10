@@ -12,6 +12,7 @@ namespace FeatureDemandPlanning.Model.Enumerations
         Processing = 2,
         Processed = 3,
         Error = 4,
-        Success = 5
+        Success = 5,
+        NotSet = 0
     }
 }

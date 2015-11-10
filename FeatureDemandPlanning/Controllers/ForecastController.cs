@@ -108,7 +108,7 @@ namespace FeatureDemandPlanning.Controllers
 
 			ViewBag.PageTitle = "Edit Forecast";
 			
-			return View("Forecast", forecastComparisonModel);
+			return View("ForecastComparison", forecastComparisonModel);
 		}
 
 		[HttpPost]
@@ -279,7 +279,7 @@ namespace FeatureDemandPlanning.Controllers
 		}
 		private ForecastComparisonViewModel GetFullAndPartialForecastComparisonViewModel(IForecast forecast)
 		{
-			var forecastComparisonModel = new ForecastComparisonViewModel(DataContext)
+			var forecastComparisonModel = new ForecastComparisonViewModel()
 			{
 				Forecast = forecast,
 				PageSize = PageSize,
@@ -383,7 +383,7 @@ namespace FeatureDemandPlanning.Controllers
                 lookup = (LookupViewModel)cachedLookup;
 			}
 			else {
-                lookup = new LookupViewModel(dataContext, forVehicle);
+                lookup = LookupViewModel.GetModelForVehicle(forVehicle, dataContext);
 				cache.Add(cacheKey, lookup, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
 			}
 			return lookup;

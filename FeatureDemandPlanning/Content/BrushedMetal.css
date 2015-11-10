@@ -28,7 +28,7 @@ a { text-decoration: none; display: block; }*/
   
   /*font: bold 6em/2em "Arial MT Bold", Arial, Helvetica, Geneva, sans-serif;*/
   text-align: center;
-  background-color: #152a55; 
+  background-color: #DDD; 
   transition: color .2s;
   border-left: solid 1px #7788aa;
   border-top: solid 1px #7788aa;
@@ -40,7 +40,6 @@ a { text-decoration: none; display: block; }*/
 
 .metal a
 {
-    color: #fff0aa;
     letter-spacing: -1px;
     text-decoration: none;
 }

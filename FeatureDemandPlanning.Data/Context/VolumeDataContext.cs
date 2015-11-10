@@ -68,6 +68,10 @@ namespace FeatureDemandPlanning.DataStore
 
             return _documentDataStore.OXODocGet(filter.OxoDocId.Value, filter.ProgrammeId.Value);
         }
+        public async Task<IEnumerable<TakeRateStatus>> ListTakeRateStatuses()
+        {
+            return await Task.FromResult<IEnumerable<TakeRateStatus>>(_volumeDataStore.FdpTakeRateStatusGetMany());
+        }
         public IEnumerable<OXODoc> ListAvailableOxoDocuments(VehicleFilter filter)
         {
             return _documentDataStore

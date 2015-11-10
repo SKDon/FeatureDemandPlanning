@@ -42,7 +42,23 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
                     }
-
+                    if (filter.ImportStatus != enums.ImportStatus.NotSet)
+                    {
+                        para.Add("@FdpImportStatusId", (int)filter.ImportStatus, dbType: DbType.Int32);
+                    }
+                    if (!string.IsNullOrEmpty(filter.FilterMessage))
+                    {
+                        para.Add("@FilterMessage", filter.FilterMessage, dbType: DbType.String, size: 50);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                    }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -66,11 +82,11 @@ namespace FeatureDemandPlanning.DataStore
                     
                     foreach (var result in results)
                     {
-                        HydrateImportType(result, conn);
-                        HydrateImportStatus(result, conn);
-                        HydrateImportErrors(result, conn);
+                        result.ImportType = ImportTypeDataItem.ToImportType(result);
+                        result.ImportStatus = ImportStatusDataItem.ToImportStatus(result);
+                        //HydrateImportErrors(result, conn);
 
-                        currentPage.Add(HydrateImportQueue(result, conn));
+                        currentPage.Add(ImportQueueDataItem.ToImportQueue(result));
                     }
 
                     retVal.CurrentPage = currentPage;
@@ -94,15 +110,15 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@ImportQueueId", importQueueId, dbType: DbType.Int32);
+                    para.Add("@FdpImportQueueId", importQueueId, dbType: DbType.Int32);
                     
                     var result = conn.Query<ImportQueueDataItem>("dbo.Fdp_ImportQueue_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
 
-                    HydrateImportType(result, conn);
-                    HydrateImportStatus(result, conn);
-                    HydrateImportErrors(result, conn);
+                    result.ImportType = ImportTypeDataItem.ToImportType(result);
+                    result.ImportStatus = ImportStatusDataItem.ToImportStatus(result);
+                    //HydrateImportErrors(result, conn);
 
-                    retVal = HydrateImportQueue(result, conn);
+                    retVal = ImportQueueDataItem.ToImportQueue(result);
                 }
                 catch (Exception ex)
                 {
@@ -144,8 +160,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public ImportQueue ImportQueueSave(ImportQueue importQueue)
         {
-            ImportQueue retVal = null;
-            string procName = "dbo.ImportQueue_Save";
+            ImportQueue retVal = new EmptyImportQueue();
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
@@ -153,33 +168,23 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
 
-                    para.Add("@ImportQueueId", importQueue.ImportQueueId, dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
-                    para.Add("@SystemUser", CurrentCDSID, dbType: DbType.String, size: 16);
-                    para.Add("@FilePath", importQueue.FilePath, dbType: DbType.String, size: -1);
-                    para.Add("@ImportTypeId", (int)importQueue.ImportType.ImportTypeDefinition, dbType: DbType.Int32);
-                    para.Add("@ImportStatusId", (int)importQueue.ImportStatus.ImportStatusCode, dbType: DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String, size: 16);
+                    para.Add("@OriginalFileName", importQueue.OriginalFileName, dbType: DbType.String);
+                    para.Add("@FilePath", importQueue.FilePath, dbType: DbType.String);
+                    para.Add("@FdpImportTypeId", (int)importQueue.ImportType.ImportTypeDefinition, dbType: DbType.Int32);
+                    para.Add("@FdpImportStatusId", (int)importQueue.ImportStatus.ImportStatusCode, dbType: DbType.Int32);
+                    para.Add("@ProgrammeId", importQueue.ProgrammeId, dbType: DbType.Int32);
+                    para.Add("@Gateway", importQueue.Gateway, dbType: DbType.String);
 
-                    conn.Execute(procName, para, commandType: CommandType.StoredProcedure);
+                    var result = conn
+                        .Query<ImportQueueDataItem>("dbo.Fdp_ImportQueue_Save", para, commandType: CommandType.StoredProcedure)
+                        .FirstOrDefault();
 
-                    if (!importQueue.ImportQueueId.HasValue)
-                    {
-                        importQueue.ImportQueueId = para.Get<int?>("@ImportQueueId");
-                    }
-
-                    // Repopulate the object following save
-                    
-                    para = new DynamicParameters();
-                    para.Add("@ImportQueueId", importQueue.ImportQueueId, dbType: DbType.Int32);
-
-                    var result = conn.Query<ImportQueueDataItem>("dbo.Fdp_ImportQueue_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-                    HydrateImportType(result, conn);
-                    HydrateImportStatus(result, conn);
+                    result.ImportType = ImportTypeDataItem.ToImportType(result);
+                    result.ImportStatus = ImportStatusDataItem.ToImportStatus(result);
                     //HydrateImportErrors(result, conn);
 
-                    // As we have used an interim object here and don't want to return some of the elements of that object
-                    // create a new ImportQueue instance and return
-                    retVal = HydrateImportQueue(result, conn);
+                    retVal = ImportQueueDataItem.ToImportQueue(result);
                 }
                 catch (Exception ex)
                 {
@@ -280,7 +285,7 @@ namespace FeatureDemandPlanning.DataStore
                     var totalImportedRecords = 0;
                     var totalFailedRecords = 0;
 
-                    para.Add("@ImportQueueId", filter.ImportQueueId.Value, dbType: DbType.Int32);
+                    para.Add("@FdpImportQueueId", filter.ImportQueueId.Value, dbType: DbType.Int32);
 
                     if (filter.ExceptionType != enums.ImportExceptionType.NotSet)
                     {
@@ -374,7 +379,6 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
-
         public IEnumerable<ImportExceptionType> ImportExceptionTypeGetMany(ImportQueueFilter filter)
         {
             var results = Enumerable.Empty<ImportExceptionType>();
@@ -384,7 +388,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@ImportQueueId", filter.ImportQueueId.Value, dbType: DbType.Int32);
+                    para.Add("@FdpImportQueueId", filter.ImportQueueId.Value, dbType: DbType.Int32);
                     para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
 
                     results = connection.Query<ImportExceptionType>("dbo.Fdp_ImportErrorType_GetMany", para, commandType: CommandType.StoredProcedure);
@@ -398,95 +402,101 @@ namespace FeatureDemandPlanning.DataStore
 
             return results;
         }
+        public IEnumerable<ImportStatus> ImportStatusGetMany()
+        {
+            var retVal = new List<FeatureDemandPlanning.Model.ImportStatus>();
 
+            using (IDbConnection connection = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    var results = connection.Query<ImportStatusDataItem>("dbo.Fdp_ImportStatus_GetMany", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        foreach (var result in results)
+                        {
+                            retVal.Add(new ImportStatus()
+                            {
+                                ImportStatusCode = (enums.ImportStatus)result.FdpImportStatusId,
+                                Status = result.Status,
+                                Description = result.Description
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportExceptionTypeGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
         private void HydrateImportErrors(ImportQueueDataItem importQueue, IDbConnection connection)
         {
             var para = new DynamicParameters();
-            para.Add("@ImportQueueId", importQueue.ImportQueueId, dbType: DbType.Int32);
+            para.Add("@FdpImportQueueId", importQueue.ImportQueueId, dbType: DbType.Int32);
 
-            importQueue.Errors = connection.Query<ImportError>("dbo.ImportError_GetMany", para, commandType: CommandType.StoredProcedure);
+            importQueue.Errors = connection.Query<ImportError>("dbo.Fdp_ImportError_GetMany", para, commandType: CommandType.StoredProcedure);
         }
+    }
+    internal class ImportStatusDataItem : ImportStatus
+    {
+        public int FdpImportStatusId { get; set; }
 
-        private void HydrateImportType(ImportQueueDataItem importQueue, IDbConnection connection)
-        {
-            var para = new DynamicParameters();
-            para.Add("@ImportTypeId", importQueue.ImportTypeId, dbType: DbType.Int32);
-
-            var type = connection.Query<ImportType>("dbo.ImportType_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
-            if (type != null)
-                importQueue.ImportType = type;
-        }
-
-        private void HydrateImportStatus(ImportQueueDataItem importQueue, IDbConnection connection)
-        {
-            var para = new DynamicParameters();
-            para.Add("@ImportStatusId", importQueue.ImportStatusId, dbType: DbType.Int32);
-
-            var status = connection.Query<ImportStatus>("dbo.ImportStatus_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
-            if (status != null)
-                importQueue.ImportStatus = status;
-        }
-
-        private ImportQueue HydrateImportQueue(ImportQueueDataItem importQueue, IDbConnection connection)
-        {
-            return new ImportQueue()
-            {
-                ImportQueueId = importQueue.ImportQueueId,
-                CreatedOn = importQueue.CreatedOn,
-                CreatedBy = importQueue.CreatedBy,
-                UpdatedOn = importQueue.UpdatedOn,
-                FilePath = importQueue.FilePath,
-                ImportStatus = importQueue.ImportStatus,
-                ImportType = importQueue.ImportType,
-                Errors = importQueue.Errors,
-                ProgrammeId = importQueue.ProgrammeId,
-                Gateway = importQueue.Gateway,
-                VehicleName = importQueue.VehicleName,
-                VehicleAKA = importQueue.VehicleAKA,
-                ModelYear = importQueue.ModelYear
-            };
-        }
-
-        private ImportStatus HydrateImportStatus(ImportStatusDataItem importStatus, IDbConnection connection)
+        public static ImportStatus ToImportStatus(ImportQueueDataItem dataItem)
         {
             return new ImportStatus()
             {
-                ImportStatusCode = (enums.ImportStatus)importStatus.ImportStatusId,
-                Status = importStatus.Status,
-                Description = importStatus.Description
+                ImportStatusCode = (enums.ImportStatus)dataItem.FdpImportStatusId,
+                Status = dataItem.Status
             };
         }
+    }
+    internal class ImportTypeDataItem : ImportType
+    {
+        public int FdpImportTypeId { get; set; }
 
-        private ImportType HydrateImportType(ImportTypeDataItem importType, IDbConnection connection)
+        public static ImportType ToImportType(ImportQueueDataItem dataItem)
         {
             return new ImportType()
             {
-                ImportTypeDefinition = (enums.ImportType)importType.ImportTypeId,
-                Type = importType.Type,
-                Description = importType.Description
+                ImportTypeDefinition = (enums.ImportType)dataItem.FdpImportTypeId,
+                Type = dataItem.Type
             };
         }
+    }
+    internal class ImportQueueDataItem : ImportQueue
+    {
+        public int FdpImportQueueId { get; set; }
+        public int FdpImportStatusId { get; set; }
+        public string Status { get; set; }
+        public int FdpImportTypeId { get; set; }
+        public string Type { get; set; }
 
-        private class ImportQueueDataItem : ImportQueue
+        public static ImportQueue ToImportQueue(ImportQueueDataItem dataItem)
         {
-            public int ImportStatusId { get; set; }
-            public string StatusCode { get; set; }
-            public int ImportTypeId { get; set; }
-            public string Type { get; set; }
-        }
-
-        private class ImportStatusDataItem
-        {
-            public int ImportStatusId { get; set; }
-            public string Status { get; set; }
-            public string Description { get; set; }
-        }
-
-        private class ImportTypeDataItem
-        {
-            public int ImportTypeId { get; set; }
-            public string Type { get; set; }
-            public string Description { get; set; }
+            return new ImportQueue()
+            {
+                ImportQueueId = dataItem.FdpImportQueueId,
+                CreatedOn = dataItem.CreatedOn,
+                CreatedBy = dataItem.CreatedBy,
+                UpdatedOn = dataItem.UpdatedOn,
+                OriginalFileName = dataItem.OriginalFileName,
+                FilePath = dataItem.FilePath,
+                ImportStatus = dataItem.ImportStatus,
+                ImportType = dataItem.ImportType,
+                Errors = dataItem.Errors,
+                ProgrammeId = dataItem.ProgrammeId,
+                Gateway = dataItem.Gateway,
+                VehicleName = dataItem.VehicleName,
+                VehicleAKA = dataItem.VehicleAKA,
+                ModelYear = dataItem.ModelYear,
+                HasErrors = dataItem.HasErrors,
+                ErrorCount = dataItem.ErrorCount
+            };
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.Filters
 {
@@ -11,15 +12,15 @@ namespace FeatureDemandPlanning.Model.Filters
     {
         public int? ImportQueueId { get; set; }
         public int? ExceptionId { get; set; }
-
-        public enums.ImportExceptionType ExceptionType 
-        { 
-            get { return _exceptionType; }
-            set { _exceptionType = value; }
-        }
-
+        public ImportAction Action { get; set; }
+        public enums.ImportStatus ImportStatus { get; set; }
+        public enums.ImportExceptionType ExceptionType { get; set;}
+        
         public ImportQueueFilter()
         {
+            Action = ImportAction.NotSet;
+            ImportStatus = enums.ImportStatus.NotSet;
+            ExceptionType = enums.ImportExceptionType.NotSet;
         }
         public ImportQueueFilter(int importQueueId) : this()
         {
@@ -30,10 +31,9 @@ namespace FeatureDemandPlanning.Model.Filters
         {
             return new ImportQueueFilter()
             {
-                ExceptionId = exceptionId
+                ExceptionId = exceptionId,
+                Action = ImportAction.Exception
             };
         }
-
-        private enums.ImportExceptionType _exceptionType = enums.ImportExceptionType.NotSet;
     }
 }

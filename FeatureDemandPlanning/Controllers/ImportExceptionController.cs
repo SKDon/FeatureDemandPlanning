@@ -40,7 +40,8 @@ namespace FeatureDemandPlanning.Controllers
                                     {
                                         ExceptionType = parameters.ExceptionType,
                                         PageIndex = PageIndex,
-                                        PageSize = PageSize
+                                        PageSize = PageSize,
+                                        Action = ImportAction.ImportQueueItem
                                     });
 
             return View(importView);
@@ -55,7 +56,8 @@ namespace FeatureDemandPlanning.Controllers
             var filter = new ImportQueueFilter(parameters.ImportQueueId.Value)
             {
                 ExceptionType = parameters.ExceptionType,
-                FilterMessage = parameters.FilterMessage
+                FilterMessage = parameters.FilterMessage,
+                Action = ImportAction.ImportQueueItem
             };
             filter.InitialiseFromJson(parameters);
 

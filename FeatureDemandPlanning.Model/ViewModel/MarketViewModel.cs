@@ -14,11 +14,16 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<Market> TopMarkets { get; set; }
         public int NumberOfMarkets { get { return TopMarkets != null && TopMarkets.Any() ? TopMarkets.Count() : 0; } }
 
-        public dynamic Configuration { get; set; }
-
-        public MarketViewModel(IDataContext dataContext) : base(dataContext)
+        public MarketViewModel() : base()
         {
-            Configuration = dataContext.ConfigurationSettings;
+        }
+
+        public static MarketViewModel GetModel(IDataContext context)
+        {
+            return new MarketViewModel()
+            {
+                Configuration = context.ConfigurationSettings
+            };
         }
     }
 }

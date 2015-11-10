@@ -114,7 +114,7 @@ namespace FeatureDemandPlanning.Controllers
         /// <returns></returns>
         private EngineCodeMappingViewModel GetFullAndPartialEngineCodeMappingViewModel(EngineCodeFilter filter)
         {
-            var engineCodeMappingModel = new EngineCodeMappingViewModel(DataContext)
+            var engineCodeMappingModel = new EngineCodeMappingViewModel()
             {
                 EngineCodeMappings = DataContext.Vehicle.ListEngineCodeMappings(filter),
                 PageSize = PageSize,

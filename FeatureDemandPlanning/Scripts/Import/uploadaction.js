@@ -2,22 +2,30 @@
 
 var model = namespace("FeatureDemandPlanning.Import");
 
-model.UploadAction = function (params) {
+model.UploadAction = function (params, model) {
     var uid = 0;
     var privateStore = {};
     var me = this;
 
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Config = params.Configuration;
-    privateStore[me.id].ActionUri = params.ModalActionUri;
+    privateStore[me.id].ActionUri = params.UploadUri;
     privateStore[me.id].Parameters = params;
+    privateStore[me.id].Model = model;
 
     me.action = function () {
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.getActionParameters = function () {
-        return $.extend({}, getData(), {
-        });
+        var formData = new FormData();
+        var model = getModel();
+        
+        formData.append("fileToUpload", model.getSelectedFile());
+        formData.append("carLine", model.getSelectedCarLine());
+        formData.append("modelYear", model.getSelectedModelYear());
+        formData.append("gateway", model.getSelectedGateway());
+       
+        return formData;
     };
     me.getIdentifierPrefix = function () {
         return $("#Action_IdentifierPrefix").val();
@@ -26,7 +34,7 @@ model.UploadAction = function (params) {
         return privateStore[me.id].ActionUri;
     };
     me.getImportFile = function () {
-        return "Import File";
+        return getModel().getSelectedFile().name;
     };
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
@@ -80,17 +88,28 @@ model.UploadAction = function (params) {
 
         return {};
     };
+    function getModel() {
+        return privateStore[me.id].Model;
+    };
     function sendData(uri, params) {
         $.ajax({
-            "dataType": "json",
             "async": true,
             "type": "POST",
             "url": uri,
             "data": params,
+            "processData": false,
+            "contentType": false,
             "success": function (json) {
-                $(document).trigger("Success", json);
+                // This is if the action succeeded, but we have trappable errors such as validation errors
+                if (json.Success) {
+                    $(document).trigger("Success", json);
+                }
+                else {
+                    $(document).trigger("Error", json);
+                }
             },
             "error": function (jqXHR, textStatus, errorThrown) {
+                // This error handler is called if an unexpected status code is thrown from the call
                 $(document).trigger("Error", JSON.parse(jqXHR.responseText));
             }
         });

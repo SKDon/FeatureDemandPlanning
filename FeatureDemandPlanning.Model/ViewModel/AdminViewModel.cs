@@ -9,9 +9,17 @@ namespace FeatureDemandPlanning.Model.ViewModel
 {
     public class AdminViewModel : SharedModelBase
     {
-        public AdminViewModel(IDataContext dataContext) : base(dataContext)
+        public AdminViewModel() : base()
         {
 
+        }
+
+        public static AdminViewModel GetModel(IDataContext context)
+        {
+            return new AdminViewModel
+            {
+                Configuration = context.ConfigurationSettings
+            };
         }
     }
 }

@@ -13,6 +13,8 @@ namespace FeatureDemandPlanning.Model.Filters
         public int? TakeRateId { get; set; }
         public int? MarketId { get; set; }
         public int? MarketGroupId { get; set; }
+        public int? TakeRateStatusId { get; set; }
+
 
         public TakeRateResultMode Mode
         {

@@ -15,7 +15,7 @@ namespace FeatureDemandPlanning.Model
         public int ProgrammeId { get; set; }
         public string Gateway { get; set; }
 
-        public int LineNumber { get; set; }
+        public string LineNumber { get; set; }
         public int FdpImportErrorTypeId { get; set; }
         public bool IsExcluded { get; set; }
 
@@ -42,7 +42,7 @@ namespace FeatureDemandPlanning.Model
             return new string[] 
             { 
                 FdpImportErrorId.ToString(),
-                LineNumber.ToString(), 
+                LineNumber.TrimStart('0'), 
                 ErrorTypeDescription,
                 ErrorMessage,
                 ErrorOn.ToString("dd/MM/yyyy HH:mm")

@@ -130,6 +130,6 @@ namespace FeatureDemandPlanning.Model
         private Market _market = new EmptyMarket();
         private MarketGroup _marketGroup = new EmptyMarketGroup();
         private VolumeData _volumeData = new VolumeData();
-        private TakeRateResultMode _mode = TakeRateResultMode.Raw;
+        private TakeRateResultMode _mode = TakeRateResultMode.PercentageTakeRate;
     }
 }

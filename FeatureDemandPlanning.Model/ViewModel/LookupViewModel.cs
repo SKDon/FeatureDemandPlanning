@@ -12,6 +12,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
 {
     public class LookupViewModel : SharedModelBase
     {
+        public IEnumerable<IVehicle> AvailableVehicles { get; set; }
+        public IVehicle LookupVehicle { get; set; }
         public IEnumerable<SelectListItem> Makes { get; set; }
         public IEnumerable<SelectListItem> Programmes { get; set; }
         public IEnumerable<SelectListItem> ModelYears { get; set; }
@@ -20,7 +22,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         private IEnumerable<SelectListItem> ListMakes()
         {
-            var makes = _availableVehicles
+            var makes = AvailableVehicles
                 .Select(v => v.Make)
                 .Distinct()
                 .Select(m => new SelectListItem
@@ -48,18 +50,18 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         private IEnumerable<SelectListItem> ListProgrammes()
         {
-            var programmes = _availableVehicles
-                //.Where(v => _lookupVehicle is EmptyVehicle ||
+            var programmes = AvailableVehicles
+                //.Where(v => LookupVehicle is EmptyVehicle ||
                 //        (
-                //            v.Make.Equals(_lookupVehicle.Make, StringComparison.OrdinalIgnoreCase))
+                //            v.Make.Equals(LookupVehicle.Make, StringComparison.OrdinalIgnoreCase))
                 //        )
                 .Distinct(new UniqueVehicleByNameComparer())
                 .Select(v => new SelectListItem
                 {
                     Text = v.Description,
                     Value = v.Code,
-                    Selected = !(_lookupVehicle is EmptyVehicle) &&
-                        _lookupVehicle.ProgrammeId.GetValueOrDefault() == v.ProgrammeId
+                    Selected = !(LookupVehicle is EmptyVehicle) &&
+                        LookupVehicle.ProgrammeId.GetValueOrDefault() == v.ProgrammeId
                 }).ToList();
 
             if (!programmes.Any() || programmes.Count() == 1)
@@ -74,11 +76,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         private IEnumerable<SelectListItem> ListModelYears()
         {
-            var modelYears = _availableVehicles
-                    .Where(v => _lookupVehicle is EmptyVehicle ||
+            var modelYears = AvailableVehicles
+                    .Where(v => LookupVehicle is EmptyVehicle ||
                             (
-                                v.Make.Equals(_lookupVehicle.Make, StringComparison.OrdinalIgnoreCase) &&
-                                v.ProgrammeId == _lookupVehicle.ProgrammeId)
+                                v.Make.Equals(LookupVehicle.Make, StringComparison.OrdinalIgnoreCase) &&
+                                v.ProgrammeId == LookupVehicle.ProgrammeId)
                             )
                     .Select(v => v.ModelYear)
                     .Distinct()
@@ -86,8 +88,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
                     {
                         Text = my,
                         Value = my,
-                        Selected = !(_lookupVehicle is EmptyVehicle) && !string.IsNullOrEmpty(_lookupVehicle.ModelYear) &&
-                            _lookupVehicle.ModelYear.Equals(my, StringComparison.OrdinalIgnoreCase)
+                        Selected = !(LookupVehicle is EmptyVehicle) && !string.IsNullOrEmpty(LookupVehicle.ModelYear) &&
+                            LookupVehicle.ModelYear.Equals(my, StringComparison.OrdinalIgnoreCase)
                     }).ToList();
 
             if (!modelYears.Any() || modelYears.Count() == 1)
@@ -102,12 +104,12 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         private IEnumerable<SelectListItem> ListGateways()
         {
-            var gateways = _availableVehicles
-                .Where(v => _lookupVehicle is EmptyVehicle ||
+            var gateways = AvailableVehicles
+                .Where(v => LookupVehicle is EmptyVehicle ||
                         (
-                            v.Make.Equals(_lookupVehicle.Make, StringComparison.OrdinalIgnoreCase) &&
-                            v.ProgrammeId == _lookupVehicle.ProgrammeId &&
-                            v.ModelYear.Equals(_lookupVehicle.ModelYear, StringComparison.OrdinalIgnoreCase
+                            v.Make.Equals(LookupVehicle.Make, StringComparison.OrdinalIgnoreCase) &&
+                            v.ProgrammeId == LookupVehicle.ProgrammeId &&
+                            v.ModelYear.Equals(LookupVehicle.ModelYear, StringComparison.OrdinalIgnoreCase
                         )))
                 .Select(v => v.Gateway)
                 .Distinct()
@@ -115,8 +117,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 {
                     Text = g,
                     Value = g,
-                    Selected = !(_lookupVehicle is EmptyVehicle) && !string.IsNullOrEmpty(_lookupVehicle.Gateway) &&
-                        _lookupVehicle.Gateway.Equals(g, StringComparison.OrdinalIgnoreCase)
+                    Selected = !(LookupVehicle is EmptyVehicle) && !string.IsNullOrEmpty(LookupVehicle.Gateway) &&
+                        LookupVehicle.Gateway.Equals(g, StringComparison.OrdinalIgnoreCase)
                 }).ToList();
 
             if (!gateways.Any() || gateways.Count() == 1)
@@ -131,10 +133,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         public IEnumerable<SelectListItem> ListTrimLevels()
         {
-            if (_lookupVehicle is EmptyVehicle || !_lookupVehicle.Programmes.Any())
+            if (LookupVehicle is EmptyVehicle || !LookupVehicle.Programmes.Any())
                 return Enumerable.Empty<SelectListItem>();
 
-            var trimLevels = _lookupVehicle.Programmes.First()
+            var trimLevels = LookupVehicle.Programmes.First()
                 .AllTrims.Select(t => new SelectListItem()
             {
                 Text = t.Name,
@@ -146,27 +148,39 @@ namespace FeatureDemandPlanning.Model.ViewModel
             return trimLevels;
         }
 
-        public LookupViewModel(IDataContext dataContext) : base(dataContext)
+        public LookupViewModel()
+            : base()
         {
-            _availableVehicles = dataContext.Vehicle.ListAvailableVehicles(new VehicleFilter());
+            InitialiseMembers();
+        }
+        public static LookupViewModel GetModel(IDataContext context)
+        {
+            var model = new LookupViewModel()
+            {
+                Configuration = context.ConfigurationSettings
+            };
 
-            Makes = Enumerable.Empty<SelectListItem>();
-            Programmes = Enumerable.Empty<SelectListItem>();
-            ModelYears = Enumerable.Empty<SelectListItem>();
-            Gateways = Enumerable.Empty<SelectListItem>();
-            TrimLevels = Enumerable.Empty<SelectListItem>();
+            model.AvailableVehicles = context.Vehicle.ListAvailableVehicles(new VehicleFilter());
+            model.Makes = model.ListMakes();
+            model.Programmes = model.ListProgrammes();
+            model.ModelYears = model.ListModelYears();
+            model.Gateways = model.ListGateways();
+            model.TrimLevels = model.ListTrimLevels();
+
+            return model;
         }
 
-        public LookupViewModel(IDataContext dataContext, IVehicle lookupVehicle)
-            : this(dataContext)
+        public static LookupViewModel GetModelForVehicle(IVehicle forVehicle, IDataContext context)
         {
-            _lookupVehicle = dataContext.Vehicle.GetVehicle(VehicleFilter.FromVehicle(lookupVehicle));
+            var model = GetModel(context);
+            model.LookupVehicle = context.Vehicle.GetVehicle(VehicleFilter.FromVehicle(forVehicle));
+            model.Makes = model.ListMakes();
+            model.Programmes = model.ListProgrammes();
+            model.ModelYears = model.ListModelYears();
+            model.Gateways = model.ListGateways();
+            model.TrimLevels = model.ListTrimLevels();
 
-            Makes = ListMakes();
-            Programmes = ListProgrammes();
-            ModelYears = ListModelYears();
-            Gateways = ListGateways();
-            TrimLevels = ListTrimLevels();
+            return model;
         }
 
         private void AppendDefaultItem(IList<SelectListItem> selectList)
@@ -180,8 +194,15 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 selectList.Insert(0, new SelectListItem { Text = "-- SELECT --", Value = "", Selected = true });
             }
         }
-
-        private IEnumerable<IVehicle> _availableVehicles = Enumerable.Empty<Vehicle>();
-        private IVehicle _lookupVehicle = new EmptyVehicle();
+        private void InitialiseMembers()
+        {
+            Makes = Enumerable.Empty<SelectListItem>();
+            Programmes = Enumerable.Empty<SelectListItem>();
+            ModelYears = Enumerable.Empty<SelectListItem>();
+            Gateways = Enumerable.Empty<SelectListItem>();
+            TrimLevels = Enumerable.Empty<SelectListItem>();
+            LookupVehicle = new EmptyVehicle();
+            AvailableVehicles = Enumerable.Empty<IVehicle>();
+        }
     }
 }

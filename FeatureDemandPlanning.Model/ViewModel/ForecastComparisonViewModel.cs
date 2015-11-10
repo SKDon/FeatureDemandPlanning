@@ -20,47 +20,21 @@ namespace FeatureDemandPlanning.Model.ViewModel
         /// Initializes a new instance of the <see cref="ForecastComparisonViewModel"/> class.
         /// </summary>
         /// <param name="dataContext">The data context.</param>
-        public ForecastComparisonViewModel(IDataContext dataContext)
-            : base(dataContext)
+        public ForecastComparisonViewModel() : base()
         {
-            Configuration = dataContext.ConfigurationSettings;
-            CookieKey = cookieKey;
+            InitialiseMembers();
+        }
+        public ForecastComparisonViewModel(SharedModelBase modelBase) : base(modelBase)
+        {
+            InitialiseMembers();
         }
 
         #endregion
 
         #region "Public Properties"
 
-        /// <summary>
-        /// Gets or sets the forecast. This is the primary model which all pages that work with forecasts will use 
-        /// </summary>
-        /// <value>
-        /// The forecast.
-        /// </value>
-        public IForecast Forecast
-        {
-            get 
-            { 
-                return _forecast; 
-            }
-            set 
-            { 
-                _forecast = value;
-                InitialiseForecast();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the forecasts for use in pages containing search results
-        /// </summary>
-        /// <value>
-        /// The forecasts.
-        /// </value>
-        public PagedResults<ForecastSummary> Forecasts
-        {
-            get { return _forecasts; }
-            set { _forecasts = value; }
-        }
+        public IForecast Forecast { get; set; }
+        public PagedResults<ForecastSummary> Forecasts { get; set; }
 
         /// <summary>
         /// Gets or sets the forecast vehicle lookup. This provides a lookup of vehicles for selection lists
@@ -138,64 +112,24 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         #region "Private Methods"
 
-        private void InitialiseForecast()
+        private void InitialiseMembers()
         {
-            InitialiseForecastVehicle();
-            InitialiseComparisonVehicles();
-        }
-
-        private void InitialiseForecastVehicle()
-        {
-            if (Forecast.ForecastVehicle is EmptyVehicle)
-            {
-                return;
-            }
-
-            Forecast.ForecastVehicle = (Vehicle)InitialiseVehicle(Forecast.ForecastVehicle);
-        }
-
-        /// <summary>
-        /// Initialises the comparison vehicles.
-        /// The list is re-ordered, placing empty vehicles at the end of the list
-        /// </summary>
-        private void InitialiseComparisonVehicles()
-        {
-            var newComparisonVehicles = EmptyVehicleList.CreateEmptyVehicleList();
-            var nonEmptyVehicles = new List<IVehicle>();
-
-            foreach (var comparisonVehicle in Forecast.ComparisonVehicles)
-            {
-                if (comparisonVehicle is EmptyVehicle)
-                {
-                    continue;
-                }
-                nonEmptyVehicles.Add(InitialiseVehicle(comparisonVehicle));
-            }
-
-            for (var i = 0; i < nonEmptyVehicles.Count(); i++)
-            {
-                newComparisonVehicles[i] = nonEmptyVehicles[i];
-            }
-
-            Forecast.ComparisonVehicles = newComparisonVehicles.Cast<Vehicle>();
-        }
-
-        private new IVehicle InitialiseVehicle(IVehicle vehicle)
-        {
-            var returnValue = this.DataContext.Vehicle.GetVehicle(VehicleFilter.FromVehicle(vehicle));
-            returnValue.TrimMappings = vehicle.TrimMappings;
-
-            return returnValue;
+            IdentifierPrefix = "Page";
+            Forecast = new EmptyForecast();
+            Forecasts = new PagedResults<ForecastSummary>();
         }
         private static async Task<ForecastComparisonViewModel> GetFullAndPartialViewModelForForecast(IDataContext context,
                                                                                                      ForecastFilter filter)
         {
-            var model = new ForecastComparisonViewModel(context)
+            var modelBase = SharedModelBase.GetBaseModel(context);
+            var model = new ForecastComparisonViewModel(modelBase)
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue
+                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
+                Configuration = context.ConfigurationSettings
             };
             model.Forecast = await context.Forecast.GetForecast(filter);
+            InitialiseForecast(model.Forecast, context);
 
             return model;
         }
@@ -203,22 +137,69 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static async Task<ForecastComparisonViewModel> GetFullAndPartialViewModelForForecasts(IDataContext context, 
                                                                                                       ForecastFilter filter)
         {
-            var model = new ForecastComparisonViewModel(context)
+            var modelBase = SharedModelBase.GetBaseModel(context);
+            var model = new ForecastComparisonViewModel(modelBase)
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue
+                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
+                Configuration = context.ConfigurationSettings
             };
             model.Forecasts = await context.Forecast.ListForecasts(filter);
 
             return model;
         }
 
+        private static void InitialiseForecast(IForecast forecast, IDataContext context)
+        {
+            InitialiseForecastVehicle(forecast, context);
+            InitialiseComparisonVehicles(forecast, context);
+        }
+        private static void InitialiseForecastVehicle(IForecast forecast, IDataContext context)
+        {
+            if (forecast.ForecastVehicle is EmptyVehicle)
+            {
+                return;
+            }
+
+            forecast.ForecastVehicle = (Vehicle)InitialiseVehicle(forecast.ForecastVehicle, context);
+        }
+        private static IVehicle InitialiseVehicle(IVehicle vehicle, IDataContext context)
+        {
+            var returnValue = context.Vehicle.GetVehicle(VehicleFilter.FromVehicle(vehicle));
+            returnValue.TrimMappings = vehicle.TrimMappings;
+
+            return returnValue;
+        }
+
+        /// <summary>
+        /// Initialises the comparison vehicles.
+        /// The list is re-ordered, placing empty vehicles at the end of the list
+        /// </summary>
+        private static void InitialiseComparisonVehicles(IForecast forecast, IDataContext context)
+        {
+            var newComparisonVehicles = EmptyVehicleList.CreateEmptyVehicleList();
+            var nonEmptyVehicles = new List<IVehicle>();
+
+            foreach (var comparisonVehicle in forecast.ComparisonVehicles)
+            {
+                if (comparisonVehicle is EmptyVehicle)
+                {
+                    continue;
+                }
+                nonEmptyVehicles.Add(InitialiseVehicle(comparisonVehicle, context));
+            }
+
+            for (var i = 0; i < nonEmptyVehicles.Count(); i++)
+            {
+                newComparisonVehicles[i] = nonEmptyVehicles[i];
+            }
+
+            forecast.ComparisonVehicles = newComparisonVehicles.Cast<Vehicle>();
+        }
+
         #endregion
 
         #region "Private Members"
-
-        private IForecast _forecast = new EmptyForecast();
-        private PagedResults<ForecastSummary> _forecasts = new PagedResults<ForecastSummary>();
         
         private const string cookieKey = "FdpFbm"; 
 

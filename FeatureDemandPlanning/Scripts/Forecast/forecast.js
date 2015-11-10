@@ -19,6 +19,7 @@ model.Forecast = function (params) {
     privateStore[me.id].ForecastId = params.ForecastId;
     privateStore[me.id].ComparisonVehicles = params.ComparisonVehicles;
     privateStore[me.id].Config = params.Configuration;
+    privateStore[me.id].ForecastUri = params.PageUri;
     privateStore[me.id].SaveForecastUri = params.SaveForecastUri;
     privateStore[me.id].ValidateForecastUri = params.ValidateForecastUri;
     privateStore[me.id].ValidationMessageUri = params.ValidationMessageUri;
@@ -32,6 +33,9 @@ model.Forecast = function (params) {
         var me = this;
         $(document).trigger("notifySuccess", me);
     };
+    me.getForecastUri = function () {
+        return privateStore[me.id].ForecastUri;
+    }
     me.getSaveForecastUri = function () {
         return privateStore[me.id].SaveForecastUri;
     };

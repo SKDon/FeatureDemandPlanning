@@ -1,29 +1,64 @@
 ﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.DataStore
 {
     public class UserDataContext : BaseDataContext, IUserDataContext
     {
         private OXOPermissionDataStore _permissions = null;
-        private SystemUserDataStore _userDataStore = null;
+        private UserDataStore _userDataStore = null;
         private ReferenceListDataStore _referenceListDataStore = null;
         
         public UserDataContext(string cdsId) : base(cdsId)
         {
             _permissions = new OXOPermissionDataStore(cdsId);
-            _userDataStore = new SystemUserDataStore(cdsId);
+            _userDataStore = new UserDataStore(cdsId);
             _referenceListDataStore = new ReferenceListDataStore(cdsId);
         }
 
-        public SystemUser GetUser()
+        public async Task<User> AddUser(User userToAdd)
         {
-            return _userDataStore.SystemUserGet(CDSID);
+            return await Task.FromResult<User>(_userDataStore.FdpUserSave(userToAdd));
+        }
+        public async Task<User> EnableUser(User userToEnable)
+        {
+            return await Task.FromResult<User>(_userDataStore.FdpUserEnable(userToEnable));
+        }
+
+        public async Task<User> DisableUser(User userToDisable)
+        {
+            return await Task.FromResult<User>(_userDataStore.FdpUserDisable(userToDisable));
+        }
+
+        public async Task<User> SetAdministrator(User userToSet)
+        {
+            return await Task.FromResult<User>(_userDataStore.FdpUserSetAdministrator(userToSet));
+        }
+
+        public async Task<User> UnsetAdministrator(User userToUnset)
+        {
+            return await Task.FromResult<User>(_userDataStore.FdpUserUnSetAdministrator(userToUnset));
+        }
+        public async Task<User> GetUser()
+        {
+            return await GetUser(new UserFilter() { CDSId = CDSID });
+        }
+        public async Task<User> GetUser(UserFilter filter)
+        {
+            return await Task.FromResult<User>(_userDataStore.FdpUserGet(filter));
+        }
+
+        public async Task<PagedResults<User>> ListUsers(UserFilter filter)
+        {
+            return await Task.FromResult<PagedResults<User>>(_userDataStore.FdpUserGetMany(filter));
         }
 
         public IEnumerable<Permission> ListPermissions()
@@ -38,22 +73,12 @@ namespace FeatureDemandPlanning.DataStore
 
         public IEnumerable<Programme> ListAllowedProgrammes()
         {
-            return _userDataStore.SystemUserProgrammes(CDSID, true);
+            throw new NotImplementedException();
         }
 
         public IEnumerable<Programme> ListAvailableProgrammes()
         {
-            return _userDataStore.SystemUserProgrammes(CDSID, false);
-        }
-
-        public IEnumerable<string> ListAvailableAdminSections()
-        {
-            return _referenceListDataStore.ReferenceListGetMany("Adm-Section").Select(r => r.Description);
-        }
-
-        public IEnumerable<string> ListAvailableReports()
-        {
-            return _referenceListDataStore.ReferenceListGetMany("Rpt-Section").Select(r => r.Description);
+            throw new NotImplementedException();
         }
     }
 }

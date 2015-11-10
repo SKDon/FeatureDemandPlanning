@@ -18,7 +18,6 @@ namespace FeatureDemandPlanning.DataStore
         {
             _importDataStore = new ImportQueueDataStore(cdsId);
         }
-
         public async Task<ImportQueue> GetImportQueue(ImportQueueFilter filter)
         {
             if (!filter.ImportQueueId.HasValue)
@@ -26,7 +25,6 @@ namespace FeatureDemandPlanning.DataStore
             
             return await Task.FromResult<ImportQueue>(_importDataStore.ImportQueueGet(filter.ImportQueueId.Value));
         }
-
         public async Task<PagedResults<ImportQueue>> ListImportQueue(ImportQueueFilter filter)
         {
             var results = await Task.FromResult<PagedResults<ImportQueue>>(
@@ -122,6 +120,12 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult<IEnumerable<FeatureDemandPlanning.Model.ImportExceptionType>>(
                 _importDataStore.ImportExceptionTypeGetMany(filter));
+        }
+
+        public async Task<IEnumerable<FeatureDemandPlanning.Model.ImportStatus>> ListImportStatuses()
+        {
+            return await Task.FromResult<IEnumerable<FeatureDemandPlanning.Model.ImportStatus>>(
+                _importDataStore.ImportStatusGetMany());
         }
 
         private ImportQueueDataStore _importDataStore;

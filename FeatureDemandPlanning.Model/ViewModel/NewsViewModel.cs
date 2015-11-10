@@ -12,17 +12,13 @@ namespace FeatureDemandPlanning.Model.ViewModel
         #region "Public Properties"
 
         public IEnumerable<News> News { get; set; }
-        
-        public dynamic Configuration { get; set; }
 
         #endregion
 
         #region "Constructors"
 
-        public NewsViewModel(IDataContext dataContext)
-            : base(dataContext)
+        public NewsViewModel() : base()
         {
-            Configuration = dataContext.ConfigurationSettings;
             InitialiseMembers();
         }
 
@@ -32,10 +28,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         public async static Task<NewsViewModel> GetFullOrPartialViewModel(IDataContext context)
         {
-            var model = new NewsViewModel(context);
-
-            var latestForecasts = await context.Forecast.ListLatestForecasts();
-            
+            var model = new NewsViewModel()
+            {
+                Configuration = context.ConfigurationSettings
+            };
             model.News = await context.News.ListNews();
 
             return model;

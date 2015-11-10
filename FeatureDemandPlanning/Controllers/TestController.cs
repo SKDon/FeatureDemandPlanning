@@ -118,7 +118,7 @@ namespace FeatureDemandPlanning.Controllers
                 forecasts = await this.DataContext.Forecast.ListForecasts(filter);
             }
 
-            var forecastComparisonModel = new ForecastComparisonViewModel(this.DataContext)
+            var forecastComparisonModel = new ForecastComparisonViewModel()
             {
                 Forecast = forecast,
                 Forecasts = forecasts,

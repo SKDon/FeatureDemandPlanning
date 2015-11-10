@@ -3,124 +3,111 @@
 
 @model FeatureDemandPlanning.Model.ViewModel.HomeViewModel
 
-@*@section PageScripts{
-        <script src="@Url.Content("~/Scripts/Import/home.js")?v=@SharedModelBase.CurrentVersion"></script>
-    }
-
-    @section PageStyles{
-        <link href="@Url.Content("~/Styles/Import/home.css")?v=@SharedModelBase.CurrentVersion" rel="stylesheet" type="text/css" />
-    }*@
-
 @section PageBody
 {
-    <div class="row" style="margin-top:20px">
-
-    <div class="col-lg-3">
-        <div class="row" style="height:20px">
-
-        </div>
-        <div class="row">
-            
-                <div class="panel panel-primary" style="margin-left:20px">
-                    <div class="panel-heading">
-                        <div class="panel-title">
-                            <span class="glyphicon glyphicon-comment pull-right"></span>
-                            @Html.ActionLink("Latest News", "Index", "News")
-                        </div>
-                        
-                    </div>
-                    <div class="panel-body" style="overflow:auto">
-                        @Html.Partial("_LatestNews")
-                    </div>
-                </div>
-            
-        </div>
-        <div class="row">
-            
-            <div class="panel panel-primary" style="margin-left:20px">
+    <div class="col-sm-4 hidden-xs">
+        <div class="col-sm-12" style="margin-top:20px">
+            <div class="panel panel-primary">
                 <div class="panel-heading">
                     <div class="panel-title">
-                        <span class="glyphicon glyphicon-tasks pull-right"></span>
+                        <span class="glyphicon glyphicon-comment pull-right"></span>
+                        @Html.ActionLink("Latest News", "Index", "News")
+                    </div>
+
+                </div>
+                <div class="panel-body" style="overflow:auto">
+                    @Html.Partial("_LatestNews")
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        <span class="glyphicon glyphicon-stats pull-right"></span>
                         @Html.ActionLink("Latest Take Rate Data",
-                                         "Index",
-                                         "Volume") 
+                                     "Index",
+                                     "Volume")
                     </div>
                 </div>
                 <div class="panel-body">
                     @Html.Partial("_LatestTakeRateData")
                 </div>
             </div>
-            
         </div>
-        <div class="row">
-
-            <div class="panel panel-primary" style="margin-left:20px">
+        <div class="col-sm-12">
+            <div class="panel panel-primary">
                 <div class="panel-heading">
                     <div class="panel-title">
-                    <span class="glyphicon glyphicon-blackboard pull-right"></span> 
-                    @Html.ActionLink("Latest Forecasts",
-                                     "Index",
-                                     "Forecast")
+                        <span class="glyphicon glyphicon-blackboard pull-right"></span>
+                        @Html.ActionLink("Latest Forecasts",
+                                         "Index",
+                                         "Forecast")
                     </div>
                 </div>
                 <div class="panel-body">
                     @Html.Partial("_LatestForecasts")
                 </div>
             </div>
-
         </div>
     </div>
-    <div class="col-lg-9">
-        <div class="row" style="margin-bottom:30px">
-            <div class="col-lg-11 inverse text-center">
+    <div class="col-sm-8">
+        <div class="col-sm-12 hidden-xs inverse text-center" style="margin-bottom:15px">
             <h1 class="text-capitalize">Feature Demand Planning</h1>
-                </div>
         </div>
-
-        <div class="row">
-
-            <div class="col-sm-3 col-sm-offset-1 text-center inverse">
+        <div class="col-md-6 col-lg-4 text-center inverse home-button">
+            <a href="@Url.Action("Index", "Import")">
                 <img src="~/Content/Images/Icons/import64.png" style="opacity:0.9;border:0" />
-                <h2 style="height:66px">Import</h2>
-                <p style="height:40px">Import volume data from external source</p>
-                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="@Url.Action("Index", "Import")" role="button">Import</a></p>
-            </div>
-            <div class="col-sm-3 text-center inverse">
-                <img src="~/Content/Images/Icons/edit64.png" style="opacity:0.9;border:0" />
-                <h2 style="height:66px">View / Edit</h2>
-                <p style="height:40px">View or edit take rate details for a car line</p>
-                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="@Url.Action("Index", "Volume")" role="button">View / Edit</a></p>
-            </div>
-            <div class="col-sm-3 text-center inverse">
-                <img src="~/Content/Images/Icons/chat64.png" style="opacity:0.9;border:0" />
-                <h2 style="height:66px">Market Review</h2>
-                <p style="height:40px">Submit take rate details to markets for further input and review</p>
-                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="#create" role="button">Review</a></p>
-            </div>
+            </a>
+            <h2 style="height:40px">Import</h2>
+            <p style="height:40px">Import volume data from external source</p>
+            <p>@Html.ActionLink("Import", "Index", "Import", null, new { @class = "btn btn-default col-md-10 col-md-offset-1", role = "button" })</p>
         </div>
-        <div class="row" style="margin-top:20px">
-            <div class="col-sm-3 col-sm-offset-1 text-center inverse">
+        <div class="col-md-6 col-lg-4 text-center inverse home-button">
+            <a href="@Url.Action("Index", "Volume")">
+                <img src="~/Content/Images/Icons/edit64.png" style="opacity:0.9;border:0" />
+            </a>
+            <h2 style="height:40px">View / Edit</h2>
+            <p style="height:40px">View or edit take rate details for a car line</p>
+            <p>@Html.ActionLink("View / Edit", "Index", "Volume", null, new { @class = "btn btn-default col-md-10 col-md-offset-1", role = "button" })</p>
+        </div>
+        <div class="col-md-6 col-lg-4 text-center inverse home-button">
+            <a href="@Url.Action("Index", "MarketReview")">
+                <img src="~/Content/Images/Icons/chat64.png" style="opacity:0.9;border:0" />
+            </a>
+            <h2 style="height:40px">Market Review</h2>
+            <p style="height:40px">Submit take rate details to markets for further input and review</p>
+            <p>@Html.ActionLink("Review", "Index", "MarketReview", null, new { @class = "btn btn-default col-md-10 col-md-offset-1", role = "button" })</p>
+        </div>
+        <div class="col-md-6 col-lg-4 text-center inverse home-button">
+            <a href="@Url.Action("Index", "Publish")">
                 <img src="~/Content/Images/Icons/publish64.png" style="opacity:0.9;border:0" />
-                <h2 style="height:66px">Publish &amp; Share</h2>
-                <p style="height:40px">Publish the take rate details and share with interested parties</p>
-                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="#publish" role="button">Publish</a></p>
-            </div>
-            <div class="col-sm-3 text-center inverse">
+            </a>
+            <h2 style="height:40px">Publish &amp; Share</h2>
+            <p style="height:40px">Publish the take rate details and share with interested parties</p>
+            <p>@Html.ActionLink("Publish", "Index", "Publish", null, new { @class = "btn btn-default col-md-10 col-md-offset-1", role = "button" })</p>
+        </div>
+        <div class="col-md-6 col-lg-4 text-center inverse home-button">
+            <a href="@Url.Action("Index", "Forecast")">
                 <img src="~/Content/Images/Icons/forecast64.png" style="opacity:0.9;border:0" />
-                <h2 style="height:66px">Forecast</h2>
-                <p style="height:40px">Forecast take rate for a specific car line</p>
-                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="@Url.Action("Index", "Forecast")" role="button">Forecast</a></p>
-            </div>
-            <div class="col-sm-3 text-center inverse">
+            </a>
+            <h2 style="height:40px">Forecast</h2>
+            <p style="height:40px">Forecast take rates for a specific car line</p>
+            <p>
+                @Html.ActionLink("Forecast", "Index", "Forecast", null, new { @class = "btn btn-default col-md-10 col-md-offset-1", role = "button" })
+            </p>
+        </div>
+        <div class="col-md-6 col-lg-4 text-center inverse home-button">
+            <a href="@Url.Action("Index", "Report")">>
                 <img src="~/Content/Images/Icons/reports64.png" style="opacity:0.9;border:0" />
-                <h2 style="height:66px">Reports</h2>
-                <p style="height:40px">Produce reports based on take rate / forecast information</p>
-                <p><a class="btn btn-default col-sm-10 col-sm-offset-1" href="#forecast" role="button">Reports</a></p>
-            </div>
+            </a>
+            <h2 style="height:40px">Reports</h2>
+            <p style="height:40px">Produce reports based on take rate / forecast information</p>
+            <p>
+                @Html.ActionLink("Reports", "Index", "Report", null, new { @class = "btn btn-default col-md-10 col-md-offset-1", role = "button" })
+            </p>
         </div>
     </div>
-</div>
-
 }
 
 

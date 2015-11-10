@@ -1,0 +1,37 @@
+﻿@using FeatureDemandPlanning.Model
+@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
+
+@{
+    var currentVersion = Model.CurrentVersion;
+}
+<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/importqueue.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/exceptions.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/upload.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/uploadaction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Import/importqueuepage.js")?v=@currentVersion"></script>
+<script language="javascript">
+
+    var importQueue, exceptions, page, modal, upload;
+    var params = {
+        ProcessUri: "@Url.Action("Process")",
+        CancelUri: "@Url.Action("Cancel")",
+        ImportQueue: @Html.Raw(Json.Encode(Model.ImportQueue)),
+        ImportQueueUri: "@Url.Action("ListImportQueue")",
+        ExceptionsUri: "@Url.Action("Index", "ImportException")",
+        ModalContentUri: "@Url.Action("ModalContent")",
+        ModalActionUri: "@Url.Action("ModalAction")",
+        UploadUri: "@Url.Action("Upload")",
+        ModalDialogId: "modal",
+        ModalContentId: "modalBody",
+        Configuration: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        _lastParam: null
+    };
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+
+</script>
+<script src="@Url.Content("~/Scripts/Import/importqueueinit.js")?v=@Model.CurrentVersion"></script>

@@ -4,8 +4,9 @@ var model = namespace("FeatureDemandPlanning.TakeRate");
 
 model.TakeRateFilter = function () {
     var me = this;
-    me.TakeRateId = 0;
+    me.TakeRateId = null;
     me.FilterMessage = "";
+    me.TakeRateStatusId = null;
 }
 
 model.TakeRates = function (params) {

@@ -94,8 +94,8 @@ page.ExceptionsPage = function (models) {
                 {
                     "sName": "LINE_NUMBER",
                     "bSearchable": true,
-                    "bSortable": false,
-                    "sClass": "text-right"
+                    "bSortable": true,
+                    "sClass": "text-left"
                 }
                 ,
                 {
@@ -182,6 +182,7 @@ page.ExceptionsPage = function (models) {
         });
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
+        me.redrawDataTable();
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
     };
@@ -239,7 +240,6 @@ page.ExceptionsPage = function (models) {
         }
     };
     me.onModalOKEventHandler = function (parameters) {
-        alert("Modal OK");
     };
     me.redrawDataTable = function () {
         $("#tblImportExceptions").DataTable().draw();

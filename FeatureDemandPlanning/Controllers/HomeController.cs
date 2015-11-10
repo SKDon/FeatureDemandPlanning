@@ -10,6 +10,7 @@ namespace FeatureDemandPlanning.Controllers
 {
     public class HomeController : ControllerBase
     {
+        //[OutputCache(Duration = 600, VaryByParam="")]
         public async Task<ActionResult> Index()
         {
             var homeModel = await HomeViewModel.GetFullOrPartialViewModel(DataContext);

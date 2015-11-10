@@ -8,7 +8,8 @@ namespace FeatureDemandPlanning.Model.Enumerations
 {
     public enum TakeRateResultMode
     {
-        Raw = 0,
-        PercentageTakeRate
+        NotSet = 0,
+        Raw = 1,
+        PercentageTakeRate = 2,
     }
 }

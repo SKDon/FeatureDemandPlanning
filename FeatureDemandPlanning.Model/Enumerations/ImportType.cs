@@ -8,6 +8,6 @@ namespace FeatureDemandPlanning.Model.Enumerations
 {
     public enum ImportType
     {
-        Fdp = 1
+        PPO = 1
     }
 }

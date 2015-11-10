@@ -1,6 +1,6 @@
 ﻿@using FeatureDemandPlanning.Model
 @{
-    var currentVersion = SharedModelBase.CurrentVersion;
+    var currentVersion = Model.CurrentVersion;
 }
 <!DOCTYPE html>
 <html>
@@ -40,7 +40,7 @@
                     </div>
                     <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
                 </form>
-                <div class="pull-left breadcrumb">
+                <div class="pull-left breadcrumb hidden-xs">
                     @Html.MvcSiteMap().SiteMapPath()
                 </div>
                 <ul class="nav navbar-nav pull-right">
@@ -50,7 +50,7 @@
                         </a>
                     </li>
                 </ul>
-                <div class="nav navbar-nav navbar-right" style="position:relative;width:230px;height:60px;">
+                <div class="nav navbar-nav navbar-right hidden-sm" style="position:relative;width:230px;height:60px;">
                     <img class="navbar-right" src="~/Content/Images/Brand/jag_logo_transparent.png" style="position:absolute;left:0;bottom:0;" />
                     <img class="navbar-right" src="~/Content/Images/Brand/lr_logo_v2_transparent.png" style="position:absolute;left:108px;bottom:0;" />
                 </div>
@@ -62,7 +62,39 @@
         <div class="carousel-overlay-parent"></div>
     </div>
 
-    <div id="backgroundCarousel" class="carousel slide" data-ride="carousel">
+    <div class="container fill nopadding carousel-outer">
+        <div id="backgroundCarousel" class="carousel slide">
+            <div class="carousel-inner">
+                <div class="active item">
+                    <div class="fill" style="background-image:url('Content/Images/Carousel/1.png');">
+                        <div class="container">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="fill" style="background-image:url('Content/Images/Carousel/2.png');">
+                        <div class="container">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="fill" style="background-image:url('Content/Images/Carousel/3.png');">
+                        <div class="container">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pull-center">
+                <a class="carousel-control left" href="#myCarousel" data-slide="prev">‹</a>
+                <a class="carousel-control right" href="#myCarousel" data-slide="next">›</a>
+            </div>
+        </div>
+    </div>
+
+    @*<div id="backgroundCarousel" class="carousel slide hidden-sm" data-ride="carousel">
         <ol class="carousel-indicators">
             <li data-target="#backgroundCarousel" data-slide-to="0" class="active"></li>
             <li data-target="#backgroundCarousel" data-slide-to="1"></li>
@@ -71,17 +103,16 @@
         </ol>
         <div class="carousel-inner" role="listbox">
             <div class="item active">
-                <img class="first-slide" src="~/Content/Images/Carousel/1.png" alt="First slide">
-
+                <img class="first-slide img-responsive" src="~/Content/Images/Carousel/1.png" alt="First slide">
             </div>
             <div class="item">
-                <img class="second-slide" src="~/Content/Images/Carousel/2.png" alt="Second slide">
+                <img class="second-slide img-responsive" src="~/Content/Images/Carousel/2.png" alt="Second slide">
             </div>
             <div class="item">
-                <img class="third-slide" src="~/Content/Images/Carousel/3.png" alt="Third slide">
+                <img class="third-slide img-responsive" src="~/Content/Images/Carousel/3.png" alt="Third slide">
             </div>
             <div class="item">
-                <img class="fourth-slide" src="~/Content/Images/Carousel/4.png" alt="Fourth slide">
+                <img class="fourth-slide img-responsive" src="~/Content/Images/Carousel/4.png" alt="Fourth slide">
             </div>
         </div>
         <a class="left carousel-control" href="#backgroundCarousel" role="button" data-slide="prev">
@@ -93,7 +124,7 @@
             <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
             <span class="sr-only">Next</span>
         </a>
-    </div>
+    </div>*@
 
     <div id="body" class="container body-content-header">
         <div id="viewport">

@@ -4,9 +4,6 @@
 
 <div class="panel panel-primary">
     <div class="panel-heading">
-        @*<div class="pull-right">
-            Showing page @Model.PageIndex of @Model.TotalPages (@Model.TotalRecords total items) 
-        </div>*@
         <h3 class="panel-title">Import Queue</h3>
     </div>
     <div class="panel-body">
@@ -23,57 +20,7 @@
                 </tr>
             </thead>
             <tbody>
-                @*@foreach (var queuedItem in Model.ImportQueue.CurrentPage)
-                {
-                    <tr>
-                        <td>@queuedItem.CreatedOn</td>
-                        <td>@queuedItem.CreatedBy</td>
-                        <td>@queuedItem.FilePath</td>
-                        <td>@queuedItem.ImportStatus.Status.ToString()</td>
-                        <td>
-                            @{
-                    switch (queuedItem.ImportStatus.ImportStatusCode)
-                    {
-                        case enums.ImportStatus.Queued:
-                            @Html.ActionLink("Process", "Process", new { ImportQueueId = queuedItem.ImportQueueId })
-                            break;
-
-                        case enums.ImportStatus.Processing:
-                        @Html.ActionLink("Cancel", "Process", new { ImportQueueId = queuedItem.ImportQueueId })
-                            break;
-
-                        default:
-                        @queuedItem.ImportStatus.Status
-                            break;
-                    }
-                            }
-                        </td>
-                    </tr>
-                }*@
             </tbody>
         </table>
-
-        @*<nav>
-            <ul class="pagination pull-right">
-                @if (Model.PageIndex != 1) 
-                {
-                    <li><a href="javascript:loadImportQueue(@Model.PageSize, 1)">&laquo;</a></li>
-                }
-                @for (var i=1;i<=Model.TotalPages;i++)
-                {
-                    if (i==Model.PageIndex) {
-                        <li class="active"><a href="javascript:loadImportQueue(@Model.PageSize, @i)">@i</a></li>
-                    }
-                    else
-                    {
-                        <li><a href="javascript:loadImportQueue(@Model.PageSize, @i)">@i</a></li>
-                    }
-                }
-                @if (Model.PageIndex != Model.TotalPages)
-                {
-                    <li><a href="javascript:loadImportQueue(@Model.PageSize, @Model.TotalPages)">&raquo;</a></li>
-                }
-            </ul>
-        </nav>*@
     </div>
 </div>

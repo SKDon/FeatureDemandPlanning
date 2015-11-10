@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.Controllers
 
         private VehicleViewModel GetFullAndPartialVehicleViewModel(VehicleFilter filter)
         {        
-            var vehicleViewModel = new VehicleViewModel(DataContext)
+            var vehicleViewModel = new VehicleViewModel()
             {
                 VehicleIndex = filter.VehicleIndex,
                 Filter = filter,

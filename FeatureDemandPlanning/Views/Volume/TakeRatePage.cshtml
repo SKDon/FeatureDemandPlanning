@@ -10,6 +10,9 @@
 
 @section PageContentHeader
 {
+    <form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
     <div class="row">
         <div class="col-lg-5 inverse" style="padding-top: 20px">
             <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
@@ -19,12 +22,42 @@
                             <img src="~/Content/Images/Icons/edit64.png" style="margin-top:15px" />
                         </div>
                         <div class="col-lg-10">
-                            <h3 style="margin-top:5px">Take Rate Files for @Model.CurrentUser.CDSID </h3>
+                            <h3 style="margin-top:5px">Take Rate Files for @Model.CurrentUser.CDSId </h3>
 
                             <p class="page-description">Below is a list of take rate files that have been applied to published OXO documents. </p>
                             <p>Select a take rate file to view or edit the information</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-5 inverse pull-right" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-heading">
+                    <div class="panel-title">Filter Take Rate Files</div>
+                </div>
+                <div class="panel-body" style="background:none !important">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="@(Model.IdentifierPrefix)_FilterMessage" class="form-label col-lg-3 text-right" style="margin-top:10px">Filter:</label>
+                            <input type="text" id="@(Model.IdentifierPrefix)_FilterMessage" placeholder="Enter search filter" class="form-control col-lg-6" />
+                        </div>
+                        <div class="form-group">
+                            <label for="@(Model.IdentifierPrefix)_Status" class="form-label col-lg-3 text-right" style="margin-top:10px">Status:</label>
+                            <button class="btn btn-default col-lg-6 dropdown-toggle" data-toggle="dropdown">
+                                <span id="@(Model.IdentifierPrefix)_SelectedStatus">Select Take Rate Status</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul id="@(Model.IdentifierPrefix)_StatusList" class="dropdown-menu">
+                                <li><a class="filter-status" data-target="" data-content="All">All</a></li>
+                                @foreach (var status in Model.Statuses)
+                                {
+                                    <li><a class="filter-status" href="#" data-target="@status.StatusId" data-content="@status.Status">@status.Status</a></li>
+                                }
+                            </ul>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

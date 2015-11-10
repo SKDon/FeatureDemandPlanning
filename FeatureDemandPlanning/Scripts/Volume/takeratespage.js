@@ -10,65 +10,23 @@ page.TakeRatesPage = function (models) {
     privateStore[me.id = uid++] = {};
     privateStore[me.id].DataTable = null;
     privateStore[me.id].Models = models;
+    privateStore[me.id].SelectedTakeRateStatusId = null;
+    privateStore[me.id].SelectedTakeRateStatus = "";
 
-    me.initialise = function () {
-        me.registerEvents();
-        me.registerSubscribers();
-
-        $(privateStore[me.id].Models).each(function () {
-            this.initialise();
+    me.actionTriggered = function (invokedOn, action) {
+        var eventArgs = {
+            ForecastId: parseInt($(this).attr("data-target")),
+            Action: parseInt($(this).attr("data-role"))
+        };
+        $(document).trigger("Action", eventArgs);
+    };
+    me.bindContextMenu = function () {
+        $("#tblTakeRates td").contextMenu({
+            menuSelector: "#contextMenu",
+            dynamicContent: me.getContextMenu,
+            contentIdentifier: me.getTakeRateId,
+            menuSelected: me.actionTriggered
         });
-        me.loadData();
-    };
-    me.setDataTable = function (dataTable) {
-        privateStore[me.id].DataTable = dataTable;
-    };
-    me.getDataTable = function () {
-        if (privateStore[me.id].DataTable == null) {
-            me.configureDataTables();
-        }
-        return privateStore[me.id].DataTable;
-    };
-    me.getFilterMessage = function () {
-        return $("#txtFilterMessage").val();
-    };
-    me.loadData = function () {
-        me.configureDataTables(getFilter());
-    };
-    me.getData = function (data, callback, settings) {
-        var params = me.getParameters(data);
-        var model = getTakeRatesModel();
-        var uri = model.getTakeRatesUri();
-        settings.jqXHR = $.ajax({
-            "dataType": "json",
-            "type": "POST",
-            "url": uri,
-            "data": params,
-            "success": function (json) {
-                callback(json);
-            }
-        });
-    };
-    me.getContextMenu = function (takeRateId) {
-        var params = { TakeRateId: takeRateId };
-        $.ajax({
-            "dataType": "html",
-            "async": true,
-            "type": "POST",
-            "url": getTakeRatesModel().getActionsUri(),
-            "data": params,
-            "success": function (response) {
-                $("#contextMenu").html(response);
-            }
-        });
-    };
-    me.getParameters = function (data) {
-        var filter = getFilter();
-        var params = $.extend({}, data, {
-            "TakeRateId": filter.TakeRateId,
-            "FilterMessage": filter.FilterMessage
-        });
-        return params;
     };
     me.configureDataTables = function (filter) {
 
@@ -152,16 +110,74 @@ page.TakeRatesPage = function (models) {
             }
         });
     };
-    me.getForecastId = function (cell) {
-        return $(cell).closest("tr").attr("data-takeRate-id");
+    me.displaySelectedTakeRateStatus = function () {
+        $("#" + me.getIdentifierPrefix() + "_SelectedStatus").html(me.getSelectedTakeRateStatusDescription());
     };
-    me.bindContextMenu = function () {
-        $("#tblTakeRates td").contextMenu({
-            menuSelector: "#contextMenu",
-            dynamicContent: me.getContextMenu,
-            contentIdentifier: me.getTakeRateId,
-            menuSelected: me.actionTriggered
+    me.getContextMenu = function (takeRateId) {
+        var params = { TakeRateId: takeRateId };
+        $.ajax({
+            "dataType": "html",
+            "async": true,
+            "type": "POST",
+            "url": getTakeRatesModel().getActionsUri(),
+            "data": params,
+            "success": function (response) {
+                $("#contextMenu").html(response);
+            }
         });
+    };
+    me.getData = function (data, callback, settings) {
+        var params = me.getParameters(data);
+        var model = getTakeRatesModel();
+        var uri = model.getTakeRatesUri();
+        settings.jqXHR = $.ajax({
+            "dataType": "json",
+            "type": "POST",
+            "url": uri,
+            "data": params,
+            "success": function (json) {
+                callback(json);
+            }
+        });
+    };
+    me.getDataTable = function () {
+        if (privateStore[me.id].DataTable == null) {
+            me.configureDataTables();
+        }
+        return privateStore[me.id].DataTable;
+    };
+    me.getFilterMessage = function () {
+        return $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
+    };
+    me.getParameters = function (data) {
+        var filter = getFilter();
+        var params = $.extend({}, data, {
+            "TakeRateId": me.getTakeRateId(),
+            "FilterMessage": me.getFilterMessage(),
+            "TakeRateStatusId": me.getSelectedTakeRateStatusId()
+        });
+        return params;
+    };
+    me.getSelectedTakeRateStatusDescription = function () {
+        return privateStore[me.id].SelectedTakeRateStatus;
+    };
+    me.getSelectedTakeRateStatusId = function () {
+        return privateStore[me.id].SelectedTakeRateStatusId;
+    };
+    me.getTakeRateId = function () {
+        return null;
+    };
+    me.initialise = function () {
+        me.registerEvents();
+        me.registerSubscribers();
+
+        $(privateStore[me.id].Models).each(function () {
+            this.initialise();
+        });
+        me.loadData();
+    };
+    me.getIdentifierPrefix = function () {
+        return $("#Page_IdentifierPrefix").val();
     };
     me.getSummary = function () {
         var table = $("#tblTakeRates").DataTable();
@@ -176,36 +192,8 @@ page.TakeRatesPage = function (models) {
 
         return model;
     };
-    me.registerEvents = function () {
-        $(document)
-            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
-            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
-            .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnResultsDelegate", [eventArgs]); })
-            .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdatedDelegate", [eventArgs]); })
-            .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
-            .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
-            .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
-    };
-    me.registerSubscribers = function () {
-        $("#notifier")
-            .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
-            .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
-            .unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
-            .unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
-            .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
-            .unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
-            .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler)
-
-        $("#dvForecastSummary").on("OnResultsDelegate", me.onForecastSummaryEventHandler);
-        $("#spnFilteredRecords").on("OnResultsDelegate", me.onFilteredRecordsEventHandler);
-        $("#dvFilter").on("FilterCompleteEventHandler", me.onFilterCompleteEventHandler);
-        $("#ddlExceptionType").on("change", me.onFilterChangedEventHandler);
-        $("#txtFilterMessage").on("keyup", function (sender, eventArgs) {
-            var length = $("#txtFilterMessage").val().length;
-            if (length == 0 || length > 2) {
-                me.onFilterChangedEventHandler(sender, eventArgs);
-            }
-        });
+    me.loadData = function () {
+        me.configureDataTables(getFilter());
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
     };
@@ -225,16 +213,6 @@ page.TakeRatesPage = function (models) {
             $("#spnFilteredRecords").html("Page " + (summary.getPageIndex() + 1) + " of " + summary.getTotalPages() + " (" + summary.getTotalRecords() + " total records)");
         }
     };
-    me.onFilterChangedEventHandler = function (sender, eventArgs) {
-        me.redrawDataTable();
-    };
-    me.actionTriggered = function (invokedOn, action) {
-        var eventArgs = {
-            ForecastId: parseInt($(this).attr("data-target")),
-            Action: parseInt($(this).attr("data-role"))
-        };
-        $(document).trigger("Action", eventArgs);
-    }
     me.onActionEventHandler = function (sender, eventArgs) {
         var action = eventArgs.Action;
         var model = getModelForAction(action);
@@ -251,6 +229,13 @@ page.TakeRatesPage = function (models) {
     me.onActionCallback = function (response) {
         me.redrawDataTable();
     };
+    me.onFilterChangedEventHandler = function (sender, eventArgs) {
+        var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
+        var filterLength = filter.length;
+        if (filterLength === 0 || filterLength > 2) {
+            me.redrawDataTable();
+        }
+    };
     me.onModalLoadedEventHandler = function (sender, eventArgs) {
         var actionId = eventArgs.Action;
         switch (actionId) {
@@ -258,8 +243,50 @@ page.TakeRatesPage = function (models) {
                 break;
         }
     };
+    me.registerEvents = function () {
+        $(document)
+            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
+            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
+            .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnResultsDelegate", [eventArgs]); })
+            .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdatedDelegate", [eventArgs]); })
+            .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
+            .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
+            .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
+    };
+    me.registerSubscribers = function () {
+        var prefix = me.getIdentifierPrefix();
+        $("#notifier")
+            .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
+            .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
+            .unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
+            .unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
+            .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
+            .unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
+            .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler)
+
+        $("#" + prefix + "_FilterMessage").on("keyup", me.onFilterChangedEventHandler);
+        $("#" + prefix + "_StatusList").find("a.filter-status").on("click", function (e) {
+            me.statusSelectedEventHandler(e);
+            e.preventDefault();
+        });
+    };
     me.redrawDataTable = function () {
         $("#tblTakeRates").DataTable().draw();
+    };
+    me.setDataTable = function (dataTable) {
+        privateStore[me.id].DataTable = dataTable;
+    };
+    me.setSelectedTakeRateStatusDescription = function (description) {
+        privateStore[me.id].SelectedTakeRateStatus = description;
+    };
+    me.setSelectedTakeRateStatusId = function (statusId) {
+        privateStore[me.id].SelectedTakeRateStatusId = statusId;
+    };
+    me.statusSelectedEventHandler = function (sender) {
+        me.setSelectedTakeRateStatusId(parseInt($(sender.target).attr("data-target")));
+        me.setSelectedTakeRateStatusDescription($(sender.target).attr("data-content"));
+        me.displaySelectedTakeRateStatus();
+        me.redrawDataTable();
     };
     function getModal() {
         return getModel("Modal");
@@ -282,18 +309,16 @@ page.TakeRatesPage = function (models) {
     };
     function getModelForAction(actionId) {
         return getTakeRatesModel();
-    }
+    };
     function getFilter() {
         var model = getTakeRatesModel();
         var pageSize = model.getPageSize();
         var pageIndex = model.getPageIndex();
         var filter = new FeatureDemandPlanning.TakeRate.TakeRateFilter();
 
-        filter.ForecastId = model.getTakeRateId();
-        filter.FilterMessage = me.getFilterMessage();
         filter.PageIndex = pageIndex;
         filter.PageSize = pageSize;
 
         return filter;
-    }
+    };
 }

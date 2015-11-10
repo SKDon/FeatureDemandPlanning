@@ -1,0 +1,43 @@
+﻿@using FeatureDemandPlanning.Model
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.UserViewModel
+
+@if (Model.User.IsActive)
+{
+    <li>
+        <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAction.DisableUser)">
+            <span class="glyphicon glyphicon-remove pull-left"></span> Disable User '@Model.User.CDSId'
+        </a>
+    </li>
+}
+else
+{
+    <li>
+        <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAction.EnableUser)">
+            <span class="glyphicon glyphicon-ok pull-left"></span> Enable User '@Model.User.CDSId'
+        </a>
+    </li>
+}
+<li class="divider"></li>
+<li>
+    <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAction.ManageProgrammes)">
+        <span class="glyphicon glyphicon-filter pull-left"></span> Manage Programmes...
+    </a>
+</li>
+@if (Model.User.IsAdmin)
+{
+    <li>
+        <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAction.UnsetAsAdministrator)">
+            <span class="glyphicon glyphicon-cog pull-left"></span> Unset as Administrator
+        </a>
+    </li>
+}
+else
+{
+<li>
+    <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAction.SetAsAdministrator)">
+        <span class="glyphicon glyphicon-cog pull-left"></span> Set as Administrator
+    </a>
+</li>
+}
