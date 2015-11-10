@@ -14,13 +14,13 @@ namespace FeatureDemandPlanning.Model.Enumerations
         MapMissingDerivative = 3,
         AddMissingFeature = 4,
         MapMissingFeature = 5,
-        AddSpecialFeature = 9,
         AddMissingTrim = 6,
         MapMissingTrim = 7,
         IgnoreException = 8,
-        Exception = 9,
-        ImportQueue = 10,
-        ImportQueueItem = 11,
+        AddSpecialFeature = 9,
+        Exception = 10,
+        ImportQueue = 11,
+        ImportQueueItem = 12,
 
         Upload = 100,
     }
