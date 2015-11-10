@@ -1,11 +1,8 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Filters;
+﻿using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
 

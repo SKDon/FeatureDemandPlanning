@@ -1,15 +1,6 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Comparers;
-using FeatureDemandPlanning.Model.Enumerations;
+﻿using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Script.Serialization;
 
 namespace FeatureDemandPlanning.Controllers
 {

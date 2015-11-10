@@ -4,11 +4,8 @@ using FeatureDemandPlanning.Model.Comparers;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.ViewModel;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Script.Serialization;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -33,7 +30,7 @@ namespace FeatureDemandPlanning.Controllers
             if (!engineCodeMappingModel.EngineCodeMappings.CurrentPage.Any())
             {
                 engineCodeMappingModel.SetProcessState(
-                    new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Warning, "No programmes available matching search criteria"));
+                    new ProcessState(ProcessStatus.Warning, "No programmes available matching search criteria"));
             }
             else
             {
@@ -43,7 +40,7 @@ namespace FeatureDemandPlanning.Controllers
                 var numberOfMappings = engineCodeMappingModel.EngineCodeMappings.CurrentPage.Where(e => !String.IsNullOrEmpty(e.ExternalEngineCode));
 
                 engineCodeMappingModel.SetProcessState(
-                    new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Information, String.Format("{0} programmes, {1} mapped engine codes matching search criteria", numberOfProgrammes, numberOfMappings)));
+                    new ProcessState(ProcessStatus.Information, String.Format("{0} programmes, {1} mapped engine codes matching search criteria", numberOfProgrammes, numberOfMappings)));
             }
 
             return View("EngineCodeMapping", engineCodeMappingModel);
@@ -52,8 +49,6 @@ namespace FeatureDemandPlanning.Controllers
         [HttpGet]
         public ActionResult EngineCodeMappings(JQueryDataTableParameters param)
         {
-            var js = new JavaScriptSerializer();
-
             var filter = new EngineCodeFilter();
             filter.InitialiseFromJson(param);
             //if (!string.IsNullOrEmpty(param.sSearch))
@@ -72,7 +67,7 @@ namespace FeatureDemandPlanning.Controllers
 
                 foreach (var result in results.CurrentPage)
                 {
-                    var stringResult = new string[] 
+                    var stringResult = new[] 
                     { 
                         result.VehicleMake, 
                         string.Format("{0} - {1}", result.VehicleName, result.VehicleAKA),

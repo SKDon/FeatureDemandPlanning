@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Script.Serialization;
 using System.Web.Caching;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Attributes;
@@ -12,22 +10,18 @@ using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Parameters;
-using FeatureDemandPlanning.Model.Results;
 using FeatureDemandPlanning.Model.Validators;
 using FeatureDemandPlanning.Model.ViewModel;
 using FluentValidation;
-using System.Net;
 
 
 namespace FeatureDemandPlanning.Controllers
 {
 	public class ForecastController : ControllerBase
 	{
-		public ForecastController() : base()
+		public ForecastController() : base(ControllerType.SectionChild)
 		{
-			ControllerType = ControllerType.SectionChild;
 		}
-
 		[HttpGet]
         [ActionName("Index")]
 		public ActionResult ForecastPage(int? forecastId)
@@ -50,7 +44,6 @@ namespace FeatureDemandPlanning.Controllers
         {
             ValidateForecastParameters(parameters, ForecastParametersValidator.NoValidation);
 
-            var js = new JavaScriptSerializer();
             var filter = new ForecastFilter()
             {
                 FilterMessage = parameters.FilterMessage
@@ -70,7 +63,7 @@ namespace FeatureDemandPlanning.Controllers
 		[HttpPost]
 		public ActionResult ForecastComparisonPage(Forecast forecast, int pageIndex)
 		{
-			var view = string.Empty;
+			string view;
 			
 			switch (pageIndex)
 			{
@@ -119,7 +112,7 @@ namespace FeatureDemandPlanning.Controllers
 			if (forecastComparisonModel.Forecast.ForecastVehicle == null)
 			{
 				forecastComparisonModel.SetProcessState(
-					new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Warning, "No programmes available matching search criteria"));
+					new ProcessState(ProcessStatus.Warning, "No programmes available matching search criteria"));
 			}
 
 			return View("ForecastComparison", forecastComparisonModel);
@@ -258,16 +251,6 @@ namespace FeatureDemandPlanning.Controllers
 
         //    return result;
         //}
-
-		private JsonResult GetResult(ProcessState processState, ForecastComparisonViewModel model)
-		{
-			model.SetProcessState(processState);
-			return Json(model);
-		}
-		private async Task<ForecastComparisonViewModel> GetFullAndPartialForecastComparisonViewModel()
-		{
-			return await GetFullAndPartialForecastComparisonViewModel(new ForecastFilter());
-		}
 		private async Task<ForecastComparisonViewModel> GetFullAndPartialForecastComparisonViewModel(ForecastFilter filter)
 		{
 			IForecast forecast = new EmptyForecast();
@@ -376,7 +359,7 @@ namespace FeatureDemandPlanning.Controllers
 		}
 		private static LookupViewModel GetLookup(IVehicle forVehicle, Cache cache, IDataContext dataContext)
 		{
-            LookupViewModel lookup = null;
+            LookupViewModel lookup;
 			var cacheKey = string.Format("ProgrammeLookup_{0}", forVehicle.GetHashCode());
 			var cachedLookup = cache.Get(cacheKey);
 			if (cachedLookup != null) {

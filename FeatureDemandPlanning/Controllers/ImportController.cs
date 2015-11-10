@@ -4,13 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
 using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Comparers;
 using enums = FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.ViewModel;
 using FeatureDemandPlanning.Model.Enumerations;
@@ -25,9 +21,9 @@ namespace FeatureDemandPlanning.Controllers
     {
         public ImportParameters Parameters { get; set; }
 
-        public ImportController() : base()
+        public ImportController() : base(ControllerType.SectionChild)
         {
-            ControllerType = ControllerType.SectionChild;
+            
         }
         [HttpGet]
         [ActionName("Index")]
@@ -47,7 +43,6 @@ namespace FeatureDemandPlanning.Controllers
         [HandleErrorWithJson]
         public async Task<ActionResult> ListImportQueue(ImportParameters parameters)
         {
-            var js = new JavaScriptSerializer();
             var filter = new ImportQueueFilter()
             {
                 FilterMessage = parameters.FilterMessage,

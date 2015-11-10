@@ -1,5 +1,4 @@
-﻿@using FeatureDemandPlanning.Model
-@using FeatureDemandPlanning.Model.Extensions
+﻿@using FeatureDemandPlanning.Model.Extensions
 @using enums = FeatureDemandPlanning.Model.Enumerations
 
 @model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
@@ -12,7 +11,7 @@
 {
     <div class="row">
         <div class="col-lg-5 inverse" style="padding-top: 20px">
-            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+            <div class="panel panel-primary" style="height:160px; background-color: #12073b; background-color: rgba(18, 7, 59, 0.75);">
                 <div class="panel-body" style="background:none !important">
                     <div class="row">
                         <div class="col-lg-2">
@@ -29,7 +28,7 @@
             </div>
         </div>
         <div class="col-lg-3 pull-right" style="padding-top: 20px">
-            <div class="panel panel-primary" style="margin-bottom: 0px;height:160px">
+            <div class="panel panel-primary" style="margin-bottom: 0;height:160px">
                 <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Filter</div></div>
                 <div class="panel-body" style="padding-left:15px;padding-right:15px;padding-top:5px;padding-bottom:5px">
                     <div class="form-group form-group-sm">
@@ -48,7 +47,7 @@
             </div>
         </div>
         <div class="col-lg-4 pull-right" style="padding-top: 20px">
-            <div id="dvImportSummary" class="panel panel-primary subscribers-notify" style="margin-bottom: 0px;height:160px">
+            <div id="dvImportSummary" class="panel panel-primary subscribers-notify" style="margin-bottom: 0;height:160px">
                 <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Exception Summary</div></div>
                 <div class="panel-body" style="padding-left:15px;padding-right:15px;padding-top:5px;padding-bottom:5px">
                     <table class="table table-bordered table-condensed dataTable table-striped" style="font-size:11px">
@@ -67,7 +66,7 @@
                             </tr>
                             <tr>
                                 <td>Import Filename:</td>
-                                <td>@System.IO.Path.GetFileName(Model.CurrentImport.OriginalFileName)</td>
+                                <td>@Path.GetFileName(Model.CurrentImport.OriginalFileName)</td>
                             </tr>
                         </tbody>
                     </table>
@@ -83,7 +82,7 @@
     <ul id="contextMenu" class="dropdown-menu context-menu" role="menu" style="display:none">
     </ul>
      
-    <div id="notifier" class="subscribers-notify col-lg-12" style="float:unset"></div>
+    <div id="notifier" class="subscribers-notify col-lg-12" style="float:none"></div>
 
     @Html.Partial("_Modal", Model)
 

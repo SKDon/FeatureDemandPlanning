@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using FeatureDemandPlanning.Model.Helpers;
-using System.Configuration;
-using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.DataStore;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Results;
@@ -37,6 +31,10 @@ namespace FeatureDemandPlanning.Controllers
             PageIndex = 0;
             PageSize = ConfigurationSettings.DefaultPageSize;
         }
+        public ControllerBase(ControllerType controllerType) : this()
+        {
+            ControllerType = controllerType;
+        }
         public JsonResult JsonGet(object data)
         {
             return Json(data, JsonRequestBehavior.AllowGet);
@@ -48,6 +46,10 @@ namespace FeatureDemandPlanning.Controllers
         public JsonResult JsonGetFailure(string message)
         {
             return JsonGet(JsonActionResult.GetFailure(message));
+        }
+        protected string GetContentPartialViewName(object forAction)
+        {
+            return string.Format("_{0}", Enum.GetName(forAction.GetType(), forAction));
         }
         private string GetCdsId()
         {
