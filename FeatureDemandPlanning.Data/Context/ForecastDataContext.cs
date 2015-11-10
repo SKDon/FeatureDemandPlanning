@@ -118,7 +118,7 @@ namespace FeatureDemandPlanning.DataStore
             if (vehicle == null || vehicle is EmptyVehicle || !vehicle.ProgrammeId.HasValue)
                 return;
 
-            var programme = _programmeDataStore.ProgrammeGet(vehicle.ProgrammeId.Value);
+            var programme = await Task.FromResult<Programme>(_programmeDataStore.ProgrammeGet(vehicle.ProgrammeId.Value));
             vehicle.Programmes = new List<Programme>() { programme };
         }
 

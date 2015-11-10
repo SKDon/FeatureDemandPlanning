@@ -2,7 +2,6 @@
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
-using FeatureDemandPlanning.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
