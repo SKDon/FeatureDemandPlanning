@@ -8,14 +8,6 @@
  *===============================================================================
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using FeatureDemandPlanning.Model.Dapper;
-using System.Web.Script.Serialization;
-
 namespace FeatureDemandPlanning.Model
 {
     public class ModelEngine : BusinessObject

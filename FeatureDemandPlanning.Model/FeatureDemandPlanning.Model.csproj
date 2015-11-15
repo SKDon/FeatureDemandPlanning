@@ -98,7 +98,9 @@
     <Compile Include="CarLine.cs" />
     <Compile Include="Empty\EmptyTakeRateSummary.cs" />
     <Compile Include="Empty\EmptyUser.cs" />
+    <Compile Include="Enumerations\TakeRateDataAction.cs" />
     <Compile Include="Enumerations\UserAction.cs" />
+    <Compile Include="Filters\TakeRateDataFilter.cs" />
     <Compile Include="Filters\TakeRateFilter.cs" />
     <Compile Include="Filters\UserFilter.cs" />
     <Compile Include="ForecastSummary.cs" />
@@ -107,7 +109,7 @@
     <Compile Include="Interfaces\INewsDataContext.cs" />
     <Compile Include="Interfaces\IReferenceDataContext.cs" />
     <Compile Include="Interfaces\IVolume.cs" />
-    <Compile Include="Interfaces\IVolumeDataContext.cs" />
+    <Compile Include="Interfaces\ITakeRateDataContext.cs" />
     <Compile Include="Derivative.cs" />
     <Compile Include="DerivativeMapping.cs" />
     <Compile Include="Empty\EmptyDerivative.cs" />
@@ -139,6 +141,7 @@
     <Compile Include="Parameters\ForecastParameters.cs" />
     <Compile Include="Parameters\ImportExceptionParameters.cs" />
     <Compile Include="Parameters\ImportParameters.cs" />
+    <Compile Include="Parameters\TakeRateDataParameters.cs" />
     <Compile Include="Parameters\TakeRateParameters.cs" />
     <Compile Include="Parameters\UserParameters.cs" />
     <Compile Include="Results\JsonActionResult.cs" />
@@ -238,7 +241,7 @@
     <Compile Include="ViewModel\AdminViewModel.cs" />
     <Compile Include="ViewModel\ConfigurationModel.cs" />
     <Compile Include="ViewModel\EngineCodeMappingViewModel.cs" />
-    <Compile Include="ViewModel\FdpOxoVolumeViewModel.cs" />
+    <Compile Include="ViewModel\TakeRateDataViewModel.cs" />
     <Compile Include="ViewModel\ForecastComparisonViewModel.cs" />
     <Compile Include="ViewModel\ForecastTrim.cs" />
     <Compile Include="ViewModel\HomeViewModel.cs" />
@@ -251,7 +254,7 @@
     <Compile Include="ViewModel\UserViewModel.cs" />
     <Compile Include="ViewModel\VehicleViewModel.cs" />
     <Compile Include="Volume.cs" />
-    <Compile Include="VolumeData.cs" />
+    <Compile Include="TakeRateData.cs" />
     <Compile Include="Comparers\StringArrayIndexComparer.cs" />
     <Compile Include="Comparers\UniqueVehicleByNameComparer.cs" />
     <Compile Include="Enumerations\ForecastValidationSection.cs" />

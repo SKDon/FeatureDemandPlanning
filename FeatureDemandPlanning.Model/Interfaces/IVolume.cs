@@ -1,11 +1,5 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Enumerations;
-using System;
+﻿using FeatureDemandPlanning.Model.Enumerations;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Interfaces
 {
@@ -22,6 +16,6 @@ namespace FeatureDemandPlanning.Model.Interfaces
         int TotalDerivatives { get; set; }
 
         IEnumerable<TakeRateSummary> VolumeSummary { get; set; }
-        VolumeData VolumeData { get; set; }
+        TakeRateData TakeRateData { get; set; }
     }
 }

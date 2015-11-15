@@ -1,11 +1,8 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Filters;
+﻿using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Comparers;
 using FeatureDemandPlanning.Model.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {

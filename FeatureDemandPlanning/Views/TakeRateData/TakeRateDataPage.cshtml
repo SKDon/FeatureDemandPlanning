@@ -1,0 +1,109 @@
+﻿@using FeatureDemandPlanning.Model
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateDataViewModel
+
+@section PageScripts
+{
+    @Html.Partial("_Scripts", Model)
+}
+
+@section PageContentHeader
+{
+    <form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
+    <div id="collapseExample" class="collapse row">
+        <div class="col-lg-12 inverse">
+
+            <div class="col-lg-5 inverse" style="padding-top: 20px">
+                <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+                    <div class="panel-body" style="background:none !important">
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <img src="~/Content/Images/Icons/edit64.png" style="margin-top:15px" />
+                            </div>
+                            <div class="col-lg-10">
+                                <h3 style="margin-top:5px">Take Rate Data</h3>
+                                <h5 id="lblVehicleDescription"></h5>
+
+                                <div id="lblPageDescription" class="subscribers-notifyPageChanged">
+                                <p class="page-description">View and edit take rate data for the selected OXO document</p>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 pull-right" style="padding-top: 20px">
+                <div class="panel panel-primary" style="margin-bottom: 0px; height:160px">
+                    <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Key</div></div>
+                    <div class="panel-body" >
+
+                        <div>
+
+                            <ul class="list-group" style="margin-bottom:10px">
+                                <li class="list-group-item standardFeature">Standard Feature</li>
+                                <li class="list-group-item optionalFeature">Optional Feature</li>
+                                <li class="list-group-item packFeature">Package Feature</li>
+                                <li class="list-group-item nonApplicableFeature">Not available</li>
+                            </ul>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 pull-right" style="padding-top: 20px; height:160px">
+                <div class="panel panel-primary" style="margin-bottom: 0px">
+                    <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">TakeRate Mix</div></div>
+                    <div class="panel-body" style="padding:5px">
+                        <form class="form-horizontal">
+                            <div class="form-group form-group-sm" style="margin-bottom:5px">
+                                <label for="txtVolume" class="col-sm-6 control-label">Total TakeRate (All Markets):</label>
+                                <div class="col-sm-5 input-group input-group-sm">
+                                    <input type="text" id="txtVolume" class="form-control" value="@*@Model.TakeRate.TotalTakeRate*@">
+                                    <span class="input-group-btn">
+                                    <button type="button" id="btnUpdateVolume" class="btn btn-sm btn-default">Update</button>
+                                        </span>
+                                </div>
+                            </div>
+                            <div class="form-group form-group-sm" style="margin-bottom:5px">
+                                <label class="col-sm-6 control-label">Filtered TakeRate (Selected Markets):</label>
+                                <div class="col-sm-6 form-control-static">
+                                    @*@Model.TakeRate.TakeRateData.FilteredTakeRate.ToString("G")*@
+                                </div>
+                            </div>
+                            <div class="form-group form-group-sm" style="margin-bottom:5px">
+                                <label class="col-sm-6 control-label">% of Total TakeRate:</label>
+                                <div class="col-sm-6 form-control-static">
+                                    @*@Model.TakeRate.TakeRateData.PercentageOfTotalTakeRate.ToString("P2")*@
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+}
+
+@section PageBody
+{
+    <div id="notifier" class="subscribers-notify col-lg-8 col-lg-offset-2"></div>
+    <ul id="contextMenu" class="dropdown-menu context-menu" role="menu" style="display: none"></ul>
+
+    @Html.Partial("_Modal", Model)
+
+    <div class="row">
+        <div id="dvUsers" class="col-lg-12">
+            @Html.Partial("_TakeRateData", Model)
+        </div>
+
+    </div>
+}
+
+
+

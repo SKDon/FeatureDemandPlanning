@@ -1,11 +1,11 @@
-﻿@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+﻿@model FeatureDemandPlanning.Model.ViewModel.TakeRateDataViewModel
 
 <div class="jumbotron">
     
         <p>The following import data files have been selected:</p>
 
         <ul>
-            @foreach (var import in Model.Volume.FdpVolumeHeaders)
+            @foreach (var import in Model.TakeRate.FdpTakeRateHeaders)
             {
                 <li>@import</li>
             }
@@ -14,7 +14,7 @@
         <p>This take rate data will be applied to the OXO document:</p>
 
         <ul>
-            <li>@Model.Volume.Document.Name</li>
+            <li>@Model.TakeRate.Document.Name</li>
         </ul>
         
         <p>Click 'Next' to continue</p>

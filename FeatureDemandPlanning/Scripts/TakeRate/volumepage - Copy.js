@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var model = namespace("FeatureDemandPlanning.Volume");
+var model = namespace("FeatureDemandPlanning.TakeRate");
 
 model.Page = function (models) {
     var uid = 0, privateStore = {}, me = this;

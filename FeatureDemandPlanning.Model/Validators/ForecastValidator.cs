@@ -1,7 +1,5 @@
 ﻿using FeatureDemandPlanning.Model.Enumerations;
 using FluentValidation;
-using FluentValidation.Mvc;
-using FluentValidation.Validators;
 using System.Collections.Generic;
 using System.Linq;
 

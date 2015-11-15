@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Interfaces;
-
-namespace FeatureDemandPlanning.Model.Interfaces
+﻿namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IDataContext
     {
@@ -19,7 +11,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IForecastDataContext Forecast { get; }
         IImportDataContext Import { get; }
         IMarketDataContext Market { get; }
-        IVolumeDataContext Volume { get; }
+        ITakeRateDataContext TakeRate { get; }
         IReferenceDataContext References { get; }
         INewsDataContext News { get; }
 

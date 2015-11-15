@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FeatureDemandPlanning.Model
+﻿namespace FeatureDemandPlanning.Model
 {
     public class FdpOxoDoc
     {

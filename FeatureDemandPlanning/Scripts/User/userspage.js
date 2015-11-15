@@ -11,7 +11,7 @@ page.UsersPage = function (models) {
     privateStore[me.id].DataTable = null;
     privateStore[me.id].Models = models;
 
-    me.actionTriggered = function (invokedOn, action) {
+    me.actionTriggered = function () {
         var eventArgs = {
             CDSId: $(this).attr("data-target"),
             Action: parseInt($(this).attr("data-role"))
@@ -27,10 +27,6 @@ page.UsersPage = function (models) {
         });
     };
     me.configureDataTables = function () {
-
-        var usersUri = getUserModel().getUsersUri();
-        var userIndex = 0;
-
         $("#tblUsers").DataTable({
             "serverSide": true,
             "pagingType": "full_numbers",
@@ -233,7 +229,7 @@ page.UsersPage = function (models) {
         $("#" + prefix + "_HideInactiveUsers").on("change", me.onFilterChangedEventHandler);
     };
     me.setDataTable = function (dataTable) {
-        privateStore[me.id].DataTable = dataTable
+        privateStore[me.id].DataTable = dataTable;
     };
     function getModal() {
         return getModel("Modal");
@@ -247,7 +243,7 @@ page.UsersPage = function (models) {
     function getModel(modelName) {
         var model = null;
         $(getModels()).each(function () {
-            if (this.ModelName == modelName) {
+            if (this.ModelName === modelName) {
                 model = this;
                 return false;
             }
@@ -257,7 +253,7 @@ page.UsersPage = function (models) {
     function getUserModel() {
         return getModel("User");
     };
-    function getFilter(pageSize, pageIndex) {
+    function getFilter() {
         var model = getUserModel();
         var pageSize = model.getPageSize();
         var pageIndex = model.getPageIndex();

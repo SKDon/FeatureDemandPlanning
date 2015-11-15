@@ -1,7 +1,7 @@
 ﻿@using FeatureDemandPlanning.Helpers
 @using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.FdpOxoTakeRateViewModel
 
 <div class="row subscribers-notifyFilterComplete" data-index="0">
     <div class="col-lg-12">
@@ -12,10 +12,10 @@
 
             <div class="panel-body">
 
-                <div class="row subscribers-notifyVehicle subscribers-notifyValidation vehicle-filter" data-index="0" data-val="Volume" style="display:block">
+                <div class="row subscribers-notifyVehicle subscribers-notifyValidation vehicle-filter" data-index="0" data-val="TakeRate" style="display:block">
 
                     <div class="col-lg-4">
-                        @Html.DropDownListForExtended(m => m.Volume.Vehicle.Make, Model.VehicleLookup.Makes,
+                        @Html.DropDownListForExtended(m => m.TakeRate.Vehicle.Make, Model.VehicleLookup.Makes,
                             new
                             {
                                 @id = "ddlMake",
@@ -26,7 +26,7 @@
                             },
                             m => true)
                         <label class="control-label inverse" for="ddlProgramme">Car Line</label>
-                        @Html.DropDownListForExtended(m => m.Volume.Vehicle.Code, Model.VehicleLookup.Programmes,
+                        @Html.DropDownListForExtended(m => m.TakeRate.Vehicle.Code, Model.VehicleLookup.Programmes,
                             new
                             {
                                 @id = "ddlProgramme",
@@ -39,7 +39,7 @@
 
                     <div class="col-lg-4">
                         <label class="control-label inverse" for="ddlModelYear">Model Year</label>
-                        @Html.DropDownListForExtended(m => m.Volume.Vehicle.ModelYear, Model.VehicleLookup.ModelYears,
+                        @Html.DropDownListForExtended(m => m.TakeRate.Vehicle.ModelYear, Model.VehicleLookup.ModelYears,
                             new
                             {
                                 @id = "ddlModelYear",
@@ -47,12 +47,12 @@
                                 @class = "form-control subscribers-notifyModelYears vehicle-filter-modelYear",
                                 @data_index = "0",
                             },
-                            m => !string.IsNullOrEmpty(m.Volume.Vehicle.Code))
+                            m => !string.IsNullOrEmpty(m.TakeRate.Vehicle.Code))
                     </div>
 
                     <div class="col-lg-4">
                         <label class="control-label inverse" for="ddlGateway">Gateway</label>
-                        @Html.DropDownListForExtended(m => m.Volume.Vehicle.Gateway, Model.VehicleLookup.Gateways,
+                        @Html.DropDownListForExtended(m => m.TakeRate.Vehicle.Gateway, Model.VehicleLookup.Gateways,
                             new
                             {
                                 @id = "ddlGateway",
@@ -60,7 +60,7 @@
                                 @class = "form-control subscribers-notifyGateways vehicle-filter-gateway",
                                 @data_index = "0"
                             },
-                            m => !string.IsNullOrEmpty(m.Volume.Vehicle.ModelYear))
+                            m => !string.IsNullOrEmpty(m.TakeRate.Vehicle.ModelYear))
                     </div>
 
                 </div>

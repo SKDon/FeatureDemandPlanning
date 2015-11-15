@@ -1,9 +1,9 @@
 ﻿@using System.Data
 @using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.FdpOxoTakeRateViewModel
 @{
-    var selectedModels = Model.Volume.Vehicle.AvailableModels;
+    var selectedModels = Model.TakeRate.Vehicle.AvailableModels;
     var rightPaneWidth = "" + selectedModels.Count() * 80 + "px";
     var uniqueid = 0;
 }
@@ -12,7 +12,7 @@
     <div class="panel-heading" style="height:50px">
         <div class="pull-left">
             <div class="panel-title">
-                <span class="badge">@Model.Volume.Vehicle.AvailableModels.Count()</span> Derivatives
+                <span class="badge">@Model.TakeRate.Vehicle.AvailableModels.Count()</span> Derivatives
             </div>
         </div>
         <div class="viewport-toolbar pull-right">
@@ -62,7 +62,7 @@
                                     <th>Hidden Descr</th>
                                     <th class="header-A0" style="border-right:none!important;">&nbsp;&nbsp;&nbsp;&nbsp;Feature Description</th>
                                     <th class="header-A1" style="border-left:none!important"></th>
-                                    @if (Model.Volume.Vehicle.Programmes.First().UseOACode)
+                                    @if (Model.TakeRate.Vehicle.Programmes.First().UseOACode)
                                     {
                                         <th class="header-A text-center" style="width:60px;vertical-align:bottom">Feature<br />Code<br />(OA)</th>
                                     }
@@ -72,13 +72,13 @@
                                     }
                                     <th>Feature Sub Group</th>
                                     <th class="header-A text-center" style="width:60px;vertical-align:bottom">
-                                        @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                                        @if (Model.TakeRate.Mode == enums.TakeRateResultMode.PercentageTakeRate)
                                         {
                                             <span>% Take Rate</span>
                                         }
                                         else
                                         {
-                                            <span>Volume</span>
+                                            <span>TakeRate</span>
                                         }
                                     </th>
 
@@ -104,13 +104,13 @@
                                 <tr>
                                     <th colspan="5" style="padding:3px !important;font-size:11px;height:20px">
                                         <div class="pull-right">
-                                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                                            @if (Model.TakeRate.Mode == enums.TakeRateResultMode.PercentageTakeRate)
                                             {
                                                 <span>% Mix by Derivative</span>
                                             }
                                             else
                                             {
-                                                <span>Volume Mix by Derivative</span>
+                                                <span>TakeRate Mix by Derivative</span>
                                             }
                                         </div>
                                     </th>
@@ -120,7 +120,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in Model.Volume.VolumeData.RawData)
+                                @foreach (var item in Model.TakeRate.TakeRateData.RawData)
                                 {
                                     var descr = @item["BrandDescription"].ToString();
                                     var subGroup = @item["FeatureSubGroup"].ToString() == "" ? "NA" : @item["FeatureSubGroup"].ToString();
@@ -150,13 +150,13 @@
                                         <td class="row text-center" style="width:60px" featureid="@item["Feature_Id"]">@item["Feature_Code"]</td>
                                         <td featureid="@item["Feature_Id"]">@subGroup</td>
                                         <td class="text-center row-total" featureid="@item["Feature_Id"]">
-                                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                                            @if (Model.TakeRate.Mode == enums.TakeRateResultMode.PercentageTakeRate)
                                             {
                                                 @(item.Field<decimal>("TotalPercentageTakeRate").ToString("P"))
                                             }
                                             else
                                             {
-                                                @(item.Field<int>("TotalVolume").ToString("G"))
+                                                @(item.Field<int>("TotalTakeRate").ToString("G"))
                                             }
                                         </td>
                                     </tr>
@@ -235,16 +235,16 @@
                                 </tr>
                                 <tr>
                                     <th colspan="4"></th>
-                                    @foreach (var volumeByModel in Model.Volume.VolumeData.VolumeByModel)
+                                    @foreach (var volumeByModel in Model.TakeRate.TakeRateData.TakeRateByModel)
                                     {
                                         <th class="text-center editable-header" style="padding:3px;font-size:11px" data="@volumeByModel.ModelId">
-                                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                                            @if (Model.TakeRate.Mode == enums.TakeRateResultMode.PercentageTakeRate)
                                             {
-                                                @volumeByModel.PercentageOfFilteredVolume.ToString("P")
+                                                @volumeByModel.PercentageOfFilteredTakeRate.ToString("P")
                                             }
                                             else
                                             {
-                                                @volumeByModel.Volume.ToString("G")
+                                                @volumeByModel.TakeRate.ToString("G")
                                             }
                                         </th>
                                     }
@@ -253,7 +253,7 @@
                             <tbody>
                                 @{
                                     uniqueid = 0;
-                                    foreach (var item in Model.Volume.VolumeData.RawData)
+                                    foreach (var item in Model.TakeRate.TakeRateData.RawData)
                                     {
                                         var descr = item.Field<string>("BrandDescription");
                                         var subGroup = item.Field<string>("FeatureSubGroup") == "" ? "NA" : item.Field<string>("FeatureSubGroup");
@@ -310,7 +310,7 @@
 {
     var rowIdentity = dataItem.Field<long?>("Id");
     var featureApplicability =
-        Model.Volume.VolumeData.FeatureApplicabilityData.Where(fa => fa.Field<long?>("Id") == rowIdentity)
+        Model.TakeRate.TakeRateData.FeatureApplicabilityData.Where(fa => fa.Field<long?>("Id") == rowIdentity)
         .Select(fa => fa.IsNull(modelIdentifier) ? string.Empty : fa.Field<string>(modelIdentifier))
         .FirstOrDefault();
 
@@ -330,7 +330,7 @@
     // 2. If no value and not applicable (N/A)
     // 3. If value render the value regardless of applicability
 
-    if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+    if (Model.TakeRate.Mode == enums.TakeRateResultMode.PercentageTakeRate)
     {
         var value = dataItem.Field<decimal?>(modelIdentifier);
         if (!value.HasValue && (parsedFeatureApplicability == "O" || parsedFeatureApplicability == "S" || parsedFeatureApplicability == "P"))
@@ -368,7 +368,7 @@
 {
     var rowIdentity = dataItem.Field<long?>("Id");
     var featureApplicability =
-        Model.Volume.VolumeData.FeatureApplicabilityData.Where(fa => fa.Field<long?>("Id") == rowIdentity)
+        Model.TakeRate.TakeRateData.FeatureApplicabilityData.Where(fa => fa.Field<long?>("Id") == rowIdentity)
         .Select(fa => fa.IsNull(modelIdentifier) ? string.Empty : fa.Field<string>(modelIdentifier))
         .FirstOrDefault();
 

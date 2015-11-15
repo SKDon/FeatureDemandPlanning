@@ -1,16 +1,9 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Interfaces;
+﻿using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Caching;
-using System.Web.Script.Serialization;
 
 namespace FeatureDemandPlanning.Model
 {

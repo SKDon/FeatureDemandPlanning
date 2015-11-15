@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var model = namespace("FeatureDemandPlanning.Volume");
+var model = namespace("FeatureDemandPlanning.TakeRate");
 
 model.OxoVolume = function (params) {
     var uid = 0;

@@ -3,14 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using System.Web.Script.Serialization;
 using System.Xml;
 using System.IO;
-using System.Xml.XPath;
 using System.Data.SqlClient;
-using System.Web;
-using ClosedXML.Excel;
-using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model.Helpers;
 using FeatureDemandPlanning.Model.Interfaces;
 
@@ -222,6 +217,11 @@ namespace FeatureDemandPlanning.Model
         public void GetDocConfiguration()
         {
             _dataContext.Document.GetConfiguration(this);
+        }
+
+        public static OXODoc FromTakeRateDataFilter(Filters.TakeRateDataFilter filter)
+        {
+            return filter.OxoDocId.HasValue ? new OXODoc() {Id = filter.OxoDocId.Value} : new EmptyOxoDocument();
         }
     }
 

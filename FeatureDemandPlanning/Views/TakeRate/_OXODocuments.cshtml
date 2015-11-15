@@ -1,10 +1,10 @@
 ﻿@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.FdpOxoTakeRateViewModel
 
 <div id="oxoDocuments" class="subscribers-notifyVehicle">
 
-    @if (Model.Volume.Vehicle.AvailableDocuments.Any())
+    @if (Model.TakeRate.Vehicle.AvailableDocuments.Any())
     {
         <div class="panel panel-primary">
             <div class="panel-heading">
@@ -28,7 +28,7 @@
                     </thead>
                     <tbody>
                         @{
-        foreach (var document in Model.Volume.Vehicle.AvailableDocuments)
+        foreach (var document in Model.TakeRate.Vehicle.AvailableDocuments)
         {
             <tr>
                 <td class="text-center">@document.VersionLabel</td>
@@ -40,7 +40,7 @@
                 <td class="text-center">@document.CreatedBy</td>
                 <td class="text-center">@document.LastUpdated</td>
                 <td class="text-center">
-                    @if (Model.Volume.Document != null && Model.Volume.Document.Id == document.Id)
+                    @if (Model.TakeRate.Document != null && Model.TakeRate.Document.Id == document.Id)
                     {
                         <button type="button" class="btn btn-sm btn-danger oxo-document-toggle" data-target="@document.Id">Unselect</button>
                     }

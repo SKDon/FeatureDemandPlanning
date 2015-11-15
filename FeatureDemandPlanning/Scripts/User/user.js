@@ -92,7 +92,7 @@ model.User = function (params) {
         return privateStore[me.id].PageSize;
     };
     me.getPageIndex = function () {
-        return privateStore[me.id].PageIndex
+        return privateStore[me.id].PageIndex;
     };
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
@@ -129,7 +129,7 @@ model.User = function (params) {
             "url": uri,
             "data": params,
             "success": function (json) {
-                callback(json)
+                callback(json);
             }
         });
     };

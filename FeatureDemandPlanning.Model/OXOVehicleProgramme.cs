@@ -11,9 +11,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Data;
-using FeatureDemandPlanning.Model.Dapper;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -65,7 +62,6 @@ namespace FeatureDemandPlanning.Model
         {
             return x.Id == y.Id;
         }
-
         public int GetHashCode(Programme obj)
         {
             return obj.Id.GetHashCode();

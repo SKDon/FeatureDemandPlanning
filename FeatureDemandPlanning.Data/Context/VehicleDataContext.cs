@@ -5,7 +5,6 @@ using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -248,12 +247,7 @@ namespace FeatureDemandPlanning.DataStore
             return programmes.Select(p => HydrateVehicleFromProgramme(p, filter.VehicleIndex));
         }
 
-        private IVehicle HydrateVehicleFromProgramme(Programme programme)
-        {
-            return HydrateVehicleFromProgramme(programme, null);
-        }
-
-        private IVehicle HydrateVehicleFromProgramme(Programme programme, int? vehicleIndex)
+        private static IVehicle HydrateVehicleFromProgramme(Programme programme, int? vehicleIndex = null)
         {
             if (programme == null)
                 return new EmptyVehicle();

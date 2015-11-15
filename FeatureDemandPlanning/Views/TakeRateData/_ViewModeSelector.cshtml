@@ -1,0 +1,34 @@
+﻿@using FeatureDemandPlanning.Model
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateDataViewModel
+
+<button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    @if (Model.Mode == enums.TakeRateResultMode.PercentageTakeRate || Model.Mode == enums.TakeRateResultMode.NotSet)
+    {
+        @:Take Rate by %
+        }
+    else
+    {
+        @:Take Rate by TakeRate
+    }
+    <span class="caret"></span>
+</button>
+<ul class="dropdown-menu">
+    @if (!(Model.Market is EmptyMarket))
+    {
+        <li>@Html.ActionLink("Take Rate by %", "Document", new { oxoDocId = Model.Document.Id, marketId = Model.Market.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
+        <li>@Html.ActionLink("Take Rate by Volume", "Document", new { oxoDocId = Model.Document.Id, marketId = Model.Market.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
+    }
+    else if (!(Model.MarketGroup is EmptyMarketGroup))
+    {
+        <li>@Html.ActionLink("Take Rate by %", "Document", new { oxoDocId = Model.Document.Id, marketGroupId = Model.MarketGroup.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
+        <li>@Html.ActionLink("Take Rate by TakeRate", "Document", new { oxoDocId = Model.Document.Id, marketGroupId = Model.MarketGroup.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
+    }
+    else
+    {
+        <li>@Html.ActionLink("Take Rate by %", "Document", new { oxoDocId = Model.Document.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
+        <li>@Html.ActionLink("Take Rate by TakeRate", "Document", new { oxoDocId = Model.Document.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
+    }
+</ul>
+

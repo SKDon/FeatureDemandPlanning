@@ -1,12 +1,7 @@
 ﻿using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -71,15 +66,15 @@ namespace FeatureDemandPlanning.Model
             } 
         }
 
-        public VolumeData VolumeData
+        public TakeRateData TakeRateData
         {
             get
             {
-                return _volumeData;
+                return _takeRateData;
             }
             set
             {
-                _volumeData = value;
+                _takeRateData = value;
             }
         }
 
@@ -129,7 +124,7 @@ namespace FeatureDemandPlanning.Model
         private OXODoc _document = new EmptyOxoDocument();
         private Market _market = new EmptyMarket();
         private MarketGroup _marketGroup = new EmptyMarketGroup();
-        private VolumeData _volumeData = new VolumeData();
+        private TakeRateData _takeRateData = new TakeRateData();
         private TakeRateResultMode _mode = TakeRateResultMode.PercentageTakeRate;
     }
 }

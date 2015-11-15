@@ -26,7 +26,7 @@
                         <span class="glyphicon glyphicon-stats pull-right"></span>
                         @Html.ActionLink("Latest Take Rate Data",
                                      "Index",
-                                     "Volume")
+                                     "TakeRate")
                     </div>
                 </div>
                 <div class="panel-body">
@@ -63,12 +63,12 @@
             <p>@Html.ActionLink("Import", "Index", "Import", null, new { @class = "btn btn-default col-md-10 col-md-offset-1", role = "button" })</p>
         </div>
         <div class="col-md-6 col-lg-4 text-center inverse home-button">
-            <a href="@Url.Action("Index", "Volume")">
+            <a href="@Url.Action("Index", "TakeRate")">
                 <img src="~/Content/Images/Icons/edit64.png" style="opacity:0.9;border:0" />
             </a>
             <h2 style="height:40px">View / Edit</h2>
             <p style="height:40px">View or edit take rate details for a car line</p>
-            <p>@Html.ActionLink("View / Edit", "Index", "Volume", null, new { @class = "btn btn-default col-md-10 col-md-offset-1", role = "button" })</p>
+            <p>@Html.ActionLink("View / Edit", "Index", "TakeRate", null, new { @class = "btn btn-default col-md-10 col-md-offset-1", role = "button" })</p>
         </div>
         <div class="col-md-6 col-lg-4 text-center inverse home-button">
             <a href="@Url.Action("Index", "MarketReview")">

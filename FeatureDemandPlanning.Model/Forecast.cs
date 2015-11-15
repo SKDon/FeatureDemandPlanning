@@ -1,16 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Data;
-using System.Web.Mvc;
-using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Validators;
 using da = System.ComponentModel.DataAnnotations;
-using FluentValidation;
-using System.ComponentModel.DataAnnotations;
 
 namespace FeatureDemandPlanning.Model
 {

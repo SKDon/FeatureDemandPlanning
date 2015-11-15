@@ -17,11 +17,11 @@ namespace FeatureDemandPlanning.Controllers
     /// <summary>
     /// Primary controller for handling viewing / editing and updating of volume (take rate information)
     /// </summary>
-    public class VolumeController : ControllerBase
+    public class TakeRateController : ControllerBase
     {
         #region "Constructors"
 
-        public VolumeController() : base()
+        public TakeRateController() : base()
         {
             ControllerType = ControllerType.SectionChild;
         }

@@ -1,21 +1,21 @@
 ﻿@using FeatureDemandPlanning.Model
 @using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateDataViewModel
 @{
-    var totalDerivatives = Model.Volume.TotalDerivatives;
-    var totalDerivativesForSelection = Model.Volume.Vehicle.AvailableModels.Count();
+    var totalDerivatives = 0;
+    var totalDerivativesForSelection = 0;
 }
 
 <!-- Single button -->
 <button id="btnMarket" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    @if (!(Model.Volume.MarketGroup is EmptyMarketGroup))
+    @if (!(Model.MarketGroup is EmptyMarketGroup))
     {
-        @:Market Group: @Model.Volume.MarketGroup.GroupName (@totalDerivativesForSelection)
+        @:Market Group: @Model.MarketGroup.GroupName (@totalDerivativesForSelection)
             }
-    else if (!(Model.Volume.Market is EmptyMarket))
+    else if (!(Model.Market is EmptyMarket))
     {
-        @:Market: @Model.Volume.Market.Name (@totalDerivativesForSelection)
+        @:Market: @Model.Market.Name (@totalDerivativesForSelection)
             }
     else
     {
@@ -27,11 +27,11 @@
     @{
         var allMarketsLink = string.Format("All Markets ({0})", totalDerivatives);
     }
-    <li>@Html.ActionLink(allMarketsLink, "Document", new { oxoDocId = Model.Volume.Document.Id, resultsMode = Model.Volume.Mode })</li>
-    @foreach (var marketGroup in Model.Volume.Vehicle.AvailableMarketGroups)
+    @*<li>@Html.ActionLink(allMarketsLink, "Document", new { oxoDocId = Model.TakeRate.Document.Id, resultsMode = Model.TakeRate.Mode })</li>
+    @foreach (var marketGroup in Model.TakeRate.Vehicle.AvailableMarketGroups)
     {
         var selectedGroup = string.Empty;
-        if (!(Model.Volume.MarketGroup is EmptyMarketGroup) && marketGroup.Id == Model.Volume.MarketGroup.Id)
+        if (!(Model.TakeRate.MarketGroup is EmptyMarketGroup) && marketGroup.Id == Model.TakeRate.MarketGroup.Id)
         {
             selectedGroup = "selected";
         }
@@ -47,7 +47,7 @@
                     @foreach (var market in markets)
                     {
                         var selectedMarket = string.Empty;
-                        if (!(Model.Volume.Market is EmptyMarket) && market.Id == Model.Volume.Market.Id)
+                        if (!(Model.TakeRate.Market is EmptyMarket) && market.Id == Model.TakeRate.Market.Id)
                         {
                             selectedMarket = "selected";
                         }
@@ -75,17 +75,17 @@
                 <span>@marketGroup.GroupName</span>
             </li>
         }
-    }
+    }*@
 </ul>
 
-@helper RenderUrlForMarketGroup(MarketGroup marketGroup)
+@*@helper RenderUrlForMarketGroup(MarketGroup marketGroup)
 {
     var groupName = string.Format("{0} ({1})", marketGroup.GroupName, marketGroup.VariantCount);
-    @Html.ActionLink(groupName, "Document", new { oxoDocId = Model.Volume.Document.Id, marketGroupId = marketGroup.Id, resultsMode = Model.Volume.Mode });
+    @Html.ActionLink(groupName, "Document", new { oxoDocId = Model.Document.Id, marketGroupId = marketGroup.Id, resultsMode = Model.Mode });
 }
 
 @helper RenderUrlForMarket(Market market)
 {
     var marketName = string.Format("{0} ({1})", market.Name, market.VariantCount);
-    @Html.ActionLink(marketName, "Document", new { oxoDocId = Model.Volume.Document.Id, marketId = market.Id, resultsMode = Model.Volume.Mode });
-}
+    @Html.ActionLink(marketName, "Document", new { oxoDocId = Model.Document.Id, marketId = market.Id, resultsMode = Model.Mode });
+}*@

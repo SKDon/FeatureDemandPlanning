@@ -1,10 +1,6 @@
 ﻿using FeatureDemandPlanning.Model.Results;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 
 namespace FeatureDemandPlanning.Model.Attributes
@@ -41,11 +37,7 @@ namespace FeatureDemandPlanning.Model.Attributes
         }
         private bool CanIgnoreException(ExceptionContext filterContext)
         {
-            return filterContext.ExceptionHandled ||!filterContext.HttpContext.IsCustomErrorEnabled; ;
-        }
-        private bool IsJsonResponseRequired(HttpRequest request)
-        {
-            return true;
+            return filterContext.ExceptionHandled ||!filterContext.HttpContext.IsCustomErrorEnabled;
         }
     }
 }

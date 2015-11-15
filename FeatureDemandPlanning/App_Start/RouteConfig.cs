@@ -17,32 +17,32 @@ namespace FeatureDemandPlanning
 
             //routes.MapRoute(name: "VolumeByMarketGroup",
             //                url: "Document/{oxoDocId}/VolumeByMarketGroup/{marketGroupId}",
-            //                defaults: new { controller = "Volume", action = "Volume", resultsMode = VolumeResultMode.Raw });
+            //                defaults: new { controller = "TakeRate", action = "TakeRate", resultsMode = VolumeResultMode.Raw });
 
             //routes.MapRoute(name: "Document",
             //                url: "Document/{oxoDocId}/{action}/{id}",
-            //                defaults: new { controller = "Volume", action = "Document", id = UrlParameter.Optional });
+            //                defaults: new { controller = "TakeRate", action = "Document", id = UrlParameter.Optional });
 
             //routes.MapRoute(name: "PercentageByMarket",
             //                url: "Document/{oxoDocId}/PercentageByMarket/{marketId}",
-            //                defaults: new { controller = "Volume", action = "PercentageByMarket", resultsMode = VolumeResultMode.PercentageTakeRate });
+            //                defaults: new { controller = "TakeRate", action = "PercentageByMarket", resultsMode = VolumeResultMode.PercentageTakeRate });
 
             //routes.MapRoute(name: "VolumeByMarket",
             //                url: "Document/{oxoDocId}/VolumeByMarket/{marketId}",
-            //                defaults: new { controller = "Volume", action = "Volume", resultsMode = VolumeResultMode.Raw });
+            //                defaults: new { controller = "TakeRate", action = "TakeRate", resultsMode = VolumeResultMode.Raw });
 
-            //routes.MapRoute(name: "Volume",
-            //                url: "Document/{oxoDocId}/Volume",
-            //                defaults: new { controller = "Volume", action = "Volume", resultsMode = VolumeResultMode.Raw });
+            //routes.MapRoute(name: "TakeRate",
+            //                url: "Document/{oxoDocId}/TakeRate",
+            //                defaults: new { controller = "TakeRate", action = "TakeRate", resultsMode = VolumeResultMode.Raw });
 
             //routes.MapRoute(name: "Percentage",
             //                url: "Document/{oxoDocId}/Percentage",
-            //                defaults: new { controller = "Volume", action = "Percentage", resultsMode = VolumeResultMode.PercentageTakeRate });
+            //                defaults: new { controller = "TakeRate", action = "Percentage", resultsMode = VolumeResultMode.PercentageTakeRate });
 
             //routes.MapRoute(
-            //    name: "Volume",
-            //    url: "Volume/{action}/{oxoDocId}",
-            //    defaults: new { controller = "Volume", action = "Volume", oxoDocId = UrlParameter.Optional }
+            //    name: "TakeRate",
+            //    url: "TakeRate/{action}/{oxoDocId}",
+            //    defaults: new { controller = "TakeRate", action = "TakeRate", oxoDocId = UrlParameter.Optional }
             //    );
 
             routes.MapRoute(

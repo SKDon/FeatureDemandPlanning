@@ -8,7 +8,7 @@
                 <h5>@Html.ActionLink(
                     string.Format("{0} - {1}", summary.OxoDocument, summary.Status),
                     "Document",
-                    "Volume",
+                    "TakeRate",
                     new { OxoDocId = summary.OxoDocId },
                     new { @class = "inverse" })</h5>
                 <footer style="font-size:10px;">Created on @(summary.CreatedOn.ToString("D")) by @summary.CreatedBy </footer>

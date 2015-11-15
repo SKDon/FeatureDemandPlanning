@@ -1,4 +1,4 @@
-﻿@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+﻿@model FeatureDemandPlanning.Model.ViewModel.TakeRateDataViewModel
 
 @{
     var currentVersion = Model.CurrentVersion;
@@ -7,15 +7,18 @@
 <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Volume/takerates.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Volume/takeratespage.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/TakeRateData/takeratedata.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/TakeRateData/page.js")?v=@currentVersion"></script>
+
+<script src="https://cdn.datatables.net/fixedcolumns/3.2.0/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.0.0/js/dataTables.responsive.min.js"></script>
 
 <script type="text/javascript">
 
-    var takeRates, page, modal;
+    var takeRateData, page, modal;
     var params = {
         ActionsUri: "@Url.Action("ContextMenu")",
-        TakeRateUri: "@Url.Action("Document")",
+        TakeRateUri: "@Url.Action("Index","TakeRateData")",
         TakeRatesUri: "@Url.Action("ListTakeRateData")",
         ModalContentUri: "@Url.Action("ModalContent")",
         ModalActionUri: "@Url.Action("ModalAction")",
@@ -24,11 +27,11 @@
         Configuration: {},
         PageSize: @Model.PageSize,
         PageIndex: @Model.PageIndex,
-        TakeRateId: @Model.TakeRate.TakeRateId,
+        TakeRateId: 0,
         IdentifierPrefix: "@Model.IdentifierPrefix",
         _lastParam: null // Prevent syntax error
     };
 
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 </script>
-<script src="@Url.Content("~/Scripts/Volume/takeratesinit.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/TakeRateData/init.js")?v=@currentVersion"></script>

@@ -1,10 +1,10 @@
 ﻿@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.FdpOxoTakeRateViewModel
 
 <div id="availableImports" class="subscribers-notifyVehicle">
 
-    @if (Model.Volume.Vehicle.AvailableImports.Any())
+    @if (Model.TakeRate.Vehicle.AvailableImports.Any())
     {
         <div class="panel panel-primary">
             <div class="panel-heading">
@@ -25,7 +25,7 @@
                     </thead>
                     <tbody>
                         @{
-        foreach (var import in Model.Volume.Vehicle.AvailableImports)
+        foreach (var import in Model.TakeRate.Vehicle.AvailableImports)
         {
             <tr>
                 <td>@import.Vehicle.Description</td>
@@ -34,13 +34,13 @@
                 <td class="text-center">@import.CreatedOn</td>
                 <td class="text-center">@import.CreatedBy</td>
                 <td class="text-center">
-                    @if (Model.Volume.FdpVolumeHeaders.Any(h => h.FdpVolumeHeaderId == import.FdpVolumeHeaderId))
+                    @if (Model.TakeRate.FdpTakeRateHeaders.Any(h => h.FdpTakeRateHeaderId == import.FdpTakeRateHeaderId))
                     {
-                        <button type="button" class="btn btn-sm btn-danger fdp-volume-header-toggle" data-target="@import.FdpVolumeHeaderId">Unselect</button>
+                        <button type="button" class="btn btn-sm btn-danger fdp-volume-header-toggle" data-target="@import.FdpTakeRateHeaderId">Unselect</button>
                     }
                     else
                     {
-                        <button type="button" class="btn btn-sm btn-primary fdp-volume-header-toggle" data-target="@import.FdpVolumeHeaderId">Select</button>
+                        <button type="button" class="btn btn-sm btn-primary fdp-volume-header-toggle" data-target="@import.FdpTakeRateHeaderId">Select</button>
                     }
                 </td>
             </tr>

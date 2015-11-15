@@ -2,7 +2,7 @@
 
 @model FeatureDemandPlanning.Model.ViewModel.HomeViewModel
 
-@if (Model.LatestNews.Count() == 0)
+@if (!Model.LatestNews.Any())
 {
     <h5>No News</h5>
 }

@@ -1,9 +1,4 @@
 ﻿using enums = FeatureDemandPlanning.Model.Enumerations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.Filters

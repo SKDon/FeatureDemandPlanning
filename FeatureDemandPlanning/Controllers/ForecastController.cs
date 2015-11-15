@@ -94,9 +94,8 @@ namespace FeatureDemandPlanning.Controllers
 		[HttpGet]
 		public async Task<ActionResult> Forecast(int? pageIndex, int? forecastId)
 		{
-			var filter = new ForecastFilter();
-			filter.ForecastId = forecastId;
-			var forecastComparisonModel = await GetFullAndPartialForecastComparisonViewModel(filter);
+		    var filter = new ForecastFilter {ForecastId = forecastId};
+		    var forecastComparisonModel = await GetFullAndPartialForecastComparisonViewModel(filter);
 			forecastComparisonModel.PageIndex = pageIndex.GetValueOrDefault();
 
 			ViewBag.PageTitle = "Edit Forecast";
@@ -127,8 +126,7 @@ namespace FeatureDemandPlanning.Controllers
 			
 			var comparisonVehicle = forecastComparisonModel
 				.NonEmptyComparisonVehicles
-				.Where(v => v.VehicleIndex == vehicleIndex)
-				.First();
+				.First(v => v.VehicleIndex == vehicleIndex);
 			var forecastTrim = forecastComparisonModel.Forecast.ForecastVehicle.TrimMappings
 				.Where(t => t.ForecastVehicleTrim.Id == forecastTrimId)
 				.Select(t => t.ForecastVehicleTrim)
@@ -137,7 +135,7 @@ namespace FeatureDemandPlanning.Controllers
 
 			if (comparisonVehicle.Vehicle.TrimMappings.Any())
 			{
-				var mappings = comparisonVehicle.Vehicle.TrimMappings.Where(m => m.ForecastVehicleTrim.Id == forecastTrim.Id).FirstOrDefault();
+				var mappings = comparisonVehicle.Vehicle.TrimMappings.FirstOrDefault(m => m.ForecastVehicleTrim.Id == forecastTrim.Id);
 				if (mappings != null)
 				{
 					configuredMappings = mappings.ComparisonVehicleTrimMappings;
@@ -160,8 +158,7 @@ namespace FeatureDemandPlanning.Controllers
 
 			var comparisonVehicle = forecastComparisonModel
 				.NonEmptyComparisonVehicles
-				.Where(v => v.VehicleIndex == vehicleIndex)
-				.First();
+				.First(v => v.VehicleIndex == vehicleIndex);
 			var forecastTrim = forecastComparisonModel.Forecast.ForecastVehicle.TrimMappings
 				.Where(t => t.ForecastVehicleTrim.Id == forecastTrimId)
 				.Select(t => t.ForecastVehicleTrim)
@@ -170,7 +167,7 @@ namespace FeatureDemandPlanning.Controllers
 
 			if (comparisonVehicle.Vehicle.TrimMappings.Any())
 			{
-				var mappings = comparisonVehicle.Vehicle.TrimMappings.Where(m => m.ForecastVehicleTrim.Id == forecastTrim.Id).FirstOrDefault();
+				var mappings = comparisonVehicle.Vehicle.TrimMappings.FirstOrDefault(m => m.ForecastVehicleTrim.Id == forecastTrim.Id);
 				if (mappings != null)
 				{
 					configuredMappings = mappings.ComparisonVehicleTrimMappings;
@@ -314,17 +311,13 @@ namespace FeatureDemandPlanning.Controllers
 				foreach (var existingTrimMapping in comparisonVehicle.TrimMappings)
 				{
 					// Get the fully populated forecast trim
-					var forecastVehicleTrim = programme.AllTrims.Where(t => t.Id == existingTrimMapping.ForecastVehicleTrim.Id).First();
+					var forecastVehicleTrim = programme.AllTrims.First(t => t.Id == existingTrimMapping.ForecastVehicleTrim.Id);
 					existingTrimMapping.ForecastVehicleTrim = forecastVehicleTrim;
 
 					// Build a list of fully populated comparison trim
-					var newComparisonVehicleTrimMappings = new List<ModelTrim>();
-					foreach (var comparisonVehicleTrimMapping in existingTrimMapping.ComparisonVehicleTrimMappings)
-					{
-						newComparisonVehicleTrimMappings.Add(comparisonVehicle.ListTrimLevels()
-							.Where(t => t.Id == comparisonVehicleTrimMapping.Id).First());
-					}
-					existingTrimMapping.ComparisonVehicleTrimMappings = newComparisonVehicleTrimMappings;
+					var newComparisonVehicleTrimMappings = existingTrimMapping.ComparisonVehicleTrimMappings
+                        .Select(comparisonVehicleTrimMapping => comparisonVehicle.ListTrimLevels().First(t => t.Id == comparisonVehicleTrimMapping.Id)).ToList();
+				    existingTrimMapping.ComparisonVehicleTrimMappings = newComparisonVehicleTrimMappings;
 				}
 			}
             else

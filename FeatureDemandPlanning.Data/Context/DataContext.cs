@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.DataStore
             _forecastContext = new ForecastDataContext(cdsId);
             _importContext = new ImportDataContext(cdsId);
             _marketContext = new MarketDataContext(cdsId);
-            _volumeContext = new VolumeDataContext(cdsId);
+            _takeRateContext = new TakeRateDataContext(cdsId);
             _referenceDataContext = new ReferenceDataContext("system");
             _newsDataContext = new NewsDataContext(cdsId);
         }
@@ -36,7 +36,7 @@ namespace FeatureDemandPlanning.DataStore
         public IForecastDataContext Forecast { get { return _forecastContext; } }
         public IImportDataContext Import { get { return _importContext; } }
         public IMarketDataContext Market { get { return _marketContext; } }
-        public IVolumeDataContext Volume { get { return _volumeContext; } }
+        public ITakeRateDataContext TakeRate { get { return _takeRateContext; } }
         public IReferenceDataContext References { get { return _referenceDataContext; } }
         public INewsDataContext News { get { return _newsDataContext; } }
 
@@ -50,7 +50,7 @@ namespace FeatureDemandPlanning.DataStore
         private IForecastDataContext _forecastContext = null;
         private IImportDataContext _importContext = null;
         private IMarketDataContext _marketContext = null;
-        private IVolumeDataContext _volumeContext = null;
+        private ITakeRateDataContext _takeRateContext = null;
         private IReferenceDataContext _referenceDataContext = null;
         private INewsDataContext _newsDataContext = null;
     }

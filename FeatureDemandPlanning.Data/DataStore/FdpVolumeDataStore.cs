@@ -53,11 +53,11 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
-        public VolumeData FdpOxoVolumeDataItemList(VolumeFilter filter)
+        public TakeRateData FdpOxoVolumeDataItemList(TakeRateDataFilter filter)
         {
-            VolumeData retVal = new VolumeData();
+            TakeRateData retVal = new TakeRateData();
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -84,7 +84,7 @@ namespace FeatureDemandPlanning.DataStore
                         cmd.Parameters.Add(new SqlParameter("@Mode", SqlDbType.NVarChar, 2) { Value = "MG" });
                     }
 
-                    if (filter.Mode == FeatureDemandPlanning.Model.Enumerations.TakeRateResultMode.PercentageTakeRate)
+                    if (filter.Mode == TakeRateResultMode.PercentageTakeRate)
                     {
                         cmd.Parameters.Add(new SqlParameter("@ShowPercentage", SqlDbType.Bit) { Value = true });
                     }
@@ -100,21 +100,23 @@ namespace FeatureDemandPlanning.DataStore
                     retVal.FeatureApplicabilityData = ds.Tables[1].AsEnumerable();
 
                     // 3. Total volumes for each model by market
-                    retVal.VolumeByModel = ds.Tables[2].AsEnumerable().Select(d => new DerivativeVolumeData()
+                    retVal.TakeRateByModel = ds.Tables[2].AsEnumerable().Select(d => new DerivativeTakeRateData()
                     {
                         ModelId = d.Field<int>("Model_Id"),
-                        Volume = d.Field<int>("Volume"),
+                        Volume = d.Field<int>("TakeRate"),
                         PercentageOfFilteredVolume = d.Field<decimal>("PercentageOfFilteredVolume")
                     });
 
                     // 4. Summary information
                     var summary = ds.Tables[3].AsEnumerable().FirstOrDefault();
-
-                    retVal.TotalVolume = summary.Field<int>("TotalVolume");
-                    retVal.FilteredVolume = summary.Field<int>("FilteredVolume");
-                    retVal.PercentageOfTotalVolume = summary.Field<decimal>("PercentageOfTotalVolume");
-                    retVal.CreatedBy = summary.Field<string>("CreatedBy");
-                    retVal.CreatedOn = summary.Field<DateTime>("CreatedOn");
+                    if (summary != null)
+                    {
+                        retVal.TotalVolume = summary.Field<int>("TotalVolume");
+                        retVal.FilteredVolume = summary.Field<int>("FilteredVolume");
+                        retVal.PercentageOfTotalVolume = summary.Field<decimal>("PercentageOfTotalVolume");
+                        retVal.CreatedBy = summary.Field<string>("CreatedBy");
+                        retVal.CreatedOn = summary.Field<DateTime>("CreatedOn");
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -138,7 +140,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@MarketGroupId", dataItemToSave.MarketGroupId, dbType: DbType.Int32);
                     para.Add("@MarketId", dataItemToSave.MarketId, dbType: DbType.Int32);
                     para.Add("@OxoDocId", dataItemToSave.OxoDocId, dbType: DbType.Int32);
-                    para.Add("@Volume", dataItemToSave.Volume, dbType: DbType.Int32);
+                    para.Add("@TakeRate", dataItemToSave.Volume, dbType: DbType.Int32);
                     para.Add("@PercentageTakeRate", dataItemToSave.PercentageTakeRate, dbType: DbType.Decimal);
                     para.Add("@PackId", dataItemToSave.PackId, dbType: DbType.Int32);
                     para.Add("@CDSID", this.CurrentCDSID, dbType: DbType.String);
@@ -260,7 +262,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             var retVal = new PagedResults<TakeRateSummary>();
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -338,7 +340,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public IEnumerable<TakeRateSummary> FdpVolumeHeaderGetManyByOxoDocIdAndUsername(TakeRateFilter filter)
         {
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 IEnumerable<TakeRateSummary> retVal = null;
                 try
@@ -359,7 +361,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public void FdpOxoDocSave(FdpOxoDoc fdpOxoDocumentToSave)
         {
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {

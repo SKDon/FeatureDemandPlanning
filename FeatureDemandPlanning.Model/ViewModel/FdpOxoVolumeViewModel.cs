@@ -1,10 +1,7 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Enumerations;
+﻿using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
@@ -169,7 +166,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         }
         private static void HydrateData(IDataContext context, FdpOxoVolumeViewModel volumeModel)
         {
-            volumeModel.Volume.VolumeData = ListVolumeData(context, volumeModel.Volume);
+            volumeModel.Volume.TakeRateData = ListVolumeData(context, volumeModel.Volume);
         }
         private static void HydrateVehicle(IDataContext context, FdpOxoVolumeViewModel volumeModel)
         {
@@ -286,10 +283,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return await context.Volume.ListTakeRateData(TakeRateFilter.FromVolume(forVolume));
         }
-        private static VolumeData ListVolumeData(IDataContext context, Volume forVolume)
+        private static TakeRateData ListVolumeData(IDataContext context, Volume forVolume)
         {
             if (forVolume.Document is EmptyOxoDocument)
-                return new VolumeData();
+                return new TakeRateData();
 
             return context.Volume.ListVolumeData(VolumeFilter.FromVolume(forVolume));
         }

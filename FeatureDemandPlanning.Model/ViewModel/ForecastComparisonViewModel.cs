@@ -1,13 +1,10 @@
 ﻿using FeatureDemandPlanning.Model.Interfaces;
-using FeatureDemandPlanning.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Validators;
-using FeatureDemandPlanning.Model.Enumerations;
 using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.ViewModel

@@ -1,7 +1,7 @@
 ﻿@using FeatureDemandPlanning.Model
 @using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateDataViewModel
 
 @section PageScripts
 {
@@ -29,8 +29,8 @@
             FilterVehiclesUri: "@Url.Action("FilterVehicles", "Vehicle")",
             AvailableDocumentsUri: "@Url.Action("OxoDocuments")",
             AvailableImportsUri: "@Url.Action("AvailableImports")",
-            EditVolumeUri: "@Url.Action("EditVolume")",
-            SaveVolumeUri: "@Url.Action("SaveVolume")",
+            EditVolumeUri: "@Url.Action("EditTakeRate")",
+            SaveVolumeUri: "@Url.Action("SaveTakeRate")",
             ValidateUri: "@Url.Action("Validate")",
             ValidationMessageUri: "@Url.Action("ValidationMessage")",
             ModalDialogId: "modal",
@@ -43,10 +43,10 @@
         };
 
         params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
-        params.Vehicle = @Html.Raw(Json.Encode(Model.Volume.Vehicle));
-        @if (Model.Volume.Document != null)
+        params.Vehicle = @Html.Raw(Json.Encode(Model.TakeRate.Vehicle));
+        @if (Model.TakeRate.Document != null)
         {
-            @:params.OxoDocId = @Model.Volume.Document.Id;
+            @:params.OxoDocId = @Model.TakeRate.Document.Id;
         }
     </script>
     <script src="@Url.Content("~/Scripts/Volume/init.js")?v=@Model.CurrentVersion"></script>
@@ -98,28 +98,28 @@
             </div>
             <div class="col-lg-5 pull-right" style="padding-top: 20px; height:160px">
                 <div class="panel panel-primary" style="margin-bottom: 0px">
-                    <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Volume Mix</div></div>
+                    <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">TakeRate Mix</div></div>
                     <div class="panel-body" style="padding:5px">
                         <form class="form-horizontal">
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
-                                <label for="txtVolume" class="col-sm-6 control-label">Total Volume (All Markets):</label>
+                                <label for="txtVolume" class="col-sm-6 control-label">Total TakeRate (All Markets):</label>
                                 <div class="col-sm-5 input-group input-group-sm">
-                                    <input type="text" id="txtVolume" class="form-control" value="@Model.Volume.VolumeData.TotalVolume">
+                                    <input type="text" id="txtVolume" class="form-control" value="@Model.TakeRate.TakeRateData.TotalTakeRate">
                                     <span class="input-group-btn">
                                     <button type="button" id="btnUpdateVolume" class="btn btn-sm btn-default">Update</button>
                                         </span>
                                 </div>
                             </div>
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
-                                <label class="col-sm-6 control-label">Filtered Volume (Selected Markets):</label>
+                                <label class="col-sm-6 control-label">Filtered TakeRate (Selected Markets):</label>
                                 <div class="col-sm-6 form-control-static">
-                                    @Model.Volume.VolumeData.FilteredVolume.ToString("G")
+                                    @Model.TakeRate.TakeRateData.FilteredTakeRate.ToString("G")
                                 </div>
                             </div>
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
-                                <label class="col-sm-6 control-label">% of Total Volume:</label>
+                                <label class="col-sm-6 control-label">% of Total TakeRate:</label>
                                 <div class="col-sm-6 form-control-static">
-                                    @Model.Volume.VolumeData.PercentageOfTotalVolume.ToString("P2")
+                                    @Model.TakeRate.TakeRateData.PercentageOfTotalTakeRate.ToString("P2")
                                 </div>
                             </div>
                         </form>
@@ -155,7 +155,7 @@
                     @Html.Partial("_Confirm");
                     break;
                 case 4:
-                    @Html.Partial("_VolumeData");
+                    @Html.Partial("_TakeRateData");
                     break;
 
             }
@@ -164,7 +164,7 @@
     </form>
 
     @Html.Partial("_Pager", Model)
-    @Html.Partial("_VolumePages", Model)
+    @Html.Partial("_TakeRatePages", Model)
 }
 
 @helper RenderPageIndexVisibility(int pageIndex)
@@ -181,12 +181,12 @@
 
 @helper RenderSelectedVehicle()
 {
-    if (!(Model.Volume.Document is EmptyOxoDocument)) {
-        @Model.Volume.Document.Name
+    if (!(Model.TakeRate.Document is EmptyOxoDocument)) {
+        @Model.TakeRate.Document.Name
     }
-    else if (!(Model.Volume.Vehicle is EmptyVehicle))
+    else if (!(Model.TakeRate.Vehicle is EmptyVehicle))
     {
-        @Model.Volume.Vehicle.FullDescription
+        @Model.TakeRate.Vehicle.FullDescription
     }
 }
 
