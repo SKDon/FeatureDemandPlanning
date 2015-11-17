@@ -1,5 +1,5 @@
 ﻿
-CREATE PROCEDURE [dbo].[Configuration_Edit] 
+CREATE PROCEDURE [dbo].[Fdp_Configuration_Edit] 
    @p_ConfigurationKey  nvarchar(50) 
   ,@p_Value  nvarchar(max) 
   ,@p_Description  nvarchar(max) 

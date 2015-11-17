@@ -1,5 +1,5 @@
 ﻿
-CREATE PROCEDURE [dbo].[Configuration_Delete] 
+CREATE PROCEDURE [dbo].[Fdp_Configuration_Delete] 
   @p_ConfigurationKey nvarchar(100)
 AS
 	

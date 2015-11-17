@@ -30,7 +30,7 @@ AS
 		FROM
 		(
 			SELECT
-				  F.ForecastId	AS ForecastId
+				  F.Id	AS ForecastId
 				, NULL			AS ForecastComparisonId
 				, FV.ProgrammeId	AS ProgrammeId
 				, T.TrimId
@@ -44,7 +44,7 @@ AS
 			JOIN Fdp_ForecastVehicle	AS FV	ON F.ForecastVehicleId	= FV.ForecastVehicleId
 			LEFT JOIN Fdp_TrimLevels	AS T	ON FV.ProgrammeId		= T.ProgrammeId
 			WHERE
-			(@ForecastId IS NULL OR F.FdpForecastId = @ForecastId)
+			(@ForecastId IS NULL OR F.Id = @ForecastId)
 		)
 		AS QUERY
 		PIVOT 
@@ -142,10 +142,10 @@ AS
 			
 			-- The trim levels of the comparison vehicle that have been mapped by the user
 			LEFT JOIN Fdp_ForecastComparisonTrim	AS FT	ON	C.ForecastComparisonId  = FT.ForecastComparisonId
-															AND T.[Level]				= FT.[Level]
-			LEFT JOIN Fdp_TrimLevels				AS T2	ON	FT.TrimId				= T2.TrimId
+															AND T.TrimId				= FT.ForecastComparisonTrimId
+			LEFT JOIN Fdp_TrimLevels				AS T2	ON	FT.ForecastComparisonTrimId				= T2.TrimId
 			WHERE
-			(@ForecastId IS NULL OR F.ForecastId = @ForecastId)
+			(@ForecastId IS NULL OR F.Id = @ForecastId)
 		)
 		AS QUERY
 		PIVOT 

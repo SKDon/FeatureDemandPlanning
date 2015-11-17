@@ -1,5 +1,5 @@
 ﻿
-CREATE PROCEDURE [dbo].[Configuration_GetMany]
+CREATE PROCEDURE [dbo].[Fdp_Configuration_GetMany]
  
 AS
 	
