@@ -1,0 +1,14 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.DerivativeMappingViewModel
+
+<li>
+    <a tabindex="-1" href="#" data-target="@Model.DerivativeMapping.FdpDerivativeMappingId" data-role="@((int)enums.DerivativeMappingAction.Delete)" data-content="@Model.DerivativeMapping.ImportDerivativeCode">
+        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Derivative Mapping '@Model.DerivativeMapping.ImportDerivativeCode' &gt; '@Model.DerivativeMapping.DerivativeCode'...
+    </a>
+</li>
+<li>
+    <a tabindex="-1" href="#" data-target="@Model.DerivativeMapping.FdpDerivativeMappingId" data-role="@((int)enums.DerivativeMappingAction.Copy)" data-content="@Model.DerivativeMapping.ImportDerivativeCode">
+        <span class="glyphicon glyphicon-copy pull-left"></span> Copy Derivative Mapping '@Model.DerivativeMapping.ImportDerivativeCode' to Gateway...
+    </a>
+</li>

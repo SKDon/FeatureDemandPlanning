@@ -1429,13 +1429,23 @@
     <Content Include="Views\Admin\Feature.cshtml" />
     <Content Include="Views\Admin\Trim.cshtml" />
     <Content Include="Views\DerivativeMapping\_Copy.cshtml" />
+    <Content Include="Views\Feature\_ContextMenu.cshtml" />
+    <Content Include="Views\Feature\_Delete.cshtml" />
+    <Content Include="Views\Feature\_Features.cshtml" />
+    <Content Include="Views\Feature\_Scripts.cshtml" />
+    <Content Include="Views\Feature\FeaturePage.cshtml" />
+    <Content Include="Views\FeatureMapping\_ContextMenu.cshtml" />
+    <Content Include="Views\FeatureMapping\_Copy.cshtml" />
+    <Content Include="Views\FeatureMapping\_Delete.cshtml" />
+    <Content Include="Views\FeatureMapping\_FeatureMappings.cshtml" />
+    <Content Include="Views\FeatureMapping\_Scripts.cshtml" />
+    <Content Include="Views\FeatureMapping\FeatureMappingPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="bin\" />
     <Folder Include="Content\css\" />
     <Folder Include="Scripts\DataTables\" />
-    <Folder Include="Views\Feature\" />
     <Folder Include="Views\Trim\" />
   </ItemGroup>
   <ItemGroup>
