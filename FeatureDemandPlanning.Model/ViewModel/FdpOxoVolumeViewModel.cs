@@ -48,20 +48,20 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         #region "Public Methods"
 
-        public static FdpOxoVolumeViewModel GetFullAndPartialViewModel(IDataContext context)
+        public static Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context)
         {
             return GetFullAndPartialViewModel(context, 
                                                 new VolumeFilter(), 
                                                 new PageFilter());
         }
-        public static FdpOxoVolumeViewModel GetFullAndPartialViewModel(IDataContext context, VolumeFilter filter, PageFilter pageFilter)
+        public static Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context, VolumeFilter filter, PageFilter pageFilter)
         {
             var volume = context.Volume.GetVolume(filter);
             return GetFullAndPartialViewModel(context, volume, pageFilter);
         }
-        public static FdpOxoVolumeViewModel GetFullAndPartialViewModel(IDataContext context, IVolume forVolume, PageFilter pageFilter)
+        public static async Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context, IVolume forVolume, PageFilter pageFilter)
         {
-            var modelBase = SharedModelBase.GetBaseModel(context);
+            var modelBase = GetBaseModel(context);
             var volumeModel = new FdpOxoVolumeViewModel(modelBase) 
             { 
                 Volume = (Volume)forVolume, 
@@ -72,7 +72,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                
             HydrateOxoDocument(context, volumeModel);
             HydrateFdpVolumeHeaders(context, volumeModel);
-            HydrateFdpVolumeHeadersFromOxoDocument(context, volumeModel);
+            await HydrateFdpVolumeHeadersFromOxoDocument(context, volumeModel);
             HydrateVehicle(context, volumeModel);
             HydrateLookups(context, forVolume, volumeModel);
             HydrateMarkets(context, volumeModel);

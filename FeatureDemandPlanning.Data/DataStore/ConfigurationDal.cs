@@ -11,7 +11,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
@@ -24,19 +23,19 @@ namespace FeatureDemandPlanning.DataStore
     
         public ConfigurationDataStore(string cdsid)
         {
-            this.CurrentCDSID = cdsid;
+            CurrentCDSID = cdsid;
         }
 
         public IEnumerable<ConfigurationItem> ConfigurationGetMany()
         {
             IEnumerable<ConfigurationItem> retVal = null;
-			using (IDbConnection conn = DbHelper.GetDBConnection())
+			using (var conn = DbHelper.GetDBConnection())
             {
 				try
 				{
 					var para = new DynamicParameters();
 					    
-					retVal = conn.Query<ConfigurationItem>("dbo.Configuration_GetMany", para, commandType: CommandType.StoredProcedure);
+					retVal = conn.Query<ConfigurationItem>("dbo.Fdp_Configuration_GetMany", para, commandType: CommandType.StoredProcedure);
 				}
 				catch (Exception ex)
 				{
@@ -51,13 +50,13 @@ namespace FeatureDemandPlanning.DataStore
         {
             ConfigurationItem retVal = null;
 
-			using (IDbConnection conn = DbHelper.GetDBConnection())
+			using (var conn = DbHelper.GetDBConnection())
 			{
 				try
 				{
 					var para = new DynamicParameters();
-					para.Add("@p_ConfigurationKey", key, dbType: DbType.String);
-					retVal = conn.Query<ConfigurationItem>("dbo.Configuration_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+					para.Add("@p_ConfigurationKey", key, DbType.String);
+					retVal = conn.Query<ConfigurationItem>("dbo.Fdp_Configuration_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
 				}
 				catch (Exception ex)
 				{
@@ -70,19 +69,19 @@ namespace FeatureDemandPlanning.DataStore
 
         public bool ConfigurationSave(ConfigurationItem obj)
         {
-            bool retVal = true;
-            string procName = "dbo.Configuration_Edit";
+            var retVal = true;
+            const string procName = "dbo.Fdp_Configuration_Edit";
 
-			using (IDbConnection conn = DbHelper.GetDBConnection())
+			using (var conn = DbHelper.GetDBConnection())
             {
 				try
 				{
 					var para = new DynamicParameters();
 
-					 para.Add("@p_ConfigurationKey", obj.ConfigurationKey, dbType: DbType.String, size: 50);
-					 para.Add("@p_Value", obj.Value, dbType: DbType.String, size: -1);
-					 para.Add("@p_Description", obj.Description, dbType: DbType.String, size: -1);
-                     para.Add("@p_DataType", obj.DataType, dbType: DbType.String, size: 50);
+					 para.Add("@p_ConfigurationKey", obj.ConfigurationKey, DbType.String, size: 50);
+					 para.Add("@p_Value", obj.Value, DbType.String, size: -1);
+					 para.Add("@p_Description", obj.Description, DbType.String, size: -1);
+                     para.Add("@p_DataType", obj.DataType, DbType.String, size: 50);
 
 					conn.Execute(procName, para, commandType: CommandType.StoredProcedure);
 				}
@@ -107,8 +106,8 @@ namespace FeatureDemandPlanning.DataStore
 				try
 				{
 					var para = new DynamicParameters();
-					para.Add("@p_ConfigurationKey", key, dbType: DbType.String);
-					conn.Execute("dbo.Configuration_Delete", para, commandType: CommandType.StoredProcedure);                   
+					para.Add("@p_ConfigurationKey", key, DbType.String);
+					conn.Execute("dbo.Fdp_Configuration_Delete", para, commandType: CommandType.StoredProcedure);                   
 				}
 				catch (Exception ex)
 				{

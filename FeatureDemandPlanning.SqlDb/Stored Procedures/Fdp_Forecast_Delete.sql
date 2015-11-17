@@ -10,7 +10,7 @@ AS
 	UPDATE Fdp_Forecast SET IsActive = 0 WHERE Id = @ForecastId;
 	
 	SELECT 
-		  F.Id
+		  F.Id AS ForecastId
 		, F.CreatedOn
 		, F.CreatedBy
 		, F.VehicleId
@@ -24,6 +24,6 @@ AS
 		
 	FROM Fdp_Forecast_VW AS F
 	WHERE
-	ForecastId = @ForecastId;
+	F.Id = @ForecastId;
 	
 	

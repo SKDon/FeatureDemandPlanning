@@ -86,14 +86,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
             }
         }
 
-        /// <summary>
-        /// Gets or sets the configuration information. This is used to determine the behaviour of the client-side scripting model
-        /// </summary>
-        /// <value>
-        /// The configuration.
-        /// </value>
-        public dynamic Configuration { get; set; }
-
         #endregion
 
         #region "Public Methods"

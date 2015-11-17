@@ -22,8 +22,6 @@ namespace FeatureDemandPlanning.Model
         public string Code { get; set; }
         public string Description { get; set; }
         public string ListName { get; set; }
-        public int DisplayOrder { get; set; }
-        public bool Active { get; set; }
            
         // A blank constructor
         public ReferenceList() {;}

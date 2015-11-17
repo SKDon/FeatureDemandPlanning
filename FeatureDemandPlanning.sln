@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureDemandPlanning.Wcf.T
 		{786AC5AA-76D4-465E-81C2-AF0E77EBFA5A} = {786AC5AA-76D4-465E-81C2-AF0E77EBFA5A}
 	EndProjectSection
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "FeatureDemandPlanning.SqlDb", "FeatureDemandPlanning.SqlDb\FeatureDemandPlanning.SqlDb.sqlproj", "{A5529CD6-E42A-4EA1-A076-043BED22167C}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "FeatureDemandPlanning.FdpSqlDb", "FeatureDemandPlanning.SqlDb\FeatureDemandPlanning.FdpSqlDb.sqlproj", "{A5529CD6-E42A-4EA1-A076-043BED22167C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,7 +73,6 @@ Global
 		{5759E6B1-FDF8-425B-94D4-6B3B7B1307F1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Development|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Development|Any CPU.Build.0 = Debug|Any CPU
 		{A5529CD6-E42A-4EA1-A076-043BED22167C}.Development|Any CPU.Deploy.0 = Debug|Any CPU
