@@ -185,7 +185,12 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\TrimController.cs" />
+    <Compile Include="Controllers\TrimMappingController.cs" />
+    <Compile Include="Controllers\FeatureController.cs" />
     <Compile Include="Controllers\DerivativeController.cs" />
+    <Compile Include="Controllers\MarketMappingController.cs" />
+    <Compile Include="Controllers\FeatureMappingController.cs" />
     <Compile Include="Controllers\DerivativeMappingController.cs" />
     <Compile Include="Controllers\EngineCodeMappingController.cs" />
     <Compile Include="Controllers\ForecastController.cs" />
@@ -892,6 +897,15 @@
     <Content Include="Scripts\Editor\oxo-editor-trm.js" />
     <Content Include="Scripts\Editor\oxo-editor-validate.js" />
     <Content Include="Scripts\Editor\oxo-model-filter.js" />
+    <Content Include="Scripts\FeatureMapping\copy.js" />
+    <Content Include="Scripts\FeatureMapping\delete.js" />
+    <Content Include="Scripts\FeatureMapping\model.js" />
+    <Content Include="Scripts\FeatureMapping\init.js" />
+    <Content Include="Scripts\FeatureMapping\page.js" />
+    <Content Include="Scripts\Feature\delete.js" />
+    <Content Include="Scripts\Feature\model.js" />
+    <Content Include="Scripts\Feature\init.js" />
+    <Content Include="Scripts\Feature\page.js" />
     <Content Include="Scripts\Forecast\comparisonvehicles.js" />
   </ItemGroup>
   <ItemGroup>
@@ -1235,6 +1249,11 @@
     <Content Include="Scripts\jquery.simplePager.js" />
     <Content Include="Scripts\jquery.smartmenu.js" />
     <Content Include="Scripts\jquery.tipsy.js" />
+    <Content Include="Scripts\MarketMapping\copy.js" />
+    <Content Include="Scripts\MarketMapping\delete.js" />
+    <Content Include="Scripts\MarketMapping\init.js" />
+    <Content Include="Scripts\MarketMapping\model.js" />
+    <Content Include="Scripts\MarketMapping\page.js" />
     <Content Include="Scripts\Shared\contextmenu.js" />
     <Content Include="Scripts\Shared\cookie.js" />
     <Content Include="Scripts\Shared\modal.js" />
@@ -1296,6 +1315,15 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\Shared\namespace.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\TrimMapping\copy.js" />
+    <Content Include="Scripts\TrimMapping\delete.js" />
+    <Content Include="Scripts\TrimMapping\init.js" />
+    <Content Include="Scripts\TrimMapping\model.js" />
+    <Content Include="Scripts\TrimMapping\page.js" />
+    <Content Include="Scripts\Trim\delete.js" />
+    <Content Include="Scripts\Trim\init.js" />
+    <Content Include="Scripts\Trim\model.js" />
+    <Content Include="Scripts\Trim\page.js" />
     <Content Include="Scripts\User\addnewuseraction.js" />
     <Content Include="Scripts\User\disableuseraction.js" />
     <Content Include="Scripts\User\manageprogrammesaction.js" />
@@ -1388,14 +1416,14 @@
     <Content Include="Views\Forecast\ForecastPage.cshtml" />
     <Content Include="Views\Forecast\_Scripts.cshtml" />
     <Content Include="Views\News\NewsPage.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\SiteMapTitleHelperModel.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\SiteMapPathHelperModel.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\SiteMapNodeModelList.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\SiteMapNodeModel.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\SiteMapHelperModel.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\MetaRobotsHelperModel.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\MenuHelperModel.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\CanonicalHelperModel.cshtml" />
+    <Content Include="Views\DisplayTemplates\SiteMapTitleHelperModel.cshtml" />
+    <Content Include="Views\DisplayTemplates\SiteMapPathHelperModel.cshtml" />
+    <Content Include="Views\DisplayTemplates\SiteMapNodeModelList.cshtml" />
+    <Content Include="Views\DisplayTemplates\SiteMapNodeModel.cshtml" />
+    <Content Include="Views\DisplayTemplates\SiteMapHelperModel.cshtml" />
+    <Content Include="Views\DisplayTemplates\MetaRobotsHelperModel.cshtml" />
+    <Content Include="Views\DisplayTemplates\MenuHelperModel.cshtml" />
+    <Content Include="Views\DisplayTemplates\CanonicalHelperModel.cshtml" />
     <Content Include="Views\Volume\TakeRatePage.cshtml" />
     <Content Include="Views\Volume\_Scripts.cshtml" />
     <Content Include="Views\Import\_Modal.cshtml" />
@@ -1433,13 +1461,29 @@
     <Content Include="Views\FeatureMapping\_FeatureMappings.cshtml" />
     <Content Include="Views\FeatureMapping\_Scripts.cshtml" />
     <Content Include="Views\FeatureMapping\FeatureMappingPage.cshtml" />
+    <Content Include="Views\MarketMapping\_ContextMenu.cshtml" />
+    <Content Include="Views\MarketMapping\_Copy.cshtml" />
+    <Content Include="Views\MarketMapping\_Delete.cshtml" />
+    <Content Include="Views\MarketMapping\_MarketMappings.cshtml" />
+    <Content Include="Views\MarketMapping\_Scripts.cshtml" />
+    <Content Include="Views\MarketMapping\MarketMappingPage.cshtml" />
+    <Content Include="Views\Trim\_ContextMenu.cshtml" />
+    <Content Include="Views\Trim\_Delete.cshtml" />
+    <Content Include="Views\Trim\_Trim.cshtml" />
+    <Content Include="Views\Trim\_Scripts.cshtml" />
+    <Content Include="Views\Trim\TrimPage.cshtml" />
+    <Content Include="Views\TrimMapping\_ContextMenu.cshtml" />
+    <Content Include="Views\TrimMapping\_Copy.cshtml" />
+    <Content Include="Views\TrimMapping\_Delete.cshtml" />
+    <Content Include="Views\TrimMapping\_TrimMappings.cshtml" />
+    <Content Include="Views\TrimMapping\_Scripts.cshtml" />
+    <Content Include="Views\TrimMapping\TrimMappingPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="bin\" />
     <Folder Include="Content\css\" />
     <Folder Include="Scripts\DataTables\" />
-    <Folder Include="Views\Trim\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -1471,7 +1515,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>63119</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

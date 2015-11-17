@@ -1,0 +1,28 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.DerivativeMappingViewModel
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Derivative Mappings</h3>
+    </div>
+    <div class="panel-body">
+        <table id="@(Model.IdentifierPrefix)_DerivativeMappingTable" class="table table-hover table-striped table-bordered dataTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th class="text-center">Created On</th>
+                    <th>Created By</th>
+                    <th>Programme</th>
+                    <th class="text-center">Gateway</th>
+                    <th class="text-center">Import Derivative</th>
+                    <th class="text-center">Mapped Derivative</th>
+                    <th class="text-center">Engine</th>
+                    <th class="text-center">Body</th>
+                    <th class="text-center">Transmission</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>

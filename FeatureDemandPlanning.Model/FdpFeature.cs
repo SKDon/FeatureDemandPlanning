@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Extensions;
 
 namespace FeatureDemandPlanning.Model
 {
     public class FdpFeature : Feature
     {
         public int? ProgrammeId { get; set; }
+        public Programme Programme { get; set; }
         public string Gateway { get; set; }
 
         public int? FdpFeatureId { get; set; }
@@ -17,9 +15,22 @@ namespace FeatureDemandPlanning.Model
 
         public DateTime? UpdatedOn { get; set; }
 
-        public FdpFeature() : base()
+        public FdpFeature()
         {
             IsActive = true;
+            Programme = new EmptyProgramme();
+        }
+        public virtual string[] ToJQueryDataTableResult()
+        {
+            return new[] 
+            { 
+                FdpFeatureId.GetValueOrDefault().ToString(),
+                CreatedOn.GetValueOrDefault().ToString("dd/MM/yyyy"),
+                CreatedBy,
+                Programme.GetDisplayString(),
+                Gateway,
+                BrandDescription
+            };
         }
     }
 }

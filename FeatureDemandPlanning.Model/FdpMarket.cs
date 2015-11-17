@@ -2,10 +2,10 @@
 
 namespace FeatureDemandPlanning.Model
 {
-    public class FdpTrim : ModelTrim
+    public class FdpMarket : Market
     {
-        public int? FdpTrimId { get; set; }
-        public new int? ProgrammeId { get; set; }
+        public int? FdpMarketId { get; set; }
+        public int? ProgrammeId { get; set; }
         public Programme Programme { get; set; }
         public string Gateway { get; set; }
 
@@ -13,13 +13,13 @@ namespace FeatureDemandPlanning.Model
         {
             return new[] 
             { 
-                FdpTrimId.GetValueOrDefault().ToString(),
+                FdpMarketId.GetValueOrDefault().ToString(),
                 CreatedOn.GetValueOrDefault().ToString("dd/MM/yyyy"),
                 CreatedBy,
                 Programme.GetDisplayString(),
                 Gateway,
-                Name,
-                Level
+                GroupName,
+                Name
             };
         }
     }

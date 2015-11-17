@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Extensions;
 using FeatureDemandPlanning.Model.Parameters;
 
@@ -19,15 +15,17 @@ namespace FeatureDemandPlanning.Model
         public string CreatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public string UpdatedBy { get; set; }
+        public bool IsActive { get; set; }
 
         public FdpDerivative()
         {
             Programme = new EmptyProgramme();
+            IsActive = true;
         }
 
         public virtual string[] ToJQueryDataTableResult()
         {
-            return new string[] 
+            return new[] 
             { 
                 FdpDerivativeId.GetValueOrDefault().ToString(),
                 CreatedOn.GetValueOrDefault().ToString("dd/MM/yyyy"),
