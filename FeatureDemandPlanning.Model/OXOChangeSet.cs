@@ -19,8 +19,6 @@ namespace FeatureDemandPlanning.Model
 {
     public class ChangeSet : BusinessObject
     {
-        private string _updatedBy;  
-
         public int SetId { get; set; } 
         public int OXODocId { get; set; }
         public string Section { get; set; }
@@ -31,24 +29,14 @@ namespace FeatureDemandPlanning.Model
 
         public string VersionLabel
         {
-            get { return String.Format("v{0:N1}", VersionId); }
+            get { return string.Format("v{0:N1}", VersionId); }
             
-        }
-
-        public new string UpdatedBy
-        {
-            get { return _updatedBy; }
-            set { _updatedBy = value; }
         }
 
         public new string LastUpdated
         {
             get {
-
-                if (base.LastUpdated.HasValue)
-                    return base.LastUpdated.Value.ToString("yyyy-MM-dd HH:mm");
-                else
-                    return "";
+                return base.LastUpdated.HasValue ? base.LastUpdated.Value.ToString("yyyy-MM-dd HH:mm") : "";
             }
         }
 
@@ -74,17 +62,14 @@ namespace FeatureDemandPlanning.Model
 
         public string VersionLabel
         {
-            get { return String.Format("v{0:N1}", VersionId); }
+            get { return string.Format("v{0:N1}", VersionId); }
 
         }
     }
 
     public class ChangeSetDownload : BusinessObject
     {
-        private string _updatedBy;  
-
         public int SetId { get; set; }
-        public DateTime LastUpdated { get; set; }
         public string MarketName { get; set; }
         public string ModelName { get; set; }
         public string FeatureName { get; set; }
@@ -104,22 +89,14 @@ namespace FeatureDemandPlanning.Model
 
         public string VersionLabel
         {
-            get { return String.Format("v{0:N1}", VersionId); }
+            get { return string.Format("v{0:N1}", VersionId); }
 
         }
 
         public string LastUpdatedLabel
         {
-            get { return LastUpdated.ToShortDateString() + " " + LastUpdated.ToShortTimeString(); }
+            get { return LastUpdated.GetValueOrDefault().ToString("dd/MM/yyyy HH:mm"); }
 
         }
-
-        public new string UpdatedBy
-        {
-            get { return _updatedBy; }
-            set { _updatedBy = value; }
-        }
-
-
     }
 }

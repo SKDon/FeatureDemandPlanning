@@ -57,7 +57,7 @@ namespace FeatureDemandPlanning.Controllers
 
             if (context != null && context.User != null && context.User.Identity != null)
             {
-                return AppHelper.GetWindowsID(context.User);
+                return AppHelper.GetWindowsId(context.User);
             }
             return Request.ServerVariables["REMOTE_USER"];
         }

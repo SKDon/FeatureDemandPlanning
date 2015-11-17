@@ -8,27 +8,17 @@
  *===============================================================================
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using FeatureDemandPlanning.Model.Dapper;
-
 namespace FeatureDemandPlanning.Model
 {
     public class ForecastComparison : BusinessObject
     {
-        public int Id { get; set; } 
-            public int ForecastComparisonId { get; set; }
-            public int ForecastId { get; set; }
-            public int ForecastVehicleId { get; set; }
-            public DateTime CreatedOn { get; set; }
-            public string CreatedBy { get; set; }
-            public int SortOrder { get; set; }
-            public bool IsActive { get; set; }
-           
+        public int ForecastComparisonId { get; set; }
+        public int ForecastId { get; set; }
+        public int ForecastVehicleId { get; set; }
+        public int SortOrder { get; set; }
+        public bool IsActive { get; set; }
+
         // A blank constructor
-        public ForecastComparison() {;}
+        public ForecastComparison() { ;}
     }
 }

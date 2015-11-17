@@ -9,19 +9,12 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using FeatureDemandPlanning.Model.Dapper;
 using System.ComponentModel.DataAnnotations;
 
 namespace FeatureDemandPlanning.Model
 {
     public class ChangeDiary : BusinessObject
     {
-        [Required]
-        public int Id { get; set; }
         [Required]
         public int OXODocId { get; set; }
         [Required]

@@ -8,24 +8,16 @@
  *===============================================================================
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using FeatureDemandPlanning.Model.Dapper;
-
 namespace FeatureDemandPlanning.Model
 {
     public class ConfigurationItem : BusinessObject
     {
-        public int Id { get; set; } 
-            public string ConfigurationKey { get; set; }
-            public string Value { get; set; }
-            public string Description { get; set; }
-            public string DataType { get; set; }
-           
+        public string ConfigurationKey { get; set; }
+        public string Value { get; set; }
+        public string Description { get; set; }
+        public string DataType { get; set; }
+
         // A blank constructor
-        public ConfigurationItem() {;}
+        public ConfigurationItem() { ;}
     }
 }

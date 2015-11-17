@@ -194,7 +194,6 @@
     <Compile Include="Controllers\ImportExceptionController.cs" />
     <Compile Include="Controllers\MarketController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
-    <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ValidationError.cs" />
     <Compile Include="Controllers\ValidationErrorItem.cs" />
@@ -1227,7 +1226,6 @@
     <Content Include="Scripts\Import\exceptionsinit.js" />
     <Content Include="Scripts\Import\upload.js" />
     <Content Include="Scripts\Import\uploadaction.js" />
-    <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\jquery.dataTables.fixColumn.js" />
@@ -1243,7 +1241,6 @@
     <Content Include="Scripts\Shared\oxo-master.js" />
     <Content Include="Scripts\Shared\pager.js" />
     <Content Include="Scripts\Shared\vehicle.js" />
-    <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Extensions\DataTables-1.10.7\Contributing.md" />
     <Content Include="Extensions\DataTables-1.10.7\examples\resources\examples.php" />
@@ -1291,17 +1288,13 @@
     <Content Include="Scripts\Forecast\forecast.js" />
     <Content Include="Scripts\Import\importqueue.js" />
     <Content Include="Scripts\Import\importqueuepage.js" />
-    <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.form.min.js" />
-    <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\Shared\namespace.js" />
-    <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\User\addnewuseraction.js" />
     <Content Include="Scripts\User\disableuseraction.js" />

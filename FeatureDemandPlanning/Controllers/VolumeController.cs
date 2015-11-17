@@ -78,24 +78,24 @@ namespace FeatureDemandPlanning.Controllers
         {
             PageFilter.PageIndex = pageIndex;
          
-            var model = FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volume, PageFilter);
-            var view = string.Empty;
+            var model = FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volume, PageFilter).Result;
+            string view;
 
             switch ((VolumePage)pageIndex)
             {
-                case FeatureDemandPlanning.Model.Enumerations.VolumePage.Vehicle:
+                case Model.Enumerations.VolumePage.Vehicle:
                     view = "_Vehicle";
                     break;
-                case FeatureDemandPlanning.Model.Enumerations.VolumePage.ImportedData:
+                case Model.Enumerations.VolumePage.ImportedData:
                     view = "_ImportedData";
                     break;
-                case FeatureDemandPlanning.Model.Enumerations.VolumePage.OxoDocument:
+                case Model.Enumerations.VolumePage.OxoDocument:
                     view = "_OXODocuments";
                     break;
-                case FeatureDemandPlanning.Model.Enumerations.VolumePage.Confirm:
+                case Model.Enumerations.VolumePage.Confirm:
                     view = "_Confirm";
                     break;
-                case FeatureDemandPlanning.Model.Enumerations.VolumePage.VolumeData:
+                case Model.Enumerations.VolumePage.VolumeData:
                     view = "_VolumeData";
                     ProcessVolumeData(model.Volume);
                     break;
@@ -110,7 +110,7 @@ namespace FeatureDemandPlanning.Controllers
         public ActionResult Validate(Volume volumeToValidate,
                                      VolumeValidationSection sectionToValidate = VolumeValidationSection.All)
         {
-            var volumeModel = FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volumeToValidate, PageFilter);
+            var volumeModel = FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volumeToValidate, PageFilter).Result;
             var validator = new VolumeValidator(volumeModel.Volume);
             var ruleSets = VolumeValidator.GetRulesetsToValidate(sectionToValidate);
             var jsonResult = new JsonResult()
@@ -119,23 +119,21 @@ namespace FeatureDemandPlanning.Controllers
             };
 
             var results = validator.Validate(volumeModel.Volume, ruleSet: ruleSets);
-            if (!results.IsValid)
-            {
-                var errorModel = results.Errors
-                    .Select(e => new ValidationError(new ValidationErrorItem
-                        {
-                            ErrorMessage = e.ErrorMessage,
-                            CustomState = e.CustomState
-                        })
-                        {
-                            key = e.PropertyName
-                        });
-
-                jsonResult = new JsonResult()
+            if (results.IsValid) return jsonResult;
+            var errorModel = results.Errors
+                .Select(e => new ValidationError(new ValidationErrorItem
                 {
-                    Data = new ValidationMessage(false, errorModel)
-                };
-            }
+                    ErrorMessage = e.ErrorMessage,
+                    CustomState = e.CustomState
+                })
+                {
+                    key = e.PropertyName
+                });
+
+            jsonResult = new JsonResult()
+            {
+                Data = new ValidationMessage(false, errorModel)
+            };
             return jsonResult;
         }
 
@@ -145,35 +143,35 @@ namespace FeatureDemandPlanning.Controllers
             return PartialView("_ValidationMessage", message);
         }
 
-        [HttpGet]
-        public ActionResult Document(int? oxoDocId, 
-                                     int? marketGroupId, 
-                                     int? marketId,
-                                     TakeRateResultMode resultsMode = TakeRateResultMode.PercentageTakeRate)
-        {
-            ViewBag.PageTitle = "OXO Volume";
+        //[HttpGet]
+        //public ActionResult Document(int? oxoDocId, 
+        //                             int? marketGroupId, 
+        //                             int? marketId,
+        //                             TakeRateResultMode resultsMode = TakeRateResultMode.PercentageTakeRate)
+        //{
+        //    ViewBag.PageTitle = "OXO Volume";
 
-            var filter = new VolumeFilter()
-            {
-                OxoDocId = oxoDocId,
-                MarketGroupId = marketGroupId,
-                MarketId = marketId,
-                Mode = resultsMode,
-            };
-            return View("Document", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, filter, PageFilter));
-        }
+        //    var filter = new VolumeFilter()
+        //    {
+        //        OxoDocId = oxoDocId,
+        //        MarketGroupId = marketGroupId,
+        //        MarketId = marketId,
+        //        Mode = resultsMode,
+        //    };
+        //    return View("Document", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, filter, PageFilter));
+        //}
 
-        [HttpPost]
-        public ActionResult OxoDocuments(Volume volume)
-        {
-            return PartialView("_OxoDocuments", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volume, PageFilter));
-        }
+        //[HttpPost]
+        //public ActionResult OxoDocuments(Volume volume)
+        //{
+        //    return PartialView("_OxoDocuments", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volume, PageFilter));
+        //}
 
-        [HttpPost]
-        public ActionResult AvailableImports(Volume volume)
-        {
-            return PartialView("_ImportedData", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volume, PageFilter));
-        }
+        //[HttpPost]
+        //public ActionResult AvailableImports(Volume volume)
+        //{
+        //    return PartialView("_ImportedData", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volume, PageFilter));
+        //}
 
         #region "Private Methods"
 

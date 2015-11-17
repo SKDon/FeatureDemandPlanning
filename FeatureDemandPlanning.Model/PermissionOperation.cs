@@ -8,18 +8,10 @@
  *===============================================================================
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using FeatureDemandPlanning.Model.Dapper;
-
 namespace FeatureDemandPlanning.Model
 {
     public class PermissionOperation : BusinessObject
     {
-        public int Id { get; set; } 
             public int FdpPermissionOperationId { get; set; }
             public string FdpPermissionObjectType { get; set; }
             public string Operation { get; set; }

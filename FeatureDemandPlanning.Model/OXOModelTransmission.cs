@@ -25,7 +25,6 @@ namespace FeatureDemandPlanning.Model
         public int ProgrammeId { get; set; }
         public string Type { get; set; }
         public string Drivetrain { get; set; }
-        public bool Active { get; set; }
             
         // A blank constructor
         public ModelTransmission() {;}

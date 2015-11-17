@@ -28,8 +28,6 @@ namespace FeatureDemandPlanning.Model
         public string Turbo { get; set; }
         public string FuelType { get; set; }
         public string Power { get; set; }
-     //   public string Electrification { get; set; }
-        public bool Active { get; set; }
                       
         // A blank constructor
         public ModelEngine() {;}

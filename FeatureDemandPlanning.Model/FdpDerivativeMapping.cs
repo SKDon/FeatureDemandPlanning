@@ -9,12 +9,9 @@ namespace FeatureDemandPlanning.Model
         public string ImportDerivativeCode { get; set; }
         public bool? IsMappedDerivative { get; set; }
 
-        public FdpDerivativeMapping() : base()
+        public new string[] ToJQueryDataTableResult()
         {
-        }
-        public string[] ToJQueryDataTableResult()
-        {
-            return new string[] 
+            return new[] 
             { 
                 FdpDerivativeMappingId.GetValueOrDefault().ToString(),
                 CreatedOn.GetValueOrDefault().ToString("dd/MM/yyyy"),

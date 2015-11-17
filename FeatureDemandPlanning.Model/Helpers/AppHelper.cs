@@ -16,8 +16,8 @@ namespace FeatureDemandPlanning.Model.Helpers
         {
             try
             {
-                string cs = "OXOApp";
-                EventLog elog = new EventLog();
+                var cs = "OXOApp";
+                var elog = new EventLog();
                 if (!EventLog.SourceExists(cs))
                 {
                     EventLog.CreateEventSource(cs, cs);
@@ -26,53 +26,48 @@ namespace FeatureDemandPlanning.Model.Helpers
                 elog.EnableRaisingEvents = true;
                 elog.WriteEntry(methodName + ':' + message);
             }
-            catch (Exception ex) { ;}
-
+            catch
+            {
+                // ignored
+            }
         }
 
-        public static string GetWindowsID(System.Security.Principal.IPrincipal user)
+        public static string GetWindowsId(System.Security.Principal.IPrincipal user)
         {
-            string retVal;
-
-            if (user.Identity.Name.Contains('\\'))
-                retVal = user.Identity.Name.Split('\\')[1];
-            else
-                retVal = user.Identity.Name;
+            var retVal = user.Identity.Name.Contains('\\') ? user.Identity.Name.Split('\\')[1] : user.Identity.Name;
 
             return retVal.ToLower();
-
         }
 
-        public static DateTime UnixTimeStampToDateTime(Int64 unixTimeStamp)
+        public static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch
-            DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
             dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToUniversalTime();
-            DateTime gmtDateTime = DateTime.SpecifyKind(dtDateTime, DateTimeKind.Utc).ToLocalTime();
+            var gmtDateTime = DateTime.SpecifyKind(dtDateTime, DateTimeKind.Utc).ToLocalTime();
 
             return gmtDateTime;
         }
 
-        public static Int64 DateTimeToUnixTimeStamp(DateTime date)
+        public static long DateTimeToUnixTimeStamp(DateTime date)
         {
-            Int64 retVal;
-            DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
             date = date.ToUniversalTime();
-            retVal = (Int64)date.Subtract(dtDateTime).TotalSeconds;
+            var retVal = (long)date.Subtract(dtDateTime).TotalSeconds;
             return retVal;
         }
 
         public static string ToJson(object obj)
         {
-            string retVal = "";
+            var retVal = "";
 
             try
             {
                 retVal = new JavaScriptSerializer().Serialize(obj);
             }
-            catch (Exception ex)
+            catch
             {
-                ;
+                // ignored
             }
             return retVal;
         }
