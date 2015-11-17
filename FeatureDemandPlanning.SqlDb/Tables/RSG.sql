@@ -1,8 +1,0 @@
-﻿CREATE TABLE [dbo].[RSG] (
-    [UID]  VARCHAR (50)  NOT NULL,
-    [Name] VARCHAR (500) NOT NULL,
-    [PS]   DATETIME      NULL,
-    [J1]   DATETIME      NULL,
-    CONSTRAINT [PK_RSG] PRIMARY KEY CLUSTERED ([UID] ASC)
-);
-

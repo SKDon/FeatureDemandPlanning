@@ -41,13 +41,13 @@ AS
 		, G.Gateway
 		, G.Display_Order
 		
-	FROM Fdp_VolumeHeader		AS V
-	JOIN Fdp_OxoDoc				AS D	ON V.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-	JOIN ProgrammePermissions	AS PP	ON V.ProgrammeId	= PP.ProgrammeId
-	JOIN OXO_Programme_VW		AS P	ON V.ProgrammeId	= P.Id
-	JOIN OXO_Gateway			AS G	ON V.Gateway		= G.Gateway
-	LEFT JOIN Fdp_Import		AS I1	ON V.FdpImportId	= I1.FdpImportId
-	LEFT JOIN ImportQueue_VW	AS I	ON I1.ImportQueueId	= I.ImportQueueId
+	FROM Fdp_VolumeHeader			AS V
+	JOIN Fdp_OxoDoc					AS D	ON V.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
+	JOIN ProgrammePermissions		AS PP	ON V.ProgrammeId		= PP.ProgrammeId
+	JOIN OXO_Programme_VW			AS P	ON V.ProgrammeId		= P.Id
+	JOIN OXO_Gateway				AS G	ON V.Gateway			= G.Gateway
+	LEFT JOIN Fdp_Import			AS I1	ON V.FdpImportId		= I1.FdpImportId
+	LEFT JOIN Fdp_ImportQueue_VW	AS I	ON I1.FdpImportQueueId	= I.FdpImportQueueId
 	WHERE
 	D.OXODocId = @OxoDocId
 	ORDER BY
