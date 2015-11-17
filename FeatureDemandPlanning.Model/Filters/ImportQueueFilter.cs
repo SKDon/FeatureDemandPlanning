@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Parameters;
 
 namespace FeatureDemandPlanning.Model.Filters
 {
@@ -15,6 +16,7 @@ namespace FeatureDemandPlanning.Model.Filters
         public ImportAction Action { get; set; }
         public enums.ImportStatus ImportStatus { get; set; }
         public enums.ImportExceptionType ExceptionType { get; set;}
+        public bool? IsActive { get; set; }
         
         public ImportQueueFilter()
         {
@@ -26,13 +28,19 @@ namespace FeatureDemandPlanning.Model.Filters
         {
             ImportQueueId = importQueueId;
         }
-
         public static ImportQueueFilter FromExceptionId(int exceptionId)
         {
             return new ImportQueueFilter()
             {
                 ExceptionId = exceptionId,
                 Action = ImportAction.Exception
+            };
+        }
+        public static ImportQueueFilter FromParameters(ImportParameters Parameters)
+        {
+            return new ImportQueueFilter()
+            {
+                ImportQueueId = Parameters.ImportQueueId
             };
         }
     }

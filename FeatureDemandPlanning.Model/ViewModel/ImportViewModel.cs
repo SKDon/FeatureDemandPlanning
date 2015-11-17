@@ -19,8 +19,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         public ImportQueue CurrentImport { get; set; }
         public ImportError CurrentException { get; set; }
-        public DerivativeMapping CurrentDerivativeMapping { get; set; }
-        public TrimMapping CurrentTrimMapping { get; set; }
         public enums.ImportAction CurrentAction { get; set; }
         public enums.ImportAction CurrentImportAction { get; set; }
         public string CurrentFeatureGroup { get; set; }
@@ -277,8 +275,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
  	        CurrentImport = new EmptyImportQueue();
             CurrentException = new EmptyImportError();
-            CurrentDerivativeMapping = new EmptyDerivativeMapping();
-            CurrentTrimMapping = new EmptyTrimMapping();
             CurrentAction = enums.ImportAction.NotSet;
             CurrentFeatureGroup = string.Empty;
             CurrentFeatureSubGroup = new EmptyFeatureGroup();

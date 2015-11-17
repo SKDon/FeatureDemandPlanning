@@ -16,31 +16,31 @@ namespace FeatureDemandPlanning.Model.Interfaces
     {
         Task<ImportQueue> GetImportQueue(ImportQueueFilter filter);
         Task<PagedResults<ImportQueue>> ListImportQueue(ImportQueueFilter filter);
-        Task<ImportQueue> SaveImportQueue(ImportQueue importItem);
-        Task<ImportError> SaveError(ImportError importError);
+        ImportQueue SaveImportQueue(ImportQueue importItem);
 
         Task<ImportStatus> GetProcessStatus(ImportQueue importItem);
-        Task<ImportResult> ProcessImportQueue(ImportQueue importItem);
-        Task<ImportResult> ProcessImportQueue();
-
+        ImportResult ProcessImportQueue(ImportQueue queuedItem);
+        
         Task<ImportError> GetException(ImportQueueFilter filter);
         Task<PagedResults<ImportError>> ListExceptions(ImportQueueFilter filter);
 
         Task<ImportError> IgnoreException(ImportQueueFilter filter);
+        
+        Task<ImportError> MapMarket(ImportQueueFilter filter, MarketMapping mapping);
 
-        Task<ImportError> AddMarket(ImportQueueFilter filter, string market);
-        Task<ImportError> MapMarket(ImportQueueFilter filter, string market, string marketToMapTo);
+        Task<ImportError> AddDerivative(ImportQueueFilter filter, FdpDerivative derivativeToAdd);
+        Task<ImportError> MapDerivative(ImportQueueFilter filter, FdpDerivativeMapping derivativeMapping);
 
-        Task<ImportError> AddDerivative(ImportQueueFilter filter, Model derivativeToAdd);
-        Task<ImportError> MapDerivative(ImportQueueFilter filter,
-                                        Model derivativeToMap,
-                                        Model derivativeToMapTo);
+        Task<ImportError> AddFeature(ImportQueueFilter filter, FdpFeature featureToAdd);
+        Task<ImportError> AddSpecialFeature(ImportQueueFilter filter, FdpSpecialFeature specialFeature);
+        Task<ImportError> MapFeature(ImportQueueFilter filter, FeatureMapping featureMapping);
 
-        Task<ImportError> AddFeature(ImportQueueFilter filter, Feature featureToAdd);
-        Task<ImportError> MapFeature(ImportQueueFilter filter, Feature featureToMap, Feature featureToMapTo);
+        Task<ImportError> AddTrim(ImportQueueFilter filter, FdpTrim trimToAdd);
+        Task<ImportError> MapTrim(ImportQueueFilter filter, TrimMapping trimMapping);
 
         Task<IEnumerable<ImportExceptionType>> ListExceptionTypes(ImportQueueFilter filter);
 
         Task<IEnumerable<ImportStatus>> ListImportStatuses();
+        Task<ImportError> SaveException(ImportQueueFilter filter);
     }
 }

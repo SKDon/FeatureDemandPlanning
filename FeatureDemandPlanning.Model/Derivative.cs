@@ -12,8 +12,6 @@
         public ModelEngine Engine { get; set; }
         public ModelTransmission Transmission { get; set; }
 
-        public bool IsMappedDerivative { get; set; }
-
         public string Name
         {
             get

@@ -91,7 +91,7 @@ page.ImportQueuePage = function (models) {
         var hasErrorsIndex = 6;
         var errorCountIndex = 7;
 
-        $("#tblImportQueue").DataTable({
+        $(".dataTable").DataTable({
             "serverSide": true,
             "responsive": true,
             "pagingType": "full_numbers",

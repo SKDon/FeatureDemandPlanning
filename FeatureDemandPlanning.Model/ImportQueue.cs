@@ -1,6 +1,7 @@
 ﻿using FeatureDemandPlanning.Model.Parameters;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace FeatureDemandPlanning.Model
     public class ImportQueue
     {
         public int? ImportQueueId { get; set; }
+        public int? ImportId { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public string CreatedBy { get; set; }
@@ -43,6 +45,8 @@ namespace FeatureDemandPlanning.Model
         public int? TotalPages { get; set; }
         public int? TotalRecords { get; set; }
 
+        public DataTable ImportData { get; set; }
+
         public ImportQueue()
         {
             ImportType = new ImportType() { ImportTypeDefinition = enums.ImportType.PPO };
@@ -54,7 +58,7 @@ namespace FeatureDemandPlanning.Model
                 ImportStatus = new ImportStatus() { ImportStatusCode = newStatus };
         }
 
-        public static ImportQueue FromImportParameters(ImportParameters parameters)
+        public static ImportQueue FromParameters(ImportParameters parameters)
         {
             return new ImportQueue()
             {

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using FeatureDemandPlanning.DataStore.DataStore;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
+using System.Data.SqlClient;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -20,7 +21,48 @@ namespace FeatureDemandPlanning.DataStore
         {
             this.CurrentCDSID = cdsid;
         }
+        public ImportQueue ImportQueueBulkImport(ImportQueue importQueue)
+        {
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                using (var bulk = new SqlBulkCopy((SqlConnection)conn))
+                {
+                    bulk.DestinationTableName = "dbo.Fdp_ImportData";
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(0, "FdpImportId"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(1, "LineNumber"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(2, "NSC or Importer Description (Vista Market)"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(3, "Country Description"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(4, "Derivative Code"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(5, "Trim Pack Description"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(6, "Bff Feature Code"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(7, "Feature Description"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(8, "Count of Specific Order No"));
 
+                    bulk.WriteToServer(importQueue.ImportData);
+                    bulk.Close();
+                }
+            }
+            return ImportQueueGet(importQueue.ImportQueueId.GetValueOrDefault());
+        }
+        public ImportQueue ImportQueueBulkImportProcess(ImportQueue importQueue)
+        {
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpImportId", importQueue.ImportId, dbType: DbType.Int32);
+
+                    conn.Execute("dbo.Fdp_ImportData_Process", para, commandType: CommandType.StoredProcedure, commandTimeout:600);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportQueueProcess", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return ImportQueueGet(importQueue.ImportQueueId.GetValueOrDefault());
+        }
         public PagedResults<ImportQueue> ImportQueueGetMany(ImportQueueFilter filter)
         {
             PagedResults<ImportQueue> retVal = null;
@@ -196,54 +238,6 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
 
         }
-
-        public ImportResult ImportQueueProcess()
-        {
-            var result = new ImportResult();
-            string procName = "dbo.Fdp_Import_Process";
-
-            using (IDbConnection conn = DbHelper.GetDBConnection())
-            {
-                try
-                {
-                    var para = new DynamicParameters();
-
-                    conn.Execute(procName, para, commandType: CommandType.StoredProcedure);
-                }
-                catch (Exception ex)
-                {
-                    AppHelper.LogError("ImportQueueDataStore.ImportQueueProcess::0", ex.Message, CurrentCDSID);
-                    throw;
-                }
-            }
-
-            return result;
-        }
-
-        public ImportResult ImportQueueProcess(ImportQueue importItem)
-        {
-            var result = new ImportResult();
-            string procName = "dbo.Fdp_Import_Process";
-
-            using (IDbConnection conn = DbHelper.GetDBConnection())
-            {
-                try
-                {
-                    var para = new DynamicParameters();
-                    para.Add("@ImportQueueId", importItem.ImportQueueId, dbType: DbType.Int32);
-               
-                    conn.Execute(procName, para, commandType: CommandType.StoredProcedure);  
-                }
-                catch (Exception ex)
-                {
-                    AppHelper.LogError("ImportQueueDataStore.ImportQueueProcess::1", ex.Message, CurrentCDSID);
-                    throw;
-                }
-            }
-
-            return result;
-        }
-
         public ImportError ImportErrorGet(ImportQueueFilter filter)
         {
             ImportError retVal = new EmptyImportError();
@@ -350,7 +344,6 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
-
         public ImportError ImportExceptionIgnore(ImportQueueFilter filter)
         {
             ImportError retVal = new EmptyImportError();
@@ -365,6 +358,34 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
 
                     var results = connection.Query<ImportError>("dbo.Fdp_ImportErrorExclusion_Save", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportExceptionIgnore", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
+        public ImportError ImportExceptionSave(ImportQueueFilter filter)
+        {
+            ImportError retVal = new EmptyImportError();
+
+            using (IDbConnection connection = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@ExceptionId", filter.ExceptionId.Value, dbType: DbType.Int32);
+                    para.Add("@IsExcluded", true, dbType: DbType.Boolean);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+
+                    var results = connection.Query<ImportError>("dbo.Fdp_ImportError_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
                     {
                         retVal = results.First();
@@ -471,6 +492,7 @@ namespace FeatureDemandPlanning.DataStore
     internal class ImportQueueDataItem : ImportQueue
     {
         public int FdpImportQueueId { get; set; }
+        public int FdpImportId { get; set; }
         public int FdpImportStatusId { get; set; }
         public string Status { get; set; }
         public int FdpImportTypeId { get; set; }
@@ -481,6 +503,7 @@ namespace FeatureDemandPlanning.DataStore
             return new ImportQueue()
             {
                 ImportQueueId = dataItem.FdpImportQueueId,
+                ImportId = dataItem.FdpImportId,
                 CreatedOn = dataItem.CreatedOn,
                 CreatedBy = dataItem.CreatedBy,
                 UpdatedOn = dataItem.UpdatedOn,

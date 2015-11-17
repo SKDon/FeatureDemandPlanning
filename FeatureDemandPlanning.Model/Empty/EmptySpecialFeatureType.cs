@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FeatureDemandPlanning.Model
+namespace FeatureDemandPlanning.Model.Empty
 {
-    public class EmptyDerivativeMapping : DerivativeMapping
+    public class EmptySpecialFeatureType : FdpSpecialFeatureType
     {
     }
 }

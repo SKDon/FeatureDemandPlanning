@@ -51,30 +51,65 @@ namespace FeatureDemandPlanning.Model.Parameters
         }
         public object GetActionSpecificParameters()
         {
-            if (Action == enums.ImportAction.MapMissingFeature || Action == enums.ImportAction.AddMissingFeature)
+            if (Action == enums.ImportAction.MapMissingFeature)
             {
                 return new {
                     ImportQueueId = ImportQueueId,
                     ExceptionId = ExceptionId,
                     ProgrammeId = ProgrammeId,
+                    Gateway = Gateway,
+                    ExceptionType = ExceptionType,
+                    Action = Action,
+                    ImportFeatureCode = ImportFeatureCode,
+                    FeatureCode = FeatureCode,
+                    FeatureDescription = FeatureDescription
+                };
+            }
+
+            if (Action == enums.ImportAction.AddMissingFeature)
+            {
+                return new
+                {
+                    ImportQueueId = ImportQueueId,
+                    ExceptionId = ExceptionId,
+                    ProgrammeId = ProgrammeId,
+                    Gateway = Gateway,
                     ExceptionType = ExceptionType,
                     Action = Action,
                     ImportFeatureCode = ImportFeatureCode,
                     FeatureCode = FeatureCode,
                     FeatureDescription = FeatureDescription,
+                    FeatureGroupId = FeatureGroupId
                 };
             }
 
-            if (Action == enums.ImportAction.MapMissingDerivative || Action == enums.ImportAction.AddMissingDerivative)
+            if (Action == enums.ImportAction.MapMissingDerivative)
             {
                 return new {
                     ImportQueueId = ImportQueueId,
                     ExceptionId = ExceptionId,
                     ProgrammeId = ProgrammeId,
+                    Gateway = Gateway,
                     ExceptionType = ExceptionType,
                     Action = Action,
                     ImportDerivativeCode = ImportDerivativeCode,
                     DerivativeCode = DerivativeCode,
+                    BodyId = BodyId,
+                    EngineId = EngineId,
+                    TransmissionId = TransmissionId
+                };
+            }
+            if (Action == enums.ImportAction.AddMissingDerivative)
+            {
+                return new
+                {
+                    ImportQueueId = ImportQueueId,
+                    ExceptionId = ExceptionId,
+                    ProgrammeId = ProgrammeId,
+                    Gateway = Gateway,
+                    ExceptionType = ExceptionType,
+                    Action = Action,
+                    DerivativeCode = ImportDerivativeCode,
                     BodyId = BodyId,
                     EngineId = EngineId,
                     TransmissionId = TransmissionId
@@ -87,6 +122,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                     ImportQueueId = ImportQueueId,
                     ExceptionId = ExceptionId,
                     ProgrammeId = ProgrammeId,
+                    Gateway = Gateway,
                     ExceptionType = ExceptionType,
                     Action = Action,
                     ImportMarket = ImportMarket,
@@ -100,6 +136,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                     ImportQueueId = ImportQueueId,
                     ExceptionId = ExceptionId,
                     ProgrammeId = ProgrammeId,
+                    Gateway = Gateway,
                     ExceptionType = ExceptionType,
                     Action = Action,
                     ImportTrim = ImportTrim,
@@ -117,6 +154,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                     ImportQueueId = ImportQueueId,
                     ExceptionId = ExceptionId,
                     ProgrammeId = ProgrammeId,
+                    Gateway = Gateway,
                     ExceptionType = ExceptionType,
                     Action = Action,
                     ImportFeatureCode = ImportFeatureCode,
@@ -131,6 +169,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                     ImportQueueId = ImportQueueId,
                     ExceptionId = ExceptionId,
                     ProgrammeId = ProgrammeId,
+                    Gateway = Gateway,
                     ExceptionType = ExceptionType,
                     Action = Action
                 };

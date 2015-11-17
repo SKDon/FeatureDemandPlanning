@@ -1,0 +1,32 @@
+﻿@model FeatureDemandPlanning.Model.ViewModel.DerivativeViewModel
+
+@{
+    var currentVersion = Model.CurrentVersion;
+}
+<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Derivative/derivative.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Derivative/deletederivativeaction.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Derivative/derivativespage.js")?v=@currentVersion"></script>
+<script language="javascript">
+
+    var derivative, page, modal;
+    var params = {
+        ActionsUri: "@Url.Action("ContextMenu")",
+        ProcessUri: "@Url.Action("Process")",
+        CancelUri: "@Url.Action("Cancel")",
+        DerivativesUri: "@Url.Action("ListDerivatives")",
+        ModalContentUri: "@Url.Action("ModalContent")",
+        ModalActionUri: "@Url.Action("ModalAction")",
+        ModalDialogId: "modal",
+        ModalContentId: "modalBody",
+        Configuration: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        _lastParam: null
+    };
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+
+</script>
+<script src="@Url.Content("~/Scripts/Derivative/derivativesinit.js")?v=@currentVersion"></script>

@@ -1,0 +1,37 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@section PageBody
+{
+    <div class="row" style="margin-bottom:30px">
+        <div class="col-xs-12 inverse text-center">
+            <h1 class="text-capitalize">Features</h1>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6 text-center inverse home-button">
+        <a href="@Url.Action("MapFeatures", "Feature")">
+            <img src="~/Content/Images/Icons/mapping64.png" style="opacity:0.9;border:0" />
+        </a>
+        <h2 style="height:66px">Map Features</h2>
+        <p style="height:40px">Map Features to the corresponding OXO equivalent</p>
+        <p><a class="btn btn-default col-xs-10 col-xs-offset-1" href="@Url.Action("MapFeatures", "Feature")" role="button">Map Features</a></p>
+    </div>
+    <div class="col-md-4 col-sm-6 text-center inverse home-button">
+        <a href="@Url.Action("Index", "Feature")">
+            <img src="~/Content/Images/Icons/mapping64.png" style="opacity:0.9;border:0" />
+        </a>
+        <h2 style="height:66px">FDP Features</h2>
+        <p style="height:40px">Features added to supplement the OXO data</p>
+        <p><a class="btn btn-default col-xs-10 col-xs-offset-1" href="@Url.Action("Index", "Feature")" role="button">FDP Features</a></p>
+    </div>
+    <div class="col-md-4 col-sm-6 text-center inverse home-button">
+        <a href="@Url.Action("Index", "SpecialFeature")">
+            <img src="~/Content/Images/Icons/mapping64.png" style="opacity:0.9;border:0" />
+        </a>
+        <h2 style="height:66px">Special Features</h2>
+        <p style="height:40px">Special Features added containing summary information for take rate data</p>
+        <p><a class="btn btn-default col-xs-10 col-xs-offset-1" href="@Url.Action("Index", "SpecialFeature")" role="button">Special Features</a></p>
+    </div>
+}
+
+

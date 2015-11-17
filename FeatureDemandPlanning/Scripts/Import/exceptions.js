@@ -25,6 +25,7 @@ model.Exceptions = function (params) {
     privateStore[me.id].IgnoreActionUri = params.IgnoreActionUri;
     privateStore[me.id].ImportQueueId = params.ImportQueueId;
     privateStore[me.id].ProgrammeId = params.ProgrammeId;
+    privateStore[me.id].Gateway = params.Gateway;
     privateStore[me.id].PageSize = params.PageSize;
     privateStore[me.id].PageIndex = params.PageIndex;
     privateStore[me.id].TotalPages = 0;
@@ -113,6 +114,9 @@ model.Exceptions = function (params) {
     me.getExceptionsUri = function () {
         return privateStore[me.id].ExceptionsUri;
     };
+    me.getGateway = function () {
+        return privateStore[me.id].Gateway;
+    }
     me.getAddTrimContentUri = function () {
         return privateStore[me.id].AddTrimContentUri;
     };

@@ -14,7 +14,7 @@ namespace FeatureDemandPlanning.Model.Validators
         public const string ExceptionIdentifier = "EXCEPTION_ID";
         public const string ExceptionIdentifierWithAction = "EXCEPTION_ID_WITH_ACTION";
         public const string ImportQueueIdentifier = "IMPORT_QUEUE_ID";
-        public const string ExceptionIdentifierWithActionAndProgramme = "EXCEPTION_ID_WITH_ACTION_AND_PROGRAMME";
+        public const string ExceptionIdentifierWithActionProgrammeAndGateway = "EXCEPTION_ID_WITH_ACTION_AND_PROGRAMME";
         public const string NoValidation = "NO_VALIDATION";
 
         public ImportExceptionParametersValidator()
@@ -36,11 +36,12 @@ namespace FeatureDemandPlanning.Model.Validators
                 RuleFor(p => p.ExceptionId).NotNull().WithMessage("'ExceptionId' not specified");
                 RuleFor(p => p.Action).NotEqual(a => ImportAction.NotSet).WithMessage("'Action' not specified");
             });
-            RuleSet(ExceptionIdentifierWithActionAndProgramme, () =>
+            RuleSet(ExceptionIdentifierWithActionProgrammeAndGateway, () =>
             {
                 RuleFor(p => p.ExceptionId).NotNull().WithMessage("'ExceptionId' not specified");
                 RuleFor(p => p.Action).NotEqual(a => ImportAction.NotSet).WithMessage("'Action' not specified");
                 RuleFor(p => p.ProgrammeId).NotNull().WithMessage("'ProgrammeId' not specified");
+                RuleFor(p => p.Gateway).NotEmpty().WithMessage("'Gateway' not specified");
             });
             RuleSet(Enum.GetName(typeof(ImportAction), ImportAction.AddMissingDerivative), () =>
             {
@@ -64,7 +65,7 @@ namespace FeatureDemandPlanning.Model.Validators
             });
             RuleSet(Enum.GetName(typeof(ImportAction), ImportAction.AddSpecialFeature), () =>
             {
-                RuleFor(p => p.FeatureCode).NotEmpty().WithMessage("'Feature Code' not specified");
+                RuleFor(p => p.ImportFeatureCode).NotEmpty().WithMessage("'Import Feature Code' not specified");
                 RuleFor(p => p.SpecialFeatureTypeId).NotEmpty().WithMessage("'Special Feature' not specified");
             });
             RuleSet(Enum.GetName(typeof(ImportAction), ImportAction.IgnoreException), () =>
@@ -79,6 +80,11 @@ namespace FeatureDemandPlanning.Model.Validators
             {
                 RuleFor(p => p.ImportFeatureCode).NotEmpty().WithMessage("'Import Feature Code' not specified");
                 RuleFor(p => p.FeatureCode).NotEmpty().WithMessage("'Feature Code' not specified");
+            });
+            RuleSet(Enum.GetName(typeof(ImportAction), ImportAction.MapMissingMarket), () =>
+            {
+                RuleFor(p => p.ImportMarket).NotEmpty().WithMessage("'Import Market' not specified");
+                RuleFor(p => p.MarketId).NotNull().WithMessage("'Mapped Market Id' not specified");
             });
         }
         public static ImportExceptionParametersValidator ValidateImportExceptionParameters(ImportExceptionParameters parameters, string ruleSetName)

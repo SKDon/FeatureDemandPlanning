@@ -39,6 +39,7 @@
         PageIndex: @Model.PageIndex,
         ImportQueueId: @Model.CurrentImport.ImportQueueId.GetValueOrDefault(),
         ProgrammeId: @Model.Programme.Id,
+        Gateway: "@Model.Gateway",
         VehicleId: @Model.Programme.VehicleId,
         IdentifierPrefix: "@Model.IdentifierPrefix",
         _lastParam: null // Prevent syntax error

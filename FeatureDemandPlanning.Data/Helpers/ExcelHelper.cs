@@ -9,6 +9,8 @@ using ClosedXML.Excel;
 using FeatureDemandPlanning.DataStore;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
+using System.Data;
+using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Helpers
 {
@@ -38,6 +40,43 @@ namespace FeatureDemandPlanning.Model.Helpers
                 memoryStream.WriteTo(response.OutputStream);
             }
             response.End();
+        }
+    }
+
+    public class ExcelReader
+    {
+        public static DataTable ReadExcelAsDataTable(string filePath)
+        {
+            var result = new DataTable();
+            using (XLWorkbook workBook = new XLWorkbook(filePath))
+            {
+                IXLWorksheet workSheet = workBook.Worksheet(1);
+
+                bool firstRow = true;
+                foreach (IXLRow row in workSheet.Rows())
+                {
+                    // Use the first row to add columns to DataTable.
+                    if (firstRow)
+                    {
+                        foreach (IXLCell cell in row.Cells())
+                        {
+                            result.Columns.Add(cell.Value.ToString());
+                        }
+                        firstRow = false;
+                    }
+                    else
+                    {
+                        result.Rows.Add();
+                        int i = 0;
+                        foreach (IXLCell cell in row.Cells())
+                        {
+                            result.Rows[result.Rows.Count - 1][i] = cell.Value.ToString();
+                            i++;
+                        }
+                    }
+                }
+            }
+            return result;
         }
     }
 

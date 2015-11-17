@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -174,7 +175,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public IEnumerable<Derivative> ListDerivatives(ProgrammeFilter filter)
         {
-            var derivatives =_derivativeDataStore.DerivativeGetMany(filter.ProgrammeId.GetValueOrDefault());
+            var derivatives =_derivativeDataStore.DerivativeGetMany(filter);
             foreach (var derivative in derivatives)
             {
                 if (derivative.BodyId.HasValue)
@@ -187,6 +188,10 @@ namespace FeatureDemandPlanning.DataStore
                     derivative.Transmission = _transmissionDataStore.ModelTransmissionGet(derivative.TransmissionId.Value);
             }
             return derivatives;
+        }
+        public IEnumerable<Gateway> ListGateways(ProgrammeFilter filter)
+        {
+            return _documentDataStore.GatewayGetMany().Where(g => string.IsNullOrEmpty(filter.Code) || g.VehicleName == filter.Code);
         }
         public IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter)
         {
@@ -239,6 +244,38 @@ namespace FeatureDemandPlanning.DataStore
             return programmes;
         }
 
+        public async Task<FdpDerivative> DeleteFdpDerivative(FdpDerivative derivativeToDelete)
+        {
+            return await Task.FromResult<FdpDerivative>(_derivativeDataStore.FdpDerivativeDelete(derivativeToDelete));
+        }
+        public async Task<FdpDerivative> GetFdpDerivative(DerivativeFilter filter)
+        {
+            return await Task.FromResult<FdpDerivative>(_derivativeDataStore.FdpDerivativeGet(filter));
+        }
+        public async Task<PagedResults<FdpDerivative>> ListFdpDerivatives(DerivativeFilter filter)
+        {
+            return await Task.FromResult<PagedResults<FdpDerivative>>(_derivativeDataStore.FdpDerivativeGetMany(filter));
+        }
+        public async Task<FdpDerivativeMapping> DeleteFdpDerivativeMapping(FdpDerivativeMapping derivativeMappingToDelete)
+        {
+            return await Task.FromResult<FdpDerivativeMapping>(_derivativeDataStore.FdpDerivativeMappingDelete(derivativeMappingToDelete));
+        }
+        public async Task<FdpDerivativeMapping> GetFdpDerivativeMapping(DerivativeMappingFilter filter)
+        {
+            return await Task.FromResult<FdpDerivativeMapping>(_derivativeDataStore.FdpDerivativeMappingGet(filter));
+        }
+        public async Task<PagedResults<FdpDerivativeMapping>> ListFdpDerivativeMappings(DerivativeMappingFilter filter)
+        {
+            return await Task.FromResult<PagedResults<FdpDerivativeMapping>>(_derivativeDataStore.FdpDerivativeMappingGetMany(filter));
+        }
+        public Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> enumerable)
+        {
+            throw new NotImplementedException();
+        }
+        public Task<FdpDerivativeMapping> CopyFdpDerivativeMappingsToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> enumerable)
+        {
+            throw new NotImplementedException();
+        }
         public IEnumerable<IVehicle> ListAvailableVehicles(VehicleFilter filter)
         {
             var programmes = ListProgrammes(filter);
@@ -266,16 +303,6 @@ namespace FeatureDemandPlanning.DataStore
                 ModelYear = programme.ModelYear,
                 Gateway = vehicleIndex.GetValueOrDefault() == 0 ? programme.Gateway : string.Empty,
                 Description = String.Format("{0} - {1}", programme.VehicleName, programme.VehicleAKA),
-                //FullDescription = vehicleIndex.GetValueOrDefault() == 0 || string.IsNullOrEmpty(programme.Gateway) ?
-                //    string.Format("{0} - {1} ({2}, {3})",
-                //        programme.VehicleName,
-                //        programme.VehicleAKA,
-                //        programme.ModelYear,
-                //        programme.Gateway) :
-                //    string.Format("{0} - {1} ({2})",
-                //        programme.VehicleName,
-                //        programme.VehicleAKA,
-                //        programme.ModelYear),
                 Programmes = new List<Programme>() { programme }
             };
         }

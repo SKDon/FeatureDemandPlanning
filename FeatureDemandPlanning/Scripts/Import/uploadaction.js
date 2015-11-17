@@ -14,6 +14,7 @@ model.UploadAction = function (params, model) {
     privateStore[me.id].Model = model;
 
     me.action = function () {
+        $("#Modal_OK").html("Uploading...Wait").attr("disabled", true);
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.getActionParameters = function () {
@@ -54,6 +55,7 @@ model.UploadAction = function (params, model) {
         $("#Modal_Cancel").html("Close");
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
+        $("#Modal_OK").removeAttr("disabled").html("OK");
         if (eventArgs.IsValidation) {
             $("#Modal_Notify")
                 .removeClass("alert-danger")

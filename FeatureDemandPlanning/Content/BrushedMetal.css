@@ -95,7 +95,8 @@ a { text-decoration: none; display: block; }*/
 /* Linear ------------------------- */
 
 .metal.linear {
-  width: 120px;
+  width: 130px;
+  margin-left:-10px !important;
   font-size: 36px;
   height: 54px;
   border-radius: 10px;
@@ -107,6 +108,16 @@ a { text-decoration: none; display: block; }*/
     hsl(0,0%,90%) 47%, 
     hsl(0,0%,78%) 53%,
     hsl(0,0%,70%)100%);
+}
+.metal.linear div {
+    margin-top:-5px !important;
+    font-size:36px;
+    color: #152a55;
+}
+.metal.linear p {
+    font-size: 11px;
+    color: #7788aa;
+    margin-top:3px;
 }
 
 

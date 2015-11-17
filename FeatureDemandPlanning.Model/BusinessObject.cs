@@ -54,6 +54,14 @@ namespace FeatureDemandPlanning.Model
     public class DataStoreBase
     {
         public string CurrentCDSID { get; set; }
+
+        public DataStoreBase()
+        {
+        }
+        public DataStoreBase(string cdsId)
+        {
+            CurrentCDSID = cdsId;
+        }
     }
 
     [Serializable]

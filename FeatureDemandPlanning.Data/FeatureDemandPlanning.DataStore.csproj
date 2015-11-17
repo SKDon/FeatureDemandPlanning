@@ -32,11 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ClosedXML">
-      <HintPath>..\packages\ClosedXML.0.76.0\lib\net40-client\ClosedXML.dll</HintPath>
-    </Reference>
-    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+      <HintPath>..\..\..\Users\bweston2\Desktop\ClosedXML.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -108,15 +104,15 @@
     <Compile Include="DataStore\OXOChangeDiaryDS.cs" />
     <Compile Include="DataStore\OXOChangeSetDS.cs" />
     <Compile Include="DataStore\OXODocDS.cs" />
-    <Compile Include="DataStore\OXOFeatureDS.cs" />
+    <Compile Include="DataStore\FeatureDataStore.cs" />
     <Compile Include="DataStore\OXOFeatureRequestDS.cs" />
-    <Compile Include="DataStore\OXOMarketDS.cs" />
+    <Compile Include="DataStore\MarketDataStore.cs" />
     <Compile Include="DataStore\OXOMarketGroupDS.cs" />
     <Compile Include="DataStore\OXOModelBodyDS.cs" />
     <Compile Include="DataStore\OXOModelDS.cs" />
     <Compile Include="DataStore\OXOModelEngineDS.cs" />
     <Compile Include="DataStore\OXOModelTransmissionDS.cs" />
-    <Compile Include="DataStore\OXOModelTrimDS.cs" />
+    <Compile Include="DataStore\ModelTrimDataStore.cs" />
     <Compile Include="DataStore\OXOPackDS.cs" />
     <Compile Include="DataStore\OXOPermissionDS.cs" />
     <Compile Include="DataStore\OXOPreferenceDS.cs" />
@@ -141,6 +137,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

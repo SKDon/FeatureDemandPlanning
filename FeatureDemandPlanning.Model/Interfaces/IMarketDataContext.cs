@@ -12,6 +12,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
     {
         IEnumerable<Market> ListAvailableMarkets();
         IEnumerable<Market> ListAvailableMarkets(ProgrammeFilter filter);
+        IEnumerable<MarketMapping> ListMappedMarkets(ProgrammeFilter filter);
         IEnumerable<Market> ListTopMarkets();
 
         Market GetMarket(VolumeFilter filter);

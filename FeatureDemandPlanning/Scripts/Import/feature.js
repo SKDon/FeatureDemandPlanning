@@ -32,7 +32,7 @@ model.Feature = function (params) {
             case 5:
                 actionModel = new FeatureDemandPlanning.Import.MapFeatureAction(me.getParameters());
                 break;
-            case 6:
+            case 9:
                 actionModel = new FeatureDemandPlanning.Import.SpecialFeatureAction(me.getParameters());
                 break;
             default:

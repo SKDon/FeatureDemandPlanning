@@ -11,8 +11,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
     public class EngineCodeMappingViewModel : SharedModelBase
     {
         public PagedResults<EngineCodeMapping> EngineCodeMappings { get; set; }
-        public dynamic Configuration { get; set; }
-
+        
         public EngineCodeMappingViewModel() : base()
         {
         }

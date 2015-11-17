@@ -41,6 +41,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ClosedXML, Version=0.76.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.76.0\lib\net40-client\ClosedXML.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
@@ -177,6 +185,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\DerivativeController.cs" />
+    <Compile Include="Controllers\DerivativeMappingController.cs" />
     <Compile Include="Controllers\EngineCodeMappingController.cs" />
     <Compile Include="Controllers\ForecastController.cs" />
     <Compile Include="Controllers\ImportController.cs" />
@@ -860,6 +870,15 @@
     <Content Include="Extensions\malihu-custom-scrollbar-plugin-master\js\uncompressed\jquery.mousewheel.js" />
     <Content Include="Extensions\malihu-custom-scrollbar-plugin-master\LICENSE.txt" />
     <Content Include="Extensions\malihu-custom-scrollbar-plugin-master\mCSB_buttons.png" />
+    <Content Include="Scripts\DerivativeMapping\copyderivativemappingaction.js" />
+    <Content Include="Scripts\DerivativeMapping\deletederivativemappingaction.js" />
+    <Content Include="Scripts\Derivative\deletederivativeaction.js" />
+    <Content Include="Scripts\DerivativeMapping\derivativemapping.js" />
+    <Content Include="Scripts\Derivative\derivative.js" />
+    <Content Include="Scripts\DerivativeMapping\derivativemappingsinit.js" />
+    <Content Include="Scripts\Derivative\derivativesinit.js" />
+    <Content Include="Scripts\DerivativeMapping\derivativemappingspage.js" />
+    <Content Include="Scripts\Derivative\derivativespage.js" />
     <Content Include="Scripts\Editor\oxo-change-log.js" />
     <Content Include="Scripts\Editor\oxo-editor-core.js" />
     <Content Include="Scripts\Editor\oxo-editor-doc.js" />
@@ -1325,7 +1344,7 @@
     <Content Include="Views\Import\_ProcessState.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Market\Market.cshtml" />
-    <Content Include="Views\Admin\Derivatives.cshtml" />
+    <Content Include="Views\Admin\Derivative.cshtml" />
     <Content Include="Views\Market\TopMarkets.cshtml" />
     <Content Include="Views\EngineCodeMapping\EngineCodeMapping.cshtml" />
     <Content Include="Views\EngineCodeMapping\EngineCodeMappings.cshtml" />
@@ -1396,12 +1415,28 @@
     <Content Include="Views\User\_ContextMenu.cshtml" />
     <Content Include="Views\User\_AddUser.cshtml" />
     <Content Include="Views\User\_ManageProgrammes.cshtml" />
+    <Content Include="Views\Derivative\DerivativePage.cshtml" />
+    <Content Include="Views\Derivative\_Derivatives.cshtml" />
+    <Content Include="Views\Shared\_Modal.cshtml" />
+    <Content Include="Views\Derivative\_Scripts.cshtml" />
+    <Content Include="Views\Derivative\_ContextMenu.cshtml" />
+    <Content Include="Views\Derivative\_Delete.cshtml" />
+    <Content Include="Views\DerivativeMapping\_Scripts.cshtml" />
+    <Content Include="Views\DerivativeMapping\_DerivativeMappings.cshtml" />
+    <Content Include="Views\DerivativeMapping\_Delete.cshtml" />
+    <Content Include="Views\DerivativeMapping\DerivativeMappingPage.cshtml" />
+    <Content Include="Views\DerivativeMapping\_ContextMenu.cshtml" />
+    <Content Include="Views\Admin\Feature.cshtml" />
+    <Content Include="Views\Admin\Trim.cshtml" />
+    <Content Include="Views\DerivativeMapping\_Copy.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="bin\" />
     <Folder Include="Content\css\" />
     <Folder Include="Scripts\DataTables\" />
+    <Folder Include="Views\Feature\" />
+    <Folder Include="Views\Trim\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

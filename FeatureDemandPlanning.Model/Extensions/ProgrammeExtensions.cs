@@ -12,7 +12,6 @@ namespace FeatureDemandPlanning.Model.Extensions
         {
             return string.Format("{0} - {1} ({2})", programme.VehicleName, programme.VehicleAKA, programme.ModelYear);
         }
-
         public static IEnumerable<CarLine> ListCarLines(this IEnumerable<Programme> programmes)
         {
             return programmes.Select(p => new CarLine()
@@ -23,6 +22,28 @@ namespace FeatureDemandPlanning.Model.Extensions
             })
             .Distinct(new CarLineComparer())
             .OrderBy(c => c.VehicleName);
+        }
+        public static IEnumerable<Gateway> ListGateways(this IEnumerable<Programme> programmes)
+        {
+            return programmes
+                .Select(p => new Gateway()
+                {
+                    VehicleName = p.VehicleName,
+                    Name = p.Gateway
+                })
+                .Distinct(new GatewayComparer())
+                .OrderBy(p => p.Name);
+        }
+        public static IEnumerable<ModelYear> ListModelYears(this IEnumerable<Programme> programmes)
+        {
+            return programmes
+                .Select(p => new ModelYear()
+                {
+                    VehicleName = p.VehicleName,
+                    Name = p.ModelYear
+                })
+                .Distinct(new ModelYearComparer())
+                .OrderBy(p => p.Name);
         }
     }
 }

@@ -36,6 +36,10 @@ namespace FeatureDemandPlanning.DataStore
             return _marketDataStore.MarketAvailableGetMany(filter.ProgrammeId.GetValueOrDefault())
                                     .OrderBy(m => m.Name);
         }
+        public IEnumerable<MarketMapping> ListMappedMarkets(ProgrammeFilter filter)
+        {
+            return _marketDataStore.MarketMappingGetMany(filter);
+        }
         public IEnumerable<Market> ListTopMarkets()
         {
             return _marketDataStore.TopMarketGetMany()

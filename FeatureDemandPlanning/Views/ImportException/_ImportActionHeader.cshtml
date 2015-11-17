@@ -4,87 +4,87 @@
 @model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
 
 <form>
-    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix"/>
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
 </form>
 
 <div class="well">
 
-        @if (   Model.CurrentAction == enums.ImportAction.AddMissingDerivative || 
+    @if (Model.CurrentAction == enums.ImportAction.AddMissingDerivative ||
                 Model.CurrentAction == enums.ImportAction.MapMissingDerivative)
-        { 
-            <div class="row">
-                <div class="col-xs-4 text-right"><strong>Import Derivative Code:</strong></div>
-                <div id="@(Model.IdentifierPrefix)_ImportDerivativeCode" data-target="@Model.CurrentException.ImportDerivativeCode" class="col-xs-8">
-                    @Model.CurrentException.ImportDerivativeCode
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-4 text-right"><strong>Import Derivative:</strong></div>
-                <div class="col-xs-8">
-                    @Model.CurrentException.ImportDerivative
-                </div>
-            </div>
-        }
-        
-        @if (   Model.CurrentAction == enums.ImportAction.AddMissingFeature || 
-                Model.CurrentAction == enums.ImportAction.MapMissingFeature || 
-                Model.CurrentAction == enums.ImportAction.AddSpecialFeature)
-        {
-            <div class="row">
-                <div class="col-xs-4 text-right"><strong>Import Feature Code:</strong></div>
-                <div id="@(Model.IdentifierPrefix)_ImportFeatureCode" class="col-xs-8" data-target="@Model.CurrentException.ImportFeatureCode">
-                    @Model.CurrentException.ImportFeatureCode
-</div>
-            </div>
-            <div class="row">
-                <div class="col-xs-4 text-right"><strong>Import Feature:</strong></div>
-                <div class="col-xs-8">
-                    @Model.CurrentException.ImportFeature
-                </div>
-            </div>
-        }
-
-        @if (Model.CurrentAction == enums.ImportAction.AddMissingTrim ||
-                Model.CurrentAction == enums.ImportAction.MapMissingTrim)
-        {
-            <div class="row">
-                <div class="col-xs-4 text-right"><strong>Import Trim Level:</strong></div>
-                <div class="col-xs-8">
-                    @Model.CurrentException.ImportTrim
-                </div>
-            </div>
-        }
-        
-        @if (Model.CurrentAction == enums.ImportAction.MapMissingMarket)
-        {
-            <div class="row">
-                <div class="col-xs-4 text-right" id="@(Model.IdentifierPrefix)_ImportMarket" data-target="@Model.CurrentException.ImportMarket"><strong>Import Market:</strong></div>
-                <div class="col-xs-8">
-                    @Model.CurrentException.ImportMarket
-                </div>
-            </div>
-        }
-        
-        @if (Model.CurrentAction == enums.ImportAction.IgnoreException)
-        {
-            <div class="row">
-                <div class="col-xs-4 text-right"><strong>Error Type:</strong></div>
-                <div class="col-xs-8">
-                    @Model.CurrentException.ErrorTypeDescription
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-4 text-right"><strong>Message:</strong></div>
-                <div id="@(Model.IdentifierPrefix)_ErrorMessage" class=" col-xs-8">
-                    @Model.CurrentException.ErrorMessage
-                </div>
-            </div>
-        }
-
+    {
         <div class="row">
-            <div class="col-xs-4 text-right"><strong>Programme:</strong></div>
-            <div class="col-xs-8">
-                @Model.Programme.GetDisplayString()
+            <div class="col-xs-4 text-right"><strong>Import Derivative Code:</strong></div>
+            <div id="@(Model.IdentifierPrefix)_ImportDerivativeCode" data-target="@Model.CurrentException.ImportDerivativeCode" class="col-xs-8">
+                @Model.CurrentException.ImportDerivativeCode
             </div>
         </div>
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Import Derivative:</strong></div>
+            <div class="col-xs-8">
+                @Model.CurrentException.ImportDerivative
+            </div>
+        </div>
+    }
+
+    @if (Model.CurrentAction == enums.ImportAction.AddMissingFeature ||
+                Model.CurrentAction == enums.ImportAction.MapMissingFeature ||
+                Model.CurrentAction == enums.ImportAction.AddSpecialFeature)
+    {
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Import Feature Code:</strong></div>
+            <div id="@(Model.IdentifierPrefix)_ImportFeatureCode" class="col-xs-8" data-target="@Model.CurrentException.ImportFeatureCode">
+                @Model.CurrentException.ImportFeatureCode
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Import Feature:</strong></div>
+            <div class="col-xs-8">
+                @Model.CurrentException.ImportFeature
+            </div>
+        </div>
+    }
+
+    @if (Model.CurrentAction == enums.ImportAction.AddMissingTrim ||
+                Model.CurrentAction == enums.ImportAction.MapMissingTrim)
+    {
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Import Trim Level:</strong></div>
+            <div class="col-xs-8">
+                @Model.CurrentException.ImportTrim
+            </div>
+        </div>
+    }
+
+    @if (Model.CurrentAction == enums.ImportAction.MapMissingMarket)
+    {
+        <div class="row">
+            <div class="col-xs-4 text-right" id="@(Model.IdentifierPrefix)_ImportMarket" data-target="@Model.CurrentException.ImportMarket"><strong>Import Market:</strong></div>
+            <div class="col-xs-8">
+                @Model.CurrentException.ImportMarket
+            </div>
+        </div>
+    }
+
+    @if (Model.CurrentAction == enums.ImportAction.IgnoreException)
+    {
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Error Type:</strong></div>
+            <div class="col-xs-8">
+                @Model.CurrentException.ErrorTypeDescription
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Message:</strong></div>
+            <div id="@(Model.IdentifierPrefix)_ErrorMessage" class=" col-xs-8">
+                @Model.CurrentException.ErrorMessage
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-xs-4 text-right"><strong>Programme:</strong></div>
+        <div class="col-xs-8">
+            @Model.Programme.GetDisplayString()
+        </div>
     </div>
+</div>

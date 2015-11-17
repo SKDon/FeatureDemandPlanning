@@ -20,10 +20,11 @@ namespace FeatureDemandPlanning.Controllers
     public class ImportController : ControllerBase
     {
         public ImportParameters Parameters { get; set; }
+        public ImportQueue CurrentQueuedItem { get; set; }
 
         public ImportController() : base(ControllerType.SectionChild)
         {
-            
+            CurrentQueuedItem = new EmptyImportQueue();
         }
         [HttpGet]
         [ActionName("Index")]
@@ -84,36 +85,46 @@ namespace FeatureDemandPlanning.Controllers
             return RedirectToAction(Enum.GetName(Parameters.Action.GetType(), Parameters.Action), 
                                     ImportParameters.GetActionSpecificParameters(Parameters));
         }
+        //[HttpPost]
+        //[HandleErrorWithJson]
+        //[ActionName("UploadEx")]
+        //public async Task<ActionResult> Upload(ImportParameters parameters)
+        //{
+        //    Parameters = parameters;
+        //    ValidateImportParameters(ImportParametersValidator.Upload);
+
+        //    SetProgrammeId();
+        //    SetUploadFilePath();
+        //    SaveImportFileToFileSystem();
+        //    QueueItemForProcessing();
+        //    ProcessQueuedItem();
+
+        //    return await Task.FromResult(JsonGetSuccess());
+        //}
         [HttpPost]
         [HandleErrorWithJson]
-        [ActionName("UploadEx")]
-        public async Task<ActionResult> Upload(ImportParameters parameters)
-        {
-            Parameters = parameters;
-            ValidateImportParameters(ImportParametersValidator.Upload);
-
-            SetProgrammeId();
-            SetUploadFilePath();
-            SaveImportFileToFileSystem();
-            await QueueItemForProcessing();
-
-            return JsonGetSuccess();
-        }
-        [HttpPost]
-        [HandleErrorWithJson]
-        public async Task<ActionResult> Upload(HttpPostedFileBase fileToUpload,
+        public ActionResult Upload(HttpPostedFileBase fileToUpload,
                                                 string carLine,
                                                 string modelYear,
                                                 string gateway)
         {
-            return await Upload(new ImportParameters()
+            Parameters = new ImportParameters
             {
                 Action = ImportAction.Upload,
                 UploadFile = fileToUpload,
                 CarLine = carLine,
                 ModelYear = modelYear,
                 Gateway = gateway
-            });
+            };
+            ValidateImportParameters(ImportParametersValidator.Upload);
+
+            SetProgrammeId();
+            SetUploadFilePath();
+            SaveImportFileToFileSystem();
+            QueueItemForProcessing();
+            ProcessQueuedItem();
+
+            return JsonGetSuccess();
         }
      
         #region "Private Methods"
@@ -148,10 +159,14 @@ namespace FeatureDemandPlanning.Controllers
             Parameters.UploadFilePath = Path.Combine(DataContext.Configuration.Configuration.FdpUploadFilePath,
                                           String.Format("{0}{1}", Guid.NewGuid().ToString(), extension));
         }
-        private async Task<ImportQueue> QueueItemForProcessing()
+        private void QueueItemForProcessing()
         {
-            var itemToQueue = ImportQueue.FromImportParameters(Parameters);
-            return await DataContext.Import.SaveImportQueue(itemToQueue);
+            CurrentQueuedItem = DataContext.Import.SaveImportQueue(ImportQueue.FromParameters(Parameters));
+        }
+        private void ProcessQueuedItem()
+        {
+            if (!(CurrentQueuedItem is EmptyImportQueue))
+                DataContext.Import.ProcessImportQueue(CurrentQueuedItem);
         }
         private void ValidateImportParameters(string ruleSetName)
         {

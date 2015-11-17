@@ -75,7 +75,8 @@ page.ExceptionsPage = function (models) {
             "ImportQueueId": filter.ImportQueueId,
             "ExceptionType": filter.ExceptionType,
             "FilterMessage": filter.FilterMessage,
-            "ProgrammeId": filter.ProgrammeId
+            "ProgrammeId": filter.ProgrammeId,
+            "Gateway": filter.Gateway
         });
         return params;
     };
@@ -210,6 +211,7 @@ page.ExceptionsPage = function (models) {
             ExceptionId: parseInt($(this).attr("data-target")),
             Action: parseInt($(this).attr("data-role")),
             ProgrammeId: getExceptionsModel().getProgrammeId(),
+            Gateway: getExceptionsModel().getGateway(),
             ErrorMessage: $(this).attr("data-content")
         };
         $(document).trigger("Action", eventArgs);

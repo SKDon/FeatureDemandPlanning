@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ClosedXML">
-      <HintPath>..\packages\ClosedXML.0.76.0\lib\net40-client\ClosedXML.dll</HintPath>
+      <HintPath>..\..\..\Users\bweston2\Desktop\ClosedXML.dll</HintPath>
     </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -96,9 +96,30 @@
     <Compile Include="Attributes\HandleJsonError.cs" />
     <Compile Include="Attributes\ValidateAjaxAttribute.cs" />
     <Compile Include="CarLine.cs" />
+    <Compile Include="Dapper\DynamicParameters.cs" />
+    <Compile Include="Empty\EmptyFdpDerivativeMapping.cs" />
+    <Compile Include="Empty\EmptyFdpDerivative.cs" />
+    <Compile Include="Empty\EmptyFdpFeature.cs" />
+    <Compile Include="Empty\EmptyFdpSpecialFeature.cs" />
+    <Compile Include="Empty\EmptyFdpTrim.cs" />
+    <Compile Include="Empty\EmptyFeatureMapping.cs" />
+    <Compile Include="Empty\EmptyMarketMapping.cs" />
+    <Compile Include="Empty\EmptyModelTrim.cs" />
+    <Compile Include="Empty\EmptySpecialFeatureType.cs" />
     <Compile Include="Empty\EmptyTakeRateSummary.cs" />
     <Compile Include="Empty\EmptyUser.cs" />
+    <Compile Include="Enumerations\DerivativeMappingAction.cs" />
+    <Compile Include="Enumerations\DerivativeAction.cs" />
     <Compile Include="Enumerations\UserAction.cs" />
+    <Compile Include="FdpDerivative.cs" />
+    <Compile Include="FdpDerivativeMapping.cs" />
+    <Compile Include="FdpFeature.cs" />
+    <Compile Include="FdpSpecialFeature.cs" />
+    <Compile Include="FdpSpecialFeatureType.cs" />
+    <Compile Include="FdpTrim.cs" />
+    <Compile Include="FeatureMapping.cs" />
+    <Compile Include="Filters\DerivativeMappingFilter.cs" />
+    <Compile Include="Filters\DerivativeFilter.cs" />
     <Compile Include="Filters\TakeRateFilter.cs" />
     <Compile Include="Filters\UserFilter.cs" />
     <Compile Include="ForecastSummary.cs" />
@@ -109,13 +130,11 @@
     <Compile Include="Interfaces\IVolume.cs" />
     <Compile Include="Interfaces\IVolumeDataContext.cs" />
     <Compile Include="Derivative.cs" />
-    <Compile Include="DerivativeMapping.cs" />
     <Compile Include="Empty\EmptyDerivative.cs" />
     <Compile Include="Empty\EmptyModelEngine.cs" />
     <Compile Include="Empty\EmptyModelTransmission.cs" />
     <Compile Include="Empty\EmptyModelBody.cs" />
     <Compile Include="Empty\EmptyCustomState.cs" />
-    <Compile Include="Empty\EmptyDerivativeCodeMapping.cs" />
     <Compile Include="Empty\EmptyFeature.cs" />
     <Compile Include="Empty\EmptyFeatureGroup.cs" />
     <Compile Include="Empty\EmptyImportError.cs" />
@@ -135,7 +154,10 @@
     <Compile Include="FdpVolumeHeader.cs" />
     <Compile Include="Filters\PageFilter.cs" />
     <Compile Include="Filters\VolumeFilter.cs" />
+    <Compile Include="MarketMapping.cs" />
     <Compile Include="ModelYear.cs" />
+    <Compile Include="Parameters\DerivativeMappingParameters.cs" />
+    <Compile Include="Parameters\DerivativeParameters.cs" />
     <Compile Include="Parameters\ForecastParameters.cs" />
     <Compile Include="Parameters\ImportExceptionParameters.cs" />
     <Compile Include="Parameters\ImportParameters.cs" />
@@ -237,6 +259,8 @@
     <Compile Include="Validators\VolumeValidator.cs" />
     <Compile Include="ViewModel\AdminViewModel.cs" />
     <Compile Include="ViewModel\ConfigurationModel.cs" />
+    <Compile Include="ViewModel\DerivativeMappingViewModel.cs" />
+    <Compile Include="ViewModel\DerivativeViewModel.cs" />
     <Compile Include="ViewModel\EngineCodeMappingViewModel.cs" />
     <Compile Include="ViewModel\FdpOxoVolumeViewModel.cs" />
     <Compile Include="ViewModel\ForecastComparisonViewModel.cs" />

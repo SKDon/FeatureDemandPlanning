@@ -18,5 +18,23 @@ namespace FeatureDemandPlanning.Controllers
             var model = AdminViewModel.GetModel(DataContext);
             return View(model);
         }
+        [HttpGet]
+        public ActionResult Derivative()
+        {
+            var model = AdminViewModel.GetModel(DataContext);
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult Feature()
+        {
+            var model = AdminViewModel.GetModel(DataContext);
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult Trim()
+        {
+            var model = AdminViewModel.GetModel(DataContext);
+            return View(model);
+        }
    }
 }

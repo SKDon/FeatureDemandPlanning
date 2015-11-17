@@ -24,11 +24,12 @@
                     <span class="icon-bar"></span>
                 </button>
 
-                <h1 class="navbar-brand metal linear">
-                    <a href="@Url.Action("Index", "Home")">
-                        F.D.P
-                    </a>
-                </h1>
+                <a href="@Url.Action("Index", "Home")">
+                    <div class="navbar-brand metal linear">
+                    <div style="margin-top:-3px">F.D.P</div>
+                    <p>Powered by RADS</p>
+                    </div>
+                </a>
 
             </div>
 
@@ -65,21 +66,21 @@
         <div id="backgroundCarousel" class="carousel slide">
             <div class="carousel-inner">
                 <div class="active item">
-                    <div class="fill" style="background-image:url('Content/Images/Carousel/1.png');">
+                    <div class="fill" style="background-image:url(@Url.Content("~/Content/Images/Carousel/1.png"));">
                         <div class="container">
 
                         </div>
                     </div>
                 </div>
                 <div class="item">
-                    <div class="fill" style="background-image:url('Content/Images/Carousel/2.png');">
+                    <div class="fill" style="background-image:url(@Url.Content("~/Content/Images/Carousel/2.png"));">
                         <div class="container">
 
                         </div>
                     </div>
                 </div>
                 <div class="item">
-                    <div class="fill" style="background-image:url('Content/Images/Carousel/3.png');">
+                    <div class="fill" style="background-image:url(@Url.Content("~/Content/Images/Carousel/3.png"));">
                         <div class="container">
 
                         </div>

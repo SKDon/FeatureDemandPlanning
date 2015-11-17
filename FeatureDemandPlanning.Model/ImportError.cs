@@ -17,6 +17,7 @@ namespace FeatureDemandPlanning.Model
 
         public string LineNumber { get; set; }
         public int FdpImportErrorTypeId { get; set; }
+        public bool IsActive { get; set; }
         public bool IsExcluded { get; set; }
 
         public enums.ImportExceptionType ErrorType
