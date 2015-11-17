@@ -1,8 +1,44 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_Import_Process] 
+﻿CREATE PROCEDURE [dbo].[Fdp_ImportData_Process] 
 	@FdpImportId INT
 AS
 
 	SET NOCOUNT ON;
+	
+	DECLARE @ProgrammeId INT;
+	DECLARE @Gateway NVARCHAR(100);
+	
+	-- Update all prior queued imports for the same programme and gateway setting the status to cancelled
+	
+	SELECT 
+		  @ProgrammeId = ProgrammeId
+		, @Gateway = Gateway
+	FROM Fdp_Import
+	WHERE
+	FdpImportId = @FdpImportId;
+	
+	UPDATE Q 
+		SET FdpImportStatusId = 5 -- Cancelled
+	FROM Fdp_ImportQueue AS Q
+	JOIN Fdp_Import AS I ON Q.FdpImportQueueId = I.FdpImportQueueId
+	WHERE
+	I.ProgrammeId = @ProgrammeId
+	AND
+	I.Gateway = @Gateway
+	AND
+	Q.FdpImportStatusId = 1; -- Queued
+	
+	-- Remove all data from cancelled import queue items
+	
+	DELETE FROM Fdp_ImportData
+	WHERE
+	FdpImportId IN 
+	(
+		SELECT FdpImportId
+		FROM Fdp_ImportQueue	AS Q
+		JOIN Fdp_Import			AS I ON Q.FdpImportQueueId = I.FdpImportQueueId 
+		WHERE
+		Q.FdpImportStatusId = 5 -- Cancelled
+	)
 
 	-- From the import data, create an FDP_VolumeHeader entry for each distinct programme 
 	-- in the import
@@ -62,7 +98,6 @@ AS
 		, MarketGroupId
 		, ModelId
 		, TrimId
-		, EngineId
 		, FeatureId
 		, FeaturePackId
 		, Volume
@@ -74,7 +109,6 @@ AS
 		, I.MarketGroupId
 		, I.ModelId
 		, I.TrimId
-		, I.EngineId
 		, I.FeatureId
 		, I.FeaturePackId
 		, SUM(CAST(I.ImportVolume AS INT)) AS Volume 
@@ -85,10 +119,9 @@ AS
 											AND I.MarketGroupId = CUR.MarketGroupId
 											AND I.ModelId		= CUR.ModelId
 											AND I.TrimId		= CUR.TrimId
-											AND I.EngineId		= CUR.EngineId
 											AND I.FeatureId		= CUR.FeatureId
 											AND I.FeaturePackId = CUR.FeaturePackId
-											--AND SUM(CAST(I.ImportVolume AS INT)) = CUR.Volume
+											AND CUR.IsManuallyEntered = 1
 	WHERE 
 	I.IsExistingData = 0
 	AND
@@ -116,7 +149,6 @@ AS
 		, I.MarketGroupId
 		, I.ModelId
 		, I.TrimId
-		, I.EngineId
 		, I.FeatureId
 		, I.FeaturePackId;
 
@@ -178,14 +210,14 @@ AS
 	
 	INSERT INTO Fdp_ImportError
 	(
-		  ImportQueueId
+		  FdpImportQueueId
 		, LineNumber
 		, ErrorOn
 		, FdpImportErrorTypeId
 		, ErrorMessage
 	)
 	SELECT 
-		  E.ImportQueueId
+		  E.FdpImportQueueId
 		, E.ImportLineNumber
 		, E.ErrorOn
 		, E.FdpImportErrorTypeId
@@ -193,14 +225,14 @@ AS
 	FROM
 	(
 		SELECT 
-			  I.ImportQueueId
+			  I.FdpImportQueueId
 			, I.ImportLineNumber
 			, GETDATE() AS ErrorOn
 			, 1 AS FdpImportErrorTypeId -- Missing Market
 			, 'Missing market ''' + I.ImportCountry + '''' AS ErrorMessage
 		FROM
 		Fdp_Import_VW				AS I
-		LEFT JOIN Fdp_ImportError	AS CUR	ON	I.ImportQueueId				= CUR.ImportQueueId
+		LEFT JOIN Fdp_ImportError	AS CUR	ON	I.FdpImportQueueId			= CUR.FdpImportQueueId
 											AND	I.ImportLineNumber			= CUR.LineNumber
 											AND CUR.FdpImportErrorTypeId	= 1
 		WHERE
@@ -213,14 +245,14 @@ AS
 		UNION
 		
 		SELECT 
-			  I.ImportQueueId
+			  I.FdpImportQueueId
 			, I.ImportLineNumber
 			, GETDATE() AS ErrorOn
 			, 3 AS FdpImportErrorTypeId -- Missing Derivative
 			, 'Missing derivative ''' + I.ImportDerivativeCode + ' - ' + I.ImportTrim + '''' AS ErrorMessage
 		FROM 
 		Fdp_Import_VW				AS I
-		LEFT JOIN Fdp_ImportError	AS CUR	ON	I.ImportQueueId				= CUR.ImportQueueId
+		LEFT JOIN Fdp_ImportError	AS CUR	ON	I.FdpImportQueueId			= CUR.FdpImportQueueId
 											AND	I.ImportLineNumber			= CUR.LineNumber
 											AND CUR.FdpImportErrorTypeId	= 3
 		WHERE
@@ -233,13 +265,13 @@ AS
 		UNION
 		
 		SELECT 
-			  I.ImportQueueId
+			  I.FdpImportQueueId
 			, I.ImportLineNumber
 			, GETDATE() AS ErrorOn
 			, 2 AS FdpImportErrorTypeId -- Missing Feature
 			, 'Missing feature ''' + I.ImportFeatureCode + ' - ' + I.ImportFeature + '''' AS ErrorMessage
 		FROM Fdp_Import_VW			AS I
-		LEFT JOIN Fdp_ImportError	AS CUR	ON	I.ImportQueueId				= CUR.ImportQueueId
+		LEFT JOIN Fdp_ImportError	AS CUR	ON	I.FdpImportQueueId			= CUR.FdpImportQueueId
 											AND	I.ImportLineNumber			= CUR.LineNumber
 											AND CUR.FdpImportErrorTypeId	= 2
 		WHERE
@@ -252,13 +284,13 @@ AS
 		UNION
 		
 		SELECT 
-			  I.ImportQueueId
+			  I.FdpImportQueueId
 			, I.ImportLineNumber
 			, GETDATE() AS ErrorOn
 			, 4 AS FdpImportErrorTypeId -- Missing Trim
 			, 'Missing trim ''' + I.ImportTrim + '''' AS ErrorMessage
 		FROM Fdp_Import_VW			AS I
-		LEFT JOIN Fdp_ImportError	AS CUR	ON	I.ImportQueueId				= CUR.ImportQueueId
+		LEFT JOIN Fdp_ImportError	AS CUR	ON	I.FdpImportQueueId			= CUR.FdpImportQueueId
 											AND	I.ImportLineNumber			= CUR.LineNumber
 											AND CUR.FdpImportErrorTypeId	= 4
 		WHERE
@@ -272,3 +304,17 @@ AS
 	ORDER BY
 	ImportLineNumber, FdpImportErrorTypeId;
 	
+	-- Update the status of the import queue item
+	
+	UPDATE Q 
+		SET FdpImportStatusId = 
+			CASE 
+				WHEN E.FdpImportErrorId IS NOT NULL THEN 4 -- Error
+				ELSE 3 -- Processed
+			END
+	FROM Fdp_ImportQueue		AS Q
+	JOIN Fdp_Import				AS I ON Q.FdpImportQueueId = I.FdpImportQueueId
+	LEFT JOIN Fdp_ImportError	AS E ON Q.FdpImportQueueId = E.FdpImportQueueId
+									 AND E.IsExcluded = 0
+	WHERE
+	I.FdpImportId = @FdpImportId;

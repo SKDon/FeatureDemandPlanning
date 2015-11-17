@@ -21,6 +21,8 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [Idx_Prog_Engine]
     ON [dbo].[OXO_Programme_Engine]([Programme_Id] ASC);
@@ -54,4 +56,9 @@ AS BEGIN
 	END
 
 END
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_OXO_Programme_Engine_Active]
+    ON [dbo].[OXO_Programme_Engine]([Active] ASC);
 

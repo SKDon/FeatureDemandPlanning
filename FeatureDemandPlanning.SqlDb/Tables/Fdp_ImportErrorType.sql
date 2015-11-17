@@ -2,6 +2,9 @@
     [FdpImportErrorTypeId] INT            NOT NULL,
     [Type]                 NVARCHAR (50)  NOT NULL,
     [Description]          NVARCHAR (MAX) NOT NULL,
+    [WorkflowOrder]        INT            DEFAULT ((0)) NULL,
     CONSTRAINT [PK_Fdp_ImportErrorType] PRIMARY KEY CLUSTERED ([FdpImportErrorTypeId] ASC)
 );
+
+
 

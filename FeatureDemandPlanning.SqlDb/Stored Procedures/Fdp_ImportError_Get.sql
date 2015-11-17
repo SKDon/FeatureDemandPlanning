@@ -6,7 +6,7 @@ AS
 	
 	SELECT 
 		  E.FdpImportId
-		, E.ImportQueueId
+		, E.FdpImportQueueId AS ImportQueueId
 		, E.ProgrammeId
 		, E.Gateway
 		, E.FdpImportErrorId

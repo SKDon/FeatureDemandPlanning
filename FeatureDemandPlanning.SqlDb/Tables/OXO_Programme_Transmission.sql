@@ -17,6 +17,8 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [Idx_Prog_Trans]
     ON [dbo].[OXO_Programme_Transmission]([Programme_Id] ASC);
@@ -56,3 +58,8 @@ AS BEGIN
 	END
 
 END
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_OXO_Programme_Transmission_Active]
+    ON [dbo].[OXO_Programme_Transmission]([Active] ASC);
+

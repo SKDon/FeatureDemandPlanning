@@ -1,28 +1,35 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_ImportQueue_Get]
-	  @ImportQueueId	INT
+	@FdpImportQueueId	INT
 AS
 	SET NOCOUNT ON;
 	
-	IF @ImportQueueId IS NOT NULL 
-		AND NOT EXISTS(SELECT TOP 1 1 FROM ImportQueue WHERE ImportQueueId = @ImportQueueId)
+	IF @FdpImportQueueId IS NOT NULL 
+		AND NOT EXISTS(SELECT TOP 1 1 FROM Fdp_ImportQueue WHERE FdpImportQueueId = @FdpImportQueueId)
 		RAISERROR (N'Import item does not exist', 16, 1);
 		
 	SELECT 
-		  Q.ImportQueueId
+		  Q.FdpImportQueueId
+		, I.FdpImportId
 		, Q.CreatedOn
 		, Q.CreatedBy
-		, Q.ImportTypeId
+		, Q.FdpImportTypeId
 		, Q.[Type]
-		, Q.ImportStatusId
+		, Q.FdpImportStatusId
 		, Q.[Status]
+		, Q.OriginalFileName
 		, Q.FilePath
 		, Q.UpdatedOn
 		, Q.Error
 		, Q.ErrorOn
-		, I.ProgrammeId
+		, V.Id AS ProgrammeId
+		, V.VehicleName
+		, V.VehicleAKA
+		, V.ModelYear
 		, I.Gateway
+		, CAST(CASE WHEN Q.ErrorOn IS NOT NULL THEN 1 ELSE 0 END AS BIT) AS HasErrors
 		
-	FROM ImportQueue_VW AS Q
-	JOIN Fdp_Import AS I ON Q.ImportQueueId = I.ImportQueueId
+	FROM Fdp_ImportQueue_VW AS Q
+	JOIN Fdp_Import			AS I	ON Q.FdpImportQueueId	= I.FdpImportQueueId
+	JOIN OXO_Programme_VW	AS V	ON	I.ProgrammeId		= V.Id
 	WHERE
-	(@ImportQueueId IS NULL OR Q.ImportQueueId = @ImportQueueId);
+	(@FdpImportQueueId IS NULL OR Q.FdpImportQueueId = @FdpImportQueueId);

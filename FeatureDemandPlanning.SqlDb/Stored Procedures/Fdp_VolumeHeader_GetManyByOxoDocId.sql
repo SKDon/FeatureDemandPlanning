@@ -26,12 +26,14 @@ AS
 	)
 	SELECT DISTINCT
 		  V.FdpVolumeHeaderId
+		, D.OXODocId
 		, V.CreatedOn
 		, V.CreatedBy
 		, V.IsManuallyEntered
 		, I.FilePath			AS ImportFilePath
 		, P.Id					AS ProgrammeId
 		, P.VehicleMake
+		, P.VehicleName + ' - ' + P.VehicleAKA AS CarLine
 		, P.VehicleName
 		, P.VehicleAKA
 		, P.ModelYear

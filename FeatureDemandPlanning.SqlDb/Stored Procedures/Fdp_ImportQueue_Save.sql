@@ -1,50 +1,46 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_ImportQueue_Save]
-	  @ImportQueueId	INT = NULL OUTPUT
-	, @SystemUser		NVARCHAR(16)
-	, @FilePath			NVARCHAR(MAX)
-	, @ImportTypeId		INT
-	, @ImportStatusId	INT
+	  @CDSId				NVARCHAR(16)
+	, @OriginalFileName		NVARCHAR(100)
+	, @FilePath				NVARCHAR(MAX)
+	, @FdpImportTypeId		INT
+	, @FdpImportStatusId	INT
+	, @ProgrammeId			INT
+	, @Gateway				NVARCHAR(10)
 AS
 	SET NOCOUNT ON;
-	
-	IF @ImportQueueId IS NOT NULL 
-		AND NOT EXISTS(SELECT TOP 1 1 FROM ImportQueue WHERE ImportQueueId = @ImportQueueId)
-		RAISERROR (N'Import item does not exist', 16, 1);
 		
-	IF NOT EXISTS(SELECT TOP 1 1 FROM ImportStatus WHERE ImportStatusId = @ImportStatusId)
-		RAISERROR (N'Status not found', 16, 1);
-		
-	IF NOT EXISTS(SELECT TOP 1 1 FROM ImportType WHERE ImportTypeId = @ImportTypeId)
-		RAISERROR (N'Type not found', 16, 1);
+	DECLARE @FdpImportQueueId INT;
 	
-	PRINT 'Import qid: ' + CAST(ISNULL(@ImportQueueId, -1) AS VARCHAR(10))
+	INSERT INTO Fdp_ImportQueue
+	(
+		  CreatedBy
+		, OriginalFileName
+		, FilePath
+		, FdpImportTypeId
+		, FdpImportStatusId
+	)
+	VALUES
+	(
+		  @CDSId
+		, @OriginalFileName
+		, @FilePath
+		, @FdpImportTypeId
+		, @FdpImportStatusId
+	);
 	
-	IF @ImportQueueId IS NULL
-	BEGIN
-		INSERT INTO ImportQueue
-		(
-			  CreatedBy
-			, FilePath
-			, ImportTypeId
-			, ImportStatusId
-		)
-		VALUES
-		(
-			  @SystemUser
-			, @FilePath
-			, @ImportTypeId
-			, @ImportStatusId
-		)
+	SET @FdpImportQueueId = SCOPE_IDENTITY();
 	
-		SET @ImportQueueId = SCOPE_IDENTITY();
-	END
-	ELSE
-	BEGIN
-		UPDATE ImportQueue SET 
-			  FilePath = @FilePath
-			, ImportStatusId = @ImportStatusId
-			, UpdatedOn = GETDATE()
-			--, UpdateBy = @SystemUser 
-		WHERE
-		ImportQueueId = @ImportQueueId
-	END;
+	INSERT INTO Fdp_Import
+	(
+		  FdpImportQueueId
+		, ProgrammeId
+		, Gateway
+	)
+	VALUES
+	(
+		  @FdpImportQueueId
+		, @ProgrammeId
+		, @Gateway
+	);
+	
+	EXEC Fdp_ImportQueue_Get @FdpImportQueueId;

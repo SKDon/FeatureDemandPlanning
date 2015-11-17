@@ -44,7 +44,7 @@ AS
 			JOIN Fdp_ForecastVehicle	AS FV	ON F.ForecastVehicleId	= FV.ForecastVehicleId
 			LEFT JOIN Fdp_TrimLevels	AS T	ON FV.ProgrammeId		= T.ProgrammeId
 			WHERE
-			(@ForecastId IS NULL OR F.ForecastId = @ForecastId)
+			(@ForecastId IS NULL OR F.FdpForecastId = @ForecastId)
 		)
 		AS QUERY
 		PIVOT 

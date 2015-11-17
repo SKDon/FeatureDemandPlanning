@@ -1,4 +1,5 @@
-﻿CREATE VIEW Fdp_Market_VW AS
+﻿
+CREATE VIEW [dbo].[Fdp_Market_VW] AS
 	
 	SELECT 
 		  STD.Name
@@ -25,11 +26,19 @@
 	LEFT JOIN 
 	(
 		SELECT 
-			  MAP1.ImportMarket
-			, MAX(MAP1.MappedMarket) AS MappedMarket
-		FROM
-		Fdp_MarketMapping AS MAP1
-		GROUP BY
-		MAP1.ImportMarket
+			  M1.ImportMarket
+			, M1.MappedMarketId
+		FROM Fdp_MarketMapping AS M1
+		JOIN
+		(
+			SELECT 
+				  MAP1.ImportMarket
+				, MAP1.FdpMarketMappingId
+				, RANK() OVER (ORDER BY MAP1.FdpMarketMappingId DESC) AS Rk
+			FROM
+			Fdp_MarketMapping AS MAP1
+		)
+		AS M ON  M1.FdpMarketMappingId = M.FdpMarketMappingId 
+			 AND M.Rk = 1
 	)
-	AS MAP ON STD.Market_Name = MAP.MappedMarket
+	AS MAP ON STD.Market_Id = MAP.MappedMarketId

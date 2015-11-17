@@ -14,17 +14,19 @@
     CONSTRAINT [FK_Fdp_VolumeDataItem_Fdp_VolumeHeader] FOREIGN KEY ([FdpVolumeHeaderId]) REFERENCES [dbo].[Fdp_VolumeHeader] ([FdpVolumeHeaderId]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Feature_Ext] FOREIGN KEY ([FeatureId]) REFERENCES [dbo].[OXO_Feature_Ext] ([Id]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Master_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[OXO_Master_Market] ([Id]),
-    CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Engine] FOREIGN KEY ([EngineId]) REFERENCES [dbo].[OXO_Programme_Engine] ([Id]),
-    CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_MarketGroup] FOREIGN KEY ([MarketGroupId]) REFERENCES [dbo].[OXO_Programme_MarketGroup] ([Id]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Model] FOREIGN KEY ([ModelId]) REFERENCES [dbo].[OXO_Programme_Model] ([Id]),
-    CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id]),
-    CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Trim] FOREIGN KEY ([TrimId]) REFERENCES [dbo].[OXO_Programme_Trim] ([Id])
+    CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id])
 );
+
+
 
 
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_FdpVolumeHeaderId]
-    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC);
+    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC)
+    INCLUDE([MarketId], [TrimId], [EngineId], [FeatureId], [Volume]);
+
+
 
 
 GO
