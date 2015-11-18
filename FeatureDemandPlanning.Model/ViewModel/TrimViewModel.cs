@@ -12,55 +12,52 @@ using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {
-    public class DerivativeViewModel : SharedModelBase
+    public class TrimViewModel : SharedModelBase
     {
-        public FdpDerivative Derivative { get; set; }
-        public PagedResults<FdpDerivative> Derivatives { get; set; }
+        public FdpTrim Trim { get; set; }
+        public PagedResults<FdpTrim> Trims { get; set; }
         public IEnumerable<Programme> Programmes { get; set; }
-        public IEnumerable<ModelBody> Bodies { get; set; }
-        public IEnumerable<ModelEngine> Engines { get; set; }
-        public IEnumerable<ModelTransmission> Transmissions { get; set; }
         public IEnumerable<CarLine> CarLines { get; set; }
         public IEnumerable<Gateway> Gateways { get; set; }
         public IEnumerable<ModelYear> ModelYears { get; set; }
 
-        public DerivativeAction CurrentAction { get; set; }
+        public TrimAction CurrentAction { get; set; }
     
-        public DerivativeViewModel() : base()
+        public TrimViewModel() : base()
         {
             InitialiseMembers();
         }
-        public DerivativeViewModel(SharedModelBase baseModel) : base(baseModel)
+        public TrimViewModel(SharedModelBase baseModel) : base(baseModel)
         {
             InitialiseMembers();
         }
-        public static async Task<DerivativeViewModel> GetModel(IDataContext context, DerivativeFilter derivativeFilter)
+        public static async Task<TrimViewModel> GetModel(IDataContext context, TrimFilter trimFilter)
         {
-            DerivativeViewModel model = null;
+            TrimViewModel model = null;
 
-            if (derivativeFilter.Action == DerivativeAction.Delete || derivativeFilter.Action == DerivativeAction.Derivative)
+            if (trimFilter.Action == TrimAction.Delete || trimFilter.Action == TrimAction.Trim)
             {
-                model = await GetFullAndPartialViewModelForDerivative(context, derivativeFilter);
+                model = await GetFullAndPartialViewModelForTrim(context, trimFilter);
             }
-            else if (derivativeFilter.Action == DerivativeAction.Derivatives)
+            else if (trimFilter.Action == TrimAction.TrimLevels)
             {
-                model = await GetFullAndPartialViewModelForDerivatives(context, derivativeFilter);
+                model = await GetFullAndPartialViewModelForTrims(context, trimFilter);
             }
             else
             {
-                model = GetFullAndPartialViewModel(context, derivativeFilter);
+                model = GetFullAndPartialViewModel(context, trimFilter);
             }
-            if (derivativeFilter.Action != DerivativeAction.NotSet)
+            if (trimFilter.Action != TrimAction.NotSet)
             {
-                model.IdentifierPrefix = Enum.GetName(derivativeFilter.Action.GetType(), derivativeFilter.Action);
+                model.IdentifierPrefix = Enum.GetName(trimFilter.Action.GetType(), trimFilter.Action);
             }
            
             return model;
         }
-        private static DerivativeViewModel GetFullAndPartialViewModel(IDataContext context,
-                                                                      DerivativeFilter filter)
+        private static TrimViewModel GetFullAndPartialViewModel(IDataContext context,
+                                                                      TrimFilter filter)
         {
-            var model = new DerivativeViewModel(SharedModelBase.GetBaseModel(context))
+            var model = new TrimViewModel(SharedModelBase.GetBaseModel(context))
             {
                 Configuration = context.ConfigurationSettings,
             };
@@ -68,39 +65,36 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return model;
         }
-        private static async Task<DerivativeViewModel> GetFullAndPartialViewModelForDerivative(IDataContext context,
-                                                                                               DerivativeFilter filter)
+        private static async Task<TrimViewModel> GetFullAndPartialViewModelForTrim(IDataContext context,
+                                                                                               TrimFilter filter)
         {
-            var model = new DerivativeViewModel()
+            var model = new TrimViewModel()
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                 PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
                 Configuration = context.ConfigurationSettings
             };
-            var derivative = await context.Vehicle.GetFdpDerivative(filter);
+            var trim = await context.Vehicle.GetFdpTrim(filter);
             var programmeFilter = new ProgrammeFilter()
             {
-                ProgrammeId = derivative.ProgrammeId,
-                Gateway = derivative.Gateway
+                ProgrammeId = trim.ProgrammeId,
+                Gateway = trim.Gateway
             };
             HydrateModelWithCommonProperties(model, context, programmeFilter);
             
-            if (!(derivative is EmptyFdpDerivative))
+            if (!(trim is EmptyFdpTrim))
             {
-                derivative.Programme = model.Programmes.FirstOrDefault(p => p.Id == derivative.ProgrammeId.GetValueOrDefault());
-                derivative.Body = model.Bodies.FirstOrDefault(b => b.Id == derivative.BodyId);
-                derivative.Engine = model.Engines.FirstOrDefault(e => e.Id == derivative.EngineId);
-                derivative.Transmission = model.Transmissions.FirstOrDefault(t => t.Id == derivative.TransmissionId);
+                trim.Programme = model.Programmes.FirstOrDefault(p => p.Id == trim.ProgrammeId.GetValueOrDefault());
             }
-            model.Derivative = derivative;
+            model.Trim = trim;
            
             return model;
         }
-        private static async Task<DerivativeViewModel> GetFullAndPartialViewModelForDerivatives(IDataContext context,
-                                                                                                DerivativeFilter filter)
+        private static async Task<TrimViewModel> GetFullAndPartialViewModelForTrims(IDataContext context,
+                                                                                                TrimFilter filter)
         {
             var baseModel = SharedModelBase.GetBaseModel(context);
-            var model = new DerivativeViewModel()
+            var model = new TrimViewModel()
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                 PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
@@ -115,47 +109,38 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
             HydrateModelWithCommonProperties(model, context, programmeFilter);
 
-            model.Derivatives = await context.Vehicle.ListFdpDerivatives(filter);
-            model.TotalPages = model.Derivatives.TotalPages;
-            model.TotalRecords = model.Derivatives.TotalRecords;
-            model.TotalDisplayRecords = model.Derivatives.TotalDisplayRecords;
+            model.Trims = await context.Vehicle.ListFdpTrims(filter);
+            model.TotalPages = model.Trims.TotalPages;
+            model.TotalRecords = model.Trims.TotalRecords;
+            model.TotalDisplayRecords = model.Trims.TotalDisplayRecords;
 
-            foreach (var derivative in model.Derivatives.CurrentPage)
+            foreach (var trim in model.Trims.CurrentPage)
             {
-                derivative.Programme = model.Programmes.FirstOrDefault(p => p.Id == derivative.ProgrammeId.GetValueOrDefault());
-                derivative.Body = model.Bodies.FirstOrDefault(b => b.Id == derivative.BodyId);
-                derivative.Engine = model.Engines.FirstOrDefault(e => e.Id == derivative.EngineId);
-                derivative.Transmission = model.Transmissions.FirstOrDefault(t => t.Id == derivative.TransmissionId);
+                trim.Programme = model.Programmes.FirstOrDefault(p => p.Id == trim.ProgrammeId.GetValueOrDefault());
             }
 
             return model;
         }
-        private static void HydrateModelWithCommonProperties(DerivativeViewModel model, IDataContext context)
+        private static void HydrateModelWithCommonProperties(TrimViewModel model, IDataContext context)
         {
             HydrateModelWithCommonProperties(model, context, new ProgrammeFilter());
         }
-        private static void HydrateModelWithCommonProperties(DerivativeViewModel model, IDataContext context, ProgrammeFilter programmeFilter)
+        private static void HydrateModelWithCommonProperties(TrimViewModel model, IDataContext context, ProgrammeFilter programmeFilter)
         {
             model.Programmes = context.Vehicle.ListProgrammes(programmeFilter);
-            model.Bodies = context.Vehicle.ListBodies(programmeFilter);
-            model.Engines = context.Vehicle.ListEngines(programmeFilter);
-            model.Transmissions = context.Vehicle.ListTransmissions(programmeFilter);
             model.Gateways = model.Programmes.ListGateways();
             model.CarLines = model.Programmes.ListCarLines();
             model.ModelYears = model.Programmes.ListModelYears();
         }
         private void InitialiseMembers()
         {
-            Derivative = new EmptyFdpDerivative();
+            Trim = new EmptyFdpTrim();
             IdentifierPrefix = "Page";
             Programmes = Enumerable.Empty<Programme>();
-            Bodies = Enumerable.Empty<ModelBody>();
-            Engines = Enumerable.Empty<ModelEngine>();
-            Transmissions = Enumerable.Empty<ModelTransmission>();
             Gateways = Enumerable.Empty<Gateway>();
             CarLines = Enumerable.Empty<CarLine>();
             ModelYears = Enumerable.Empty<ModelYear>();
-            CurrentAction = DerivativeAction.NotSet;
+            CurrentAction = TrimAction.NotSet;
         }
 
         

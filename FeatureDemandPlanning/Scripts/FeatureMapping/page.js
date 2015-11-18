@@ -1,8 +1,8 @@
 ﻿"use strict";
 
-var page = namespace("FeatureDemandPlanning.Derivative");
+var page = namespace("FeatureDemandPlanning.Feature");
 
-page.DerivativeMappingsPage = function (models) {
+page.FeatureMappingsPage = function (models) {
     var uid = 0;
     var privateStore = {};
     var me = this;
@@ -99,8 +99,8 @@ page.DerivativeMappingsPage = function (models) {
     };
     me.actionTriggered = function (invokedOn, action) {
         var eventArgs = {
-            DerivativeMappingId: $(this).attr("data-target"),
-            DerivativeCode: $(this).attr("data-content"),
+            FeatureMappingId: $(this).attr("data-target"),
+            FeatureCode: $(this).attr("data-content"),
             Action: parseInt($(this).attr("data-role"))
         };
         $(document).trigger("Action", eventArgs);
@@ -109,15 +109,15 @@ page.DerivativeMappingsPage = function (models) {
         $(".dataTable td").contextMenu({
             menuSelector: "#contextMenu",
             dynamicContent: me.getContextMenu,
-            contentIdentifier: me.getDerivativeMappingId,
+            contentIdentifier: me.getFeatureMappingId,
             menuSelected: me.actionTriggered
         });
     };
     me.configureDataTables = function () {
 
-        var derivativesUri = getDerivativeMappingModel().getDerivativeMappingsUri();
-        var derivativeIndex = 0;
-        var derivativeCodeIndex = 5;
+        var featuresUri = getFeatureMappingModel().getFeatureMappingsUri();
+        var featureIndex = 0;
+        var featureCodeIndex = 5;
 
         $(".dataTable").DataTable({
             "serverSide": true,
@@ -160,46 +160,33 @@ page.DerivativeMappingsPage = function (models) {
                     "sClass": "text-center"
                 }
                 , {
-                    "sTitle": "Import Derivative",
-                    "sName": "DERIVATIVE",
+                    "sTitle": "Import Feature",
+                    "sName": "FEATURE",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center"
                 }
                 , {
                     "sTitle": "Mapping",
-                    "sName": "DERIVATIVE",
+                    "sName": "MAPPING",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center"
                 }
                 , {
-                    "sTitle": "Body",
-                    "sName": "BODY",
+                    "sTitle": "Brand Description",
+                    "sName": "BRAND_DESCRIPTION",
                     "bSearchable": true,
                     "bSortable": true,
-                    "sClass": "text-center"
+                    "sClass": "text-left"
                 }
-                , {
-                    "sTitle": "Engine",
-                    "sName": "ENGINE",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Transmission",
-                    "sName": "TRANSMISSION",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
+     
             ],
             "fnCreatedRow": function (row, data, index) {
-                var derivativeMappingId = data[derivativeIndex];
-                var derivativeCode = data[derivativeCodeIndex];
-                $(row).attr("data-target", derivativeMappingId);
-                $(row).attr("data-content", derivativeCode);
+                var featureMappingId = data[featureIndex];
+                var featureCode = data[featureCodeIndex];
+                $(row).attr("data-target", featureMappingId);
+                $(row).attr("data-content", featureCode);
             },
             "fnDrawCallback": function (oSettings) {
                 //$(document).trigger("Results", me.getSummary());
@@ -207,14 +194,14 @@ page.DerivativeMappingsPage = function (models) {
             }
         });
     };
-    me.getContextMenu = function (derivativeMappingId) {
-        var params = { DerivativeMappingId: derivativeMappingId };
+    me.getContextMenu = function (featureMappingId) {
+        var params = { FeatureMappingId: featureMappingId };
         $("#contextMenu").html("");
         $.ajax({
             "dataType": "html",
             "async": true,
             "type": "POST",
-            "url": getDerivativeMappingModel().getActionsUri(),
+            "url": getFeatureMappingModel().getActionsUri(),
             "data": params,
             "success": function (response) {
                 $("#contextMenu").html(response);
@@ -232,8 +219,8 @@ page.DerivativeMappingsPage = function (models) {
     };
     me.getData = function (data, callback, settings) {
         var params = me.getParameters(data);
-        var model = getDerivativeMappingModel();
-        var uri = model.getDerivativeMappingsUri();
+        var model = getFeatureMappingModel();
+        var uri = model.getFeatureMappingsUri();
         settings.jqXHR = $.ajax({
             "dataType": "json",
             "type": "POST",
@@ -253,7 +240,7 @@ page.DerivativeMappingsPage = function (models) {
     me.getParameters = function (data) {
         var filter = getFilter();
         var params = $.extend({}, data, {
-            "DerivativeMappingId": me.getDerivativeMappingId(),
+            "FeatureMappingId": me.getFeatureMappingId(),
             "CarLine": me.getSelectedCarLine(),
             "ModelYear": me.getSelectedModelYear(),
             "Gateway": me.getSelectedGateway(),
@@ -261,10 +248,10 @@ page.DerivativeMappingsPage = function (models) {
         });
         return params;
     };
-    me.getDerivativeMappingId = function (cell) {
+    me.getFeatureMappingId = function (cell) {
         return $(cell).closest("tr").attr("data-target");
     };
-    me.getDerivativeCode = function (cell) {
+    me.getFeatureCode = function (cell) {
         return $(cell).closest("tr").attr("data-content");
     };
     me.initialise = function () {
@@ -294,7 +281,7 @@ page.DerivativeMappingsPage = function (models) {
 
         if (actionModel.isModalAction()) {
             getModal().showModal({
-                Title: model.getActionTitle(action, eventArgs.DerivativeCode),
+                Title: model.getActionTitle(action, eventArgs.FeatureCode),
                 Uri: model.getActionContentUri(action),
                 Data: JSON.stringify(eventArgs),
                 Model: model,
@@ -376,7 +363,7 @@ page.DerivativeMappingsPage = function (models) {
         return getModel("Modal");
     };
     function getModelForAction(actionId) {
-        return getDerivativeMappingModel();
+        return getFeatureMappingModel();
     }
     function getModels() {
         return privateStore[me.id].Models;
@@ -391,14 +378,14 @@ page.DerivativeMappingsPage = function (models) {
         });
         return model;
     };
-    function getDerivativeMappingModel() {
-        return getModel("DerivativeMapping");
+    function getFeatureMappingModel() {
+        return getModel("FeatureMapping");
     };
     function getFilter(pageSize, pageIndex) {
-        var model = getDerivativeMappingModel();
+        var model = getFeatureMappingModel();
         var pageSize = model.getPageSize();
         var pageIndex = model.getPageIndex();
-        var filter = new FeatureDemandPlanning.Derivative.DerivativeMappingFilter();
+        var filter = new FeatureDemandPlanning.Feature.FeatureMappingFilter();
 
         filter.PageIndex = pageIndex;
         filter.PageSize = pageSize;

@@ -1,8 +1,8 @@
 ﻿"use strict";
 
-var page = namespace("FeatureDemandPlanning.Derivative");
+var page = namespace("FeatureDemandPlanning.Trim");
 
-page.DerivativesPage = function (models) {
+page.TrimsPage = function (models) {
     var uid = 0;
     var privateStore = {};
     var me = this;
@@ -99,8 +99,8 @@ page.DerivativesPage = function (models) {
     };
     me.actionTriggered = function (invokedOn, action) {
         var eventArgs = {
-            DerivativeId: $(this).attr("data-target"),
-            DerivativeCode: $(this).attr("data-content"),
+            TrimId: $(this).attr("data-target"),
+            TrimCode: $(this).attr("data-content"),
             Action: parseInt($(this).attr("data-role"))
         };
         $(document).trigger("Action", eventArgs);
@@ -109,15 +109,15 @@ page.DerivativesPage = function (models) {
         $(".dataTable td").contextMenu({
             menuSelector: "#contextMenu",
             dynamicContent: me.getContextMenu,
-            contentIdentifier: me.getDerivativeId,
+            contentIdentifier: me.getTrimId,
             menuSelected: me.actionTriggered
         });
     };
     me.configureDataTables = function () {
 
-        var derivativesUri = getDerivativeModel().getDerivativesUri();
-        var derivativeIndex = 0;
-        var derivativeCodeIndex = 5;
+        var trimsUri = getTrimModel().getTrimsUri();
+        var trimIndex = 0;
+        var trimCodeIndex = 5;
 
         $(".dataTable").DataTable({
             "serverSide": true,
@@ -160,7 +160,7 @@ page.DerivativesPage = function (models) {
                     "sClass": "text-center"
                 }
                 , {
-                    "sTitle": "Derivative",
+                    "sTitle": "Trim",
                     "sName": "DERIVATIVE",
                     "bSearchable": true,
                     "bSortable": true,
@@ -189,10 +189,10 @@ page.DerivativesPage = function (models) {
                 }
             ],
             "fnCreatedRow": function (row, data, index) {
-                var derivativeId = data[derivativeIndex];
-                var derivativeCode = data[derivativeCodeIndex];
-                $(row).attr("data-target", derivativeId);
-                $(row).attr("data-content", derivativeCode);
+                var trimId = data[trimIndex];
+                var trimCode = data[trimCodeIndex];
+                $(row).attr("data-target", trimId);
+                $(row).attr("data-content", trimCode);
             },
             "fnDrawCallback": function (oSettings) {
                 //$(document).trigger("Results", me.getSummary());
@@ -200,14 +200,14 @@ page.DerivativesPage = function (models) {
             }
         });
     };
-    me.getContextMenu = function (derivativeId) {
-        var params = { DerivativeId: derivativeId };
+    me.getContextMenu = function (trimId) {
+        var params = { TrimId: trimId };
         $("#contextMenu").html("");
         $.ajax({
             "dataType": "html",
             "async": true,
             "type": "POST",
-            "url": getDerivativeModel().getActionsUri(),
+            "url": getTrimModel().getActionsUri(),
             "data": params,
             "success": function (response) {
                 $("#contextMenu").html(response);
@@ -222,8 +222,8 @@ page.DerivativesPage = function (models) {
     };
     me.getData = function (data, callback, settings) {
         var params = me.getParameters(data);
-        var model = getDerivativeModel();
-        var uri = model.getDerivativesUri();
+        var model = getTrimModel();
+        var uri = model.getTrimsUri();
         settings.jqXHR = $.ajax({
             "dataType": "json",
             "type": "POST",
@@ -243,7 +243,7 @@ page.DerivativesPage = function (models) {
     me.getParameters = function (data) {
         var filter = getFilter();
         var params = $.extend({}, data, {
-            "DerivativeId": me.getDerivativeId(),
+            "TrimId": me.getTrimId(),
             "CarLine": me.getSelectedCarLine(),
             "ModelYear": me.getSelectedModelYear(),
             "Gateway": me.getSelectedGateway(),
@@ -251,10 +251,10 @@ page.DerivativesPage = function (models) {
         });
         return params;
     };
-    me.getDerivativeId = function (cell) {
+    me.getTrimId = function (cell) {
         return $(cell).closest("tr").attr("data-target");
     };
-    me.getDerivativeCode = function (cell) {
+    me.getTrimCode = function (cell) {
         return $(cell).closest("tr").attr("data-content");
     };
     me.initialise = function () {
@@ -282,7 +282,7 @@ page.DerivativesPage = function (models) {
 
         if (actionModel.isModalAction()) {
             getModal().showModal({
-                Title: model.getActionTitle(action, eventArgs.DerivativeCode),
+                Title: model.getActionTitle(action, eventArgs.TrimCode),
                 Uri: model.getActionContentUri(action),
                 Data: JSON.stringify(eventArgs),
                 Model: model,
@@ -364,7 +364,7 @@ page.DerivativesPage = function (models) {
         return getModel("Modal");
     };
     function getModelForAction(actionId) {
-        return getDerivativeModel();
+        return getTrimModel();
     }
     function getModels() {
         return privateStore[me.id].Models;
@@ -379,14 +379,14 @@ page.DerivativesPage = function (models) {
         });
         return model;
     };
-    function getDerivativeModel() {
-        return getModel("Derivative");
+    function getTrimModel() {
+        return getModel("Trim");
     };
     function getFilter(pageSize, pageIndex) {
-        var model = getDerivativeModel();
+        var model = getTrimModel();
         var pageSize = model.getPageSize();
         var pageIndex = model.getPageIndex();
-        var filter = new FeatureDemandPlanning.Derivative.DerivativeFilter();
+        var filter = new FeatureDemandPlanning.Trim.TrimFilter();
 
         filter.PageIndex = pageIndex;
         filter.PageSize = pageSize;

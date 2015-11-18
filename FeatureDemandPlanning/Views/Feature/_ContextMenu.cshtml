@@ -1,9 +1,9 @@
 ﻿@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.DerivativeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.FeatureViewModel
 
 <li>
-    <a tabindex="-1" href="#" data-target="@Model.Derivative.FdpDerivativeId" data-role="@((int)enums.DerivativeAction.Delete)" data-content="@Model.Derivative.DerivativeCode">
-        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Derivative '@Model.Derivative.DerivativeCode'
+    <a tabindex="-1" href="#" data-target="@Model.Feature.FdpFeatureId" data-role="@((int)enums.FeatureAction.Delete)" data-content="@Model.Feature.FeatureCode">
+        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Feature '@Model.Feature.FeatureCode'
     </a>
 </li>

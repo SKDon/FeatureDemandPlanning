@@ -15,48 +15,48 @@ using System.Web.Mvc;
 
 namespace FeatureDemandPlanning.Controllers
 {
-    public class DerivativeController : ControllerBase
+    public class TrimController : ControllerBase
     {
-        public DerivativeController() : base()
+        public TrimController() : base()
         {
             ControllerType = ControllerType.SectionChild;
         }
         [HttpGet]
         [ActionName("Index")]
-        public ActionResult UserPage()
+        public ActionResult TrimPage()
         {
-            return RedirectToAction("DerivativePage");
+            return RedirectToAction("TrimPage");
         }
         [HttpGet]
-        public async Task<ActionResult> DerivativePage(DerivativeParameters parameters)
+        public async Task<ActionResult> TrimPage(TrimParameters parameters)
         {
-            var filter = new DerivativeFilter()
+            var filter = new TrimFilter()
             {
                 PageIndex = PageIndex,
                 PageSize = PageSize
             };
-            return View(await DerivativeViewModel.GetModel(DataContext, filter));
+            return View(await TrimViewModel.GetModel(DataContext, filter));
         }
         [HttpPost]
         [HandleErrorWithJson]
-        public async Task<ActionResult> ListDerivatives(DerivativeParameters parameters)
+        public async Task<ActionResult> ListTrims(TrimParameters parameters)
         {
-            ValidateDerivativeParameters(parameters, DerivativeParametersValidator.NoValidation);
+            ValidateTrimParameters(parameters, TrimParametersValidator.NoValidation);
 
-            var filter = new DerivativeFilter()
+            var filter = new TrimFilter()
             {
                 FilterMessage = parameters.FilterMessage,
                 CarLine = parameters.CarLine,
                 ModelYear = parameters.ModelYear,
                 Gateway = parameters.Gateway,
-                Action = DerivativeAction.Derivatives
+                Action = TrimAction.TrimLevels
             };
             filter.InitialiseFromJson(parameters);
 
-            var results = await DerivativeViewModel.GetModel(DataContext, filter);
+            var results = await TrimViewModel.GetModel(DataContext, filter);
             var jQueryResult = new JQueryDataTableResultModel(results);
 
-            foreach (var result in results.Derivatives.CurrentPage)
+            foreach (var result in results.Trims.CurrentPage)
             {
                 jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
             }
@@ -64,65 +64,65 @@ namespace FeatureDemandPlanning.Controllers
             return Json(jQueryResult);
         }
         [HttpPost]
-        public async Task<ActionResult> ContextMenu(DerivativeParameters parameters)
+        public async Task<ActionResult> ContextMenu(TrimParameters parameters)
         {
-            ValidateDerivativeParameters(parameters, DerivativeParametersValidator.DerivativeIdentifier);
+            ValidateTrimParameters(parameters, TrimParametersValidator.TrimIdentifier);
 
-            var filter = DerivativeFilter.FromParameters(parameters);
-            filter.Action = DerivativeAction.Derivative;
+            var filter = TrimFilter.FromParameters(parameters);
+            filter.Action = TrimAction.Trim;
 
-            var derivativeView = await DerivativeViewModel.GetModel(DataContext, filter);
+            var derivativeView = await TrimViewModel.GetModel(DataContext, filter);
 
             return PartialView("_ContextMenu", derivativeView);
         }
         [HttpPost]
         [HandleError(View = "_ModalError")]
-        public async Task<ActionResult> ModalContent(DerivativeParameters parameters)
+        public async Task<ActionResult> ModalContent(TrimParameters parameters)
         {
-            ValidateDerivativeParameters(parameters, DerivativeParametersValidator.Action);
+            ValidateTrimParameters(parameters, TrimParametersValidator.Action);
 
-            var filter = DerivativeMappingFilter.FromParameters(parameters);
+            var filter = TrimMappingFilter.FromParameters(parameters);
             var derivativeView = await GetModelFromParameters(parameters);
 
             return PartialView(GetContentPartialViewName(parameters.Action), derivativeView);
         }
         [HttpPost]
         [HandleErrorWithJson]
-        public ActionResult ModalAction(DerivativeParameters parameters)
+        public ActionResult ModalAction(TrimParameters parameters)
         {
-            ValidateDerivativeParameters(parameters, DerivativeParametersValidator.DerivativeIdentifierWithAction);
-            ValidateDerivativeParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+            ValidateTrimParameters(parameters, TrimParametersValidator.TrimIdentifierWithAction);
+            ValidateTrimParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
         [HandleErrorWithJson]
-        public async Task<ActionResult> Delete(DerivativeParameters parameters)
+        public async Task<ActionResult> Delete(TrimParameters parameters)
         {
             var derivativeView = await GetModelFromParameters(parameters);
-            if (derivativeView.Derivative is EmptyFdpDerivative)
+            if (derivativeView.Trim is EmptyFdpTrim)
             {
-                return JsonGetFailure(string.Format("Derivative does not exist", parameters.DerivativeId));
+                return JsonGetFailure(string.Format("Trim does not exist", parameters.TrimId));
             }
 
-            derivativeView.Derivative = await DataContext.Vehicle.DeleteFdpDerivative(FdpDerivative.FromParameters(parameters));
-            if (derivativeView.Derivative is EmptyFdpDerivative)
+            derivativeView.Trim = await DataContext.Vehicle.DeleteFdpTrim(FdpTrim.FromParameters(parameters));
+            if (derivativeView.Trim is EmptyFdpTrim)
             {
-                return JsonGetFailure(string.Format("Derivative '{0}' could not be deleted", derivativeView.Derivative.DerivativeCode));
+                return JsonGetFailure(string.Format("Trim '{0}' could not be deleted", derivativeView.Trim.Name));
             }
 
             return JsonGetSuccess();
         }
-        private string GetContentPartialViewName(DerivativeAction forAction)
+        private string GetContentPartialViewName(TrimAction forAction)
         {
             return string.Format("_{0}", Enum.GetName(forAction.GetType(), forAction));
         }
-        private async Task<DerivativeViewModel> GetModelFromParameters(DerivativeParameters parameters)
+        private async Task<TrimViewModel> GetModelFromParameters(TrimParameters parameters)
         {
-            return await DerivativeViewModel.GetModel(DataContext, DerivativeMappingFilter.FromParameters(parameters));
+            return await TrimViewModel.GetModel(DataContext, TrimMappingFilter.FromParameters(parameters));
         }
-        private void ValidateDerivativeParameters(DerivativeParameters parameters, string ruleSetName)
+        private void ValidateTrimParameters(TrimParameters parameters, string ruleSetName)
         {
-            var validator = new DerivativeParametersValidator();
+            var validator = new TrimParametersValidator();
             var result = validator.Validate(parameters, ruleSet: ruleSetName);
             if (!result.IsValid)
             {
@@ -131,35 +131,35 @@ namespace FeatureDemandPlanning.Controllers
         }
     }
 
-    internal class DerivativeParametersValidator : AbstractValidator<DerivativeParameters>
+    internal class TrimParametersValidator : AbstractValidator<TrimParameters>
     {
-        public const string DerivativeIdentifier = "DERIVATIVE_ID";
+        public const string TrimIdentifier = "TRIM_ID";
         public const string NoValidation = "NO_VALIDATION";
         public const string Action = "ACTION";
-        public const string DerivativeIdentifierWithAction = "DERIVATIVE_ID_WITH_ACTION";
+        public const string TrimIdentifierWithAction = "TRIM_ID_WITH_ACTION";
 
-        public DerivativeParametersValidator()
+        public TrimParametersValidator()
         {
             RuleSet(NoValidation, () =>
             {
 
             });
-            RuleSet(DerivativeIdentifier, () =>
+            RuleSet(TrimIdentifier, () =>
             {
-                RuleFor(p => p.DerivativeId).NotNull().WithMessage("'DerivativeId' not specified");
+                RuleFor(p => p.TrimId).NotNull().WithMessage("'TrimId' not specified");
             });
             RuleSet(Action, () =>
             {
-                RuleFor(p => p.Action).NotEqual(a => DerivativeAction.NotSet).WithMessage("'Action' not specified");
+                RuleFor(p => p.Action).NotEqual(a => TrimAction.NotSet).WithMessage("'Action' not specified");
             });
-            RuleSet(DerivativeIdentifierWithAction, () =>
+            RuleSet(TrimIdentifierWithAction, () =>
             {
-                RuleFor(p => p.DerivativeId).NotNull().WithMessage("'DerivativeId' not specified");
-                RuleFor(p => p.Action).NotEqual(a => DerivativeAction.NotSet).WithMessage("'Action' not specified");
+                RuleFor(p => p.TrimId).NotNull().WithMessage("'TrimId' not specified");
+                RuleFor(p => p.Action).NotEqual(a => TrimAction.NotSet).WithMessage("'Action' not specified");
             });
-            RuleSet(Enum.GetName(typeof(DerivativeAction), DerivativeAction.Delete), () =>
+            RuleSet(Enum.GetName(typeof(TrimAction), TrimAction.Delete), () =>
             {
-                RuleFor(p => p.DerivativeId).NotNull().WithMessage("'DerivativeId' not specified");
+                RuleFor(p => p.TrimId).NotNull().WithMessage("'TrimId' not specified");
             });
         }
     }

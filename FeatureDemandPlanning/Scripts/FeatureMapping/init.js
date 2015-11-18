@@ -2,9 +2,9 @@
 
 $(document).ready(function () {
     modal = new FeatureDemandPlanning.Modal.Modal(params);
-    derivativeMapping = new FeatureDemandPlanning.Derivative.DerivativeMapping(params);
+    featureMapping = new FeatureDemandPlanning.Feature.FeatureMapping(params);
 
-    page = new FeatureDemandPlanning.Derivative.DerivativeMappingsPage([derivativeMapping, modal]);
+    page = new FeatureDemandPlanning.Feature.FeatureMappingsPage([featureMapping, modal]);
 
     page.initialise();
 });

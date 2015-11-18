@@ -9,6 +9,7 @@ using FeatureDemandPlanning.Model.Helpers;
 using System.Data.SqlClient;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Context;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -218,43 +219,93 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public IEnumerable<MarketMapping> MarketMappingGetMany(ProgrammeFilter filter)
+        public PagedResults<FdpMarketMapping> FdpMarketMappingGetMany(MarketFilter filter)
         {
-            IEnumerable<MarketMapping> retVal = Enumerable.Empty<MarketMapping>();
+            PagedResults<FdpMarketMapping> retVal = null;
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
                 {
-                    var para = new DynamicParameters();
-                    
-                    para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
-                    para.Add("@IsGlobalMapping", false, dbType: DbType.Boolean);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    var totalRecords = 0;
+                    var totalDisplayRecords = 0;
 
-                    retVal = conn.Query<MarketMapping>("dbo.Fdp_MarketMapping_GetMany", para, commandType: CommandType.StoredProcedure);
-                    if (!retVal.Any())
+                    if (!string.IsNullOrEmpty(filter.CarLine))
                     {
-                        return retVal;   
+                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
                     }
-                    foreach (var result in retVal)
+                    if (!string.IsNullOrEmpty(filter.ModelYear))
                     {
-                        result.MappedMarket = MarketGet(result.MappedMarketId.GetValueOrDefault());
+                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
                     }
+                    if (!string.IsNullOrEmpty(filter.Gateway))
+                    {
+                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                    }
+                    if (filter.ProgrammeId.HasValue)
+                    {
+                        para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
+                    }
+                    if (!string.IsNullOrEmpty(filter.Gateway))
+                    {
+                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    }
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = conn.Query<FdpMarketMapping>("dbo.Fdp_MarketMapping_GetMany", para, commandType: CommandType.StoredProcedure);
+
+                    if (results.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                    }
+                    retVal = new PagedResults<FdpMarketMapping>()
+                    {
+                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                    };
+
+                    var currentPage = new List<FdpMarketMapping>();
+
+                    foreach (var result in results)
+                    {
+                        currentPage.Add(result);
+                    }
+                    retVal.CurrentPage = currentPage;
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.MarketMappingGetMany", ex.Message, CurrentCDSID);
+                    AppHelper.LogError("FeatureDataStore.FdpMarketMappingGetMany", ex.Message, CurrentCDSID);
                     throw;
                 }
             }
-
             return retVal;
         }
-        public MarketMapping MarketMappingDelete(MarketMapping mapping)
+        public FdpMarketMapping FdpMarketMappingDelete(FdpMarketMapping mapping)
         {
-            MarketMapping retVal = new EmptyMarketMapping();
+            FdpMarketMapping retVal = new EmptyFdpMarketMapping();
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
@@ -265,25 +316,24 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpMarketMappingId", mapping.FdpMarketMappingId, dbType: DbType.String);
                     para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
 
-                    var results = conn.Query<MarketMapping>("dbo.Fdp_MarketMapping_Delete", para, commandType: CommandType.StoredProcedure);
+                    var results = conn.Query<FdpMarketMapping>("dbo.Fdp_MarketMapping_Delete", para, commandType: CommandType.StoredProcedure);
                     if (!results.Any())
                     {
                         return retVal;
                     }
                     retVal = results.First();
-                    retVal.MappedMarket = MarketGet(retVal.MappedMarketId.GetValueOrDefault());
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.MarketMappingSave", ex.Message, CurrentCDSID);
+                    AppHelper.LogError("MarketDataStore.FdpMarketMappingDelete", ex.Message, CurrentCDSID);
                     throw;
                 }
             }
             return retVal;
         }
-        public MarketMapping MarketMappingSave(MarketMapping mapping)
+        public FdpMarketMapping FdpMarketMappingSave(FdpMarketMapping mapping)
         {
-            MarketMapping retVal = new EmptyMarketMapping();
+            FdpMarketMapping retVal = new EmptyFdpMarketMapping();
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
@@ -292,27 +342,50 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
 
                     para.Add("@ImportMarket", mapping.ImportMarket, dbType: DbType.String);
-                    para.Add("@MappedMarketId", mapping.MappedMarketId, dbType: DbType.Int32);
+                    para.Add("@MappedMarketId", mapping.MarketId, dbType: DbType.Int32);
                     para.Add("@ProgrammeId", mapping.ProgrammeId, dbType: DbType.Int32);
                     para.Add("@Gateway", mapping.Gateway, dbType: DbType.String);
-                    para.Add("@IsGlobalMapping", mapping.IsGlobalMapping, dbType: DbType.Boolean);
+                    //para.Add("@IsGlobalMapping", mapping.IsGlobalMapping, dbType: DbType.Boolean);
                     para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
 
-                    var results = conn.Query<MarketMapping>("dbo.Fdp_MarketMapping_Save", para, commandType: CommandType.StoredProcedure);
+                    var results = conn.Query<FdpMarketMapping>("dbo.Fdp_MarketMapping_Save", para, commandType: CommandType.StoredProcedure);
                     if (!results.Any())
                     {
                         return retVal;
                     }
                     retVal = results.First();
-                    retVal.MappedMarket = MarketGet(retVal.MappedMarketId.GetValueOrDefault());
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.MarketMappingSave", ex.Message, CurrentCDSID);
+                    AppHelper.LogError("MarketDataStore.FdpMarketMappingSave", ex.Message, CurrentCDSID);
                     throw;
                 }
             }
 
+            return retVal;
+        }
+        public FdpMarketMapping FdpMarketMappingGet(MarketMappingFilter filter)
+        {
+            FdpMarketMapping retVal = new EmptyFdpMarketMapping();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpDerivativeMappingId", filter.MarketMappingId.GetValueOrDefault(), dbType: DbType.Int32);
+
+                    var results = conn.Query<FdpMarketMapping>("Fdp_MarketMapping_Get", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FdpMarketMappingGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
             return retVal;
         }
     }

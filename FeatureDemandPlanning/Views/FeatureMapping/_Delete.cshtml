@@ -1,51 +1,39 @@
 ﻿@using FeatureDemandPlanning.Model.Extensions
 
-@model FeatureDemandPlanning.Model.ViewModel.DerivativeMappingViewModel
+@model FeatureDemandPlanning.Model.ViewModel.FeatureMappingViewModel
 
 <form>
     <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
 </form>
 <div class="well col-xs-12">
     <div class="col-xs-4 text-right">
-        <strong>Import Derivative:</strong>
+        <strong>Import Feature:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.DerivativeMapping.ImportDerivativeCode
+        @Model.FeatureMapping.ImportFeatureCode
     </div>
     <div class="col-xs-4 text-right">
         <strong>Programme:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.DerivativeMapping.Programme.GetDisplayString()
+        @Model.FeatureMapping.Programme.GetDisplayString()
     </div>
     <div class="col-xs-4 text-right" style="margin-bottom:15px">
         <strong>Gateway:</strong>
     </div>
     <div class="col-xs-8" style="margin-bottom:15px">
-        @Model.DerivativeMapping.Gateway
+        @Model.FeatureMapping.Gateway
     </div>
     <div class="col-xs-4 text-right">
-        <strong>Mapped Derivative:</strong>
+        <strong>Mapped Feature:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.DerivativeMapping.DerivativeCode
+        @Model.FeatureMapping.FeatureCode
     </div>
     <div class="col-xs-4 text-right">
-        <strong>Body:</strong>
+        <strong>Brand Description:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.DerivativeMapping.Body.Name
-    </div>
-    <div class="col-xs-4 text-right">
-        <strong>Engine:</strong>
-    </div>
-    <div class="col-xs-8">
-        @Model.DerivativeMapping.Engine.Name
-    </div>
-    <div class="col-xs-4 text-right">
-        <strong>Transmission:</strong>
-    </div>
-    <div class="col-xs-8">
-        @Model.DerivativeMapping.Transmission.Name
+        @Model.FeatureMapping.BrandDescription
     </div>
  </div>

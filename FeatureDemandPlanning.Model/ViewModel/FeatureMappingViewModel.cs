@@ -18,9 +18,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public FdpFeatureMapping FeatureMapping { get; set; }
         public PagedResults<FdpFeatureMapping> FeatureMappings { get; set; }
         public IEnumerable<Programme> Programmes { get; set; }
-        public IEnumerable<ModelBody> Bodies { get; set; }
-        public IEnumerable<ModelEngine> Engines { get; set; }
-        public IEnumerable<ModelTransmission> Transmissions { get; set; }
         public IEnumerable<CarLine> CarLines { get; set; }
         public IEnumerable<Gateway> Gateways { get; set; }
         public IEnumerable<ModelYear> ModelYears { get; set;}
@@ -98,9 +95,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
             if (!(featureMapping is EmptyFdpFeatureMapping))
             {
                 featureMapping.Programme = model.Programmes.FirstOrDefault(p => p.Id == featureMapping.ProgrammeId.GetValueOrDefault());
-                featureMapping.Body = model.Bodies.FirstOrDefault(b => b.Id == featureMapping.BodyId);
-                featureMapping.Engine = model.Engines.FirstOrDefault(e => e.Id == featureMapping.EngineId);
-                featureMapping.Transmission = model.Transmissions.FirstOrDefault(t => t.Id == featureMapping.TransmissionId);
             }
             model.FeatureMapping = featureMapping;
            
@@ -136,9 +130,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
             foreach (var featureMapping in model.FeatureMappings.CurrentPage)
             {
                 featureMapping.Programme = model.Programmes.FirstOrDefault(p => p.Id == featureMapping.ProgrammeId.GetValueOrDefault());
-                featureMapping.Body = model.Bodies.FirstOrDefault(b => b.Id == featureMapping.BodyId);
-                featureMapping.Engine = model.Engines.FirstOrDefault(e => e.Id == featureMapping.EngineId);
-                featureMapping.Transmission = model.Transmissions.FirstOrDefault(t => t.Id == featureMapping.TransmissionId);
             }
 
             return model;
@@ -150,9 +141,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static void HydrateModelWithCommonProperties(FeatureMappingViewModel model, IDataContext context, ProgrammeFilter programmeFilter)
         {
             model.Programmes = context.Vehicle.ListProgrammes(programmeFilter);
-            model.Bodies = context.Vehicle.ListBodies(programmeFilter);
-            model.Engines = context.Vehicle.ListEngines(programmeFilter);
-            model.Transmissions = context.Vehicle.ListTransmissions(programmeFilter);
             model.Gateways = model.Programmes.ListGateways();
             model.CarLines = model.Programmes.ListCarLines();
             model.ModelYears = model.Programmes.ListModelYears();
@@ -162,9 +150,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
             FeatureMapping = new EmptyFdpFeatureMapping();
             IdentifierPrefix = "Page";
             Programmes = Enumerable.Empty<Programme>();
-            Bodies = Enumerable.Empty<ModelBody>();
-            Engines = Enumerable.Empty<ModelEngine>();
-            Transmissions = Enumerable.Empty<ModelTransmission>();
             Gateways = Enumerable.Empty<Gateway>();
             CarLines = Enumerable.Empty<CarLine>();
             ModelYears = Enumerable.Empty<ModelYear>();

@@ -1,9 +1,9 @@
 ﻿@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.DerivativeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.TrimViewModel
 
 <li>
-    <a tabindex="-1" href="#" data-target="@Model.Derivative.FdpDerivativeId" data-role="@((int)enums.DerivativeAction.Delete)" data-content="@Model.Derivative.DerivativeCode">
-        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Derivative '@Model.Derivative.DerivativeCode'
+    <a tabindex="-1" href="#" data-target="@Model.Trim.FdpTrimId" data-role="@((int)enums.TrimAction.Delete)" data-content="@Model.Trim.Name">
+        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Trim '@Model.Trim.Name'
     </a>
 </li>

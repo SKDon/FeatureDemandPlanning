@@ -216,7 +216,7 @@ namespace FeatureDemandPlanning.Controllers
                 .Where(f => f.FeatureCode.Equals(parameters.FeatureCode, StringComparison.InvariantCultureIgnoreCase))
                 .First();
 
-            var featureMapping = new FeatureMapping()
+            var featureMapping = new FdpFeatureMapping()
             {
                 ImportFeatureCode = parameters.ImportFeatureCode,
                 ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
@@ -233,7 +233,7 @@ namespace FeatureDemandPlanning.Controllers
         {
             var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value);
             var importView = await GetModelFromParameters(parameters);
-            var trimMapping = new TrimMapping()
+            var trimMapping = new FdpTrimMapping()
             {
                 ImportTrim = parameters.ImportTrim,
                 ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
@@ -250,13 +250,13 @@ namespace FeatureDemandPlanning.Controllers
         {
             var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value);
             var importView = await GetModelFromParameters(parameters);
-            var marketMapping = new MarketMapping()
+            var marketMapping = new FdpMarketMapping()
             {
                 ImportMarket = parameters.ImportMarket,
-                MappedMarketId = parameters.MarketId,
+                MarketId = parameters.MarketId,
                 ProgrammeId = parameters.ProgrammeId,
                 Gateway = parameters.Gateway,
-                IsGlobalMapping = false
+                //IsGlobalMapping = false
             };
             importView.CurrentException = await DataContext.Import.MapMarket(filter, marketMapping);
             await DeactivateException(importView.CurrentException);

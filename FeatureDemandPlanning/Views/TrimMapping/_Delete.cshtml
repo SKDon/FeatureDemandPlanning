@@ -1,51 +1,45 @@
 ﻿@using FeatureDemandPlanning.Model.Extensions
 
-@model FeatureDemandPlanning.Model.ViewModel.DerivativeMappingViewModel
+@model FeatureDemandPlanning.Model.ViewModel.TrimMappingViewModel
 
 <form>
     <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
 </form>
 <div class="well col-xs-12">
     <div class="col-xs-4 text-right">
-        <strong>Import Derivative:</strong>
+        <strong>Import Trim:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.DerivativeMapping.ImportDerivativeCode
+        @Model.TrimMapping.ImportTrim
     </div>
     <div class="col-xs-4 text-right">
         <strong>Programme:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.DerivativeMapping.Programme.GetDisplayString()
+        @Model.TrimMapping.Programme.GetDisplayString()
     </div>
     <div class="col-xs-4 text-right" style="margin-bottom:15px">
         <strong>Gateway:</strong>
     </div>
     <div class="col-xs-8" style="margin-bottom:15px">
-        @Model.DerivativeMapping.Gateway
+        @Model.TrimMapping.Gateway
     </div>
     <div class="col-xs-4 text-right">
-        <strong>Mapped Derivative:</strong>
+        <strong>Mapped Trim:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.DerivativeMapping.DerivativeCode
+        @Model.TrimMapping.Name
     </div>
     <div class="col-xs-4 text-right">
-        <strong>Body:</strong>
+        <strong>Level:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.DerivativeMapping.Body.Name
+        @Model.TrimMapping.Level
     </div>
     <div class="col-xs-4 text-right">
-        <strong>Engine:</strong>
+        <strong>DPCK:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.DerivativeMapping.Engine.Name
-    </div>
-    <div class="col-xs-4 text-right">
-        <strong>Transmission:</strong>
-    </div>
-    <div class="col-xs-8">
-        @Model.DerivativeMapping.Transmission.Name
+        @Model.TrimMapping.DPCK
     </div>
  </div>

@@ -1,18 +1,18 @@
-﻿var model = namespace("FeatureDemandPlanning.Derivative");
+﻿var model = namespace("FeatureDemandPlanning.Trim");
 
-model.DerivativeMappingFilter = function () {
+model.TrimMappingFilter = function () {
     var me = this;
     me.ProgrammeId = null;
     me.Gateway = "";
     me.FilterMessage = "";
 };
-model.DerivativeMapping = function (params) {
+model.TrimMapping = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
 
     privateStore[me.id = uid++] = {};
-    privateStore[me.id].DerivativeMappingsUri = params.DerivativeMappingsUri;
+    privateStore[me.id].TrimMappingsUri = params.TrimMappingsUri;
     privateStore[me.id].ActionsUri = params.ActionsUri;
     privateStore[me.id].Configuration = params.Configuration;
     privateStore[me.id].ModalContentUri = params.ModalContentUri;
@@ -21,7 +21,7 @@ model.DerivativeMapping = function (params) {
     privateStore[me.id].PageIndex = params.PageIndex;
     privateStore[me.id].Parameters = params;
 
-    me.ModelName = "DerivativeMapping";
+    me.ModelName = "TrimMapping";
 
     me.getActionContentUri = function (action) {
         return privateStore[me.id].ModalContentUri;
@@ -31,30 +31,30 @@ model.DerivativeMapping = function (params) {
 
         switch (action) {
             case 1:
-                actionModel = new FeatureDemandPlanning.Derivative.DeleteDerivativeMappingAction(me.getParameters());
+                actionModel = new FeatureDemandPlanning.Trim.DeleteTrimMappingAction(me.getParameters());
                 break;
             case 4:
-                actionModel = new FeatureDemandPlanning.Derivative.CopyDerivativeMappingAction(me.getParameters());
+                actionModel = new FeatureDemandPlanning.Trim.CopyTrimMappingAction(me.getParameters());
                 break;
             case 5:
-                actionModel = new FeatureDemandPlanning.Derivative.CopyAllDerivativeMappingAction(me.getParameters());
+                actionModel = new FeatureDemandPlanning.Trim.CopyAllTrimMappingAction(me.getParameters());
                 break;
             default:
                 break;
         }
         return actionModel;
     };
-    me.getActionTitle = function (action, derivativeMapping) {
+    me.getActionTitle = function (action, trimMapping) {
         var title = "";
         switch (action) {
             case 1:
-                title = "Delete Derivative Mappping '" + derivativeMapping + "'";
+                title = "Delete Trim Mappping '" + trimMapping + "'";
                 break;
             case 4:
-                title = "Copy Derivative Mapping '" + derivativeMapping + "' to Gateway";
+                title = "Copy Trim Mapping '" + trimMapping + "' to Gateway";
                 break;
             case 5:
-                title = "Copy All Derivative Mappings '" + derivativeMapping + "' to Gateway";
+                title = "Copy All Trim Mappings '" + trimMapping + "' to Gateway";
                 break;
             default:
                 break;
@@ -70,8 +70,8 @@ model.DerivativeMapping = function (params) {
     me.getConfiguration = function () {
         return privateStore[me.id].Configuration;
     };
-    me.getDerivativeMappingsUri = function () {
-        return privateStore[me.id].DerivativeMappingsUri;
+    me.getTrimMappingsUri = function () {
+        return privateStore[me.id].TrimMappingsUri;
     };
     me.getIdentifierPrefix = function () {
         return $("#Page_IdentifierPrefix").val();
@@ -87,11 +87,11 @@ model.DerivativeMapping = function (params) {
     };
     me.loadUsers = function () {
         $.ajax({
-            url: me.getDerivativeMappingsUri(),
+            url: me.getTrimMappingsUri(),
             type: "GET",
             dataType: "json",
             data: filter,
-            success: loadDerivativesCallback,
+            success: loadTrimsCallback,
             error: genericErrorCallback
         });
     }
@@ -126,7 +126,7 @@ model.DerivativeMapping = function (params) {
         privateStore[me.id].Config = response.Configuration;
         $(document).trigger("notifyError", response);
     };
-    function loadDerivativesCallback(response) {
+    function loadTrimsCallback(response) {
         $(document).trigger("notifyResults", response);
     };
 };

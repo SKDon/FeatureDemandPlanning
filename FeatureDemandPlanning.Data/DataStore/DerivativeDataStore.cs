@@ -65,7 +65,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.DerivativeMappingDelete", ex.Message, CurrentCDSID);
+                    AppHelper.LogError("DerivativeDataStore.DerivativeMappingDelete", ex.Message, CurrentCDSID);
                     throw;
                 }
             }

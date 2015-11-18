@@ -143,23 +143,23 @@ namespace FeatureDemandPlanning.Controllers
             return PartialView("_ValidationMessage", message);
         }
 
-        //[HttpGet]
-        //public ActionResult Document(int? oxoDocId, 
-        //                             int? marketGroupId, 
-        //                             int? marketId,
-        //                             TakeRateResultMode resultsMode = TakeRateResultMode.PercentageTakeRate)
-        //{
-        //    ViewBag.PageTitle = "OXO Volume";
+        [HttpGet]
+        public ActionResult Document(int? oxoDocId,
+                                     int? marketGroupId,
+                                     int? marketId,
+                                     TakeRateResultMode resultsMode = TakeRateResultMode.PercentageTakeRate)
+        {
+            ViewBag.PageTitle = "OXO Volume";
 
-        //    var filter = new VolumeFilter()
-        //    {
-        //        OxoDocId = oxoDocId,
-        //        MarketGroupId = marketGroupId,
-        //        MarketId = marketId,
-        //        Mode = resultsMode,
-        //    };
-        //    return View("Document", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, filter, PageFilter));
-        //}
+            var filter = new VolumeFilter()
+            {
+                OxoDocId = oxoDocId,
+                MarketGroupId = marketGroupId,
+                MarketId = marketId,
+                Mode = resultsMode,
+            };
+            return View("Document", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, filter, PageFilter).Result);
+        }
 
         //[HttpPost]
         //public ActionResult OxoDocuments(Volume volume)

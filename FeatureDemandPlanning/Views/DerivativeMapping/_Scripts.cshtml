@@ -5,10 +5,10 @@
 <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/DerivativeMapping/derivativemapping.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/DerivativeMapping/copyderivativemappingaction.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/DerivativeMapping/deletederivativemappingaction.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/DerivativeMapping/derivativemappingspage.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/DerivativeMapping/model.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/DerivativeMapping/copy.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/DerivativeMapping/delete.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/DerivativeMapping/page.js")?v=@currentVersion"></script>
 <script language="javascript">
 
     var derivativeMapping, page, modal;
@@ -29,4 +29,4 @@
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 
 </script>
-<script src="@Url.Content("~/Scripts/DerivativeMapping/derivativemappingsinit.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/DerivativeMapping/init.js")?v=@currentVersion"></script>

@@ -12,57 +12,54 @@ using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {
-    public class DerivativeMappingViewModel : SharedModelBase
+    public class MarketMappingViewModel : SharedModelBase
     {
-        public DerivativeMappingAction CurrentAction { get; set; }
-        public FdpDerivativeMapping DerivativeMapping { get; set; }
-        public PagedResults<FdpDerivativeMapping> DerivativeMappings { get; set; }
+        public MarketMappingAction CurrentAction { get; set; }
+        public FdpMarketMapping MarketMapping { get; set; }
+        public PagedResults<FdpMarketMapping> MarketMappings { get; set; }
         public IEnumerable<Programme> Programmes { get; set; }
-        public IEnumerable<ModelBody> Bodies { get; set; }
-        public IEnumerable<ModelEngine> Engines { get; set; }
-        public IEnumerable<ModelTransmission> Transmissions { get; set; }
         public IEnumerable<CarLine> CarLines { get; set; }
         public IEnumerable<Gateway> Gateways { get; set; }
         public IEnumerable<ModelYear> ModelYears { get; set;}
        
-        public DerivativeMappingViewModel() : base()
+        public MarketMappingViewModel() : base()
         {
             InitialiseMembers();
         }
-        public DerivativeMappingViewModel(SharedModelBase baseModel) : base(baseModel)
+        public MarketMappingViewModel(SharedModelBase baseModel) : base(baseModel)
         {
             InitialiseMembers();
         }
-        public static async Task<DerivativeMappingViewModel> GetModel(IDataContext context,
-                                                                      DerivativeMappingFilter filter)
+        public static async Task<MarketMappingViewModel> GetModel(IDataContext context,
+                                                                      MarketMappingFilter filter)
         {
-            DerivativeMappingViewModel model = null;
+            MarketMappingViewModel model = null;
 
-            if (filter.Action == DerivativeMappingAction.Delete 
-                || filter.Action == DerivativeMappingAction.Mapping
-                || filter.Action == DerivativeMappingAction.Copy)
+            if (filter.Action == MarketMappingAction.Delete 
+                || filter.Action == MarketMappingAction.Mapping
+                || filter.Action == MarketMappingAction.Copy)
             {
-                model = await GetFullAndPartialViewModelForDerivativeMapping(context, filter);
+                model = await GetFullAndPartialViewModelForMarketMapping(context, filter);
             }
-            else if (filter.Action == DerivativeMappingAction.Mappings ||
-                filter.Action == DerivativeMappingAction.CopyAll)
+            else if (filter.Action == MarketMappingAction.Mappings ||
+                filter.Action == MarketMappingAction.CopyAll)
             {
-                model = await GetFullAndPartialViewModelForDerivativeMappings(context, filter);
+                model = await GetFullAndPartialViewModelForMarketMappings(context, filter);
             }
             else
             {
                 model = GetFullAndPartialViewModel(context, filter);
             }
-            if (filter.Action != DerivativeMappingAction.NotSet)
+            if (filter.Action != MarketMappingAction.NotSet)
             {
                 model.IdentifierPrefix = Enum.GetName(filter.Action.GetType(), filter.Action);
             }
             return model;
         }
-        private static DerivativeMappingViewModel GetFullAndPartialViewModel(IDataContext context,
-                                                                             DerivativeMappingFilter filter)
+        private static MarketMappingViewModel GetFullAndPartialViewModel(IDataContext context,
+                                                                             MarketMappingFilter filter)
         {
-            var model = new DerivativeMappingViewModel(SharedModelBase.GetBaseModel(context))
+            var model = new MarketMappingViewModel(SharedModelBase.GetBaseModel(context))
             {
                 Configuration = context.ConfigurationSettings,
             };
@@ -70,14 +67,14 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return model;
         }
-        private static async Task<DerivativeMappingViewModel> GetFullAndPartialViewModelForDerivativeMapping
+        private static async Task<MarketMappingViewModel> GetFullAndPartialViewModelForMarketMapping
         (
             IDataContext context,
-            DerivativeMappingFilter filter
+            MarketMappingFilter filter
         )
         {
             var baseModel = SharedModelBase.GetBaseModel(context);
-            var model = new DerivativeMappingViewModel()
+            var model = new MarketMappingViewModel()
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                 PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
@@ -85,35 +82,32 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 CurrentUser = baseModel.CurrentUser,
                 CurrentVersion = baseModel.CurrentVersion
             };
-            var derivativeMapping = await context.Vehicle.GetFdpDerivativeMapping(filter);
+            var marketMapping = await context.Market.GetFdpMarketMapping(filter);
             var programmeFilter = new ProgrammeFilter()
             {
-                ProgrammeId = derivativeMapping.ProgrammeId,
-                Gateway = derivativeMapping.Gateway,
-                Code = model.DerivativeMapping.Programme.VehicleName // In order to filter the gateways specific to the programme
+                ProgrammeId = marketMapping.ProgrammeId,
+                Gateway = marketMapping.Gateway,
+                Code = model.MarketMapping.Programme.VehicleName // In order to filter the gateways specific to the programme
             };
             HydrateModelWithCommonProperties(model, context, programmeFilter);
             model.Gateways = context.Vehicle.ListGateways(programmeFilter);
             
-            if (!(derivativeMapping is EmptyFdpDerivativeMapping))
+            if (!(marketMapping is EmptyFdpMarketMapping))
             {
-                derivativeMapping.Programme = model.Programmes.FirstOrDefault(p => p.Id == derivativeMapping.ProgrammeId.GetValueOrDefault());
-                derivativeMapping.Body = model.Bodies.FirstOrDefault(b => b.Id == derivativeMapping.BodyId);
-                derivativeMapping.Engine = model.Engines.FirstOrDefault(e => e.Id == derivativeMapping.EngineId);
-                derivativeMapping.Transmission = model.Transmissions.FirstOrDefault(t => t.Id == derivativeMapping.TransmissionId);
+                marketMapping.Programme = model.Programmes.FirstOrDefault(p => p.Id == marketMapping.ProgrammeId.GetValueOrDefault());
             }
-            model.DerivativeMapping = derivativeMapping;
+            model.MarketMapping = marketMapping;
            
             return model;
         }
-        private static async Task<DerivativeMappingViewModel> GetFullAndPartialViewModelForDerivativeMappings
+        private static async Task<MarketMappingViewModel> GetFullAndPartialViewModelForMarketMappings
         (
             IDataContext context,
-            DerivativeMappingFilter filter
+            MarketMappingFilter filter
         )
         {
             var baseModel = SharedModelBase.GetBaseModel(context);
-            var model = new DerivativeMappingViewModel(baseModel)
+            var model = new MarketMappingViewModel(baseModel)
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                 PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
@@ -128,47 +122,38 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
             HydrateModelWithCommonProperties(model, context, programmeFilter);
 
-            model.DerivativeMappings = await context.Vehicle.ListFdpDerivativeMappings(filter);
-            model.TotalPages = model.DerivativeMappings.TotalPages;
-            model.TotalRecords = model.DerivativeMappings.TotalRecords;
-            model.TotalDisplayRecords = model.DerivativeMappings.TotalDisplayRecords;
+            model.MarketMappings = await context.Market.ListFdpMarketMappings(filter);
+            model.TotalPages = model.MarketMappings.TotalPages;
+            model.TotalRecords = model.MarketMappings.TotalRecords;
+            model.TotalDisplayRecords = model.MarketMappings.TotalDisplayRecords;
 
-            foreach (var derivativeMapping in model.DerivativeMappings.CurrentPage)
+            foreach (var marketMapping in model.MarketMappings.CurrentPage)
             {
-                derivativeMapping.Programme = model.Programmes.FirstOrDefault(p => p.Id == derivativeMapping.ProgrammeId.GetValueOrDefault());
-                derivativeMapping.Body = model.Bodies.FirstOrDefault(b => b.Id == derivativeMapping.BodyId);
-                derivativeMapping.Engine = model.Engines.FirstOrDefault(e => e.Id == derivativeMapping.EngineId);
-                derivativeMapping.Transmission = model.Transmissions.FirstOrDefault(t => t.Id == derivativeMapping.TransmissionId);
+                marketMapping.Programme = model.Programmes.FirstOrDefault(p => p.Id == marketMapping.ProgrammeId.GetValueOrDefault());
             }
 
             return model;
         }
-        private static void HydrateModelWithCommonProperties(DerivativeMappingViewModel model, IDataContext context)
+        private static void HydrateModelWithCommonProperties(MarketMappingViewModel model, IDataContext context)
         {
             HydrateModelWithCommonProperties(model, context, new ProgrammeFilter());
         }
-        private static void HydrateModelWithCommonProperties(DerivativeMappingViewModel model, IDataContext context, ProgrammeFilter programmeFilter)
+        private static void HydrateModelWithCommonProperties(MarketMappingViewModel model, IDataContext context, ProgrammeFilter programmeFilter)
         {
             model.Programmes = context.Vehicle.ListProgrammes(programmeFilter);
-            model.Bodies = context.Vehicle.ListBodies(programmeFilter);
-            model.Engines = context.Vehicle.ListEngines(programmeFilter);
-            model.Transmissions = context.Vehicle.ListTransmissions(programmeFilter);
             model.Gateways = model.Programmes.ListGateways();
             model.CarLines = model.Programmes.ListCarLines();
             model.ModelYears = model.Programmes.ListModelYears();
         }
         private void InitialiseMembers()
         {
-            DerivativeMapping = new EmptyFdpDerivativeMapping();
+            MarketMapping = new EmptyFdpMarketMapping();
             IdentifierPrefix = "Page";
             Programmes = Enumerable.Empty<Programme>();
-            Bodies = Enumerable.Empty<ModelBody>();
-            Engines = Enumerable.Empty<ModelEngine>();
-            Transmissions = Enumerable.Empty<ModelTransmission>();
             Gateways = Enumerable.Empty<Gateway>();
             CarLines = Enumerable.Empty<CarLine>();
             ModelYears = Enumerable.Empty<ModelYear>();
-            CurrentAction = DerivativeMappingAction.NotSet;
+            CurrentAction = MarketMappingAction.NotSet;
         }
     }
 }

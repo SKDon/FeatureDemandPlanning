@@ -1,18 +1,18 @@
-﻿var model = namespace("FeatureDemandPlanning.Derivative");
+﻿var model = namespace("FeatureDemandPlanning.Feature");
 
-model.DerivativeMappingFilter = function () {
+model.FeatureMappingFilter = function () {
     var me = this;
     me.ProgrammeId = null;
     me.Gateway = "";
     me.FilterMessage = "";
 };
-model.DerivativeMapping = function (params) {
+model.FeatureMapping = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
 
     privateStore[me.id = uid++] = {};
-    privateStore[me.id].DerivativeMappingsUri = params.DerivativeMappingsUri;
+    privateStore[me.id].FeatureMappingsUri = params.FeatureMappingsUri;
     privateStore[me.id].ActionsUri = params.ActionsUri;
     privateStore[me.id].Configuration = params.Configuration;
     privateStore[me.id].ModalContentUri = params.ModalContentUri;
@@ -21,7 +21,7 @@ model.DerivativeMapping = function (params) {
     privateStore[me.id].PageIndex = params.PageIndex;
     privateStore[me.id].Parameters = params;
 
-    me.ModelName = "DerivativeMapping";
+    me.ModelName = "FeatureMapping";
 
     me.getActionContentUri = function (action) {
         return privateStore[me.id].ModalContentUri;
@@ -31,30 +31,30 @@ model.DerivativeMapping = function (params) {
 
         switch (action) {
             case 1:
-                actionModel = new FeatureDemandPlanning.Derivative.DeleteDerivativeMappingAction(me.getParameters());
+                actionModel = new FeatureDemandPlanning.Feature.DeleteFeatureMappingAction(me.getParameters());
                 break;
             case 4:
-                actionModel = new FeatureDemandPlanning.Derivative.CopyDerivativeMappingAction(me.getParameters());
+                actionModel = new FeatureDemandPlanning.Feature.CopyFeatureMappingAction(me.getParameters());
                 break;
             case 5:
-                actionModel = new FeatureDemandPlanning.Derivative.CopyAllDerivativeMappingAction(me.getParameters());
+                actionModel = new FeatureDemandPlanning.Feature.CopyAllFeatureMappingAction(me.getParameters());
                 break;
             default:
                 break;
         }
         return actionModel;
     };
-    me.getActionTitle = function (action, derivativeMapping) {
+    me.getActionTitle = function (action, featureMapping) {
         var title = "";
         switch (action) {
             case 1:
-                title = "Delete Derivative Mappping '" + derivativeMapping + "'";
+                title = "Delete Feature Mappping '" + featureMapping + "'";
                 break;
             case 4:
-                title = "Copy Derivative Mapping '" + derivativeMapping + "' to Gateway";
+                title = "Copy Feature Mapping '" + featureMapping + "' to Gateway";
                 break;
             case 5:
-                title = "Copy All Derivative Mappings '" + derivativeMapping + "' to Gateway";
+                title = "Copy All Feature Mappings '" + featureMapping + "' to Gateway";
                 break;
             default:
                 break;
@@ -70,8 +70,8 @@ model.DerivativeMapping = function (params) {
     me.getConfiguration = function () {
         return privateStore[me.id].Configuration;
     };
-    me.getDerivativeMappingsUri = function () {
-        return privateStore[me.id].DerivativeMappingsUri;
+    me.getFeatureMappingsUri = function () {
+        return privateStore[me.id].FeatureMappingsUri;
     };
     me.getIdentifierPrefix = function () {
         return $("#Page_IdentifierPrefix").val();
@@ -87,11 +87,11 @@ model.DerivativeMapping = function (params) {
     };
     me.loadUsers = function () {
         $.ajax({
-            url: me.getDerivativeMappingsUri(),
+            url: me.getFeatureMappingsUri(),
             type: "GET",
             dataType: "json",
             data: filter,
-            success: loadDerivativesCallback,
+            success: loadFeaturesCallback,
             error: genericErrorCallback
         });
     }
@@ -126,7 +126,7 @@ model.DerivativeMapping = function (params) {
         privateStore[me.id].Config = response.Configuration;
         $(document).trigger("notifyError", response);
     };
-    function loadDerivativesCallback(response) {
+    function loadFeaturesCallback(response) {
         $(document).trigger("notifyResults", response);
     };
 };

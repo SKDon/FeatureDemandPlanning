@@ -26,17 +26,17 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<ImportError> IgnoreException(ImportQueueFilter filter);
         
-        Task<ImportError> MapMarket(ImportQueueFilter filter, MarketMapping mapping);
+        Task<ImportError> MapMarket(ImportQueueFilter filter, FdpMarketMapping mapping);
 
         Task<ImportError> AddDerivative(ImportQueueFilter filter, FdpDerivative derivativeToAdd);
         Task<ImportError> MapDerivative(ImportQueueFilter filter, FdpDerivativeMapping derivativeMapping);
 
         Task<ImportError> AddFeature(ImportQueueFilter filter, FdpFeature featureToAdd);
         Task<ImportError> AddSpecialFeature(ImportQueueFilter filter, FdpSpecialFeature specialFeature);
-        Task<ImportError> MapFeature(ImportQueueFilter filter, FeatureMapping featureMapping);
+        Task<ImportError> MapFeature(ImportQueueFilter filter, FdpFeatureMapping featureMapping);
 
         Task<ImportError> AddTrim(ImportQueueFilter filter, FdpTrim trimToAdd);
-        Task<ImportError> MapTrim(ImportQueueFilter filter, TrimMapping trimMapping);
+        Task<ImportError> MapTrim(ImportQueueFilter filter, FdpTrimMapping trimMapping);
 
         Task<IEnumerable<ImportExceptionType>> ListExceptionTypes(ImportQueueFilter filter);
 

@@ -1,6 +1,6 @@
 ﻿namespace FeatureDemandPlanning.Model.Empty
 {
-    public class EmptyFdpFeatureMapping : FdpFeatureMapping
+    public class EmptyFdpTrimMapping : FdpTrimMapping
     {
     }
 }

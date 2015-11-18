@@ -8,6 +8,7 @@ namespace FeatureDemandPlanning.Model
         public int? ProgrammeId { get; set; }
         public Programme Programme { get; set; }
         public string Gateway { get; set; }
+        public int? MarketId { get; set; }
 
         public virtual string[] ToJQueryDataTableResult()
         {
