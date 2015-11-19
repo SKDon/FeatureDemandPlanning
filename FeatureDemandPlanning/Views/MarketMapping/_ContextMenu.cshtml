@@ -1,14 +1,14 @@
 ﻿@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.DerivativeMappingViewModel
+@model FeatureDemandPlanning.Model.ViewModel.MarketMappingViewModel
 
 <li>
-    <a tabindex="-1" href="#" data-target="@Model.DerivativeMapping.FdpDerivativeMappingId" data-role="@((int)enums.DerivativeMappingAction.Delete)" data-content="@Model.DerivativeMapping.ImportDerivativeCode">
-        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Derivative Mapping '@Model.DerivativeMapping.ImportDerivativeCode' &gt; '@Model.DerivativeMapping.DerivativeCode'...
+    <a tabindex="-1" href="#" data-target="@Model.MarketMapping.FdpMarketMappingId" data-role="@((int)enums.MarketMappingAction.Delete)" data-content="@Model.MarketMapping.ImportMarketCode">
+        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Market Mapping '@Model.MarketMapping.ImportMarketCode' &gt; '@Model.MarketMapping.MarketCode'...
     </a>
 </li>
 <li>
-    <a tabindex="-1" href="#" data-target="@Model.DerivativeMapping.FdpDerivativeMappingId" data-role="@((int)enums.DerivativeMappingAction.Copy)" data-content="@Model.DerivativeMapping.ImportDerivativeCode">
-        <span class="glyphicon glyphicon-copy pull-left"></span> Copy Derivative Mapping '@Model.DerivativeMapping.ImportDerivativeCode' to Gateway...
+    <a tabindex="-1" href="#" data-target="@Model.MarketMapping.FdpMarketMappingId" data-role="@((int)enums.MarketMappingAction.Copy)" data-content="@Model.MarketMapping.ImportMarketCode">
+        <span class="glyphicon glyphicon-copy pull-left"></span> Copy Market Mapping '@Model.MarketMapping.ImportMarketCode' to Gateway...
     </a>
 </li>

@@ -1,4 +1,4 @@
-﻿@model FeatureDemandPlanning.Model.ViewModel.DerivativeViewModel
+﻿@model FeatureDemandPlanning.Model.ViewModel.TrimViewModel
 
 @{
     var currentVersion = Model.CurrentVersion;
@@ -6,17 +6,17 @@
 <script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
 <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Derivative/derivative.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Derivative/deletederivativeaction.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Derivative/derivativespage.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Trim/model.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Trim/delete.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Trim/page.js")?v=@currentVersion"></script>
 <script language="javascript">
 
-    var derivative, page, modal;
+    var trim, page, modal;
     var params = {
         ActionsUri: "@Url.Action("ContextMenu")",
         ProcessUri: "@Url.Action("Process")",
         CancelUri: "@Url.Action("Cancel")",
-        DerivativesUri: "@Url.Action("ListDerivatives")",
+        TrimsUri: "@Url.Action("ListTrims")",
         ModalContentUri: "@Url.Action("ModalContent")",
         ModalActionUri: "@Url.Action("ModalAction")",
         ModalDialogId: "modal",
@@ -29,4 +29,4 @@
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 
 </script>
-<script src="@Url.Content("~/Scripts/Derivative/derivativesinit.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Trim/init.js")?v=@currentVersion"></script>

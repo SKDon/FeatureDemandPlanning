@@ -8,6 +8,7 @@ using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Context;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -352,9 +353,9 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
-        public FeatureMapping FeatureMappingDelete(FeatureMapping featureMapping)
+        public FdpFeatureMapping FeatureMappingDelete(FdpFeatureMapping featureMapping)
         {
-            FeatureMapping retVal = new EmptyFeatureMapping();
+            FdpFeatureMapping retVal = new EmptyFdpFeatureMapping();
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
@@ -362,7 +363,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     para.Add("@FdpFeatureMappingId", featureMapping.FdpFeatureMappingId, dbType: DbType.Int32);
                     
-                    var results = conn.Query<FeatureMapping>("Fdp_FeatureMapping_Delete", para, commandType: CommandType.StoredProcedure);
+                    var results = conn.Query<FdpFeatureMapping>("Fdp_FeatureMapping_Delete", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
                     {
                         retVal = results.First();
@@ -376,9 +377,9 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public FeatureMapping FeatureMappingGet(FeatureMapping featureMapping)
+        public FdpFeatureMapping FeatureMappingGet(FdpFeatureMapping featureMapping)
         {
-            FeatureMapping retVal = new EmptyFeatureMapping();
+            FdpFeatureMapping retVal = new EmptyFdpFeatureMapping();
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
@@ -386,7 +387,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
                     para.Add("@FdpFeatureMappingId", featureMapping.FdpFeatureMappingId, dbType: DbType.Int32);
 
-                    var results = conn.Query<FeatureMapping>("Fdp_FeatureMapping_Get", para, commandType: CommandType.StoredProcedure);
+                    var results = conn.Query<FdpFeatureMapping>("Fdp_FeatureMapping_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
                     {
                         retVal = results.First();
@@ -400,9 +401,9 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public FeatureMapping FeatureMappingSave(FeatureMapping featureMapping)
+        public FdpFeatureMapping FeatureMappingSave(FdpFeatureMapping featureMapping)
         {
-            FeatureMapping retVal = new EmptyFeatureMapping();
+            FdpFeatureMapping retVal = new EmptyFdpFeatureMapping();
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
@@ -411,9 +412,9 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@ImportFeatureCode", featureMapping.ImportFeatureCode, dbType: DbType.String);
                     para.Add("@ProgrammeId", featureMapping.ProgrammeId, dbType: DbType.Int32);
                     para.Add("@Gateway", featureMapping.Gateway, dbType: DbType.String);
-                    para.Add("@FeatureId", featureMapping.FeatureId, dbType: DbType.Int32);
-                    
-                    var results = conn.Query<FeatureMapping>("Fdp_FeatureMapping_Save", para, commandType: CommandType.StoredProcedure);
+                    para.Add("@FeatureId", featureMapping.FdpFeatureId, dbType: DbType.Int32);
+
+                    var results = conn.Query<FdpFeatureMapping>("Fdp_FeatureMapping_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
                     {
                         retVal = results.First();
@@ -427,7 +428,7 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public FdpFeature FdpFeatureDelete(int fdpFeatureId)
+        public FdpFeature FdpFeatureDelete(FdpFeature featureToDelete)
         {
             FdpFeature retVal = new EmptyFdpFeature();
             using (IDbConnection conn = DbHelper.GetDBConnection())
@@ -435,7 +436,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@FdpFeatureId", fdpFeatureId, dbType: DbType.Int32);
+                    para.Add("@FdpFeatureId", featureToDelete.FdpFeatureId.GetValueOrDefault(), dbType: DbType.Int32);
                     
                     retVal = conn.Query<FdpFeature>("dbo.Fdp_Feature_Delete", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -447,7 +448,7 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public FdpFeature FdpFeatureGet(int fdpFeatureId)
+        public FdpFeature FdpFeatureGet(FeatureFilter filter)
         {
             FdpFeature retVal = new EmptyFdpFeature();
             using (IDbConnection conn = DbHelper.GetDBConnection())
@@ -455,7 +456,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpFeatureId", fdpFeatureId, dbType: DbType.Int32);
+                    para.Add("@FdpFeatureId", filter.FeatureId.GetValueOrDefault(), dbType: DbType.Int32);
                     retVal = conn.Query<FdpFeature>("dbo.Fdp_Feature_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
@@ -466,22 +467,85 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public IEnumerable<FdpFeature> FdpFeatureGetMany(ProgrammeFilter filter)
+        public PagedResults<FdpFeature> FdpFeatureGetMany(FeatureFilter filter)
         {
-            IEnumerable<FdpFeature> retVal = Enumerable.Empty<FdpFeature>();
+            PagedResults<FdpFeature> retVal = null;
+
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
-    
-                    retVal = conn.Query<FdpFeature>("dbo.Fdp_Feature_GetMany", para, commandType: CommandType.StoredProcedure);
+                    var totalRecords = 0;
+                    var totalDisplayRecords = 0;
+
+                    if (!string.IsNullOrEmpty(filter.CarLine))
+                    {
+                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.ModelYear))
+                    {
+                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.Gateway))
+                    {
+                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                    }
+                    if (filter.ProgrammeId.HasValue)
+                    {
+                        para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
+                    }
+                    if (!string.IsNullOrEmpty(filter.Gateway))
+                    {
+                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    }
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = conn.Query<FdpFeature>("dbo.Fdp_Feature_GetMany", para, commandType: CommandType.StoredProcedure);
+
+                    if (results.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                    }
+                    retVal = new PagedResults<FdpFeature>()
+                    {
+                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                    };
+
+                    var currentPage = new List<FdpFeature>();
+
+                    foreach (var result in results)
+                    {
+                        currentPage.Add(result);
+                    }
+                    retVal.CurrentPage = currentPage;
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpFeatureGetMany", ex.Message, CurrentCDSID);
+                    AppHelper.LogError("FeatureDataStore.FdpDerivativeGetMany", ex.Message, CurrentCDSID);
                     throw;
                 }
             }
@@ -495,11 +559,11 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@ProgrammeId", feature.ProgrammeId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@Gateway", feature.Gateway, dbType: DbType.String);
                     para.Add("@FeatureCode", feature.FeatureCode, dbType: DbType.String);
                     para.Add("@FeatureGroupId", feature.FeatureGroupId, dbType: DbType.Int32);
                     para.Add("@FeatureDescription", feature.BrandDescription, dbType: DbType.String);
-                    para.Add("@ProgrammeId", feature.ProgrammeId.GetValueOrDefault(), dbType: DbType.Int32);
-                    para.Add("@Gateway", feature.Gateway, dbType: DbType.String);
                     
                     retVal = conn.Query<FdpFeature>("dbo.Fdp_Feature_Save", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -589,6 +653,134 @@ namespace FeatureDemandPlanning.DataStore
                 catch (Exception ex)
                 {
                     AppHelper.LogError("FeatureDataStore.FdpSpecialFeatureSave", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public FdpFeatureMapping FdpFeatureMappingDelete(FdpFeatureMapping featureMappingToDelete)
+        {
+            FdpFeatureMapping retVal = new EmptyFdpFeatureMapping();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpFeatureMappingId", featureMappingToDelete.FdpFeatureMappingId, dbType: DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+
+                    var results = conn.Query<FdpFeatureMapping>("Fdp_FeatureMapping_Delete", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpFeatureMappingDelete", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public FdpFeatureMapping FdpFeatureMappingGet(FeatureMappingFilter filter)
+        {
+            FdpFeatureMapping retVal = new EmptyFdpFeatureMapping();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpFeatureMappingId", filter.FeatureMappingId.GetValueOrDefault(), dbType: DbType.Int32);
+
+                    var results = conn.Query<FdpFeatureMapping>("Fdp_FeatureMapping_Get", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FeatureMappingGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public PagedResults<FdpFeatureMapping> FdpFeatureMappingGetMany(FeatureMappingFilter filter)
+        {
+            PagedResults<FdpFeatureMapping> retVal = null;
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    var totalRecords = 0;
+                    var totalDisplayRecords = 0;
+
+                    if (!string.IsNullOrEmpty(filter.CarLine))
+                    {
+                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.ModelYear))
+                    {
+                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.Gateway))
+                    {
+                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                    }
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = conn.Query<FdpFeatureMapping>("dbo.Fdp_FeatureMapping_GetMany", para, commandType: CommandType.StoredProcedure);
+
+                    if (results.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                    }
+                    retVal = new PagedResults<FdpFeatureMapping>()
+                    {
+                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                    };
+
+                    var currentPage = new List<FdpFeatureMapping>();
+
+                    foreach (var result in results)
+                    {
+                        currentPage.Add(result);
+                    }
+                    retVal.CurrentPage = currentPage;
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpFeatureMappingGetMany", ex.Message, CurrentCDSID);
                     throw;
                 }
             }

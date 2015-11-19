@@ -28,8 +28,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IEnumerable<Feature> ListFeatures(ProgrammeFilter filter);
         IEnumerable<FeatureGroup> ListFeatureGroups(ProgrammeFilter filter);
 
-        PagedResults<EngineCodeMapping> ListEngineCodeMappings(EngineCodeFilter filter);
-        EngineCodeMapping UpdateEngineCodeMapping(EngineCodeMapping mapping);
+        // Derivatives and mappings
 
         Task<FdpDerivative> DeleteFdpDerivative(FdpDerivative derivativeToDelete);
         Task<FdpDerivative> GetFdpDerivative(DerivativeFilter filter);
@@ -39,8 +38,33 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<FdpDerivativeMapping> GetFdpDerivativeMapping(DerivativeMappingFilter filter);
         Task<PagedResults<FdpDerivativeMapping>> ListFdpDerivativeMappings(DerivativeMappingFilter filter);
 
-        Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> enumerable);
+        Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> gateways);
+        Task<FdpDerivativeMapping> CopyFdpDerivativeMappingsToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> gateways);
 
-        Task<FdpDerivativeMapping> CopyFdpDerivativeMappingsToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> enumerable);
+        // Features and mappings
+
+        Task<FdpFeature> DeleteFdpFeature(FdpFeature featureToDelete);
+        Task<FdpFeature> GetFdpFeature(FeatureFilter filter);
+        Task<PagedResults<FdpFeature>> ListFdpFeatures(FeatureFilter filter);
+
+        Task<FdpFeatureMapping> DeleteFdpFeatureMapping(FdpFeatureMapping fdpFeatureMapping);
+        Task<FdpFeatureMapping> GetFdpFeatureMapping(FeatureMappingFilter filter);
+        Task<PagedResults<FdpFeatureMapping>> ListFdpFeatureMappings(FeatureMappingFilter filter);
+
+        Task<FdpFeatureMapping> CopyFdpFeatureMappingToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways);
+        Task<FdpFeatureMapping> CopyFdpFeatureMappingsToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways);
+
+        // Trim and mappings
+
+        Task<FdpTrim> DeleteFdpTrim(FdpTrim trimToDelete);
+        Task<FdpTrim> GetFdpTrim(TrimFilter filter);
+        Task<PagedResults<FdpTrim>> ListFdpTrims(TrimFilter filter);
+
+        Task<FdpTrimMapping> DeleteFdpTrimMapping(FdpTrimMapping fdpTrimMapping);
+        Task<FdpTrimMapping> GetFdpTrimMapping(TrimMappingFilter filter);
+        Task<PagedResults<FdpTrimMapping>> ListFdpTrimMappings(TrimMappingFilter filter);
+
+        Task<FdpTrimMapping> CopyFdpTrimMappingToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways);
+        Task<FdpTrimMapping> CopyFdpTrimMappingsToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways);
     }
 }

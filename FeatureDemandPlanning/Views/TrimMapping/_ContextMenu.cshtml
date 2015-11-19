@@ -1,14 +1,14 @@
 ﻿@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.DerivativeMappingViewModel
+@model FeatureDemandPlanning.Model.ViewModel.TrimMappingViewModel
 
 <li>
-    <a tabindex="-1" href="#" data-target="@Model.DerivativeMapping.FdpDerivativeMappingId" data-role="@((int)enums.DerivativeMappingAction.Delete)" data-content="@Model.DerivativeMapping.ImportDerivativeCode">
-        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Derivative Mapping '@Model.DerivativeMapping.ImportDerivativeCode' &gt; '@Model.DerivativeMapping.DerivativeCode'...
+    <a tabindex="-1" href="#" data-target="@Model.TrimMapping.FdpTrimMappingId" data-role="@((int)enums.TrimMappingAction.Delete)" data-content="@Model.TrimMapping.ImportTrim">
+        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Trim Mapping '@Model.TrimMapping.ImportTrim' &gt; '@Model.TrimMapping.Name'...
     </a>
 </li>
 <li>
-    <a tabindex="-1" href="#" data-target="@Model.DerivativeMapping.FdpDerivativeMappingId" data-role="@((int)enums.DerivativeMappingAction.Copy)" data-content="@Model.DerivativeMapping.ImportDerivativeCode">
-        <span class="glyphicon glyphicon-copy pull-left"></span> Copy Derivative Mapping '@Model.DerivativeMapping.ImportDerivativeCode' to Gateway...
+    <a tabindex="-1" href="#" data-target="@Model.TrimMapping.FdpTrimMappingId" data-role="@((int)enums.TrimMappingAction.Copy)" data-content="@Model.TrimMapping.ImportTrim">
+        <span class="glyphicon glyphicon-copy pull-left"></span> Copy Trim Mapping '@Model.TrimMapping.ImportTrim' to Gateway...
     </a>
 </li>

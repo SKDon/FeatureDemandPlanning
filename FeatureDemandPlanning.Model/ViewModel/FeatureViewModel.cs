@@ -12,55 +12,52 @@ using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {
-    public class DerivativeViewModel : SharedModelBase
+    public class FeatureViewModel : SharedModelBase
     {
-        public FdpDerivative Derivative { get; set; }
-        public PagedResults<FdpDerivative> Derivatives { get; set; }
+        public FdpFeature Feature { get; set; }
+        public PagedResults<FdpFeature> Features { get; set; }
         public IEnumerable<Programme> Programmes { get; set; }
-        public IEnumerable<ModelBody> Bodies { get; set; }
-        public IEnumerable<ModelEngine> Engines { get; set; }
-        public IEnumerable<ModelTransmission> Transmissions { get; set; }
         public IEnumerable<CarLine> CarLines { get; set; }
         public IEnumerable<Gateway> Gateways { get; set; }
         public IEnumerable<ModelYear> ModelYears { get; set; }
 
-        public DerivativeAction CurrentAction { get; set; }
+        public FeatureAction CurrentAction { get; set; }
     
-        public DerivativeViewModel() : base()
+        public FeatureViewModel() : base()
         {
             InitialiseMembers();
         }
-        public DerivativeViewModel(SharedModelBase baseModel) : base(baseModel)
+        public FeatureViewModel(SharedModelBase baseModel) : base(baseModel)
         {
             InitialiseMembers();
         }
-        public static async Task<DerivativeViewModel> GetModel(IDataContext context, DerivativeFilter derivativeFilter)
+        public static async Task<FeatureViewModel> GetModel(IDataContext context, FeatureFilter featureFilter)
         {
-            DerivativeViewModel model = null;
+            FeatureViewModel model = null;
 
-            if (derivativeFilter.Action == DerivativeAction.Delete || derivativeFilter.Action == DerivativeAction.Derivative)
+            if (featureFilter.Action == FeatureAction.Delete || featureFilter.Action == FeatureAction.Feature)
             {
-                model = await GetFullAndPartialViewModelForDerivative(context, derivativeFilter);
+                model = await GetFullAndPartialViewModelForFeature(context, featureFilter);
             }
-            else if (derivativeFilter.Action == DerivativeAction.Derivatives)
+            else if (featureFilter.Action == FeatureAction.Features)
             {
-                model = await GetFullAndPartialViewModelForDerivatives(context, derivativeFilter);
+                model = await GetFullAndPartialViewModelForFeatures(context, featureFilter);
             }
             else
             {
-                model = GetFullAndPartialViewModel(context, derivativeFilter);
+                model = GetFullAndPartialViewModel(context, featureFilter);
             }
-            if (derivativeFilter.Action != DerivativeAction.NotSet)
+            if (featureFilter.Action != FeatureAction.NotSet)
             {
-                model.IdentifierPrefix = Enum.GetName(derivativeFilter.Action.GetType(), derivativeFilter.Action);
+                model.IdentifierPrefix = Enum.GetName(featureFilter.Action.GetType(), featureFilter.Action);
             }
            
             return model;
         }
-        private static DerivativeViewModel GetFullAndPartialViewModel(IDataContext context,
-                                                                      DerivativeFilter filter)
+        private static FeatureViewModel GetFullAndPartialViewModel(IDataContext context,
+                                                                      FeatureFilter filter)
         {
-            var model = new DerivativeViewModel(SharedModelBase.GetBaseModel(context))
+            var model = new FeatureViewModel(SharedModelBase.GetBaseModel(context))
             {
                 Configuration = context.ConfigurationSettings,
             };
@@ -68,39 +65,36 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return model;
         }
-        private static async Task<DerivativeViewModel> GetFullAndPartialViewModelForDerivative(IDataContext context,
-                                                                                               DerivativeFilter filter)
+        private static async Task<FeatureViewModel> GetFullAndPartialViewModelForFeature(IDataContext context,
+                                                                                               FeatureFilter filter)
         {
-            var model = new DerivativeViewModel()
+            var model = new FeatureViewModel()
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                 PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
                 Configuration = context.ConfigurationSettings
             };
-            var derivative = await context.Vehicle.GetFdpDerivative(filter);
+            var feature = await context.Vehicle.GetFdpFeature(filter);
             var programmeFilter = new ProgrammeFilter()
             {
-                ProgrammeId = derivative.ProgrammeId,
-                Gateway = derivative.Gateway
+                ProgrammeId = feature.ProgrammeId,
+                Gateway = feature.Gateway
             };
             HydrateModelWithCommonProperties(model, context, programmeFilter);
             
-            if (!(derivative is EmptyFdpDerivative))
+            if (!(feature is EmptyFdpFeature))
             {
-                derivative.Programme = model.Programmes.FirstOrDefault(p => p.Id == derivative.ProgrammeId.GetValueOrDefault());
-                derivative.Body = model.Bodies.FirstOrDefault(b => b.Id == derivative.BodyId);
-                derivative.Engine = model.Engines.FirstOrDefault(e => e.Id == derivative.EngineId);
-                derivative.Transmission = model.Transmissions.FirstOrDefault(t => t.Id == derivative.TransmissionId);
+                feature.Programme = model.Programmes.FirstOrDefault(p => p.Id == feature.ProgrammeId.GetValueOrDefault());
             }
-            model.Derivative = derivative;
+            model.Feature = feature;
            
             return model;
         }
-        private static async Task<DerivativeViewModel> GetFullAndPartialViewModelForDerivatives(IDataContext context,
-                                                                                                DerivativeFilter filter)
+        private static async Task<FeatureViewModel> GetFullAndPartialViewModelForFeatures(IDataContext context,
+                                                                                                FeatureFilter filter)
         {
             var baseModel = SharedModelBase.GetBaseModel(context);
-            var model = new DerivativeViewModel()
+            var model = new FeatureViewModel()
             {
                 PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                 PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
@@ -115,47 +109,38 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
             HydrateModelWithCommonProperties(model, context, programmeFilter);
 
-            model.Derivatives = await context.Vehicle.ListFdpDerivatives(filter);
-            model.TotalPages = model.Derivatives.TotalPages;
-            model.TotalRecords = model.Derivatives.TotalRecords;
-            model.TotalDisplayRecords = model.Derivatives.TotalDisplayRecords;
+            model.Features = await context.Vehicle.ListFdpFeatures(filter);
+            model.TotalPages = model.Features.TotalPages;
+            model.TotalRecords = model.Features.TotalRecords;
+            model.TotalDisplayRecords = model.Features.TotalDisplayRecords;
 
-            foreach (var derivative in model.Derivatives.CurrentPage)
+            foreach (var feature in model.Features.CurrentPage)
             {
-                derivative.Programme = model.Programmes.FirstOrDefault(p => p.Id == derivative.ProgrammeId.GetValueOrDefault());
-                derivative.Body = model.Bodies.FirstOrDefault(b => b.Id == derivative.BodyId);
-                derivative.Engine = model.Engines.FirstOrDefault(e => e.Id == derivative.EngineId);
-                derivative.Transmission = model.Transmissions.FirstOrDefault(t => t.Id == derivative.TransmissionId);
+                feature.Programme = model.Programmes.FirstOrDefault(p => p.Id == feature.ProgrammeId.GetValueOrDefault());
             }
 
             return model;
         }
-        private static void HydrateModelWithCommonProperties(DerivativeViewModel model, IDataContext context)
+        private static void HydrateModelWithCommonProperties(FeatureViewModel model, IDataContext context)
         {
             HydrateModelWithCommonProperties(model, context, new ProgrammeFilter());
         }
-        private static void HydrateModelWithCommonProperties(DerivativeViewModel model, IDataContext context, ProgrammeFilter programmeFilter)
+        private static void HydrateModelWithCommonProperties(FeatureViewModel model, IDataContext context, ProgrammeFilter programmeFilter)
         {
             model.Programmes = context.Vehicle.ListProgrammes(programmeFilter);
-            model.Bodies = context.Vehicle.ListBodies(programmeFilter);
-            model.Engines = context.Vehicle.ListEngines(programmeFilter);
-            model.Transmissions = context.Vehicle.ListTransmissions(programmeFilter);
             model.Gateways = model.Programmes.ListGateways();
             model.CarLines = model.Programmes.ListCarLines();
             model.ModelYears = model.Programmes.ListModelYears();
         }
         private void InitialiseMembers()
         {
-            Derivative = new EmptyFdpDerivative();
+            Feature = new EmptyFdpFeature();
             IdentifierPrefix = "Page";
             Programmes = Enumerable.Empty<Programme>();
-            Bodies = Enumerable.Empty<ModelBody>();
-            Engines = Enumerable.Empty<ModelEngine>();
-            Transmissions = Enumerable.Empty<ModelTransmission>();
             Gateways = Enumerable.Empty<Gateway>();
             CarLines = Enumerable.Empty<CarLine>();
             ModelYears = Enumerable.Empty<ModelYear>();
-            CurrentAction = DerivativeAction.NotSet;
+            CurrentAction = FeatureAction.NotSet;
         }
 
         

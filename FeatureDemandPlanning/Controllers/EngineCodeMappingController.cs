@@ -94,35 +94,5 @@ namespace FeatureDemandPlanning.Controllers
 
             return Json(jQueryResult, JsonRequestBehavior.AllowGet);
         }
-
-        [HttpGet]
-        public ActionResult EditEngineCodeMapping(EngineCodeMapping mapping)
-        {
-            mapping = DataContext.Vehicle.UpdateEngineCodeMapping(mapping);
-
-            return Json(mapping, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Gets the full and partial view model to be used by the controller actions
-        /// </summary>
-        /// <returns></returns>
-        private EngineCodeMappingViewModel GetFullAndPartialEngineCodeMappingViewModel(EngineCodeFilter filter)
-        {
-            var engineCodeMappingModel = new EngineCodeMappingViewModel()
-            {
-                EngineCodeMappings = DataContext.Vehicle.ListEngineCodeMappings(filter),
-                PageSize = PageSize,
-                PageIndex = PageIndex
-            };
-
-            if (engineCodeMappingModel.EngineCodeMappings.CurrentPage.Any())
-            {
-                engineCodeMappingModel.TotalPages = engineCodeMappingModel.EngineCodeMappings.TotalPages;
-                engineCodeMappingModel.TotalRecords = engineCodeMappingModel.EngineCodeMappings.TotalRecords;
-            }
-
-            return engineCodeMappingModel;
-        }
     }
 }

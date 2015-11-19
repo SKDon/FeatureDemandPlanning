@@ -1,18 +1,18 @@
-﻿var model = namespace("FeatureDemandPlanning.Derivative");
+﻿var model = namespace("FeatureDemandPlanning.Feature");
 
-model.DerivativeFilter = function () {
+model.FeatureFilter = function () {
     var me = this;
     me.ProgrammeId = null;
     me.Gateway = "";
     me.FilterMessage = "";
 };
-model.Derivative = function (params) {
+model.Feature = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
 
     privateStore[me.id = uid++] = {};
-    privateStore[me.id].DerivativesUri = params.DerivativesUri;
+    privateStore[me.id].FeaturesUri = params.FeaturesUri;
     privateStore[me.id].ActionsUri = params.ActionsUri;
     privateStore[me.id].Configuration = params.Configuration;
     privateStore[me.id].ModalContentUri = params.ModalContentUri;
@@ -21,7 +21,7 @@ model.Derivative = function (params) {
     privateStore[me.id].PageIndex = params.PageIndex;
     privateStore[me.id].Parameters = params;
 
-    me.ModelName = "Derivative";
+    me.ModelName = "Feature";
 
     me.getActionContentUri = function (action) {
         return privateStore[me.id].ModalContentUri;
@@ -31,18 +31,18 @@ model.Derivative = function (params) {
 
         switch (action) {
             case 1:
-                actionModel = new FeatureDemandPlanning.Derivative.DeleteDerivativeAction(me.getParameters());
+                actionModel = new FeatureDemandPlanning.Feature.DeleteFeatureAction(me.getParameters());
                 break;
             default:
                 break;
         }
         return actionModel;
     };
-    me.getActionTitle = function (action, derivative) {
+    me.getActionTitle = function (action, feature) {
         var title = "";
         switch (action) {
             case 1:
-                title = "Delete Derivative '" + derivative + "'";
+                title = "Delete Feature '" + feature + "'";
                 break;
             default:
                 break;
@@ -67,16 +67,16 @@ model.Derivative = function (params) {
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
     };
-    me.getDerivativesUri = function () {
-        return privateStore[me.id].DerivativesUri;
+    me.getFeaturesUri = function () {
+        return privateStore[me.id].FeaturesUri;
     };
     me.loadUsers = function () {
         $.ajax({
-            url: me.getDerivativesUri(),
+            url: me.getFeaturesUri(),
             type: "GET",
             dataType: "json",
             data: filter,
-            success: loadDerivativesCallback,
+            success: loadFeaturesCallback,
             error: genericErrorCallback
         });
     }
@@ -110,7 +110,7 @@ model.Derivative = function (params) {
         privateStore[me.id].Config = response.Configuration;
         $(document).trigger("notifyError", response);
     };
-    function loadDerivativesCallback(response) {
+    function loadFeaturesCallback(response) {
         $(document).trigger("notifyResults", response);
     };
 };

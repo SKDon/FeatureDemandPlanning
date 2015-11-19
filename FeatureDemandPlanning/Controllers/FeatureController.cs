@@ -15,48 +15,48 @@ using System.Web.Mvc;
 
 namespace FeatureDemandPlanning.Controllers
 {
-    public class DerivativeController : ControllerBase
+    public class FeatureController : ControllerBase
     {
-        public DerivativeController() : base()
+        public FeatureController() : base()
         {
             ControllerType = ControllerType.SectionChild;
         }
         [HttpGet]
         [ActionName("Index")]
-        public ActionResult UserPage()
+        public ActionResult FeaturePage()
         {
-            return RedirectToAction("DerivativePage");
+            return RedirectToAction("FeaturePage");
         }
         [HttpGet]
-        public async Task<ActionResult> DerivativePage(DerivativeParameters parameters)
+        public async Task<ActionResult> FeaturePage(FeatureParameters parameters)
         {
-            var filter = new DerivativeFilter()
+            var filter = new FeatureFilter()
             {
                 PageIndex = PageIndex,
                 PageSize = PageSize
             };
-            return View(await DerivativeViewModel.GetModel(DataContext, filter));
+            return View(await FeatureViewModel.GetModel(DataContext, filter));
         }
         [HttpPost]
         [HandleErrorWithJson]
-        public async Task<ActionResult> ListDerivatives(DerivativeParameters parameters)
+        public async Task<ActionResult> ListFeatures(FeatureParameters parameters)
         {
-            ValidateDerivativeParameters(parameters, DerivativeParametersValidator.NoValidation);
+            ValidateFeatureParameters(parameters, FeatureParametersValidator.NoValidation);
 
-            var filter = new DerivativeFilter()
+            var filter = new FeatureFilter()
             {
                 FilterMessage = parameters.FilterMessage,
                 CarLine = parameters.CarLine,
                 ModelYear = parameters.ModelYear,
                 Gateway = parameters.Gateway,
-                Action = DerivativeAction.Derivatives
+                Action = FeatureAction.Features
             };
             filter.InitialiseFromJson(parameters);
 
-            var results = await DerivativeViewModel.GetModel(DataContext, filter);
+            var results = await FeatureViewModel.GetModel(DataContext, filter);
             var jQueryResult = new JQueryDataTableResultModel(results);
 
-            foreach (var result in results.Derivatives.CurrentPage)
+            foreach (var result in results.Features.CurrentPage)
             {
                 jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
             }
@@ -64,65 +64,65 @@ namespace FeatureDemandPlanning.Controllers
             return Json(jQueryResult);
         }
         [HttpPost]
-        public async Task<ActionResult> ContextMenu(DerivativeParameters parameters)
+        public async Task<ActionResult> ContextMenu(FeatureParameters parameters)
         {
-            ValidateDerivativeParameters(parameters, DerivativeParametersValidator.DerivativeIdentifier);
+            ValidateFeatureParameters(parameters, FeatureParametersValidator.FeatureIdentifier);
 
-            var filter = DerivativeFilter.FromParameters(parameters);
-            filter.Action = DerivativeAction.Derivative;
+            var filter = FeatureFilter.FromParameters(parameters);
+            filter.Action = FeatureAction.Feature;
 
-            var derivativeView = await DerivativeViewModel.GetModel(DataContext, filter);
+            var derivativeView = await FeatureViewModel.GetModel(DataContext, filter);
 
             return PartialView("_ContextMenu", derivativeView);
         }
         [HttpPost]
         [HandleError(View = "_ModalError")]
-        public async Task<ActionResult> ModalContent(DerivativeParameters parameters)
+        public async Task<ActionResult> ModalContent(FeatureParameters parameters)
         {
-            ValidateDerivativeParameters(parameters, DerivativeParametersValidator.Action);
+            ValidateFeatureParameters(parameters, FeatureParametersValidator.Action);
 
-            var filter = DerivativeMappingFilter.FromParameters(parameters);
+            var filter = FeatureMappingFilter.FromParameters(parameters);
             var derivativeView = await GetModelFromParameters(parameters);
 
             return PartialView(GetContentPartialViewName(parameters.Action), derivativeView);
         }
         [HttpPost]
         [HandleErrorWithJson]
-        public ActionResult ModalAction(DerivativeParameters parameters)
+        public ActionResult ModalAction(FeatureParameters parameters)
         {
-            ValidateDerivativeParameters(parameters, DerivativeParametersValidator.DerivativeIdentifierWithAction);
-            ValidateDerivativeParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+            ValidateFeatureParameters(parameters, FeatureParametersValidator.FeatureIdentifierWithAction);
+            ValidateFeatureParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
         [HandleErrorWithJson]
-        public async Task<ActionResult> Delete(DerivativeParameters parameters)
+        public async Task<ActionResult> Delete(FeatureParameters parameters)
         {
             var derivativeView = await GetModelFromParameters(parameters);
-            if (derivativeView.Derivative is EmptyFdpDerivative)
+            if (derivativeView.Feature is EmptyFdpFeature)
             {
-                return JsonGetFailure(string.Format("Derivative does not exist", parameters.DerivativeId));
+                return JsonGetFailure(string.Format("Feature does not exist", parameters.FeatureId));
             }
 
-            derivativeView.Derivative = await DataContext.Vehicle.DeleteFdpDerivative(FdpDerivative.FromParameters(parameters));
-            if (derivativeView.Derivative is EmptyFdpDerivative)
+            derivativeView.Feature = await DataContext.Vehicle.DeleteFdpFeature(FdpFeature.FromParameters(parameters));
+            if (derivativeView.Feature is EmptyFdpFeature)
             {
-                return JsonGetFailure(string.Format("Derivative '{0}' could not be deleted", derivativeView.Derivative.DerivativeCode));
+                return JsonGetFailure(string.Format("Feature '{0}' could not be deleted", derivativeView.Feature.FeatureCode));
             }
 
             return JsonGetSuccess();
         }
-        private string GetContentPartialViewName(DerivativeAction forAction)
+        private string GetContentPartialViewName(FeatureAction forAction)
         {
             return string.Format("_{0}", Enum.GetName(forAction.GetType(), forAction));
         }
-        private async Task<DerivativeViewModel> GetModelFromParameters(DerivativeParameters parameters)
+        private async Task<FeatureViewModel> GetModelFromParameters(FeatureParameters parameters)
         {
-            return await DerivativeViewModel.GetModel(DataContext, DerivativeMappingFilter.FromParameters(parameters));
+            return await FeatureViewModel.GetModel(DataContext, FeatureMappingFilter.FromParameters(parameters));
         }
-        private void ValidateDerivativeParameters(DerivativeParameters parameters, string ruleSetName)
+        private void ValidateFeatureParameters(FeatureParameters parameters, string ruleSetName)
         {
-            var validator = new DerivativeParametersValidator();
+            var validator = new FeatureParametersValidator();
             var result = validator.Validate(parameters, ruleSet: ruleSetName);
             if (!result.IsValid)
             {
@@ -131,35 +131,35 @@ namespace FeatureDemandPlanning.Controllers
         }
     }
 
-    internal class DerivativeParametersValidator : AbstractValidator<DerivativeParameters>
+    internal class FeatureParametersValidator : AbstractValidator<FeatureParameters>
     {
-        public const string DerivativeIdentifier = "DERIVATIVE_ID";
+        public const string FeatureIdentifier = "FEATURE_ID";
         public const string NoValidation = "NO_VALIDATION";
         public const string Action = "ACTION";
-        public const string DerivativeIdentifierWithAction = "DERIVATIVE_ID_WITH_ACTION";
+        public const string FeatureIdentifierWithAction = "FEATURE_ID_WITH_ACTION";
 
-        public DerivativeParametersValidator()
+        public FeatureParametersValidator()
         {
             RuleSet(NoValidation, () =>
             {
 
             });
-            RuleSet(DerivativeIdentifier, () =>
+            RuleSet(FeatureIdentifier, () =>
             {
-                RuleFor(p => p.DerivativeId).NotNull().WithMessage("'DerivativeId' not specified");
+                RuleFor(p => p.FeatureId).NotNull().WithMessage("'FeatureId' not specified");
             });
             RuleSet(Action, () =>
             {
-                RuleFor(p => p.Action).NotEqual(a => DerivativeAction.NotSet).WithMessage("'Action' not specified");
+                RuleFor(p => p.Action).NotEqual(a => FeatureAction.NotSet).WithMessage("'Action' not specified");
             });
-            RuleSet(DerivativeIdentifierWithAction, () =>
+            RuleSet(FeatureIdentifierWithAction, () =>
             {
-                RuleFor(p => p.DerivativeId).NotNull().WithMessage("'DerivativeId' not specified");
-                RuleFor(p => p.Action).NotEqual(a => DerivativeAction.NotSet).WithMessage("'Action' not specified");
+                RuleFor(p => p.FeatureId).NotNull().WithMessage("'FeatureId' not specified");
+                RuleFor(p => p.Action).NotEqual(a => FeatureAction.NotSet).WithMessage("'Action' not specified");
             });
-            RuleSet(Enum.GetName(typeof(DerivativeAction), DerivativeAction.Delete), () =>
+            RuleSet(Enum.GetName(typeof(FeatureAction), FeatureAction.Delete), () =>
             {
-                RuleFor(p => p.DerivativeId).NotNull().WithMessage("'DerivativeId' not specified");
+                RuleFor(p => p.FeatureId).NotNull().WithMessage("'FeatureId' not specified");
             });
         }
     }

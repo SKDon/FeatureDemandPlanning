@@ -17,7 +17,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public MarketViewModel() : base()
         {
         }
-
         public static MarketViewModel GetModel(IDataContext context)
         {
             return new MarketViewModel()

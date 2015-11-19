@@ -75,7 +75,6 @@ namespace FeatureDemandPlanning.DataStore
                         .Where(d => IsDocumentForVehicle(d, VehicleFilter.ToVehicle(filter)))
                         .Distinct(new OXODocComparer());
         }
-
         public IEnumerable<TakeRateSummary> ListAvailableImports(VehicleFilter filter, Programme forProgramme)
         {
             var imports = _volumeDataStore
@@ -224,7 +223,6 @@ namespace FeatureDemandPlanning.DataStore
 
             return programmes.First();
         }
-
         public IEnumerable<Programme> ListProgrammes(ProgrammeFilter filter)
         {
             var programmes = _programmeDataStore.ProgrammeByGatewayGetMany();
@@ -243,6 +241,8 @@ namespace FeatureDemandPlanning.DataStore
             return programmes;
         }
 
+        // Derivatives and mappings
+        
         public async Task<FdpDerivative> DeleteFdpDerivative(FdpDerivative derivativeToDelete)
         {
             return await Task.FromResult<FdpDerivative>(_derivativeDataStore.FdpDerivativeDelete(derivativeToDelete));
@@ -275,6 +275,78 @@ namespace FeatureDemandPlanning.DataStore
         {
             throw new NotImplementedException();
         }
+
+        // Features and mappings
+
+        public async Task<FdpFeature> DeleteFdpFeature(FdpFeature featureToDelete)
+        {
+            return await Task.FromResult<FdpFeature>(_featureDataStore.FdpFeatureDelete(featureToDelete));
+        }
+        public async Task<FdpFeature> GetFdpFeature(FeatureFilter filter)
+        {
+            return await Task.FromResult<FdpFeature>(_featureDataStore.FdpFeatureGet(filter));
+        }
+        public async Task<PagedResults<FdpFeature>> ListFdpFeatures(FeatureFilter filter)
+        {
+            return await Task.FromResult<PagedResults<FdpFeature>>(_featureDataStore.FdpFeatureGetMany(filter));
+        }
+        public async Task<FdpFeatureMapping> DeleteFdpFeatureMapping(FdpFeatureMapping featureMappingToDelete)
+        {
+            return await Task.FromResult<FdpFeatureMapping>(_featureDataStore.FdpFeatureMappingDelete(featureMappingToDelete));
+        }
+        public async Task<FdpFeatureMapping> GetFdpFeatureMapping(FeatureMappingFilter filter)
+        {
+            return await Task.FromResult<FdpFeatureMapping>(_featureDataStore.FdpFeatureMappingGet(filter));
+        }
+        public async Task<PagedResults<FdpFeatureMapping>> ListFdpFeatureMappings(FeatureMappingFilter filter)
+        {
+            return await Task.FromResult<PagedResults<FdpFeatureMapping>>(_featureDataStore.FdpFeatureMappingGetMany(filter));
+        }
+        public Task<FdpFeatureMapping> CopyFdpFeatureMappingToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways)
+        {
+            throw new NotImplementedException();
+        }
+        public Task<FdpFeatureMapping> CopyFdpFeatureMappingsToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways)
+        {
+            throw new NotImplementedException();
+        }
+
+        // Trim and mappings
+
+        public async Task<FdpTrim> DeleteFdpTrim(FdpTrim trimToDelete)
+        {
+            return await Task.FromResult<FdpTrim>(_trimDataStore.FdpTrimDelete(trimToDelete));
+        }
+        public async Task<FdpTrim> GetFdpTrim(TrimFilter filter)
+        {
+            return await Task.FromResult<FdpTrim>(_trimDataStore.FdpTrimGet(filter));
+        }
+        public async Task<PagedResults<FdpTrim>> ListFdpTrims(TrimFilter filter)
+        {
+            return await Task.FromResult<PagedResults<FdpTrim>>(_trimDataStore.FdpTrimGetMany(filter));
+        }
+        public async Task<FdpTrimMapping> DeleteFdpTrimMapping(FdpTrimMapping trimMappingToDelete)
+        {
+            return await Task.FromResult<FdpTrimMapping>(_trimDataStore.FdpTrimMappingDelete(trimMappingToDelete));
+        }
+        public async Task<FdpTrimMapping> GetFdpTrimMapping(TrimMappingFilter filter)
+        {
+            return await Task.FromResult<FdpTrimMapping>(_trimDataStore.FdpTrimMappingGet(filter));
+        }
+        public async Task<PagedResults<FdpTrimMapping>> ListFdpTrimMappings(TrimMappingFilter filter)
+        {
+            return await Task.FromResult<PagedResults<FdpTrimMapping>>(_trimDataStore.FdpTrimMappingGetMany(filter));
+        }
+        public Task<FdpTrimMapping> CopyFdpTrimMappingToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways)
+        {
+            throw new NotImplementedException();
+        }
+        public Task<FdpTrimMapping> CopyFdpTrimMappingsToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways)
+        {
+            throw new NotImplementedException();
+        }
+
+
         public IEnumerable<IVehicle> ListAvailableVehicles(VehicleFilter filter)
         {
             var programmes = ListProgrammes(filter);

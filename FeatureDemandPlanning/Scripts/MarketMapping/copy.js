@@ -1,8 +1,8 @@
 ﻿"use strict";
 
-var model = namespace("FeatureDemandPlanning.Derivative");
+var model = namespace("FeatureDemandPlanning.Market");
 
-model.CopyDerivativeMappingAction = function (params) {
+model.CopyMarketMappingAction = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
@@ -11,8 +11,8 @@ model.CopyDerivativeMappingAction = function (params) {
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].ActionUri = params.ModalActionUri;
     privateStore[me.id].Parameters = params;
-    privateStore[me.id].DerivativeId = params.DerivativeId;
-    privateStore[me.id].DerivativeCode = params.DerivativeCode;
+    privateStore[me.id].MarketId = params.MarketId;
+    privateStore[me.id].MarketCode = params.MarketCode;
     privateStore[me.id].SelectedGateway = params.SelectedGateway;
 
     me.action = function () {
@@ -34,7 +34,7 @@ model.CopyDerivativeMappingAction = function (params) {
     };
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
-            "DerivativeId": me.getDerivativeId(),
+            "MarketId": me.getMarketId(),
             "Gateway": me.getSelectedGateway()
         });
     };
@@ -47,11 +47,11 @@ model.CopyDerivativeMappingAction = function (params) {
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
     };
-    me.getDerivativeId = function () {
-        return $("#" + me.getIdentifierPrefix() + "_DerivativeId").val();
+    me.getMarketId = function () {
+        return $("#" + me.getIdentifierPrefix() + "_MarketId").val();
     };
-    me.getDerivativeCode = function () {
-        return privateStore[me.id].DerivativeCode;
+    me.getMarketCode = function () {
+        return privateStore[me.id].MarketCode;
     };
     me.getSelectedGateway = function () {
         return privateStore[me.id].SelectedGateway;
@@ -68,7 +68,7 @@ model.CopyDerivativeMappingAction = function (params) {
             .removeClass("alert-danger")
             .removeClass("alert-warning")
             .addClass("alert-success")
-            .html("Derivative mapping copied successfully")
+            .html("Market mapping copied successfully")
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");

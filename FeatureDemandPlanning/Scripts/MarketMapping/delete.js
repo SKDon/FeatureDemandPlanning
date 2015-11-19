@@ -1,8 +1,8 @@
 ﻿"use strict";
 
-var model = namespace("FeatureDemandPlanning.Derivative");
+var model = namespace("FeatureDemandPlanning.Market");
 
-model.DeleteDerivativeMappingAction = function (params) {
+model.DeleteMarketMappingAction = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
@@ -11,8 +11,8 @@ model.DeleteDerivativeMappingAction = function (params) {
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].ActionUri = params.ModalActionUri;
     privateStore[me.id].Parameters = params;
-    privateStore[me.id].DerivativeId = params.DerivativeId;
-    privateStore[me.id].DerivativeCode = params.DerivativeCode;
+    privateStore[me.id].MarketId = params.MarketId;
+    privateStore[me.id].MarketCode = params.MarketCode;
 
     me.action = function () {
         sendData(me.getActionUri(), me.getActionParameters());
@@ -22,7 +22,7 @@ model.DeleteDerivativeMappingAction = function (params) {
     };
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
-            "DerivativeId": me.getDerivativeId()
+            "MarketId": me.getMarketId()
         });
     };
     me.getIdentifierPrefix = function () {
@@ -34,11 +34,11 @@ model.DeleteDerivativeMappingAction = function (params) {
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
     };
-    me.getDerivativeId = function () {
-        return $("#" + me.getIdentifierPrefix() + "_DerivativeId").val();
+    me.getMarketId = function () {
+        return $("#" + me.getIdentifierPrefix() + "_MarketId").val();
     };
-    me.getDerivativeCode = function () {
-        return privateStore[me.id].DerivativeCode;
+    me.getMarketCode = function () {
+        return privateStore[me.id].MarketCode;
     }
     me.initialise = function () {
         me.registerEvents();
@@ -52,7 +52,7 @@ model.DeleteDerivativeMappingAction = function (params) {
             .removeClass("alert-danger")
             .removeClass("alert-warning")
             .addClass("alert-success")
-            .html("Derivative mapping deleted successfully")
+            .html("Market mapping deleted successfully")
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");

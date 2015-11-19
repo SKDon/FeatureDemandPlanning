@@ -15,49 +15,49 @@ using System.Web.Mvc;
 
 namespace FeatureDemandPlanning.Controllers
 {
-    public class DerivativeMappingController : ControllerBase
+    public class MarketMappingController : ControllerBase
     {
-        public DerivativeMappingController()
+        public MarketMappingController()
             : base()
         {
             ControllerType = ControllerType.SectionChild;
         }
         [HttpGet]
         [ActionName("Index")]
-        public ActionResult DerivativeMappingPage()
+        public ActionResult MarketMappingPage()
         {
-            return RedirectToAction("DerivativeMappingPage");
+            return RedirectToAction("MarketMappingPage");
         }
         [HttpGet]
-        public async Task<ActionResult> DerivativeMappingPage(DerivativeMappingParameters parameters)
+        public async Task<ActionResult> MarketMappingPage(MarketMappingParameters parameters)
         {
-            var filter = new DerivativeMappingFilter()
+            var filter = new MarketMappingFilter()
             {
                 PageIndex = PageIndex,
                 PageSize = PageSize
             };
-            return View(await DerivativeMappingViewModel.GetModel(DataContext, filter));
+            return View(await MarketMappingViewModel.GetModel(DataContext, filter));
         }
         [HttpPost]
         [HandleErrorWithJson]
-        public async Task<ActionResult> ListDerivativeMappings(DerivativeMappingParameters parameters)
+        public async Task<ActionResult> ListMarketMappings(MarketMappingParameters parameters)
         {
-            ValidateDerivativeMappingParameters(parameters, DerivativeMappingParametersValidator.NoValidation);
+            ValidateMarketMappingParameters(parameters, MarketMappingParametersValidator.NoValidation);
 
-            var filter = new DerivativeMappingFilter()
+            var filter = new MarketMappingFilter()
             {
                 FilterMessage = parameters.FilterMessage,
                 CarLine = parameters.CarLine,
                 ModelYear = parameters.ModelYear,
                 Gateway = parameters.Gateway,
-                Action = DerivativeMappingAction.Mappings
+                Action = MarketMappingAction.Mappings
             };
             filter.InitialiseFromJson(parameters);
 
-            var results = await DerivativeMappingViewModel.GetModel(DataContext, filter);
+            var results = await MarketMappingViewModel.GetModel(DataContext, filter);
             var jQueryResult = new JQueryDataTableResultModel(results);
 
-            foreach (var result in results.DerivativeMappings.CurrentPage)
+            foreach (var result in results.MarketMappings.CurrentPage)
             {
                 jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
             }
@@ -65,99 +65,99 @@ namespace FeatureDemandPlanning.Controllers
             return Json(jQueryResult);
         }
         [HttpPost]
-        public async Task<ActionResult> ContextMenu(DerivativeMappingParameters parameters)
+        public async Task<ActionResult> ContextMenu(MarketMappingParameters parameters)
         {
-            ValidateDerivativeMappingParameters(parameters, DerivativeMappingParametersValidator.DerivativeMappingIdentifier);
+            ValidateMarketMappingParameters(parameters, MarketMappingParametersValidator.MarketMappingIdentifier);
 
-            var filter = DerivativeMappingFilter.FromDerivativeMappingParameters(parameters);
-            filter.Action = DerivativeMappingAction.Mapping;
+            var filter = MarketMappingFilter.FromMarketMappingParameters(parameters);
+            filter.Action = MarketMappingAction.Mapping;
 
-            var derivativeMappingView = await DerivativeMappingViewModel.GetModel(DataContext, filter);
+            var derivativeMappingView = await MarketMappingViewModel.GetModel(DataContext, filter);
 
             return PartialView("_ContextMenu", derivativeMappingView);
         }
         [HttpPost]
         [HandleError(View = "_ModalError")]
-        public async Task<ActionResult> ModalContent(DerivativeMappingParameters parameters)
+        public async Task<ActionResult> ModalContent(MarketMappingParameters parameters)
         {
-            ValidateDerivativeMappingParameters(parameters, DerivativeMappingParametersValidator.Action);
+            ValidateMarketMappingParameters(parameters, MarketMappingParametersValidator.Action);
 
-            var filter = DerivativeMappingFilter.FromDerivativeMappingParameters(parameters);
-            var derivativeMappingView = await DerivativeMappingViewModel.GetModel(DataContext, filter);
+            var filter = MarketMappingFilter.FromMarketMappingParameters(parameters);
+            var derivativeMappingView = await MarketMappingViewModel.GetModel(DataContext, filter);
 
             return PartialView(GetContentPartialViewName(parameters.Action), derivativeMappingView);
         }
         [HttpPost]
         [HandleErrorWithJson]
-        public ActionResult ModalAction(DerivativeMappingParameters parameters)
+        public ActionResult ModalAction(MarketMappingParameters parameters)
         {
-            ValidateDerivativeMappingParameters(parameters, DerivativeMappingParametersValidator.DerivativeIdentifierWithAction);
-            ValidateDerivativeMappingParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+            ValidateMarketMappingParameters(parameters, MarketMappingParametersValidator.MarketIdentifierWithAction);
+            ValidateMarketMappingParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
         [HandleErrorWithJson]
-        public async Task<ActionResult> Delete(DerivativeMappingParameters parameters)
+        public async Task<ActionResult> Delete(MarketMappingParameters parameters)
         {
             var derivativeMappingView = await GetModelFromParameters(parameters);
-            if (derivativeMappingView.DerivativeMapping is EmptyFdpDerivativeMapping)
+            if (derivativeMappingView.MarketMapping is EmptyFdpMarketMapping)
             {
-                return JsonGetFailure("DerivativeMapping does not exist");
+                return JsonGetFailure("MarketMapping does not exist");
             }
 
-            derivativeMappingView.DerivativeMapping = await DataContext.Vehicle.DeleteFdpDerivativeMapping(FdpDerivativeMapping.FromParameters(parameters));
-            if (derivativeMappingView.DerivativeMapping is EmptyFdpDerivativeMapping)
+            derivativeMappingView.MarketMapping = await DataContext.Market.DeleteFdpMarketMapping(FdpMarketMapping.FromParameters(parameters));
+            if (derivativeMappingView.MarketMapping is EmptyFdpMarketMapping)
             {
-                return JsonGetFailure(string.Format("DerivativeMapping '{0}' could not be deleted", derivativeMappingView.DerivativeMapping.ImportDerivativeCode));
+                return JsonGetFailure(string.Format("MarketMapping '{0}' could not be deleted", derivativeMappingView.MarketMapping.ImportMarket));
             }
 
             return JsonGetSuccess();
         }
         [HandleErrorWithJson]
-        public async Task<ActionResult> Copy(DerivativeMappingParameters parameters)
+        public async Task<ActionResult> Copy(MarketMappingParameters parameters)
         {
             var derivativeMappingView = await GetModelFromParameters(parameters);
-            if (derivativeMappingView.DerivativeMapping is EmptyFdpDerivativeMapping)
+            if (derivativeMappingView.MarketMapping is EmptyFdpMarketMapping)
             {
-                return JsonGetFailure("DerivativeMapping does not exist");
+                return JsonGetFailure("MarketMapping does not exist");
             }
 
-            derivativeMappingView.DerivativeMapping = await DataContext.Vehicle.CopyFdpDerivativeMappingToGateway(FdpDerivativeMapping.FromParameters(parameters), parameters.CopyToGateways);
-            if (derivativeMappingView.DerivativeMapping is EmptyFdpDerivativeMapping)
+            derivativeMappingView.MarketMapping = await DataContext.Market.CopyFdpMarketMappingToGateway(FdpMarketMapping.FromParameters(parameters), parameters.CopyToGateways);
+            if (derivativeMappingView.MarketMapping is EmptyFdpMarketMapping)
             {
-                return JsonGetFailure(string.Format("DerivativeMapping '{0}' could not be copied", derivativeMappingView.DerivativeMapping.ImportDerivativeCode));
+                return JsonGetFailure(string.Format("MarketMapping '{0}' could not be copied", derivativeMappingView.MarketMapping.ImportMarket));
             }
 
             return JsonGetSuccess();
         }
         [HandleErrorWithJson]
-        public async Task<ActionResult> CopyAll(DerivativeMappingParameters parameters)
+        public async Task<ActionResult> CopyAll(MarketMappingParameters parameters)
         {
             var derivativeMappingView = await GetModelFromParameters(parameters);
-            if (derivativeMappingView.DerivativeMapping is EmptyFdpDerivativeMapping)
+            if (derivativeMappingView.MarketMapping is EmptyFdpMarketMapping)
             {
-                return JsonGetFailure("DerivativeMapping does not exist");
+                return JsonGetFailure("MarketMapping does not exist");
             }
 
-            derivativeMappingView.DerivativeMapping = await DataContext.Vehicle.CopyFdpDerivativeMappingsToGateway(FdpDerivativeMapping.FromParameters(parameters), parameters.CopyToGateways);
-            if (derivativeMappingView.DerivativeMapping is EmptyFdpDerivativeMapping)
+            derivativeMappingView.MarketMapping = await DataContext.Market.CopyFdpMarketMappingsToGateway(FdpMarketMapping.FromParameters(parameters), parameters.CopyToGateways);
+            if (derivativeMappingView.MarketMapping is EmptyFdpMarketMapping)
             {
-                return JsonGetFailure(string.Format("DerivativeMappings could not be copied", derivativeMappingView.DerivativeMapping.ImportDerivativeCode));
+                return JsonGetFailure(string.Format("MarketMappings could not be copied", derivativeMappingView.MarketMapping.ImportMarket));
             }
 
             return JsonGetSuccess();
         }
-        private string GetContentPartialViewName(DerivativeAction forAction)
+        private string GetContentPartialViewName(MarketAction forAction)
         {
             return string.Format("_{0}", Enum.GetName(forAction.GetType(), forAction));
         }
-        private async Task<DerivativeMappingViewModel> GetModelFromParameters(DerivativeMappingParameters parameters)
+        private async Task<MarketMappingViewModel> GetModelFromParameters(MarketMappingParameters parameters)
         {
-            return await DerivativeMappingViewModel.GetModel(DataContext, DerivativeMappingFilter.FromDerivativeMappingParameters(parameters));
+            return await MarketMappingViewModel.GetModel(DataContext, MarketMappingFilter.FromMarketMappingParameters(parameters));
         }
-        private void ValidateDerivativeMappingParameters(DerivativeMappingParameters parameters, string ruleSetName)
+        private void ValidateMarketMappingParameters(MarketMappingParameters parameters, string ruleSetName)
         {
-            var validator = new DerivativeMappingParametersValidator();
+            var validator = new MarketMappingParametersValidator();
             var result = validator.Validate(parameters, ruleSet: ruleSetName);
             if (!result.IsValid)
             {
@@ -166,35 +166,35 @@ namespace FeatureDemandPlanning.Controllers
         }
     }
 
-    internal class DerivativeMappingParametersValidator : AbstractValidator<DerivativeMappingParameters>
+    internal class MarketMappingParametersValidator : AbstractValidator<MarketMappingParameters>
     {
-        public const string DerivativeMappingIdentifier = "DERIVATIVE_MAPPING_ID";
+        public const string MarketMappingIdentifier = "MARKET_MAPPING_ID";
         public const string NoValidation = "NO_VALIDATION";
         public const string Action = "ACTION";
-        public const string DerivativeIdentifierWithAction = "DERIVATIVE_ID_WITH_ACTION";
+        public const string MarketIdentifierWithAction = "MARKET_MAPPING_ID_WITH_ACTION";
 
-        public DerivativeMappingParametersValidator()
+        public MarketMappingParametersValidator()
         {
             RuleSet(NoValidation, () =>
             {
 
             });
-            RuleSet(DerivativeMappingIdentifier, () =>
+            RuleSet(MarketMappingIdentifier, () =>
             {
-                RuleFor(p => p.DerivativeMappingId).NotNull().WithMessage("'DerivativeMappingId' not specified");
+                RuleFor(p => p.MarketMappingId).NotNull().WithMessage("'MarketMappingId' not specified");
             });
             RuleSet(Action, () =>
             {
-                RuleFor(p => p.Action).NotEqual(a => DerivativeMappingAction.NotSet).WithMessage("'Action' not specified");
+                RuleFor(p => p.Action).NotEqual(a => MarketMappingAction.NotSet).WithMessage("'Action' not specified");
             });
-            RuleSet(DerivativeIdentifierWithAction, () =>
+            RuleSet(MarketIdentifierWithAction, () =>
             {
-                RuleFor(p => p.DerivativeMappingId).NotNull().WithMessage("'DerivativeMappingId' not specified");
-                RuleFor(p => p.Action).NotEqual(a => DerivativeMappingAction.NotSet).WithMessage("'Action' not specified");
+                RuleFor(p => p.MarketMappingId).NotNull().WithMessage("'MarketMappingId' not specified");
+                RuleFor(p => p.Action).NotEqual(a => MarketMappingAction.NotSet).WithMessage("'Action' not specified");
             });
-            RuleSet(Enum.GetName(typeof(DerivativeMappingAction), DerivativeMappingAction.Delete), () =>
+            RuleSet(Enum.GetName(typeof(MarketMappingAction), MarketMappingAction.Delete), () =>
             {
-                RuleFor(p => p.DerivativeMappingId).NotNull().WithMessage("'DerivativeMappingId' not specified");
+                RuleFor(p => p.MarketMappingId).NotNull().WithMessage("'MarketMappingId' not specified");
             });
         }
     }

@@ -1,14 +1,14 @@
 ﻿@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.DerivativeMappingViewModel
+@model FeatureDemandPlanning.Model.ViewModel.FeatureMappingViewModel
 
 <li>
-    <a tabindex="-1" href="#" data-target="@Model.DerivativeMapping.FdpDerivativeMappingId" data-role="@((int)enums.DerivativeMappingAction.Delete)" data-content="@Model.DerivativeMapping.ImportDerivativeCode">
-        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Derivative Mapping '@Model.DerivativeMapping.ImportDerivativeCode' &gt; '@Model.DerivativeMapping.DerivativeCode'...
+    <a tabindex="-1" href="#" data-target="@Model.FeatureMapping.FdpFeatureMappingId" data-role="@((int)enums.FeatureMappingAction.Delete)" data-content="@Model.FeatureMapping.ImportFeatureCode">
+        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Feature Mapping '@Model.FeatureMapping.ImportFeatureCode' &gt; '@Model.FeatureMapping.FeatureCode'...
     </a>
 </li>
 <li>
-    <a tabindex="-1" href="#" data-target="@Model.DerivativeMapping.FdpDerivativeMappingId" data-role="@((int)enums.DerivativeMappingAction.Copy)" data-content="@Model.DerivativeMapping.ImportDerivativeCode">
-        <span class="glyphicon glyphicon-copy pull-left"></span> Copy Derivative Mapping '@Model.DerivativeMapping.ImportDerivativeCode' to Gateway...
+    <a tabindex="-1" href="#" data-target="@Model.FeatureMapping.FdpFeatureMappingId" data-role="@((int)enums.FeatureMappingAction.Copy)" data-content="@Model.FeatureMapping.ImportFeatureCode">
+        <span class="glyphicon glyphicon-copy pull-left"></span> Copy Feature Mapping '@Model.FeatureMapping.ImportFeatureCode' to Gateway...
     </a>
 </li>

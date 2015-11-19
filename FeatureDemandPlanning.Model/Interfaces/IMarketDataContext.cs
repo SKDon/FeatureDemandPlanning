@@ -1,4 +1,5 @@
 ﻿using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,6 @@ namespace FeatureDemandPlanning.Model.Interfaces
     {
         IEnumerable<Market> ListAvailableMarkets();
         IEnumerable<Market> ListAvailableMarkets(ProgrammeFilter filter);
-        IEnumerable<MarketMapping> ListMappedMarkets(ProgrammeFilter filter);
         IEnumerable<Market> ListTopMarkets();
 
         Market GetMarket(VolumeFilter filter);
@@ -24,5 +24,14 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         IEnumerable<Model> ListAvailableModelsByMarket(OXODoc forDocument, Market byMarket);
         IEnumerable<Model> ListAvailableModelsByMarketGroup(OXODoc forDocument, MarketGroup byMarketGroup);
+
+        // Mappings
+
+        Task<FdpMarketMapping> DeleteFdpMarketMapping(FdpMarketMapping fdpMarketMapping);
+        Task<FdpMarketMapping> GetFdpMarketMapping(MarketMappingFilter filter);
+        Task<PagedResults<FdpMarketMapping>> ListFdpMarketMappings(MarketMappingFilter filter);
+
+        Task<FdpMarketMapping> CopyFdpMarketMappingToGateway(FdpMarketMapping fdpMarketMapping, IEnumerable<string> gateways);
+        Task<FdpMarketMapping> CopyFdpMarketMappingsToGateway(FdpMarketMapping fdpMarketMapping, IEnumerable<string> gateways);
     }
 }

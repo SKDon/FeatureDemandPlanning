@@ -62,9 +62,9 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult<ImportError>(_importDataStore.ImportExceptionIgnore(filter));
         }
-        public async Task<ImportError> MapMarket(ImportQueueFilter filter, MarketMapping mapping)
+        public async Task<ImportError> MapMarket(ImportQueueFilter filter, FdpMarketMapping mapping)
         {
-            var task = await Task.FromResult<MarketMapping>(_marketDataStore.MarketMappingSave(mapping));
+            var task = await Task.FromResult<FdpMarketMapping>(_marketDataStore.FdpMarketMappingSave(mapping));
             return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
         }
         public async Task<ImportError> AddDerivative(ImportQueueFilter filter, FdpDerivative derivativeToAdd)
@@ -87,9 +87,9 @@ namespace FeatureDemandPlanning.DataStore
             var task = await Task.FromResult<FdpSpecialFeature>(_featureDataStore.FdpSpecialFeatureSave(specialFeature));
             return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
         }
-        public async Task<ImportError> MapFeature(ImportQueueFilter filter, FeatureMapping featureMapping)
+        public async Task<ImportError> MapFeature(ImportQueueFilter filter, FdpFeatureMapping featureMapping)
         {
-            var task = await Task.FromResult<FeatureMapping>(_featureDataStore.FeatureMappingSave(featureMapping));
+            var task = await Task.FromResult<FdpFeatureMapping>(_featureDataStore.FeatureMappingSave(featureMapping));
             return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
         }
         public async Task<ImportError> AddTrim(ImportQueueFilter filter, FdpTrim trimToAdd)
@@ -97,9 +97,9 @@ namespace FeatureDemandPlanning.DataStore
             var task = await Task.FromResult<FdpTrim>(_trimDataStore.FdpTrimSave(trimToAdd));
             return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
         }
-        public async Task<ImportError> MapTrim(ImportQueueFilter filter, TrimMapping trimMapping)
+        public async Task<ImportError> MapTrim(ImportQueueFilter filter, FdpTrimMapping trimMapping)
         {
-            var task = await Task.FromResult<TrimMapping>(_trimDataStore.TrimMappingSave(trimMapping));
+            var task = await Task.FromResult<FdpTrimMapping>(_trimDataStore.TrimMappingSave(trimMapping));
             return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
         }
         public ImportResult ProcessImportQueue(ImportQueue queuedItem)

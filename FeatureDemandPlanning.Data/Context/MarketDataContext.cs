@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using enums = FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Context;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -36,10 +37,7 @@ namespace FeatureDemandPlanning.DataStore
             return _marketDataStore.MarketAvailableGetMany(filter.ProgrammeId.GetValueOrDefault())
                                     .OrderBy(m => m.Name);
         }
-        public IEnumerable<MarketMapping> ListMappedMarkets(ProgrammeFilter filter)
-        {
-            return _marketDataStore.MarketMappingGetMany(filter);
-        }
+        
         public IEnumerable<Market> ListTopMarkets()
         {
             return _marketDataStore.TopMarketGetMany()
@@ -115,6 +113,27 @@ namespace FeatureDemandPlanning.DataStore
         {
             return _documentDataStore.OXODocAvailableModelsByMarketGroup(forDocument.ProgrammeId, forDocument.Id, byMarketGroup.Id)
                 .Where(m => m.Available == true);
+        }
+
+        public async Task<FdpMarketMapping> DeleteFdpMarketMapping(FdpMarketMapping marketMappingToDelete)
+        {
+            return await Task.FromResult<FdpMarketMapping>(_marketDataStore.FdpMarketMappingDelete(marketMappingToDelete));
+        }
+        public async Task<FdpMarketMapping> GetFdpMarketMapping(MarketMappingFilter filter)
+        {
+            return await Task.FromResult<FdpMarketMapping>(_marketDataStore.FdpMarketMappingGet(filter));
+        }
+        public async Task<PagedResults<FdpMarketMapping>> ListFdpMarketMappings(MarketMappingFilter filter)
+        {
+            return await Task.FromResult<PagedResults<FdpMarketMapping>>(_marketDataStore.FdpMarketMappingGetMany(filter));
+        }
+        public Task<FdpMarketMapping> CopyFdpMarketMappingToGateway(FdpMarketMapping fdpMarketMapping, IEnumerable<string> enumerable)
+        {
+            throw new NotImplementedException();
+        }
+        public Task<FdpMarketMapping> CopyFdpMarketMappingsToGateway(FdpMarketMapping fdpMarketMapping, IEnumerable<string> enumerable)
+        {
+            throw new NotImplementedException();
         }
 
         private MarketDataStore _marketDataStore;

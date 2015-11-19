@@ -28,6 +28,8 @@
   <mvcSiteMapNode title="Settings" controller="Admin" action="Index">
     <mvcSiteMapNode title="Users" controller="User" action="Index"/>
     <mvcSiteMapNode title="Users" controller="User" action="UserPage"/>
+    <mvcSiteMapNode title="Market Mapping" controller="MarketMapping" action="Index"/>
+    <mvcSiteMapNode title="Market Mapping" controller="MarketMapping" action="MarketMappingPage"/>
 
     <mvcSiteMapNode title="Derivatives" controller="Admin" action="Derivative">
       <mvcSiteMapNode title="FDP Derivatives" controller="Derivative" action="Index"/>

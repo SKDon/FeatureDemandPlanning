@@ -1,45 +1,33 @@
 ﻿@using FeatureDemandPlanning.Model.Extensions
 
-@model FeatureDemandPlanning.Model.ViewModel.DerivativeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.TrimViewModel
 
 <form>
     <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
 </form>
 <div class="well col-xs-12">
     <div class="col-xs-4 text-right">
-        <strong>Derivative:</strong>
+        <strong>Trim:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.Derivative.DerivativeCode
+        @Model.Trim.Name
     </div>
     <div class="col-xs-4 text-right">
         <strong>Programme:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.Derivative.Programme.GetDisplayString()
+        @Model.Trim.Programme.GetDisplayString()
     </div>
     <div class="col-xs-4 text-right">
         <strong>Gateway:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.Derivative.Programme.Gateway
+        @Model.Trim.Programme.Gateway
     </div>
     <div class="col-xs-4 text-right">
-        <strong>Body:</strong>
+        <strong>Level:</strong>
     </div>
     <div class="col-xs-8">
-        @Model.Derivative.Body.Name
-    </div>
-    <div class="col-xs-4 text-right">
-        <strong>Engine:</strong>
-    </div>
-    <div class="col-xs-8">
-        @Model.Derivative.Engine.Name
-    </div>
-    <div class="col-xs-4 text-right">
-        <strong>Transmission:</strong>
-    </div>
-    <div class="col-xs-8">
-        @Model.Derivative.Transmission.Name
+        @Model.Trim.Level
     </div>
  </div>

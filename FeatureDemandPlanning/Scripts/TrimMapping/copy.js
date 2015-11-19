@@ -1,8 +1,8 @@
 ﻿"use strict";
 
-var model = namespace("FeatureDemandPlanning.Derivative");
+var model = namespace("FeatureDemandPlanning.Trim");
 
-model.CopyDerivativeMappingAction = function (params) {
+model.CopyTrimMappingAction = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
@@ -11,8 +11,8 @@ model.CopyDerivativeMappingAction = function (params) {
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].ActionUri = params.ModalActionUri;
     privateStore[me.id].Parameters = params;
-    privateStore[me.id].DerivativeId = params.DerivativeId;
-    privateStore[me.id].DerivativeCode = params.DerivativeCode;
+    privateStore[me.id].TrimId = params.TrimId;
+    privateStore[me.id].TrimCode = params.TrimCode;
     privateStore[me.id].SelectedGateway = params.SelectedGateway;
 
     me.action = function () {
@@ -34,7 +34,7 @@ model.CopyDerivativeMappingAction = function (params) {
     };
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
-            "DerivativeId": me.getDerivativeId(),
+            "TrimId": me.getTrimId(),
             "Gateway": me.getSelectedGateway()
         });
     };
@@ -47,11 +47,11 @@ model.CopyDerivativeMappingAction = function (params) {
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
     };
-    me.getDerivativeId = function () {
-        return $("#" + me.getIdentifierPrefix() + "_DerivativeId").val();
+    me.getTrimId = function () {
+        return $("#" + me.getIdentifierPrefix() + "_TrimId").val();
     };
-    me.getDerivativeCode = function () {
-        return privateStore[me.id].DerivativeCode;
+    me.getTrimCode = function () {
+        return privateStore[me.id].TrimCode;
     };
     me.getSelectedGateway = function () {
         return privateStore[me.id].SelectedGateway;
@@ -68,7 +68,7 @@ model.CopyDerivativeMappingAction = function (params) {
             .removeClass("alert-danger")
             .removeClass("alert-warning")
             .addClass("alert-success")
-            .html("Derivative mapping copied successfully")
+            .html("Trim mapping copied successfully")
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");

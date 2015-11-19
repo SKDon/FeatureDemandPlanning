@@ -97,10 +97,12 @@
     <Compile Include="Empty\EmptyFdpDerivativeMapping.cs" />
     <Compile Include="Empty\EmptyFdpDerivative.cs" />
     <Compile Include="Empty\EmptyFdpFeature.cs" />
+    <Compile Include="Empty\EmptyFdpFeatureMapping.cs" />
+    <Compile Include="Empty\EmptyFdpMarket.cs" />
+    <Compile Include="Empty\EmptyFdpMarketMapping.cs" />
     <Compile Include="Empty\EmptyFdpSpecialFeature.cs" />
     <Compile Include="Empty\EmptyFdpTrim.cs" />
-    <Compile Include="Empty\EmptyFeatureMapping.cs" />
-    <Compile Include="Empty\EmptyMarketMapping.cs" />
+    <Compile Include="Empty\EmptyFdpTrimMapping.cs" />
     <Compile Include="Empty\EmptyModelTrim.cs" />
     <Compile Include="Empty\EmptySpecialFeatureType.cs" />
     <Compile Include="Empty\EmptyTakeRateSummary.cs" />
@@ -124,7 +126,6 @@
     <Compile Include="FdpSpecialFeature.cs" />
     <Compile Include="FdpSpecialFeatureType.cs" />
     <Compile Include="FdpTrim.cs" />
-    <Compile Include="FeatureMapping.cs" />
     <Compile Include="Filters\MarketFilter.cs" />
     <Compile Include="Filters\MarketMappingFilter.cs" />
     <Compile Include="Filters\TrimFilter.cs" />
@@ -156,7 +157,6 @@
     <Compile Include="Empty\EmptyMarketGroup.cs" />
     <Compile Include="Empty\EmptyOxoDocument.cs" />
     <Compile Include="Empty\EmptyProgramme.cs" />
-    <Compile Include="Empty\EmptyTrimMapping.cs" />
     <Compile Include="Empty\EmptyVehicleList.cs" />
     <Compile Include="Empty\EmptyVolume.cs" />
     <Compile Include="Empty\EmptyVolumeHeader.cs" />
@@ -167,7 +167,6 @@
     <Compile Include="FdpVolumeHeader.cs" />
     <Compile Include="Filters\PageFilter.cs" />
     <Compile Include="Filters\VolumeFilter.cs" />
-    <Compile Include="MarketMapping.cs" />
     <Compile Include="ModelYear.cs" />
     <Compile Include="Parameters\MarketParameters.cs" />
     <Compile Include="Parameters\MarketMappingParameters.cs" />
@@ -186,7 +185,6 @@
     <Compile Include="SharedModelBase.cs" />
     <Compile Include="SpecialFeature.cs" />
     <Compile Include="TakeRateStatus.cs" />
-    <Compile Include="TrimMapping.cs" />
     <Compile Include="Enumerations\ControllerType.cs" />
     <Compile Include="Enumerations\ImportAction.cs" />
     <Compile Include="Enumerations\ImportExceptionType.cs" />

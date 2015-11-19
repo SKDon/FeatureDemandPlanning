@@ -1,8 +1,8 @@
 ﻿"use strict";
 
-var page = namespace("FeatureDemandPlanning.Derivative");
+var page = namespace("FeatureDemandPlanning.Trim");
 
-page.DerivativeMappingsPage = function (models) {
+page.TrimMappingsPage = function (models) {
     var uid = 0;
     var privateStore = {};
     var me = this;
@@ -99,8 +99,8 @@ page.DerivativeMappingsPage = function (models) {
     };
     me.actionTriggered = function (invokedOn, action) {
         var eventArgs = {
-            DerivativeMappingId: $(this).attr("data-target"),
-            DerivativeCode: $(this).attr("data-content"),
+            TrimMappingId: $(this).attr("data-target"),
+            TrimCode: $(this).attr("data-content"),
             Action: parseInt($(this).attr("data-role"))
         };
         $(document).trigger("Action", eventArgs);
@@ -109,15 +109,15 @@ page.DerivativeMappingsPage = function (models) {
         $(".dataTable td").contextMenu({
             menuSelector: "#contextMenu",
             dynamicContent: me.getContextMenu,
-            contentIdentifier: me.getDerivativeMappingId,
+            contentIdentifier: me.getTrimMappingId,
             menuSelected: me.actionTriggered
         });
     };
     me.configureDataTables = function () {
 
-        var derivativesUri = getDerivativeMappingModel().getDerivativeMappingsUri();
-        var derivativeIndex = 0;
-        var derivativeCodeIndex = 5;
+        var trimsUri = getTrimMappingModel().getTrimMappingsUri();
+        var trimIndex = 0;
+        var trimCodeIndex = 5;
 
         $(".dataTable").DataTable({
             "serverSide": true,
@@ -160,7 +160,7 @@ page.DerivativeMappingsPage = function (models) {
                     "sClass": "text-center"
                 }
                 , {
-                    "sTitle": "Import Derivative",
+                    "sTitle": "Import Trim",
                     "sName": "DERIVATIVE",
                     "bSearchable": true,
                     "bSortable": true,
@@ -196,10 +196,10 @@ page.DerivativeMappingsPage = function (models) {
                 }
             ],
             "fnCreatedRow": function (row, data, index) {
-                var derivativeMappingId = data[derivativeIndex];
-                var derivativeCode = data[derivativeCodeIndex];
-                $(row).attr("data-target", derivativeMappingId);
-                $(row).attr("data-content", derivativeCode);
+                var trimMappingId = data[trimIndex];
+                var trimCode = data[trimCodeIndex];
+                $(row).attr("data-target", trimMappingId);
+                $(row).attr("data-content", trimCode);
             },
             "fnDrawCallback": function (oSettings) {
                 //$(document).trigger("Results", me.getSummary());
@@ -207,14 +207,14 @@ page.DerivativeMappingsPage = function (models) {
             }
         });
     };
-    me.getContextMenu = function (derivativeMappingId) {
-        var params = { DerivativeMappingId: derivativeMappingId };
+    me.getContextMenu = function (trimMappingId) {
+        var params = { TrimMappingId: trimMappingId };
         $("#contextMenu").html("");
         $.ajax({
             "dataType": "html",
             "async": true,
             "type": "POST",
-            "url": getDerivativeMappingModel().getActionsUri(),
+            "url": getTrimMappingModel().getActionsUri(),
             "data": params,
             "success": function (response) {
                 $("#contextMenu").html(response);
@@ -232,8 +232,8 @@ page.DerivativeMappingsPage = function (models) {
     };
     me.getData = function (data, callback, settings) {
         var params = me.getParameters(data);
-        var model = getDerivativeMappingModel();
-        var uri = model.getDerivativeMappingsUri();
+        var model = getTrimMappingModel();
+        var uri = model.getTrimMappingsUri();
         settings.jqXHR = $.ajax({
             "dataType": "json",
             "type": "POST",
@@ -253,7 +253,7 @@ page.DerivativeMappingsPage = function (models) {
     me.getParameters = function (data) {
         var filter = getFilter();
         var params = $.extend({}, data, {
-            "DerivativeMappingId": me.getDerivativeMappingId(),
+            "TrimMappingId": me.getTrimMappingId(),
             "CarLine": me.getSelectedCarLine(),
             "ModelYear": me.getSelectedModelYear(),
             "Gateway": me.getSelectedGateway(),
@@ -261,10 +261,10 @@ page.DerivativeMappingsPage = function (models) {
         });
         return params;
     };
-    me.getDerivativeMappingId = function (cell) {
+    me.getTrimMappingId = function (cell) {
         return $(cell).closest("tr").attr("data-target");
     };
-    me.getDerivativeCode = function (cell) {
+    me.getTrimCode = function (cell) {
         return $(cell).closest("tr").attr("data-content");
     };
     me.initialise = function () {
@@ -294,7 +294,7 @@ page.DerivativeMappingsPage = function (models) {
 
         if (actionModel.isModalAction()) {
             getModal().showModal({
-                Title: model.getActionTitle(action, eventArgs.DerivativeCode),
+                Title: model.getActionTitle(action, eventArgs.TrimCode),
                 Uri: model.getActionContentUri(action),
                 Data: JSON.stringify(eventArgs),
                 Model: model,
@@ -376,7 +376,7 @@ page.DerivativeMappingsPage = function (models) {
         return getModel("Modal");
     };
     function getModelForAction(actionId) {
-        return getDerivativeMappingModel();
+        return getTrimMappingModel();
     }
     function getModels() {
         return privateStore[me.id].Models;
@@ -391,14 +391,14 @@ page.DerivativeMappingsPage = function (models) {
         });
         return model;
     };
-    function getDerivativeMappingModel() {
-        return getModel("DerivativeMapping");
+    function getTrimMappingModel() {
+        return getModel("TrimMapping");
     };
     function getFilter(pageSize, pageIndex) {
-        var model = getDerivativeMappingModel();
+        var model = getTrimMappingModel();
         var pageSize = model.getPageSize();
         var pageIndex = model.getPageIndex();
-        var filter = new FeatureDemandPlanning.Derivative.DerivativeMappingFilter();
+        var filter = new FeatureDemandPlanning.Trim.TrimMappingFilter();
 
         filter.PageIndex = pageIndex;
         filter.PageSize = pageSize;

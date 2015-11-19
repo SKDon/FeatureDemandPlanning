@@ -5,6 +5,7 @@ namespace FeatureDemandPlanning.Model
 {
     public class FdpFeature : Feature
     {
+        public int? FeatureId { get; set; }
         public int? ProgrammeId { get; set; }
         public Programme Programme { get; set; }
         public string Gateway { get; set; }
@@ -31,6 +32,11 @@ namespace FeatureDemandPlanning.Model
                 Gateway,
                 BrandDescription
             };
+        }
+
+        public static FdpFeature FromParameters(Parameters.FeatureParameters parameters)
+        {
+            throw new NotImplementedException();
         }
     }
 }

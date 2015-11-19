@@ -9,6 +9,7 @@ using FeatureDemandPlanning.Model.Helpers;
 using System.Web.Script.Serialization;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Context;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -138,9 +139,9 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
-        public TrimMapping TrimMappingDelete(TrimMapping trimMapping)
+        public FdpTrimMapping TrimMappingDelete(FdpTrimMapping trimMapping)
         {
-            TrimMapping retVal = new EmptyTrimMapping();
+            FdpTrimMapping retVal = new EmptyFdpTrimMapping();
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
@@ -149,7 +150,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpTrimMappingId", trimMapping.FdpTrimMappingId, dbType: DbType.Int32);
                     para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
 
-                    var results = conn.Query<TrimMapping>("Fdp_TrimMapping_Delete", para, commandType: CommandType.StoredProcedure);
+                    var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Delete", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
                     {
                         retVal = results.First();
@@ -163,9 +164,9 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public TrimMapping TrimMappingGet(TrimMapping trimMapping)
+        public FdpTrimMapping TrimMappingGet(FdpTrimMapping trimMapping)
         {
-            TrimMapping retVal = new EmptyTrimMapping();
+            FdpTrimMapping retVal = new EmptyFdpTrimMapping();
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
@@ -173,7 +174,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
                     para.Add("@FdpTrimMappingId", trimMapping.FdpTrimMappingId, dbType: DbType.Int32);
 
-                    var results = conn.Query<TrimMapping>("Fdp_TrimMapping_Get", para, commandType: CommandType.StoredProcedure);
+                    var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
                     {
                         retVal = results.First();
@@ -187,9 +188,9 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public TrimMapping TrimMappingSave(TrimMapping trimMapping)
+        public FdpTrimMapping TrimMappingSave(FdpTrimMapping trimMapping)
         {
-            TrimMapping retVal = new EmptyTrimMapping();
+            FdpTrimMapping retVal = new EmptyFdpTrimMapping();
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
@@ -198,9 +199,9 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@ImportTrim", trimMapping.ImportTrim, dbType: DbType.String);
                     para.Add("@ProgrammeId", trimMapping.ProgrammeId, dbType: DbType.Int32);
                     para.Add("@Gateway", trimMapping.ImportTrim, dbType: DbType.String);
-                    para.Add("@TrimId", trimMapping.TrimId, dbType: DbType.Int32);
+                    para.Add("@TrimId", trimMapping.FdpTrimId, dbType: DbType.Int32);
 
-                    var results = conn.Query<TrimMapping>("Fdp_TrimMapping_Save", para, commandType: CommandType.StoredProcedure);
+                    var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
                     {
                         retVal = results.First();
@@ -294,6 +295,260 @@ namespace FeatureDemandPlanning.DataStore
                 catch (Exception ex)
                 {
                     AppHelper.LogError("ModelTrimDataStore.FdpTrimSave", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public FdpTrim FdpTrimDelete(FdpTrim trimToDelete)
+        {
+            FdpTrim retVal = new EmptyFdpTrim();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpTrimId", trimToDelete.FdpTrimId.GetValueOrDefault(), dbType: DbType.Int32);
+
+                    retVal = conn.Query<FdpTrim>("dbo.Fdp_Trim_Delete", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpTrimDelete", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public FdpTrim FdpTrimGet(TrimFilter filter)
+        {
+            FdpTrim retVal = new EmptyFdpTrim();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpTrimId", filter.TrimId.GetValueOrDefault(), dbType: DbType.Int32);
+                    retVal = conn.Query<FdpTrim>("dbo.Fdp_Trim_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpTrimGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public PagedResults<FdpTrim> FdpTrimGetMany(TrimFilter filter)
+        {
+            PagedResults<FdpTrim> retVal = null;
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    var totalRecords = 0;
+                    var totalDisplayRecords = 0;
+
+                    if (!string.IsNullOrEmpty(filter.CarLine))
+                    {
+                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.ModelYear))
+                    {
+                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.Gateway))
+                    {
+                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                    }
+                    if (filter.ProgrammeId.HasValue)
+                    {
+                        para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
+                    }
+                    if (!string.IsNullOrEmpty(filter.Gateway))
+                    {
+                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    }
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = conn.Query<FdpTrim>("dbo.Fdp_Trim_GetMany", para, commandType: CommandType.StoredProcedure);
+
+                    if (results.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                    }
+                    retVal = new PagedResults<FdpTrim>()
+                    {
+                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                    };
+
+                    var currentPage = new List<FdpTrim>();
+
+                    foreach (var result in results)
+                    {
+                        currentPage.Add(result);
+                    }
+                    retVal.CurrentPage = currentPage;
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpTrimGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public FdpTrimMapping FdpTrimMappingDelete(FdpTrimMapping trimMappingToDelete)
+        {
+            FdpTrimMapping retVal = new EmptyFdpTrimMapping();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpTrimMappingId", trimMappingToDelete.FdpTrimMappingId, dbType: DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+
+                    var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Delete", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("TrimDataStore.TrimMappingDelete", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public FdpTrimMapping FdpTrimMappingGet(TrimMappingFilter filter)
+        {
+            FdpTrimMapping retVal = new EmptyFdpTrimMapping();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpTrimMappingId", filter.TrimMappingId.GetValueOrDefault(), dbType: DbType.Int32);
+
+                    var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Get", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.TrimMappingGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public PagedResults<FdpTrimMapping> FdpTrimMappingGetMany(TrimMappingFilter filter)
+        {
+            PagedResults<FdpTrimMapping> retVal = null;
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    var totalRecords = 0;
+                    var totalDisplayRecords = 0;
+
+                    if (!string.IsNullOrEmpty(filter.CarLine))
+                    {
+                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.ModelYear))
+                    {
+                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.Gateway))
+                    {
+                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                    }
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = conn.Query<FdpTrimMapping>("dbo.Fdp_TrimMapping_GetMany", para, commandType: CommandType.StoredProcedure);
+
+                    if (results.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                    }
+                    retVal = new PagedResults<FdpTrimMapping>()
+                    {
+                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                    };
+
+                    var currentPage = new List<FdpTrimMapping>();
+
+                    foreach (var result in results)
+                    {
+                        currentPage.Add(result);
+                    }
+                    retVal.CurrentPage = currentPage;
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpTrimMappingGetMany", ex.Message, CurrentCDSID);
                     throw;
                 }
             }

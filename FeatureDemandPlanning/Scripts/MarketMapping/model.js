@@ -1,18 +1,18 @@
-﻿var model = namespace("FeatureDemandPlanning.Derivative");
+﻿var model = namespace("FeatureDemandPlanning.Market");
 
-model.DerivativeMappingFilter = function () {
+model.MarketMappingFilter = function () {
     var me = this;
     me.ProgrammeId = null;
     me.Gateway = "";
     me.FilterMessage = "";
 };
-model.DerivativeMapping = function (params) {
+model.MarketMapping = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
 
     privateStore[me.id = uid++] = {};
-    privateStore[me.id].DerivativeMappingsUri = params.DerivativeMappingsUri;
+    privateStore[me.id].MarketMappingsUri = params.MarketMappingsUri;
     privateStore[me.id].ActionsUri = params.ActionsUri;
     privateStore[me.id].Configuration = params.Configuration;
     privateStore[me.id].ModalContentUri = params.ModalContentUri;
@@ -21,7 +21,7 @@ model.DerivativeMapping = function (params) {
     privateStore[me.id].PageIndex = params.PageIndex;
     privateStore[me.id].Parameters = params;
 
-    me.ModelName = "DerivativeMapping";
+    me.ModelName = "MarketMapping";
 
     me.getActionContentUri = function (action) {
         return privateStore[me.id].ModalContentUri;
@@ -31,30 +31,30 @@ model.DerivativeMapping = function (params) {
 
         switch (action) {
             case 1:
-                actionModel = new FeatureDemandPlanning.Derivative.DeleteDerivativeMappingAction(me.getParameters());
+                actionModel = new FeatureDemandPlanning.Market.DeleteMarketMappingAction(me.getParameters());
                 break;
             case 4:
-                actionModel = new FeatureDemandPlanning.Derivative.CopyDerivativeMappingAction(me.getParameters());
+                actionModel = new FeatureDemandPlanning.Market.CopyMarketMappingAction(me.getParameters());
                 break;
             case 5:
-                actionModel = new FeatureDemandPlanning.Derivative.CopyAllDerivativeMappingAction(me.getParameters());
+                actionModel = new FeatureDemandPlanning.Market.CopyAllMarketMappingAction(me.getParameters());
                 break;
             default:
                 break;
         }
         return actionModel;
     };
-    me.getActionTitle = function (action, derivativeMapping) {
+    me.getActionTitle = function (action, marketMapping) {
         var title = "";
         switch (action) {
             case 1:
-                title = "Delete Derivative Mappping '" + derivativeMapping + "'";
+                title = "Delete Market Mappping '" + marketMapping + "'";
                 break;
             case 4:
-                title = "Copy Derivative Mapping '" + derivativeMapping + "' to Gateway";
+                title = "Copy Market Mapping '" + marketMapping + "' to Gateway";
                 break;
             case 5:
-                title = "Copy All Derivative Mappings '" + derivativeMapping + "' to Gateway";
+                title = "Copy All Market Mappings '" + marketMapping + "' to Gateway";
                 break;
             default:
                 break;
@@ -70,8 +70,8 @@ model.DerivativeMapping = function (params) {
     me.getConfiguration = function () {
         return privateStore[me.id].Configuration;
     };
-    me.getDerivativeMappingsUri = function () {
-        return privateStore[me.id].DerivativeMappingsUri;
+    me.getMarketMappingsUri = function () {
+        return privateStore[me.id].MarketMappingsUri;
     };
     me.getIdentifierPrefix = function () {
         return $("#Page_IdentifierPrefix").val();
@@ -87,11 +87,11 @@ model.DerivativeMapping = function (params) {
     };
     me.loadUsers = function () {
         $.ajax({
-            url: me.getDerivativeMappingsUri(),
+            url: me.getMarketMappingsUri(),
             type: "GET",
             dataType: "json",
             data: filter,
-            success: loadDerivativesCallback,
+            success: loadMarketsCallback,
             error: genericErrorCallback
         });
     }
@@ -126,7 +126,7 @@ model.DerivativeMapping = function (params) {
         privateStore[me.id].Config = response.Configuration;
         $(document).trigger("notifyError", response);
     };
-    function loadDerivativesCallback(response) {
+    function loadMarketsCallback(response) {
         $(document).trigger("notifyResults", response);
     };
 };
