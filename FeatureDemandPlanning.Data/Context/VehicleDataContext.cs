@@ -5,7 +5,6 @@ using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.DataStore
@@ -134,22 +133,22 @@ namespace FeatureDemandPlanning.DataStore
                 return results;
 
             // Filter the results 
-            // TO DO, get this in the database as parameters
+            // TODO, get this in the database as parameters
 
             engineCodeMappings = engineCodeMappings
                 .Where(e => !filter.ProgrammeId.HasValue || e.Id == filter.ProgrammeId.Value)
                 .Where(e => !filter.VehicleId.HasValue || e.VehicleId == filter.VehicleId.Value)
-                .Where(e => String.IsNullOrEmpty(filter.Code) || e.VehicleName.Equals(filter.Code, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => String.IsNullOrEmpty(filter.Make) || e.VehicleMake.Equals(filter.Make, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => String.IsNullOrEmpty(filter.ModelYear) || e.ModelYear.Equals(filter.ModelYear, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => String.IsNullOrEmpty(filter.Gateway) || e.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => String.IsNullOrEmpty(filter.DerivativeCode) || (string.IsNullOrEmpty(e.ExternalEngineCode) ? string.Empty : e.ExternalEngineCode.ToUpper()).Contains(filter.DerivativeCode.ToUpper()))
+                .Where(e => string.IsNullOrEmpty(filter.Code) || e.VehicleName.Equals(filter.Code, StringComparison.InvariantCultureIgnoreCase))
+                .Where(e => string.IsNullOrEmpty(filter.Make) || e.VehicleMake.Equals(filter.Make, StringComparison.InvariantCultureIgnoreCase))
+                .Where(e => string.IsNullOrEmpty(filter.ModelYear) || e.ModelYear.Equals(filter.ModelYear, StringComparison.InvariantCultureIgnoreCase))
+                .Where(e => string.IsNullOrEmpty(filter.Gateway) || e.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase))
+                .Where(e => string.IsNullOrEmpty(filter.DerivativeCode) || (string.IsNullOrEmpty(e.ExternalEngineCode) ? string.Empty : e.ExternalEngineCode.ToUpper()).Contains(filter.DerivativeCode.ToUpper()))
                 .Where(e => !filter.EngineId.HasValue || e.EngineId == filter.EngineId.Value)
-                .Where(e => String.IsNullOrEmpty(filter.EngineSize) || e.EngineSize.Equals(filter.EngineSize, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => String.IsNullOrEmpty(filter.Cylinder) || e.Cylinder.Equals(filter.Cylinder, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => String.IsNullOrEmpty(filter.Fuel) || e.Fuel.Equals(filter.Fuel, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => String.IsNullOrEmpty(filter.Power) || e.Power.Equals(filter.Power, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => String.IsNullOrEmpty(filter.Electrification) || e.Electrification.Equals(filter.Electrification, StringComparison.InvariantCultureIgnoreCase));
+                .Where(e => string.IsNullOrEmpty(filter.EngineSize) || e.EngineSize.Equals(filter.EngineSize, StringComparison.InvariantCultureIgnoreCase))
+                .Where(e => string.IsNullOrEmpty(filter.Cylinder) || e.Cylinder.Equals(filter.Cylinder, StringComparison.InvariantCultureIgnoreCase))
+                .Where(e => string.IsNullOrEmpty(filter.Fuel) || e.Fuel.Equals(filter.Fuel, StringComparison.InvariantCultureIgnoreCase))
+                .Where(e => string.IsNullOrEmpty(filter.Power) || e.Power.Equals(filter.Power, StringComparison.InvariantCultureIgnoreCase))
+                .Where(e => string.IsNullOrEmpty(filter.Electrification) || e.Electrification.Equals(filter.Electrification, StringComparison.InvariantCultureIgnoreCase));
 
             results.TotalRecords = engineCodeMappings.Count();
 
@@ -232,10 +231,10 @@ namespace FeatureDemandPlanning.DataStore
             programmes = programmes
                 .Where(p => !filter.ProgrammeId.HasValue || p.Id == filter.ProgrammeId.Value)
                 .Where(p => !filter.VehicleId.HasValue || p.VehicleId == filter.VehicleId.Value)
-                .Where(p => String.IsNullOrEmpty(filter.Code) || p.VehicleName.Equals(filter.Code, StringComparison.InvariantCultureIgnoreCase))
-                .Where(p => String.IsNullOrEmpty(filter.Make) || p.VehicleMake.Equals(filter.Make, StringComparison.InvariantCultureIgnoreCase))
-                .Where(p => String.IsNullOrEmpty(filter.ModelYear) || p.ModelYear.Equals(filter.ModelYear, StringComparison.InvariantCultureIgnoreCase))
-                .Where(p => String.IsNullOrEmpty(filter.Gateway) || p.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase))
+                .Where(p => string.IsNullOrEmpty(filter.Code) || p.VehicleName.Equals(filter.Code, StringComparison.InvariantCultureIgnoreCase))
+                .Where(p => string.IsNullOrEmpty(filter.Make) || p.VehicleMake.Equals(filter.Make, StringComparison.InvariantCultureIgnoreCase))
+                .Where(p => string.IsNullOrEmpty(filter.ModelYear) || p.ModelYear.Equals(filter.ModelYear, StringComparison.InvariantCultureIgnoreCase))
+                .Where(p => string.IsNullOrEmpty(filter.Gateway) || p.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase))
                 .Select(p => p);
 
             return programmes;
@@ -393,7 +392,7 @@ namespace FeatureDemandPlanning.DataStore
                 ProgrammeId = programme.Id,
                 ModelYear = programme.ModelYear,
                 Gateway = vehicleIndex.GetValueOrDefault() == 0 ? programme.Gateway : string.Empty,
-                Description = String.Format("{0} - {1}", programme.VehicleName, programme.VehicleAKA),
+                Description = string.Format("{0} - {1}", programme.VehicleName, programme.VehicleAKA),
                 Programmes = new List<Programme>() { programme }
             };
         }

@@ -1,0 +1,282 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>FeatureDemandPlanning.FdpSqlDb</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{a5529cd6-e42a-4ea1-a076-043bed22167c}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql100DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>FeatureDemandPlanning.SqlDb</RootNamespace>
+    <AssemblyName>FeatureDemandPlanning.SqlDb</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultCollation>Latin1_General_CI_AS</DefaultCollation>
+    <AnsiNulls>False</AnsiNulls>
+    <QuotedIdentifier>False</QuotedIdentifier>
+    <IsChangeTrackingOn>False</IsChangeTrackingOn>
+    <IsChangeTrackingAutoCleanupOn>True</IsChangeTrackingAutoCleanupOn>
+    <ChangeTrackingRetentionPeriod>2</ChangeTrackingRetentionPeriod>
+    <ChangeTrackingRetentionUnit>Days</ChangeTrackingRetentionUnit>
+    <IsEncryptionOn>False</IsEncryptionOn>
+    <IsBrokerPriorityHonored>False</IsBrokerPriorityHonored>
+    <Trustworthy>False</Trustworthy>
+    <AutoUpdateStatisticsAsynchronously>False</AutoUpdateStatisticsAsynchronously>
+    <PageVerify>CHECKSUM</PageVerify>
+    <ServiceBrokerOption>DisableBroker</ServiceBrokerOption>
+    <DateCorrelationOptimizationOn>False</DateCorrelationOptimizationOn>
+    <Parameterization>SIMPLE</Parameterization>
+    <AllowSnapshotIsolation>False</AllowSnapshotIsolation>
+    <ReadCommittedSnapshot>False</ReadCommittedSnapshot>
+    <VardecimalStorageFormatOn>True</VardecimalStorageFormatOn>
+    <SupplementalLoggingOn>False</SupplementalLoggingOn>
+    <CompatibilityMode>100</CompatibilityMode>
+    <AnsiNullDefault>False</AnsiNullDefault>
+    <AnsiPadding>False</AnsiPadding>
+    <AnsiWarnings>False</AnsiWarnings>
+    <ArithAbort>False</ArithAbort>
+    <ConcatNullYieldsNull>False</ConcatNullYieldsNull>
+    <NumericRoundAbort>False</NumericRoundAbort>
+    <RecursiveTriggersEnabled>False</RecursiveTriggersEnabled>
+    <DatabaseChaining>False</DatabaseChaining>
+    <DatabaseState>ONLINE</DatabaseState>
+    <CloseCursorOnCommitEnabled>False</CloseCursorOnCommitEnabled>
+    <DefaultCursor>GLOBAL</DefaultCursor>
+    <AutoClose>False</AutoClose>
+    <AutoCreateStatistics>True</AutoCreateStatistics>
+    <AutoShrink>False</AutoShrink>
+    <AutoUpdateStatistics>True</AutoUpdateStatistics>
+    <TornPageDetection>False</TornPageDetection>
+    <DatabaseAccess>MULTI_USER</DatabaseAccess>
+    <Recovery>FULL</Recovery>
+    <EnableFullTextSearch>True</EnableFullTextSearch>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <CreateProjectFromDatabaseCompleted>True</CreateProjectFromDatabaseCompleted>
+    <TargetDatabase>FeatureDemandPlanning.SqlDb</TargetDatabase>
+    <ValidateCasingOnIdentifiers>False</ValidateCasingOnIdentifiers>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Tables\" />
+    <Folder Include="Views\" />
+    <Folder Include="Security\" />
+    <Folder Include="Functions\" />
+    <Folder Include="Stored Procedures\" />
+    <Folder Include="DML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Tables\Fdp_Configuration.sql" />
+    <Build Include="Tables\Fdp_Derivative.sql" />
+    <Build Include="Tables\Fdp_DerivativeMapping.sql" />
+    <Build Include="Tables\Fdp_Feature.sql" />
+    <Build Include="Tables\Fdp_FeatureMapping.sql" />
+    <Build Include="Tables\Fdp_Forecast.sql" />
+    <Build Include="Tables\Fdp_ForecastComparison.sql" />
+    <Build Include="Tables\Fdp_ForecastComparisonTrim.sql" />
+    <Build Include="Tables\Fdp_ForecastVehicle.sql" />
+    <Build Include="Tables\Fdp_Import.sql" />
+    <Build Include="Tables\Fdp_ImportData.sql" />
+    <Build Include="Tables\Fdp_ImportError.sql" />
+    <Build Include="Tables\Fdp_ImportErrorExclusion.sql" />
+    <Build Include="Tables\Fdp_ImportErrorType.sql" />
+    <Build Include="Tables\Fdp_ImportQueue.sql" />
+    <Build Include="Tables\Fdp_ImportQueueError.sql" />
+    <Build Include="Tables\Fdp_ImportSpecialFeature.sql" />
+    <Build Include="Tables\Fdp_ImportStatus.sql" />
+    <Build Include="Tables\Fdp_ImportType.sql" />
+    <Build Include="Tables\Fdp_MarketMapping.sql" />
+    <Build Include="Tables\Fdp_News.sql" />
+    <Build Include="Tables\Fdp_OxoDoc.sql" />
+    <Build Include="Tables\Fdp_OxoVolume.sql" />
+    <Build Include="Tables\Fdp_OxoVolumeDataItem.sql" />
+    <Build Include="Tables\Fdp_OxoVolumeDataItemAudit.sql" />
+    <Build Include="Tables\Fdp_OxoVolumeDataItemNote.sql" />
+    <Build Include="Tables\Fdp_PermissionObjectType.sql" />
+    <Build Include="Tables\Fdp_PermissionOperation.sql" />
+    <Build Include="Tables\Fdp_PermissionType.sql" />
+    <Build Include="Tables\Fdp_SpecialFeature.sql" />
+    <Build Include="Tables\Fdp_SpecialFeatureType.sql" />
+    <Build Include="Tables\Fdp_TakeRateStatus.sql" />
+    <Build Include="Tables\Fdp_TopMarket.sql" />
+    <Build Include="Tables\Fdp_Trim.sql" />
+    <Build Include="Tables\Fdp_TrimMapping.sql" />
+    <Build Include="Tables\Fdp_TrimMapping_Old.sql" />
+    <Build Include="Tables\Fdp_User.sql" />
+    <Build Include="Tables\Fdp_UserProgramme.sql" />
+    <Build Include="Tables\Fdp_Volume.sql" />
+    <Build Include="Tables\Fdp_VolumeDataItem.sql" />
+    <Build Include="Tables\Fdp_VolumeHeader.sql" />
+    <Build Include="Views\Fdp_Derivative_VW.sql" />
+    <Build Include="Views\Fdp_DerivativeMapping_VW.sql" />
+    <Build Include="Views\Fdp_FeatureMapping_VW.sql" />
+    <Build Include="Views\Fdp_Forecast_VW.sql" />
+    <Build Include="Views\Fdp_ForecastComparison_VW.sql" />
+    <Build Include="Views\Fdp_Gateways_VW.sql" />
+    <Build Include="Views\Fdp_Import_VW.sql" />
+    <Build Include="Views\Fdp_ImportError_VW.sql" />
+    <Build Include="Views\Fdp_ImportQueue_VW.sql" />
+    <Build Include="Views\Fdp_ImportQueueError_VW.sql" />
+    <Build Include="Views\Fdp_ImportVolume_VW.sql" />
+    <Build Include="Views\Fdp_Market_VW.sql" />
+    <Build Include="Views\Fdp_MarketMapping_VW.sql" />
+    <Build Include="Views\Fdp_ProgrammeByGateway_VW.sql" />
+    <Build Include="Views\Fdp_TopMarket_VW.sql" />
+    <Build Include="Views\Fdp_TrimLevels.sql" />
+    <Build Include="Views\Fdp_TrimMapping_VW.sql" />
+    <Build Include="Views\Fdp_UserProgramme_VW.sql" />
+    <Build Include="Functions\Fdp_UserProgrammes.sql" />
+    <Build Include="Functions\Fdp_UserProgrammes_GetMany.sql" />
+    <Build Include="Functions\fn_Fdp_OxoVolumeData_Get_Market.sql" />
+    <Build Include="Functions\fn_Fdp_OxoVolumeData_Get_Market2.sql" />
+    <Build Include="Functions\fn_Fdp_OxoVolumeData_Get_MarketGroup.sql" />
+    <Build Include="Functions\fn_Fdp_OxoVolumeData_Get_MarketGroup2.sql" />
+    <Build Include="Stored Procedures\Fdp_Configuration_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_Configuration_Edit.sql" />
+    <Build Include="Stored Procedures\Fdp_Configuration_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_Configuration_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_Configuration_New.sql" />
+    <Build Include="Stored Procedures\Fdp_Derivative_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_Derivative_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_Derivative_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_Derivative_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_DerivativeMapping_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_DerivativeMapping_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_DerivativeMapping_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_DerivativeMapping_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_Feature_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_Feature_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_Feature_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_Feature_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_FeatureMapping_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_FeatureMapping_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_FeatureMapping_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_Forecast_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_Forecast_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_Forecast_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_Forecast_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_ForecastComparisonTrim_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_ForecastComparisonTrim_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ForecastComparisonTrim_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_ForecastComparisonVehicle_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_ForecastMappedTrim_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_Import_Process_Old.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportData_Process.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportError_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportError_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportError_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportErrorType_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportQueue_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportQueue_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportQueue_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportQueue_UpdateStatus.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportQueueError_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportQueueError_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportStatus_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportStatus_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportType_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportType_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_MarketMapping_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_MarketMapping_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_MarketMapping_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_MarketMapping_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_News_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_News_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_OxoDoc_Process.sql" />
+    <Build Include="Stored Procedures\Fdp_OxoDoc_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_OxoVolumeDataHistory_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_OxoVolumeDataItem_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_OxoVolumeDataItem_GetCrossTab.sql" />
+    <Build Include="Stored Procedures\Fdp_OxoVolumeDataItem_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_OxoVolumeDataNote_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_OxoVolumeDataNote_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_ProgrammeByGateway_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_SpecialFeature_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_SpecialFeature_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_SpecialFeature_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_SpecialFeature_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_SpecialFeatureType_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateStatus_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_TopMarket_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_TopMarket_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_TopMarket_New.sql" />
+    <Build Include="Stored Procedures\Fdp_Trim_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_Trim_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_Trim_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_Trim_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_TrimLevels_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_TrimMapping_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_TrimMapping_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_TrimMapping_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_TrimMapping_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_User_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_User_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_User_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_User_SetIsActive.sql" />
+    <Build Include="Stored Procedures\Fdp_User_SetIsAdmin.sql" />
+    <Build Include="Stored Procedures\Fdp_UserProgramme_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_VolumeHeader_GetManyByOxoDocId.sql" />
+    <Build Include="Stored Procedures\Fdp_VolumeHeader_GetManyByUsername.sql" />
+    <Build Include="Stored Procedures\Fdp_VolumeHeader_Save.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="..\..\Oxo\OxoSqlDb\Snapshots\Oxo.dacpac">
+      <HintPath>..\..\Oxo\OxoSqlDb\Snapshots\Oxo.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+    </ArtifactReference>
+    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>msdb</DatabaseVariableLiteralValue>
+    </ArtifactReference>
+    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
+  </ItemGroup>
+</Project>

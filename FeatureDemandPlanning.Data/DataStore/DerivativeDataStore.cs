@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using FeatureDemandPlanning.DataStore.DataStore;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Context;
@@ -27,9 +25,9 @@ namespace FeatureDemandPlanning.DataStore
 
         public IEnumerable<Derivative> DerivativeGetMany(ProgrammeFilter filter)
         {
-            IEnumerable<Derivative> retVal = Enumerable.Empty<Derivative>();
+            var retVal = Enumerable.Empty<Derivative>();
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -75,7 +73,7 @@ namespace FeatureDemandPlanning.DataStore
         public FdpDerivativeMapping FdpDerivativeMappingGet(DerivativeMappingFilter filter)
         {
             FdpDerivativeMapping retVal = new EmptyFdpDerivativeMapping();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -100,7 +98,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             PagedResults<FdpDerivativeMapping> retVal = null;
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
