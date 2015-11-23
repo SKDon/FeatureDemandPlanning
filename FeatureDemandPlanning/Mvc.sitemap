@@ -30,6 +30,8 @@
     <mvcSiteMapNode title="Users" controller="User" action="UserPage"/>
     <mvcSiteMapNode title="Market Mapping" controller="MarketMapping" action="Index"/>
     <mvcSiteMapNode title="Market Mapping" controller="MarketMapping" action="MarketMappingPage"/>
+    <mvcSiteMapNode title="Ignored Exceptions" controller="IgnoredException" action="Index"/>
+    <mvcSiteMapNode title="Ignored Exceptions" controller="IgnoredException" action="IgnoredExceptionPage"/>
 
     <mvcSiteMapNode title="Derivatives" controller="Admin" action="Derivative">
       <mvcSiteMapNode title="FDP Derivatives" controller="Derivative" action="Index"/>
