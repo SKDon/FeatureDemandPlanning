@@ -20,7 +20,8 @@ namespace FeatureDemandPlanning.Model
                 Gateway,
                 ImportTrim,
                 Name,
-                Level
+                Level,
+                DPCK
             };
         }
         public static FdpTrimMapping FromParameters(TrimMappingParameters parameters)
@@ -28,7 +29,7 @@ namespace FeatureDemandPlanning.Model
             return new FdpTrimMapping()
             {
                 FdpTrimMappingId = parameters.TrimMappingId,
-                ProgrammeId = parameters.ProgrammeId,
+                ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
                 Gateway = parameters.Gateway
             };
         }

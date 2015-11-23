@@ -42,5 +42,10 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<IEnumerable<ImportStatus>> ListImportStatuses();
         Task<ImportError> SaveException(ImportQueueFilter filter);
+
+        Task<FdpImportErrorExclusion> GetFdpImportErrorExclusion(IgnoredExceptionFilter filter);
+        Task<PagedResults<FdpImportErrorExclusion>> ListFdpIgnoredExceptions(IgnoredExceptionFilter filter);
+
+        Task<FdpImportErrorExclusion> DeleteFdpImportErrorExclusion(FdpImportErrorExclusion fdpImportErrorExclusion);
     }
 }

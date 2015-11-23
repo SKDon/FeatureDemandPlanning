@@ -160,29 +160,15 @@ page.FeaturesPage = function (models) {
                     "sClass": "text-center"
                 }
                 , {
-                    "sTitle": "Feature",
-                    "sName": "DERIVATIVE",
+                    "sTitle": "Feature Code",
+                    "sName": "FEATURE_CODE",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center"
                 }
                 , {
-                    "sTitle": "Body",
-                    "sName": "BODY",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Engine",
-                    "sName": "ENGINE",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Transmission",
-                    "sName": "TRANSMISSION",
+                    "sTitle": "Description",
+                    "sName": "DESCRIPTION",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center"
@@ -265,6 +251,8 @@ page.FeaturesPage = function (models) {
             this.initialise();
         });
         me.loadData();
+        me.filterModelYears();
+        me.filterGateways();
     };
     me.loadData = function () {
         me.configureDataTables(getFilter());

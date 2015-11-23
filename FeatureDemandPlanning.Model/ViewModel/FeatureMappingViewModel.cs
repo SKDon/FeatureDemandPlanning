@@ -91,6 +91,12 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
             HydrateModelWithCommonProperties(model, context, programmeFilter);
             model.Gateways = context.Vehicle.ListGateways(programmeFilter);
+
+            // If we are copying to another gateway, we need to remove the source gateway from the list of available gateways
+            if (filter.Action == FeatureMappingAction.Copy)
+            {
+                model.Gateways = model.Gateways.Where(g => !(g.Name.Equals(featureMapping.Gateway, StringComparison.InvariantCultureIgnoreCase)));
+            }
             
             if (!(featureMapping is EmptyFdpFeatureMapping))
             {

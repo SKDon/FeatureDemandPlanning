@@ -84,7 +84,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             
             if (!(trim is EmptyFdpTrim))
             {
-                trim.Programme = model.Programmes.FirstOrDefault(p => p.Id == trim.ProgrammeId.GetValueOrDefault());
+                trim.Programme = model.Programmes.FirstOrDefault(p => p.Id == trim.ProgrammeId);
             }
             model.Trim = trim;
            
@@ -116,7 +116,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             foreach (var trim in model.Trims.CurrentPage)
             {
-                trim.Programme = model.Programmes.FirstOrDefault(p => p.Id == trim.ProgrammeId.GetValueOrDefault());
+                trim.Programme = model.Programmes.FirstOrDefault(p => p.Id == trim.ProgrammeId);
             }
 
             return model;

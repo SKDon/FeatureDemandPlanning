@@ -54,6 +54,13 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<FdpFeatureMapping> CopyFdpFeatureMappingToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways);
         Task<FdpFeatureMapping> CopyFdpFeatureMappingsToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways);
 
+        Task<FdpSpecialFeatureMapping> DeleteFdpSpecialFeatureMapping(FdpSpecialFeatureMapping fdpSpecialFeatureMapping);
+        Task<FdpSpecialFeatureMapping> GetFdpSpecialFeatureMapping(SpecialFeatureMappingFilter filter);
+        Task<PagedResults<FdpSpecialFeatureMapping>> ListFdpSpecialFeatureMappings(SpecialFeatureMappingFilter filter);
+
+        Task<FdpSpecialFeatureMapping> CopyFdpSpecialFeatureMappingToGateway(FdpSpecialFeatureMapping fdpSpecialFeatureMapping, IEnumerable<string> gateways);
+        Task<FdpSpecialFeatureMapping> CopyFdpSpecialFeatureMappingsToGateway(FdpSpecialFeatureMapping fdpSpecialFeatureMapping, IEnumerable<string> gateways);
+
         // Trim and mappings
 
         Task<FdpTrim> DeleteFdpTrim(FdpTrim trimToDelete);

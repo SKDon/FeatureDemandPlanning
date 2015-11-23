@@ -131,11 +131,24 @@ namespace FeatureDemandPlanning.DataStore
             return await Task.FromResult<IEnumerable<FeatureDemandPlanning.Model.ImportExceptionType>>(
                 _importDataStore.ImportExceptionTypeGetMany(filter));
         }
-
         public async Task<IEnumerable<FeatureDemandPlanning.Model.ImportStatus>> ListImportStatuses()
         {
             return await Task.FromResult<IEnumerable<FeatureDemandPlanning.Model.ImportStatus>>(
                 _importDataStore.ImportStatusGetMany());
+        }
+        public async Task<FdpImportErrorExclusion> GetFdpImportErrorExclusion(IgnoredExceptionFilter filter)
+        {
+            return await Task.FromResult(_importDataStore.FdpImportErrorExclusionGet(filter));
+        }
+
+        public async Task<PagedResults<FdpImportErrorExclusion>> ListFdpIgnoredExceptions(IgnoredExceptionFilter filter)
+        {
+            return await Task.FromResult(_importDataStore.FdpImportErrorExclusionGetMany(filter));
+        }
+
+        public async Task<FdpImportErrorExclusion> DeleteFdpImportErrorExclusion(FdpImportErrorExclusion fdpImportErrorExclusion)
+        {
+            return await Task.FromResult(_importDataStore.FdpImportErrorExclusionDelete(fdpImportErrorExclusion));
         }
 
         private DataTable GetImportFileAsDataTable(ImportQueue queuedItem)

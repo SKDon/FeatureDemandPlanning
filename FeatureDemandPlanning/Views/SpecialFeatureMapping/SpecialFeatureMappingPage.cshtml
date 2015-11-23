@@ -1,0 +1,119 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.SpecialFeatureMappingViewModel
+
+@section PageScripts
+{
+    @Html.Partial("_Scripts", Model)
+}
+
+@section PageContentHeader
+{
+    <form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 inverse" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-body" style="background:none !important">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            <img src="~/Content/Images/Icons/mapping64.png" style="margin-top:15px" />
+                        </div>
+                        <div class="col-xs-10">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h3 style="margin-top:5px">Special Feature Mapping Management</h3>
+                                    <h4 id="lblVehicleDescription">&nbsp;</h4>
+                                </div>
+                            </div>
+                            <div class="row vertical-spacer">
+                                <div class="col-xs-12 vertical-align">
+                                    <p class="page-description">List of imported features from the Business Objects PPO that have a special purpose, 
+                                    typically for aggregation of summary data.</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-lg-5 inverse pull-right" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+
+                <div class="panel-body" style="background:none !important">
+                    <div class="form-group-sm" style="margin-bottom:15px;">
+                        <label for="@(Model.IdentifierPrefix)_SelectCarLine" class="col-lg-3 control-label">Car Line:</label>
+                        <div class="col-lg-9" style="margin-bottom:15px;">
+                            <button id="@(Model.IdentifierPrefix)_SelectCarLine" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
+                                <span id="@(Model.IdentifierPrefix)_SelectedCarLine">Select Car Line</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul id="@(Model.IdentifierPrefix)_CarLineList" class="dropdown-menu">
+                                @foreach (var carLine in Model.CarLines)
+                                {
+                                    <li><a class="car-line-item" href="#" data-filter="@carLine.VehicleName" data-target="@carLine.VehicleName" data-content="@string.Format("{0} - {1}", carLine.VehicleName, carLine.VehicleAKA)">@string.Format("{0} - {1}", carLine.VehicleName, carLine.VehicleAKA)</a></li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group-sm" style="margin-bottom:15px;">
+                        <label for="@(Model.IdentifierPrefix)_SelectModelYear" class="col-lg-3 control-label">Model Year:</label>
+                        <div class="col-lg-9" style="margin-bottom:15px;">
+                            <button id="@(Model.IdentifierPrefix)_SelectModelYear" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
+                                <span id="@(Model.IdentifierPrefix)_SelectedModelYear">Select Model Year</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul id="@(Model.IdentifierPrefix)_ModelYearList" class="dropdown-menu">
+                                @foreach (var modelYear in Model.ModelYears)
+                                {
+                                    <li><a class="model-year-item" href="#" data-filter="@modelYear.VehicleName" data-target="@modelYear.Name">@modelYear.Name</a></li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group-sm" style="margin-bottom:15px;">
+                        <label for="@(Model.IdentifierPrefix)_SelectGateway" class="col-lg-3 control-label">Gateway:</label>
+                        <div class="col-lg-9" style="margin-bottom:15px;">
+                            <button id="@(Model.IdentifierPrefix)_SelectGateway" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
+                                <span id="@(Model.IdentifierPrefix)_SelectedGateway">Select Gateway</span>
+                                <span class="caret"></span>
+                            </button>
+
+                            <ul id="@(Model.IdentifierPrefix)_GatewayList" class="dropdown-menu">
+                                @foreach (var gateway in Model.Gateways)
+                                {
+                                    <li><a class="gateway-item" href="#" data-filter="@gateway.VehicleName" data-target="@gateway.Name">@gateway.Name</a></li>
+                                }
+                            </ul>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+}
+
+@section PageBody
+{
+    <div id="notifier" class="subscribers-notify"></div>
+    <ul id="contextMenu" class="dropdown-menu context-menu" role="menu" style="display:none"></ul>
+
+    @Html.Partial("_Modal", Model)
+
+    <div class="row">
+        <div id="dvUsers" class="col-lg-12">
+            @Html.Partial("_SpecialFeatureMappings", Model)
+        </div>
+
+    </div>
+
+}
+
+

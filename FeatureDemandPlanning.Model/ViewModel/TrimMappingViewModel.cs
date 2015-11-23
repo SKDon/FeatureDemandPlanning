@@ -94,7 +94,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             
             if (!(trimMapping is EmptyFdpTrimMapping))
             {
-                trimMapping.Programme = model.Programmes.FirstOrDefault(p => p.Id == trimMapping.ProgrammeId.GetValueOrDefault());
+                trimMapping.Programme = model.Programmes.FirstOrDefault(p => p.Id == trimMapping.ProgrammeId);
             }
             model.TrimMapping = trimMapping;
            
@@ -129,7 +129,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             foreach (var trimMapping in model.TrimMappings.CurrentPage)
             {
-                trimMapping.Programme = model.Programmes.FirstOrDefault(p => p.Id == trimMapping.ProgrammeId.GetValueOrDefault());
+                trimMapping.Programme = model.Programmes.FirstOrDefault(p => p.Id == trimMapping.ProgrammeId);
             }
 
             return model;

@@ -31,5 +31,28 @@ namespace FeatureDemandPlanning.Model.Extensions
 
             return result;
         }
+
+        public static string ToCommaSeperatedList(this IEnumerable<string> stringList)
+        {
+            var sb = new StringBuilder();
+            foreach (var s in stringList)
+            {
+                sb.Append(s);
+                sb.Append(", ");
+            }
+            var result = sb.ToString();
+            if (result.Length > 0)
+            {
+                result = result.Substring(0, result.Length - 2);
+            }
+            return result;
+        }
+
+        public static string Truncate(this string value, int length)
+        {
+            if (value == null)
+                throw new ArgumentNullException("value");
+            return value.Length <= length ? value : value.Substring(0, length);
+        }
     }
 }

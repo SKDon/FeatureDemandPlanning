@@ -252,11 +252,19 @@ page.DerivativeMappingsPage = function (models) {
     };
     me.getParameters = function (data) {
         var filter = getFilter();
+        var modelYear = me.getSelectedModelYear();
+        if (modelYear === "N/A") {
+            modelYear = "";
+        }
+        var gateway = me.getSelectedGateway();
+        if (gateway === "N/A") {
+            gateway = "";
+        }
         var params = $.extend({}, data, {
             "DerivativeMappingId": me.getDerivativeMappingId(),
             "CarLine": me.getSelectedCarLine(),
-            "ModelYear": me.getSelectedModelYear(),
-            "Gateway": me.getSelectedGateway(),
+            "ModelYear": modelYear,
+            "Gateway": gateway,
             "FilterMessage": me.getFilterMessage()
         });
         return params;

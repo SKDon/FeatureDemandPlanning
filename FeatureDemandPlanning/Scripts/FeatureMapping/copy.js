@@ -35,7 +35,7 @@ model.CopyFeatureMappingAction = function (params) {
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
             "FeatureId": me.getFeatureId(),
-            "Gateway": me.getSelectedGateway()
+            "CopyToGateways": [me.getSelectedGateway()]
         });
     };
     me.getIdentifierPrefix = function () {

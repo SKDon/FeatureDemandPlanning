@@ -10,6 +10,7 @@ using FeatureDemandPlanning.DataStore.DataStore;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Extensions;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -345,6 +346,31 @@ namespace FeatureDemandPlanning.DataStore
                 catch (Exception ex)
                 {
                     AppHelper.LogError("FeatureDataStore.FdpDerivativeSave", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public FdpDerivativeMapping FdpDerivativeMappingCopy(FdpDerivativeMapping derivativeMappingToCopy, IEnumerable<string> gateways)
+        {
+            FdpDerivativeMapping retVal = new EmptyFdpDerivativeMapping();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    para.Add("@FdpDerivativeMappingId", derivativeMappingToCopy.FdpDerivativeMappingId, DbType.Int32);
+                    para.Add("@Gateways", gateways.ToCommaSeperatedList(), DbType.String);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+
+                    var rows = conn.Execute("Fdp_DerivativeMapping_Copy", para, commandType: CommandType.StoredProcedure);
+
+                    retVal = FdpDerivativeMappingGet(new DerivativeMappingFilter() { DerivativeMappingId = derivativeMappingToCopy.FdpDerivativeMappingId });
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpFeatureMappingCopy", ex.Message, CurrentCDSID);
                     throw;
                 }
             }

@@ -9,6 +9,7 @@ using FeatureDemandPlanning.Model.Helpers;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Extensions;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -684,7 +685,6 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-
         public FdpFeatureMapping FdpFeatureMappingGet(FeatureMappingFilter filter)
         {
             FdpFeatureMapping retVal = new EmptyFdpFeatureMapping();
@@ -709,7 +709,6 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-
         public PagedResults<FdpFeatureMapping> FdpFeatureMappingGetMany(FeatureMappingFilter filter)
         {
             PagedResults<FdpFeatureMapping> retVal = null;
@@ -781,6 +780,182 @@ namespace FeatureDemandPlanning.DataStore
                 catch (Exception ex)
                 {
                     AppHelper.LogError("FeatureDataStore.FdpFeatureMappingGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public FdpFeatureMapping FdpFeatureMappingCopy(FdpFeatureMapping featureMappingToCopy, IEnumerable<string> gateways)
+        {
+            FdpFeatureMapping retVal = new EmptyFdpFeatureMapping();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    para.Add("@FdpFeatureMappingId", featureMappingToCopy.FdpFeatureMappingId, DbType.Int32);
+                    para.Add("@Gateways", gateways.ToCommaSeperatedList(), DbType.String);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+
+                    var rows = conn.Execute("Fdp_FeatureMapping_Copy", para, commandType: CommandType.StoredProcedure);
+
+                    retVal = FdpFeatureMappingGet(new FeatureMappingFilter() { FeatureMappingId = featureMappingToCopy.FdpFeatureMappingId });
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpFeatureMappingCopy", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public FdpSpecialFeatureMapping FdpSpecialFeatureMappingGet(SpecialFeatureMappingFilter filter)
+        {
+            FdpSpecialFeatureMapping retVal = new EmptyFdpSpecialFeatureMapping();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpSpecialFeatureMappingId", filter.SpecialFeatureMappingId.GetValueOrDefault(), dbType: DbType.Int32);
+
+                    var results = conn.Query<FdpSpecialFeatureMapping>("Fdp_SpecialFeatureMapping_Get", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FdpSpecialFeatureMappingGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public FdpSpecialFeatureMapping FdpSpecialFeatureMappingDelete(FdpSpecialFeatureMapping featureMappingToDelete)
+        {
+            FdpSpecialFeatureMapping retVal = new EmptyFdpSpecialFeatureMapping();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpSpecialFeatureMappingId", featureMappingToDelete.FdpSpecialFeatureMappingId, dbType: DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+
+                    var results = conn.Query<FdpSpecialFeatureMapping>("Fdp_SpecialFeatureMapping_Delete", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpSpecialFeatureMappingDelete", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public PagedResults<FdpSpecialFeatureMapping> FdpSpecialFeatureMappingGetMany(SpecialFeatureMappingFilter filter)
+        {
+            PagedResults<FdpSpecialFeatureMapping> retVal = null;
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    var totalRecords = 0;
+                    var totalDisplayRecords = 0;
+
+                    if (!string.IsNullOrEmpty(filter.CarLine))
+                    {
+                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.ModelYear))
+                    {
+                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.Gateway))
+                    {
+                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                    }
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = conn.Query<FdpSpecialFeatureMapping>("dbo.Fdp_SpecialFeatureMapping_GetMany", para, commandType: CommandType.StoredProcedure);
+
+                    if (results.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                    }
+                    retVal = new PagedResults<FdpSpecialFeatureMapping>()
+                    {
+                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                    };
+
+                    var currentPage = new List<FdpSpecialFeatureMapping>();
+
+                    foreach (var result in results)
+                    {
+                        currentPage.Add(result);
+                    }
+                    retVal.CurrentPage = currentPage;
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpSpecialFeatureMappingGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public FdpSpecialFeatureMapping FdpSpecialFeatureMappingCopy(FdpSpecialFeatureMapping featureMappingToCopy, IEnumerable<string> gateways)
+        {
+            FdpSpecialFeatureMapping retVal = new EmptyFdpSpecialFeatureMapping();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    para.Add("@FdpSpecialFeatureMappingId", featureMappingToCopy.FdpSpecialFeatureMappingId, DbType.Int32);
+                    para.Add("@Gateways", gateways.ToCommaSeperatedList(), DbType.String);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+
+                    var rows = conn.Execute("Fdp_SpecialFeatureMapping_Copy", para, commandType: CommandType.StoredProcedure);
+
+                    retVal = FdpSpecialFeatureMappingGet(new SpecialFeatureMappingFilter() { SpecialFeatureMappingId = featureMappingToCopy.FdpSpecialFeatureMappingId });
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpSpecialFeatureMappingCopy", ex.Message, CurrentCDSID);
                     throw;
                 }
             }

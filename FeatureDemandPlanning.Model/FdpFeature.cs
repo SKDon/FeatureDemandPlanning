@@ -9,6 +9,7 @@ namespace FeatureDemandPlanning.Model
         public int? ProgrammeId { get; set; }
         public Programme Programme { get; set; }
         public string Gateway { get; set; }
+        public string Description { get; set; }
 
         public int? FdpFeatureId { get; set; }
         public int? FeatureGroupId { get; set; }
@@ -30,7 +31,8 @@ namespace FeatureDemandPlanning.Model
                 CreatedBy,
                 Programme.GetDisplayString(),
                 Gateway,
-                BrandDescription
+                FeatureCode,
+                Description
             };
         }
 

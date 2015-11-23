@@ -1,0 +1,14 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.SpecialFeatureMappingViewModel
+
+<li>
+    <a tabindex="-1" href="#" data-target="@Model.SpecialFeatureMapping.FdpSpecialFeatureMappingId" data-role="@((int)enums.SpecialFeatureMappingAction.Delete)" data-content="@Model.SpecialFeatureMapping.FeatureCode">
+        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Feature Mapping '@Model.SpecialFeatureMapping.FeatureCode'...
+    </a>
+</li>
+<li>
+    <a tabindex="-1" href="#" data-target="@Model.SpecialFeatureMapping.FdpSpecialFeatureMappingId" data-role="@((int)enums.SpecialFeatureMappingAction.Copy)" data-content="@Model.SpecialFeatureMapping.FeatureCode">
+        <span class="glyphicon glyphicon-copy pull-left"></span> Copy Feature Mapping '@Model.SpecialFeatureMapping.FeatureCode' to Gateway...
+    </a>
+</li>

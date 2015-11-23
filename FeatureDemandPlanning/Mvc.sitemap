@@ -42,6 +42,8 @@
       <mvcSiteMapNode title="FDP Features" controller="Feature" action="FeaturePage"/>
       <mvcSiteMapNode title="Feature Mapping" controller="FeatureMapping" action="Index"/>
       <mvcSiteMapNode title="Feature Mapping" controller="FeatureMapping" action="FeatureMappingPage"/>
+      <mvcSiteMapNode title="Special Feature Mapping" controller="SpecialFeatureMapping" action="Index"/>
+      <mvcSiteMapNode title="Special Feature Mapping" controller="SpecialFeatureMapping" action="SpecialFeatureMappingPage"/>
     </mvcSiteMapNode>
     <mvcSiteMapNode title="Trim" controller="Admin" action="Trim">
       <mvcSiteMapNode title="FDP Trim" controller="Trim" action="Index"/>

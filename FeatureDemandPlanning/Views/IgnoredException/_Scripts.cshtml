@@ -1,0 +1,32 @@
+﻿@model FeatureDemandPlanning.Model.ViewModel.IgnoredExceptionViewModel 
+
+@{ var currentVersion = Model.CurrentVersion; }
+
+<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/IgnoredException/model.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/IgnoredException/copy.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/IgnoredException/delete.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/IgnoredException/page.js")?v=@currentVersion"></script>
+<script language="javascript">
+
+    var ignoredException, page, modal;
+    var params = {
+        ActionsUri: "@Url.Action("ContextMenu")",
+        ProcessUri: "@Url.Action("Process")",
+        CancelUri: "@Url.Action("Cancel")",
+        IgnoredExceptionUri: "@Url.Action("ListIgnoredExceptions")",
+        ModalContentUri: "@Url.Action("ModalContent")",
+        ModalActionUri: "@Url.Action("ModalAction")",
+        ModalDialogId: "modal",
+        ModalContentId: "modalBody",
+        Configuration: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        _lastParam: null
+    };
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+
+</script>
+<script src="@Url.Content("~/Scripts/IgnoredException/init.js")?v=@currentVersion"></script>

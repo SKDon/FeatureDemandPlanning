@@ -35,7 +35,7 @@ model.CopyDerivativeMappingAction = function (params) {
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
             "DerivativeId": me.getDerivativeId(),
-            "Gateway": me.getSelectedGateway()
+            "CopyToGateways": [me.getSelectedGateway()]
         });
     };
     me.getIdentifierPrefix = function () {

@@ -64,10 +64,6 @@
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\Microsoft.SqlServer.ManagedDTS\v4.0_12.0.0.0__89845dcd8080cc91\Microsoft.SqlServer.ManagedDTS.dll</HintPath>
-    </Reference>
     <Reference Include="MvcSiteMapProvider, Version=4.6.20.0, Culture=neutral, PublicKeyToken=1923abe4657913cc, processorArchitecture=MSIL">
       <HintPath>..\packages\MvcSiteMapProvider.MVC5.Core.4.6.20\lib\net45\MvcSiteMapProvider.dll</HintPath>
       <Private>True</Private>
@@ -185,6 +181,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\IgnoredExceptionController.cs" />
+    <Compile Include="Controllers\SpecialFeatureMappingController.cs" />
     <Compile Include="Controllers\TrimController.cs" />
     <Compile Include="Controllers\TrimMappingController.cs" />
     <Compile Include="Controllers\FeatureController.cs" />
@@ -896,6 +894,15 @@
     <Content Include="Scripts\Editor\oxo-editor-trm.js" />
     <Content Include="Scripts\Editor\oxo-editor-validate.js" />
     <Content Include="Scripts\Editor\oxo-model-filter.js" />
+    <Content Include="Scripts\IgnoredException\delete.js" />
+    <Content Include="Scripts\IgnoredException\init.js" />
+    <Content Include="Scripts\IgnoredException\model.js" />
+    <Content Include="Scripts\IgnoredException\page.js" />
+    <Content Include="Scripts\SpecialFeatureMapping\copy.js" />
+    <Content Include="Scripts\SpecialFeatureMapping\delete.js" />
+    <Content Include="Scripts\SpecialFeatureMapping\init.js" />
+    <Content Include="Scripts\SpecialFeatureMapping\model.js" />
+    <Content Include="Scripts\SpecialFeatureMapping\page.js" />
     <Content Include="Scripts\FeatureMapping\copy.js" />
     <Content Include="Scripts\FeatureMapping\delete.js" />
     <Content Include="Scripts\FeatureMapping\model.js" />
@@ -1301,6 +1308,7 @@
     <None Include="MvcSiteMapSchema.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\PublishProfiles\Filesystem.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Extensions\dataTables.bootstrap\dataTables.bootstrap.js" />
     <Content Include="Scripts\Forecast\forecast.js" />
@@ -1475,6 +1483,17 @@
     <Content Include="Views\TrimMapping\_TrimMappings.cshtml" />
     <Content Include="Views\TrimMapping\_Scripts.cshtml" />
     <Content Include="Views\TrimMapping\TrimMappingPage.cshtml" />
+    <Content Include="Views\SpecialFeatureMapping\_ContextMenu.cshtml" />
+    <Content Include="Views\SpecialFeatureMapping\_Copy.cshtml" />
+    <Content Include="Views\SpecialFeatureMapping\_Delete.cshtml" />
+    <Content Include="Views\SpecialFeatureMapping\_SpecialFeatureMappings.cshtml" />
+    <Content Include="Views\SpecialFeatureMapping\_Scripts.cshtml" />
+    <Content Include="Views\SpecialFeatureMapping\SpecialFeatureMappingPage.cshtml" />
+    <Content Include="Views\IgnoredException\_ContextMenu.cshtml" />
+    <Content Include="Views\IgnoredException\_Delete.cshtml" />
+    <Content Include="Views\IgnoredException\_IgnoredExceptions.cshtml" />
+    <Content Include="Views\IgnoredException\_Scripts.cshtml" />
+    <Content Include="Views\IgnoredException\IgnoredExceptionPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1512,7 +1531,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>63119</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

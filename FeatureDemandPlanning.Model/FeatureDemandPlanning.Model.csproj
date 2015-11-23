@@ -94,9 +94,11 @@
     <Compile Include="Attributes\ValidateAjaxAttribute.cs" />
     <Compile Include="CarLine.cs" />
     <Compile Include="Dapper\DynamicParameters.cs" />
+    <Compile Include="Empty\EmptyFdpImportErrorExclusion.cs" />
     <Compile Include="Empty\EmptyFdpDerivativeMapping.cs" />
     <Compile Include="Empty\EmptyFdpDerivative.cs" />
     <Compile Include="Empty\EmptyFdpFeature.cs" />
+    <Compile Include="Empty\EmptyFdpSpecialFeatureMapping.cs" />
     <Compile Include="Empty\EmptyFdpFeatureMapping.cs" />
     <Compile Include="Empty\EmptyFdpMarket.cs" />
     <Compile Include="Empty\EmptyFdpMarketMapping.cs" />
@@ -107,6 +109,8 @@
     <Compile Include="Empty\EmptySpecialFeatureType.cs" />
     <Compile Include="Empty\EmptyTakeRateSummary.cs" />
     <Compile Include="Empty\EmptyUser.cs" />
+    <Compile Include="Enumerations\IgnoredExceptionAction.cs" />
+    <Compile Include="Enumerations\SpecialFeatureMappingAction.cs" />
     <Compile Include="Enumerations\MarketAction.cs" />
     <Compile Include="Enumerations\FeatureAction.cs" />
     <Compile Include="Enumerations\MarketMappingAction.cs" />
@@ -116,7 +120,9 @@
     <Compile Include="Enumerations\DerivativeMappingAction.cs" />
     <Compile Include="Enumerations\DerivativeAction.cs" />
     <Compile Include="Enumerations\UserAction.cs" />
+    <Compile Include="FdpImportErrorExclusion.cs" />
     <Compile Include="FdpDerivative.cs" />
+    <Compile Include="FdpSpecialFeatureMapping.cs" />
     <Compile Include="FdpMarketMapping.cs" />
     <Compile Include="FdpMarket.cs" />
     <Compile Include="FdpTrimMapping.cs" />
@@ -126,6 +132,8 @@
     <Compile Include="FdpSpecialFeature.cs" />
     <Compile Include="FdpSpecialFeatureType.cs" />
     <Compile Include="FdpTrim.cs" />
+    <Compile Include="Filters\IgnoredExceptionFilter.cs" />
+    <Compile Include="Filters\SpecialFeatureMappingFilter.cs" />
     <Compile Include="Filters\MarketFilter.cs" />
     <Compile Include="Filters\MarketMappingFilter.cs" />
     <Compile Include="Filters\TrimFilter.cs" />
@@ -168,6 +176,8 @@
     <Compile Include="Filters\PageFilter.cs" />
     <Compile Include="Filters\VolumeFilter.cs" />
     <Compile Include="ModelYear.cs" />
+    <Compile Include="Parameters\IgnoredExceptionParameters.cs" />
+    <Compile Include="Parameters\SpecialFeatureMappingParameters.cs" />
     <Compile Include="Parameters\MarketParameters.cs" />
     <Compile Include="Parameters\MarketMappingParameters.cs" />
     <Compile Include="Parameters\TrimMappingParameters.cs" />
@@ -276,7 +286,9 @@
     <Compile Include="Validators\VolumeValidator.cs" />
     <Compile Include="ViewModel\AdminViewModel.cs" />
     <Compile Include="ViewModel\ConfigurationModel.cs" />
+    <Compile Include="ViewModel\IgnoredExceptionViewModel.cs" />
     <Compile Include="ViewModel\MarketMappingViewModel.cs" />
+    <Compile Include="ViewModel\SpecialFeatureMappingViewModel.cs" />
     <Compile Include="ViewModel\TrimMappingViewModel.cs" />
     <Compile Include="ViewModel\TrimViewModel.cs" />
     <Compile Include="ViewModel\FeatureMappingViewModel.cs" />

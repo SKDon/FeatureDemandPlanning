@@ -94,6 +94,11 @@ namespace FeatureDemandPlanning.Controllers
             ValidateFeatureMappingParameters(parameters, FeatureMappingParametersValidator.FeatureIdentifierWithAction);
             ValidateFeatureMappingParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
 
+            if (parameters.Action == FeatureMappingAction.CopyAll || parameters.Action == FeatureMappingAction.Copy)
+            {
+                TempData["CopyToGateways"] = parameters.CopyToGateways;
+            }
+
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
         [HandleErrorWithJson]
@@ -116,6 +121,7 @@ namespace FeatureDemandPlanning.Controllers
         [HandleErrorWithJson]
         public async Task<ActionResult> Copy(FeatureMappingParameters parameters)
         {
+            parameters.CopyToGateways = (IEnumerable<string>)TempData["CopyToGateways"];
             var derivativeMappingView = await GetModelFromParameters(parameters);
             if (derivativeMappingView.FeatureMapping is EmptyFdpFeatureMapping)
             {

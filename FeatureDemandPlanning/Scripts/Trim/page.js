@@ -167,22 +167,8 @@ page.TrimsPage = function (models) {
                     "sClass": "text-center"
                 }
                 , {
-                    "sTitle": "Body",
-                    "sName": "BODY",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Engine",
-                    "sName": "ENGINE",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Transmission",
-                    "sName": "TRANSMISSION",
+                    "sTitle": "Level",
+                    "sName": "LEVEL",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center"
@@ -265,6 +251,8 @@ page.TrimsPage = function (models) {
             this.initialise();
         });
         me.loadData();
+        me.filterModelYears();
+        me.filterGateways();
     };
     me.loadData = function () {
         me.configureDataTables(getFilter());

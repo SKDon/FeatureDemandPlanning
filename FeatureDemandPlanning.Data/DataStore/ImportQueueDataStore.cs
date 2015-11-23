@@ -12,6 +12,7 @@ using FeatureDemandPlanning.DataStore.DataStore;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
 using System.Data.SqlClient;
+using FeatureDemandPlanning.Model.Empty;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -453,6 +454,131 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
 
+            return retVal;
+        }
+        public FdpImportErrorExclusion FdpImportErrorExclusionDelete(FdpImportErrorExclusion fdpImportErrorExclusion)
+        {
+            FdpImportErrorExclusion retVal = new EmptyFdpImportErrorExclusion();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpImportErrorExclusionId", fdpImportErrorExclusion.FdpImportErrorExclusionId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+
+                    var results = conn.Query<FdpImportErrorExclusion>("Fdp_ImportErrorExclusion_Delete", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.FdpImportErrorExclusionDelete", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public FdpImportErrorExclusion FdpImportErrorExclusionGet(IgnoredExceptionFilter filter)
+        {
+            FdpImportErrorExclusion retVal = new EmptyFdpImportErrorExclusion();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpImportErrorExclusionId", filter.IgnoredExceptionId.GetValueOrDefault(), dbType: DbType.Int32);
+
+                    var results = conn.Query<FdpImportErrorExclusion>("Fdp_ImportErrorExclusion_Get", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.FdpImportErrorExclusionGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public PagedResults<FdpImportErrorExclusion> FdpImportErrorExclusionGetMany(IgnoredExceptionFilter filter)
+        {
+            PagedResults<FdpImportErrorExclusion> retVal = null;
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    var totalRecords = 0;
+                    var totalDisplayRecords = 0;
+
+                    if (!string.IsNullOrEmpty(filter.CarLine))
+                    {
+                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.ModelYear))
+                    {
+                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.Gateway))
+                    {
+                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    }
+                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                    }
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = conn.Query<FdpImportErrorExclusion>("dbo.Fdp_ImportErrorExclusion_GetMany", para, commandType: CommandType.StoredProcedure);
+
+                    if (results.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                    }
+                    retVal = new PagedResults<FdpImportErrorExclusion>()
+                    {
+                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                    };
+
+                    var currentPage = new List<FdpImportErrorExclusion>();
+
+                    foreach (var result in results)
+                    {
+                        currentPage.Add(result);
+                    }
+                    retVal.CurrentPage = currentPage;
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.FdpImportErrorExclusionGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
             return retVal;
         }
         private void HydrateImportErrors(ImportQueueDataItem importQueue, IDbConnection connection)

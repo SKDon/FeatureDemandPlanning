@@ -29,7 +29,6 @@ namespace FeatureDemandPlanning.DataStore
             _featureDataStore = new FeatureDataStore(cdsId);
             _derivativeDataStore = new DerivativeDataStore(cdsId);
         }
-
         public IVehicle GetVehicle(VehicleFilter filter)
         {
             IVehicle vehicle = new EmptyVehicle();
@@ -268,11 +267,11 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult<PagedResults<FdpDerivativeMapping>>(_derivativeDataStore.FdpDerivativeMappingGetMany(filter));
         }
-        public Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> enumerable)
+        public async Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> gateways)
         {
-            throw new NotImplementedException();
+            return await Task.FromResult<FdpDerivativeMapping>(_derivativeDataStore.FdpDerivativeMappingCopy(fdpDerivativeMapping, gateways));
         }
-        public Task<FdpDerivativeMapping> CopyFdpDerivativeMappingsToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> enumerable)
+        public Task<FdpDerivativeMapping> CopyFdpDerivativeMappingsToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> gateways)
         {
             throw new NotImplementedException();
         }
@@ -303,11 +302,31 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult<PagedResults<FdpFeatureMapping>>(_featureDataStore.FdpFeatureMappingGetMany(filter));
         }
-        public Task<FdpFeatureMapping> CopyFdpFeatureMappingToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways)
+        public async Task<FdpFeatureMapping> CopyFdpFeatureMappingToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways)
+        {
+            return await Task.FromResult<FdpFeatureMapping>(_featureDataStore.FdpFeatureMappingCopy(fdpFeatureMapping, gateways));
+        }
+        public Task<FdpFeatureMapping> CopyFdpFeatureMappingsToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways)
         {
             throw new NotImplementedException();
         }
-        public Task<FdpFeatureMapping> CopyFdpFeatureMappingsToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways)
+        public async Task<FdpSpecialFeatureMapping> DeleteFdpSpecialFeatureMapping(FdpSpecialFeatureMapping featureMappingToDelete)
+        {
+            return await Task.FromResult<FdpSpecialFeatureMapping>(_featureDataStore.FdpSpecialFeatureMappingDelete(featureMappingToDelete));
+        }
+        public async Task<FdpSpecialFeatureMapping> GetFdpSpecialFeatureMapping(SpecialFeatureMappingFilter filter)
+        {
+            return await Task.FromResult<FdpSpecialFeatureMapping>(_featureDataStore.FdpSpecialFeatureMappingGet(filter));
+        }
+        public async Task<PagedResults<FdpSpecialFeatureMapping>> ListFdpSpecialFeatureMappings(SpecialFeatureMappingFilter filter)
+        {
+            return await Task.FromResult<PagedResults<FdpSpecialFeatureMapping>>(_featureDataStore.FdpSpecialFeatureMappingGetMany(filter));
+        }
+        public async Task<FdpSpecialFeatureMapping> CopyFdpSpecialFeatureMappingToGateway(FdpSpecialFeatureMapping fdpSpecialFeatureMapping, IEnumerable<string> gateways)
+        {
+            return await Task.FromResult<FdpSpecialFeatureMapping>(_featureDataStore.FdpSpecialFeatureMappingCopy(fdpSpecialFeatureMapping, gateways));
+        }
+        public Task<FdpSpecialFeatureMapping> CopyFdpSpecialFeatureMappingsToGateway(FdpSpecialFeatureMapping fdpSpecialFeatureMapping, IEnumerable<string> gateways)
         {
             throw new NotImplementedException();
         }
@@ -346,8 +365,6 @@ namespace FeatureDemandPlanning.DataStore
         {
             throw new NotImplementedException();
         }
-
-
         public IEnumerable<IVehicle> ListAvailableVehicles(VehicleFilter filter)
         {
             var programmes = ListProgrammes(filter);
@@ -356,6 +373,8 @@ namespace FeatureDemandPlanning.DataStore
 
             return programmes.Select(p => HydrateVehicleFromProgramme(p, filter.VehicleIndex));
         }
+
+        #region "Private Methods"
 
         private IVehicle HydrateVehicleFromProgramme(Programme programme)
         {
@@ -385,6 +404,10 @@ namespace FeatureDemandPlanning.DataStore
                 (string.IsNullOrEmpty(vehicle.Gateway) || documentToCheck.Gateway == vehicle.Gateway);
         }
 
+        #endregion
+
+        #region "Private Members"
+
         private VehicleDataStore _vehicleDataStore = null;
         private ProgrammeDataStore _programmeDataStore = null;
         private OXODocDataStore _documentDataStore = null;
@@ -398,5 +421,7 @@ namespace FeatureDemandPlanning.DataStore
         private ModelEngineDataStore _engineDataStore = null;
         private FeatureDataStore _featureDataStore = null;
         private DerivativeDataStore _derivativeDataStore = null;
+
+        #endregion
     }
 }

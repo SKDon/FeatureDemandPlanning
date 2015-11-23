@@ -20,7 +20,7 @@ namespace FeatureDemandPlanning.Model
                 Gateway,
                 ImportFeatureCode,
                 FeatureCode,
-                BrandDescription
+                Description
             };
         }
         public static FdpFeatureMapping FromParameters(FeatureMappingParameters parameters)

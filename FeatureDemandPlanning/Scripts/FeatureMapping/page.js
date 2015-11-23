@@ -174,8 +174,8 @@ page.FeatureMappingsPage = function (models) {
                     "sClass": "text-center"
                 }
                 , {
-                    "sTitle": "Brand Description",
-                    "sName": "BRAND_DESCRIPTION",
+                    "sTitle": "Description",
+                    "sName": "DESCRIPTION",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-left"
@@ -239,11 +239,19 @@ page.FeatureMappingsPage = function (models) {
     };
     me.getParameters = function (data) {
         var filter = getFilter();
+        var modelYear = me.getSelectedModelYear();
+        if (modelYear === "N/A") {
+            modelYear = "";
+        }
+        var gateway = me.getSelectedGateway();
+        if (gateway === "N/A") {
+            gateway = "";
+        }
         var params = $.extend({}, data, {
             "FeatureMappingId": me.getFeatureMappingId(),
             "CarLine": me.getSelectedCarLine(),
-            "ModelYear": me.getSelectedModelYear(),
-            "Gateway": me.getSelectedGateway(),
+            "ModelYear": modelYear,
+            "Gateway": gateway,
             "FilterMessage": me.getFilterMessage()
         });
         return params;

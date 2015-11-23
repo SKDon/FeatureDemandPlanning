@@ -265,6 +265,8 @@ page.DerivativesPage = function (models) {
             this.initialise();
         });
         me.loadData();
+        me.filterModelYears();
+        me.filterGateways();
     };
     me.loadData = function () {
         me.configureDataTables(getFilter());

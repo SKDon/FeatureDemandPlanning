@@ -1,0 +1,10 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+@using FeatureDemandPlanning.Model.Extensions
+
+@model FeatureDemandPlanning.Model.ViewModel.IgnoredExceptionViewModel
+
+<li>
+    <a tabindex="-1" href="#" data-target="@Model.IgnoredException.FdpImportErrorExclusionId" data-role="@((int)enums.IgnoredExceptionAction.Delete)" data-content="@Model.IgnoredException.FdpImportErrorExclusionId">
+        <span class="glyphicon glyphicon-remove pull-left"></span> Delete Ignored Exception '@Model.IgnoredException.ErrorMessage.Truncate(50)'...
+    </a>
+</li>

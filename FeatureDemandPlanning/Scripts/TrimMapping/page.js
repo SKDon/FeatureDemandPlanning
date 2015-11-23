@@ -174,22 +174,15 @@ page.TrimMappingsPage = function (models) {
                     "sClass": "text-center"
                 }
                 , {
-                    "sTitle": "Body",
-                    "sName": "BODY",
+                    "sTitle": "Level",
+                    "sName": "LEVEL",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center"
                 }
                 , {
-                    "sTitle": "Engine",
-                    "sName": "ENGINE",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Transmission",
-                    "sName": "TRANSMISSION",
+                    "sTitle": "DPCK",
+                    "sName": "DPCK",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center"

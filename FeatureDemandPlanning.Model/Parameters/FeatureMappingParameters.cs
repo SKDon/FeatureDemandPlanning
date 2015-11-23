@@ -21,16 +21,21 @@ namespace FeatureDemandPlanning.Model.Parameters
 
         public new object GetActionSpecificParameters()
         {
-            if (Action == FeatureMappingAction.Delete || 
-                Action == FeatureMappingAction.Copy || 
-                Action == FeatureMappingAction.CopyAll)
+            if (Action == FeatureMappingAction.Delete)
             {
                 return new
                 {
                     FeatureMappingId
                 };
             }
-
+            if (Action == FeatureMappingAction.Copy || Action == FeatureMappingAction.CopyAll)
+            {
+                return new
+                {
+                    FeatureMappingId,
+                    CopyToGateways
+                };
+            }
             return new { };
         }
     }

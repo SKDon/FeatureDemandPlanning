@@ -1,0 +1,72 @@
+﻿@using FeatureDemandPlanning.Model.Extensions
+
+@model FeatureDemandPlanning.Model.ViewModel.SpecialFeatureMappingViewModel
+
+<form>
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+</form>
+
+<div class="alert alert-info">
+    <div class="row">
+        <div class="col-lg-1 text-center">
+            <span class="glyphicon glyphicon-info-sign"></span>
+        </div>
+        <div class="col-lg-11">
+            <p>Copy the selected mapping to a new gateway for the programme.</p>
+            <p>Select a gateway and click <strong>'OK'</strong> to continue.</p>
+        </div>
+    </div>
+</div>
+
+<div class="well col-xs-12">
+    <div class="col-xs-4 text-right">
+        <strong>Import Feature:</strong>
+    </div>
+    <div class="col-xs-8">
+        @Model.SpecialFeatureMapping.FeatureCode
+    </div>
+    <div class="col-xs-4 text-right">
+        <strong>Programme:</strong>
+    </div>
+    <div class="col-xs-8">
+        @Model.SpecialFeatureMapping.Programme.GetDisplayString()
+    </div>
+    <div class="col-xs-4 text-right" style="margin-bottom:15px">
+        <strong>Gateway:</strong>
+    </div>
+    <div class="col-xs-8" style="margin-bottom:15px">
+        @Model.SpecialFeatureMapping.Gateway
+    </div>
+    <div class="col-xs-4 text-right">
+        <strong>Special Feature:</strong>
+    </div>
+    <div class="col-xs-8">
+        @Model.SpecialFeatureMapping.Description
+    </div>
+ </div>
+<div class="col-xs-12">
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="panel-title">Copy to Gateway</div>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="form-label col-xs-3 text-right" style="margin-top:5px">New Gateway:</label>
+                <div class="col-xs-9">
+                    <button id="@(Model.IdentifierPrefix)_SelectGateway" type="button" class="btn btn-sm btn-default dropdown-toggle col-sm-12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span id="@(Model.IdentifierPrefix)_SelectedGateway">Select Gateway</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul id="@(Model.IdentifierPrefix)_GatewayList" class="dropdown-menu">
+                        @foreach (var gateway in Model.Gateways.Where(g => !g.Name.Equals(Model.SpecialFeatureMapping.Gateway, StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            <li><a class="gateway-item" href="#" data-target="@gateway.Name" data-content="@gateway.Name">@gateway.Name</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+    </div>

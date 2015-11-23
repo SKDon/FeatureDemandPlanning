@@ -1,0 +1,32 @@
+﻿@model FeatureDemandPlanning.Model.ViewModel.SpecialFeatureMappingViewModel 
+
+@{ var currentVersion = Model.CurrentVersion; }
+
+<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/SpecialFeatureMapping/model.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/SpecialFeatureMapping/copy.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/SpecialFeatureMapping/delete.js")?v=@currentVersion"></script>
+<script src="@Url.Content("~/Scripts/SpecialFeatureMapping/page.js")?v=@currentVersion"></script>
+<script language="javascript">
+
+    var specialFeatureMapping, page, modal;
+    var params = {
+        ActionsUri: "@Url.Action("ContextMenu")",
+        ProcessUri: "@Url.Action("Process")",
+        CancelUri: "@Url.Action("Cancel")",
+        SpecialFeatureMappingsUri: "@Url.Action("ListSpecialFeatureMappings")",
+        ModalContentUri: "@Url.Action("ModalContent")",
+        ModalActionUri: "@Url.Action("ModalAction")",
+        ModalDialogId: "modal",
+        ModalContentId: "modalBody",
+        Configuration: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        _lastParam: null
+    };
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+
+</script>
+<script src="@Url.Content("~/Scripts/SpecialFeatureMapping/init.js")?v=@currentVersion"></script>

@@ -6,7 +6,7 @@ namespace FeatureDemandPlanning.Model
     {
         public int? TrimId { get; set; }
         public int? FdpTrimId { get; set; }
-        public new int? ProgrammeId { get; set; }
+        //public new int? ProgrammeId { get; set; }
         public Programme Programme { get; set; }
         public string Gateway { get; set; }
 

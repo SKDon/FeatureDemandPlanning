@@ -48,7 +48,7 @@ model.DerivativeMapping = function (params) {
         var title = "";
         switch (action) {
             case 1:
-                title = "Delete Derivative Mappping '" + derivativeMapping + "'";
+                title = "Delete Derivative Mapping '" + derivativeMapping + "'";
                 break;
             case 4:
                 title = "Copy Derivative Mapping '" + derivativeMapping + "' to Gateway";
