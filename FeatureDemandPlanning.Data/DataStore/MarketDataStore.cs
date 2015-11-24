@@ -361,9 +361,12 @@ namespace FeatureDemandPlanning.DataStore
 
                     para.Add("@ImportMarket", mapping.ImportMarket, dbType: DbType.String);
                     para.Add("@MappedMarketId", mapping.MarketId, dbType: DbType.Int32);
-                    para.Add("@ProgrammeId", mapping.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@Gateway", mapping.Gateway, dbType: DbType.String);
-                    //para.Add("@IsGlobalMapping", mapping.IsGlobalMapping, dbType: DbType.Boolean);
+                    if (!mapping.IsGlobalMapping)
+                    {
+                        para.Add("@ProgrammeId", mapping.ProgrammeId, dbType: DbType.Int32);
+                        para.Add("@Gateway", mapping.Gateway, dbType: DbType.String);
+                    }
+                    para.Add("@IsGlobalMapping", mapping.IsGlobalMapping, dbType: DbType.Boolean);
                     para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
 
                     var results = conn.Query<FdpMarketMapping>("dbo.Fdp_MarketMapping_Save", para, commandType: CommandType.StoredProcedure);

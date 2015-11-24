@@ -256,7 +256,7 @@ namespace FeatureDemandPlanning.Controllers
                 MarketId = parameters.MarketId,
                 ProgrammeId = parameters.ProgrammeId,
                 Gateway = parameters.Gateway,
-                //IsGlobalMapping = false
+                IsGlobalMapping = parameters.IsGlobalMapping
             };
             importView.CurrentException = await DataContext.Import.MapMarket(filter, marketMapping);
             await DeactivateException(importView.CurrentException);

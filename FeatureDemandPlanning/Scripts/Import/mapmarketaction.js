@@ -59,7 +59,8 @@ model.MapMarketAction = function (params) {
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
             "MarketId": me.getSelectedMarketId(),
-            "ImportMarket": me.getImportMarket()
+            "ImportMarket": me.getImportMarket(),
+            "IsGlobalMapping": me.getIsGlobalMapping()
         });
     };
     me.getIdentifierPrefix = function () {
@@ -70,6 +71,9 @@ model.MapMarketAction = function (params) {
     };
     me.getIsNoGroup = function () {
         return privateStore[me.id].IsNoGroup;
+    };
+    me.getIsGlobalMapping = function () {
+        return $("#" + me.getIdentifierPrefix() + "_CheckIsGlobalMapping").is(":checked");
     };
     me.getActionUri = function () {
         return privateStore[me.id].ActionUri;

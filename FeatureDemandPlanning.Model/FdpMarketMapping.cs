@@ -8,6 +8,7 @@ namespace FeatureDemandPlanning.Model
         public int? FdpMarketMappingId { get; set; }
         public string ImportMarket { get; set; }
         public bool? IsMappedMarket { get; set; }
+        public bool IsGlobalMapping { get; set; }
 
         public new string[] ToJQueryDataTableResult()
         {

@@ -39,8 +39,7 @@
                     </ul>
                 </div>
             </div>
-        </form>
-        <form class="form-horizontal">
+        
             <div class="form-group">
                 <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_SelectMarket">Market:</label>
                 <div class="col-sm-8">
@@ -54,6 +53,15 @@
                             <li><a class="market-item" href="#" data-target="@market.Id" data-content="@market.Name" data-filter="@market.GroupName">@market.Name</a></li>
                         }
                     </ul>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-8 col-sm-offset-4">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="@(Model.IdentifierPrefix)_CheckIsGlobalMapping" checked="checked"><strong> Global Mapping</strong>
+                        </label>
+                    </div>
                 </div>
             </div>
         </form>

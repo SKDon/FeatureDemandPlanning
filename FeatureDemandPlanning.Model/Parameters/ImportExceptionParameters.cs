@@ -30,6 +30,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public int? TransmissionId { get; set; }
 
         public int? SpecialFeatureTypeId { get; set; }
+        public bool IsGlobalMapping { get; set; }
 
         public ImportExceptionParameters() : base()
         {
@@ -126,7 +127,8 @@ namespace FeatureDemandPlanning.Model.Parameters
                     ExceptionType = ExceptionType,
                     Action = Action,
                     ImportMarket = ImportMarket,
-                    MarketId = MarketId
+                    MarketId = MarketId,
+                    IsGlobalMapping = IsGlobalMapping
                 };
             }
 
