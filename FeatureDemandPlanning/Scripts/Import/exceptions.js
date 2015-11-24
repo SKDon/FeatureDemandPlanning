@@ -18,6 +18,7 @@ model.Exceptions = function (params) {
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].ActionsUri = params.ActionsUri;
     privateStore[me.id].ExceptionsUri = params.ExceptionsUri;
+    privateStore[me.id].SummaryUri = params.SummaryUri;
     privateStore[me.id].AddTrimContentUri = params.AddTrimContentUri;
     privateStore[me.id].AddTrimActionUri = params.AddTrimActionUri;
     privateStore[me.id].MapTrimContentUri = params.MapTrimContentUri;
@@ -140,6 +141,9 @@ model.Exceptions = function (params) {
     };
     me.getProgrammeId = function () {
         return privateStore[me.id].ProgrammeId;
+    };
+    me.getSummaryUri = function () {
+        return privateStore[me.id].SummaryUri;
     }
     me.getTotalPages = function () {
         return privateStore[me.id].TotalPages;

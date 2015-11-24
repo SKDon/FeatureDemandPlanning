@@ -144,17 +144,17 @@ page.ExceptionsPage = function (models) {
         });
     };
     me.getSummary = function () {
-        var table = $("#tblImportExceptions").DataTable();
-        var info = table.page.info();
-        var model = getExceptionsModel();
-        
-        model.setTotalRecords(info.recordsTotal);
-        model.setTotalDisplayRecords(info.recordsDisplay);
-        model.setPageIndex(info.page);
-        model.setPageSize(info.length);
-        model.setTotalPages(info.pages);
-
-        return model;
+        var params = me.getParameters({});
+        $.ajax({
+            "dataType": "html",
+            "async": true,
+            "type": "GET",
+            "url": getExceptionsModel().getSummaryUri(),
+            "data": params,
+            "success": function (response) {
+                $("#" + me.getIdentifierPrefix() + "_ImportSummary").html(response);
+            }
+        });
     };
     me.registerEvents = function () {
         $(document)
@@ -195,10 +195,7 @@ page.ExceptionsPage = function (models) {
     me.onResultsEventHandler = function (sender, eventArgs) {
     };
     me.onImportSummaryEventHandler = function (sender, eventArgs) {
-        //var summary = eventArgs;
-        //$("#spnLinesFailed").html(summary.getTotalFailRecords());
-        //$("#spnLinesImported").html(summary.getTotalSuccessRecords());
-        //$("#spnTotalRows").html(summary.getTotalFailRecords() + summary.getTotalSuccessRecords());
+        me.getSummary();
     };
     me.onFilteredRecordsEventHandler = function (sender, eventArgs) {
         var summary = eventArgs;
