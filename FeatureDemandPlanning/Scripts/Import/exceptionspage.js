@@ -172,9 +172,7 @@ page.ExceptionsPage = function (models) {
             .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
             .unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
             .unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
-            .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
-            .unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
-            .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler)
+            .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler);
 
         $("#dvImportSummary").on("OnResultsDelegate", me.onImportSummaryEventHandler);
         $("#spnFilteredRecords").on("OnResultsDelegate", me.onFilteredRecordsEventHandler);
@@ -236,17 +234,6 @@ page.ExceptionsPage = function (models) {
     };
     me.onActionCallback = function (response) {
         me.redrawDataTable();
-    };
-    me.onModalLoadedEventHandler = function (sender, eventArgs) {
-        var actionId = eventArgs.Action;
-        switch (actionId) {
-            case 1: me.initialiseMapMarketModal();
-                break;
-            default:
-                break;
-        }
-    };
-    me.onModalOKEventHandler = function (parameters) {
     };
     me.redrawDataTable = function () {
         $("#tblImportExceptions").DataTable().draw();

@@ -372,6 +372,17 @@ namespace FeatureDemandPlanning.DataStore
 
             return programmes.Select(p => HydrateVehicleFromProgramme(p, filter.VehicleIndex));
         }
+        public IEnumerable<TrimLevel> ListTrimLevels(ProgrammeFilter programmeFilter)
+        {
+            for (var i = 1; i <= 10; i++)
+            {
+                yield return new TrimLevel() {
+                    Level = i,
+                    DisplayOrder = i,
+                    Description = string.Format("TL{0}", i)
+                };
+            }
+        }
 
         #region "Private Methods"
 

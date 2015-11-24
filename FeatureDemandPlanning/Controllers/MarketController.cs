@@ -116,7 +116,7 @@ namespace FeatureDemandPlanning.Controllers
         {
             MarketViewModel marketModel = new MarketViewModel();
 
-            marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets(filter);
+            marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets();
 
             return Json(marketModel);
         }

@@ -2,4 +2,54 @@
 
 @model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
 
+<div class="alert alert-info">
+    <div class="row">
+        <div class="col-lg-1 text-center">
+            <span class="glyphicon glyphicon-info-sign"></span>
+        </div>
+        <div class="col-lg-11">
+            <p>Add missing trim details below.</p>
+            <p>Click <strong>'OK'</strong> to continue.</p>
+        </div>
+    </div>
+</div>
+
 @Html.Partial("_ImportActionHeader", Model)
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="panel-title">New Trim Details</div>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_SelectBody">Level:</label>
+                <div class="col-sm-8">
+                    <button id="@(Model.IdentifierPrefix)_SelectTrimLevel" type="button" class="btn btn-sm btn-default dropdown-toggle col-sm-12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span id="@(Model.IdentifierPrefix)_SelectedTrimLevel">Select Trim Level</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul id="@(Model.IdentifierPrefix)_TrimLevelList" class="dropdown-menu">
+                        @foreach (var trimLevel in Model.AvailableTrimLevels)
+                        {
+                            <li><a class="trimlevel-item" href="#" data-target="@trimLevel.Level" data-content="@trimLevel.Description">@trimLevel.Description</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_TextAbbreviation">Abbreviation:</label>
+                <div class="col-sm-8">
+                    <input type="text" id="@(Model.IdentifierPrefix)_TextAbbreviation" class="form-control form" value=""/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_TextDPCK">DPCK:</label>
+                <div class="col-sm-8">
+                    <input type="text" id="@(Model.IdentifierPrefix)_TextDPCK" class="form-control" value="" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

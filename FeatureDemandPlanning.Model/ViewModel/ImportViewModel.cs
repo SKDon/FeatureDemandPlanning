@@ -45,6 +45,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<Derivative> AvailableDerivatives { get; set; }
         public IEnumerable<ImportExceptionType> AvailableExceptionTypes { get; set; }
         public IEnumerable<ImportStatus> AvailableImportStatuses { get; set; }
+        public IEnumerable<TrimLevel> AvailableTrimLevels { get; set; }
 
         #endregion
 
@@ -241,9 +242,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.AvailableBodies = context.Vehicle.ListBodies(programmeFilter);
             model.AvailableTrim = context.Vehicle.ListTrim(programmeFilter);
             model.AvailableSpecialFeatures = context.Volume.ListSpecialFeatures(programmeFilter);
-            model.AvailableMarkets = context.Market.ListAvailableMarkets(programmeFilter);
+            model.AvailableMarkets = context.Market.ListAvailableMarkets();
             model.AvailableFeatures = context.Vehicle.ListFeatures(programmeFilter);
             model.AvailableFeatureGroups = context.Vehicle.ListFeatureGroups(programmeFilter);
+            model.AvailableTrimLevels = context.Vehicle.ListTrimLevels(programmeFilter);
 
             var derivativeFilter = new DerivativeFilter()
             {
@@ -299,6 +301,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             AvailableDerivatives = Enumerable.Empty<Derivative>();
             AvailableExceptionTypes = Enumerable.Empty<ImportExceptionType>();
             AvailableImportStatuses = Enumerable.Empty<ImportStatus>();
+            AvailableTrimLevels = Enumerable.Empty<TrimLevel>();
 
             IdentifierPrefix = "Page";
         }

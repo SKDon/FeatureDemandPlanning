@@ -27,6 +27,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IEnumerable<ModelTrim> ListTrim(ProgrammeFilter filter);
         IEnumerable<Feature> ListFeatures(ProgrammeFilter filter);
         IEnumerable<FeatureGroup> ListFeatureGroups(ProgrammeFilter filter);
+        IEnumerable<TrimLevel> ListTrimLevels(ProgrammeFilter programmeFilter);
 
         // Derivatives and mappings
 

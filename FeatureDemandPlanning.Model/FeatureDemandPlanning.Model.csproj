@@ -199,6 +199,7 @@
     <Compile Include="Enumerations\ImportAction.cs" />
     <Compile Include="Enumerations\ImportExceptionType.cs" />
     <Compile Include="ImportResult.cs" />
+    <Compile Include="TrimLevel.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Validators\ComparisonVehicleExtensions.cs" />
     <Compile Include="Validators\ExtendedValidationResult.cs" />

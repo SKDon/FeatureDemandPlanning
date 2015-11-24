@@ -10,19 +10,22 @@ model.AddTrimAction = function (params) {
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].ActionUri = params.ModalActionUri;
-    privateStore[me.id].SelectedTrimLevel = "";
+    privateStore[me.id].SelectedTrimLevel = null;
+    privateStore[me.id].SelectedTrimLevelDescription = "";
     privateStore[me.id].Parameters = params;
 
     me.action = function () {
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.displaySelectedTrimLevel = function () {
-        $("#" + me.getIdentifierPrefix() + "_SelectedTrimLevel").html(me.getSelectedTrimLevel());
+        $("#" + me.getIdentifierPrefix() + "_SelectedTrimLevel").html(me.getSelectedTrimLevelDescription());
     };
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
-            "ImportTrim": me.getImportTrim(),
-            "Level": me.getSelectedTrimLevel()
+            "TrimName": me.getImportTrim(),
+            "TrimLevel": me.getSelectedTrimLevelDescription(),
+            "TrimAbbreviation": me.getAbbreviation(),
+            "DPCK": me.getDPCK()
         });
     };
     me.getIdentifierPrefix = function () {
@@ -37,15 +40,25 @@ model.AddTrimAction = function (params) {
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
     };
+    me.getAbbreviation = function () {
+        return $("#" + me.getIdentifierPrefix() + "_TextAbbreviation").val();
+    };
+    me.getDPCK = function () {
+        return $("#" + me.getIdentifierPrefix() + "_TextDPCK").val();
+    };
     me.getSelectedTrim = function () {
         return me.getImportTrim();
     };
     me.getSelectedTrimLevel = function () {
         return privateStore[me.id].SelectedTrimLevel;
     };
+    me.getSelectedTrimLevelDescription = function () {
+        return privateStore[me.id].SelectedTrimLevelDescription;
+    };
     me.trimLevelSelectedEventHandler = function (sender) {
         me.setSelectedTrimLevel(parseInt($(sender.target).attr("data-target")));
-        me.displaySelectedTrim();
+        me.setSelectedTrimLevelDescription($(sender.target).attr("data-content"));
+        me.displaySelectedTrimLevel();
     };
     me.initialise = function () {
         me.registerEvents();
@@ -56,7 +69,7 @@ model.AddTrimAction = function (params) {
             .removeClass("alert-danger")
             .removeClass("alert-warning")
             .addClass("alert-success")
-            .html("New derivative '" + me.getImportDerivativeCode() + "' added successfully")
+            .html("New trim '" + me.getImportTrim() + " (" + me.getSelectedTrimLevelDescription() + ")' added successfully")
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");
@@ -93,11 +106,11 @@ model.AddTrimAction = function (params) {
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;
     };
-    me.setSelectedTrimId = function (trimId) {
-        privateStore[me.id].SelectedTrimId = trimId;
+    me.setSelectedTrimLevel = function (trimLevel) {
+        privateStore[me.id].SelectedTrimLevel = trimLevel;
     };
-    me.setSelectedTrim = function (trim) {
-        privateStore[me.id].SelectedTrim = trim;
+    me.setSelectedTrimLevelDescription = function (trimLevelDescription) {
+        privateStore[me.id].SelectedTrimLevelDescription = trimLevelDescription;
     };
     function getData() {
         var params = me.getParameters();

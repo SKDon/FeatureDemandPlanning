@@ -93,6 +93,24 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
+        public IEnumerable<Market> FdpMarketAvailableGetMany()
+        {
+            IEnumerable<Market> retVal = null;
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    retVal = conn.Query<Market>("dbo.Fdp_Market_AvailableGetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("MarketDataStore.FdpMarketAvailableGetMany", ex.Message, CurrentCDSID);
+                }
+
+            }
+            return retVal;
+        }
         public Market MarketGet(int id)
         {
             Market retVal = new EmptyMarket();

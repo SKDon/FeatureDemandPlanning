@@ -12,7 +12,6 @@ namespace FeatureDemandPlanning.Model.Interfaces
     public interface IMarketDataContext
     {
         IEnumerable<Market> ListAvailableMarkets();
-        IEnumerable<Market> ListAvailableMarkets(ProgrammeFilter filter);
         IEnumerable<Market> ListTopMarkets();
 
         Market GetMarket(VolumeFilter filter);

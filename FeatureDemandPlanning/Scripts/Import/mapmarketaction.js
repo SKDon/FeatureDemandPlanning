@@ -14,6 +14,7 @@ model.MapMarketAction = function (params) {
     privateStore[me.id].SelectedMarket = "";
     privateStore[me.id].SelectedMarketGroup = "";
     privateStore[me.id].Parameters = params;
+    privateStore[me.id].IsNoGroup = false;
 
     me.action = function () {
         sendData(me.getActionUri(), me.getActionParameters());
@@ -22,7 +23,18 @@ model.MapMarketAction = function (params) {
         $("#" + me.getIdentifierPrefix() + "_SelectedMarket").html(me.getSelectedMarket());
     };
     me.displaySelectedMarketGroup = function () {
-        $("#" + me.getIdentifierPrefix() + "_SelectedMarketGroup").html(me.getSelectedMarketGroup());
+        var selectedMarketGroup = me.getSelectedMarketGroup();
+        if (selectedMarketGroup === "") {
+            if (!me.getIsNoGroup()) {
+                $("#" + me.getIdentifierPrefix() + "_SelectedMarketGroup").html("Select Market Group");
+            }
+            else
+            {
+                $("#" + me.getIdentifierPrefix() + "_SelectedMarketGroup").html("No Group");
+            }
+        } else {
+            $("#" + me.getIdentifierPrefix() + "_SelectedMarketGroup").html(me.getSelectedMarketGroup());
+        }
     };
     me.filterMarkets = function () {
         var selectedMarket = $("#" + me.getIdentifierPrefix() + "_SelectedMarket");
@@ -56,6 +68,9 @@ model.MapMarketAction = function (params) {
     me.getImportMarket = function () {
         return $("#" + me.getIdentifierPrefix() + "_ImportMarket").attr("data-target");
     };
+    me.getIsNoGroup = function () {
+        return privateStore[me.id].IsNoGroup;
+    };
     me.getActionUri = function () {
         return privateStore[me.id].ActionUri;
     };
@@ -78,6 +93,7 @@ model.MapMarketAction = function (params) {
     };
     me.marketGroupSelectedEventHandler = function (sender) {
         me.setSelectedMarketGroup($(sender.target).attr("data-content"));
+        me.setIsNoGroup(me.getSelectedMarketGroup() === "");
         me.displaySelectedMarketGroup();
         me.filterMarkets();
     };
@@ -140,6 +156,9 @@ model.MapMarketAction = function (params) {
     };
     me.setSelectedMarketGroup = function (marketGroup) {
         privateStore[me.id].SelectedMarketGroup = marketGroup;
+    };
+    me.setIsNoGroup = function (isNoGroup) {
+        privateStore[me.id].IsNoGroup = isNoGroup;
     };
     function getData() {
         var params = me.getParameters();

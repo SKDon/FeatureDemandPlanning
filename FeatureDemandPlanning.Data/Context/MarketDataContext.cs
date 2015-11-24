@@ -23,19 +23,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public IEnumerable<Market> ListAvailableMarkets()
         {
-            var topMarkets = ListTopMarkets();
-
-            var markets = _marketDataStore.MarketGetMany()
-                .Where(m => !topMarkets.Contains(m, new MarketComparer()))
-                .Where(m => m.Active == true)
-                .OrderBy(m => m.Name).ToList();
-
-            return markets;
-        }
-        public IEnumerable<Market> ListAvailableMarkets(ProgrammeFilter filter)
-        {
-            return _marketDataStore.MarketAvailableGetMany(filter.ProgrammeId.GetValueOrDefault())
-                                    .OrderBy(m => m.Name);
+            return _marketDataStore.FdpMarketAvailableGetMany();
         }
         
         public IEnumerable<Market> ListTopMarkets()

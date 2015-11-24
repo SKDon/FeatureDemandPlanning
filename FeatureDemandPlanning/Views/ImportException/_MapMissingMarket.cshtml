@@ -32,10 +32,10 @@
                     <ul id="@(Model.IdentifierPrefix)_MarketGroupList" class="dropdown-menu">
                         @foreach (var group in Model.AvailableMarkets.Where(m => !string.IsNullOrEmpty(m.GroupName)).Select(m => m.GroupName).OrderBy(m => m).Distinct())
                         {
-                            <li><a class="market-group-item" href="#" data-target="@group">@group</a></li>
+                            <li><a class="market-group-item" href="#" data-target="@group" data-content="@group">@group</a></li>
                         }
                         <li class="divider"></li>
-                        <li><a class="market-group-item" href="#" data-target="">No Group</a></li>
+                        <li><a class="market-group-item" href="#" data-target="" data-content="">No Group</a></li>
                     </ul>
                 </div>
             </div>

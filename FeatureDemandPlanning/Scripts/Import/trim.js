@@ -9,32 +9,16 @@ model.Trim = function (params) {
 
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Config = params.Configuration;
-    privateStore[me.id].AddTrimContentUri = params.AddTrimContentUri;
-    privateStore[me.id].AddTrimActionUri = params.AddTrimActionUri;
-    privateStore[me.id].MapTrimContentUri = params.MapTrimContentUri;
-    privateStore[me.id].MapTrimActionUri = params.MapTrimActionUri;
-    privateStore[me.id].ListAvailableTrimUri = params.ListAvailableTrimUri;
-    privateStore[me.id].AvailableTrim = [];
-    privateStore[me.id].Parameters = {};
+    privateStore[me.id].ModalContentUri = params.ModalContentUri;
+    privateStore[me.id].ModalActionUri = params.ModalActionUri;
+    privateStore[me.id].Parameters = params;
     
     me.ModelName = "Trim";
 
     me.initialise = function () {
-        me.listAvailableTrim();
     };
     me.getActionContentUri = function (action) {
-        var uri = "";
-        switch (action) {
-            case 6:
-                uri = me.getAddTrimContentUri();
-                break;
-            case 7:
-                uri = me.getMapTrimContentUri();
-                break;
-            default:
-                break;
-        }
-        return uri;
+        return privateStore[me.id].ModalContentUri;
     };
     me.getActionModel = function (action) {
         var actionModel = null;
@@ -51,18 +35,7 @@ model.Trim = function (params) {
         return actionModel;
     };
     me.getActionUri = function (action) {
-        var uri = "";
-        switch (action) {
-            case 6:
-                uri = me.getAddTrimActionUri();
-                break;
-            case 7:
-                uri = me.getMapTrimActionUri();
-                break;
-            default:
-                break;
-        }
-        return uri;
+        return privateStore[me.id].ModalActionUri;
     };
     me.getActionTitle = function (action) {
         var title = "";
@@ -78,12 +51,6 @@ model.Trim = function (params) {
         }
         return title;
     };
-    me.getAvailableTrim = function () {
-        return privateStore[me.id].AvailableTrim;
-    };
-    me.setAvailableTrim = function (trim) {
-        privateStore[me.id].AvailableTrim = engines.AvailableTrim;
-    };
     me.getConfiguration = function () {
         return privateStore[me.id].Configuration;
     };
@@ -92,27 +59,9 @@ model.Trim = function (params) {
     };
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;
-    }
-    me.getAddTrimContentUri = function () {
-        return privateStore[me.id].AddTrimContentUri;
     };
-    me.getAddTrimActionUri = function () {
-        return privateStore[me.id].AddTrimActionUri;
-    };
-    me.getMapTrimContentUri = function () {
-        return privateStore[me.id].MapTrimContentUri;
-    };
-    me.getMapTrimActionUri = function () {
-        return privateStore[me.id].MapTrimActionUri;
-    };
-    me.getAvailableTrimUri = function () {
-        return privateStore[me.id].ListAvailableTrimUri;
-    }
     me.getProgrammeId = function() {
         return getData().ProgrammeId;
-    };
-    me.listAvailableTrim = function () {
-        sendData(me.getAvailableTrimUri(), { ProgrammeId: me.getProgrammeId() }, me.setAvailableTrim);
     };
     function getData() {
         var params = me.getParameters();
