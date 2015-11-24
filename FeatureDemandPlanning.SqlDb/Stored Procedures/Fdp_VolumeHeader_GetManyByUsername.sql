@@ -8,7 +8,7 @@
 	-- TODO - Implement permissions over which take rate files can be viewed
 	, @CDSId				NVARCHAR(16)	= NULL
 	, @PageIndex			INT				= NULL
-	, @PageSize				INT				= NULL
+	, @PageSize				INT				= 10
 	, @SortIndex			INT				= 0
 	, @SortDirection		VARCHAR(5)		= 'DESC'
 	, @TotalPages			INT OUTPUT

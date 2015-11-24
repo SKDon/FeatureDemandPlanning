@@ -1,4 +1,5 @@
-﻿CREATE VIEW [dbo].[Fdp_MarketMapping_VW] AS
+﻿
+CREATE VIEW [dbo].[Fdp_MarketMapping_VW] AS
 	
 	SELECT 
 		  STD.Name
@@ -26,6 +27,17 @@
 	OXO_Programme_MarketGroupMarket_VW	AS STD
 	JOIN Fdp_Gateways_VW				AS G	ON STD.Programme_Id = G.ProgrammeId
 	LEFT JOIN Fdp_MarketMapping			AS MAP	ON STD.Market_Id	= MAP.MappedMarketId
-												AND MAP.ProgrammeId	= STD.Programme_Id
-												AND MAP.Gateway		= G.Gateway
-												AND MAP.IsActive	= 1
+												AND 
+												(
+													MAP.IsGlobalMapping = 1
+													OR
+													(
+														MAP.IsGlobalMapping = 0
+														AND
+														MAP.Gateway = G.Gateway
+														AND
+														MAP.ProgrammeId = STD.Programme_Id
+													)
+												)
+												AND 
+												MAP.IsActive	= 1

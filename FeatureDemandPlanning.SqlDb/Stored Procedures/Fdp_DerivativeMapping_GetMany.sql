@@ -15,7 +15,7 @@
 AS
 	SET NOCOUNT ON;
 	
-	IF @PageIndex IS NULL 
+	IF ISNULL(@PageIndex, 0) = 0 
 		SET @PageIndex = 1;
 	
 	DECLARE @MinIndex AS INT;
@@ -24,9 +24,16 @@ AS
 	(
 		  RowIndex INT IDENTITY(1, 1)
 		, DerivativeCode NVARCHAR(20)
+		, MappedDerivativeCode NVARCHAR(20)
+		, ProgrammeId INT
+		, Gateway NVARCHAR(200)
 	);
-	INSERT INTO @PageRecords (DerivativeCode)
-	SELECT D.ImportDerivativeCode
+	INSERT INTO @PageRecords (DerivativeCode, MappedDerivativeCode, ProgrammeId, Gateway)
+	SELECT 
+		  D.ImportDerivativeCode
+		, D.MappedDerivativeCode
+		, D.ProgrammeId
+		, D.Gateway
 	FROM
 	Fdp_DerivativeMapping_VW AS D
 	JOIN OXO_Programme_VW	 AS P ON D.ProgrammeId = P.Id
@@ -40,7 +47,7 @@ AS
 	(
 		(@IncludeAllDerivatives = 0 AND D.IsMappedDerivative = 1)
 		OR
-		(@IncludeAllDerivatives = 1 AND D.IsMappedDerivative = 0)
+		(@IncludeAllDerivatives = 1)
 	)
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
@@ -70,4 +77,7 @@ AS
 
 	FROM @PageRecords				AS P
 	JOIN Fdp_DerivativeMapping_VW	AS D	ON	P.DerivativeCode = D.ImportDerivativeCode
+											AND P.MappedDerivativeCode = D.MappedDerivativeCode
+											AND P.ProgrammeId = D.ProgrammeId
+											AND P.Gateway = D.Gateway
 											AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex;

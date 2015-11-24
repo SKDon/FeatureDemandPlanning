@@ -10,12 +10,14 @@ BEGIN
 		
 		DECLARE @FdpImportQueueId	INT;
 		DECLARE @ProgrammeId	INT;
+		DECLARE @Gateway		NVARCHAR(100);
 		DECLARE @Message		NVARCHAR(MAX);
 		
 		SELECT 
 			  @FdpImportQueueId	= I.FdpImportQueueId
 			, @Message			= E.ErrorMessage
 			, @ProgrammeId		= I.ProgrammeId
+			, @Gateway			= I.Gateway
 			
 		FROM Fdp_ImportError	AS E
 		JOIN Fdp_Import			AS I ON E.FdpImportQueueId = I.FdpImportQueueId
@@ -37,17 +39,21 @@ BEGIN
 						WHERE 
 						ProgrammeId = @ProgrammeId
 						AND
-						ErrorMessage = @Message)
+						ErrorMessage = @Message
+						AND
+						IsActive = 1)
 			
 			INSERT INTO Fdp_ImportErrorExclusion
 			(
 				  ProgrammeId
+				, Gateway
 				, ErrorMessage
 				, CreatedBy
 			)
 			VALUES
 			(
 				  @ProgrammeId
+				, @Gateway
 				, @Message
 				, @CDSId
 			) 

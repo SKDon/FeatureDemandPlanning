@@ -1,10 +1,13 @@
-﻿CREATE VIEW [dbo].[Fdp_Import_VW] AS
+﻿
+CREATE VIEW [dbo].[Fdp_Import_VW] AS
 
 	SELECT 
 		  Q.FdpImportQueueId
 		, IH.FdpImportId
 		, Q.CreatedBy
 		, Q.CreatedOn
+		, Q.FdpImportStatusId
+		, S.[Status]
 		, I.LineNumber										AS ImportLineNumber  
 		, I.[NSC or Importer Description (Vista Market)]	AS ImportMarket
 		, I.[Country Description]							AS ImportCountry
@@ -89,6 +92,7 @@
 	FROM Fdp_Import							AS IH
 	JOIN Fdp_ImportData						AS I		ON	IH.FdpImportId				= I.FdpImportId
 	JOIN Fdp_ImportQueue					AS Q		ON	IH.FdpImportQueueId			= Q.FdpImportQueueId
+	JOIN Fdp_ImportStatus					AS S		ON	Q.FdpImportStatusId			= S.FdpImportStatusId
 	JOIN OXO_Programme_VW					AS P		ON	IH.ProgrammeId				= P.Id
 	
 	-- Mapping of market details

@@ -40,4 +40,6 @@ AS
 		E.FdpImportErrorTypeId = @FdpImportErrorTypeId
 		AND
 		E.ErrorMessage = @ErrorMessage
-	)
+	)	
+
+	EXEC Fdp_ImportError_Get @FdpImportErrorId;

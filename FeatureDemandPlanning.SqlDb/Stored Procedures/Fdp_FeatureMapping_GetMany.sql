@@ -1,32 +1,73 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_FeatureMapping_GetMany]
-	  @ProgrammeId	INT				= NULL
-	, @Gateway		NVARCHAR(100)	= NULL
-	, @CDSId		NVARCHAR(16)
+	  @CarLine					NVARCHAR(10)	= NULL
+	, @ModelYear				NVARCHAR(10)	= NULL
+	, @Gateway					NVARCHAR(16)	= NULL
+	, @IncludeAllFeatures		BIT = 0
+	, @CDSId					NVARCHAR(16)
+	, @FilterMessage			NVARCHAR(50)	= NULL
+	, @PageIndex				INT				= NULL
+	, @PageSize					INT				= 10
+	, @SortIndex				INT				= 1
+	, @SortDirection			VARCHAR(5)		= 'ASC'
+	, @TotalPages				INT OUTPUT
+	, @TotalRecords				INT OUTPUT
+	, @TotalDisplayRecords		INT OUTPUT
 AS
 	SET NOCOUNT ON;
-		
-	SELECT 
-		  MAP.FdpFeatureMappingId
-		, MAP.ImportFeatureCode
-		, MAP.ProgrammeId
-		, MAP.Gateway
-		, F.Id AS FeatureId
-		, F.Feat_Code AS FeatureCode
-		, ISNULL(B.Brand_Desc, F.[Description]) AS FeatureDescription
-		, MAP.CreatedOn
-		, MAP.CreatedBy
-		, MAP.IsActive
-		, MAP.UpdatedOn
-		, MAP.UpdatedBy
-		
-	  FROM Fdp_FeatureMapping			AS MAP
-	  JOIN OXO_Feature_Ext				AS F	ON MAP.FeatureId	= F.Id
-	  LEFT JOIN OXO_Feature_Brand_Desc	AS B	ON F.Feat_Code		= B.Feat_Code
-	  WHERE 
-	  (@ProgrammeId IS NULL OR MAP.ProgrammeId = @ProgrammeId)
-	  AND
-	  (@Gateway IS NULL OR MAP.Gateway = @Gateway)
-	  AND
-	  MAP.IsActive = 1
-	  ORDER BY
-	  MAP.ImportFeatureCode
+	
+	IF @PageIndex IS NULL 
+		SET @PageIndex = 1;
+	
+	DECLARE @MinIndex AS INT;
+	DECLARE @MaxIndex AS INT;
+	DECLARE @PageRecords AS TABLE
+	(
+		  RowIndex INT IDENTITY(1, 1)
+		, FeatureCode NVARCHAR(20)
+	);
+	INSERT INTO @PageRecords (FeatureCode)
+	SELECT F.ImportFeatureCode
+	FROM
+	Fdp_FeatureMapping_VW AS F
+	JOIN OXO_Programme_VW	 AS P ON F.ProgrammeId = P.Id
+	WHERE
+	(@CarLine IS NULL OR P.VehicleName = @CarLine)
+	AND
+	(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
+	AND
+	(@Gateway IS NULL OR F.Gateway = @Gateway)
+	AND
+	(
+		(@IncludeAllFeatures = 0 AND F.IsMappedFeature = 1)
+		OR
+		(@IncludeAllFeatures = 1 AND F.IsMappedFeature = 0)
+	)
+	AND
+	F.IsMappedFeature = 1;
+	
+	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
+	SELECT @TotalDisplayRecords = @TotalRecords;
+	
+	IF ISNULL(@PageSize, 0) = 0
+		SET @PageSize = @TotalRecords;
+	
+	SET @TotalPages = CEILING(@TotalRecords / CAST(@PageSize AS DECIMAL));
+	SET @MinIndex = ((@PageIndex - 1) * @PageSize) + 1;
+	SET @MaxIndex = @MinIndex + (@PageSize - 1);
+
+	SELECT DISTINCT
+		  F.CreatedOn
+		, F.CreatedBy
+		, F.FdpFeatureMappingId
+		, F.ImportFeatureCode
+		, F.MappedFeatureCode AS FeatureCode
+		, F.ProgrammeId
+		, F.Gateway
+		, F.[Description]
+		, F.IsMappedFeature
+		, F.UpdatedOn
+		, F.UpdatedBy
+
+	FROM @PageRecords				AS P
+	JOIN Fdp_FeatureMapping_VW		AS F	ON	P.FeatureCode = F.ImportFeatureCode
+											AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex;

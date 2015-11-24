@@ -10,7 +10,7 @@ AS
 		, Gateway
 		, FeatureId
 		, F.Feat_Code AS FeatureCode
-		, ISNULL(B.Brand_Desc, F.[Description]) AS FeatureDescription
+		, ISNULL(B.Brand_Desc, F.[Description]) AS [Description]
 		, CreatedOn
 		, CreatedBy
 		, IsActive

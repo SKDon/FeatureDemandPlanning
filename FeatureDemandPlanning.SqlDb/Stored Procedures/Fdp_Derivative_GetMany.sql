@@ -87,5 +87,3 @@ AS
 	FROM @PageRecords		AS P
 	JOIN Fdp_Derivative		AS D	ON	P.FdpDerivativeId = D.FdpDerivativeId
 									AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex;
-									
-									SELECT * FROM Fdp_Derivative

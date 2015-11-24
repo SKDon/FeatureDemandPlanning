@@ -1,8 +1,8 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_MarketMapping_GetMany]
+﻿CREATE PROCEDURE [dbo].[Fdp_SpecialFeatureMapping_GetMany] 
 	  @CarLine					NVARCHAR(10)	= NULL
 	, @ModelYear				NVARCHAR(10)	= NULL
 	, @Gateway					NVARCHAR(16)	= NULL
-	, @IsGlobalMapping			BIT = 0
+	, @IncludeAllFeatures		BIT = 1
 	, @CDSId					NVARCHAR(16)
 	, @FilterMessage			NVARCHAR(50)	= NULL
 	, @PageIndex				INT				= NULL
@@ -23,21 +23,21 @@ AS
 	DECLARE @PageRecords AS TABLE
 	(
 		  RowIndex INT IDENTITY(1, 1)
-		, FdpMarketMappingId INT
+		, FdpSpecialFeatureMappingId INT
 	);
-	INSERT INTO @PageRecords (FdpMarketMappingId)
-	SELECT M.FdpMarketMappingId
+	INSERT INTO @PageRecords (FdpSpecialFeatureMappingId)
+	SELECT S.FdpSpecialFeatureMappingId
 	FROM
-	Fdp_MarketMapping		AS M
-	JOIN OXO_Programme_VW	AS P ON M.ProgrammeId = P.Id
+	Fdp_SpecialFeatureMapping_VW AS S
+	JOIN OXO_Programme_VW	 AS P ON S.ProgrammeId = P.Id
 	WHERE
 	(@CarLine IS NULL OR P.VehicleName = @CarLine)
 	AND
 	(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
 	AND
-	(@Gateway IS NULL OR M.Gateway = @Gateway)
+	(@Gateway IS NULL OR S.Gateway = @Gateway)
 	AND
-	M.IsActive = 1
+	S.IsActive = 1;
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
 	SELECT @TotalDisplayRecords = @TotalRecords;
@@ -50,17 +50,19 @@ AS
 	SET @MaxIndex = @MinIndex + (@PageSize - 1);
 
 	SELECT DISTINCT
-		  M.FdpMarketMappingId
-		, M.CreatedOn
-		, M.CreatedBy
-		, M.ProgrammeId
-		, M.Gateway
-		, M.IsGlobalMapping
-		, M.ImportMarket
-		, M.MappedMarketId			AS MappedMarketId
-		, MK.Name					AS MarketName
+		  S.CreatedOn
+		, S.CreatedBy
+		, S.FdpSpecialFeatureMappingId
+		, S.ImportFeatureCode
+		, S.MappedFeatureCode		 AS FeatureCode
+		, S.SpecialFeatureType
+		, S.[Description]			
+		, S.ProgrammeId
+		, S.Gateway
+		, S.IsMappedFeature
+		, S.UpdatedOn
+		, S.UpdatedBy
 
-	FROM @PageRecords				AS P
-	JOIN Fdp_MarketMapping			AS M	ON	P.FdpMarketMappingId = M.FdpMarketMappingId
-											AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex
-	JOIN OXO_Master_Market			AS MK	ON	M.MappedMarketId = MK.Id
+	FROM @PageRecords					AS P
+	JOIN Fdp_SpecialFeatureMapping_VW	AS S	ON	P.FdpSpecialFeatureMappingId = S.FdpSpecialFeatureMappingId
+												AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex;

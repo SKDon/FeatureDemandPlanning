@@ -5,7 +5,7 @@
 	, @ModelId					INT
 	, @MarketGroupId			INT				= NULL
 	, @MarketId					INT
-	, @FdpOxoDocId				INT
+	, @OxoDocId					INT
 	, @Volume					INT
 	, @PercentageTakeRate		DECIMAL(5, 4)
 	, @PackId					INT				= NULL
@@ -20,14 +20,13 @@ AS
 				  AND
 				  FdpOxoVolumeDataItemId = @FdpOxoVolumeDataItemId)
 	BEGIN
-
 		INSERT INTO Fdp_OxoVolumeDataItem
 		(
 			  Section
 			, ModelId
 			, MarketGroupId
 			, MarketId
-			, FdpOxoDocId
+			, OxoDocId
 			, Volume
 			, PercentageTakeRate
 			, CreatedBy
@@ -39,7 +38,7 @@ AS
 			, @ModelId
 			, @MarketGroupId
 			, @MarketId
-			, @FdpOxoDocId
+			, @OxoDocId
 			, @Volume
 			, @PercentageTakeRate
 			, @CDSID

@@ -1,13 +1,22 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 
 	SELECT 
-		  P.Id			AS ProgrammeId
+		  NULL			AS FdpTrimMappingId
+		, T.Created_On	AS CreatedOn
+		, T.Created_By	AS CreatedBy
+		, P.Id			AS ProgrammeId
 		, G.Gateway
 		, T.Id			AS TrimId
 		, T.Name		AS ImportTrim
 		, T.Name		AS MappedTrim
+		, T.[Level]
+		, T.DPCK
+		, T.Last_Updated	AS UpdatedOn
+		, T.Updated_By		AS UpdatedBy
+		, CAST(0 AS BIT) AS IsMappedTrim
 	FROM
 	OXO_Programme				AS P
 	JOIN Fdp_Gateways_VW		AS G	ON	P.Id		= G.ProgrammeId
@@ -22,11 +31,19 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 	UNION
 	
 	SELECT 
-		  P.Id			AS ProgrammeId
+		  M.FdpTrimMappingId
+		, M.CreatedOn
+		, M.CreatedBy
+		, P.Id			AS ProgrammeId
 		, G.Gateway
 		, T.Id			AS TrimId
 		, M.ImportTrim	AS ImportTrim
 		, T.Name		AS MappedTrim
+		, T.[Level]
+		, T.DPCK
+		, T.Last_Updated	AS UpdatedOn
+		, T.Updated_By		AS UpdatedBy
+		, CAST(1 AS BIT) AS IsMappedTrim
 	FROM
 	OXO_Programme				AS P
 	JOIN Fdp_Gateways_VW		AS G	ON	P.Id		= G.ProgrammeId

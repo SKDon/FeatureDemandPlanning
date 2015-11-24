@@ -24,6 +24,6 @@ BEGIN
 	
 	PRINT @SqlQuery
 	
-	EXEC xp_cmdshell @SQLQuery;
+	EXEC master..xp_cmdshell @SQLQuery;
 END
 

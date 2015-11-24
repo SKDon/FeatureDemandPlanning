@@ -1,4 +1,5 @@
-﻿CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
+﻿
+CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 
 	SELECT 
 		  D.CreatedOn
@@ -20,14 +21,14 @@
 	JOIN Fdp_Gateways_VW			AS G	ON	P.Id				= G.ProgrammeId
 	JOIN Fdp_Derivative_VW			AS D	ON	P.Id				= D.ProgrammeId
 											AND D.BMC				<> ''
-	LEFT JOIN Fdp_DerivativeMapping	AS M	ON	P.Id				= M.ProgrammeId
-											AND G.Gateway			= M.Gateway
-											AND	D.BodyId			= M.BodyId
-											AND D.EngineId			= M.EngineId
-											AND D.TransmissionId	= M.TransmissionId
-											AND M.IsActive			= 1
-	WHERE
-	M.FdpDerivativeMappingId IS NULL
+	--LEFT JOIN Fdp_DerivativeMapping	AS M	ON	P.Id				= M.ProgrammeId
+	--										AND G.Gateway			= M.Gateway
+	--										AND	D.BodyId			= M.BodyId
+	--										AND D.EngineId			= M.EngineId
+	--										AND D.TransmissionId	= M.TransmissionId
+	--										AND M.IsActive			= 1
+	--WHERE
+	--M.FdpDerivativeMappingId IS NULL
 	
 	UNION
 	

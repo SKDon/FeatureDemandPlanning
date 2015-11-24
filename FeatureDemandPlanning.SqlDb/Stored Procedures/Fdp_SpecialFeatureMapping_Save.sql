@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_SpecialFeature_Save]
+﻿CREATE PROCEDURE [dbo].[Fdp_SpecialFeatureMapping_Save]
 	  @FeatureCode				NVARCHAR(20)
 	, @ProgrammeId				INT
 	, @Gateway					NVARCHAR(100)

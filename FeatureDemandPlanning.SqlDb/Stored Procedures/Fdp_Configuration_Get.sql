@@ -1,5 +1,5 @@
 ﻿
-CREATE PROCEDURE [dbo].[Configuration_Get] 
+CREATE PROCEDURE [dbo].[Fdp_Configuration_Get] 
   @p_ConfigurationKey nvarchar(100)
 AS
 	
@@ -11,6 +11,3 @@ AS
       	     
     FROM dbo.Fdp_Configuration
 	WHERE ConfigurationKey = @p_ConfigurationKey;
-
-
-

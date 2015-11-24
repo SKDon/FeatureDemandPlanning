@@ -5,14 +5,13 @@ AS
 	SET NOCOUNT ON;
 
 	SELECT
-		  N.FdpOxoVolumeDataItemNoteId
-		, N.FdpOxoVolumeDataItemId
+		  N.FdpOxoVolumeDataNoteId
 		, N.EnteredOn
 		, N.EnteredBy
 		, N.Note
 	FROM
-	Fdp_OxoVolumeDataItemNote AS N
+	Fdp_OxoVolumeDataNote AS N
 	WHERE
-	N.FdpOxoVolumeDataItemId = @FdpOxoVolumeDataId
+	N.FdpOxoVolumeDataId = @FdpOxoVolumeDataId
 	ORDER BY
 	N.EnteredOn DESC;

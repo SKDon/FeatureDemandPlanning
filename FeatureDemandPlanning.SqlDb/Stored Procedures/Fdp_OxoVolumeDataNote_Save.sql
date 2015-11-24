@@ -7,9 +7,9 @@ AS
 	
 	SET NOCOUNT ON;
 
-	INSERT INTO Fdp_OxoVolumeDataItemNote
+	INSERT INTO Fdp_OxoVolumeDataNote
 	(
-		  FdpOxoVolumeDataItemId
+		  FdpOxoVolumeDataId
 		, EnteredBy
 		, Note
 	)

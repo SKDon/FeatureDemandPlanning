@@ -6,5 +6,5 @@ AS
 		  FdpSpecialFeatureTypeId
 		, SpecialFeatureType
 		, [Description]
-	FROM Fdp_SpecialFeatureType
+	FROM [FDP].[dbo].[Fdp_SpecialFeatureType]
 	ORDER BY SpecialFeatureType
