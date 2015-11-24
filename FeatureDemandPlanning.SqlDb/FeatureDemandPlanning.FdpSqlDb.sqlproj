@@ -160,7 +160,6 @@
     <Build Include="Views\Fdp_ImportQueue_VW.sql" />
     <Build Include="Views\Fdp_ImportQueueError_VW.sql" />
     <Build Include="Views\Fdp_ImportVolume_VW.sql" />
-    <Build Include="Views\Fdp_Market_VW.sql" />
     <Build Include="Views\Fdp_MarketMapping_VW.sql" />
     <Build Include="Views\Fdp_ProgrammeByGateway_VW.sql" />
     <Build Include="Views\Fdp_TopMarket_VW.sql" />
@@ -175,7 +174,6 @@
     <Build Include="Functions\fn_Fdp_OxoVolumeData_Get_MarketGroup2.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_Edit.sql" />
-    <Build Include="Stored Procedures\Fdp_Configuration_Get.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_New.sql" />
     <Build Include="Stored Procedures\Fdp_Derivative_Delete.sql" />
@@ -193,7 +191,6 @@
     <Build Include="Stored Procedures\Fdp_FeatureMapping_Get.sql" />
     <Build Include="Stored Procedures\Fdp_FeatureMapping_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_FeatureMapping_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_Forecast_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_Forecast_Get.sql" />
     <Build Include="Stored Procedures\Fdp_Forecast_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_Forecast_Save.sql" />
@@ -201,7 +198,6 @@
     <Build Include="Stored Procedures\Fdp_ForecastComparisonTrim_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_ForecastComparisonTrim_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ForecastComparisonVehicle_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_ForecastMappedTrim_Get.sql" />
     <Build Include="Stored Procedures\Fdp_Import_Process_Old.sql" />
     <Build Include="Stored Procedures\Fdp_ImportData_Process.sql" />
     <Build Include="Stored Procedures\Fdp_ImportError_Get.sql" />
@@ -231,14 +227,9 @@
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataHistory_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataItem_Get.sql" />
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataItem_GetCrossTab.sql" />
-    <Build Include="Stored Procedures\Fdp_OxoVolumeDataItem_Save.sql" />
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataNote_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataNote_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ProgrammeByGateway_GetMany.sql" />
-    <Build Include="Stored Procedures\Fdp_SpecialFeature_Delete.sql" />
-    <Build Include="Stored Procedures\Fdp_SpecialFeature_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_SpecialFeature_GetMany.sql" />
-    <Build Include="Stored Procedures\Fdp_SpecialFeature_Save.sql" />
     <Build Include="Stored Procedures\Fdp_SpecialFeatureType_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_TakeRateStatus_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_TopMarket_Delete.sql" />
@@ -262,6 +253,62 @@
     <Build Include="Stored Procedures\Fdp_VolumeHeader_GetManyByOxoDocId.sql" />
     <Build Include="Stored Procedures\Fdp_VolumeHeader_GetManyByUsername.sql" />
     <Build Include="Stored Procedures\Fdp_VolumeHeader_Save.sql" />
+    <Build Include="Views\Fdp_SpecialFeatureMapping_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_SpecialFeatureMapping_Save.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_SpecialFeatureMapping_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_SpecialFeatureMapping_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_SpecialFeatureMapping_Delete.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_SpecialFeatureMapping_Copy.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Market_AvailableGetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ImportQueueSummary_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_Delete.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_FeatureMapping_Delete.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_FeatureMapping_Copy.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_DerivativeMapping_Copy.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Configuration_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="..\..\Oxo\OxoSqlDb\Snapshots\Oxo.dacpac">
