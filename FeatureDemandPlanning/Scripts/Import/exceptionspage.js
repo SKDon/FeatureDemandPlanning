@@ -10,7 +10,30 @@ page.ExceptionsPage = function (models) {
     privateStore[me.id = uid++] = {};
     privateStore[me.id].DataTable = null;
     privateStore[me.id].Models = models;
+    privateStore[me.id].SelectedExceptionType = "";
+    privateStore[me.id].SelectedExceptionTypeId = 0;
 
+    me.displaySelectedExceptionType = function () {
+        $("#" + me.getIdentifierPrefix() + "_SelectedExceptionType").html(me.getSelectedExceptionType());
+    };
+    me.getSelectedExceptionType = function () {
+        return privateStore[me.id].SelectedExceptionType;
+    };
+    me.getSelectedExceptionTypeId = function () {
+        return privateStore[me.id].SelectedExceptionTypeId;
+    };
+    me.exceptionTypeSelectedEventHandler = function (sender) {
+        me.setSelectedExceptionTypeId(parseInt($(sender.target).attr("data-target")));
+        me.setSelectedExceptionType($(sender.target).attr("data-content"));
+        me.displaySelectedExceptionType();
+        me.redrawDataTable();
+    };
+    me.setSelectedExceptionType = function (exceptionType) {
+        privateStore[me.id].SelectedExceptionType = exceptionType;
+    };
+    me.setSelectedExceptionTypeId = function (exceptionTypeId) {
+        privateStore[me.id].SelectedExceptionTypeId = exceptionTypeId;
+    };
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
@@ -157,6 +180,7 @@ page.ExceptionsPage = function (models) {
         });
     };
     me.registerEvents = function () {
+        var prefix = me.getIdentifierPrefix();
         $(document)
             .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
             .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
@@ -164,9 +188,15 @@ page.ExceptionsPage = function (models) {
             .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdatedDelegate", [eventArgs]); })
             .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
             .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
-            .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
+            .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); });
+
+        $("#" + prefix + "_ExceptionTypeList").find("a.type-item").on("click", function (e) {
+            me.exceptionTypeSelectedEventHandler(e);
+            e.preventDefault();
+        });
     };
     me.registerSubscribers = function () {
+        var prefix = me.getIdentifierPrefix();
         $("#notifier")
             .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
             .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
@@ -178,8 +208,8 @@ page.ExceptionsPage = function (models) {
         $("#spnFilteredRecords").on("OnResultsDelegate", me.onFilteredRecordsEventHandler);
         $("#dvFilter").on("FilterCompleteEventHandler", me.onFilterCompleteEventHandler);
         $("#ddlExceptionType").on("change", me.onFilterChangedEventHandler);
-        $("#txtFilterMessage").on("keyup", function (sender, eventArgs) {
-            var length = $("#txtFilterMessage").val().length;
+        $("#" + prefix + "_FilterMessage").on("keyup", function (sender, eventArgs) {
+            var length = $("#" + prefix + "_FilterMessage").val().length;
             if (length == 0 || length > 2) {
                 me.onFilterChangedEventHandler(sender, eventArgs);
             }
@@ -327,7 +357,7 @@ page.ExceptionsPage = function (models) {
         var filter = new FeatureDemandPlanning.Import.ExceptionsFilter();
 
         filter.ImportQueueId = model.getImportQueueId();
-        filter.ExceptionType = me.getExceptionType();
+        filter.ExceptionType = me.getSelectedExceptionTypeId();
         filter.FilterMessage = me.getFilterMessage();
         filter.PageIndex = pageIndex;
         filter.PageSize = pageSize;
