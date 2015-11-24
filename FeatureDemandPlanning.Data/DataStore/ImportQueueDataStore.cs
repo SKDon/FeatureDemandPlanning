@@ -382,7 +382,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@ExceptionId", filter.ExceptionId.Value, dbType: DbType.Int32);
+                    para.Add("@FdpImportErrorId", filter.ExceptionId.Value, dbType: DbType.Int32);
                     para.Add("@IsExcluded", true, dbType: DbType.Boolean);
                     para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
 

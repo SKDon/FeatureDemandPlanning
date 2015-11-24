@@ -85,6 +85,9 @@ page.IgnoredExceptionPage = function (models) {
         me.displaySelectedGateway();
         me.redrawDataTable();
     };
+    me.getIdentifierPrefix = function () {
+        return $("#Page_IdentifierPrefix").val();
+    };
     me.getSelectedCarLine = function () {
         return privateStore[me.id].SelectedCarLine;
     };

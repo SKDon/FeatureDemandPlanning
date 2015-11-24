@@ -23,27 +23,18 @@ namespace FeatureDemandPlanning.DataStore
 
         #endregion
 
-        public IEnumerable<Derivative> DerivativeGetMany(ProgrammeFilter filter)
+        public IEnumerable<Derivative> DerivativeGetMany(DerivativeFilter filter)
         {
-            var retVal = Enumerable.Empty<Derivative>();
+            filter.PageSize = 1000;
+            filter.IncludeAllDerivatives = true;
 
-            using (var conn = DbHelper.GetDBConnection())
+            var derivatives = FdpDerivativeMappingGetMany(filter);
+            if (derivatives == null || derivatives.CurrentPage == null || !derivatives.CurrentPage.Any())
             {
-                try
-                {
-                    var para = new DynamicParameters();
-                    para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@IncludeAllDerivatives", false, dbType: DbType.Boolean);
-
-                    retVal = conn.Query<Derivative>("Fdp_DerivativeMapping_GetMany", para, commandType: CommandType.StoredProcedure);
-                }
-                catch (Exception ex)
-                {
-                    AppHelper.LogError("FdpVolumeDataStore.DerivativeGetMany", ex.Message, CurrentCDSID);
-                    throw;
-                }
+                return Enumerable.Empty<Derivative>();
             }
-            return retVal;
+
+            return derivatives.CurrentPage.Where(d => d.IsMappedDerivative == false);
         }
         public FdpDerivativeMapping FdpDerivativeMappingDelete(FdpDerivativeMapping derivativeMapping)
         {
@@ -94,7 +85,7 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public PagedResults<FdpDerivativeMapping> FdpDerivativeMappingGetMany(DerivativeMappingFilter filter)
+        public PagedResults<FdpDerivativeMapping> FdpDerivativeMappingGetMany(DerivativeFilter filter)
         {
             PagedResults<FdpDerivativeMapping> retVal = null;
 
@@ -116,28 +107,32 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.Value, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
                     if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
                     {
                         var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
-                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
-                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
-                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    if (filter.IncludeAllDerivatives)
+                    {
+                        para.Add("@IncludeAllDerivatives", true, DbType.Boolean);
+                    }
+                    para.Add("@TotalPages", DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", DbType.Int32, direction: ParameterDirection.Output);
 
                     var results = conn.Query<FdpDerivativeMapping>("dbo.Fdp_DerivativeMapping_GetMany", para, commandType: CommandType.StoredProcedure);
 

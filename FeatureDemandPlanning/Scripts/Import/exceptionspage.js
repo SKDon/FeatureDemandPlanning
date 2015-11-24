@@ -36,6 +36,9 @@ page.ExceptionsPage = function (models) {
     me.getFilterMessage = function () {
         return $("#txtFilterMessage").val();
     };
+    me.getIdentifierPrefix = function () {
+        return $("#Page_IdentifierPrefix").val();
+    };
     me.loadData = function () {
         me.configureDataTables(getFilter());
     };
@@ -53,6 +56,8 @@ page.ExceptionsPage = function (models) {
                 model.setTotalSuccessRecords(json.TotalSuccess);
                 model.setTotalFailRecords(json.TotalFail);
                 callback(json);
+                me.updatePaging();
+                me.updateTotals();
             }
         });
     };
@@ -255,6 +260,20 @@ page.ExceptionsPage = function (models) {
             items: 10
         });
     };
+    me.updatePaging = function () {
+        var info = $("#tblImportExceptions").DataTable().page.info();
+        var prefix = me.getIdentifierPrefix();
+        var pageIndex = info.page + 1;
+        var totalPages = info.pages;
+        var total = info.recordsTotal;
+        $(".results-paging").html("Page " + pageIndex + " of " + totalPages);
+    };
+    me.updateTotals = function () {
+        var info = $("#tblImportExceptions").DataTable().page.info();
+        var prefix = me.getIdentifierPrefix();
+        var total = info.recordsTotal;
+        $(".results-total").html(total + " Exceptions");
+    }
     function getModal() {
         return getModel("Modal");
     };

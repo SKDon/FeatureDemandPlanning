@@ -170,7 +170,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             return _bodyDataStore.ModelBodyGetMany(filter.ProgrammeId.GetValueOrDefault());
         }
-        public IEnumerable<Derivative> ListDerivatives(ProgrammeFilter filter)
+        public IEnumerable<Derivative> ListDerivatives(DerivativeFilter filter)
         {
             var derivatives =_derivativeDataStore.DerivativeGetMany(filter);
             foreach (var derivative in derivatives)

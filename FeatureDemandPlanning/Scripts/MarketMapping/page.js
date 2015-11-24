@@ -128,7 +128,7 @@ page.MarketMappingsPage = function (models) {
             "aoColumns": [
                 {
                     "sTitle": "",
-                    "sName": "DERIVATIVE_ID",
+                    "sName": "MARKET_MAPPING_ID",
                     "bSearchable": false,
                     "bSortable": false,
                     "bVisible": false
@@ -169,27 +169,6 @@ page.MarketMappingsPage = function (models) {
                 , {
                     "sTitle": "Mapping",
                     "sName": "DERIVATIVE",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Body",
-                    "sName": "BODY",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Engine",
-                    "sName": "ENGINE",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Transmission",
-                    "sName": "TRANSMISSION",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center"
@@ -241,6 +220,8 @@ page.MarketMappingsPage = function (models) {
             "data": params,
             "success": function (json) {
                 callback(json);
+                me.updatePaging();
+                me.updateTotals();
             }
         });
     };
@@ -372,6 +353,20 @@ page.MarketMappingsPage = function (models) {
     me.setSelectedGateway = function (gateway) {
         privateStore[me.id].SelectedGateway = gateway;
     };
+    me.updatePaging = function () {
+        var info = $(".dataTable").DataTable().page.info();
+        var prefix = me.getIdentifierPrefix();
+        var pageIndex = info.page + 1;
+        var totalPages = info.pages;
+        var total = info.recordsTotal;
+        $(".results-paging").html("Page " + pageIndex + " of " + totalPages);
+    };
+    me.updateTotals = function () {
+        var info = $(".dataTable").DataTable().page.info();
+        var prefix = me.getIdentifierPrefix();
+        var total = info.recordsTotal;
+        $(".results-total").html(total + " Mapped Markets");
+    }
     function getModal() {
         return getModel("Modal");
     };

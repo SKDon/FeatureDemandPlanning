@@ -15,6 +15,8 @@ namespace FeatureDemandPlanning.Model.Filters
         public int? BodyId { get; set; }
         public int? TransmissionId { get; set; }
 
+        public bool IncludeAllDerivatives { get; set; }
+
         public DerivativeAction Action { get; set; }
 
         public DerivativeFilter()

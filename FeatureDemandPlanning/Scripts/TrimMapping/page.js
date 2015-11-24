@@ -234,6 +234,8 @@ page.TrimMappingsPage = function (models) {
             "data": params,
             "success": function (json) {
                 callback(json);
+                me.updatePaging();
+                me.updateTotals();
             }
         });
     };
@@ -365,6 +367,20 @@ page.TrimMappingsPage = function (models) {
     me.setSelectedGateway = function (gateway) {
         privateStore[me.id].SelectedGateway = gateway;
     };
+    me.updatePaging = function () {
+        var info = $(".dataTable").DataTable().page.info();
+        var prefix = me.getIdentifierPrefix();
+        var pageIndex = info.page + 1;
+        var totalPages = info.pages;
+        var total = info.recordsTotal;
+        $(".results-paging").html("Page " + pageIndex + " of " + totalPages);
+    };
+    me.updateTotals = function () {
+        var info = $(".dataTable").DataTable().page.info();
+        var prefix = me.getIdentifierPrefix();
+        var total = info.recordsTotal;
+        $(".results-total").html(total + " Mapped Trim Levels");
+    }
     function getModal() {
         return getModel("Modal");
     };

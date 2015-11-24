@@ -9,6 +9,9 @@
 
 @section PageContentHeader
 {
+    <form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
     <div class="row">
         <div class="col-lg-5 inverse" style="padding-top: 20px">
             <div class="panel panel-primary" style="height:160px; background-color: #12073b; background-color: rgba(18, 7, 59, 0.75);">
@@ -41,7 +44,7 @@
                             }
                         </select>
                         <label for="txtFilterMessage" class="form-label inverse" style="font-size:11px">Message:</label>
-                    <input type="text" id="txtFilterMessage" class="form-control" />    
+                        <input type="text" id="txtFilterMessage" class="form-control" />
                     </div>
                 </div>
             </div>
@@ -79,16 +82,16 @@
 @section PageBody
 {
     <div id="dvFilter" class="subscribers-notifyFilterComplete"></div>
-    <ul id="contextMenu" class="dropdown-menu context-menu" role="menu" style="display:none">
-    </ul>
-     
+    <ul id="contextMenu" class="dropdown-menu context-menu" role="menu" style="display:none"></ul>
+
     <div id="notifier" class="subscribers-notify col-lg-12" style="float:none"></div>
 
     @Html.Partial("_Modal", Model)
 
     <div id="pnlImportExceptions" class="panel panel-primary" style="display:none;">
-        <div class="panel-heading">
-            <div class="panel-title"><span id="spnFilteredRecords" class="subscribers-notifyResults"></span> Import Exceptions</div>
+        <div class="panel-heading" style="height:38px">
+            <h3 class="panel-title results-paging pull-right"></h3>
+            <h3 class="panel-title results-total pull-left">Import Exceptions</h3>
         </div>
         <div class="panel-body">
             <table id="tblImportExceptions" class="table table-bordered table-condensed table-striped dataTable">
@@ -101,8 +104,7 @@
                         <th class="text-center col-lg-2">Error On</th>
                     </tr>
                 </thead>
-                <tbody>
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>

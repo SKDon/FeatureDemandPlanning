@@ -20,7 +20,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Programme GetProgramme(ProgrammeFilter filter);
 
         IEnumerable<ModelBody> ListBodies(ProgrammeFilter filter);
-        IEnumerable<Derivative> ListDerivatives(ProgrammeFilter filter);
+        IEnumerable<Derivative> ListDerivatives(DerivativeFilter filter);
         IEnumerable<Gateway> ListGateways(ProgrammeFilter programmeFilter);
         IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter);
         IEnumerable<ModelEngine> ListEngines(ProgrammeFilter filter);

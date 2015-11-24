@@ -43,6 +43,7 @@ model.UploadAction = function (params, model) {
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
+        $("#Modal_OK").removeAttr("disabled").html("OK");
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
         $("#Modal_Notify")

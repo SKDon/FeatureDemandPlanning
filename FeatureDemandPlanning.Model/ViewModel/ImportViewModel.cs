@@ -244,7 +244,14 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.AvailableMarkets = context.Market.ListAvailableMarkets(programmeFilter);
             model.AvailableFeatures = context.Vehicle.ListFeatures(programmeFilter);
             model.AvailableFeatureGroups = context.Vehicle.ListFeatureGroups(programmeFilter);
-            model.AvailableDerivatives = context.Vehicle.ListDerivatives(programmeFilter);
+
+            var derivativeFilter = new DerivativeFilter()
+            {
+                CarLine = model.Programme.VehicleName,
+                ModelYear = model.Programme.ModelYear,
+                Gateway = model.Gateway
+            };
+            model.AvailableDerivatives = context.Vehicle.ListDerivatives(derivativeFilter);
 
             return model;
         }

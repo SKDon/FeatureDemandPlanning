@@ -1,5 +1,13 @@
 ﻿@model FeatureDemandPlanning.Model.ViewModel.HomeViewModel
 
+@if (!Model.LatestTakeRateData.Any())
+{
+    <div class="row inverse" style="font-size:0.8em;">
+        <div class="col-lg-12">
+            No forecast information available
+        </div>
+    </div>
+}
 @foreach (var forecast in Model.LatestForecasts.Take(2))
 {
     <div class="row inverse" style="font-size:0.8em;">

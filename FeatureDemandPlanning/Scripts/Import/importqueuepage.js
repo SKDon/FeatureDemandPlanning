@@ -63,6 +63,8 @@ page.ImportQueuePage = function (models) {
             "data": params,
             "success": function (json) {
                 callback(json);
+                me.updatePaging();
+                me.updateTotals();
                 me.setTimer(setTimeout(function () {
                     me.redrawDataTable();
                 }, 10000));
@@ -224,6 +226,20 @@ page.ImportQueuePage = function (models) {
     me.redrawDataTable = function () {
         $(".dataTable").DataTable().draw();
     };
+    me.updatePaging = function () {
+        var info = $(".dataTable").DataTable().page.info();
+        var prefix = me.getIdentifierPrefix();
+        var pageIndex = info.page + 1;
+        var totalPages = info.pages;
+        var total = info.recordsTotal;
+        $(".results-paging").html("Page " + pageIndex + " of " + totalPages);
+    };
+    me.updateTotals = function () {
+        var info = $(".dataTable").DataTable().page.info();
+        var prefix = me.getIdentifierPrefix();
+        var total = info.recordsTotal;
+        $(".results-total").html(total + " Import Items");
+    }
     function getModal() {
         return getModel("Modal");
     };
