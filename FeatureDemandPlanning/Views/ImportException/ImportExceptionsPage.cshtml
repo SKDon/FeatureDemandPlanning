@@ -30,24 +30,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 pull-right" style="padding-top: 20px">
-            <div class="panel panel-primary" style="margin-bottom: 0;height:160px">
-                <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Filter</div></div>
-                <div class="panel-body" style="padding-left:15px;padding-right:15px;padding-top:5px;padding-bottom:5px">
-                    <div class="form-group form-group-sm">
-                        <label for="ddlExceptionType" class="form-label inverse" style="font-size:11px">Error Type:</label>
-                        <select id="ddlExceptionType" class="form-control">
-                            <option value="0">All</option>
-                            @foreach (var availableExceptionType in Model.AvailableExceptionTypes)
-                            {
-                                <option value="@((int)availableExceptionType.ExceptionType))">@availableExceptionType.Type</option>
-                            }
-                        </select>
-                        <label for="txtFilterMessage" class="form-label inverse" style="font-size:11px">Message:</label>
-                        <input type="text" id="txtFilterMessage" class="form-control" />
-                    </div>
-                </div>
-            </div>
+        <div class="col-lg-3 pull-right" style="padding-top: 20px" id="@(Model.IdentifierPrefix)_Filter">
+            @Html.Partial("_Filter", Model)
         </div>
         <div class="col-lg-4 pull-right" style="padding-top: 20px" id="@(Model.IdentifierPrefix)_ImportSummary">
             @Html.Partial("_ImportSummary", Model)
