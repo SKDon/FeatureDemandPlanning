@@ -36,6 +36,20 @@ model.Trim = function (params) {
         }
         return uri;
     };
+    me.getActionModel = function (action) {
+        var actionModel = null;
+        switch (action) {
+            case 6:
+                actionModel = new FeatureDemandPlanning.Import.AddTrimAction(me.getParameters());
+                break;
+            case 7:
+                actionModel = new FeatureDemandPlanning.Import.MapTrimAction(me.getParameters());
+                break;
+            default:
+                break;
+        }
+        return actionModel;
+    };
     me.getActionUri = function (action) {
         var uri = "";
         switch (action) {
@@ -53,7 +67,7 @@ model.Trim = function (params) {
     me.getActionTitle = function (action) {
         var title = "";
         switch (action) {
-            case 7:
+            case 6:
                 title = "Add New Trim Level";
                 break;
             case 7:

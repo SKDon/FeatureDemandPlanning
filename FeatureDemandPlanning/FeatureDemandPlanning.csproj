@@ -898,6 +898,8 @@
     <Content Include="Scripts\IgnoredException\init.js" />
     <Content Include="Scripts\IgnoredException\model.js" />
     <Content Include="Scripts\IgnoredException\page.js" />
+    <Content Include="Scripts\Import\addtrimaction.js" />
+    <Content Include="Scripts\Import\maptrimaction.js" />
     <Content Include="Scripts\SpecialFeatureMapping\copy.js" />
     <Content Include="Scripts\SpecialFeatureMapping\delete.js" />
     <Content Include="Scripts\SpecialFeatureMapping\init.js" />
