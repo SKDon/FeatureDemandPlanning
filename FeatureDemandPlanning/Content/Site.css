@@ -1026,3 +1026,9 @@ button.close {
 .home-button {
     margin-bottom:10px
 }
+
+.form-horizontal .control-label {
+    text-align: right;
+    margin-top: 5px;
+    padding: 0px;
+}
