@@ -195,10 +195,10 @@ page.ExceptionsPage = function (models) {
     me.onResultsEventHandler = function (sender, eventArgs) {
     };
     me.onImportSummaryEventHandler = function (sender, eventArgs) {
-        var summary = eventArgs;
-        $("#spnLinesFailed").html(summary.getTotalFailRecords());
-        $("#spnLinesImported").html(summary.getTotalSuccessRecords());
-        $("#spnTotalRows").html(summary.getTotalFailRecords() + summary.getTotalSuccessRecords());
+        //var summary = eventArgs;
+        //$("#spnLinesFailed").html(summary.getTotalFailRecords());
+        //$("#spnLinesImported").html(summary.getTotalSuccessRecords());
+        //$("#spnTotalRows").html(summary.getTotalFailRecords() + summary.getTotalSuccessRecords());
     };
     me.onFilteredRecordsEventHandler = function (sender, eventArgs) {
         var summary = eventArgs;

@@ -32,6 +32,10 @@ namespace FeatureDemandPlanning.DataStore
             
             return await Task.FromResult<ImportQueue>(_importDataStore.ImportQueueGet(filter.ImportQueueId.Value));
         }
+        public async Task<ImportSummary> GetImportSummary(ImportQueueFilter filter)
+        {
+            return await Task.FromResult(_importDataStore.ImportQueueSummaryGet(filter.ImportQueueId.Value));
+        }
         public async Task<PagedResults<ImportQueue>> ListImportQueue(ImportQueueFilter filter)
         {
             var results = await Task.FromResult<PagedResults<ImportQueue>>(

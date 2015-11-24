@@ -23,5 +23,6 @@ namespace FeatureDemandPlanning.Model.Enumerations
         ImportQueueItem = 12,
 
         Upload = 100,
+        Summary,
     }
 }

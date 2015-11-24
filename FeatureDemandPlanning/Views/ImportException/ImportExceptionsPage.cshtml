@@ -49,32 +49,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 pull-right" style="padding-top: 20px">
-            <div id="dvImportSummary" class="panel panel-primary subscribers-notify" style="margin-bottom: 0;height:160px">
-                <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Exception Summary</div></div>
-                <div class="panel-body" style="padding-left:15px;padding-right:15px;padding-top:5px;padding-bottom:5px">
-                    <table class="table table-bordered table-condensed dataTable table-striped" style="font-size:11px">
-                        <tbody>
-                            <tr>
-                                <td>Lines Imported:</td>
-                                <td><span id="spnLinesImported">-</span></td>
-                            </tr>
-                            <tr>
-                                <td>Lines Failed:</td>
-                                <td><span id="spnLinesFailed">-</span></td>
-                            </tr>
-                            <tr>
-                                <td>Total Lines:</td>
-                                <td><span id="spnTotalRows">-</span></td>
-                            </tr>
-                            <tr>
-                                <td>Import Filename:</td>
-                                <td>@Path.GetFileName(Model.CurrentImport.OriginalFileName)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="col-lg-4 pull-right" style="padding-top: 20px" id="@(Model.IdentifierPrefix)_ImportSummary">
+            @Html.Partial("_ImportSummary", Model)
         </div>
     </div>
 }

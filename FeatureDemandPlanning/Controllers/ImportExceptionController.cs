@@ -41,6 +41,17 @@ namespace FeatureDemandPlanning.Controllers
 
             return View(importView);
         }
+        [HttpGet]
+        public async Task<ActionResult> ImportSummary(ImportExceptionParameters parameters)
+        {
+            var importView = await ImportViewModel.GetModel(DataContext,
+                                    new ImportQueueFilter(parameters.ImportQueueId.Value)
+                                    {
+                                        Action = ImportAction.Summary
+                                    });
+            
+            return PartialView("_ImportSummary", importView);
+        }
         [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> ListImportExceptions(ImportExceptionParameters parameters)

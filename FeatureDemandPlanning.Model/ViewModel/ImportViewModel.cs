@@ -29,6 +29,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         public PagedResults<ImportError> Exceptions { get; set; }
         public PagedResults<ImportQueue> ImportQueue { get; set; }
+        public ImportSummary Summary { get; set; }
 
         public Programme Programme { get; set; }
         public string Gateway { get; set; }
@@ -177,6 +178,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
             {
                 model = await GetFullAndPartialViewModelForImportQueueItem(context, filter);
             }
+            else if (filter.Action == ImportAction.Summary)
+            {
+                model = await GetFullAndPartialViewModelForSummary(context, filter);
+            }
             else
             {
                 model = await GetFullAndPartialViewModel(context, filter);
@@ -276,6 +281,15 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.TotalDisplayRecords = model.Exceptions.TotalDisplayRecords;
             model.Programme = context.Vehicle.GetProgramme(programmeFilter);
             model.Gateway = model.CurrentImport.Gateway;
+            model.Summary = await context.Import.GetImportSummary(filter);
+
+            return model;
+        }
+
+        private async static Task<ImportViewModel> GetFullAndPartialViewModelForSummary(IDataContext context, ImportQueueFilter filter)
+        {
+            var model = new ImportViewModel(SharedModelBase.GetBaseModel(context));
+            model.Summary = await context.Import.GetImportSummary(filter);
 
             return model;
         }

@@ -1496,6 +1496,7 @@
     <Content Include="Views\IgnoredException\_IgnoredExceptions.cshtml" />
     <Content Include="Views\IgnoredException\_Scripts.cshtml" />
     <Content Include="Views\IgnoredException\IgnoredExceptionPage.cshtml" />
+    <Content Include="Views\ImportException\_ImportSummary.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -172,6 +172,32 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
+        public ImportSummary ImportQueueSummaryGet(int importQueueId)
+        {
+            ImportSummary retVal = new EmptyImportSummary();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpImportQueueId", importQueueId, dbType: DbType.Int32);
+
+                    var results = conn.Query<ImportSummary>("dbo.Fdp_ImportQueueSummary_Get", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportQueueSummaryGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
 
         public ImportError ImportErrorSave(ImportError importError)
         {

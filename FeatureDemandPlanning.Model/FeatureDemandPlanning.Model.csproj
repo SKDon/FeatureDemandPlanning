@@ -105,6 +105,7 @@
     <Compile Include="Empty\EmptyFdpSpecialFeature.cs" />
     <Compile Include="Empty\EmptyFdpTrim.cs" />
     <Compile Include="Empty\EmptyFdpTrimMapping.cs" />
+    <Compile Include="Empty\EmptyImportSummary.cs" />
     <Compile Include="Empty\EmptyModelTrim.cs" />
     <Compile Include="Empty\EmptySpecialFeatureType.cs" />
     <Compile Include="Empty\EmptyTakeRateSummary.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="ForecastSummary.cs" />
     <Compile Include="Gateway.cs" />
     <Compile Include="ImportExceptionType.cs" />
+    <Compile Include="ImportSummary.cs" />
     <Compile Include="Interfaces\INewsDataContext.cs" />
     <Compile Include="Interfaces\IReferenceDataContext.cs" />
     <Compile Include="Interfaces\IVolume.cs" />

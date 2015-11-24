@@ -15,6 +15,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
     public interface IImportDataContext
     {
         Task<ImportQueue> GetImportQueue(ImportQueueFilter filter);
+        Task<ImportSummary> GetImportSummary(ImportQueueFilter filter);
         Task<PagedResults<ImportQueue>> ListImportQueue(ImportQueueFilter filter);
         ImportQueue SaveImportQueue(ImportQueue importItem);
 
