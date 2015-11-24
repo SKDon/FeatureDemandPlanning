@@ -198,8 +198,8 @@ namespace FeatureDemandPlanning.DataStore
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     para.Add("@ImportTrim", trimMapping.ImportTrim, dbType: DbType.String);
                     para.Add("@ProgrammeId", trimMapping.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@Gateway", trimMapping.ImportTrim, dbType: DbType.String);
-                    para.Add("@TrimId", trimMapping.FdpTrimId, dbType: DbType.Int32);
+                    para.Add("@Gateway", trimMapping.Gateway, dbType: DbType.String);
+                    para.Add("@TrimId", trimMapping.TrimId, dbType: DbType.Int32);
 
                     var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())

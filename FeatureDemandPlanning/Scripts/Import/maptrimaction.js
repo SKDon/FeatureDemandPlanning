@@ -22,8 +22,8 @@ model.MapTrimAction = function (params) {
     };
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
-            "TrimId": me.getSelectedDerivativeCode(),
-            "ImportTrim": me.getImportDerivativeCode()
+            "TrimId": me.getSelectedTrimId,
+            "ImportTrim": me.getImportTrim()
         });
     };
     me.getIdentifierPrefix = function () {

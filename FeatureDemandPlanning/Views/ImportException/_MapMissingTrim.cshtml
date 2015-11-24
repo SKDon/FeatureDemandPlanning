@@ -1,4 +1,5 @@
 ﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+@using FeatureDemandPlanning.Model.Extensions
 
 @model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
 
@@ -10,16 +11,19 @@
     </div>
     <div class="panel-body">
         <form class="form-horizontal">
-            <div class="form-group form-group-sm">
-                <label for="ddlTrim" class="control-label col-xs-2 text-right">Trim:</label>
+            <div class="form-group">
+                <label class="control-label col-xs-2" for="@(Model.IdentifierPrefix)_SelectTrim">Trim:</label>
                 <div class="col-xs-10">
-                    <select id="ddlTrim" class="form-control">
-                        <option value="" selected>-- SELECT --</option>
+                    <button id="@(Model.IdentifierPrefix)_SelectTrim" type="button" class="btn btn-sm btn-default dropdown-toggle col-sm-12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span id="@(Model.IdentifierPrefix)_SelectedTrim">Select Trim</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul id="@(Model.IdentifierPrefix)_TrimList" class="dropdown-menu">
                         @foreach (var trim in Model.AvailableTrim)
                         {
-                            <option value="@trim.Id">@trim.GetDisplayString()</option>
+                            <li><a class="trim-item" href="#" data-target="@trim.Id" data-content="@trim.Name (@trim.Level - @trim.DPCK)">@trim.Name (@trim.Level - @trim.DPCK)</a></li>
                         }
-                    </select>
+                    </ul>
                 </div>
             </div>
         </form>
