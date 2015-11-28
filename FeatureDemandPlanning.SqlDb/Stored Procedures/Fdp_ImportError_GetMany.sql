@@ -46,25 +46,40 @@ AS
 	(ISNULL(@FilterMessage, '') = '' 
 		OR E.ErrorMessage LIKE '%' + @FilterMessage + '%' 
 		OR E.[Type] LIKE '%' + @FilterMessage + '%')
-	ORDER BY
-		CASE @SortDirection
-			WHEN 'ASC' THEN
-				CASE ISNULL(@SortIndex, 0)
-					WHEN 0 THEN RIGHT('0000000000' + CAST(LineNumber AS VARCHAR(10)), 10)
-					WHEN 1 THEN [Type]
-					WHEN 2 THEN ErrorMessage
-					WHEN 3 THEN CONVERT(VARCHAR(20), ErrorOn, 20)
-				END
-		END ASC,
-		CASE @SortDirection
-			WHEN 'DESC' THEN
-				CASE ISNULL(@SortIndex, 0)
-					WHEN 0 THEN RIGHT('0000000000' + CAST(LineNumber AS VARCHAR(10)), 10)
-					WHEN 1 THEN [Type]
-					WHEN 2 THEN ErrorMessage
-					WHEN 3 THEN CONVERT(VARCHAR(20), ErrorOn, 20)
-				END	
-		END DESC
+	--ORDER BY
+	--	--CASE @SortDirection
+	--	--	WHEN 'ASC' THEN
+	--			CASE ISNULL(@SortIndex, 0)
+	--				WHEN 0 THEN LineNumber
+	--				WHEN 1 THEN 0
+	--				WHEN 2 THEN 0
+	--				WHEN 3 THEN 0
+	--				ELSE LineNumber
+	--			END,
+	--			CASE ISNULL(@SortIndex, 0)
+	--				WHEN 0 THEN ''
+	--				WHEN 1 THEN [Type]
+	--				WHEN 2 THEN ErrorMessage
+	--				WHEN 3 THEN ''
+	--				ELSE ''
+	--			END,
+	--			CASE ISNULL(@SortIndex, 0)
+	--				WHEN 0 THEN 0
+	--				WHEN 1 THEN 0
+	--				WHEN 2 THEN 0
+	--				WHEN 3 THEN ErrorOn
+	--				ELSE ErrorOn
+	--			END
+		--END ASC,
+		--CASE @SortDirection
+		--	WHEN 'DESC' THEN
+		--		CASE ISNULL(@SortIndex, 0)
+		--			WHEN 0 THEN LineNumber
+		--			WHEN 1 THEN [Type]
+		--			WHEN 2 THEN ErrorMessage
+		--			WHEN 3 THEN CONVERT(VARCHAR(20), ErrorOn, 20)
+		--		END	
+		--END DESC;
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
 	
@@ -76,13 +91,8 @@ AS
 	SET @MaxIndex = @MinIndex + (@PageSize - 1);
 	
 	SELECT @TotalDisplayRecords = COUNT(1) FROM @PageRecords WHERE RowIndex BETWEEN @MinIndex AND @MaxIndex;
-	SELECT @TotalFailedRecords = COUNT(DISTINCT LineNumber) FROM @PageRecords
-	SELECT @TotalImportedRecords = COUNT(1) - @TotalFailedRecords
-	FROM
-	Fdp_Import AS I
-	JOIN Fdp_ImportData AS D ON I.FdpImportId = D.FdpImportId
-	WHERE
-	I.FdpImportQueueId = @FdpImportQueueId;
+	SET @TotalFailedRecords = 0; -- This is now handled by the summary stored proc
+	SET @TotalImportedRecords = 0; -- This is now handled by the summary stored proc
 	
 	SELECT 
 		  E.FdpImportErrorId

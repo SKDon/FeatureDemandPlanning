@@ -4,10 +4,12 @@
     [IsManuallyEntered]   BIT CONSTRAINT [DF_Fdp_VolumeDataItem_IsManuallyEntered] DEFAULT ((1)) NOT NULL,
     [MarketId]            INT NOT NULL,
     [MarketGroupId]       INT NULL,
-    [ModelId]             INT NOT NULL,
-    [TrimId]              INT NOT NULL,
-    [EngineId]            INT NOT NULL,
-    [FeatureId]           INT NOT NULL,
+    [ModelId]             INT NULL,
+    [FdpModelId]          INT NULL,
+    [TrimId]              INT NULL,
+    [FdpTrimId]           INT NULL,
+    [FeatureId]           INT NULL,
+    [FdpFeatureId]        INT NULL,
     [FeaturePackId]       INT NULL,
     [Volume]              INT CONSTRAINT [DF_Fdp_VolumeDataItem_Volume] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_Fdp_VolumeDataItem] PRIMARY KEY CLUSTERED ([FdpVolumeDataItemId] ASC),
@@ -21,10 +23,14 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_FdpVolumeHeaderId]
     ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC)
-    INCLUDE([MarketId], [TrimId], [EngineId], [FeatureId], [Volume]);
+    INCLUDE([MarketId], [TrimId], [FeatureId], [Volume]);
+
+
 
 
 

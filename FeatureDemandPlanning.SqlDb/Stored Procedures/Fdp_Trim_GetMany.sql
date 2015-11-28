@@ -53,6 +53,7 @@ AS
 		  T.FdpTrimId
 		, T.ProgrammeId
 		, T.Gateway
+		, T.BMC
 		, T.TrimName AS Name
 		, T.TrimLevel AS [Level]
 		, T.CreatedOn

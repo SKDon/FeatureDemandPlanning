@@ -1,4 +1,6 @@
 ﻿
+
+
 CREATE VIEW [dbo].[Fdp_Import_VW] AS
 
 	SELECT 
@@ -16,29 +18,31 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 		, I.[Bff Feature Code]								AS ImportFeatureCode
 		, I.[Feature Description]							AS ImportFeature
 		, I.[Count of Specific Order No]					AS ImportVolume
-		, SFT.FdpSpecialFeatureTypeId						AS SpecialFeatureCodeTypeId
-		, UPPER(SFT.SpecialFeatureType)						AS SpecialFeatureCodeType
-		, SFT.[Description]									AS SpecialFeatureCodeDescription
-		, P.Id												AS ProgrammeId
+		, IH.ProgrammeId
+		, IH.Gateway
 		, P.VehicleMake
 		, P.VehicleName
 		, P.VehicleAKA
 		, P.ModelYear										AS ModelYear
-		, IH.Gateway										AS Gateway
+		, SFT.FdpSpecialFeatureTypeId						AS SpecialFeatureCodeTypeId
+		, UPPER(SFT.SpecialFeatureType)						AS SpecialFeatureCodeType
+		, SFT.[Description]									AS SpecialFeatureCodeDescription
 		, MMAP.Market_Id									AS MarketId
 		, MMAP.Market_Name									AS Market
 		, MMAP.Market_Group_Id								AS MarketGroupId
 		, MMAP.Market_Group_Name							AS MarketGroup
-		, M.Id												AS ModelId
-		, M.BMC												AS BMC
+		, M1.Id												AS ModelId
+		, M2.FdpModelId
+		, ISNULL(M1.BMC, M2.BMC)							AS BMC
 		, B.Id												AS BodyId
 		, B.Shape											AS BodyShape
 		, B.Doors											AS BodyDoors
 		, B.Wheelbase										AS BodyWheelbase
-		, T.Id												AS TrimId
-		, T.Name											AS TrimName
-		, T.[Level]											AS TrimLevel
-		, T.DPCK											AS DPCK
+		, TMAP.TrimId
+		, TMAP.FdpTrimId
+		, TMAP.MappedTrim									AS TrimName
+		, TMAP.[Level]										AS TrimLevel
+		, TMAP.DPCK
 		, E.Id												AS EngineId
 		, E.Size											AS EngineSize
 		, E.Fuel_Type										AS EngineFuelType
@@ -50,6 +54,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 		, TM.[Type]											AS TransmissionType
 		, TM.Drivetrain										AS TransmissionDrivetrain
 		, FE.Id												AS FeatureId
+		, CAST(NULL AS INT)									AS FdpFeatureId
 		, FE.Feat_Code										AS FeatureCode
 		, FE.[Description]									AS FeatureDescription
 		, FB.Brand_Desc										AS MarketingFeatureDescription
@@ -64,12 +69,12 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 					ELSE 0
 				END AS BIT)									AS IsMarketMissing
 		, CAST( CASE 
-					WHEN DER.ProgrammeId IS NULL AND SF.FdpSpecialFeatureId IS NULL
+					WHEN DMAP.ProgrammeId IS NULL AND SF.FdpSpecialFeatureId IS NULL
 					THEN 1 
 					ELSE 0
 				END AS BIT)									AS IsDerivativeMissing
 		, CAST( CASE 
-					WHEN T.Id IS NULL AND SF.FdpSpecialFeatureId IS NULL
+					WHEN TMAP.ProgrammeId IS NULL AND SF.FdpSpecialFeatureId IS NULL
 					THEN 1 
 					ELSE 0
 				END AS BIT)									AS IsTrimMissing
@@ -97,12 +102,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 	
 	-- Mapping of market details
 	
-	LEFT JOIN Fdp_MarketMapping_VW			AS MMAP		ON	
-														(
-															I.[Country Description]     = MMAP.Market_Name
-															OR
-															I.[NSC or Importer Description (Vista Market)] = MMAP.Market_Name
-														)
+	LEFT JOIN Fdp_MarketMapping_VW			AS MMAP		ON	I.[Country Description]     = MMAP.Market_Name
 														AND IH.ProgrammeId				= MMAP.ProgrammeId
 														AND IH.Gateway					= MMAP.Gateway
 	
@@ -119,9 +119,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 																										
 	LEFT JOIN Fdp_TrimMapping_VW			AS TMAP		ON	I.[Trim Pack Description]	= TMAP.ImportTrim
 														AND IH.ProgrammeId				= TMAP.ProgrammeId
-														AND IH.Gateway					= TMAP.Gateway
-	LEFT JOIN OXO_Programme_Trim			AS T		ON	TMAP.TrimId					= T.Id
-																
+														AND IH.Gateway					= TMAP.Gateway															
 	-- Mapping of features		
 													
 	LEFT JOIN Fdp_FeatureMapping_VW			AS FMAP		ON	I.[Bff Feature Code]		= FMAP.ImportFeatureCode
@@ -141,23 +139,45 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 	LEFT JOIN OXO_Programme_Pack			AS FP		ON	FL.Pack_Id					= FP.Id
 														
 	-- The combination of body, engine, transmission and trim gives us the model
-	LEFT JOIN OXO_Programme_Model			AS M		ON	P.Id						= M.Programme_Id
-														AND B.Id						= M.Body_Id
-														AND E.Id						= M.Engine_Id
-														AND TM.Id						= M.Transmission_Id
-														AND T.Id						= M.Trim_Id
-	-- The combination of body, engine and transmission gives us the derivative
-	LEFT JOIN Fdp_Derivative_VW				AS DER		ON	IH.ProgrammeId				= DER.ProgrammeId
-														AND B.Id						= DER.BodyId
-														AND E.Id						= DER.EngineId
-														AND TM.Id						= DER.TransmissionId
+	-- This will either be an existing OXO model, or an FDP model (FDP derivative, trim or both)
 	
-	LEFT JOIN Fdp_VolumeHeader				AS CUR1		ON	P.Id						= CUR1.ProgrammeId
+	LEFT JOIN OXO_Programme_Model			AS M1		ON	IH.ProgrammeId				= M1.Programme_Id
+														AND DMAP.BodyId					= M1.Body_Id
+														AND DMAP.EngineId				= M1.Engine_Id
+														AND DMAP.TransmissionId			= M1.Transmission_Id
+														AND TMAP.TrimId					= M1.Trim_Id
+														AND M1.Active					= 1
+														
+	LEFT JOIN Fdp_Model_VW					AS M2		ON	IH.ProgrammeId				= M2.ProgrammeId
+														AND DMAP.BodyId					= M2.BodyId
+														AND DMAP.EngineId				= M2.EngineId
+														AND DMAP.TransmissionId			= M2.TransmissionId
+														AND 
+														(
+															(
+																TMAP.TrimId	= M2.TrimId
+																AND
+																TMAP.FdpTrimId IS NULL
+															)
+															OR
+															(
+																TMAP.FdpTrimId = M2.FdpTrimId
+																AND
+																TMAP.TrimId	IS NULL
+															)
+														)
+														AND M2.IsActive					= 1
+	
+	LEFT JOIN Fdp_VolumeHeader				AS CUR1		ON	IH.ProgrammeId				= CUR1.ProgrammeId
 														AND IH.Gateway					= CUR1.Gateway
 	LEFT JOIN Fdp_VolumeDataItem			AS CUR		ON	CUR1.FdpVolumeHeaderId		= CUR.FdpVolumeHeaderId
 														AND MMAP.Market_Id				= CUR.MarketId
-														AND M.Id						= CUR.ModelId
-														AND T.Id						= CUR.TrimId
+														AND 
+														(
+															M1.Id						= CUR.ModelId
+															OR
+															M2.FdpModelId				= CUR.FdpModelId
+														)
 														AND	FE.Id						= CUR.FeatureId
 														AND CAST(I.[Count of Specific Order No] AS INT)
 																						= CUR.Volume

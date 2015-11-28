@@ -7,6 +7,7 @@ AS
 	
 	DECLARE @ProgrammeId INT;
 	DECLARE @Gateway NVARCHAR(100);
+	DECLARE @FdpImportQueueId INT;
 	
 	-- Update the status of our import to be processing
 	
@@ -28,6 +29,7 @@ AS
 	SELECT 
 		  @ProgrammeId = ProgrammeId
 		, @Gateway = Gateway
+		, @FdpImportQueueId = FdpImportQueueId
 	FROM Fdp_Import
 	WHERE
 	FdpImportId = @FdpImportId;
@@ -125,13 +127,15 @@ AS
 		, ErrorOn
 		, FdpImportErrorTypeId
 		, ErrorMessage
+		, AdditionalData
 	)
 	SELECT 
 		  I.FdpImportQueueId
 		, I.ImportLineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId -- Missing Trim
-		, 'Missing trim ''' + I.ImportTrim + '''' AS ErrorMessage
+		, 'Missing trim ''' + I.ImportTrim + ''' for derivative ''' + I.BMC + '''' AS ErrorMessage
+		, I.BMC
 	FROM Fdp_Import_VW			AS I
 	LEFT JOIN Fdp_ImportError	AS CUR	ON	I.FdpImportQueueId			= CUR.FdpImportQueueId
 										AND	I.ImportLineNumber			= CUR.LineNumber
@@ -221,6 +225,8 @@ AS
 	AND
 	I.FdpImportId = @FdpImportId
 	AND
+	I.FdpImportQueueId = @FdpImportQueueId
+	AND
 	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
 	AND
 	CUR.FdpVolumeHeaderId IS NULL
@@ -242,8 +248,11 @@ AS
 		, MarketId
 		, MarketGroupId
 		, ModelId
+		, FdpModelId
 		, TrimId
+		, FdpTrimId
 		, FeatureId
+		, FdpFeatureId
 		, FeaturePackId
 		, Volume
 	)
@@ -253,19 +262,32 @@ AS
 		, I.MarketId
 		, I.MarketGroupId
 		, I.ModelId
+		, I.FdpModelId
 		, I.TrimId
+		, I.FdpTrimId
 		, I.FeatureId
+		, NULL
 		, I.FeaturePackId
-		, SUM(CAST(I.ImportVolume AS INT)) AS Volume 
+		, CAST(I.ImportVolume AS INT) 
 	FROM
-	Fdp_Import_VW			AS I
-	JOIN Fdp_VolumeHeader			AS H ON I.FdpImportId = H.FdpImportId
-	LEFT JOIN Fdp_VolumeDataItem	AS CUR	ON	I.MarketId		= CUR.MarketId
-											AND I.MarketGroupId = CUR.MarketGroupId
-											AND I.ModelId		= CUR.ModelId
-											AND I.TrimId		= CUR.TrimId
-											AND I.FeatureId		= CUR.FeatureId
-											AND I.FeaturePackId = CUR.FeaturePackId
+	Fdp_Import_VW					AS I
+	JOIN Fdp_VolumeHeader			AS H	ON	I.FdpImportId		= H.FdpImportId
+	LEFT JOIN Fdp_VolumeDataItem	AS CUR	ON	H.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
+											AND I.MarketId			= CUR.MarketId
+											AND 
+											(
+												I.ModelId = CUR.ModelId
+												OR
+												I.FdpModelId = CUR.FdpModelId
+											)
+											AND 
+											(
+												I.FeatureId = CUR.FeatureId
+												OR
+												I.FdpFeatureId = CUR.FdpFeatureId
+											)
+											AND I.FeaturePackId				= CUR.FeaturePackId
+											AND CAST(I.ImportVolume AS INT) = CUR.Volume
 											AND CUR.IsManuallyEntered = 1
 	WHERE 
 	I.IsExistingData = 0
@@ -285,21 +307,21 @@ AS
 	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
 	AND
 	CUR.FdpVolumeDataItemId IS NULL
-	AND
-	I.FdpImportStatusId <> 4
+	--AND
+	--I.FdpImportStatusId <> 4
 	
 	-- Need to group here, as if there are results from the view where multiple import lines
 	-- match the same trim / engine mapping for the programme / market in question
 	-- we need to aggregate the take rate
 	 
-	GROUP BY
-		  H.FdpVolumeHeaderId
-		, I.MarketId
-		, I.MarketGroupId
-		, I.ModelId
-		, I.TrimId
-		, I.FeatureId
-		, I.FeaturePackId;
+	--GROUP BY
+	--	  H.FdpVolumeHeaderId
+	--	, I.MarketId
+	--	, I.MarketGroupId
+	--	, I.ModelId
+	--	, I.TrimId
+	--	, I.FeatureId
+	--	, I.FeaturePackId;
 
 	-- Add the summary volume information for each market / derivative / trim level
 	-- Only add information if it differs from the previous volume data

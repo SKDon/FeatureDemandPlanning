@@ -1,6 +1,4 @@
-﻿
-
-CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
+﻿CREATE VIEW [dbo].[Fdp_TrimMapping_VW_New] AS
 
 	SELECT 
 		  T.CreatedOn
@@ -10,15 +8,12 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 		, T.Name			AS ImportTrim
 		, T.Name			AS MappedTrim
 		, T.Abbreviation
-		, T.[Level]
-		, T.BMC
-		, T.DPCK
+		, T.[Level]		
 		, CAST(0 AS BIT)	AS IsMappedTrim
 		, T.IsFdpTrim
 		, T.TrimId
 		, T.FdpTrimId
 		, CAST(NULL AS INT)	AS FdpTrimMappingId
-		, T.IsActive
 		, T.UpdatedOn
 		, T.UpdatedBy
 		
@@ -36,15 +31,12 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 		, M.ImportTrim			AS ImportTrim
 		, T.Name				AS MappedTrim
 		, T.Abbreviation
-		, T.[Level]
-		, M.BMC
-		, T.DPCK		
+		, T.[Level]		
 		, CAST(1 AS BIT)		AS IsMappedTrim
 		, T.IsFdpTrim
 		, T.TrimId
 		, NULL					AS FdpTrimId
 		, M.FdpTrimMappingId
-		, M.IsActive
 		, M.UpdatedOn
 		, M.UpdatedBy
 		

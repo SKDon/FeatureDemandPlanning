@@ -2,6 +2,7 @@
 	  @CarLine					NVARCHAR(10)	= NULL
 	, @ModelYear				NVARCHAR(10)	= NULL
 	, @Gateway					NVARCHAR(16)	= NULL
+	, @DerivativeCode			NVARCHAR(20)	= NULL
 	, @IncludeAllTrim			BIT = 0
 	, @CDSId					NVARCHAR(16)
 	, @FilterMessage			NVARCHAR(50)	= NULL
@@ -24,9 +25,12 @@ AS
 	(
 		  RowIndex INT IDENTITY(1, 1)
 		, Trim NVARCHAR(1000)
+		, MappedTrim NVARCHAR(1000)
+		, ProgrammeId INT
+		, Gateway NVARCHAR(200)
 	);
-	INSERT INTO @PageRecords (Trim)
-	SELECT T.ImportTrim
+	INSERT INTO @PageRecords (Trim, MappedTrim, ProgrammeId, Gateway)
+	SELECT T.ImportTrim, T.MappedTrim, T.ProgrammeId, T.Gateway
 	FROM
 	Fdp_TrimMapping_VW AS T
 	JOIN OXO_Programme_VW	 AS P ON T.ProgrammeId = P.Id
@@ -38,10 +42,14 @@ AS
 	(@Gateway IS NULL OR T.Gateway = @Gateway)
 	AND
 	(
-		(@IncludeAllTrim = 0 AND T.IsMappedTrim = 1)
+		(@IncludeAllTrim = 0 AND T.IsMappedTrim = 0)
 		OR
-		(@IncludeAllTrim = 1 AND T.IsMappedTrim = 0)
+		(@IncludeAllTrim = 1)
 	)
+	AND
+	(@DerivativeCode IS NULL OR (T.BMC = @DerivativeCode OR T.BMC IS NULL))
+	AND
+	T.IsActive = 1;
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
 	SELECT @TotalDisplayRecords = @TotalRecords;
@@ -54,18 +62,26 @@ AS
 	SET @MaxIndex = @MinIndex + (@PageSize - 1);
 
 	SELECT DISTINCT
-		  T.CreatedOn
-		, T.CreatedBy
+		  T.TrimId
+		, T.FdpTrimId
 		, T.FdpTrimMappingId
+		, T.CreatedOn
+		, T.CreatedBy
 		, T.ImportTrim
 		, T.MappedTrim AS Name
 		, T.ProgrammeId
 		, T.Gateway
+		, T.BMC
 		, T.[Level]
 		, T.DPCK
+		, T.IsFdpTrim
 		, T.UpdatedOn
 		, T.UpdatedBy
 
 	FROM @PageRecords				AS P
 	JOIN Fdp_TrimMapping_VW	AS T	ON	P.Trim = T.ImportTrim
-									AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex;
+									AND P.ProgrammeId = T.ProgrammeId
+									AND P.Gateway = T.Gateway
+									AND P.MappedTrim = T.MappedTrim
+									AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex
+									AND T.IsActive = 1;

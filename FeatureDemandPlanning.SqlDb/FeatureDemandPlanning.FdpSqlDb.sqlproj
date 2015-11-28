@@ -168,10 +168,6 @@
     <Build Include="Views\Fdp_UserProgramme_VW.sql" />
     <Build Include="Functions\Fdp_UserProgrammes.sql" />
     <Build Include="Functions\Fdp_UserProgrammes_GetMany.sql" />
-    <Build Include="Functions\fn_Fdp_OxoVolumeData_Get_Market.sql" />
-    <Build Include="Functions\fn_Fdp_OxoVolumeData_Get_Market2.sql" />
-    <Build Include="Functions\fn_Fdp_OxoVolumeData_Get_MarketGroup.sql" />
-    <Build Include="Functions\fn_Fdp_OxoVolumeData_Get_MarketGroup2.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_Edit.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_GetMany.sql" />
@@ -306,6 +302,58 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_Configuration_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_Model.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_TrimMapping_VW_New.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_Trim_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_Model_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_Feature_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Security\RoleMemberships.sql" />
+    <Build Include="Functions\fn_Fdp_TakeRateData_ByMarketGroup_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Functions\fn_Fdp_TakeRateData_ByMarket_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Functions\fn_Fdp_SplitModelIds.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\OXO_Master_MarketGroup_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TrimMapping_Copy.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Model_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_AvailableModelByMarketGroup_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_AvailableModelByMarket_GetMany.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
