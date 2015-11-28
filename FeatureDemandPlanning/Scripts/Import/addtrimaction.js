@@ -12,6 +12,8 @@ model.AddTrimAction = function (params) {
     privateStore[me.id].ActionUri = params.ModalActionUri;
     privateStore[me.id].SelectedTrimLevel = null;
     privateStore[me.id].SelectedTrimLevelDescription = "";
+    privateStore[me.id].SelectedDerivativeCode = "";
+    privateStore[me.id].SelectedDerivative = "";
     privateStore[me.id].Parameters = params;
 
     me.action = function () {
@@ -20,8 +22,12 @@ model.AddTrimAction = function (params) {
     me.displaySelectedTrimLevel = function () {
         $("#" + me.getIdentifierPrefix() + "_SelectedTrimLevel").html(me.getSelectedTrimLevelDescription());
     };
+    me.displaySelectedDerivative = function () {
+        $("#" + me.getIdentifierPrefix() + "_SelectedDerivative").html(me.getSelectedDerivative());
+    };
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
+            "DerivativeCode": me.getSelectedDerivativeCode(),
             "TrimName": me.getImportTrim(),
             "TrimLevel": me.getSelectedTrimLevelDescription(),
             "TrimAbbreviation": me.getAbbreviation(),
@@ -46,6 +52,15 @@ model.AddTrimAction = function (params) {
     me.getDPCK = function () {
         return $("#" + me.getIdentifierPrefix() + "_TextDPCK").val();
     };
+    me.getSelectedDerivativeCode = function () {
+        return privateStore[me.id].SelectedDerivativeCode;
+    };
+    me.getSelectedDerivative = function () {
+        return privateStore[me.id].SelectedDerivative;
+    };
+    me.getSelectedTrim = function () {
+        return me.getImportTrim();
+    };
     me.getSelectedTrim = function () {
         return me.getImportTrim();
     };
@@ -55,6 +70,11 @@ model.AddTrimAction = function (params) {
     me.getSelectedTrimLevelDescription = function () {
         return privateStore[me.id].SelectedTrimLevelDescription;
     };
+    me.derivativeSelectedEventHandler = function (sender) {
+        me.setSelectedDerivativeCode($(sender.target).attr("data-target"));
+        me.setSelectedDerivative($(sender.target).attr("data-content"));
+        me.displaySelectedDerivative();
+    };
     me.trimLevelSelectedEventHandler = function (sender) {
         me.setSelectedTrimLevel(parseInt($(sender.target).attr("data-target")));
         me.setSelectedTrimLevelDescription($(sender.target).attr("data-content"));
@@ -63,6 +83,7 @@ model.AddTrimAction = function (params) {
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
+        me.setSelectedDerivativeCode($("#" + me.getIdentifierPrefix() + "_InitialSelectedDerivative").val());
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
         $("#Modal_Notify")
@@ -89,6 +110,10 @@ model.AddTrimAction = function (params) {
     };
     me.registerEvents = function () {
         var prefix = me.getIdentifierPrefix();
+        $("#" + prefix + "_DerivativeList").find("a.derivative-item").on("click", function (e) {
+            me.derivativeSelectedEventHandler(e);
+            e.preventDefault();
+        });
         $("#" + prefix + "_TrimLevelList").find("a.trimlevel-item").on("click", function (e) {
             me.trimLevelSelectedEventHandler(e);
             e.preventDefault();
@@ -105,6 +130,12 @@ model.AddTrimAction = function (params) {
     };
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;
+    };
+    me.setSelectedDerivativeCode = function (derivativeCode) {
+        privateStore[me.id].SelectedDerivativeCode = derivativeCode;
+    };
+    me.setSelectedDerivative = function (derivative) {
+        privateStore[me.id].SelectedDerivative = derivative;
     };
     me.setSelectedTrimLevel = function (trimLevel) {
         privateStore[me.id].SelectedTrimLevel = trimLevel;

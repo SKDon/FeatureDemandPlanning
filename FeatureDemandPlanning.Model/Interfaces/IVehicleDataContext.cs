@@ -19,12 +19,13 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IEnumerable<Programme> ListProgrammes(ProgrammeFilter filter);
         Programme GetProgramme(ProgrammeFilter filter);
 
+        IEnumerable<FdpModel> ListAvailableModels(ProgrammeFilter filter);
         IEnumerable<ModelBody> ListBodies(ProgrammeFilter filter);
         IEnumerable<Derivative> ListDerivatives(DerivativeFilter filter);
         IEnumerable<Gateway> ListGateways(ProgrammeFilter programmeFilter);
         IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter);
         IEnumerable<ModelEngine> ListEngines(ProgrammeFilter filter);
-        IEnumerable<ModelTrim> ListTrim(ProgrammeFilter filter);
+        IEnumerable<FdpTrimMapping> ListTrim(TrimFilter filter);
         IEnumerable<Feature> ListFeatures(ProgrammeFilter filter);
         IEnumerable<FeatureGroup> ListFeatureGroups(ProgrammeFilter filter);
         IEnumerable<TrimLevel> ListTrimLevels(ProgrammeFilter programmeFilter);

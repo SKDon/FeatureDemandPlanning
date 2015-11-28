@@ -38,7 +38,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<ModelEngine> AvailableEngines { get; set; }
         public IEnumerable<ModelTransmission> AvailableTransmissions { get; set; }
         public IEnumerable<ModelBody> AvailableBodies { get; set; }
-        public IEnumerable<ModelTrim> AvailableTrim { get; set; }
+        public IEnumerable<FdpTrimMapping> AvailableTrim { get; set; }
         public IEnumerable<SpecialFeature> AvailableSpecialFeatures { get; set; }
         public IEnumerable<Market> AvailableMarkets { get; set; }
         public IEnumerable<Feature> AvailableFeatures { get; set; }
@@ -245,12 +245,20 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.AvailableEngines = context.Vehicle.ListEngines(programmeFilter);
             model.AvailableTransmissions = context.Vehicle.ListTransmissions(programmeFilter);
             model.AvailableBodies = context.Vehicle.ListBodies(programmeFilter);
-            model.AvailableTrim = context.Vehicle.ListTrim(programmeFilter);
             model.AvailableSpecialFeatures = context.Volume.ListSpecialFeatures(programmeFilter);
             model.AvailableMarkets = context.Market.ListAvailableMarkets();
             model.AvailableFeatures = context.Vehicle.ListFeatures(programmeFilter);
             model.AvailableFeatureGroups = context.Vehicle.ListFeatureGroups(programmeFilter);
             model.AvailableTrimLevels = context.Vehicle.ListTrimLevels(programmeFilter);
+
+            var trimFilter = new TrimMappingFilter()
+            {
+                CarLine = model.Programme.VehicleName,
+                ModelYear = model.Programme.ModelYear,
+                Gateway = model.Gateway,
+                DerivativeCode = model.CurrentException.ImportDerivativeCode
+            };
+            model.AvailableTrim = context.Vehicle.ListTrim(trimFilter);
 
             var derivativeFilter = new DerivativeFilter()
             {
@@ -307,7 +315,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             AvailableEngines = Enumerable.Empty<ModelEngine>();
             AvailableTransmissions = Enumerable.Empty<ModelTransmission>();
             AvailableBodies = Enumerable.Empty<ModelBody>();
-            AvailableTrim = Enumerable.Empty<ModelTrim>();
+            AvailableTrim = Enumerable.Empty<FdpTrimMapping>();
             AvailableSpecialFeatures  = Enumerable.Empty<SpecialFeature>();
             AvailableMarkets = Enumerable.Empty<Market>();
             AvailableFeatures = Enumerable.Empty<Feature>();

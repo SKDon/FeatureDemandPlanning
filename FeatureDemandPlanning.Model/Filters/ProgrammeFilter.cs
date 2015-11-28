@@ -20,6 +20,9 @@ namespace FeatureDemandPlanning.Model.Filters
         public string ModelYear { get; set; }
         public string Gateway { get; set; }
 
+        public int? MarketId { get; set; }
+        public int? MarketGroupId { get; set; }
+
         public ProgrammeFilter()
         {
 

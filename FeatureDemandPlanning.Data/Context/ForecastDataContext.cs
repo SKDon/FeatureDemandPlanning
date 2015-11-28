@@ -131,7 +131,7 @@ namespace FeatureDemandPlanning.DataStore
             if (programme == null)
                 return;
 
-            var trim = _modelTrimDataStore.ModelTrimGetMany(vehicle.ProgrammeId.Value);
+            var trim = _modelTrimDataStore.ModelTrimGetMany(new TrimFilter() { ProgrammeId = vehicle.ProgrammeId });
             if (trim == null || !trim.Any())
             {
                 programme.AllTrims = Enumerable.Empty<ModelTrim>();

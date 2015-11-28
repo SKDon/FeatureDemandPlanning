@@ -18,6 +18,7 @@ namespace FeatureDemandPlanning.Model
                 CreatedBy,
                 Programme.GetDisplayString(),
                 Gateway,
+                BMC,
                 ImportTrim,
                 Name,
                 Level,
@@ -32,6 +33,18 @@ namespace FeatureDemandPlanning.Model
                 ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
                 Gateway = parameters.Gateway
             };
+        }
+
+        public string GetIdentifierString()
+        {
+            if (FdpTrimId.HasValue)
+            {
+                return string.Format("F{0}", FdpTrimId);
+            }
+            else
+            {
+                return string.Format("O{0}", TrimId);
+            }
         }
     }
 }

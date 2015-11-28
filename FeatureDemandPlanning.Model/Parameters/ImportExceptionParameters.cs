@@ -18,6 +18,8 @@ namespace FeatureDemandPlanning.Model.Parameters
 
         public string ImportTrim { get; set; }
         public int? TrimId { get; set; }
+        public int? FdpTrimId { get; set; }
+        public string TrimIdentifier { get; set; }
         public string TrimName { get; set; }
         public string TrimAbbreviation { get; set; }
         public string TrimLevel { get; set; }
@@ -143,10 +145,13 @@ namespace FeatureDemandPlanning.Model.Parameters
                     Action = Action,
                     ImportTrim = ImportTrim,
                     TrimId = TrimId,
+                    FdpTrimId = FdpTrimId,
                     TrimName = TrimName,
                     TrimAbbreviation = TrimAbbreviation,
                     TrimLevel = TrimLevel,
-                    DPCK = DPCK
+                    DPCK = DPCK,
+                    DerivativeCode = DerivativeCode,
+                    TrimIdentifier = TrimIdentifier
                 };
             }
 
@@ -179,5 +184,7 @@ namespace FeatureDemandPlanning.Model.Parameters
 
             return new { };
         }
+
+        
     }
 }

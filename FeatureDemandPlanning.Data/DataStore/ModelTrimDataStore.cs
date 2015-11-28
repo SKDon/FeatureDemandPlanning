@@ -10,6 +10,7 @@ using System.Web.Script.Serialization;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Extensions;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -29,26 +30,19 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
-        public IEnumerable<ModelTrim> ModelTrimGetMany(int progId)
+        public IEnumerable<FdpTrimMapping> ModelTrimGetMany(TrimFilter filter)
         {
-            IEnumerable<ModelTrim> retVal = null;
-			using (IDbConnection conn = DbHelper.GetDBConnection())
+            filter.PageSize = 1000;
+            filter.IncludeAllTrim = true;
+
+            var trim = FdpTrimMappingGetMany(filter);
+            if (trim == null || trim.CurrentPage == null || !trim.CurrentPage.Any())
             {
-				try
-				{
-					var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progId, dbType: DbType.Int32);
-					retVal = conn.Query<ModelTrim>("dbo.OXO_ModelTrim_GetMany", para, commandType: CommandType.StoredProcedure);
-				}
-				catch (Exception ex)
-				{
-					AppHelper.LogError("ModelTrimDataStore.ModelTrimGetMany", ex.Message, CurrentCDSID);
-				}
-			}
+                return Enumerable.Empty<FdpTrimMapping>();
+            }
 
-            return retVal;   
+            return trim.CurrentPage.Where(d => !d.FdpTrimMappingId.HasValue);
         }
-
         public ModelTrim ModelTrimGet(int id)
         {
             ModelTrim retVal = null;
@@ -198,8 +192,16 @@ namespace FeatureDemandPlanning.DataStore
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     para.Add("@ImportTrim", trimMapping.ImportTrim, dbType: DbType.String);
                     para.Add("@ProgrammeId", trimMapping.ProgrammeId, dbType: DbType.Int32);
+                    para.Add("@DerivativeCode", trimMapping.BMC, DbType.String);
                     para.Add("@Gateway", trimMapping.Gateway, dbType: DbType.String);
-                    para.Add("@TrimId", trimMapping.TrimId, dbType: DbType.Int32);
+                    if (trimMapping.TrimId.HasValue)
+                    {
+                        para.Add("@TrimId", trimMapping.TrimId.Value, dbType: DbType.Int32);
+                    }
+                    if (trimMapping.FdpTrimId.HasValue)
+                    {
+                        para.Add("@FdpTrimId", trimMapping.FdpTrimId, DbType.Int32);
+                    }
 
                     var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -285,6 +287,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     para.Add("@ProgrammeId", trim.ProgrammeId, dbType: DbType.Int32);
                     para.Add("@Gateway", trim.Gateway, dbType: DbType.String);
+                    para.Add("@DerivativeCode", trim.BMC, DbType.String);
                     para.Add("@TrimName", trim.Name, dbType: DbType.String);
                     para.Add("@TrimAbbreviation", trim.Abbreviation, dbType: DbType.String);
                     para.Add("@TrimLevel", trim.Level, dbType: DbType.String);
@@ -477,8 +480,7 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-
-        public PagedResults<FdpTrimMapping> FdpTrimMappingGetMany(TrimMappingFilter filter)
+        public PagedResults<FdpTrimMapping> FdpTrimMappingGetMany(TrimFilter filter)
         {
             PagedResults<FdpTrimMapping> retVal = null;
 
@@ -501,6 +503,14 @@ namespace FeatureDemandPlanning.DataStore
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
                         para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.DerivativeCode))
+                    {
+                        para.Add("@DerivativeCode", filter.DerivativeCode, DbType.String);
+                    }
+                    if (filter.IncludeAllTrim)
+                    {
+                        para.Add("@IncludeAllTrim", filter.IncludeAllTrim, DbType.Boolean);
                     }
                     if (filter.PageIndex.HasValue)
                     {
@@ -549,6 +559,31 @@ namespace FeatureDemandPlanning.DataStore
                 catch (Exception ex)
                 {
                     AppHelper.LogError("FeatureDataStore.FdpTrimMappingGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public FdpTrimMapping FdpTrimMappingCopy(FdpTrimMapping trimMappingToCopy, IEnumerable<string> gateways)
+        {
+            FdpTrimMapping retVal = new EmptyFdpTrimMapping();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    para.Add("@FdpTrimMappingId", trimMappingToCopy.FdpTrimMappingId, DbType.Int32);
+                    para.Add("@Gateways", gateways.ToCommaSeperatedList(), DbType.String);
+                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+
+                    var rows = conn.Execute("Fdp_TrimMapping_Copy", para, commandType: CommandType.StoredProcedure);
+
+                    retVal = FdpTrimMappingGet(new TrimMappingFilter() { TrimMappingId = trimMappingToCopy.FdpTrimMappingId });
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpFeatureMappingCopy", ex.Message, CurrentCDSID);
                     throw;
                 }
             }

@@ -44,7 +44,13 @@ namespace FeatureDemandPlanning.DataStore
             // Populate the list of available derivatives for that market
             if (filter.OxoDocId.HasValue && filter.ProgrammeId.HasValue)
             {
-                var variants = _documentDataStore.OXODocAvailableModelsByMarket(filter.ProgrammeId.Value, filter.OxoDocId.Value, market.Id);
+                var programmeFilter = new ProgrammeFilter()
+                {
+                    ProgrammeId = filter.ProgrammeId,
+                    Gateway = filter.Gateway,
+                    MarketId = filter.MarketId
+                };
+                var variants = _documentDataStore.FdpModelsByMarketGetMany(programmeFilter);
                 market.VariantCount = variants.Count();
             }
 
@@ -65,7 +71,13 @@ namespace FeatureDemandPlanning.DataStore
             // Populate the list of available derivatives for that market
             if (filter.OxoDocId.HasValue && filter.ProgrammeId.HasValue)
             {
-                var variants = _documentDataStore.OXODocAvailableModelsByMarketGroup(filter.ProgrammeId.Value, filter.OxoDocId.Value, marketGroup.Id);
+                var programmeFilter = new ProgrammeFilter()
+                {
+                    ProgrammeId = filter.ProgrammeId,
+                    Gateway = filter.Gateway,
+                    MarketGroupId = filter.MarketGroupId
+                };
+                var variants = _documentDataStore.FdpModelsByMarketGroupGetMany(programmeFilter);
                 marketGroup.VariantCount = variants.Count();
             }
 
@@ -92,14 +104,26 @@ namespace FeatureDemandPlanning.DataStore
 
             return _marketDataStore.TopMarketDelete(market);
         }
-        public IEnumerable<Model.Model> ListAvailableModelsByMarket(OXODoc forDocument, Market byMarket)
+        public IEnumerable<FdpModel> ListAvailableModelsByMarket(OXODoc forDocument, Market byMarket)
         {
-            return _documentDataStore.OXODocAvailableModelsByMarket(forDocument.ProgrammeId, forDocument.Id, byMarket.Id)
+            var filter = new ProgrammeFilter()
+            {
+                ProgrammeId = forDocument.ProgrammeId,
+                Gateway = forDocument.Gateway,
+                MarketId = byMarket.Id
+            };
+            return _documentDataStore.FdpModelsByMarketGetMany(filter)
                 .Where(m => m.Available == true);
         }
-        public IEnumerable<Model.Model> ListAvailableModelsByMarketGroup(OXODoc forDocument, MarketGroup byMarketGroup)
+        public IEnumerable<FdpModel> ListAvailableModelsByMarketGroup(OXODoc forDocument, MarketGroup byMarketGroup)
         {
-            return _documentDataStore.OXODocAvailableModelsByMarketGroup(forDocument.ProgrammeId, forDocument.Id, byMarketGroup.Id)
+            var filter = new ProgrammeFilter()
+            {
+                ProgrammeId = forDocument.ProgrammeId,
+                Gateway = forDocument.Gateway,
+                MarketGroupId = byMarketGroup.Id
+            };
+            return _documentDataStore.FdpModelsByMarketGroupGetMany(filter)
                 .Where(m => m.Available == true);
         }
 

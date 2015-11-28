@@ -35,7 +35,7 @@ model.CopyTrimMappingAction = function (params) {
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
             "TrimId": me.getTrimId(),
-            "Gateway": me.getSelectedGateway()
+            "CopyToGateways": [me.getSelectedGateway()]
         });
     };
     me.getIdentifierPrefix = function () {

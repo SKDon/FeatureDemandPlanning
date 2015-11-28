@@ -160,6 +160,13 @@ page.TrimsPage = function (models) {
                     "sClass": "text-center"
                 }
                 , {
+                    "sTitle": "BMC",
+                    "sName": "BMC",
+                    "bSearchable": true,
+                    "bSortable": true,
+                    "sClass": "text-center"
+                }
+                , {
                     "sTitle": "Trim",
                     "sName": "DERIVATIVE",
                     "bSearchable": true,

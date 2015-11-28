@@ -17,9 +17,13 @@ namespace FeatureDemandPlanning.Model.Filters
 
         public TrimAction Action { get; set; }
 
+        public bool IncludeAllTrim { get; set; }
+        public string DerivativeCode { get; set; }
+
         public TrimFilter()
         {
             Action = TrimAction.NotSet;
+            IncludeAllTrim = false;
         }
         public static TrimFilter FromTrimId(int? trimId)
         {

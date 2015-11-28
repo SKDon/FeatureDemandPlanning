@@ -53,6 +53,12 @@
                 @Model.CurrentException.ImportTrim
             </div>
         </div>
+    <div class="row">
+        <div class="col-xs-4 text-right"><strong>Import Derivative:</strong></div>
+        <div id="@(Model.IdentifierPrefix)_ImportDerivative" class="col-xs-8" data-target="@Model.CurrentException.ImportDerivativeCode">
+            @Model.CurrentException.ImportDerivativeCode
+        </div>
+    </div>
     }
 
     @if (Model.CurrentAction == enums.ImportAction.MapMissingMarket)

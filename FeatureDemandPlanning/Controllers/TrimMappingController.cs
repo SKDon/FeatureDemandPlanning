@@ -93,6 +93,10 @@ namespace FeatureDemandPlanning.Controllers
         {
             ValidateTrimMappingParameters(parameters, TrimMappingParametersValidator.TrimIdentifierWithAction);
             ValidateTrimMappingParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+            if (parameters.Action == TrimMappingAction.CopyAll || parameters.Action == TrimMappingAction.Copy)
+            {
+                TempData["CopyToGateways"] = parameters.CopyToGateways;
+            }
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
@@ -116,6 +120,7 @@ namespace FeatureDemandPlanning.Controllers
         [HandleErrorWithJson]
         public async Task<ActionResult> Copy(TrimMappingParameters parameters)
         {
+            parameters.CopyToGateways = (IEnumerable<string>)TempData["CopyToGateways"];
             var derivativeMappingView = await GetModelFromParameters(parameters);
             if (derivativeMappingView.TrimMapping is EmptyFdpTrimMapping)
             {

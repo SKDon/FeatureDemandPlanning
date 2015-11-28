@@ -71,7 +71,7 @@
                         <span class="caret"></span>
                     </button>
                     <ul id="@(Model.IdentifierPrefix)_GatewayList" class="dropdown-menu">
-                        @foreach (var gateway in Model.Gateways)
+                        @foreach (var gateway in Model.Gateways.Where(g => !g.Name.Equals(Model.TrimMapping.Gateway, StringComparison.InvariantCultureIgnoreCase)))
                         {
                             <li><a class="gateway-item" href="#" data-target="@gateway.Name" data-content="@gateway.Name">@gateway.Name</a></li>
                         }

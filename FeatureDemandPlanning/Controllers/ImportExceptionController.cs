@@ -164,7 +164,8 @@ namespace FeatureDemandPlanning.Controllers
                 Name = parameters.TrimName,
                 Abbreviation = parameters.TrimAbbreviation,
                 Level = parameters.TrimLevel,
-                DPCK = parameters.DPCK
+                DPCK = parameters.DPCK,
+                BMC = parameters.DerivativeCode
             };
             importView.CurrentException = await DataContext.Import.AddTrim(filter, trim);
             await DeactivateException(importView.CurrentException);
@@ -249,8 +250,19 @@ namespace FeatureDemandPlanning.Controllers
                 ImportTrim = parameters.ImportTrim,
                 ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
                 Gateway = parameters.Gateway,
-                TrimId = parameters.TrimId.GetValueOrDefault()
+                BMC = parameters.DerivativeCode
             };
+            if (!string.IsNullOrEmpty(parameters.TrimIdentifier))
+            {
+                if (parameters.TrimIdentifier.StartsWith("F"))
+                {
+                    trimMapping.FdpTrimId = int.Parse(parameters.TrimIdentifier.Substring(1));
+                }
+                else
+                {
+                    trimMapping.TrimId = int.Parse(parameters.TrimIdentifier.Substring(1));
+                }
+            }
             importView.CurrentException = await DataContext.Import.MapTrim(filter, trimMapping);
             await DeactivateException(importView.CurrentException);
 

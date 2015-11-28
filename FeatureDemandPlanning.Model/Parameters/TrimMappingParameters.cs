@@ -27,7 +27,8 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    TrimMappingId
+                    TrimMappingId,
+                    CopyToGateways
                 };
             }
 

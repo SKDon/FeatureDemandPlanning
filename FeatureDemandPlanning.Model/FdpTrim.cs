@@ -9,6 +9,9 @@ namespace FeatureDemandPlanning.Model
         //public new int? ProgrammeId { get; set; }
         public Programme Programme { get; set; }
         public string Gateway { get; set; }
+        public string BMC { get; set; }
+
+        public bool IsFdpTrim { get; set; }
 
         public virtual string[] ToJQueryDataTableResult()
         {
@@ -19,6 +22,7 @@ namespace FeatureDemandPlanning.Model
                 CreatedBy,
                 Programme.GetDisplayString(),
                 Gateway,
+                BMC,
                 Name,
                 Level
             };
@@ -26,7 +30,12 @@ namespace FeatureDemandPlanning.Model
 
         public static FdpTrim FromParameters(Parameters.TrimParameters parameters)
         {
-            throw new System.NotImplementedException();
+            return new FdpTrim()
+            {
+                FdpTrimId = parameters.TrimId,
+                ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
+                Gateway = parameters.Gateway
+            };
         }
     }
 }

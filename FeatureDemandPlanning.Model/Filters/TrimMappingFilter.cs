@@ -10,6 +10,7 @@ namespace FeatureDemandPlanning.Model.Filters
         public TrimMappingFilter()
         {
             Action = TrimMappingAction.NotSet;
+            IncludeAllTrim = false;
         }
 
         public static TrimMappingFilter FromTrimMappingId(int? trimMappingId)

@@ -13,6 +13,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public string ModelYear { get; set; }
         public string Gateway { get; set; }
         public string FilterMessage { get; set; }
+        public string DerivativeCode { get; set; }
 
         public TrimAction Action { get; set; }
 

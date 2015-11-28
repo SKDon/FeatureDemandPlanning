@@ -43,7 +43,7 @@ namespace FeatureDemandPlanning.DataStore
 
             var availableDocuments = ListAvailableOxoDocuments(filter);
             var availableImports = ListAvailableImports(filter, programme);
-            var availableModels = ListAvailableModels(filter, programme);
+            var availableModels = ListAvailableModels(filter);
             var availableMarketGroups = ListAvailableMarketGroups(filter, programme);
             //var availableMarkets = ListAvailableMarkets(filter, programme);
 
@@ -93,13 +93,9 @@ namespace FeatureDemandPlanning.DataStore
             return imports;
         }
 
-        public IEnumerable<Model.Model> ListAvailableModels(VehicleFilter filter, Programme forProgramme)
+        public IEnumerable<FdpModel> ListAvailableModels(ProgrammeFilter filter)
         {
-            var models = _modelDataStore
-                            .ModelGetMany(string.Empty, forProgramme.Id, null)
-                            .ToList();
-
-            return models;
+            return _modelDataStore.FdpModelGetMany(filter);
         }
         public IEnumerable<MarketGroup> ListAvailableMarketGroups(VehicleFilter filter, Programme forProgramme)
         {
@@ -198,9 +194,9 @@ namespace FeatureDemandPlanning.DataStore
         {
             return _engineDataStore.ModelEngineGetMany(filter.ProgrammeId.GetValueOrDefault());
         }
-        public IEnumerable<ModelTrim> ListTrim(ProgrammeFilter filter)
+        public IEnumerable<FdpTrimMapping> ListTrim(TrimFilter filter)
         {
-            return _trimDataStore.ModelTrimGetMany(filter.ProgrammeId.GetValueOrDefault());
+            return _trimDataStore.ModelTrimGetMany(filter);
         }
         public IEnumerable<Feature> ListFeatures(ProgrammeFilter filter)
         {
@@ -356,9 +352,9 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult<PagedResults<FdpTrimMapping>>(_trimDataStore.FdpTrimMappingGetMany(filter));
         }
-        public Task<FdpTrimMapping> CopyFdpTrimMappingToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways)
+        public async Task<FdpTrimMapping> CopyFdpTrimMappingToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways)
         {
-            throw new NotImplementedException();
+            return await Task.FromResult<FdpTrimMapping>(_trimDataStore.FdpTrimMappingCopy(fdpTrimMapping, gateways));
         }
         public Task<FdpTrimMapping> CopyFdpTrimMappingsToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways)
         {

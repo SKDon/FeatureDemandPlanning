@@ -9,6 +9,7 @@ using FeatureDemandPlanning.Model.Helpers;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using FeatureDemandPlanning.DataStore;
+using FeatureDemandPlanning.Model.Filters;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -462,6 +463,49 @@ namespace FeatureDemandPlanning.DataStore
 
             }
             return retVal;                
+        }
+
+        public IEnumerable<FdpModel> FdpModelsByMarketGetMany(ProgrammeFilter filter)
+        {
+            IEnumerable<FdpModel> retVal = null;
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
+                    para.Add("@OxoDocId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    retVal = conn.Query<FdpModel>("dbo.Fdp_AvailableModelByMarket_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("OXODocDataStore.FdpModelsByMarketGetMany", ex.Message, CurrentCDSID);
+                }
+
+            }
+            return retVal;
+        }
+        public IEnumerable<FdpModel> FdpModelsByMarketGroupGetMany(ProgrammeFilter filter)
+        {
+            IEnumerable<FdpModel> retVal = null;
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
+                    para.Add("@OxoDocId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@MarketGroupId", filter.MarketGroupId, DbType.Int32);
+                    retVal = conn.Query<FdpModel>("dbo.Fdp_AvailableModelByMarketGroup_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("OXODocDataStore.FdpModelsByMarketGroupGetMany", ex.Message, CurrentCDSID);
+                }
+
+            }
+            return retVal;
         }
 
         public IEnumerable<OXODataChain> OXODocGetItemDataChain(string option, int docId, int progId, int modelId, int featureId, string level, int objectId)

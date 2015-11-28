@@ -81,6 +81,9 @@ page.ExceptionsPage = function (models) {
                 callback(json);
                 me.updatePaging();
                 me.updateTotals();
+            },
+            "error": function (jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
             }
         });
     };
@@ -94,6 +97,9 @@ page.ExceptionsPage = function (models) {
             "data": params,
             "success": function (response) {
                 $("#contextMenu").html(response);
+            },
+            "error": function (jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
             }
         });
     };
@@ -176,6 +182,9 @@ page.ExceptionsPage = function (models) {
             "data": params,
             "success": function (response) {
                 $("#" + me.getIdentifierPrefix() + "_ImportSummary").html(response);
+            },
+            "error": function (jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
             }
         });
     };

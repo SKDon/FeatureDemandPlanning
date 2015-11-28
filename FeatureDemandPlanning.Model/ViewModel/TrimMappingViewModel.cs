@@ -87,7 +87,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             {
                 ProgrammeId = trimMapping.ProgrammeId,
                 Gateway = trimMapping.Gateway,
-                Code = model.TrimMapping.Programme.VehicleName // In order to filter the gateways specific to the programme
+                //Code = model.TrimMapping.Programme.VehicleName // In order to filter the gateways specific to the programme
             };
             HydrateModelWithCommonProperties(model, context, programmeFilter);
             model.Gateways = context.Vehicle.ListGateways(programmeFilter);

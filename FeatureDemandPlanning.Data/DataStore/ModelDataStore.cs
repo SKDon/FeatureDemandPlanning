@@ -6,6 +6,7 @@ using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
+using FeatureDemandPlanning.Model.Filters;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -193,6 +194,27 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@p_prog_Id", prog_Id, dbType: DbType.Int32);
                     para.Add("@p_doc_Id", doc_id, dbType: DbType.Int32);
                     retVal = conn.Query<Model.Model>("dbo.OXO_GSF_Model_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ModelDataStore.GSFModelGetMany", ex.Message, CurrentCDSID);
+                }
+            }
+
+            return retVal;
+        }
+
+        public IEnumerable<FdpModel> FdpModelGetMany(ProgrammeFilter filter)
+        {
+            IEnumerable<FdpModel> retVal = null;
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
+                    para.Add("@OxoDocId", filter.OxoDocId, dbType: DbType.Int32);
+                    retVal = conn.Query<FdpModel>("dbo.Fdp_Model_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {

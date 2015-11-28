@@ -109,7 +109,7 @@
     <Compile Include="DataStore\MarketDataStore.cs" />
     <Compile Include="DataStore\OXOMarketGroupDS.cs" />
     <Compile Include="DataStore\OXOModelBodyDS.cs" />
-    <Compile Include="DataStore\OXOModelDS.cs" />
+    <Compile Include="DataStore\ModelDataStore.cs" />
     <Compile Include="DataStore\OXOModelEngineDS.cs" />
     <Compile Include="DataStore\OXOModelTransmissionDS.cs" />
     <Compile Include="DataStore\ModelTrimDataStore.cs" />

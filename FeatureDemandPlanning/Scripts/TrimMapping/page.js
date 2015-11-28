@@ -160,6 +160,13 @@ page.TrimMappingsPage = function (models) {
                     "sClass": "text-center"
                 }
                 , {
+                    "sTitle": "BMC",
+                    "sName": "BMC",
+                    "bSearchable": true,
+                    "bSortable": true,
+                    "sClass": "text-center"
+                }
+                , {
                     "sTitle": "Import Trim",
                     "sName": "DERIVATIVE",
                     "bSearchable": true,

@@ -98,6 +98,7 @@
     <Compile Include="Empty\EmptyFdpDerivativeMapping.cs" />
     <Compile Include="Empty\EmptyFdpDerivative.cs" />
     <Compile Include="Empty\EmptyFdpFeature.cs" />
+    <Compile Include="Empty\EmptyFdpModel.cs" />
     <Compile Include="Empty\EmptyFdpSpecialFeatureMapping.cs" />
     <Compile Include="Empty\EmptyFdpFeatureMapping.cs" />
     <Compile Include="Empty\EmptyFdpMarket.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Enumerations\UserAction.cs" />
     <Compile Include="FdpImportErrorExclusion.cs" />
     <Compile Include="FdpDerivative.cs" />
+    <Compile Include="FdpModel.cs" />
     <Compile Include="FdpSpecialFeatureMapping.cs" />
     <Compile Include="FdpMarketMapping.cs" />
     <Compile Include="FdpMarket.cs" />
