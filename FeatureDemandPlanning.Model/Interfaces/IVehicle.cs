@@ -26,7 +26,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IEnumerable<Programme> Programmes { get; set; }
         IEnumerable<OXODoc> AvailableDocuments { get; set; }
         IEnumerable<TakeRateSummary> AvailableImports { get; set; }
-        IEnumerable<Model> AvailableModels { get; set; }
+        IEnumerable<FdpModel> AvailableModels { get; set; }
         IEnumerable<MarketGroup> AvailableMarketGroups { get; set; }
         //IEnumerable<Market> AvailableMarkets { get; set; }
 

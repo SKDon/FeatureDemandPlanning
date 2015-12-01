@@ -28,7 +28,7 @@ BEGIN
 				  ProgrammeId
 				, Gateway
 				, FeatureCode
-				, FdpSpecialFeatureId
+				, FdpSpecialFeatureTypeId
 				, CreatedBy
 			)
 			VALUES
@@ -44,7 +44,7 @@ BEGIN
 	  
 		COMMIT TRANSACTION;
 		
-		EXEC Fdp_SpecialFeature_Get @FdpSpecialFeatureId;
+		EXEC Fdp_SpecialFeatureMapping_Get @FdpSpecialFeatureId;
 	  
 	END TRY
 	BEGIN CATCH

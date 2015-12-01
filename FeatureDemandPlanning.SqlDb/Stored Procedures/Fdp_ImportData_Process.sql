@@ -2,35 +2,38 @@
 	  @FdpImportId	INT
 	, @LineNumber	INT = NULL
 AS
-
 	SET NOCOUNT ON;
 	
-	DECLARE @ProgrammeId INT;
-	DECLARE @Gateway NVARCHAR(100);
-	
-	-- Update the status of our import to be processing
-	
-	PRINT 'Setting import to processing...'
-
-	UPDATE Q SET FdpImportStatusId = 2
-	FROM
-	Fdp_Import AS I
-	JOIN Fdp_ImportQueue AS Q ON I.FdpImportQueueId = Q.FdpImportQueueId
-	WHERE
-	I.FdpImportId = @FdpImportId
-	AND
-	Q.FdpImportStatusId IN (1, 4)
-	
-	-- Update all prior queued imports for the same programme and gateway setting the status to cancelled
-	
-	PRINT 'Cancelling old imports...'
+	DECLARE @ProgrammeId		INT;
+	DECLARE @Gateway			NVARCHAR(100);
+	DECLARE @OxoDocId			INT;
+	DECLARE @FdpVolumeHeaderId	INT;
+	DECLARE @FdpImportQueueId	INT;
+	DECLARE @Message			NVARCHAR(400);
 	
 	SELECT 
 		  @ProgrammeId = ProgrammeId
 		, @Gateway = Gateway
+		, @FdpImportQueueId = FdpImportQueueId
 	FROM Fdp_Import
 	WHERE
 	FdpImportId = @FdpImportId;
+	
+	-- Update the status of our import to be processing
+	
+	SET @Message = 'Setting import to processing...'
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+	
+	UPDATE Fdp_ImportQueue SET FdpImportStatusId = 2
+	WHERE
+	FdpImportQueueId = @FdpImportQueueId
+	AND
+	FdpImportStatusId IN (1, 4);
+	
+	-- Update all prior queued imports for the same programme and gateway setting the status to cancelled
+
+	SET @Message = 'Cancelling old imports...'
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
 	
 	UPDATE Q 
 		SET FdpImportStatusId = 5 -- Cancelled
@@ -60,7 +63,8 @@ AS
 	
 	-- Create exceptions of varying types based on the data that cannot be processed
 	
-	PRINT 'Adding exceptions report'
+	SET @Message = 'Adding missing markets...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 	
 	INSERT INTO Fdp_ImportError
 	(
@@ -84,11 +88,19 @@ AS
 	WHERE
 	I.FdpImportId = @FdpImportId
 	AND
+	I.FdpImportQueueId = @FdpImportQueueId
+	AND
 	I.IsMarketMissing = 1
 	AND
 	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
 	AND
 	CUR.FdpImportErrorId IS NULL
+	
+	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing market errors added';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+	
+	SET @Message = 'Adding missing derivatives...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 		
 	INSERT INTO Fdp_ImportError
 	(
@@ -112,11 +124,19 @@ AS
 	WHERE
 	I.FdpImportId = @FdpImportId
 	AND
+	I.FdpImportQueueId = @FdpImportQueueId
+	AND
 	I.IsDerivativeMissing = 1
 	AND
 	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
 	AND
-	CUR.FdpImportErrorId IS NULL
+	CUR.FdpImportErrorId IS NULL;
+	
+	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing derivative errors added';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+	
+	SET @Message = 'Adding missing trim...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 	
 	INSERT INTO Fdp_ImportError
 	(
@@ -125,13 +145,15 @@ AS
 		, ErrorOn
 		, FdpImportErrorTypeId
 		, ErrorMessage
+		, AdditionalData
 	)
 	SELECT 
 		  I.FdpImportQueueId
 		, I.ImportLineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId -- Missing Trim
-		, 'Missing trim ''' + I.ImportTrim + '''' AS ErrorMessage
+		, 'Missing trim ''' + I.ImportTrim + ''' for derivative ''' + I.BMC + '''' AS ErrorMessage
+		, I.BMC
 	FROM Fdp_Import_VW			AS I
 	LEFT JOIN Fdp_ImportError	AS CUR	ON	I.FdpImportQueueId			= CUR.FdpImportQueueId
 										AND	I.ImportLineNumber			= CUR.LineNumber
@@ -139,11 +161,19 @@ AS
 	WHERE
 	I.FdpImportId = @FdpImportId
 	AND
+	I.FdpImportQueueId = @FdpImportQueueId
+	AND
 	I.IsTrimMissing = 1 
 	AND
 	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
 	AND
-	CUR.FdpImportErrorId IS NULL
+	CUR.FdpImportErrorId IS NULL;
+	
+	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing trim errors added';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+	
+	SET @Message = 'Adding features...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 		
 	INSERT INTO Fdp_ImportError
 	(
@@ -166,27 +196,23 @@ AS
 	WHERE
 	I.FdpImportId = @FdpImportId
 	AND
+	I.FdpImportQueueId = @FdpImportQueueId
+	AND
 	I.IsFeatureMissing = 1
 	AND
 	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
 	AND
 	CUR.FdpImportErrorId IS NULL
 	
-	-- Update the status of the report to error if we have any
-	
-	UPDATE Q SET FdpImportStatusId = 4
-	FROM Fdp_Import AS I
-	JOIN Fdp_ImportQueue AS Q ON I.FdpImportQueueId = Q.FdpImportQueueId
-	JOIN Fdp_ImportError AS E ON Q.FdpImportQueueId = E.FdpImportQueueId
-							  AND E.IsExcluded		= 0
-	WHERE
-	I.FdpImportId = @FdpImportId;
+	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing feature errors added';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 	
 	-- From the import data, create an FDP_VolumeHeader entry for each distinct programme 
 	-- in the import
 	
-	PRINT 'Adding header information'
-
+	SET @Message = 'Adding header information...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+	
 	INSERT INTO Fdp_VolumeHeader
 	(
 		  CreatedOn
@@ -194,6 +220,7 @@ AS
 		, ProgrammeId
 		, Gateway
 		, FdpImportId
+		, FdpTakeRateStatusId
 		, IsManuallyEntered
 	)
 	SELECT
@@ -202,6 +229,7 @@ AS
 		, I.ProgrammeId
 		, I.Gateway
 		, I.FdpImportId
+		, 1					AS FdpTakeRateStatusId
 		, 0					AS IsManuallyCreated
 	FROM 
 	FDP_Import_VW				AS I
@@ -221,6 +249,8 @@ AS
 	AND
 	I.FdpImportId = @FdpImportId
 	AND
+	I.FdpImportQueueId = @FdpImportQueueId
+	AND
 	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
 	AND
 	CUR.FdpVolumeHeaderId IS NULL
@@ -229,11 +259,38 @@ AS
 	  I.FdpImportId
 	, I.ProgrammeId
 	, I.Gateway;
+	
+	SELECT @FdpVolumeHeaderId = FdpVolumeHeaderId
+	FROM
+	Fdp_VolumeHeader
+	WHERE
+	FdpImportId = @FdpImportId;
+	
+	-- Create the link to the volume data and the most recent published document for the programme and gateway
+	
+	INSERT INTO Fdp_OxoDoc 
+	(
+		  CreatedBy
+		, FdpVolumeHeaderId
+		, OXODocId
+	)
+	SELECT TOP 1
+		  H.CreatedBy
+		, H.FdpVolumeHeaderId
+		, D.Id 
+	FROM Fdp_VolumeHeader	AS H
+	JOIN OXO_Doc			AS D	ON	H.ProgrammeId	= D.Programme_Id
+									AND H.Gateway		= D.Gateway
+									AND D.[Status]		= 'PUBLISHED'
+	LEFT JOIN Fdp_OxoDoc	AS CUR	ON	H.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
+	WHERE
+	CUR.FdpOxoDocId IS NULL;
 
 	-- If there are no active errors for the import...
 	-- For every entry in the import, create an entry in FDP_VolumeDataItem
 	
-	PRINT 'Adding volume data'
+	SET @Message = 'Adding volume data...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 
 	INSERT INTO Fdp_VolumeDataItem
 	(
@@ -242,8 +299,11 @@ AS
 		, MarketId
 		, MarketGroupId
 		, ModelId
+		, FdpModelId
 		, TrimId
+		, FdpTrimId
 		, FeatureId
+		, FdpFeatureId
 		, FeaturePackId
 		, Volume
 	)
@@ -253,19 +313,32 @@ AS
 		, I.MarketId
 		, I.MarketGroupId
 		, I.ModelId
+		, I.FdpModelId
 		, I.TrimId
+		, I.FdpTrimId
 		, I.FeatureId
+		, I.FdpFeatureId
 		, I.FeaturePackId
-		, SUM(CAST(I.ImportVolume AS INT)) AS Volume 
+		, CAST(I.ImportVolume AS INT) 
 	FROM
-	Fdp_Import_VW			AS I
-	JOIN Fdp_VolumeHeader			AS H ON I.FdpImportId = H.FdpImportId
-	LEFT JOIN Fdp_VolumeDataItem	AS CUR	ON	I.MarketId		= CUR.MarketId
-											AND I.MarketGroupId = CUR.MarketGroupId
-											AND I.ModelId		= CUR.ModelId
-											AND I.TrimId		= CUR.TrimId
-											AND I.FeatureId		= CUR.FeatureId
-											AND I.FeaturePackId = CUR.FeaturePackId
+	Fdp_Import_VW					AS I
+	JOIN Fdp_VolumeHeader			AS H	ON	I.FdpImportId		= H.FdpImportId
+	LEFT JOIN Fdp_VolumeDataItem	AS CUR	ON	H.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
+											AND I.MarketId			= CUR.MarketId
+											AND 
+											(
+												I.ModelId = CUR.ModelId
+												OR
+												I.FdpModelId = CUR.FdpModelId
+											)
+											AND 
+											(
+												I.FeatureId = CUR.FeatureId
+												OR
+												I.FdpFeatureId = CUR.FdpFeatureId
+											)
+											AND I.FeaturePackId				= CUR.FeaturePackId
+											AND CAST(I.ImportVolume AS INT) = CUR.Volume
 											AND CUR.IsManuallyEntered = 1
 	WHERE 
 	I.IsExistingData = 0
@@ -282,70 +355,77 @@ AS
 	AND
 	I.FdpImportId = @FdpImportId
 	AND
-	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
-	AND
 	CUR.FdpVolumeDataItemId IS NULL
-	AND
-	I.FdpImportStatusId <> 4
+	--AND
+	--I.FdpImportStatusId <> 4
 	
-	-- Need to group here, as if there are results from the view where multiple import lines
-	-- match the same trim / engine mapping for the programme / market in question
-	-- we need to aggregate the take rate
-	 
-	GROUP BY
-		  H.FdpVolumeHeaderId
-		, I.MarketId
-		, I.MarketGroupId
-		, I.ModelId
-		, I.TrimId
-		, I.FeatureId
-		, I.FeaturePackId;
+	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' data items added';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
 
 	-- Add the summary volume information for each market / derivative / trim level
 	-- Only add information if it differs from the previous volume data
 	
-	PRINT 'Adding summary information'
-
-	INSERT INTO Fdp_Volume
+	SET @Message = 'Adding summary information...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
+	
+	INSERT INTO Fdp_TakeRateSummary
 	(
 		  FdpVolumeHeaderId
-		, IsManuallyEntered
+		, FdpSpecialFeatureMappingId
 		, MarketId
-		, MarketGroupId
 		, ModelId
-		, TrimId
-		, EngineId
+		, FdpModelId
 		, Volume
+		, PercentageTakeRate
 	)
 	SELECT
 		  H.FdpVolumeHeaderId
-		, 0
+		, I.FdpSpecialFeatureMappingId
 		, I.MarketId
-		, I.MarketGroupId
-		, I.ModelId
-		, I.TrimId
-		, I.EngineId
-		, I.TotalVolume
+		, I.ModelId 
+		, I.FdpModelId
+		, I.ImportVolume
+		, 0
 	FROM
-	Fdp_ImportVolume_VW		AS I
-	JOIN Fdp_VolumeHeader	AS H	ON I.FdpImportId	= H.FdpImportId
-	LEFT JOIN Fdp_Volume	AS CUR	ON I.MarketId		= CUR.MarketId
-									AND	I.MarketGroupId	= CUR.MarketGroupId
-									AND I.ModelId		= CUR.ModelId
-									AND I.TotalVolume	= CUR.Volume
-									AND I.TrimId		= CUR.TrimId 
+	Fdp_Import_VW					AS I
+	JOIN Fdp_VolumeHeader			AS H	ON	I.FdpImportId					= H.FdpImportId
+	LEFT JOIN Fdp_TakeRateSummary	AS CUR	ON	H.FdpVolumeHeaderId				= CUR.FdpVolumeHeaderId
+											AND I.FdpSpecialFeatureMappingId	= CUR.FdpSpecialFeatureMappingId
+											AND I.MarketId						= CUR.MarketId
+											AND
+											(
+												I.ModelId = CUR.ModelId
+												OR
+												I.FdpModelId = CUR.FdpModelId
+											)
+											AND I.ImportVolume					<> CUR.Volume
 	WHERE
 	I.FdpImportId = @FdpImportId
 	AND
-	CUR.FdpVolumeId IS NULL;
+	I.IsSpecialFeatureCode = 1
+	AND
+	I.IsMarketMissing = 0
+	AND
+	I.IsDerivativeMissing = 0
+	AND
+	I.IsTrimMissing = 0
+	AND
+	CUR.FdpTakeRateSummaryId IS NULL
+	
+	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' summary items added';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
 	
 	-- Update the total volume mix based on the sum of the total volumes for each market and derivative
 	
 	DECLARE @TotalVolume INT
-	SELECT @TotalVolume = SUM(I.TotalVolume)
-	FROM Fdp_ImportVolume_VW	AS I
+	SELECT @TotalVolume = SUM(S.Volume)
+	FROM Fdp_VolumeHeader		AS H
+	JOIN Fdp_TakeRateSummary	AS S	ON H.FdpVolumeHeaderId			= S.FdpVolumeHeaderId
+	JOIN Fdp_SpecialFeature		AS SF	ON S.FdpSpecialFeatureMappingId = SF.FdpSpecialFeatureId
 	WHERE
-	I.FdpImportId = @FdpImportId;
+	H.FdpImportId = @FdpImportId
+	AND
+	SF.FdpSpecialFeatureTypeId = 1 -- Volume by derivative (full year)
 	
 	UPDATE Fdp_VolumeHeader SET TotalVolume = @TotalVolume
 	WHERE

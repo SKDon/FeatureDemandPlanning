@@ -18,16 +18,39 @@ namespace FeatureDemandPlanning.Model
 
         public IEnumerable<DataRow> RawData { get; set; }
         public IEnumerable<DataRow> FeatureApplicabilityData { get { return _faData; } set { _faData = value; } }
-        public IEnumerable<DerivativeVolumeData> VolumeByModel { get { return _volumeByModel; } set { _volumeByModel = value; } }
+        public IEnumerable<ModelTakeRateSummary> TakeRateSummaryByModel { get { return _takeRateSummaryByModel; } set { _takeRateSummaryByModel = value; } }
 
         private IEnumerable<DataRow> _rawData = Enumerable.Empty<DataRow>();
         private IEnumerable<DataRow> _faData = Enumerable.Empty<DataRow>();
-        private IEnumerable<DerivativeVolumeData> _volumeByModel = Enumerable.Empty<DerivativeVolumeData>();
+        private IEnumerable<ModelTakeRateSummary> _takeRateSummaryByModel = Enumerable.Empty<ModelTakeRateSummary>();
     }
 
-    public class DerivativeVolumeData
+    public class ModelTakeRateSummary
     {
-        public int ModelId { get; set; }
+        public string StringIdentifier { get; set; }
+        public bool IsFdpModel { get; set; }
+        public int? ModelId
+        {
+            get
+            {
+                if (IsFdpModel)
+                {
+                    return null;
+                }
+                return int.Parse(StringIdentifier.Remove(0));
+            }
+        }
+        public int? FdpModelId
+        {
+            get
+            {
+                if (!IsFdpModel)
+                {
+                    return null;
+                }
+                return int.Parse(StringIdentifier.Remove(0));
+            }
+        }
         public int Volume { get; set; }
         public decimal PercentageOfFilteredVolume { get; set; }
     }

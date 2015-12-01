@@ -6,10 +6,11 @@
     [FdpOxoVolumeDataItemId]      INT            NULL,
     [Section]                     NVARCHAR (100) NULL,
     [ModelId]                     INT            NULL,
+    [FdpModelId]                  INT            NULL,
     [FeatureId]                   INT            NULL,
+    [FdpFeatureId]                INT            NULL,
     [MarketGroupId]               INT            NULL,
     [MarketId]                    INT            NULL,
-    [TrimId]                      INT            NULL,
     [FdpOxoDocId]                 INT            NULL,
     [Volume]                      INT            NULL,
     [PercentageTakeRate]          DECIMAL (5, 4) NULL,
@@ -22,6 +23,8 @@
     CONSTRAINT [PK_Fdp_OxoVolumeDataItemAudit] PRIMARY KEY CLUSTERED ([FdpOxoVolumeDataItemAuditId] ASC),
     CONSTRAINT [FK_Fdp_OxoVolumeDataItemAudit_Fdp_OxoVolumeDataItem] FOREIGN KEY ([FdpOxoVolumeDataItemId]) REFERENCES [dbo].[Fdp_OxoVolumeDataItem] ([FdpOxoVolumeDataItemId])
 );
+
+
 
 
 GO

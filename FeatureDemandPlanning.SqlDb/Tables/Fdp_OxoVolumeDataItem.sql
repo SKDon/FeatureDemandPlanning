@@ -1,11 +1,12 @@
 ﻿CREATE TABLE [dbo].[Fdp_OxoVolumeDataItem] (
     [FdpOxoVolumeDataItemId] INT            IDENTITY (1, 1) NOT NULL,
     [Section]                NVARCHAR (100) NOT NULL,
-    [ModelId]                INT            NOT NULL,
+    [ModelId]                INT            NULL,
+    [FdpModelId]             INT            NULL,
     [FeatureId]              INT            NULL,
+    [FdpFeatureId]           INT            NULL,
     [MarketGroupId]          INT            NULL,
     [MarketId]               INT            NOT NULL,
-    [TrimId]                 INT            NOT NULL,
     [FdpOxoDocId]            INT            NOT NULL,
     [Volume]                 INT            NULL,
     [PercentageTakeRate]     DECIMAL (5, 4) NULL,
@@ -19,21 +20,26 @@
     CONSTRAINT [FK_Fdp_OxoVolumeData_OXO_Master_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[OXO_Master_Market] ([Id]),
     CONSTRAINT [FK_Fdp_OxoVolumeData_OXO_Programme_Model] FOREIGN KEY ([ModelId]) REFERENCES [dbo].[OXO_Programme_Model] ([Id]),
     CONSTRAINT [FK_Fdp_OxoVolumeData_OXO_Programme_Pack] FOREIGN KEY ([PackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id]),
+    CONSTRAINT [FK_Fdp_OxoVolumeDataItem_Fdp_Feature] FOREIGN KEY ([FdpFeatureId]) REFERENCES [dbo].[Fdp_Feature] ([FdpFeatureId]),
+    CONSTRAINT [FK_Fdp_OxoVolumeDataItem_Fdp_Model] FOREIGN KEY ([FdpModelId]) REFERENCES [dbo].[Fdp_Model] ([FdpModelId]),
     CONSTRAINT [FK_Fdp_OxoVolumeDataItem_FDP_OXODoc] FOREIGN KEY ([FdpOxoDocId]) REFERENCES [dbo].[Fdp_OxoDoc] ([FdpOxoDocId]),
     CONSTRAINT [FK_Fdp_OxoVolumeDataItem_OXO_Feature_Ext] FOREIGN KEY ([FeatureId]) REFERENCES [dbo].[OXO_Feature_Ext] ([Id]),
-    CONSTRAINT [FK_Fdp_OxoVolumeDataItem_OXO_Programme_MarketGroup] FOREIGN KEY ([MarketGroupId]) REFERENCES [dbo].[OXO_Programme_MarketGroup] ([Id]),
-    CONSTRAINT [FK_Fdp_OxoVolumeDataItem_OXO_Programme_Trim] FOREIGN KEY ([TrimId]) REFERENCES [dbo].[OXO_Programme_Trim] ([Id])
+    CONSTRAINT [FK_Fdp_OxoVolumeDataItem_OXO_Programme_MarketGroup] FOREIGN KEY ([MarketGroupId]) REFERENCES [dbo].[OXO_Programme_MarketGroup] ([Id])
 );
+
+
 
 
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_OxoVolumeDataItem_ModelId]
     ON [dbo].[Fdp_OxoVolumeDataItem]([ModelId] ASC)
-    INCLUDE([FeatureId], [TrimId], [Volume], [FdpOxoDocId], [MarketGroupId], [MarketId]);
+    INCLUDE([FeatureId], [Volume], [FdpOxoDocId], [MarketGroupId], [MarketId]);
+
+
 
 
 GO
-CREATE TRIGGER [dbo].[Fdp_OxoVolumeDataItem_Update] ON dbo.Fdp_OxoVolumeDataItem
+CREATE TRIGGER [dbo].[Fdp_OxoVolumeDataItem_Update] ON [dbo].[Fdp_OxoVolumeDataItem]
 FOR UPDATE
 AS 
 BEGIN
@@ -49,10 +55,11 @@ BEGIN
 		, FdpOxoVolumeDataItemId
 		, Section
 		, ModelId
+		, FdpModelId
 		, FeatureId
+		, FdpFeatureId
 		, MarketGroupId
 		, MarketId
-		, TrimId
 		, FdpOxoDocId
 		, Volume
 		, PercentageTakeRate
@@ -70,10 +77,11 @@ BEGIN
 		, D.FdpOxoVolumeDataItemId
 		, D.Section
 		, D.ModelId
+		, D.FdpModelId
 		, D.FeatureId
+		, D.FdpFeatureId
 		, D.MarketGroupId
 		, D.MarketId
-		, D.TrimId
 		, D.FdpOxoDocId
 		, D.Volume
 		, D.PercentageTakeRate

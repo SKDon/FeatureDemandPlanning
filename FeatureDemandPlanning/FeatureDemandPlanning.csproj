@@ -243,6 +243,7 @@
     <Content Include="Content\DataTables\js\dataTables.jqueryui.min.js" />
     <Content Include="Content\DataTables\js\jquery.dataTables.js" />
     <Content Include="Content\DataTables\js\jquery.dataTables.min.js" />
+    <Content Include="Content\DataTables\js\jquery.dataTables.rowGrouping.js" />
     <Content Include="Content\Editor\oxo-change-log.css" />
     <Content Include="Content\Editor\oxo-editor-validate.css" />
     <Content Include="Content\Editor\oxo-editor.css" />
@@ -871,6 +872,9 @@
     <Content Include="Extensions\malihu-custom-scrollbar-plugin-master\js\uncompressed\jquery.mousewheel.js" />
     <Content Include="Extensions\malihu-custom-scrollbar-plugin-master\LICENSE.txt" />
     <Content Include="Extensions\malihu-custom-scrollbar-plugin-master\mCSB_buttons.png" />
+    <Content Include="Scripts\DataTables\dataTables.bootstrap.min.js" />
+    <Content Include="Content\DataTables\js\dataTables.fixedColumns.min.js" />
+    <Content Include="Scripts\DataTables\jquery.dataTables.min.js" />
     <Content Include="Scripts\DerivativeMapping\copy.js" />
     <Content Include="Scripts\DerivativeMapping\delete.js" />
     <Content Include="Scripts\Derivative\delete.js" />
@@ -1498,12 +1502,12 @@
     <Content Include="Views\IgnoredException\IgnoredExceptionPage.cshtml" />
     <Content Include="Views\ImportException\_ImportSummary.cshtml" />
     <Content Include="Views\ImportException\_Filter.cshtml" />
+    <Content Include="Views\Volume\_VolumeData - Copy.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="bin\" />
     <Folder Include="Content\css\" />
-    <Folder Include="Scripts\DataTables\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

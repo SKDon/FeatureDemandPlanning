@@ -79,5 +79,11 @@ AS
 	JOIN Fdp_DerivativeMapping_VW	AS D	ON	P.DerivativeCode = D.ImportDerivativeCode
 											AND P.MappedDerivativeCode = D.MappedDerivativeCode
 											AND P.ProgrammeId = D.ProgrammeId
+											AND
+											(
+												(@IncludeAllDerivatives = 0 AND D.IsMappedDerivative = 1)
+												OR
+												(@IncludeAllDerivatives = 1)
+											)
 											AND P.Gateway = D.Gateway
 											AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex;

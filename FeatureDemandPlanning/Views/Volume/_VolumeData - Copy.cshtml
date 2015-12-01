@@ -1,0 +1,410 @@
+﻿@using System.Data
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+@{
+    var selectedModels = Model.Volume.Vehicle.AvailableModels;
+    var rightPaneWidth = "" + selectedModels.Count() * 80 + "px";
+    var uniqueid = 0;
+}
+
+<div class="panel panel-primary">
+    <div class="panel-heading" style="height:50px">
+        <div class="pull-left">
+            @*<div class="panel-title">
+                Take Rate Data
+            </div>*@
+        </div>
+        <div class="viewport-toolbar pull-left">
+            
+            <div class="btn-group">
+                @Html.Partial("_ViewModeSelector", Model)
+            </div>
+            <div class="btn-group">
+                @Html.Partial("_MarketSelector", Model)
+            </div>
+            <div class="input-group input-group-sm">
+                <input class="form-control" style="top:1px" type="text" maxlength="10" placeholder="Filter" aria-describedby="filter-addon" />
+            </div>
+        </div>
+        <div class="viewport-toolbar pull-right">
+            <div class="btn-group">
+                <button type="button" class="btn btn-default btn-sm" onclick="ToggleAllFolderWrapper();"><i class="glyphicon glyphicon-plus"></i> Toggle All</button>
+                <button type="button" class="btn btn-default btn-sm" id="butChangeLog" onclick='changeLogWrapper();'><i class="glyphicon glyphicon-book"></i> Change Sets</button>
+                <button type="button" class="btn btn-default btn-sm" id="butValidate" onclick='validateDoc();'><i class="glyphicon glyphicon-check"></i> Validate</button>
+                <button type="button" class="btn btn-default btn-sm" id="btnMarketReview" onclick="marketReview"><i class="glyphicon glyphicon-flag"></i> Market Review</button>
+                <button type="button" class="btn btn-default btn-sm" id="butPublish"><i class="glyphicon glyphicon-pushpin"></i> Publish</button>
+                <button type="button" class="btn btn-default btn-sm" id="butSaveChange" onclick='showSaveChangeDialog();' style="display:none"><i class="glyphicon glyphicon-save"></i> Save Changes</button>
+                <button type="button" class="btn btn-default btn-sm" id="butCancelChange" onclick='cancelOXODocument();' style="display:none"><i class="glyphicon glyphicon-remove"></i> Cancel Changes</button>
+            </div>
+            
+            
+            <div class="btn-group">
+                <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
+                    <span class="glyphicon glyphicon-collapse-down"></span>
+                </a>
+            </div>
+            
+        </div>
+
+
+    </div>
+
+    <div class="panel-body">
+        <div id="body">
+            <div id="viewport">
+
+                @renderCloneHeader(@rightPaneWidth)
+
+                <div id="innerbody">
+                    <div id="left-pane" class="oxo-box" style="width:500px;">
+                        <table id="oxo-core-table-A" cellpadding="0" cellspacing="0" class="table table-bordered table-condensed dataTable oxo-table" style="width:500px;border:0px;">
+                            <thead>
+                                <tr>
+                                    <th>display order</th>
+                                    <th>Feature Group</th>
+                                    <th>Hidden Descr</th>
+                                    <th class="header-A0" style="border-right:none!important;">&nbsp;&nbsp;&nbsp;&nbsp;Feature Description</th>
+                                    <th class="header-A1" style="border-left:none!important"></th>
+                                    @if (Model.Volume.Vehicle.Programmes.First().UseOACode)
+                                    {
+                                        <th class="header-A text-center" style="width:60px;vertical-align:bottom">Feature<br />Code<br />(OA)</th>
+                                    }
+                                    else
+                                    {
+                                        <th class="header-A text-center" style="width:60px;vertical-align:bottom">Feature<br />Code<br />(JLR)</th>
+                                    }
+                                    <th>Feature Sub Group</th>
+                                    <th class="header-A text-center" style="width:60px;vertical-align:bottom">
+                                        @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                                        {
+                                            <span>% Take Rate</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Volume</span>
+                                        }
+                                    </th>
+
+                                </tr>
+                                <tr>
+                                    <th colspan="5" style="padding:3px !important;font-size:11px"><div class="pull-right">Trim Level&nbsp;&nbsp;</div></th>
+                                    <th style="border-top:none!important"></th>
+                                    <th style="border-top:none!important"></th>
+                                    <th style="border-top:none!important"></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" style="padding:3px !important;font-size:11px"><div class="pull-right">DPCK&nbsp;&nbsp;</div></th>
+                                    <th style="border-top:none!important"></th>
+                                    <th style="border-top:none!important"></th>
+                                    <th style="border-top:none!important"></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" style="padding:3px !important;font-size:11px"><div class="pull-right">BMC&nbsp;&nbsp;</div></th>
+                                    <th style="border-top:none!important"></th>
+                                    <th style="border-top:none!important"></th>
+                                    <th style="border-top:none!important"></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" style="padding:3px !important;font-size:11px;height:20px">
+                                        <div class="pull-right">
+                                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                                            {
+                                                <span>% Mix by Derivative</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Volume Mix by Derivative</span>
+                                            }
+                                        </div>
+                                    </th>
+                                    <th style="border-top:none!important"></th>
+                                    <th style="border-top:none!important"></th>
+                                    <th style="border-top:none!important"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Volume.VolumeData.RawData)
+                                {
+                                    var descr = @item["BrandDescription"].ToString();
+                                    var subGroup = @item["FeatureSubGroup"].ToString() == "" ? "NA" : @item["FeatureSubGroup"].ToString();
+
+                                    <tr class="oxo-data-row-2" row-id="@item["DisplayOrder"]" featureid="@item["FeatureIdentifier"]" uniqueid="@uniqueid">
+                                        <td class="center-no-sort" style="width:0px;">@item["DisplayOrder"]</td>
+                                        <td>@item["FeatureGroup"]</td>
+                                        <td>@descr.Replace("'", "\'")</td>
+                                        <td class="row" featureid="@item["FeatureIdentifier"]" style="border-right:none!important;">
+                                            <span class="ellipsis" title="@descr">@descr</span>
+                                        </td>
+                                        <td featureid="@item["FeatureIdentifier"]">
+                                            @if (item.Field<bool>("HasRule"))
+                                            {
+                                                <span><i class="glyphicon glyphicon-alert" featureid="@item["FeatureIdentifier"]"></i> Rule</span>
+                                            }
+                                            @if ("" + item["FeatureComment"] != "")
+                                            {
+                                                <span><i class="glyphicon glyphicon-pencil" featureid="@item["FeatureIdentifier"]"></i> Note</span>
+                                            }
+                                            @if ("" + item["LongDescription"] != "")
+                                            {
+                                                @*<span title="@descr"><i class="glyphicon glyphicon-info-sign"></i></span>*@
+                                            }
+                                        </td>
+
+                                        <td class="row text-center" style="width:60px" featureid="@item["FeatureIdentifier"]">@item["FeatureCode"]</td>
+                                        <td featureid="@item["FeatureIdentifier"]">@subGroup</td>
+                                        <td class="text-center row-total" featureid="@item["FeatureIdentifier"]">
+                                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                                            {
+                                                @(item.Field<decimal>("TotalPercentageTakeRate").ToString("P"))
+                                            }
+                                            else
+                                            {
+                                                @(item.Field<int>("TotalVolume").ToString("G"))
+                                            }
+                                        </td>
+                                    </tr>
+                                            uniqueid = uniqueid + 1;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="right-pane" class="oxo-box" style="width:@rightPaneWidth;left:-3px">
+                        <table id="oxo-core-table-B" cellpadding="0" cellspacing="0" class="table table-bordered table-condensed dataTable display oxo-table" style="width:100%;border:0px;">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Feature Group</th>
+                                    <th>DESC</th>
+                                    <th>Sub group</th>
+                                    @foreach (var carModel in selectedModels)
+                                    {
+                                        var nameParts = carModel.NameWithBR.Split('#');
+                                        <th class="model text-center" data="@carModel.Id">
+                                            @foreach (string part in nameParts)
+                                            {
+                                                @part<br />
+                                            }
+                                        </th>
+                                    }
+                                </tr>
+                                <tr>
+                                    <th colspan="4"></th>
+                                    @foreach (var carModel in selectedModels)
+                                    {
+                                        <th class="text-center" style="padding:3px;font-size:11px" data="@carModel.StringIdentifier">
+                                            @if (!string.IsNullOrEmpty(carModel.TrimLevel))
+                                            {
+                                                @carModel.TrimLevel
+                                            }
+                                            else
+                                            {
+                                                <span>-</span>
+                                            }
+                                        </th>
+                                    }
+                                </tr>
+                                <tr>
+                                    <th colspan="4"></th>
+                                    @foreach (var carModel in selectedModels)
+                                    {
+                                        <th class="text-center" style="padding:3px;font-size:11px" data="@carModel.StringIdentifier">
+                                            @if (!string.IsNullOrEmpty(carModel.DPCK))
+                                            {
+                                                @carModel.DPCK
+                                            }
+                                            else
+                                            {
+                                                <span>-</span>
+                                            }
+                                        </th>
+                                    }
+                                </tr>
+                                <tr>
+                                    <th colspan="4"></th>
+                                    @foreach (var carModel in selectedModels)
+                                    {
+                                        <th class="text-center" style="padding:3px;font-size:11px" data="@carModel.Id">
+                                            @if (!string.IsNullOrEmpty(carModel.BMC))
+                                            {
+                                                @carModel.BMC
+                                            }
+                                            else
+                                            {
+                                                <span>-</span>
+                                            }
+                                        </th>
+                                    }
+                                </tr>
+                                <tr>
+                                    <th colspan="4"></th>
+                                    @foreach (var volumeByModel in Model.Volume.VolumeData.TakeRateSummaryByModel)
+                                    {
+                                        <th class="text-center editable-header" style="padding:3px;font-size:11px" data="@volumeByModel.StringIdentifier">
+                                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                                            {
+                                                @volumeByModel.PercentageOfFilteredVolume.ToString("P")
+                                            }
+                                            else
+                                            {
+                                                @volumeByModel.Volume.ToString("G")
+                                            }
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    uniqueid = 0;
+                                    foreach (var item in Model.Volume.VolumeData.RawData)
+                                    {
+                                        var descr = item.Field<string>("BrandDescription");
+                                        var subGroup = item.Field<string>("FeatureSubGroup") == "" ? "NA" : item.Field<string>("FeatureSubGroup");
+
+                                        <tr class="oxo-data-row-2" row-id="@(item.Field<int>("DisplayOrder"))" uniqueid="@uniqueid">
+                                            <td>@(item.Field<int>("DisplayOrder"))</td>
+                                            <td>@(item.Field<string>("FeatureGroup"))</td>
+                                            <td>@(item.Field<string>("FeatureCode"))|@descr.Replace("'", "\'")</td>
+                                            <td>@subGroup</td>
+                                            @foreach (var carModel in selectedModels)
+                                            {
+                                                var modelIdentifier = carModel.StringIdentifier;
+                                                <td class="oxo-data editable @RenderDataClass(modelIdentifier, item)" modelid="@modelIdentifier" featureid="@(item.Field<string>("FeatureIdentifier"))" packid="0" prevval="@RenderDataItem(modelIdentifier, item)">@RenderDataItem(modelIdentifier, item)</td>
+                                            }
+                                        </tr>
+
+                                            uniqueid++;
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="footer">
+            <div id="h-slider"></div>
+        </div>
+        <div id="v-slider"></div>
+    </div>
+</div>
+
+@helper renderCloneHeader(string rightPaneWidth)
+{
+    <div id="clone-column-header" class="oxo-box">
+        <div id="innerheader" class="oxo-box">
+            <div id="left-pane-header" cellpadding="0" cellspacing="0" class="oxo-box" style="width:500px;">
+                <table id="clone-oxo-core-table-A" class="table table-bordered table-condensed dataTable display oxo-table">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+            <div id="right-pane-header" class="oxo-box" style="width:@rightPaneWidth">
+                <table id="clone-oxo-core-table-B" cellpadding="0" cellspacing="0" class="table table-bordered table-condensed dataTable display oxo-table">
+                    <thead>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@helper RenderDataItem(string modelIdentifier, DataRow dataItem)
+{
+    var rowIdentity = dataItem.Field<long?>("Id");
+    var featureApplicability =
+        Model.Volume.VolumeData.FeatureApplicabilityData.Where(fa => fa.Field<long?>("Id") == rowIdentity)
+        .Select(fa => fa.IsNull(modelIdentifier) ? string.Empty : fa.Field<string>(modelIdentifier))
+        .FirstOrDefault();
+
+
+    var parsedFeatureApplicability = featureApplicability
+            .Replace("*", string.Empty)
+            .Replace("(", string.Empty)
+            .Replace(")", string.Empty);
+
+    // If volume
+    // 1. If no value and optional or standard (-)
+    // 2. If no value and not applicable (N/A)
+    // 3. If value render the value regardless of applicability
+
+    // If percentage
+    // 1. If no value and optional or standard (-)
+    // 2. If no value and not applicable (N/A)
+    // 3. If value render the value regardless of applicability
+
+    if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+    {
+        var value = dataItem.Field<decimal?>(modelIdentifier);
+        if (!value.HasValue && (parsedFeatureApplicability == "O" || parsedFeatureApplicability == "S" || parsedFeatureApplicability == "P"))
+        {
+            @:-
+        }
+        else if (value.GetValueOrDefault() == 0 && (string.IsNullOrEmpty(parsedFeatureApplicability) || parsedFeatureApplicability == "NA"))
+        {
+            @:N/A
+        }
+        else
+        {
+            @value.Value.ToString("P")
+        }
+    }
+    else
+    {
+        var value = dataItem.Field<int?>(modelIdentifier);
+        if (!value.HasValue && (parsedFeatureApplicability == "O" || parsedFeatureApplicability == "S" || parsedFeatureApplicability == "P"))
+        {
+            @:-
+        }
+        else if (value.GetValueOrDefault() == 0 && (string.IsNullOrEmpty(parsedFeatureApplicability) || parsedFeatureApplicability == "NA"))
+        {
+            @:N/A
+        }
+        else
+        {
+            @value.Value.ToString("G")
+        }
+    }
+}
+
+@helper RenderDataClass(string modelIdentifier, DataRow dataItem)
+{
+    var rowIdentity = dataItem.Field<long?>("Id");
+    var featureApplicability =
+        Model.Volume.VolumeData.FeatureApplicabilityData.Where(fa => fa.Field<long?>("Id") == rowIdentity)
+        .Select(fa => fa.IsNull(modelIdentifier) ? string.Empty : fa.Field<string>(modelIdentifier))
+        .FirstOrDefault();
+
+    if (string.IsNullOrEmpty(featureApplicability))
+    {
+        @("nonApplicableFeature");
+    }
+    else
+    {
+        var parsedFeatureApplicability = featureApplicability
+            .Replace("*", string.Empty)
+            .Replace("(", string.Empty)
+            .Replace(")", string.Empty);
+
+        switch (parsedFeatureApplicability)
+        {
+            case "O":
+                @("optionalFeature");
+                break;
+            case "S":
+            @("standardFeature");
+            break;
+            case "P":
+            @("packFeature");
+            break;
+            case "NA":
+            @("nonApplicableFeature");
+            break;
+            default:
+            @("nonApplicableFeature");
+            break;
+        }
+    }
+
+}

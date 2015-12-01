@@ -93,10 +93,10 @@ namespace FeatureDemandPlanning.DataStore
             return imports;
         }
 
-        public IEnumerable<Model.Model> ListAvailableModels(VehicleFilter filter, Programme forProgramme)
+        public IEnumerable<FdpModel> ListAvailableModels(VehicleFilter filter, Programme forProgramme)
         {
             var models = _modelDataStore
-                            .ModelGetMany(string.Empty, forProgramme.Id, null)
+                            .ModelGetMany(filter)
                             .ToList();
 
             return models;

@@ -18,6 +18,7 @@ namespace FeatureDemandPlanning.DataStore
             : base(cdsId)
         {
             _marketDataStore = new MarketDataStore(cdsId);
+            _modelDataStore = new ModelDataStore(cdsId);
             _marketGroupDataStore = new MarketGroupDataStore(cdsId);
             _documentDataStore = new OXODocDataStore(cdsId);
         }
@@ -92,17 +93,16 @@ namespace FeatureDemandPlanning.DataStore
 
             return _marketDataStore.TopMarketDelete(market);
         }
-        public IEnumerable<Model.Model> ListAvailableModelsByMarket(OXODoc forDocument, Market byMarket)
+        public IEnumerable<FdpModel> ListAvailableModelsByMarket(ProgrammeFilter filter, Market byMarket)
         {
-            return _documentDataStore.OXODocAvailableModelsByMarket(forDocument.ProgrammeId, forDocument.Id, byMarket.Id)
+            return _modelDataStore.FdpAvailableModelByMarketGetMany(filter, byMarket)
                 .Where(m => m.Available == true);
         }
-        public IEnumerable<Model.Model> ListAvailableModelsByMarketGroup(OXODoc forDocument, MarketGroup byMarketGroup)
+        public IEnumerable<FdpModel> ListAvailableModelsByMarketGroup(ProgrammeFilter filter, MarketGroup byMarketGroup)
         {
-            return _documentDataStore.OXODocAvailableModelsByMarketGroup(forDocument.ProgrammeId, forDocument.Id, byMarketGroup.Id)
+            return _modelDataStore.FdpAvailableModelByMarketGroupGetMany(filter, byMarketGroup)
                 .Where(m => m.Available == true);
         }
-
         public async Task<FdpMarketMapping> DeleteFdpMarketMapping(FdpMarketMapping marketMappingToDelete)
         {
             return await Task.FromResult<FdpMarketMapping>(_marketDataStore.FdpMarketMappingDelete(marketMappingToDelete));
@@ -127,5 +127,6 @@ namespace FeatureDemandPlanning.DataStore
         private MarketDataStore _marketDataStore;
         private MarketGroupDataStore _marketGroupDataStore;
         private OXODocDataStore _documentDataStore;
+        private ModelDataStore _modelDataStore;
     }
 }

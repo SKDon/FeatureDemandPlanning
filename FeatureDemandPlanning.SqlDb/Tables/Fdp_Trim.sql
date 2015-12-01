@@ -7,6 +7,7 @@
     [TrimName]         NVARCHAR (1000) NOT NULL,
     [TrimAbbreviation] NVARCHAR (100)  NOT NULL,
     [TrimLevel]        NVARCHAR (1000) NOT NULL,
+    [BMC]              NVARCHAR (20)   NULL,
     [DPCK]             NVARCHAR (20)   NULL,
     [IsActive]         BIT             CONSTRAINT [DF_Fdp_Trim_IsActive] DEFAULT ((1)) NOT NULL,
     [UpdatedOn]        DATETIME        NULL,
@@ -14,6 +15,8 @@
     CONSTRAINT [PK_FdpTrim] PRIMARY KEY CLUSTERED ([FdpTrimId] ASC),
     CONSTRAINT [FK_FdpTrim_OXO_Programme] FOREIGN KEY ([ProgrammeId]) REFERENCES [dbo].[OXO_Programme] ([Id])
 );
+
+
 
 
 GO

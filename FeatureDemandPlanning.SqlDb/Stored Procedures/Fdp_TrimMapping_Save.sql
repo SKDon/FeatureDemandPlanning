@@ -1,9 +1,11 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TrimMapping_Save]
-	  @ImportTrim	NVARCHAR(200)
-	, @ProgrammeId	INT
-	, @Gateway		NVARCHAR(100)
-	, @TrimId		INT
-	, @CDSId		NVARCHAR(16)
+	  @ImportTrim		NVARCHAR(200)
+	, @ProgrammeId		INT
+	, @Gateway			NVARCHAR(100)
+	, @DerivativeCode	NVARCHAR(20)
+	, @TrimId			INT = NULL
+	, @FdpTrimId		INT = NULL
+	, @CDSId			NVARCHAR(16)
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -21,7 +23,11 @@ BEGIN
 				  AND
 				  Gateway = @Gateway
 				  AND
-				  TrimId = @TrimId
+				  BMC = @DerivativeCode
+				  AND
+				  (@TrimId IS NULL OR TrimId = @TrimId)
+				  AND
+				  (@FdpTrimId IS NULL OR FdpTrimId = @FdpTrimId)
 				  AND
 				  IsActive = 1)
 				  
@@ -30,7 +36,9 @@ BEGIN
 			  ImportTrim
 			, ProgrammeId
 			, Gateway
+			, BMC
 			, TrimId
+			, FdpTrimId
 			, CreatedBy
 		)
 		VALUES
@@ -38,7 +46,9 @@ BEGIN
 			  @ImportTrim
 			, @ProgrammeId
 			, @Gateway
+			, @DerivativeCode
 			, @TrimId
+			, @FdpTrimId
 			, @CDSId
 		);
 		

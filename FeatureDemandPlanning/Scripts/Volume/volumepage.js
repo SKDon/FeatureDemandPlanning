@@ -12,13 +12,17 @@ model.Page = function (models) {
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
+
         $(privateStore[me.id].Models).each(function () {
             this.initialise();
         });
-        me.initialiseControls();
-        initialiseMaster();
-        initialiseEditor();
-        //me.configureScroller(3); // Fix first seven columns
+        me.loadData();
+    };
+    me.loadData = function () {
+        me.configureDataTables();
+    };
+    me.getIdentifierPrefix = function () {
+        return $("#Page_IdentifierPrefix").val();
     };
     me.clearVehicle = function () {
         me.setVehicle(getVehicleModel().getEmptyVehicle());
@@ -164,70 +168,200 @@ model.Page = function (models) {
         $(".oxo-document-toggle").unbind("click").on("click", me.toggleOxoDocument);
         $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader)
     };
-    me.initialiseControls = function () {
-        $("#oxoDocumentsTable").dataTable();
-        $("#availableImportsTable").dataTable();
-        $(".editable").editable(function (value, settings) {
+    me.configureDataTables = function () {
 
-            // Update the total mix for the field
-            try 
-            {
-                var currentModelId = $(this).attr("modelid");
-                var featureId = $(this).attr("featureid");
-                var newValue = parseInt(value.trim());
-                var oldValue = parseInt(getVolumeModel().getCurrentEditValue());
-                var rowTotal = 0;
-
-                if (!($.isNumeric(newValue)) || newValue == oldValue)
-                    return getVolumeModel().getCurrentEditValue();
-
-                $(this).closest("tr").find(".editable").each(function (value) {
-                    var elementValue = parseInt($(this).html().trim());
-                    if ($.isNumeric(elementValue) && currentModelId != $(this).attr("modelid")) {
-                        rowTotal += elementValue;
-                    }
-                });
-
-                rowTotal += newValue;
-
-                $(".row-total[featureid='" + featureId + "']").html(rowTotal).addClass("dirty");
-                getVolumeModel().setCurrentEditValue(null);
-
-                // Mark the field as dirty
-                //$(this).html($(this.html())).addClass("dirty");
-                
-            }
-            catch (ex) {
-                console.log(ex);
-            }
-
-            return value;
-        }, {
-            tooltip: "Click to edit",
-            cssclass: "editable-cell",
-            data: function (value, settings)
-            {
-                var trimmedValue = $.trim(value);
-                getVolumeModel().setCurrentEditValue(trimmedValue);
-                return trimmedValue;
-            },
-            select: true,
-            onblur: "submit"
+       
+        var table = $("#" + me.getIdentifierPrefix() + "_TakeRateData").DataTable({
+            serverSide: false,
+            paging: false,
+            ordering: false,
+            processing: true,
+            dom: "ltip",
+            scrollX: true,
+            scrollY: "500px",
+            scrollCollapse: true
         });
-        $(".editable-header").editable(function (value, settings) {
-            console.log(this);
-            console.log(value);
-            console.log(settings);
+
+        new $.fn.dataTable.FixedColumns(table, {
+            leftColumns: 5,
+            drawCallback: function (left, right) {
+                var settings = table.settings();
+                if (settings.data().length == 0) {
+                    return;
+                }
+
+                var nGroup, nCell, index, groupName;
+                var lastGroupName = "", corrector = 0;
+                var nTrs = $("#" + me.getIdentifierPrefix() + "_TakeRateData tbody tr");
+                var iColspan = nTrs[0].getElementsByTagName('td').length;
+
+                for (var i = 0 ; i < nTrs.length ; i++) {
+                    index = settings.page.info().start + i;
+                    groupName = settings.data()[index][0];
+
+                    if (groupName != lastGroupName) {
+                        /* Cell to insert into main table */
+                        nGroup = document.createElement('tr');
+                        nCell = document.createElement('td');
+                        nCell.colSpan = iColspan;
+                        nCell.className = "group";
+                        nCell.innerHTML = "&nbsp;";
+                        nGroup.appendChild(nCell);
+                        nTrs[i].parentNode.insertBefore(nGroup, nTrs[i]);
+
+                        /* Cell to insert into the frozen columns */
+                        nGroup = document.createElement('tr');
+                        nCell = document.createElement('td');
+                        nCell.className = "group";
+                        nCell.innerHTML = groupName;
+                        nCell.colSpan = 5;
+                        nGroup.appendChild(nCell);
+                        $(nGroup).insertBefore($('tbody tr:eq(' + (i + corrector) + ')', left.body)[0]);
+
+                        corrector++;
+                        lastGroupName = groupName;
+                    }
+                }
+            }
+        });
+
+        //$("#" + me.getIdentifierPrefix() + "_TakeRateData").rowGrouping();
+        //    "aoColumns": [
+        //        {
+        //            "sName": "TAKE_RATE_ID",
+        //            "bVisible": false
+        //        },
+        //        {
+        //            "sName": "CREATED_ON",
+        //            "bSearchable": true,
+        //            "bSortable": true,
+        //            "sClass": "text-center",
+        //            "render": function (data, type, full, meta) {
+        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+        //            }
+        //        }
+        //        ,
+        //        {
+        //            "sName": "CREATED_BY",
+        //            "bSearchable": true,
+        //            "bSortable": true,
+        //            "sClass": "text-center",
+        //            "render": function (data, type, full, meta) {
+        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+        //            }
+        //        },
+        //        {
+        //            "sName": "OXO_DOCUMENT",
+        //            "bSearchable": true,
+        //            "bSortable": true,
+        //            "render": function (data, type, full, meta) {
+        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+        //            }
+        //        },
+        //        {
+        //            "sName": "STATUS",
+        //            "bSearchable": true,
+        //            "bSortable": true,
+        //            "sClass": "text-center",
+        //            "render": function (data, type, full, meta) {
+        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+        //            }
+        //        },
+        //        {
+        //            "sName": "UPDATED_ON",
+        //            "bSearchable": true,
+        //            "bSortable": true,
+        //            "sClass": "text-center",
+        //            "render": function (data, type, full, meta) {
+        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+        //            }
+        //        },
+        //        {
+        //            "sName": "UPDATED_BY",
+        //            "bSearchable": true,
+        //            "bSortable": true,
+        //            "sClass": "text-center",
+        //            "render": function (data, type, full, meta) {
+        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+        //            }
+        //        }
+        //    ],
+        //    "fnCreatedRow": function (row, data, index) {
+        //        var takeRateId = data[0];
+        //        $(row).attr("data-takeRate-id", takeRateId);
+        //    },
+        //    "fnDrawCallback": function (oSettings) {
+        //        $(document).trigger("Results", me.getSummary());
+        //        me.bindContextMenu();
+        //        $("#pnlTakeRates").show();
+        //    }
+        //});
+    };
+    me.initialiseControls = function () {
+        var prefix = me.getIdentifierPrefix();
+        //$("#oxoDocumentsTable").dataTable();
+        //$("#availableImportsTable").dataTable();
+        //$(".editable").editable(function (value, settings) {
+
+        //    // Update the total mix for the field
+        //    try 
+        //    {
+        //        var currentModelId = $(this).attr("modelid");
+        //        var featureId = $(this).attr("featureid");
+        //        var newValue = parseInt(value.trim());
+        //        var oldValue = parseInt(getVolumeModel().getCurrentEditValue());
+        //        var rowTotal = 0;
+
+        //        if (!($.isNumeric(newValue)) || newValue == oldValue)
+        //            return getVolumeModel().getCurrentEditValue();
+
+        //        $(this).closest("tr").find(".editable").each(function (value) {
+        //            var elementValue = parseInt($(this).html().trim());
+        //            if ($.isNumeric(elementValue) && currentModelId != $(this).attr("modelid")) {
+        //                rowTotal += elementValue;
+        //            }
+        //        });
+
+        //        rowTotal += newValue;
+
+        //        $(".row-total[featureid='" + featureId + "']").html(rowTotal).addClass("dirty");
+        //        getVolumeModel().setCurrentEditValue(null);
+
+        //        // Mark the field as dirty
+        //        //$(this).html($(this.html())).addClass("dirty");
+                
+        //    }
+        //    catch (ex) {
+        //        console.log(ex);
+        //    }
+
+        //    return value;
+        //}, {
+        //    tooltip: "Click to edit",
+        //    cssclass: "editable-cell",
+        //    data: function (value, settings)
+        //    {
+        //        var trimmedValue = $.trim(value);
+        //        getVolumeModel().setCurrentEditValue(trimmedValue);
+        //        return trimmedValue;
+        //    },
+        //    select: true,
+        //    onblur: "submit"
+        //});
+        //$(".editable-header").editable(function (value, settings) {
+        //    console.log(this);
+        //    console.log(value);
+        //    console.log(settings);
 
             
-            return value;
-        }, {
-            tooltip: "Click to edit",
-            cssclass: "editable-header",
-            data: function (string) { return $.trim(string) },
-            select: true,
-            onblur: "submit"
-        });
+        //    return value;
+        //}, {
+        //    tooltip: "Click to edit",
+        //    cssclass: "editable-header",
+        //    data: function (string) { return $.trim(string) },
+        //    select: true,
+        //    onblur: "submit"
+        //});
     };
     me.nextPage = function (sender, eventArgs) {
         getPager().nextPage();
@@ -616,17 +750,14 @@ model.Page = function (models) {
     function getTrimMapping() {
         return getModel("TrimMapping");
     };
-    function getVehicleFilter() {
-        var model = getVehicleModel(), filter = new FeatureDemandPlanning.Vehicle.VehicleFilter(),
-            classPrefix = ".vehicle-filter";
+    function getFilter() {
+        var model = getTakeRatesModel();
+        var pageSize = model.getPageSize();
+        var pageIndex = model.getPageIndex();
+        var filter = new FeatureDemandPlanning.TakeRate.TakeRateFilter();
 
-        filter.Make = "";
-        filter.Code = $(classPrefix + "-programme").val();
-        filter.ModelYear = $(classPrefix + "-modelYear").val();
-        filter.Gateway = $(classPrefix + "-gateway").val();
-        filter.DerivativeCode = $(classPrefix + "-derivativeCode").val();
-        filter.PageIndex = model.getPageIndex();
-        filter.PageSize = model.getPageSize();
+        filter.PageIndex = pageIndex;
+        filter.PageSize = pageSize;
 
         return filter;
     };

@@ -8,9 +8,12 @@
     [IsExcluded]           BIT            DEFAULT ((0)) NOT NULL,
     [UpdatedOn]            DATETIME       NULL,
     [UpdatedBy]            NVARCHAR (16)  NULL,
+    [AdditionalData]       NVARCHAR (100) NULL,
     CONSTRAINT [PK_Fdp_ImportError] PRIMARY KEY CLUSTERED ([FdpImportErrorId] ASC),
     CONSTRAINT [FK_Fdp_ImportError_Fdp_ImportErrorType] FOREIGN KEY ([FdpImportErrorTypeId]) REFERENCES [dbo].[Fdp_ImportErrorType] ([FdpImportErrorTypeId])
 );
+
+
 
 
 

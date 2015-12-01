@@ -293,26 +293,32 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return context.Volume.ListVolumeData(VolumeFilter.FromVolume(forVolume));
         }
-        private static IEnumerable<Model> ListAvailableModelsFilteredByMarket(IDataContext context, Volume forVolume)
+        private static IEnumerable<FdpModel> ListAvailableModelsFilteredByMarket(IDataContext context, Volume forVolume)
         {
-            IEnumerable<Model> filteredModels = Enumerable.Empty<Model>();
+            IEnumerable<FdpModel> filteredModels = Enumerable.Empty<FdpModel>();
 
             if (forVolume.Document is EmptyOxoDocument || forVolume.Vehicle is EmptyVehicle)
                 return filteredModels;
 
-            filteredModels = forVolume.Vehicle.AvailableModels;
-            var identifiers = filteredModels.Select(m => m.Id);
-
+            var filter = new ProgrammeFilter()
+            {
+                ProgrammeId = forVolume.Document.ProgrammeId,
+                Gateway = forVolume.Document.Gateway,
+                OxoDocId = forVolume.Document.Id
+            };
+            
             if (!(forVolume.Market is EmptyMarket))
             {
-                identifiers = context.Market.ListAvailableModelsByMarket(forVolume.Document, forVolume.Market).Select(m => m.Id);
+                filteredModels = context.Market.ListAvailableModelsByMarket(filter, forVolume.Market).Where(m => m.Available == true);
             }
             else if (!(forVolume.MarketGroup is EmptyMarketGroup))
             {
-                identifiers = context.Market.ListAvailableModelsByMarketGroup(forVolume.Document, forVolume.MarketGroup).Select(m => m.Id);
+                filteredModels = context.Market.ListAvailableModelsByMarketGroup(filter, forVolume.MarketGroup).Where(m => m.Available == true);
             }
-
-            filteredModels = forVolume.Vehicle.AvailableModels.Where(m => identifiers.Contains(m.Id));
+            else
+            {
+                filteredModels = forVolume.Vehicle.AvailableModels;
+            }
 
             return filteredModels;
         }

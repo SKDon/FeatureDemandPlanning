@@ -6,6 +6,7 @@ using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
+using FeatureDemandPlanning.Model.Filters;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -18,6 +19,57 @@ namespace FeatureDemandPlanning.DataStore
             this.CurrentCDSID = cdsid;
         }
 
+        public IEnumerable<FdpModel> FdpAvailableModelByMarketGetMany(ProgrammeFilter filter, Market market)
+        {
+            IEnumerable<FdpModel> retVal = Enumerable.Empty<FdpModel>();
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+
+                    para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
+                    para.Add("@Gateway", filter.Gateway, DbType.String);
+                    para.Add("@OxoDocId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@MarketId", market.Id, DbType.Int32);
+
+                    retVal = conn.Query<FdpModel>("dbo.Fdp_AvailableModelByMarket_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpAvailableModelByMarketGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public IEnumerable<FdpModel> FdpAvailableModelByMarketGroupGetMany(ProgrammeFilter filter, MarketGroup marketGroup)
+        {
+            IEnumerable<FdpModel> retVal = Enumerable.Empty<FdpModel>();
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+
+                    para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
+                    para.Add("@Gateway", filter.Gateway, DbType.String);
+                    para.Add("@OxoDocId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@MarketGroupId", marketGroup.Id, DbType.Int32);
+
+                    retVal = conn.Query<FdpModel>("dbo.Fdp_AvailableModelByMarketGroup_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpAvailableModelByMarketGroupGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
         /// <summary>
         /// Models the get many.
         /// </summary>
@@ -25,18 +77,17 @@ namespace FeatureDemandPlanning.DataStore
         /// <param name="prog_Id">The prog_ identifier.</param>
         /// <param name="doc_id">The doc_id.</param>
         /// <returns></returns>
-        public IEnumerable<Model.Model> ModelGetMany(string make, int? prog_Id, int? doc_id)
+        public IEnumerable<FdpModel> ModelGetMany(ProgrammeFilter filter)
         {
-            IEnumerable<Model.Model> retVal = null;
+            IEnumerable<FdpModel> retVal = null;
 			using (IDbConnection conn = DbHelper.GetDBConnection())
             {
 				try
 				{
-					var para = new DynamicParameters();
-                    para.Add("@p_make", make, dbType: DbType.String, size: 50);					    
-					para.Add("@p_prog_Id", prog_Id, dbType: DbType.Int32);
-                    para.Add("@p_doc_Id", doc_id, dbType: DbType.Int32);
-                    retVal = conn.Query<Model.Model>("dbo.OXO_Model_GetMany", para, commandType: CommandType.StoredProcedure);
+					var para = new DynamicParameters();    
+					para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
+                    para.Add("@OxoDocId", filter.OxoDocId, DbType.Int32);
+                    retVal = conn.Query<FdpModel>("dbo.Fdp_Model_GetMany", para, commandType: CommandType.StoredProcedure);
 				}
 				catch (Exception ex)
 				{

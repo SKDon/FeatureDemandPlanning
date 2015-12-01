@@ -21,8 +21,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Market AddTopMarket(int marketId);
         Market DeleteTopMarket(int marketId);
 
-        IEnumerable<Model> ListAvailableModelsByMarket(OXODoc forDocument, Market byMarket);
-        IEnumerable<Model> ListAvailableModelsByMarketGroup(OXODoc forDocument, MarketGroup byMarketGroup);
+        IEnumerable<FdpModel> ListAvailableModelsByMarket(ProgrammeFilter filter, Market byMarket);
+        IEnumerable<FdpModel> ListAvailableModelsByMarketGroup(ProgrammeFilter filter, MarketGroup byMarketGroup);
 
         // Mappings
 

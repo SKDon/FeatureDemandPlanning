@@ -1,54 +1,56 @@
 ﻿
 
-
 CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 
 	SELECT 
-		  NULL			AS FdpTrimMappingId
-		, T.Created_On	AS CreatedOn
-		, T.Created_By	AS CreatedBy
-		, P.Id			AS ProgrammeId
-		, G.Gateway
-		, T.Id			AS TrimId
-		, T.Name		AS ImportTrim
-		, T.Name		AS MappedTrim
+		  T.CreatedOn
+		, T.CreatedBy
+		, P.Id				AS ProgrammeId
+		, T.Gateway			AS Gateway
+		, T.Name			AS ImportTrim
+		, T.Name			AS MappedTrim
+		, T.Abbreviation
 		, T.[Level]
+		, T.BMC
 		, T.DPCK
-		, T.Last_Updated	AS UpdatedOn
-		, T.Updated_By		AS UpdatedBy
-		, CAST(0 AS BIT) AS IsMappedTrim
+		, CAST(0 AS BIT)	AS IsMappedTrim
+		, T.IsFdpTrim
+		, T.TrimId
+		, T.FdpTrimId
+		, CAST(NULL AS INT)	AS FdpTrimMappingId
+		, T.IsActive
+		, T.UpdatedOn
+		, T.UpdatedBy
+		
 	FROM
-	OXO_Programme				AS P
-	JOIN Fdp_Gateways_VW		AS G	ON	P.Id		= G.ProgrammeId
-	JOIN OXO_Programme_Trim		AS T	ON	P.Id		= T.Programme_Id
-	LEFT JOIN Fdp_TrimMapping	AS M	ON	P.Id		= M.ProgrammeId
-										AND	T.Id		= M.TrimId
-										AND G.Gateway	= M.Gateway
-										AND M.IsActive	= 1
-	WHERE
-	M.FdpTrimMappingId IS NULL
-	
+	OXO_Programme		AS P
+	JOIN Fdp_Trim_VW	AS T	ON	P.Id = T.ProgrammeId
+											
 	UNION
 	
 	SELECT 
-		  M.FdpTrimMappingId
-		, M.CreatedOn
+		  M.CreatedOn
 		, M.CreatedBy
-		, P.Id			AS ProgrammeId
-		, G.Gateway
-		, T.Id			AS TrimId
-		, M.ImportTrim	AS ImportTrim
-		, T.Name		AS MappedTrim
+		, T.ProgrammeId
+		, T.Gateway
+		, M.ImportTrim			AS ImportTrim
+		, T.Name				AS MappedTrim
+		, T.Abbreviation
 		, T.[Level]
-		, T.DPCK
-		, T.Last_Updated	AS UpdatedOn
-		, T.Updated_By		AS UpdatedBy
-		, CAST(1 AS BIT) AS IsMappedTrim
+		, M.BMC
+		, T.DPCK		
+		, CAST(1 AS BIT)		AS IsMappedTrim
+		, T.IsFdpTrim
+		, T.TrimId
+		, NULL					AS FdpTrimId
+		, M.FdpTrimMappingId
+		, M.IsActive
+		, M.UpdatedOn
+		, M.UpdatedBy
+		
 	FROM
-	OXO_Programme				AS P
-	JOIN Fdp_Gateways_VW		AS G	ON	P.Id		= G.ProgrammeId
-	JOIN OXO_Programme_Trim		AS T	ON	P.Id		= T.Programme_Id
-	JOIN Fdp_TrimMapping		AS M	ON	P.Id		= M.ProgrammeId
-										AND	T.Id		= M.TrimId
-										AND G.Gateway	= M.Gateway
-										AND M.IsActive	= 1
+	Fdp_Trim_VW				AS T
+	JOIN Fdp_TrimMapping	AS M	ON	T.TrimId			= M.TrimId
+									AND	T.ProgrammeId		= M.ProgrammeId
+									AND T.Gateway			= M.Gateway
+									AND M.IsActive			= 1

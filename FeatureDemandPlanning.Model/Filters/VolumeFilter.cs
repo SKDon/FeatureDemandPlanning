@@ -26,7 +26,7 @@ namespace FeatureDemandPlanning.Model.Filters
             } 
         }
 
-        public IEnumerable<Model> Models 
+        public IEnumerable<FdpModel> Models 
         { 
             get 
             {
@@ -63,7 +63,7 @@ namespace FeatureDemandPlanning.Model.Filters
             return filter;
         }
 
-        private IEnumerable<Model> _models = Enumerable.Empty<Model>();
+        private IEnumerable<FdpModel> _models = Enumerable.Empty<FdpModel>();
         private TakeRateResultMode _resultMode = TakeRateResultMode.Raw;
     }
 }
