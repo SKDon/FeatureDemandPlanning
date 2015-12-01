@@ -21,6 +21,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<ImportStatus> GetProcessStatus(ImportQueue importItem);
         ImportResult ProcessImportQueue(ImportQueue queuedItem);
+        ImportResult ReprocessImportQueue(ImportQueue queuedItem);
         
         Task<ImportError> GetException(ImportQueueFilter filter);
         Task<PagedResults<ImportError>> ListExceptions(ImportQueueFilter filter);

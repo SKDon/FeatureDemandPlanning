@@ -120,6 +120,14 @@ namespace FeatureDemandPlanning.DataStore
 
             return result;
         }
+        public ImportResult ReprocessImportQueue(ImportQueue queuedItem)
+        {
+            var result = new ImportResult();
+            queuedItem = ProcessImportData(queuedItem);
+            result.Status = queuedItem.ImportStatus;
+            
+            return result;
+        }
         public async Task<ImportError> GetException(ImportQueueFilter filter)
         {
             return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));

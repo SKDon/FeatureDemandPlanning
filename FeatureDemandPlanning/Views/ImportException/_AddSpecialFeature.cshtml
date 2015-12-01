@@ -23,15 +23,19 @@
     </div>
     <div class="panel-body">
         <form class="form-horizontal">
-            <div class="form-group form-group-sm">
-                <label for="ddlSpecialFeature" class="control-label col-xs-2 text-right">Type:</label>
-                <div class="col-xs-10">
-                    <select id="ddlSpecialFeature" class="form-control">
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_SelectSpecialFeature">Special Feature:</label>
+                <div class="col-sm-8">
+                    <button id="@(Model.IdentifierPrefix)_SelectSpecialFeature" type="button" class="btn btn-sm btn-default dropdown-toggle col-sm-12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span id="@(Model.IdentifierPrefix)_SelectedSpecialFeature">Select Special Feature</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul id="@(Model.IdentifierPrefix)_SpecialFeatureList" class="dropdown-menu">
                         @foreach (var specialFeature in Model.AvailableSpecialFeatures)
                         {
-                            <option value="@specialFeature.FdpSpecialFeatureTypeId">@specialFeature.Description</option>
+                            <li><a class="special-feature-item" href="#" data-target="@specialFeature.FdpSpecialFeatureTypeId" data-content="@specialFeature.Description">@specialFeature.Description</a></li>
                         }
-                    </select>
+                    </ul>
                 </div>
             </div>
             

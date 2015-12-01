@@ -53,6 +53,10 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     para.Add("@FdpImportId", importQueue.ImportId, dbType: DbType.Int32);
+                    if (importQueue.LineNumber.HasValue)
+                    {
+                        para.Add("@LineNumber", importQueue.LineNumber, DbType.Int32);
+                    }
 
                     conn.Execute("dbo.Fdp_ImportData_Process", para, commandType: CommandType.StoredProcedure, commandTimeout:600);
                 }

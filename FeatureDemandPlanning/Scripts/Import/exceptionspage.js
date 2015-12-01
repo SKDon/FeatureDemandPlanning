@@ -57,7 +57,7 @@ page.ExceptionsPage = function (models) {
         return parseInt($("#ddlExceptionType").val());
     };
     me.getFilterMessage = function () {
-        return $("#txtFilterMessage").val();
+        return $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
     };
     me.getIdentifierPrefix = function () {
         return $("#Page_IdentifierPrefix").val();

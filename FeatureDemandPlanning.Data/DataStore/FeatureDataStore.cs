@@ -586,7 +586,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     para.Add("@FdpSpecialFeatureId", fdpFeatureId, dbType: DbType.Int32);
 
-                    retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeature_Delete", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeatureMapping_Delete", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
                 {
@@ -605,7 +605,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     para.Add("@FdpSpecialFeatureId", fdpFeatureId, dbType: DbType.Int32);
-                    retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeature_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeatureMapping_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
                 {
@@ -626,7 +626,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
                     para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
 
-                    retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeature_GetMany", para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeatureMapping_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
@@ -649,7 +649,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@ProgrammeId", specialFeature.ProgrammeId.GetValueOrDefault(), dbType: DbType.Int32);
                     para.Add("@Gateway", specialFeature.Gateway, dbType: DbType.String);
 
-                    retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeature_Save", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeatureMapping_Save", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
                 {

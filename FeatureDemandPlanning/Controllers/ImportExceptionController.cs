@@ -131,6 +131,7 @@ namespace FeatureDemandPlanning.Controllers
             };
             importView.CurrentException = await DataContext.Import.AddDerivative(filter, derivative);
             await DeactivateException(importView.CurrentException);
+            await ReProcessException(importView.CurrentException);
 
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
@@ -149,6 +150,7 @@ namespace FeatureDemandPlanning.Controllers
             };
             importView.CurrentException = await DataContext.Import.AddFeature(filter, feature);
             await DeactivateException(importView.CurrentException);
+            await ReProcessException(importView.CurrentException);
 
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
@@ -169,6 +171,7 @@ namespace FeatureDemandPlanning.Controllers
             };
             importView.CurrentException = await DataContext.Import.AddTrim(filter, trim);
             await DeactivateException(importView.CurrentException);
+            await ReProcessException(importView.CurrentException);
 
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
@@ -189,6 +192,7 @@ namespace FeatureDemandPlanning.Controllers
             };
             importView.CurrentException = await DataContext.Import.AddSpecialFeature(filter, specialFeature);
             await DeactivateException(importView.CurrentException);
+            await ReProcessException(importView.CurrentException);
 
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
@@ -216,6 +220,7 @@ namespace FeatureDemandPlanning.Controllers
             };
             importView.CurrentException = await DataContext.Import.MapDerivative(filter, derivativeMapping);
             await DeactivateException(importView.CurrentException);
+            await ReProcessException(importView.CurrentException);
 
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
@@ -237,6 +242,7 @@ namespace FeatureDemandPlanning.Controllers
             };
             importView.CurrentException = await DataContext.Import.MapFeature(filter, featureMapping);
             await DeactivateException(importView.CurrentException);
+            await ReProcessException(importView.CurrentException);
 
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
@@ -265,6 +271,7 @@ namespace FeatureDemandPlanning.Controllers
             }
             importView.CurrentException = await DataContext.Import.MapTrim(filter, trimMapping);
             await DeactivateException(importView.CurrentException);
+            await ReProcessException(importView.CurrentException);
 
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
@@ -283,6 +290,7 @@ namespace FeatureDemandPlanning.Controllers
             };
             importView.CurrentException = await DataContext.Import.MapMarket(filter, marketMapping);
             await DeactivateException(importView.CurrentException);
+            await ReProcessException(importView.CurrentException);
 
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
@@ -313,6 +321,16 @@ namespace FeatureDemandPlanning.Controllers
             filter.IsActive = false;
 
             return await DataContext.Import.SaveException(filter);
+        }
+        private async Task<ImportResult> ReProcessException(ImportError exception)
+        {
+            var queuedItem = new ImportQueue()
+            {
+                ImportId = exception.FdpImportId,
+                ImportQueueId = exception.ImportQueueId,
+                LineNumber = int.Parse(exception.LineNumber)
+            };
+            return await Task.FromResult(DataContext.Import.ReprocessImportQueue(queuedItem));
         }
        
         #endregion

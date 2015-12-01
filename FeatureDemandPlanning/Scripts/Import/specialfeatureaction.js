@@ -20,7 +20,7 @@ model.SpecialFeatureAction = function (params) {
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.displaySelectedFeature = function () {
-        $("#" + me.getIdentifierPrefix() + "_SelectedSpecialFeatureTypeId").html(me.getSelectedSpecialFeatureType());
+        $("#" + me.getIdentifierPrefix() + "_SelectedSpecialFeature").html(me.getSelectedSpecialFeatureType());
     }
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
@@ -88,7 +88,7 @@ model.SpecialFeatureAction = function (params) {
     };
     me.registerEvents = function () {
         var prefix = me.getIdentifierPrefix();
-        $("#" + prefix + "_FeatureList").find("a.feature-item").on("click", function (e) {
+        $("#" + prefix + "_SpecialFeatureList").find("a.special-feature-item").on("click", function (e) {
             me.itemSelectedEventHandler(e);
             e.preventDefault();
         });
