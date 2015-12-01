@@ -51,23 +51,23 @@ BEGIN
 		, D.FdpFeatureId
 		, 0						AS PackId
 		, D.ModelId
-		, D.FdpModelId
+		, NULL
 		, SUM(D.Volume)			AS Volume
 		, 0.0					AS PercentageTakeRate	
     FROM 
-    Fdp_OxoVolumeDataItem	AS D	WITH(NOLOCK) 
-    JOIN @Models			AS M	ON	D.ModelId		= M.ModelId
-									AND M.IsFdpModel	= 0
-    JOIN Fdp_OxoDoc			AS FO	ON	D.FdpOxoDocId	= FO.FdpOxoDocId
+    Fdp_OxoDoc				AS X
+    JOIN Fdp_VolumeHeader	AS H	ON	X.FdpVolumeHeaderId = H.FdpVolumeHeaderId
+    JOIN Fdp_VolumeDataItem AS D	ON	H.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
+    JOIN @Models			AS M	ON	D.ModelId			= M.ModelId
+									AND M.IsFdpModel		= 0
+	JOIN OXO_Programme_MarketGroupMarket_VW 
+							AS MK	ON	D.MarketId			= MK.Market_Id
 	WHERE 
-	FO.OxoDocId = @OxoDocId
+	X.OxoDocId = @OxoDocId
 	AND
-	(@MarketGroupId IS NULL OR D.MarketGroupId = @MarketGroupId)
-	AND 
-	D.IsActive = 1
+	(@MarketGroupId IS NULL OR MK.Market_Group_Id = @MarketGroupId)
 	GROUP BY
 	  D.ModelId
-	, D.FdpModelId
 	, D.FeatureId
 	, D.FdpFeatureId
 	
@@ -77,26 +77,26 @@ BEGIN
 		  D.FeatureId
 		, D.FdpFeatureId
 		, 0						AS PackId
-		, D.ModelId
+		, NULL
 		, D.FdpModelId
 		, SUM(D.Volume)			AS Volume
 		, 0.0					AS PercentageTakeRate	
     FROM 
-    Fdp_OxoVolumeDataItem	AS D	WITH(NOLOCK) 
-    JOIN @Models			AS M	ON	D.FdpModelId	= M.ModelId
-									AND M.IsFdpModel	= 1
-    JOIN Fdp_OxoDoc			AS FO	ON	D.FdpOxoDocId	= FO.FdpOxoDocId
+    Fdp_OxoDoc				AS X
+    JOIN Fdp_VolumeHeader	AS H	ON	X.FdpVolumeHeaderId = H.FdpVolumeHeaderId
+    JOIN Fdp_VolumeDataItem AS D	ON	H.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
+    JOIN @Models			AS M	ON	D.FdpModelId		= M.ModelId
+									AND M.IsFdpModel		= 1
+	JOIN OXO_Programme_MarketGroupMarket_VW 
+							AS MK	ON	D.MarketId			= MK.Market_Id
 	WHERE 
-	FO.OxoDocId = @OxoDocId
+	X.OxoDocId = @OxoDocId
 	AND
-	(@MarketGroupId IS NULL OR D.MarketGroupId = @MarketGroupId)
-	AND 
-	D.IsActive = 1
+	(@MarketGroupId IS NULL OR MK.Market_Group_Id = @MarketGroupId)
 	GROUP BY
-	  D.ModelId
-	, D.FdpModelId
+	  D.FdpModelId
 	, D.FeatureId
 	, D.FdpFeatureId
 	
-	RETURN 
+	RETURN; 
 END

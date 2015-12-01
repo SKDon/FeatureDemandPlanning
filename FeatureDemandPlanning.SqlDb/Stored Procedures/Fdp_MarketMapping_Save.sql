@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_MarketMapping_Save]
-	  @ImportMarket		NVARCHAR(20)
+	  @ImportMarket		NVARCHAR(50)
 	, @MappedMarketId	INT
 	, @ProgrammeId		INT				= NULL
 	, @Gateway			NVARCHAR(100)	= NULL

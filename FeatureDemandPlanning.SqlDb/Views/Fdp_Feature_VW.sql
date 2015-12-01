@@ -1,9 +1,12 @@
-﻿CREATE VIEW Fdp_Feature_VW
+﻿
+CREATE VIEW [dbo].[Fdp_Feature_VW]
 AS
 
 SELECT 
-	  F.ID
-	, CAST(NULL AS INT) AS FdpFeatureId
+	  F.ID					AS FeatureId
+	, E.Created_On			AS CreatedOn
+	, E.Created_By			AS CreatedBy
+	, CAST(NULL AS INT)		AS FdpFeatureId
 	, F.Name 
 	, F.AKA
 	, F.ModelYear
@@ -14,22 +17,40 @@ SELECT
 	, F.OACode
 	, F.SystemDescription
 	, F.BrandDescription
+	, GR.Id					AS FeatureGroupId
 	, F.FeatureGroup
 	, F.FeatureSubGroup
+	, P.Id					AS FeaturePackId
+	, P.PackName			AS FeaturePackName
+	, P.PackFeatureCode		AS FeaturePackCode
 	, F.DisplayOrder
 	, F.FeatureComment
 	, F.FeatureRuleText
 	, F.LongDescription
 	, F.EFGName
-	, CAST(0 AS BIT) AS IsFdpFeature
+	, CAST(0 AS BIT)		AS IsFdpFeature
+	, E.Last_Updated		AS UpdatedOn
+	, E.Updated_By			AS UpdatedBy
 	
-FROM OXO_Programme_Feature_VW	AS F
-JOIN Fdp_Gateways_VW			AS G ON F.ProgrammeId = G.ProgrammeId
+FROM OXO_Programme_Feature_VW	AS F 
+JOIN OXO_Feature_Ext			AS E	ON F.FeatureCode	= E.Feat_Code
+JOIN Fdp_Gateways_VW			AS G	ON F.ProgrammeId	= G.ProgrammeId
+LEFT JOIN OXO_Feature_Group		AS GR	ON F.FeatureGroup	= GR.Group_Name
+										AND 
+										(
+											F.FeatureSubGroup = GR.Sub_Group_Name
+											OR
+											F.FeatureSubGroup IS NULL
+										)
+LEFT JOIN OXO_Pack_Feature_VW	AS P	ON F.ProgrammeId	= P.ProgrammeId
+										AND F.ID			= P.Id
 
 UNION
 
 SELECT
-	  CAST(NULL AS INT) AS Id 
+	  CAST(NULL AS INT) AS FeatureId 
+	, F.CreatedOn
+	, F.CreatedBy
 	, F.FdpFeatureId
 	, P.VehicleName			AS Name
 	, P.VehicleAKA			AS AKA
@@ -41,14 +62,20 @@ SELECT
 	, F.FeatureCode			AS OACode
 	, F.FeatureDescription	AS SystemDescription
 	, F.FeatureDescription	AS BrandDescription
+	, G.Id					AS FeatureGroupId
 	, G.Group_Name			AS FeatureGroup
 	, G.Sub_Group_Name		AS FeatureSubGroup
+	, NULL					AS FeaturePackId
+	, NULL					AS FeaturePackName
+	, NULL					AS FeaturePackCode
 	, 0						AS DisplayOrder
 	, NULL					AS FeatureComment
 	, NULL					AS FeatureRuleText
 	, F.FeatureDescription	AS LongDescription
 	, 'Unknown'				AS EFGName
 	, CAST(1 AS BIT)		AS IsFdpFeature
+	, F.UpdatedOn
+	, F.UpdatedBy
 						
 FROM Fdp_Feature			AS F 
 JOIN OXO_Programme_VW		AS P ON F.ProgrammeId		= P.Id

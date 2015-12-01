@@ -146,7 +146,6 @@
     <Build Include="Tables\Fdp_TrimMapping_Old.sql" />
     <Build Include="Tables\Fdp_User.sql" />
     <Build Include="Tables\Fdp_UserProgramme.sql" />
-    <Build Include="Tables\Fdp_Volume.sql" />
     <Build Include="Tables\Fdp_VolumeDataItem.sql" />
     <Build Include="Tables\Fdp_VolumeHeader.sql" />
     <Build Include="Views\Fdp_Derivative_VW.sql" />
@@ -160,7 +159,10 @@
     <Build Include="Views\Fdp_ImportQueue_VW.sql" />
     <Build Include="Views\Fdp_ImportQueueError_VW.sql" />
     <Build Include="Views\Fdp_ImportVolume_VW.sql" />
-    <Build Include="Views\Fdp_MarketMapping_VW.sql" />
+    <Build Include="Views\Fdp_MarketMapping_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Views\Fdp_ProgrammeByGateway_VW.sql" />
     <Build Include="Views\Fdp_TopMarket_VW.sql" />
     <Build Include="Views\Fdp_TrimLevels.sql" />
@@ -354,6 +356,22 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_AvailableModelByMarket_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_TakeRateSummary.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_TakeRateSummaryByModelAndMarket_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_TakeRateSummaryByModel_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_TakeRateSummaryByMarket_VW.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>

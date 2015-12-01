@@ -1,53 +1,62 @@
 ﻿
-
-
-
 CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
-
-	SELECT 
-		  NULL				AS FdpFeatureMappingId
-		, E.Created_On		AS CreatedOn
-		, E.Created_By		AS CreatedBy
-		, F.ProgrammeId
-		, G.Gateway			AS Gateway
-		, F.Id				AS FeatureId
-		, F.FeatureCode		AS ImportFeatureCode
-		, F.FeatureCode		AS MappedFeatureCode
-		, ISNULL(F.BrandDescription, F.SystemDescription) AS [Description]
-		, CAST(0 AS BIT)	AS IsMappedFeature
-		, E.Last_Updated	AS UpdatedOn
-		, E.Updated_By		AS UpdatedBy
-	FROM
-	OXO_Programme_Feature_VW		AS F 
-	JOIN OXO_Feature_Ext			AS E	ON	F.FeatureCode	= E.Feat_Code
-	JOIN Fdp_Gateways_VW			AS G	ON	F.ProgrammeId	= G.ProgrammeId
-	LEFT JOIN Fdp_FeatureMapping	AS M	ON	F.ProgrammeId	= M.ProgrammeId
-											AND G.Gateway		= M.Gateway
-											AND F.ID			= M.FeatureId
-											AND M.IsActive		= 1
-	WHERE
-	M.FdpFeatureMappingId IS NULL
 	
+	SELECT
+		  F.FeatureId
+		, F.FdpFeatureId
+		, F.CreatedOn
+		, F.CreatedBy
+		, F.ProgrammeId
+		, F.Gateway				AS Gateway
+		, F.FeatureCode			AS ImportFeatureCode
+		, F.FeatureCode			AS MappedFeatureCode
+		, F.BrandDescription
+		, F.SystemDescription	AS [Description]
+		, F.FeatureGroupId
+		, F.FeatureGroup
+		, F.FeatureSubGroup
+		, F.FeaturePackId
+		, F.FeaturePackCode
+		, F.FeaturePackName
+		, F.DisplayOrder
+		, CAST(0 AS BIT)		AS IsMappedFeature
+		, F.IsFdpFeature
+		, CAST(NULL AS INT)		AS FdpFeatureMappingId
+		, F.UpdatedOn
+		, F.UpdatedBy 
+	FROM
+	OXO_Programme			AS P
+	JOIN Fdp_Feature_VW		AS F	ON	P.Id = F.ProgrammeId
+							
 	UNION
 	
 	SELECT
-		  M.FdpFeatureMappingId
+		  M.FeatureId
+		, NULL					AS FdpFeatureId
 		, M.CreatedOn
 		, M.CreatedBy
 		, F.ProgrammeId
 		, M.Gateway				AS Gateway
-		, F.Id					AS FeatureId
 		, M.ImportFeatureCode	AS ImportFeatureCode
 		, F.FeatureCode			AS MappedFeatureCode
-		, ISNULL(F.BrandDescription, F.SystemDescription) AS [Description]
+		, F.BrandDescription
+		, F.SystemDescription	AS [Description]
+		, F.FeatureGroupId
+		, F.FeatureGroup
+		, F.FeatureSubGroup
+		, F.FeaturePackId
+		, F.FeaturePackCode
+		, F.FeaturePackName
+		, F.DisplayOrder
 		, CAST(1 AS BIT)		AS IsMappedFeature
+		, F.IsFdpFeature
+		, M.FdpFeatureMappingId
 		, M.UpdatedOn
 		, M.UpdatedBy
 	FROM
-	OXO_Programme_Feature_VW		AS F 
-	JOIN OXO_Feature_Ext			AS E	ON	F.FeatureCode	= E.Feat_Code
-	JOIN Fdp_Gateways_VW			AS G	ON	F.ProgrammeId	= G.ProgrammeId
+	OXO_Programme					AS P 
+	JOIN Fdp_Feature_VW				AS F	ON	P.Id			= F.ProgrammeId
 	JOIN Fdp_FeatureMapping			AS M	ON	F.ProgrammeId	= M.ProgrammeId
-											AND G.Gateway		= M.Gateway
-											AND F.ID			= M.FeatureId
+											AND F.Gateway		= M.Gateway
+											AND F.FeatureId		= M.FeatureId
 											AND M.IsActive		= 1

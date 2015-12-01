@@ -55,16 +55,15 @@ BEGIN
 		, SUM(D.Volume)			AS Volume
 		, 0.0					AS PercentageTakeRate	
     FROM 
-    Fdp_OxoVolumeDataItem	AS D	WITH(NOLOCK) 
-    JOIN @Models			AS M	ON	D.ModelId		= M.ModelId
-									AND M.IsFdpModel	= 0
-    JOIN Fdp_OxoDoc			AS FO	ON	D.FdpOxoDocId	= FO.FdpOxoDocId
+    Fdp_OxoDoc				AS X
+    JOIN Fdp_VolumeHeader	AS H	ON	X.FdpVolumeHeaderId = H.FdpVolumeHeaderId
+    JOIN Fdp_VolumeDataItem AS D	ON	H.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
+    JOIN @Models			AS M	ON	D.ModelId			= M.ModelId
+									AND M.IsFdpModel		= 0
 	WHERE 
-	FO.OxoDocId = @OxoDocId
+	X.OxoDocId = @OxoDocId
 	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
-	AND 
-	D.IsActive = 1
 	GROUP BY
 	  D.ModelId
 	, D.FdpModelId
@@ -82,16 +81,15 @@ BEGIN
 		, SUM(D.Volume)			AS Volume
 		, 0.0					AS PercentageTakeRate	
     FROM 
-    Fdp_OxoVolumeDataItem	AS D	WITH(NOLOCK) 
-    JOIN @Models			AS M	ON	D.FdpModelId	= M.ModelId
-									AND M.IsFdpModel	= 1
-    JOIN Fdp_OxoDoc			AS FO	ON	D.FdpOxoDocId	= FO.FdpOxoDocId
+    Fdp_OxoDoc				AS X
+    JOIN Fdp_VolumeHeader	AS H	ON	X.FdpVolumeHeaderId = H.FdpVolumeHeaderId
+    JOIN Fdp_VolumeDataItem AS D	ON	H.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
+    JOIN @Models			AS M	ON	D.FdpModelId		= M.ModelId
+									AND M.IsFdpModel		= 1
 	WHERE 
-	FO.OxoDocId = @OxoDocId
+	X.OxoDocId = @OxoDocId
 	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
-	AND 
-	D.IsActive = 1
 	GROUP BY
 	  D.ModelId
 	, D.FdpModelId
