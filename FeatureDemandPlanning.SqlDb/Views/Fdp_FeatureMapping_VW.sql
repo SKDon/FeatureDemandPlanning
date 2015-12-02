@@ -1,4 +1,5 @@
 ﻿
+
 CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 	
 	SELECT
@@ -18,6 +19,9 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, F.FeaturePackId
 		, F.FeaturePackCode
 		, F.FeaturePackName
+		, F.FeatureComment
+		, F.LongDescription
+		, F.FeatureRuleText
 		, F.DisplayOrder
 		, CAST(0 AS BIT)		AS IsMappedFeature
 		, F.IsFdpFeature
@@ -47,6 +51,9 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, F.FeaturePackId
 		, F.FeaturePackCode
 		, F.FeaturePackName
+		, F.FeatureComment
+		, F.LongDescription
+		, F.FeatureRuleText
 		, F.DisplayOrder
 		, CAST(1 AS BIT)		AS IsMappedFeature
 		, F.IsFdpFeature

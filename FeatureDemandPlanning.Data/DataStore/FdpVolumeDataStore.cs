@@ -63,7 +63,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var cmd = conn.CreateCommand();
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = "Fdp_OxoVolumeDataItem_GetCrossTab";
+                    cmd.CommandText = "Fdp_TakeRateData_GetCrossTab";
                     cmd.CommandTimeout = 0;
 
                     cmd.Parameters.Add(new SqlParameter("@OxoDocId", SqlDbType.Int) { Value = filter.OxoDocId.Value });
@@ -100,9 +100,10 @@ namespace FeatureDemandPlanning.DataStore
                     retVal.FeatureApplicabilityData = ds.Tables[1].AsEnumerable();
 
                     // 3. Total volumes for each model by market
-                    retVal.VolumeByModel = ds.Tables[2].AsEnumerable().Select(d => new DerivativeVolumeData()
+                    retVal.TakeRateSummaryByModel = ds.Tables[2].AsEnumerable().Select(d => new ModelTakeRateSummary()
                     {
-                        ModelId = d.Field<int>("Model_Id"),
+                        StringIdentifier = d.Field<string>("StringIdentifier"),
+                        IsFdpModel = d.Field<bool>("IsFdpModel"),
                         Volume = d.Field<int>("Volume"),
                         PercentageOfFilteredVolume = d.Field<decimal>("PercentageOfFilteredVolume")
                     });

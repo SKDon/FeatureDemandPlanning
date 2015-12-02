@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_OxoVolumeDataItem_GetCrossTab] 
+﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateData_GetCrossTab] 
     @OxoDocId		INT
   , @Mode			NVARCHAR(2)
   , @ObjectId		INT = NULL
@@ -14,15 +14,17 @@ AS
 	DECLARE @MarketGroupId		INT;
 	DECLARE @FdpOxoDocId		INT;
 	DECLARE @FilteredVolume		INT;
+	DECLARE @TotalVolume		INT;
 	DECLARE @ModelTotals		NVARCHAR(MAX) = N'';
 	DECLARE @OxoModelIds		NVARCHAR(MAX) = N'';
 
 	CREATE TABLE #FeatureApplicability
 	(
-		  FeatureId		INT				NULL
-		, PackId		INT				NULL
-		, ModelId		INT				NULL
-		, OxoCode		NVARCHAR(100)	NULL
+		  FeatureId			INT				NULL
+		, PackId			INT				NULL
+		, ModelId			INT				NULL
+		, OxoCode			NVARCHAR(100)	NULL
+		, StringIdentifier	NVARCHAR(10)	NULL
 	);
 	CREATE TABLE #RawTakeRateData
 	(
@@ -45,7 +47,7 @@ AS
 		, FdpFeatureId			INT
 		, FeatureComment		NVARCHAR(4000)	NULL
 		, SystemDescription		NVARCHAR(200)	NULL
-		, RuleCount				INT
+		, HasRule				BIT
 		, LongDescription		NVARCHAR(MAX)	NULL
 		, Volume				INT
 		, PercentageTakeRate	DECIMAL(4, 2)
@@ -53,7 +55,7 @@ AS
 		, ModelId				INT
 		, FdpModelId			INT
 		, StringIdentifier		NVARCHAR(10)
-		, Ix					INT
+		, FeatureIdentifier		NVARCHAR(10)
 	);
 	CREATE TABLE #Model
 	(
@@ -126,8 +128,21 @@ AS
 		FROM 
 		dbo.fn_Fdp_TakeRateData_ByMarketGroup_Get(@OxoDocId, @MarketGroupId, @ModelIds) AS TR;
 		
-		INSERT INTO #FeatureApplicability 
-		SELECT * FROM dbo.FN_OXO_Data_Get_FBM_MarketGroup(@OxoDocId, @MarketGroupId, @OxoModelIds)
+		INSERT INTO #FeatureApplicability
+		(
+			  FeatureId		
+			, PackId		
+			, ModelId		
+			, OxoCode		
+			, StringIdentifier
+		) 
+		SELECT 
+			  Feature_Id
+			, Pack_Id
+			, Model_Id
+			, OXO_Code
+			, 'O' + CAST(Model_Id AS NVARCHAR(10))
+		FROM dbo.FN_OXO_Data_Get_FBM_MarketGroup(@OxoDocId, @MarketGroupId, @OxoModelIds)
 	END
 	ELSE
 	BEGIN
@@ -152,8 +167,21 @@ AS
 		FROM 
 		dbo.fn_Fdp_TakeRateData_ByMarket_Get(@OxoDocId, @ObjectId, @ModelIds) AS TR;
 		
-		INSERT INTO #FeatureApplicability 
-		SELECT * FROM dbo.FN_OXO_Data_Get_FBM_Market(@OxoDocId, @MarketGroupId, @ObjectId, @OxoModelIds)
+		INSERT INTO #FeatureApplicability
+		(
+			  FeatureId		
+			, PackId		
+			, ModelId		
+			, OxoCode		
+			, StringIdentifier
+		) 
+		SELECT 
+			  Feature_Id
+			, Pack_Id
+			, Model_Id
+			, OXO_Code
+			, 'O' + CAST(Model_Id AS NVARCHAR(10))
+		FROM dbo.FN_OXO_Data_Get_FBM_Market(@OxoDocId, @MarketGroupId, @ObjectId, @OxoModelIds)
 	END
 	
 	CREATE NONCLUSTERED INDEX Ix_TmpRawTakeRateData_Code ON #RawTakeRateData
@@ -177,13 +205,16 @@ AS
 			, FEA.FeatureSubGroup
 			, FEA.BrandDescription
 			, FEA.[Description]
+			, FEA.FeatureComment
+			, FEA.FeatureRuleText
+			, FEA.LongDescription
 			, D.ModelId
 			, CAST(NULL AS INT) AS FdpModelId 
 			, ISNULL(D.Volume, 0) AS Volume
 			, D.PercentageTakeRate
-			, NULL AS OxoCode --O.OxoCode
+			, O.OxoCode
 			, M.StringIdentifier
-			, 1 AS IX
+			, 'O' + CAST(FEA.FeatureId AS NVARCHAR(10)) AS FeatureIdentifier
 			  
 		FROM Fdp_FeatureMapping_VW		AS FEA
 		LEFT JOIN #RawTakeRateData		AS D	ON		FEA.FeatureId	= D.FeatureId
@@ -208,13 +239,20 @@ AS
 			, FEA.FeatureSubGroup
 			, FEA.BrandDescription
 			, FEA.[Description]
+			, FEA.FeatureComment
+			, FEA.FeatureRuleText
+			, FEA.LongDescription
 			, CAST(NULL AS INT) AS ModelId
 			, D.FdpModelId 
 			, ISNULL(D.Volume, 0) AS Volume
 			, D.PercentageTakeRate
 			, CAST(NULL AS NVARCHAR(10)) AS OxoCode
 			, M.StringIdentifier
-			, 2 AS IX
+			, CASE
+				WHEN FEA.FeatureId IS NOT NULL THEN 'O' + CAST(FEA.FeatureId AS NVARCHAR(10))
+				ELSE 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10))
+			  END
+			  AS FeatureIdentifier
 			  
 		FROM Fdp_FeatureMapping_VW		AS FEA
 		LEFT JOIN #RawTakeRateData		AS D	ON		FEA.FeatureId	= D.FeatureId
@@ -237,13 +275,20 @@ AS
 			, FEA.FeatureSubGroup
 			, FEA.BrandDescription
 			, FEA.[Description]
+			, FEA.FeatureComment
+			, FEA.FeatureRuleText
+			, FEA.LongDescription
 			, CAST(NULL AS INT) AS ModelId
 			, D.FdpModelId 
 			, ISNULL(D.Volume, 0) AS Volume
 			, D.PercentageTakeRate
 			, CAST(NULL AS NVARCHAR(10)) AS OxoCode
 			, M.StringIdentifier
-			, 3 AS IX
+			, CASE
+				WHEN FEA.FeatureId IS NOT NULL THEN 'O' + CAST(FEA.FeatureId AS NVARCHAR(10))
+				ELSE 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10))
+			  END
+			  AS FeatureIdentifier
 			  
 		FROM Fdp_FeatureMapping_VW		AS FEA
 		LEFT JOIN #RawTakeRateData		AS D	ON		FEA.FdpFeatureId	= D.FdpFeatureId
@@ -263,41 +308,39 @@ AS
 		, BrandDescription		
 		, FeatureId
 		, FdpFeatureId			
-		--, FeatureComment		
+		, FeatureComment		
 		, SystemDescription		
-		--, RuleCount				
-		--, LongDescription	
+		, HasRule				
+		, LongDescription	
 		, ModelId
 		, FdpModelId		
 		, Volume				
 		, PercentageTakeRate
 		, OxoCode
 		, StringIdentifier	
-		, Ix			
+		, FeatureIdentifier			
 	)
 	SELECT 
 		  F.DisplayOrder
 		, F.FeatureGroup
 		, F.FeatureSubGroup
 		, F.FeatureCode
-		, F.BrandDescription		AS BrandDescription
+		, F.BrandDescription
 		, F.FeatureId
 		, F.FdpFeatureId	 
-		--, ISNULL(FeatureComment, N'')		AS FeatureComment
-		, F.[Description]					AS SystemDescription
-		--, ISNULL(LEN(FeatureRuleText),0)	AS RuleCount
-		--, ISNULL(LongDescription, N'')		AS LongDescription
+		, F.FeatureComment
+		, F.[Description]
+		, CAST(CASE WHEN LEN(F.FeatureRuleText) > 0 THEN 1 ELSE 0 END AS BIT)
+		, F.LongDescription
 		, F.ModelId
 		, F.FdpModelId 
-		, ISNULL(F.Volume, 0) AS Volume
+		, ISNULL(F.Volume, 0)
 		, F.PercentageTakeRate
 		, F.OxoCode
 		, F.StringIdentifier
-		, F.IX
+		, F.FeatureIdentifier
 	FROM
 	TakeRateDataByFeature				AS F 
-	
-	SELECT * FROM #TakeRateDataByFeature
 
 	-- If we are showing volume information, use the raw volume figures,
 	-- otherwise return the percentage take rate for each feature / market
@@ -308,11 +351,10 @@ AS
 	
 	IF @ShowPercentage = 0
 	BEGIN
-		SET @Sql =		  'SELECT DATASET.*, ' + @ModelTotals + ' AS TotalVolume '
-		--SET @Sql = 'SELECT DATASET.* '				
+		SET @Sql =		  'SELECT DATASET.*, ' + @ModelTotals + ' AS TotalVolume '				
 		SET @Sql = @Sql + 'FROM ( '
-		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode) AS Id, DisplayOrder, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, StringIdentifier, '
-		SET @Sql = @Sql + 'SystemDescription, RuleCount, LongDescription, ISNULL(Volume, 0) AS Volume '
+		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, StringIdentifier, '
+		SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, ISNULL(Volume, 0) AS Volume '
 		SET @Sql = @Sql + 'FROM #TakeRateDataByFeature) AS S1 '
 		SET @Sql = @Sql + 'PIVOT ( '
 		SET @Sql = @Sql + 'SUM([Volume]) FOR StringIdentifier '
@@ -321,11 +363,10 @@ AS
 	END
 	ELSE
 	BEGIN
-		--SET @Sql =		  'SELECT DATASET.*, ' + @ModelTotals + ' AS TotalPercentageTakeRate '
-		SET @Sql = 'SELECT DATASET.* '					
+		SET @Sql =		  'SELECT DATASET.*, ' + @ModelTotals + ' AS TotalPercentageTakeRate '
 		SET @Sql = @Sql + 'FROM ( '
-		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode) AS Id, DisplayOrder, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, StringIdentifier, '
-		SET @Sql = @Sql + 'SystemDescription, RuleCount, LongDescription, PercentageTakeRate '
+		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, StringIdentifier, '
+		SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, PercentageTakeRate '
 		SET @Sql = @Sql + 'FROM #TakeRateDataByFeature) AS S2 '
 		SET @Sql = @Sql + 'PIVOT ( '
 		SET @Sql = @Sql + 'SUM([PercentageTakeRate]) FOR StringIdentifier '
@@ -336,64 +377,130 @@ AS
 	PRINT @Sql;
 	EXEC sp_executesql @Sql;
 	
-	---- For the second dataset, return the OXO Code to determine the feature applicability
-	---- Unfortunately we can't easily combine into the first dataset due to the fact that we are pivoting on different columns
+	-- For the second dataset, return the OXO Code to determine the feature applicability
+	-- Unfortunately we can't easily combine into the first dataset due to the fact that we are pivoting on different columns
 	
-	--SET @Sql =		  'SELECT DATASET.* '				
-	--SET @Sql = @Sql + 'FROM ( '
-	--SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY Display_Order, Feature_Code) AS Id, Display_Order, FeatureGroup, FeatureSubGroup, Feature_Code, BrandDescription, Feature_Id, FeatureComment, '
-	--SET @Sql = @Sql + 'SystemDescription, RuleCount, LongDescription, Model_Id, OXO_Code '
-	--SET @Sql = @Sql + 'FROM #FeatureByMarket '
-	--SET @Sql = @Sql + 'WHERE Feature_Id <> -1) AS S3 '
-	--SET @Sql = @Sql + 'PIVOT ( '
-	--SET @Sql = @Sql + 'MAX([OXO_Code]) FOR Model_Id '
-	--SET @Sql = @Sql + 'IN (' + @ModelIds + ')) AS DATASET '
-	--SET @Sql = @Sql + 'ORDER BY Display_Order, Feature_Code';
+	SET @Sql =		  'SELECT DATASET.* '				
+	SET @Sql = @Sql + 'FROM ( '
+	SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, StringIdentifier, '
+	SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, OXOCode '
+	SET @Sql = @Sql + 'FROM #TakeRateDataByFeature) AS S3 '
+	SET @Sql = @Sql + 'PIVOT ( '
+	SET @Sql = @Sql + 'MAX([OXOCode]) FOR StringIdentifier '
+	SET @Sql = @Sql + 'IN (' + @ModelIds + ')) AS DATASET '
+	SET @Sql = @Sql + 'ORDER BY DisplayOrder, FeatureCode';
 
-	--PRINT @Sql;
-	--EXEC sp_executesql @Sql;
+	PRINT @Sql;
+	EXEC sp_executesql @Sql;
 	
-	--SELECT @FilteredVolume = SUM(ISNULL(Volume, 0)) FROM #TakeRateDataByFeature WHERE FeatureId = -1
+	-- Third dataset returning volume and percentage take rate by derivative
+	-- Calculate the total volumes for the whole unfiltered dataset and the filtered dataset
+
+	SELECT @TotalVolume = SUM(S.TotalVolume)
+	FROM
+	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+	WHERE
+	ProgrammeId = @ProgrammeId
+	AND
+	Gateway = @Gateway;
 	
-	---- Third dataset returning volume and percentage take rate by derivative
-	
-	--SELECT 
-	--	  M.ModelId
-	--	, M.IsFdpModel
-	--	, ISNULL(FBM.Volume, 0) AS Volume
-	--	, CASE 
-	--		WHEN @FilteredVolume = 0 THEN 0.0
-	--		ELSE ISNULL(FBM.Volume, 0) / CAST(@FilteredVolume AS DECIMAL(10,0)) 
-	--	  END 
-	--	  AS PercentageOfFilteredVolume
-	--FROM #Model					AS M
-	--LEFT JOIN #TakeRateDataByFeature	AS FBM ON	M.ModelId		= FBM.ModelId
-	--								   AND	FBM.FeatureId	= -1;
+	SELECT @FilteredVolume = SUM(S.TotalVolume)
+	FROM
+	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+	JOIN #Model AS M ON S.ModelId = M.ModelId
+					 AND M.IsFdpModel = 0
+	WHERE
+	S.ProgrammeId = @ProgrammeId
+	AND
+	S.Gateway = @Gateway
+	AND
+	(
+		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
+		OR
+		(@Mode = 'MG' AND (@MarketGroupId IS NULL OR S.MarketGroupId = @MarketGroupId))
+	)
+
+	SELECT @FilteredVolume = @FilteredVolume + SUM(S.TotalVolume)
+	FROM
+	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+	JOIN #Model AS M ON S.FdpModelId = M.ModelId
+					 AND M.IsFdpModel = 1
+	WHERE
+	ProgrammeId = @ProgrammeId
+	AND
+	Gateway = @Gateway
+	AND
+	(
+		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
+		OR
+		(@Mode = 'MG' AND (@ObjectId IS NULL OR S.MarketGroupId = @ObjectId))
+	)
+
+	SELECT 
+		  M.StringIdentifier
+		, M.IsFdpModel
+		, SUM(S.TotalVolume) AS Volume
+		, SUM(S.TotalVolume) / CAST(@FilteredVolume AS DECIMAL) AS PercentageOfFilteredVolume
+	FROM
+	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+	JOIN #Model AS M ON S.ModelId = M.ModelId
+					 AND M.IsFdpModel = 0
+	WHERE
+	ProgrammeId = @ProgrammeId
+	AND
+	Gateway = @Gateway
+	AND
+	(
+		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
+		OR
+		(@Mode = 'MG' AND (@ObjectId IS NULL OR S.MarketGroupId = @ObjectId))
+	)
+	GROUP BY
+	M.StringIdentifier, M.IsFdpModel
+
+	UNION
+
+	SELECT 
+		  M.StringIdentifier
+		, M.IsFdpModel
+		, SUM(S.TotalVolume) AS Volume
+		, SUM(S.TotalVolume) / CAST(@FilteredVolume AS DECIMAL) AS PercentageOfFilteredVolume
+	FROM
+	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+	JOIN #Model AS M ON S.FdpModelId = M.ModelId
+					 AND M.IsFdpModel = 1
+	WHERE
+	ProgrammeId = @ProgrammeId
+	AND
+	Gateway = @Gateway
+	AND
+	(
+		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
+		OR
+		(@Mode = 'MG' AND (@ObjectId IS NULL OR S.MarketGroupId = @ObjectId))
+	)
+	GROUP BY
+	M.StringIdentifier, M.IsFdpModel
 	
 	---- Summary dataset returning the meta information for the data (created by, updated, total volume mix, volume for market, etc)
 	
-	--SELECT TOP 1
-	--	  ISNULL(V.TotalVolume, 0)	AS TotalVolume
-	--	, @FilteredVolume			AS FilteredVolume
-	--	, CASE 
-	--		WHEN ISNULL(V.TotalVolume, 0) = 0 THEN 0.0
-	--		ELSE @FilteredVolume / CAST(V.TotalVolume AS DECIMAL(10,0))
-	--	  END 
-	--								AS PercentageOfTotalVolume
-	--	, D.CreatedBy
-	--	, D.CreatedOn
+	SELECT TOP 1
+		  ISNULL(@TotalVolume, 0)				AS TotalVolume
+		, ISNULL(@FilteredVolume, 0)			AS FilteredVolume
+		, ISNULL(CASE 
+			WHEN ISNULL(@TotalVolume, 0) = 0 THEN 0.0
+			ELSE @FilteredVolume / CAST(@TotalVolume AS DECIMAL)
+		  END, 0.0) 
+									AS PercentageOfTotalVolume
+		, D.CreatedBy
+		, D.CreatedOn
 		
-	--FROM
-	--OXO_Doc						AS D1		
-	--LEFT JOIN	Fdp_OxoDoc		AS D	ON	D1.Id = D.OXODocId
-	--LEFT JOIN	Fdp_OxoVolume	AS V ON D.FdpOxoDocId = V.FdpOxoDocId
-	--WHERE
-	--D.FdpOxoDocId = @FdpOxoDocId;
+	FROM
+	Fdp_OxoDoc AS D
+	WHERE
+	D.FdpOxoDocId = @FdpOxoDocId;
 	
 	DROP TABLE #TakeRateDataByFeature;
 	DROP TABLE #RawTakeRateData;
 	DROP TABLE #FeatureApplicability;
 	DROP TABLE #Model;
-	
-	
-	

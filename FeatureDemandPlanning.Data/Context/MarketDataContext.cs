@@ -18,6 +18,7 @@ namespace FeatureDemandPlanning.DataStore
             : base(cdsId)
         {
             _marketDataStore = new MarketDataStore(cdsId);
+            _modelDataStore = new ModelDataStore(cdsId);
             _marketGroupDataStore = new MarketGroupDataStore(cdsId);
             _documentDataStore = new OXODocDataStore(cdsId);
         }
@@ -44,13 +45,7 @@ namespace FeatureDemandPlanning.DataStore
             // Populate the list of available derivatives for that market
             if (filter.OxoDocId.HasValue && filter.ProgrammeId.HasValue)
             {
-                var programmeFilter = new ProgrammeFilter()
-                {
-                    ProgrammeId = filter.ProgrammeId,
-                    Gateway = filter.Gateway,
-                    MarketId = filter.MarketId
-                };
-                var variants = _documentDataStore.FdpModelsByMarketGetMany(programmeFilter);
+                var variants = _documentDataStore.OXODocAvailableModelsByMarket(filter.ProgrammeId.Value, filter.OxoDocId.Value, market.Id);
                 market.VariantCount = variants.Count();
             }
 
@@ -71,13 +66,7 @@ namespace FeatureDemandPlanning.DataStore
             // Populate the list of available derivatives for that market
             if (filter.OxoDocId.HasValue && filter.ProgrammeId.HasValue)
             {
-                var programmeFilter = new ProgrammeFilter()
-                {
-                    ProgrammeId = filter.ProgrammeId,
-                    Gateway = filter.Gateway,
-                    MarketGroupId = filter.MarketGroupId
-                };
-                var variants = _documentDataStore.FdpModelsByMarketGroupGetMany(programmeFilter);
+                var variants = _documentDataStore.OXODocAvailableModelsByMarketGroup(filter.ProgrammeId.Value, filter.OxoDocId.Value, marketGroup.Id);
                 marketGroup.VariantCount = variants.Count();
             }
 
@@ -104,29 +93,16 @@ namespace FeatureDemandPlanning.DataStore
 
             return _marketDataStore.TopMarketDelete(market);
         }
-        public IEnumerable<FdpModel> ListAvailableModelsByMarket(OXODoc forDocument, Market byMarket)
+        public IEnumerable<FdpModel> ListAvailableModelsByMarket(ProgrammeFilter filter, Market byMarket)
         {
-            var filter = new ProgrammeFilter()
-            {
-                ProgrammeId = forDocument.ProgrammeId,
-                Gateway = forDocument.Gateway,
-                MarketId = byMarket.Id
-            };
-            return _documentDataStore.FdpModelsByMarketGetMany(filter)
+            return _modelDataStore.FdpAvailableModelByMarketGetMany(filter, byMarket)
                 .Where(m => m.Available == true);
         }
-        public IEnumerable<FdpModel> ListAvailableModelsByMarketGroup(OXODoc forDocument, MarketGroup byMarketGroup)
+        public IEnumerable<FdpModel> ListAvailableModelsByMarketGroup(ProgrammeFilter filter, MarketGroup byMarketGroup)
         {
-            var filter = new ProgrammeFilter()
-            {
-                ProgrammeId = forDocument.ProgrammeId,
-                Gateway = forDocument.Gateway,
-                MarketGroupId = byMarketGroup.Id
-            };
-            return _documentDataStore.FdpModelsByMarketGroupGetMany(filter)
+            return _modelDataStore.FdpAvailableModelByMarketGroupGetMany(filter, byMarketGroup)
                 .Where(m => m.Available == true);
         }
-
         public async Task<FdpMarketMapping> DeleteFdpMarketMapping(FdpMarketMapping marketMappingToDelete)
         {
             return await Task.FromResult<FdpMarketMapping>(_marketDataStore.FdpMarketMappingDelete(marketMappingToDelete));
@@ -151,5 +127,6 @@ namespace FeatureDemandPlanning.DataStore
         private MarketDataStore _marketDataStore;
         private MarketGroupDataStore _marketGroupDataStore;
         private OXODocDataStore _documentDataStore;
+        private ModelDataStore _modelDataStore;
     }
 }

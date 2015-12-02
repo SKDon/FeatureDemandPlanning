@@ -1,4 +1,5 @@
 ﻿
+
 CREATE VIEW [dbo].[Fdp_Feature_VW]
 AS
 
@@ -24,9 +25,9 @@ SELECT
 	, P.PackName			AS FeaturePackName
 	, P.PackFeatureCode		AS FeaturePackCode
 	, F.DisplayOrder
-	, F.FeatureComment
-	, F.FeatureRuleText
-	, F.LongDescription
+	, ISNULL(F.FeatureComment, '') AS FeatureComment
+	, ISNULL(F.FeatureRuleText, '') AS FeatureRuleText
+	, ISNULL(F.LongDescription, '') AS LongDescription
 	, F.EFGName
 	, CAST(0 AS BIT)		AS IsFdpFeature
 	, E.Last_Updated		AS UpdatedOn
@@ -68,10 +69,10 @@ SELECT
 	, NULL					AS FeaturePackId
 	, NULL					AS FeaturePackName
 	, NULL					AS FeaturePackCode
-	, 0						AS DisplayOrder
-	, NULL					AS FeatureComment
-	, NULL					AS FeatureRuleText
-	, F.FeatureDescription	AS LongDescription
+	, G.Display_Order		AS DisplayOrder
+	, '' AS FeatureComment
+	, '' AS FeatureRuleText
+	, ISNULL(F.FeatureDescription, '') AS LongDescription
 	, 'Unknown'				AS EFGName
 	, CAST(1 AS BIT)		AS IsFdpFeature
 	, F.UpdatedOn

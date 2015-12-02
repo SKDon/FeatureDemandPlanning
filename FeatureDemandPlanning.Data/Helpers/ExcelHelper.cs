@@ -11,6 +11,7 @@ using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
 using System.Data;
 using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Filters;
 
 namespace FeatureDemandPlanning.Model.Helpers
 {
@@ -1150,7 +1151,7 @@ namespace FeatureDemandPlanning.Model.Helpers
 
                 // car models
                 ModelDataStore mds = new ModelDataStore(cdsid);
-                var carModels = mds.ModelGetMany(null, progid, docid);
+                var carModels = mds.ModelGetMany(new ProgrammeFilter() { ProgrammeId = progid, OxoDocId = docid });
                 string modelIds = string.Join(",", carModels.Select(p => string.Format("[{0}]", p.Id.ToString())));
                 int modelCount = carModels.Count();
             
@@ -1558,7 +1559,7 @@ namespace FeatureDemandPlanning.Model.Helpers
 
                 // car models
                 ModelDataStore mds = new ModelDataStore(cdsid);
-                var carModels = mds.ModelGetMany(null, progid, docid);
+                var carModels = mds.ModelGetMany(new ProgrammeFilter() { ProgrammeId = progid, OxoDocId = docid });
                 string modelIds = string.Join(",", carModels.Select(p => string.Format("[{0}]", p.Id.ToString())));
                 int modelCount = carModels.Count();
 

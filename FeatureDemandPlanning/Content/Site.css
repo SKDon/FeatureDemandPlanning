@@ -391,7 +391,7 @@ textarea {
 
 .table-bordered.dataTable > thead > tr > th {
     border-right: 1px solid #7788aa;
-    border-top: 1px solid #7788aa !important;
+    border-top: solid 1px #7788aa !important;
     border-left: none;
     border-bottom: none;
     padding-right: 8px;
@@ -1031,4 +1031,78 @@ button.close {
     text-align: right;
     margin-top: 5px;
     padding: 0px;
+}
+
+th.model {
+    width:80px;
+    min-width:80px;
+    max-width:80px;
+    border-left:none !important;
+    border-top:none !important;
+    border-bottom: none !important;
+    border-right: solid 1px #2E4372 !important;
+}
+
+table.cross-tab {
+    /*width:auto;*/
+}
+
+tr.cross-tab-header {
+    border-top: solid 1px #2E4372;
+    border-bottom: solid 1px #2E4372;
+}
+
+td.cross-tab-data-item {
+    width:80px;
+    min-width:80px;
+    max-width:80px;
+}
+
+th.first-cell {
+    font-size:11px;
+    /*padding: 2px !important;*/
+    border-left:none !important;
+    border-top:none !important;
+    border-bottom: none !important;
+    border-right: solid 1px #2E4372 !important;
+}
+
+th.bmc {
+    font-size:11px;
+    /*padding: 2px !important;*/
+    border-left:none !important;
+    border-top:none !important;
+    border-bottom: none !important;
+    border-right: solid 1px #2E4372 !important;
+}
+
+th.dpck {
+    font-size:11px;
+    /*padding: 2px !important;*/
+    border-left:none !important;
+    border-top:none !important;
+    border-bottom: none !important;
+    border-right: solid 1px #2E4372 !important;
+}
+
+th.trim-level {
+    font-size:11px;
+    /*padding: 2px !important;*/
+    border-left:none !important;
+    border-top:none !important;
+    border-bottom: none !important;
+    border-right: solid 1px #2E4372 !important;
+}
+
+th.model-mix {
+    font-size:11px;
+    color:#fff !important;
+    border-left:none !important;
+    border-top:none !important;
+    border-bottom: none !important;
+    border-right: solid 1px #2E4372 !important;
+}
+
+.DTFC_LeftBodyWrapper {
+    top:-13px !important;
 }

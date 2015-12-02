@@ -15,11 +15,11 @@
     <script src="@Url.Content("~/Scripts/Volume/volumepage.js")?v=@Model.CurrentVersion"></script>
 
     <!-- TO DO put these in the bundle -->
-    <script src="@Url.Content("~/Scripts/Shared/oxo-master.js")?v=@Model.CurrentVersion"></script>
+    @*<script src="@Url.Content("~/Scripts/Shared/oxo-master.js")?v=@Model.CurrentVersion"></script>
     <script src="@Url.Content("~/Scripts/Editor/oxo-editor-fbm.js")?v=@Model.CurrentVersion"></script>
     <script src="@Url.Content("~/Scripts/Editor/oxo-editor-core.js")?v=@Model.CurrentVersion"></script>
     <script src="@Url.Content("~/Scripts/Editor/oxo-model-filter.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Editor/oxo-change-log.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Editor/oxo-change-log.js")?v=@Model.CurrentVersion"></script>*@
 
     <script type="text/javascript">
 
@@ -54,6 +54,9 @@
 
 @section PageContentHeader
 {
+    <form>
+    <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+</form>
     <div id="collapseExample" class="collapse row">
         <div class="col-lg-12 inverse">
 

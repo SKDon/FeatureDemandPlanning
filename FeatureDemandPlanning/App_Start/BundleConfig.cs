@@ -70,10 +70,9 @@ namespace FeatureDemandPlanning
             bundles.Add(new ScriptBundle("~/bundles/js/dataTables").Include(
                     "~/Content/DataTables/js/jquery.dataTables.js",
                     "~/Content/DataTables/js/dataTables.bootstrap.min.js",
-                    "~/Content/Responsive/js/dataTables.responsive.min.js",
-                    "~/Extensions/jquery.dataTables.rowGrouping/jquery.dataTables.rowGrouping.js",
-                    "~/Scripts/jquery.dataTables.grouping.mnh.js",
-                    "~/Scripts/jquery.dataTables.fixColumn.js"
+                    "~/Content/DataTables/js/dataTables.fixedColumns.min.js",
+                    "~/Content/DataTables/js/jquery.dataTables.rowGrouping.js",
+                    "~/Content/Responsive/js/dataTables.responsive.min.js"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/dataTables").Include(

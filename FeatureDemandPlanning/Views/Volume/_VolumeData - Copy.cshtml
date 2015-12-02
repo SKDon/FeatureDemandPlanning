@@ -2,6 +2,11 @@
 @using enums = FeatureDemandPlanning.Model.Enumerations
 
 @model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+@{
+    var selectedModels = Model.Volume.Vehicle.AvailableModels;
+    var rightPaneWidth = "" + selectedModels.Count() * 80 + "px";
+    var uniqueid = 0;
+}
 
 <div class="panel panel-primary">
     <div class="panel-heading" style="height:50px">
@@ -46,119 +51,10 @@
     </div>
 
     <div class="panel-body">
-        <div class="col-xs-12">
-        <table id="@(Model.IdentifierPrefix)_TakeRateData" class="table table-bordered table-condensed dataTable cross-tab">
-            <thead>
-                <tr class="cross-tab-header">
-                    <th colspan="5" class="text-right first-cell"></th>
-                    @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
-                    {
-                        <th class="text-center model" data="@availableModel.StringIdentifier">
-                            @foreach (string namePart in availableModel.NameWithBR.Split('#'))
-                            {
-                                @namePart<br />
-                            }
-                        </th>
-                    }
-                </tr>
-                <tr class="cross-tab-header">
-                    <th colspan="5" class="text-right bmc">BMC</th>
-                    @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
-                    {
-                        <th class="text-center bmc">
-                            @availableModel.BMC
-                        </th>
-                    }
-                </tr>
-                <tr class="cross-tab-header">
-                    <th colspan="5" class="text-right trim-level">Level</th>
-                    @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
-                    {
-                        <th class="text-center trim-level">
-                            @availableModel.TrimLevel
-                        </th>
-                    }
-                </tr>
-                <tr class="cross-tab-header">
-                    <th colspan="5" class="text-right dpck">DPCK</th>
-                    @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
-                    {
-                        <th class="text-center dpck">
-                            @availableModel.DPCK
-                        </th>
-                    }
-                </tr>
-                <tr class="cross-tab-header">
-                    <th colspan="5" class="text-right model-mix">% Mix by Model</th>
-                    @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
-                    {
-                        <th class="text-center model-mix">
-                            @{
-                        var summary = Model.Volume.VolumeData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
-                        var percentage = "-";
-                        if (summary != null)
-                        {
-                            percentage = string.Format("{0:P2}", summary.PercentageOfFilteredVolume);
-                        }
-                        @percentage
-                            }
-                        </th>
-                    }
-                </tr>
-
-                <tr class="cross-tab-header">
-                    <th style="display:none">Feature Group</th>
-                    <th>Sub Group</th>
-                    <th>Description</th>
-                    <th>Code</th>
-                    <th>%</th>
-                    <th colspan="@Model.Volume.Vehicle.AvailableModels.Count()"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var featureRow in Model.Volume.VolumeData.RawData)
-                {
-                    <tr data-target="@(featureRow.Field<string>("FeatureIdentifier"))">
-                        <td style="display:none">@(featureRow.Field<string>("FeatureGroup"))</td>
-                        <td>@(featureRow.Field<string>("FeatureSubGroup"))</td>
-                        <td>@(featureRow.Field<string>("BrandDescription"))</td>
-                        <td>@(featureRow.Field<string>("FeatureCode"))</td>
-                        <td>
-                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
-                            {
-                                <span>@(featureRow.Field<decimal>("TotalPercentageTakeRate"))</span>
-                            }
-                            else
-                            {
-                                <span>@(featureRow.Field<string>("TotalVolume"))</span>
-                            }
-                        </td>
-                        @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
-                        {
-                            <td class="text-center cross-tab-data-item">
-                                @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
-                                {
-                                    <span>@(featureRow.Field<decimal?>(availableModel.StringIdentifier))</span>
-                                }
-                                else
-                                {
-                                    <span>@(featureRow.Field<int?>(availableModel.StringIdentifier))</span>
-                                }
-                            </td>
-                        }
-                </tr>
-                }
-
-            </tbody>
-        </table>
-            </div>
-    </div>
-
-    <div class="panel-body">
         <div id="body">
             <div id="viewport">
 
-                @renderCloneHeader("1000px")
+                @renderCloneHeader(@rightPaneWidth)
 
                 <div id="innerbody">
                     <div id="left-pane" class="oxo-box" style="width:500px;">
@@ -233,7 +129,7 @@
                                     var descr = @item["BrandDescription"].ToString();
                                     var subGroup = @item["FeatureSubGroup"].ToString() == "" ? "NA" : @item["FeatureSubGroup"].ToString();
 
-                                    <tr class="oxo-data-row-2" row-id="@item["DisplayOrder"]" featureid="@item["FeatureIdentifier"]" uniqueid="1">
+                                    <tr class="oxo-data-row-2" row-id="@item["DisplayOrder"]" featureid="@item["FeatureIdentifier"]" uniqueid="@uniqueid">
                                         <td class="center-no-sort" style="width:0px;">@item["DisplayOrder"]</td>
                                         <td>@item["FeatureGroup"]</td>
                                         <td>@descr.Replace("'", "\'")</td>
@@ -268,13 +164,13 @@
                                             }
                                         </td>
                                     </tr>
-                                           // uniqueid = uniqueid + 1;
+                                            uniqueid = uniqueid + 1;
                                 }
                             </tbody>
                         </table>
                     </div>
 
-                    <div id="right-pane" class="oxo-box" style="width:1000px;left:-3px">
+                    <div id="right-pane" class="oxo-box" style="width:@rightPaneWidth;left:-3px">
                         <table id="oxo-core-table-B" cellpadding="0" cellspacing="0" class="table table-bordered table-condensed dataTable display oxo-table" style="width:100%;border:0px;">
                             <thead>
                                 <tr>
@@ -282,7 +178,7 @@
                                     <th>Feature Group</th>
                                     <th>DESC</th>
                                     <th>Sub group</th>
-                                    @foreach (var carModel in Model.Volume.Vehicle.AvailableModels)
+                                    @foreach (var carModel in selectedModels)
                                     {
                                         var nameParts = carModel.NameWithBR.Split('#');
                                         <th class="model text-center" data="@carModel.Id">
@@ -295,7 +191,7 @@
                                 </tr>
                                 <tr>
                                     <th colspan="4"></th>
-                                    @foreach (var carModel in Model.Volume.Vehicle.AvailableModels)
+                                    @foreach (var carModel in selectedModels)
                                     {
                                         <th class="text-center" style="padding:3px;font-size:11px" data="@carModel.StringIdentifier">
                                             @if (!string.IsNullOrEmpty(carModel.TrimLevel))
@@ -311,7 +207,7 @@
                                 </tr>
                                 <tr>
                                     <th colspan="4"></th>
-                                    @foreach (var carModel in Model.Volume.Vehicle.AvailableModels)
+                                    @foreach (var carModel in selectedModels)
                                     {
                                         <th class="text-center" style="padding:3px;font-size:11px" data="@carModel.StringIdentifier">
                                             @if (!string.IsNullOrEmpty(carModel.DPCK))
@@ -327,7 +223,7 @@
                                 </tr>
                                 <tr>
                                     <th colspan="4"></th>
-                                    @foreach (var carModel in Model.Volume.Vehicle.AvailableModels)
+                                    @foreach (var carModel in selectedModels)
                                     {
                                         <th class="text-center" style="padding:3px;font-size:11px" data="@carModel.Id">
                                             @if (!string.IsNullOrEmpty(carModel.BMC))
@@ -360,25 +256,25 @@
                             </thead>
                             <tbody>
                                 @{
-                                    //uniqueid = 0;
+                                    uniqueid = 0;
                                     foreach (var item in Model.Volume.VolumeData.RawData)
                                     {
                                         var descr = item.Field<string>("BrandDescription");
                                         var subGroup = item.Field<string>("FeatureSubGroup") == "" ? "NA" : item.Field<string>("FeatureSubGroup");
 
-                                        <tr class="oxo-data-row-2" row-id="@(item.Field<int>("DisplayOrder"))" uniqueid="">
+                                        <tr class="oxo-data-row-2" row-id="@(item.Field<int>("DisplayOrder"))" uniqueid="@uniqueid">
                                             <td>@(item.Field<int>("DisplayOrder"))</td>
                                             <td>@(item.Field<string>("FeatureGroup"))</td>
                                             <td>@(item.Field<string>("FeatureCode"))|@descr.Replace("'", "\'")</td>
                                             <td>@subGroup</td>
-                                            @foreach (var carModel in Model.Volume.Vehicle.AvailableModels)
+                                            @foreach (var carModel in selectedModels)
                                             {
                                                 var modelIdentifier = carModel.StringIdentifier;
                                                 <td class="oxo-data editable @RenderDataClass(modelIdentifier, item)" modelid="@modelIdentifier" featureid="@(item.Field<string>("FeatureIdentifier"))" packid="0" prevval="@RenderDataItem(modelIdentifier, item)">@RenderDataItem(modelIdentifier, item)</td>
                                             }
                                         </tr>
 
-                                            //uniqueid++;
+                                            uniqueid++;
                                     }
                                 }
                             </tbody>
@@ -417,7 +313,6 @@
 @helper RenderDataItem(string modelIdentifier, DataRow dataItem)
 {
     var rowIdentity = dataItem.Field<long?>("Id");
-    var test = Model.Volume.VolumeData.FeatureApplicabilityData.Where(fa => fa.Field<long?>("Id") == rowIdentity);
     var featureApplicability =
         Model.Volume.VolumeData.FeatureApplicabilityData.Where(fa => fa.Field<long?>("Id") == rowIdentity)
         .Select(fa => fa.IsNull(modelIdentifier) ? string.Empty : fa.Field<string>(modelIdentifier))

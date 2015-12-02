@@ -122,6 +122,7 @@
     <Compile Include="Enumerations\DerivativeMappingAction.cs" />
     <Compile Include="Enumerations\DerivativeAction.cs" />
     <Compile Include="Enumerations\UserAction.cs" />
+    <Compile Include="Extensions\FdpModelExtensions.cs" />
     <Compile Include="FdpImportErrorExclusion.cs" />
     <Compile Include="FdpDerivative.cs" />
     <Compile Include="FdpModel.cs" />

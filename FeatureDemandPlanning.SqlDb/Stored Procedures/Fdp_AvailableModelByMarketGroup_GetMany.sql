@@ -1,11 +1,9 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_AvailableModelByMarketGroup_GetMany]   
    @ProgrammeId		INT,
+   @Gateway			NVARCHAR(100),
    @OxoDocId		INT,
    @MarketGroupId	INT
 AS
-	DECLARE @Gateway NVARCHAR(100);
-	SELECT @Gateway = Gateway
-	FROM OXO_Doc WHERE Id = @OxoDocId;
 	
 	WITH Set_A AS
 	(
@@ -26,12 +24,12 @@ AS
 		AND 
 		Gateway = @Gateway
 		AND
-		MarketGroupId = @MarketGroupId
+		(@MarketGroupId IS NULL OR MarketGroupId = @MarketGroupId)
 		AND
 		FdpModelId IS NOT NULL
 	)	
 	SELECT 
-		  MODELS.Identifier 
+		  MODELS.StringIdentifier 
 		, MODELS.DisplayOrder
 		, MODELS.VehicleName
 		, MODELS.VehicleAKA
@@ -41,12 +39,15 @@ AS
 		, MODELS.NameWithBR
 		, MODELS.Id
 		, MODELS.FdpModelId
+		, MODELS.BMC
 		, MODELS.ProgrammeId
 		, MODELS.BodyId
 		, MODELS.EngineId
 		, MODELS.TransmissionId
 		, MODELS.TrimId
 		, MODELS.FdpTrimId
+		, MODELS.DPCK
+		, MODELS.TrimLevel
 		, MODELS.CoA
 		, MODELS.Active
 		, MODELS.CreatedBy
@@ -55,12 +56,12 @@ AS
 		, MODELS.LastUpdated
 		, MODELS.Shape
 		, MODELS.KD
-		, MODELS.Available
+		, CAST(CASE WHEN @MarketGroupId IS NULL THEN 1 ELSE MODELS.Available END AS BIT) AS Available
 	FROM
 	(
 	   SELECT 
 		DISTINCT
-		'O' + CAST(M.Id AS NVARCHAR(10)) AS Identifier, 
+		'O' + CAST(M.Id AS NVARCHAR(10)) AS StringIdentifier, 
    		DisplayOrder,	
 		VehicleName,
 		VehicleAKA,
@@ -70,12 +71,15 @@ AS
 		NameWithBR,   
 		M.Id  AS Id,
 		NULL AS FdpModelId,
-		M.Programme_Id  AS ProgrammeId,  
+		M.Programme_Id  AS ProgrammeId, 
+		M.BMC, 
 		M.Body_Id  AS BodyId,  
 		M.Engine_Id  AS EngineId,
 		M.Transmission_Id  AS TransmissionId,  
 		M.Trim_Id  AS TrimId, 
 		NULL AS FdpTrimId,
+		M.DPCK,
+		M.[Level] AS TrimLevel,
 		M.CoA, 
 		M.Active,  
 		M.Created_By  AS CreatedBy,  
@@ -95,7 +99,7 @@ AS
 		UNION
 	    
 		SELECT 
-			 'F' + CAST(M.FdpModelId AS NVARCHAR(10)) AS Identifier
+			 'F' + CAST(M.FdpModelId AS NVARCHAR(10)) AS StringIdentifier
 			, M.DisplayOrder
 			, M.VehicleName
 			, M.VehicleAKA
@@ -105,12 +109,15 @@ AS
 			, M.NameWithBR   
 			, NULL			AS Id
 			, M.FdpModelId
-			, M.ProgrammeId  
+			, M.ProgrammeId
+			, M.BMC  
 			, M.BodyId
 			, M.EngineId
 			, M.TransmissionId  
 			, M.TrimId
 			, M.FdpTrimId
+			, M.DPCK
+			, M.[Level] AS TrimLevel
 			, M.CoA
 			, M.IsActive	AS Active  
 			, M.CreatedBy 

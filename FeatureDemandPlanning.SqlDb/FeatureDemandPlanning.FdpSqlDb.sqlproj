@@ -196,7 +196,10 @@
     <Build Include="Stored Procedures\Fdp_ForecastComparisonTrim_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_ForecastComparisonTrim_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ForecastComparisonVehicle_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_Import_Process_Old.sql" />
+    <Build Include="Stored Procedures\Fdp_Import_Process_Old.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_ImportData_Process.sql" />
     <Build Include="Stored Procedures\Fdp_ImportError_Get.sql" />
     <Build Include="Stored Procedures\Fdp_ImportError_GetMany.sql" />
@@ -224,7 +227,6 @@
     <Build Include="Stored Procedures\Fdp_OxoDoc_Save.sql" />
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataHistory_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataItem_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_OxoVolumeDataItem_GetCrossTab.sql" />
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataNote_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataNote_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ProgrammeByGateway_GetMany.sql" />
@@ -307,6 +309,10 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Tables\Fdp_TakeRateSummary.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
     <Build Include="Tables\Fdp_Model.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
@@ -319,6 +325,18 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Views\Fdp_TakeRateSummaryByModelAndMarket_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_TakeRateSummaryByModel_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_TakeRateSummaryByMarket_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
     <Build Include="Views\Fdp_Model_VW.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
@@ -327,6 +345,7 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Security\Prx_Rad_User.sql" />
     <Build Include="Security\RoleMemberships.sql" />
     <Build Include="Functions\fn_Fdp_TakeRateData_ByMarketGroup_Get.sql">
       <AnsiNulls>On</AnsiNulls>
@@ -340,10 +359,30 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Stored Procedures\OXO_OXODocChangeLogDetail_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\OXO_OXODoc_ValidateEmptyCells.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\OXO_OXODoc_FPSValidateEmptyCells.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\OXO_Master_MarketGroup_Get.sql">
       <AnsiNulls>On</AnsiNulls>
     </Build>
+    <Build Include="Stored Procedures\OXO_Market_Delete.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_TrimMapping_Copy.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateData_GetCrossTab.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
@@ -356,22 +395,6 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_AvailableModelByMarket_GetMany.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="Tables\Fdp_TakeRateSummary.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="Views\Fdp_TakeRateSummaryByModelAndMarket_VW.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="Views\Fdp_TakeRateSummaryByModel_VW.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="Views\Fdp_TakeRateSummaryByMarket_VW.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>

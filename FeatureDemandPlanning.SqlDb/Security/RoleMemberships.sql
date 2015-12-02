@@ -1,4 +1,2 @@
-﻿EXECUTE sp_addrolemember @rolename = N'db_owner', @membername = N'Prx_Rad_User';
-
-
+﻿ALTER ROLE [db_owner] ADD MEMBER [Prx_Rad_User];
 
