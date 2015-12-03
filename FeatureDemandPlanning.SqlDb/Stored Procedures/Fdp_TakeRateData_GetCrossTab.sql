@@ -56,6 +56,12 @@ AS
 		, FdpModelId			INT
 		, StringIdentifier		NVARCHAR(10)
 		, FeatureIdentifier		NVARCHAR(10)
+		, S INT
+	);
+	CREATE TABLE #AggregateVolumeByFeature
+	(
+		AggregatedFeatureIdentifier NVARCHAR(10)
+		, AggregatedVolume INT
 	);
 	CREATE TABLE #Model
 	(
@@ -215,10 +221,11 @@ AS
 			, O.OxoCode
 			, M.StringIdentifier
 			, 'O' + CAST(FEA.FeatureId AS NVARCHAR(10)) AS FeatureIdentifier
+			, 1 AS S
 			  
 		FROM Fdp_FeatureMapping_VW		AS FEA
-		LEFT JOIN #RawTakeRateData		AS D	ON		FEA.FeatureId	= D.FeatureId
-		LEFT JOIN #FeatureApplicability	AS O	ON		D.FeatureId		= O.FeatureId
+		JOIN #RawTakeRateData		AS D	ON		FEA.FeatureId	= D.FeatureId
+		JOIN #FeatureApplicability	AS O	ON		D.FeatureId		= O.FeatureId
 												AND		D.ModelId		= O.ModelId
 		JOIN #Model						AS M	ON		D.ModelId		= M.ModelId
 												AND		M.IsFdpModel = 0
@@ -253,10 +260,11 @@ AS
 				ELSE 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10))
 			  END
 			  AS FeatureIdentifier
+			, 2 AS S
 			  
 		FROM Fdp_FeatureMapping_VW		AS FEA
-		LEFT JOIN #RawTakeRateData		AS D	ON		FEA.FeatureId	= D.FeatureId
-		LEFT JOIN #Model				AS M	ON		D.FdpModelId	= M.ModelId
+		JOIN #RawTakeRateData		AS D	ON		FEA.FeatureId	= D.FeatureId
+		JOIN #Model						AS M	ON		D.FdpModelId	= M.ModelId
 												AND		M.IsFdpModel = 1
 		WHERE 
 		FEA.ProgrammeId = @ProgrammeId
@@ -289,12 +297,47 @@ AS
 				ELSE 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10))
 			  END
 			  AS FeatureIdentifier
+			, 3 AS S
 			  
 		FROM Fdp_FeatureMapping_VW		AS FEA
-		LEFT JOIN #RawTakeRateData		AS D	ON		FEA.FdpFeatureId	= D.FdpFeatureId
-		LEFT JOIN #Model				AS M	ON		D.FdpModelId		= M.ModelId
+		JOIN #RawTakeRateData		AS D	ON		FEA.FdpFeatureId	= D.FdpFeatureId
+		JOIN #Model				AS M	ON		D.FdpModelId		= M.ModelId
 												AND		M.IsFdpModel		= 1
 		WHERE 
+		FEA.ProgrammeId = @ProgrammeId
+		AND
+		FEA.Gateway = @Gateway
+		
+		UNION
+		
+		SELECT 
+			  FEA.DisplayOrder
+			, FEA.FeatureId
+			, FEA.FdpFeatureId
+			, FEA.MappedFeatureCode AS FeatureCode
+			, FEA.FeatureGroupId 
+			, FEA.FeatureGroup	
+			, FEA.FeatureSubGroup
+			, FEA.BrandDescription
+			, FEA.[Description]
+			, FEA.FeatureComment
+			, FEA.FeatureRuleText
+			, FEA.LongDescription
+			, CAST(NULL AS INT) AS ModelId
+			, CAST(NULL AS INT) FdpModelId 
+			, 0 AS Volume
+			, 0 AS PercentageTakeRate
+			, CAST(NULL AS NVARCHAR(10)) AS OxoCode
+			, CAST(NULL AS NVARCHAR(10)) AS StringIdentifier
+			, CASE
+				WHEN FEA.FeatureId IS NOT NULL THEN 'O' + CAST(FEA.FeatureId AS NVARCHAR(10))
+				ELSE 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10))
+			  END
+			  AS FeatureIdentifier
+			, 4 AS S
+			  
+		FROM Fdp_FeatureMapping_VW		AS FEA
+		WHERE
 		FEA.ProgrammeId = @ProgrammeId
 		AND
 		FEA.Gateway = @Gateway
@@ -318,7 +361,8 @@ AS
 		, PercentageTakeRate
 		, OxoCode
 		, StringIdentifier	
-		, FeatureIdentifier			
+		, FeatureIdentifier
+		, S			
 	)
 	SELECT 
 		  F.DisplayOrder
@@ -339,8 +383,64 @@ AS
 		, F.OxoCode
 		, F.StringIdentifier
 		, F.FeatureIdentifier
+		, F.S
 	FROM
 	TakeRateDataByFeature				AS F 
+	
+	INSERT INTO #AggregateVolumeByFeature
+	(
+		  AggregatedFeatureIdentifier
+		, AggregatedVolume
+	)
+	SELECT FeatureIdentifier, SUM(Volume) FROM #TakeRateDataByFeature
+	WHERE
+	-- Not sure what's going on here, we have take information not associated with models
+	(ModelId IS NOT NULL AND FdpModelId IS NULL)
+	OR
+	(FdpModelId IS NOT NULL AND ModelId IS NULL)
+	GROUP BY FeatureIdentifier
+	
+	-- Work out total volumes so we can calculate percentage take from the feature mix
+	
+	SELECT @TotalVolume = SUM(S.TotalVolume)
+	FROM
+	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+	WHERE
+	ProgrammeId = @ProgrammeId
+	AND
+	Gateway = @Gateway;
+	
+	SELECT @FilteredVolume = SUM(S.TotalVolume)
+	FROM
+	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+	JOIN #Model AS M ON S.ModelId = M.ModelId
+					 AND M.IsFdpModel = 0
+	WHERE
+	S.ProgrammeId = @ProgrammeId
+	AND
+	S.Gateway = @Gateway
+	AND
+	(
+		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
+		OR
+		(@Mode = 'MG' AND (@MarketGroupId IS NULL OR S.MarketGroupId = @MarketGroupId))
+	)
+	
+	SELECT @FilteredVolume = @FilteredVolume + SUM(S.TotalVolume)
+	FROM
+	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+	JOIN #Model AS M ON S.FdpModelId = M.ModelId
+					 AND M.IsFdpModel = 1
+	WHERE
+	ProgrammeId = @ProgrammeId
+	AND
+	Gateway = @Gateway
+	AND
+	(
+		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
+		OR
+		(@Mode = 'MG' AND (@ObjectId IS NULL OR S.MarketGroupId = @ObjectId))
+	)
 
 	-- If we are showing volume information, use the raw volume figures,
 	-- otherwise return the percentage take rate for each feature / market
@@ -363,11 +463,12 @@ AS
 	END
 	ELSE
 	BEGIN
-		SET @Sql =		  'SELECT DATASET.*, ' + @ModelTotals + ' AS TotalPercentageTakeRate '
+		SET @Sql =		  'SELECT DATASET.*, ISNULL(AggregatedVolume, 0) / CAST(' + CAST(@FilteredVolume AS NVARCHAR(10)) + ' AS DECIMAL) AS TotalPercentageTakeRate '
 		SET @Sql = @Sql + 'FROM ( '
 		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, StringIdentifier, '
 		SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, PercentageTakeRate '
 		SET @Sql = @Sql + 'FROM #TakeRateDataByFeature) AS S2 '
+		SET @Sql = @Sql + 'LEFT JOIN #AggregateVolumeByFeature AS F ON S2.FeatureIdentifier = F.AggregatedFeatureIdentifier '
 		SET @Sql = @Sql + 'PIVOT ( '
 		SET @Sql = @Sql + 'SUM([PercentageTakeRate]) FOR StringIdentifier '
 		SET @Sql = @Sql + 'IN (' + @ModelIds + ')) AS DATASET '
@@ -395,46 +496,6 @@ AS
 	
 	-- Third dataset returning volume and percentage take rate by derivative
 	-- Calculate the total volumes for the whole unfiltered dataset and the filtered dataset
-
-	SELECT @TotalVolume = SUM(S.TotalVolume)
-	FROM
-	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
-	WHERE
-	ProgrammeId = @ProgrammeId
-	AND
-	Gateway = @Gateway;
-	
-	SELECT @FilteredVolume = SUM(S.TotalVolume)
-	FROM
-	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
-	JOIN #Model AS M ON S.ModelId = M.ModelId
-					 AND M.IsFdpModel = 0
-	WHERE
-	S.ProgrammeId = @ProgrammeId
-	AND
-	S.Gateway = @Gateway
-	AND
-	(
-		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
-		OR
-		(@Mode = 'MG' AND (@MarketGroupId IS NULL OR S.MarketGroupId = @MarketGroupId))
-	)
-
-	SELECT @FilteredVolume = @FilteredVolume + SUM(S.TotalVolume)
-	FROM
-	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
-	JOIN #Model AS M ON S.FdpModelId = M.ModelId
-					 AND M.IsFdpModel = 1
-	WHERE
-	ProgrammeId = @ProgrammeId
-	AND
-	Gateway = @Gateway
-	AND
-	(
-		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
-		OR
-		(@Mode = 'MG' AND (@ObjectId IS NULL OR S.MarketGroupId = @ObjectId))
-	)
 
 	SELECT 
 		  M.StringIdentifier

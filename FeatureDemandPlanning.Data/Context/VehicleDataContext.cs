@@ -43,7 +43,7 @@ namespace FeatureDemandPlanning.DataStore
 
             var availableDocuments = ListAvailableOxoDocuments(filter);
             var availableImports = ListAvailableImports(filter, programme);
-            var availableModels = ListAvailableModels(filter, programme);
+            var availableModels = ListAvailableModels(filter);
             var availableMarketGroups = ListAvailableMarketGroups(filter, programme);
             //var availableMarkets = ListAvailableMarkets(filter, programme);
 
@@ -93,7 +93,7 @@ namespace FeatureDemandPlanning.DataStore
             return imports;
         }
 
-        public IEnumerable<FdpModel> ListAvailableModels(VehicleFilter filter, Programme forProgramme)
+        public IEnumerable<FdpModel> ListAvailableModels(ProgrammeFilter filter)
         {
             var models = _modelDataStore
                             .ModelGetMany(filter)
@@ -198,9 +198,9 @@ namespace FeatureDemandPlanning.DataStore
         {
             return _engineDataStore.ModelEngineGetMany(filter.ProgrammeId.GetValueOrDefault());
         }
-        public IEnumerable<ModelTrim> ListTrim(ProgrammeFilter filter)
+        public IEnumerable<FdpTrimMapping> ListTrim(TrimFilter filter)
         {
-            return _trimDataStore.ModelTrimGetMany(filter.ProgrammeId.GetValueOrDefault());
+            return _trimDataStore.ModelTrimGetMany(filter);
         }
         public IEnumerable<Feature> ListFeatures(ProgrammeFilter filter)
         {

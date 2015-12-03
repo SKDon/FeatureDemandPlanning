@@ -158,7 +158,6 @@
     <Build Include="Views\Fdp_ImportError_VW.sql" />
     <Build Include="Views\Fdp_ImportQueue_VW.sql" />
     <Build Include="Views\Fdp_ImportQueueError_VW.sql" />
-    <Build Include="Views\Fdp_ImportVolume_VW.sql" />
     <Build Include="Views\Fdp_MarketMapping_VW.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
@@ -223,10 +222,8 @@
     <Build Include="Stored Procedures\Fdp_MarketMapping_Save.sql" />
     <Build Include="Stored Procedures\Fdp_News_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_News_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_OxoDoc_Process.sql" />
     <Build Include="Stored Procedures\Fdp_OxoDoc_Save.sql" />
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataHistory_GetMany.sql" />
-    <Build Include="Stored Procedures\Fdp_OxoVolumeDataItem_Get.sql" />
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataNote_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_OxoVolumeDataNote_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ProgrammeByGateway_GetMany.sql" />
@@ -345,8 +342,6 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="Security\Prx_Rad_User.sql" />
-    <Build Include="Security\RoleMemberships.sql" />
     <Build Include="Functions\fn_Fdp_TakeRateData_ByMarketGroup_Get.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
@@ -398,6 +393,7 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Security\Prx_Rad_User_1.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="..\..\Oxo\OxoSqlDb\Snapshots\Oxo.dacpac">

@@ -53,7 +53,7 @@ BEGIN
 		, D.ModelId
 		, NULL
 		, SUM(D.Volume)			AS Volume
-		, 0.0					AS PercentageTakeRate	
+		, MAX(D.PercentageTakeRate)	AS PercentageTakeRate	
     FROM 
     Fdp_OxoDoc				AS X
     JOIN Fdp_VolumeHeader	AS H	ON	X.FdpVolumeHeaderId = H.FdpVolumeHeaderId
@@ -62,6 +62,7 @@ BEGIN
 									AND M.IsFdpModel		= 0
 	JOIN OXO_Programme_MarketGroupMarket_VW 
 							AS MK	ON	D.MarketId			= MK.Market_Id
+									AND H.ProgrammeId		= MK.Programme_Id
 	WHERE 
 	X.OxoDocId = @OxoDocId
 	AND
@@ -80,7 +81,7 @@ BEGIN
 		, NULL
 		, D.FdpModelId
 		, SUM(D.Volume)			AS Volume
-		, 0.0					AS PercentageTakeRate	
+		, MAX(D.PercentageTakeRate)					AS PercentageTakeRate	
     FROM 
     Fdp_OxoDoc				AS X
     JOIN Fdp_VolumeHeader	AS H	ON	X.FdpVolumeHeaderId = H.FdpVolumeHeaderId
@@ -89,6 +90,7 @@ BEGIN
 									AND M.IsFdpModel		= 1
 	JOIN OXO_Programme_MarketGroupMarket_VW 
 							AS MK	ON	D.MarketId			= MK.Market_Id
+									AND H.ProgrammeId		= MK.Programme_Id
 	WHERE 
 	X.OxoDocId = @OxoDocId
 	AND

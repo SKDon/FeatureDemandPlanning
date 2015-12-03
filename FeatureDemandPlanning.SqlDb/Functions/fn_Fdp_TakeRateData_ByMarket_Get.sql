@@ -51,9 +51,9 @@ BEGIN
 		, D.FdpFeatureId
 		, 0						AS PackId
 		, D.ModelId
-		, D.FdpModelId
+		, CAST(NULL AS INT) AS FdpModelId
 		, SUM(D.Volume)			AS Volume
-		, 0.0					AS PercentageTakeRate	
+		, MAX(D.PercentageTakeRate)  AS PercentageTakeRate
     FROM 
     Fdp_OxoDoc				AS X
     JOIN Fdp_VolumeHeader	AS H	ON	X.FdpVolumeHeaderId = H.FdpVolumeHeaderId
@@ -66,7 +66,7 @@ BEGIN
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
 	GROUP BY
 	  D.ModelId
-	, D.FdpModelId
+	--, D.FdpModelId
 	, D.FeatureId
 	, D.FdpFeatureId
 	
@@ -76,10 +76,10 @@ BEGIN
 		  D.FeatureId
 		, D.FdpFeatureId
 		, 0						AS PackId
-		, D.ModelId
+		, CAST(NULL AS INT) AS ModelId
 		, D.FdpModelId
 		, SUM(D.Volume)			AS Volume
-		, 0.0					AS PercentageTakeRate	
+		, MAX(D.PercentageTakeRate)	AS PercentageTakeRate
     FROM 
     Fdp_OxoDoc				AS X
     JOIN Fdp_VolumeHeader	AS H	ON	X.FdpVolumeHeaderId = H.FdpVolumeHeaderId
@@ -91,8 +91,8 @@ BEGIN
 	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
 	GROUP BY
-	  D.ModelId
-	, D.FdpModelId
+	--  D.ModelId
+	  D.FdpModelId
 	, D.FeatureId
 	, D.FdpFeatureId
 	

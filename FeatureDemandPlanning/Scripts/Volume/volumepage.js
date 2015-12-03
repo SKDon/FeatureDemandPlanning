@@ -20,6 +20,8 @@ model.Page = function (models) {
     };
     me.loadData = function () {
         me.configureDataTables();
+        me.configureComments();
+        me.configureRules();
     };
     me.getIdentifierPrefix = function () {
         return $("#Page_IdentifierPrefix").val();
@@ -166,8 +168,15 @@ model.Page = function (models) {
         });
 
         $(".oxo-document-toggle").unbind("click").on("click", me.toggleOxoDocument);
-        $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader)
+        $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);
     };
+    me.configureComments = function () {
+        $(".comment-item").popover({ html: true, title: "Comments" });
+
+        $('.comment-item').on("click", function (e) {
+            $('.comment-item').not(this).popover("hide");
+        });
+    }
     me.configureDataTables = function () {
 
        
@@ -176,28 +185,29 @@ model.Page = function (models) {
             paging: false,
             ordering: false,
             processing: true,
-            dom: "ltip",
+            dom: "t",
             scrollX: true,
-            scrollY: "500px",
+            scrollY: "450px",
             scrollCollapse: true
         });
 
         new $.fn.dataTable.FixedColumns(table, {
-            leftColumns: 5,
+            leftColumns: 3,
             drawCallback: function (left, right) {
                 var settings = table.settings();
                 if (settings.data().length == 0) {
                     return;
                 }
 
-                var nGroup, nCell, index, groupName;
-                var lastGroupName = "", corrector = 0;
+                var nGroup, nSubGroup, nCell, index, groupName, subGroupName;
+                var lastGroupName = "", lastSubGroupName = "", corrector = 0;
                 var nTrs = $("#" + me.getIdentifierPrefix() + "_TakeRateData tbody tr");
-                var iColspan = nTrs[0].getElementsByTagName('td').length;
+                var iColspan = 0;
 
                 for (var i = 0 ; i < nTrs.length ; i++) {
                     index = settings.page.info().start + i;
-                    groupName = settings.data()[index][0];
+                    groupName = $(nTrs[i]).attr("data-group"); //settings.data()[index][0];
+                    subGroupName = $(nTrs[i]).attr("data-subgroup");
 
                     if (groupName != lastGroupName) {
                         /* Cell to insert into main table */
@@ -207,20 +217,82 @@ model.Page = function (models) {
                         nCell.className = "group";
                         nCell.innerHTML = "&nbsp;";
                         nGroup.appendChild(nCell);
+                        $(nGroup).attr("data-toggle", groupName);
                         nTrs[i].parentNode.insertBefore(nGroup, nTrs[i]);
+                        $(nGroup).on("click", function (sender, eventArgs) {
+                            var clickedGroup = $(this).attr("data-toggle");
+                            $("tbody tr[data-group='" + clickedGroup + "']").toggle();
+                        });
 
                         /* Cell to insert into the frozen columns */
                         nGroup = document.createElement('tr');
                         nCell = document.createElement('td');
                         nCell.className = "group";
-                        nCell.innerHTML = groupName;
-                        nCell.colSpan = 5;
+                        nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + groupName;
+                        nCell.colSpan = 3;
+                        $(nGroup).attr("data-toggle", groupName);
                         nGroup.appendChild(nCell);
                         $(nGroup).insertBefore($('tbody tr:eq(' + (i + corrector) + ')', left.body)[0]);
+                        $(nGroup).on("click", function (sender, eventArgs) {
+                            var clickedGroup = $(this).attr("data-toggle");
+                            var rows = $("tbody tr[data-group='" + clickedGroup + "']").toggle();
+                            if ($(rows[0]).is(":visible")) {
+                                $(this).find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                            }
+                            else {
+                                $(this).find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                            }
+                        });
 
                         corrector++;
                         lastGroupName = groupName;
                     }
+
+                    if (subGroupName != lastSubGroupName) {
+                        if (subGroupName != "") {
+                            /* Cell to insert into main table */
+                            nSubGroup = document.createElement('tr');
+                            nCell = document.createElement('td');
+                            nCell.colSpan = iColspan;
+                            nCell.className = "sub-group";
+                            nCell.innerHTML = "&nbsp;";
+                            $(nSubGroup).attr("data-group", groupName)
+                            $(nSubGroup).attr("data-toggle", subGroupName);
+                            nSubGroup.appendChild(nCell);
+                            nTrs[i].parentNode.insertBefore(nSubGroup, nTrs[i]);
+                            $(nSubGroup).on("click", function (sender, eventArgs) {
+                                var clickedGroup = $(this).attr("data-toggle");
+                                $("tbody tr[data-subgroup='" + clickedGroup + "']").toggle();
+                            });
+
+                            /* Cell to insert into the frozen columns */
+                            nSubGroup = document.createElement('tr');
+                            nCell = document.createElement('td');
+                            nCell.className = "sub-group";
+                            nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + subGroupName;
+                            nCell.colSpan = 3;
+                            $(nSubGroup).attr("data-group", groupName);
+                            $(nSubGroup).attr("data-toggle", subGroupName);
+                            nSubGroup.appendChild(nCell);
+                            $(nSubGroup).insertBefore($('tbody tr:eq(' + (i + corrector) + ')', left.body)[0]);
+                            $(nSubGroup).on("click", function (sender, eventArgs) {
+                                var clickedGroup = $(this).attr("data-toggle");
+                                var rows = $("tbody tr[data-subgroup='" + clickedGroup + "']").toggle();
+                                if ($(rows[0]).is(":visible")) {
+                                    $(this).find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                                }
+                                else {
+                                    $(this).find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                                }
+                            });
+
+                            corrector++;
+                        }
+                        lastSubGroupName = subGroupName;
+                    }
+
+                    //var liner = $(".DTFC_LeftBodyLiner");
+                    //$(liner).height($(liner).height() + 17, "px");
                 }
             }
         });

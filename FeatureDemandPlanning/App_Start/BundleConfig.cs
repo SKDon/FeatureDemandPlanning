@@ -57,7 +57,7 @@ namespace FeatureDemandPlanning
             bundles.Add(new StyleBundle("~/bundles/site/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
-                      "~/Content/Editor/oxo-editor.css",
+                      //"~/Content/Editor/oxo-editor.css",
                       "~/Content/BrushedMetal.css",
                       //"~/Content/jquery.tipsy.css",
                       //"~/Content/jquery.simplePager.css",

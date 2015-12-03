@@ -7,11 +7,11 @@
     <div class="panel-heading" style="height:50px">
         <div class="pull-left">
             @*<div class="panel-title">
-                Take Rate Data
-            </div>*@
+                    Take Rate Data
+                </div>*@
         </div>
         <div class="viewport-toolbar pull-left">
-            
+
             <div class="btn-group">
                 @Html.Partial("_ViewModeSelector", Model)
             </div>
@@ -32,387 +32,220 @@
                 <button type="button" class="btn btn-default btn-sm" id="butSaveChange" onclick='showSaveChangeDialog();' style="display:none"><i class="glyphicon glyphicon-save"></i> Save Changes</button>
                 <button type="button" class="btn btn-default btn-sm" id="butCancelChange" onclick='cancelOXODocument();' style="display:none"><i class="glyphicon glyphicon-remove"></i> Cancel Changes</button>
             </div>
-            
-            
+
+
             <div class="btn-group">
                 <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
                     <span class="glyphicon glyphicon-collapse-down"></span>
                 </a>
             </div>
-            
+
         </div>
 
 
     </div>
 
-    <div class="panel-body">
+    <div class="panel-body" style="padding:5px">
         <div class="col-xs-12">
-        <table id="@(Model.IdentifierPrefix)_TakeRateData" class="table table-bordered table-condensed dataTable cross-tab">
-            <thead>
-                <tr class="cross-tab-header">
-                    <th colspan="5" class="text-right first-cell"></th>
-                    @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
-                    {
-                        <th class="text-center model" data="@availableModel.StringIdentifier">
-                            @foreach (string namePart in availableModel.NameWithBR.Split('#'))
-                            {
-                                @namePart<br />
-                            }
-                        </th>
-                    }
-                </tr>
-                <tr class="cross-tab-header">
-                    <th colspan="5" class="text-right bmc">BMC</th>
-                    @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
-                    {
-                        <th class="text-center bmc">
-                            @availableModel.BMC
-                        </th>
-                    }
-                </tr>
-                <tr class="cross-tab-header">
-                    <th colspan="5" class="text-right trim-level">Level</th>
-                    @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
-                    {
-                        <th class="text-center trim-level">
-                            @availableModel.TrimLevel
-                        </th>
-                    }
-                </tr>
-                <tr class="cross-tab-header">
-                    <th colspan="5" class="text-right dpck">DPCK</th>
-                    @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
-                    {
-                        <th class="text-center dpck">
-                            @availableModel.DPCK
-                        </th>
-                    }
-                </tr>
-                <tr class="cross-tab-header">
-                    <th colspan="5" class="text-right model-mix">% Mix by Model</th>
-                    @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
-                    {
-                        <th class="text-center model-mix">
-                            @{
-                        var summary = Model.Volume.VolumeData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
-                        var percentage = "-";
-                        if (summary != null)
-                        {
-                            percentage = string.Format("{0:P2}", summary.PercentageOfFilteredVolume);
-                        }
-                        @percentage
-                            }
-                        </th>
-                    }
-                </tr>
-
-                <tr class="cross-tab-header">
-                    <th style="display:none">Feature Group</th>
-                    <th>Sub Group</th>
-                    <th>Description</th>
-                    <th>Code</th>
-                    <th>%</th>
-                    <th colspan="@Model.Volume.Vehicle.AvailableModels.Count()"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var featureRow in Model.Volume.VolumeData.RawData)
-                {
-                    <tr data-target="@(featureRow.Field<string>("FeatureIdentifier"))">
-                        <td style="display:none">@(featureRow.Field<string>("FeatureGroup"))</td>
-                        <td>@(featureRow.Field<string>("FeatureSubGroup"))</td>
-                        <td>@(featureRow.Field<string>("BrandDescription"))</td>
-                        <td>@(featureRow.Field<string>("FeatureCode"))</td>
-                        <td>
-                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
-                            {
-                                <span>@(featureRow.Field<decimal>("TotalPercentageTakeRate"))</span>
-                            }
-                            else
-                            {
-                                <span>@(featureRow.Field<string>("TotalVolume"))</span>
-                            }
-                        </td>
+            <table id="@(Model.IdentifierPrefix)_TakeRateData" class="table table-bordered table-condensed dataTable cross-tab">
+                <thead>
+                    <tr class="cross-tab-header">
+                        <th colspan="3" class="text-right first-cell"></th>
                         @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
                         {
-                            <td class="text-center cross-tab-data-item">
-                                @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                            var modelClassName = string.Empty;
+                            if (availableModel.FdpModelId.HasValue)
+                            {
+                                modelClassName = "fdp-model";
+                            }
+                            <th class="text-center model @modelClassName" data="@availableModel.StringIdentifier">
+                                @foreach (string namePart in availableModel.NameWithBR.Split('#'))
                                 {
-                                    <span>@(featureRow.Field<decimal?>(availableModel.StringIdentifier))</span>
+                                    @namePart<br />
+                                }
+                            </th>
+                        }
+                    </tr>
+                    <tr class="cross-tab-header">
+                        <th colspan="3" class="text-right bmc">BMC</th>
+                        @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
+                        {
+                            var modelClassName = string.Empty;
+                            if (availableModel.FdpModelId.HasValue)
+                            {
+                                modelClassName = "fdp-model";
+                            }
+                            <th class="text-center bmc @modelClassName">
+                                @if (!string.IsNullOrEmpty(availableModel.BMC))
+                                {
+                                    <span>@availableModel.BMC</span>
                                 }
                                 else
                                 {
-                                    <span>@(featureRow.Field<int?>(availableModel.StringIdentifier))</span>
+                                    <span>-</span>
+                                }
+                            </th>
+                        }
+                    </tr>
+                    <tr class="cross-tab-header" style="height:25px">
+                        <th colspan="3" class="text-right trim-level">Level</th>
+                        @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
+                        {
+                            var modelClassName = string.Empty;
+                            if (availableModel.FdpModelId.HasValue)
+                            {
+                                modelClassName = "fdp-model";
+                            }
+                            <th class="text-center trim-level @modelClassName">
+                                @if (!string.IsNullOrEmpty(availableModel.TrimLevel))
+                                {
+                                    <span>@availableModel.TrimLevel</span>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </th>
+                        }
+                    </tr>
+                    <tr class="cross-tab-header">
+                        <th colspan="3" class="text-right dpck">DPCK</th>
+                        @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
+                        {
+                            var modelClassName = string.Empty;
+                            if (availableModel.FdpModelId.HasValue)
+                            {
+                                modelClassName = "fdp-model";
+                            }
+                            <th class="text-center dpck @modelClassName">
+                                @if (!string.IsNullOrEmpty(availableModel.DPCK))
+                                {
+                                    <span>@availableModel.DPCK</span>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </th>
+                        }
+                    </tr>
+                    <tr class="cross-tab-header">
+                        <th class="cross-tab-data-item feature-description">Description</th>
+                        <th class="cross-tab-data-item feature-code">Code</th>
+                        <th class="text-right model-mix">
+                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                            {
+                                @:% Mix
+                        }
+                            else
+                            {
+                                @:Volume
+                        }
+                        </th>
+                        @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
+                        {
+                            var modelClassName = string.Empty;
+                            if (availableModel.FdpModelId.HasValue)
+                            {
+                                modelClassName = "fdp-model";
+                            }
+                            if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                            {
+                                <th class="text-center model-mix @modelClassName">
+                                    @{
+                                var summary = Model.Volume.VolumeData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
+                                var percentage = "-";
+                                if (summary != null)
+                                {
+                                    percentage = string.Format("{0:P2}", summary.PercentageOfFilteredVolume);
+                                }
+                                @percentage
+                                    }
+                                </th>
+                            }
+                            else
+                            {
+                                <th class="text-center model-mix @modelClassName">
+                                    @{
+                                var summary = Model.Volume.VolumeData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
+                                var volume = "-";
+                                if (summary != null)
+                                {
+                                    volume = summary.Volume.ToString();
+                                }
+                                @volume
+                                    }
+                                </th>
+                            }
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var featureRow in Model.Volume.VolumeData.RawData)
+                    {
+                        <tr data-target="@(featureRow.Field<string>("FeatureIdentifier"))" data-group="@(featureRow.Field<string>("FeatureGroup"))" data-subgroup="@(featureRow.Field<string>("FeatureSubGroup"))">
+                            @{
+                                var featureClassName = "";
+                                var featureFixedClassName = "cross-tab-fixed";
+                                var featureFixedLastClassName = "cross-tab-fixed-last";
+                                if (featureRow.Field<string>("FeatureIdentifier").StartsWith("F"))
+                                {
+                                    featureClassName = "fdp-data-item";
+                                    featureFixedClassName = "fdp-data-item-fixed";
+                                    featureFixedLastClassName = "fdp-data-item-fixed-last";
+                                }
+                            }
+
+                            <td class="cross-tab-data-item @featureFixedClassName @featureClassName">
+                                <div class="pull-left">@(featureRow.Field<string>("BrandDescription"))</div>
+                                @if (featureRow.Field<bool>("HasRule"))
+                                {
+                                    <div class="rule-item pull-right"><span class="glyphicon glyphicon-alert"></span>&nbsp;</div>
+                                }
+                                @if (!string.IsNullOrEmpty(featureRow.Field<string>("FeatureComment")))
+                                {
+                                    <div class="comment-item pull-right" data-toggle="popover" title="Comments" data-content="@(featureRow.Field<string>("FeatureComment"))"><span class="glyphicon glyphicon-pencil"></span>&nbsp;</div>
+                                }
+
+
+                            </td>
+                            <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName">@(featureRow.Field<string>("FeatureCode"))</td>
+                            <td class="cross-tab-data-item @featureFixedClassName @featureFixedLastClassName @featureClassName text-center">
+                                @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+                                {
+                                    <span>@(string.Format("{0:P2}", featureRow.Field<decimal>("TotalPercentageTakeRate")))</span>
+                                }
+                                else
+                                {
+                                    <span>@(featureRow.Field<int>("TotalVolume"))</span>
                                 }
                             </td>
-                        }
-                </tr>
-                }
-
-            </tbody>
-        </table>
-            </div>
-    </div>
-
-    <div class="panel-body">
-        <div id="body">
-            <div id="viewport">
-
-                @renderCloneHeader("1000px")
-
-                <div id="innerbody">
-                    <div id="left-pane" class="oxo-box" style="width:500px;">
-                        <table id="oxo-core-table-A" cellpadding="0" cellspacing="0" class="table table-bordered table-condensed dataTable oxo-table" style="width:500px;border:0px;">
-                            <thead>
-                                <tr>
-                                    <th>display order</th>
-                                    <th>Feature Group</th>
-                                    <th>Hidden Descr</th>
-                                    <th class="header-A0" style="border-right:none!important;">&nbsp;&nbsp;&nbsp;&nbsp;Feature Description</th>
-                                    <th class="header-A1" style="border-left:none!important"></th>
-                                    @if (Model.Volume.Vehicle.Programmes.First().UseOACode)
-                                    {
-                                        <th class="header-A text-center" style="width:60px;vertical-align:bottom">Feature<br />Code<br />(OA)</th>
-                                    }
-                                    else
-                                    {
-                                        <th class="header-A text-center" style="width:60px;vertical-align:bottom">Feature<br />Code<br />(JLR)</th>
-                                    }
-                                    <th>Feature Sub Group</th>
-                                    <th class="header-A text-center" style="width:60px;vertical-align:bottom">
-                                        @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
-                                        {
-                                            <span>% Take Rate</span>
-                                        }
-                                        else
-                                        {
-                                            <span>Volume</span>
-                                        }
-                                    </th>
-
-                                </tr>
-                                <tr>
-                                    <th colspan="5" style="padding:3px !important;font-size:11px"><div class="pull-right">Trim Level&nbsp;&nbsp;</div></th>
-                                    <th style="border-top:none!important"></th>
-                                    <th style="border-top:none!important"></th>
-                                    <th style="border-top:none!important"></th>
-                                </tr>
-                                <tr>
-                                    <th colspan="5" style="padding:3px !important;font-size:11px"><div class="pull-right">DPCK&nbsp;&nbsp;</div></th>
-                                    <th style="border-top:none!important"></th>
-                                    <th style="border-top:none!important"></th>
-                                    <th style="border-top:none!important"></th>
-                                </tr>
-                                <tr>
-                                    <th colspan="5" style="padding:3px !important;font-size:11px"><div class="pull-right">BMC&nbsp;&nbsp;</div></th>
-                                    <th style="border-top:none!important"></th>
-                                    <th style="border-top:none!important"></th>
-                                    <th style="border-top:none!important"></th>
-                                </tr>
-                                <tr>
-                                    <th colspan="5" style="padding:3px !important;font-size:11px;height:20px">
-                                        <div class="pull-right">
-                                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
-                                            {
-                                                <span>% Mix by Derivative</span>
-                                            }
-                                            else
-                                            {
-                                                <span>Volume Mix by Derivative</span>
-                                            }
-                                        </div>
-                                    </th>
-                                    <th style="border-top:none!important"></th>
-                                    <th style="border-top:none!important"></th>
-                                    <th style="border-top:none!important"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.Volume.VolumeData.RawData)
+                            @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
+                            {
+                                var modelClassName = "";
+                                if (featureRow.Field<string>("FeatureIdentifier").StartsWith("F") || availableModel.FdpModelId.HasValue)
                                 {
-                                    var descr = @item["BrandDescription"].ToString();
-                                    var subGroup = @item["FeatureSubGroup"].ToString() == "" ? "NA" : @item["FeatureSubGroup"].ToString();
-
-                                    <tr class="oxo-data-row-2" row-id="@item["DisplayOrder"]" featureid="@item["FeatureIdentifier"]" uniqueid="1">
-                                        <td class="center-no-sort" style="width:0px;">@item["DisplayOrder"]</td>
-                                        <td>@item["FeatureGroup"]</td>
-                                        <td>@descr.Replace("'", "\'")</td>
-                                        <td class="row" featureid="@item["FeatureIdentifier"]" style="border-right:none!important;">
-                                            <span class="ellipsis" title="@descr">@descr</span>
-                                        </td>
-                                        <td featureid="@item["FeatureIdentifier"]">
-                                            @if (item.Field<bool>("HasRule"))
-                                            {
-                                                <span><i class="glyphicon glyphicon-alert" featureid="@item["FeatureIdentifier"]"></i> Rule</span>
-                                            }
-                                            @if ("" + item["FeatureComment"] != "")
-                                            {
-                                                <span><i class="glyphicon glyphicon-pencil" featureid="@item["FeatureIdentifier"]"></i> Note</span>
-                                            }
-                                            @if ("" + item["LongDescription"] != "")
-                                            {
-                                                @*<span title="@descr"><i class="glyphicon glyphicon-info-sign"></i></span>*@
-                                            }
-                                        </td>
-
-                                        <td class="row text-center" style="width:60px" featureid="@item["FeatureIdentifier"]">@item["FeatureCode"]</td>
-                                        <td featureid="@item["FeatureIdentifier"]">@subGroup</td>
-                                        <td class="text-center row-total" featureid="@item["FeatureIdentifier"]">
-                                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
-                                            {
-                                                @(item.Field<decimal>("TotalPercentageTakeRate").ToString("P"))
-                                            }
-                                            else
-                                            {
-                                                @(item.Field<int>("TotalVolume").ToString("G"))
-                                            }
-                                        </td>
-                                    </tr>
-                                           // uniqueid = uniqueid + 1;
+                                    modelClassName = "fdp-data-item";
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div id="right-pane" class="oxo-box" style="width:1000px;left:-3px">
-                        <table id="oxo-core-table-B" cellpadding="0" cellspacing="0" class="table table-bordered table-condensed dataTable display oxo-table" style="width:100%;border:0px;">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Feature Group</th>
-                                    <th>DESC</th>
-                                    <th>Sub group</th>
-                                    @foreach (var carModel in Model.Volume.Vehicle.AvailableModels)
-                                    {
-                                        var nameParts = carModel.NameWithBR.Split('#');
-                                        <th class="model text-center" data="@carModel.Id">
-                                            @foreach (string part in nameParts)
-                                            {
-                                                @part<br />
-                                            }
-                                        </th>
-                                    }
-                                </tr>
-                                <tr>
-                                    <th colspan="4"></th>
-                                    @foreach (var carModel in Model.Volume.Vehicle.AvailableModels)
-                                    {
-                                        <th class="text-center" style="padding:3px;font-size:11px" data="@carModel.StringIdentifier">
-                                            @if (!string.IsNullOrEmpty(carModel.TrimLevel))
-                                            {
-                                                @carModel.TrimLevel
-                                            }
-                                            else
-                                            {
-                                                <span>-</span>
-                                            }
-                                        </th>
-                                    }
-                                </tr>
-                                <tr>
-                                    <th colspan="4"></th>
-                                    @foreach (var carModel in Model.Volume.Vehicle.AvailableModels)
-                                    {
-                                        <th class="text-center" style="padding:3px;font-size:11px" data="@carModel.StringIdentifier">
-                                            @if (!string.IsNullOrEmpty(carModel.DPCK))
-                                            {
-                                                @carModel.DPCK
-                                            }
-                                            else
-                                            {
-                                                <span>-</span>
-                                            }
-                                        </th>
-                                    }
-                                </tr>
-                                <tr>
-                                    <th colspan="4"></th>
-                                    @foreach (var carModel in Model.Volume.Vehicle.AvailableModels)
-                                    {
-                                        <th class="text-center" style="padding:3px;font-size:11px" data="@carModel.Id">
-                                            @if (!string.IsNullOrEmpty(carModel.BMC))
-                                            {
-                                                @carModel.BMC
-                                            }
-                                            else
-                                            {
-                                                <span>-</span>
-                                            }
-                                        </th>
-                                    }
-                                </tr>
-                                <tr>
-                                    <th colspan="4"></th>
-                                    @foreach (var volumeByModel in Model.Volume.VolumeData.TakeRateSummaryByModel)
-                                    {
-                                        <th class="text-center editable-header" style="padding:3px;font-size:11px" data="@volumeByModel.StringIdentifier">
-                                            @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
-                                            {
-                                                @volumeByModel.PercentageOfFilteredVolume.ToString("P")
-                                            }
-                                            else
-                                            {
-                                                @volumeByModel.Volume.ToString("G")
-                                            }
-                                        </th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @{
-                                    //uniqueid = 0;
-                                    foreach (var item in Model.Volume.VolumeData.RawData)
-                                    {
-                                        var descr = item.Field<string>("BrandDescription");
-                                        var subGroup = item.Field<string>("FeatureSubGroup") == "" ? "NA" : item.Field<string>("FeatureSubGroup");
-
-                                        <tr class="oxo-data-row-2" row-id="@(item.Field<int>("DisplayOrder"))" uniqueid="">
-                                            <td>@(item.Field<int>("DisplayOrder"))</td>
-                                            <td>@(item.Field<string>("FeatureGroup"))</td>
-                                            <td>@(item.Field<string>("FeatureCode"))|@descr.Replace("'", "\'")</td>
-                                            <td>@subGroup</td>
-                                            @foreach (var carModel in Model.Volume.Vehicle.AvailableModels)
-                                            {
-                                                var modelIdentifier = carModel.StringIdentifier;
-                                                <td class="oxo-data editable @RenderDataClass(modelIdentifier, item)" modelid="@modelIdentifier" featureid="@(item.Field<string>("FeatureIdentifier"))" packid="0" prevval="@RenderDataItem(modelIdentifier, item)">@RenderDataItem(modelIdentifier, item)</td>
-                                            }
-                                        </tr>
-
-                                            //uniqueid++;
-                                    }
+                                else
+                                {
+                                    modelClassName = "";
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                                <td class="text-center cross-tab-data-item @modelClassName @RenderDataClass(availableModel.StringIdentifier, featureRow)">
+                                    @RenderDataItem(availableModel.StringIdentifier, featureRow)
+                                </td>
+                            }
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
         </div>
-        <div id="footer">
-            <div id="h-slider"></div>
-        </div>
-        <div id="v-slider"></div>
     </div>
+
+
 </div>
-
-@helper renderCloneHeader(string rightPaneWidth)
-{
-    <div id="clone-column-header" class="oxo-box">
-        <div id="innerheader" class="oxo-box">
-            <div id="left-pane-header" cellpadding="0" cellspacing="0" class="oxo-box" style="width:500px;">
-                <table id="clone-oxo-core-table-A" class="table table-bordered table-condensed dataTable display oxo-table">
-                    <thead>
-                    </thead>
-                </table>
-            </div>
-            <div id="right-pane-header" class="oxo-box" style="width:@rightPaneWidth">
-                <table id="clone-oxo-core-table-B" cellpadding="0" cellspacing="0" class="table table-bordered table-condensed dataTable display oxo-table">
-                    <thead>
-                    </thead>
-                </table>
-            </div>
-        </div>
-    </div>
-}
 
 @helper RenderDataItem(string modelIdentifier, DataRow dataItem)
 {
@@ -442,17 +275,17 @@
     if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
     {
         var value = dataItem.Field<decimal?>(modelIdentifier);
-        if (!value.HasValue && (parsedFeatureApplicability == "O" || parsedFeatureApplicability == "S" || parsedFeatureApplicability == "P"))
+        if (value.GetValueOrDefault() == 0 && (parsedFeatureApplicability == "O" || parsedFeatureApplicability == "S" || parsedFeatureApplicability == "P"))
         {
             @:-
         }
         else if (value.GetValueOrDefault() == 0 && (string.IsNullOrEmpty(parsedFeatureApplicability) || parsedFeatureApplicability == "NA"))
         {
-            @:N/A
+            @("N/A")
         }
         else
         {
-            @value.Value.ToString("P")
+            @value.Value.ToString("P2")
         }
     }
     else
@@ -464,7 +297,7 @@
         }
         else if (value.GetValueOrDefault() == 0 && (string.IsNullOrEmpty(parsedFeatureApplicability) || parsedFeatureApplicability == "NA"))
         {
-            @:N/A
+            @("N/A")
         }
         else
         {
@@ -483,7 +316,7 @@
 
     if (string.IsNullOrEmpty(featureApplicability))
     {
-        @("nonApplicableFeature");
+        @("text-muted");
     }
     else
     {
@@ -504,10 +337,10 @@
             @("packFeature");
             break;
             case "NA":
-            @("nonApplicableFeature");
+            @("text-muted");
             break;
             default:
-            @("nonApplicableFeature");
+            @("text-muted");
             break;
         }
     }

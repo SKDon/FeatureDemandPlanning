@@ -391,10 +391,10 @@ textarea {
 
 .table-bordered.dataTable > thead > tr > th {
     border-right: 1px solid #7788aa;
-    border-top: solid 1px #7788aa !important;
+    border-top-color: #7788aa;
     border-left: none;
     border-bottom: none;
-    padding-right: 8px;
+    /*padding-right: 8px;*/
     color: #fff0aa;
 }
 
@@ -428,6 +428,7 @@ textarea {
 
 .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
     border: 1px solid #4e638e;
+    
 }
 
 .table-striped > tbody > tr:nth-of-type(2n+1) {
@@ -648,18 +649,24 @@ th.header-A0 {
     background-color: #152a55;
     color: #FFF;
     cursor: pointer;
-    border-top: 1px solid #78A !important;
-    border-left: 1px solid #78A !important;
-    border-right: 1px solid #78A !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    font-size:11px;
+    height:25px;
+    vertical-align:middle;
 }
 
-.subgroup {
-    background-color: #2e4372;
-    color: #FFF;
+.sub-group {
+    background-color: #4e638e;
+    color: #fff;
     cursor: pointer;
-    border-top: 1px solid #78A !important;
-    border-left: 1px solid #78A !important;
-    border-right: 1px solid #78A !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    font-size: 11px;
+    height:25px;
+    vertical-align:middle;
 }
 
 tr.subgroup-item > td:first-of-type {
@@ -859,32 +866,36 @@ ul.dropdown-menu > li span.glyphicon {
 }
 
 td.nonApplicableFeature {
-    background-color: #fff;
+    background-color: transparent !important;
     color: #061639;
+    width:100%;
 }
 
 td.packFeature {
-    background-color: #403075;
+    background-color: #403075 !important;
     color: #887cb0;
+    width: 100%;
 }
-
 td.standardFeature {
-    background-color: #7788aa;
+    background-color: #7788aa !important;
     color: #fff;
+    width:100%;
 }
 
 td.optionalFeature {
-    background-color: #887cb0;
+    background-color: #4e638e !important;
     color: #12073b;
+    width:100%;
+    border-color:#78a !important;
 }
 
 li.nonApplicableFeature {
-    background-color: #fff;
+    background-color: #fff !important;
     color: #061639;
 }
 
 li.packFeature {
-    background-color: #403075;
+    background-color: #403075 !important;
     color: #887cb0;
 }
 
@@ -894,8 +905,9 @@ li.standardFeature {
 }
 
 li.optionalFeature {
-    background-color: #887cb0;
+    background-color: #4e638a;
     color: #12073b;
+    border-color:#78a !important;
 }
 
 .list-group-item {
@@ -1041,6 +1053,17 @@ th.model {
     border-top:none !important;
     border-bottom: none !important;
     border-right: solid 1px #2E4372 !important;
+    color:#fff;
+    font-size:8pt;
+    vertical-align:middle !important;
+    padding:0px !important;
+}
+
+th.fdp-model {
+    color:#887cb0 !important;
+    padding:0px !important;
+    vertical-align:middle !important;
+    font-size:8pt;
 }
 
 table.cross-tab {
@@ -1048,18 +1071,51 @@ table.cross-tab {
 }
 
 tr.cross-tab-header {
-    border-top: solid 1px #2E4372;
-    border-bottom: solid 1px #2E4372;
+    /*border-top: solid 1px #2E4372;*/
+    /*border-bottom: solid 1px #2E4372;*/
+}
+
+td.cross-tab-fixed {
+    background-color: #d4b06a;
+    border-color: #805b15 !important;
+    color: #553800;
+}
+
+td.cross-tab-fixed-last {
+    border-right: solid 2px #553800 !important;
 }
 
 td.cross-tab-data-item {
     width:80px;
     min-width:80px;
     max-width:80px;
+    font-size:8pt;
+    padding-top:10px !important;
+    height:25px;
+}
+
+td.fdp-data-item {
+    width:80px;
+    min-width:80px;
+    max-width:80px;
+    background-color: #887cb0;
+    color: #12073b;
+    height:25px;
+    padding-top:10px !important;
+}
+
+td.fdp-data-item-fixed {
+    background-color: #605292;
+    border-color: #887cb0 !important;
+    color: #fff;
+}
+
+td.fdp-data-item-fixed-last {
+    border-right: solid 2px #261758 !important;
 }
 
 th.first-cell {
-    font-size:11px;
+    font-size:8pt;
     /*padding: 2px !important;*/
     border-left:none !important;
     border-top:none !important;
@@ -1068,41 +1124,86 @@ th.first-cell {
 }
 
 th.bmc {
-    font-size:11px;
+    font-size:8pt;
+    /*color:#fff !important;*/
     /*padding: 2px !important;*/
     border-left:none !important;
-    border-top:none !important;
+    /*border-top:none !important;*/
     border-bottom: none !important;
     border-right: solid 1px #2E4372 !important;
+    padding:2px
 }
 
 th.dpck {
-    font-size:11px;
+    font-size:8pt;
+    /*color:#fff !important;*/
     /*padding: 2px !important;*/
     border-left:none !important;
     border-top:none !important;
     border-bottom: none !important;
     border-right: solid 1px #2E4372 !important;
+    padding:2px
 }
 
 th.trim-level {
-    font-size:11px;
+    font-size:8pt;
+    /*color:#fff !important;*/
     /*padding: 2px !important;*/
     border-left:none !important;
     border-top:none !important;
     border-bottom: none !important;
     border-right: solid 1px #2E4372 !important;
+    padding:2px
 }
 
 th.model-mix {
-    font-size:11px;
-    color:#fff !important;
+    font-size:8pt;
+    color:#fff;
+    text-align:center;
     border-left:none !important;
-    border-top:none !important;
+    /*border-top:none !important;*/
+    border-bottom: none !important;
+    border-right: solid 1px #2E4372 !important;
+    padding:2px;
+}
+
+th.feature-description {
+    font-size:8pt;
+    color:#fff;
+    border-left:none !important;
+    /*border-top:none !important;*/
+    border-bottom: none !important;
+    border-right: solid 1px #2E4372 !important;
+    min-width:300px;
+}
+
+th.feature-code {
+    font-size:11px;
+    color:#fff;
+    text-align:center;
+    border-left:none !important;
+    /*border-top:none !important;*/
     border-bottom: none !important;
     border-right: solid 1px #2E4372 !important;
 }
 
 .DTFC_LeftBodyWrapper {
-    top:-13px !important;
+    top:-14px !important;
+}
+
+.comment-item, .rule-item {
+    cursor:pointer;
+}
+
+.popover {
+    font-size: 11px;
+    background-color: #D4b06a;
+    color: #061639;
+}
+
+.popover .popover-title {
+    font-size: 11px;
+    font-weight: bold;
+    background-color :#d4b06a;
+    border-bottom: none;
 }

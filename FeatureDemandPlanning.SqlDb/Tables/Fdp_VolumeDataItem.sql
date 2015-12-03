@@ -14,6 +14,7 @@
     [FdpFeatureId]        INT           NULL,
     [FeaturePackId]       INT           NULL,
     [Volume]              INT           CONSTRAINT [DF_Fdp_VolumeDataItem_Volume] DEFAULT ((0)) NOT NULL,
+    [PercentageTakeRate]  FLOAT (53)    CONSTRAINT [DF_Fdp_VolumeDataItem_PercentageTakeRate] DEFAULT ((0)) NOT NULL,
     [UpdatedOn]           DATETIME      NULL,
     [UpdatedBy]           NVARCHAR (16) NULL,
     CONSTRAINT [PK_Fdp_VolumeDataItem] PRIMARY KEY CLUSTERED ([FdpVolumeDataItemId] ASC),
@@ -23,6 +24,8 @@
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Model] FOREIGN KEY ([ModelId]) REFERENCES [dbo].[OXO_Programme_Model] ([Id]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id])
 );
+
+
 
 
 
