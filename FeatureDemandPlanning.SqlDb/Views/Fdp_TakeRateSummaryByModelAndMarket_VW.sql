@@ -1,9 +1,11 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_TakeRateSummaryByModelAndMarket_VW] AS
 
 	SELECT 
-		  VOL.ProgrammeId
+		  VOL.DocumentId
+		, VOL.ProgrammeId
 		, VOL.Gateway
 		, VOL.MarketId
 		, MK.Market_Name AS MarketName
@@ -22,7 +24,8 @@ CREATE VIEW [dbo].[Fdp_TakeRateSummaryByModelAndMarket_VW] AS
 	FROM
 	(
 		SELECT 
-			  D.Programme_Id AS ProgrammeId
+			  D.Id				AS DocumentId
+			, D.Programme_Id	AS ProgrammeId
 			, D.Gateway
 			, S.MarketId
 			, S.ModelId
@@ -33,7 +36,8 @@ CREATE VIEW [dbo].[Fdp_TakeRateSummaryByModelAndMarket_VW] AS
 		JOIN OXO_Doc				AS D	ON H.DocumentId	= D.Id
 		JOIN Fdp_TakeRateSummary	AS S	ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
 		GROUP BY
-		  D.Programme_Id
+		  D.Id
+		, D.Programme_Id
 		, D.Gateway
 		, S.MarketId
 		, S.ModelId
