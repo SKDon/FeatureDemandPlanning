@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Fdp_TakeRateSummary] (
     [FdpTakeRateSummaryId]       INT           IDENTITY (1, 1) NOT NULL,
     [CreatedOn]                  DATETIME      CONSTRAINT [DF_Fdp_TakeRateSummary_CreatedOn] DEFAULT (getdate()) NOT NULL,
-    [CreatedBy]                  NVARCHAR (16) CONSTRAINT [DF_Fdp_TakeRateSummary_CreatedBy] DEFAULT (suser_sname()) NOT NULL,
+    [CreatedBy]                  NVARCHAR (25) CONSTRAINT [DF_Fdp_TakeRateSummary_CreatedBy] DEFAULT (suser_sname()) NOT NULL,
     [FdpVolumeHeaderId]          INT           NOT NULL,
     [FdpSpecialFeatureMappingId] INT           NOT NULL,
     [MarketId]                   INT           NULL,

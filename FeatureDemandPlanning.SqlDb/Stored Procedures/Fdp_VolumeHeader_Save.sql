@@ -1,9 +1,9 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_VolumeHeader_Save]
 	  @FdpVolumeHeaderId	INT = NULL OUTPUT
-	, @ProgrammeId			INT
-	, @Gateway				NVARCHAR(100)
-	, @FdpImportId			INT = NULL
+	, @DocumentId			INT
 	, @IsManuallyEntered	BIT = 1
+	, @TotalVolume			INT = 0
+	, @FdpTakeRateStatusId	INT = 1
 	, @CDSID				NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
@@ -13,17 +13,17 @@ AS
 		INSERT INTO Fdp_VolumeHeader
 		(
 			  CreatedBy
-			, ProgrammeId
-			, Gateway
-			, FdpImportId
+			, DocumentId
+			, FdpTakeRateStatusId
+			, TotalVolume
 			, IsManuallyEntered
 		)
 		VALUES
 		(
 			  @CDSID
-			, @ProgrammeId
-			, @Gateway
-			, @FdpImportId
+			, @DocumentId
+			, @FdpTakeRateStatusId
+			, @TotalVolume
 			, @IsManuallyEntered
 		)
 		
@@ -33,24 +33,13 @@ AS
 	BEGIN
 	
 		UPDATE Fdp_VolumeHeader SET
-			  ProgrammeId		= @ProgrammeId
-			, Gateway			= @Gateway
-			, FdpImportId		= @FdpImportId
-			, IsManuallyEntered = @IsManuallyEntered
+			  TotalVolume = @TotalVolume
+			, FdpTakeRateStatusId = @FdpTakeRateStatusId
+			, UpdatedOn = GETDATE()
+			, UpdatedBy = @CDSID
 		WHERE
 		FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	
 	END
 
-	SELECT 
-		  FdpVolumeHeaderId
-		, CreatedOn
-		, CreatedBy
-		, ProgrammeId
-		, Gateway
-		, FdpImportId
-		, IsManuallyEntered
-	FROM
-	FDP_VolumeHeader
-	WHERE 
-	FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	EXEC Fdp_VolumeHeader_Get @FdpVolumeHeaderId;

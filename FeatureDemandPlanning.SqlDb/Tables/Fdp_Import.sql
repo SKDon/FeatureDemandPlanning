@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Fdp_Import] (
     [FdpImportId]      INT            IDENTITY (1, 1) NOT NULL,
     [CreatedOn]        DATETIME       CONSTRAINT [DF_Fdp_Import_CreatedOn] DEFAULT (getdate()) NOT NULL,
-    [CreatedBy]        NVARCHAR (16)  CONSTRAINT [DF_Fdp_Import_CreatedBy] DEFAULT (suser_sname()) NOT NULL,
+    [CreatedBy]        NVARCHAR (25)  CONSTRAINT [DF_Fdp_Import_CreatedBy] DEFAULT (suser_sname()) NOT NULL,
     [FdpImportQueueId] INT            NOT NULL,
     [ProgrammeId]      INT            NOT NULL,
     [Gateway]          NVARCHAR (100) NOT NULL,
