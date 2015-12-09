@@ -97,14 +97,19 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@FilterMessage", filter.FilterMessage, dbType: DbType.String, size: 50);
                     }
-                    if (filter.SortIndex.HasValue)
-                    {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
-                    }
+                    //if (filter.SortIndex.HasValue)
+                    //{
+                    //    para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                    //}
+                    para.Add("@SortIndex", filter.SortIndex.GetValueOrDefault(), dbType: DbType.Int32);
                     if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
                     {
                         var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
                         para.Add("@SortDirection", direction, dbType: DbType.String);
+                    }
+                    else
+                    {
+                        para.Add("@SortDirection", "DESC", DbType.String);
                     }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -248,6 +253,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpImportStatusId", (int)importQueue.ImportStatus.ImportStatusCode, dbType: DbType.Int32);
                     para.Add("@ProgrammeId", importQueue.ProgrammeId, dbType: DbType.Int32);
                     para.Add("@Gateway", importQueue.Gateway, dbType: DbType.String);
+                    para.Add("@DocumentId", importQueue.DocumentId, DbType.Int32);
 
                     var result = conn
                         .Query<ImportQueueDataItem>("dbo.Fdp_ImportQueue_Save", para, commandType: CommandType.StoredProcedure)
@@ -332,7 +338,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.GetValueOrDefault(), dbType: DbType.Int32);
                     }
                     if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
                     {
@@ -670,6 +676,7 @@ namespace FeatureDemandPlanning.DataStore
                 Errors = dataItem.Errors,
                 ProgrammeId = dataItem.ProgrammeId,
                 Gateway = dataItem.Gateway,
+                Document = dataItem.Document,
                 VehicleName = dataItem.VehicleName,
                 VehicleAKA = dataItem.VehicleAKA,
                 ModelYear = dataItem.ModelYear,

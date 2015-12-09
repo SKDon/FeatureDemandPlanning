@@ -12,6 +12,7 @@ namespace FeatureDemandPlanning.Model
         public string Name { get; set; }
         public int DisplayOrder { get; set; }
         public string VehicleName { get; set; }
+        public string ModelYear { get; set; }
     }
 
     public class GatewayComparer : IEqualityComparer<Gateway>
@@ -19,12 +20,13 @@ namespace FeatureDemandPlanning.Model
         public bool Equals(Gateway x, Gateway y)
         {
             return x.VehicleName.Equals(y.VehicleName, StringComparison.InvariantCultureIgnoreCase) &&
+                x.ModelYear.Equals(y.ModelYear, StringComparison.InvariantCultureIgnoreCase) &&
                 x.Name.Equals(y.Name, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public int GetHashCode(Gateway obj)
         {
-            return string.Format("{0}{1}", obj.VehicleName, obj.Name.ToUpper()).GetHashCode();
+            return string.Format("{0}{1}{2}", obj.VehicleName, obj.ModelYear, obj.Name.ToUpper()).GetHashCode();
         }
     }
 }

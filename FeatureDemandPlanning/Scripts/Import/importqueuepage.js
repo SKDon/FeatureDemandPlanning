@@ -11,7 +11,30 @@ page.ImportQueuePage = function (models) {
     privateStore[me.id].DataTable = null;
     privateStore[me.id].Models = models;
     privateStore[me.id].Timer = null;
-    
+    privateStore[me.id].SelectedImportStatus = "";
+    privateStore[me.id].SelectedImportStatusId = 0;
+
+    me.displaySelectedImportStatus = function () {
+        $("#" + me.getIdentifierPrefix() + "_SelectedImportStatus").html(me.getSelectedImportStatus());
+    };
+    me.getSelectedImportStatus = function () {
+        return privateStore[me.id].SelectedImportStatus;
+    };
+    me.getSelectedImportStatusId = function () {
+        return privateStore[me.id].SelectedImportStatusId;
+    };
+    me.importStatusSelectedEventHandler = function (sender) {
+        me.setSelectedImportStatusId(parseInt($(sender.target).attr("data-target")));
+        me.setSelectedImportStatus($(sender.target).attr("data-content"));
+        me.displaySelectedImportStatus();
+        me.redrawDataTable();
+    };
+    me.setSelectedImportStatus = function (importStatus) {
+        privateStore[me.id].SelectedImportStatus = importStatus;
+    };
+    me.setSelectedImportStatusId = function (importStatusId) {
+        privateStore[me.id].SelectedImportStatusId = importStatusId;
+    };
     me.cancelTimer = function () {
         var timer = me.getTimer();
         if (timer != null) {
@@ -74,14 +97,11 @@ page.ImportQueuePage = function (models) {
     me.getFilterMessage = function () {
         return $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
     };
-    me.getSelectedImportStatus = function () {
-        return parseInt($("#" + me.getIdentifierPrefix() + "_SelectImportStatus").val());
-    }
     me.getParameters = function (data) {
         var filter = getFilter();
         var params = $.extend({}, data, {
             "ImportQueueId": filter.ImportQueueId,
-            "ImportStatusId": me.getSelectedImportStatus(),
+            "ImportStatusId": me.getSelectedImportStatusId(),
             "FilterMessage": me.getFilterMessage()
         });
         return params;
@@ -99,7 +119,8 @@ page.ImportQueuePage = function (models) {
             "pagingType": "full_numbers",
             "ajax": me.getData,
             "processing": true,
-            "sDom": "ltip",
+            "dom": "ltp",
+            "order": [["0", "desc"]],
             "aoColumns": [
                 {
                     "sTitle": "Uploaded On",
@@ -115,7 +136,7 @@ page.ImportQueuePage = function (models) {
                     "bSortable": true
                 }
                 ,{
-                    "sTitle": "Vehicle",
+                    "sTitle": "Vehicle / OXO Document Version",
                     "sName": "VEHICLE_DESCRIPTION",
                     "bSearchable": true,
                     "bSortable": true
@@ -181,6 +202,11 @@ page.ImportQueuePage = function (models) {
             };
             $(document).trigger("Action", eventArgs);
         });
+
+        $("#" + prefix + "_ImportStatusList").find("a.status-item").on("click", function (e) {
+            me.importStatusSelectedEventHandler(e);
+            e.preventDefault();
+        });
     };
     me.registerSubscribers = function () {
         var prefix = me.getIdentifierPrefix();
@@ -194,7 +220,6 @@ page.ImportQueuePage = function (models) {
             .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler);
 
         $("#" + prefix + "_FilterMessage").on("keyup", me.onFilterChangedEventHandler);
-        $("#" + prefix + "_SelectImportStatus").on("change", me.onFilterChangedEventHandler);
     };
     me.loadImportQueue = function (pageSize, pageIndex) {
         var filter = getFilter(pageSize, pageIndex);

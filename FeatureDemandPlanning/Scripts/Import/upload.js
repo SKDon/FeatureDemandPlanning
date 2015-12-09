@@ -9,6 +9,7 @@ model.UploadParameters = function () {
     me.CarLine = "";
     me.ModelYear = "";
     me.Gateway = "";
+    me.DocumentId = null;
 }
 
 model.Upload = function (params) {
@@ -25,6 +26,8 @@ model.Upload = function (params) {
     privateStore[me.id].SelectedCarLineDescription = "";
     privateStore[me.id].SelectedModelYear = "";
     privateStore[me.id].SelectedGateway = "";
+    privateStore[me.id].SelectedDocument = "";
+    privateStore[me.id].SelectedDocumentId = null;
     privateStore[me.id].Parameters = params;
 
     me.ModelName = "Upload";
@@ -35,23 +38,36 @@ model.Upload = function (params) {
         me.displaySelectedCarLine();
         me.filterModelYears();
         me.filterGateways();
+        me.filterDocuments();
     };
     me.displaySelectedCarLine = function () {
         $("#" + me.getIdentifierPrefix() + "_SelectedCarLine").html(me.getSelectedCarLineDescription());
     }
     me.displaySelectedModelYear = function () {
         var selectedModelYear = me.getSelectedModelYear();
-        if (selectedModelYear == "") {
+        if (selectedModelYear === "") {
             selectedModelYear = "Select Model Year";
         }
         $("#" + me.getIdentifierPrefix() + "_SelectedModelYear").html(selectedModelYear);
     };
     me.displaySelectedGateway = function () {
         var selectedGateway = me.getSelectedGateway();
-        if (selectedGateway == "") {
+        if (selectedGateway === "") {
             selectedGateway = "Select Gateway";
         }
         $("#" + me.getIdentifierPrefix() + "_SelectedGateway").html(selectedGateway);
+    };
+    me.displaySelectedDocument = function () {
+        var selectedDocument = me.getSelectedDocument();
+        if (selectedDocument === "") {
+            selectedDocument = "Select Document";
+        }
+        $("#" + me.getIdentifierPrefix() + "_SelectedDocument").html(selectedDocument);
+    };
+    me.documentSelectedEventHandler = function (sender) {
+        me.setSelectedDocumentId(parseInt($(sender.target).attr("data-target")));
+        me.setSelectedDocument($(sender.target).attr("data-content"));
+        me.displaySelectedDocument();
     };
     me.filterModelYears = function () {
         var selectedModelYear = $("#" + me.getIdentifierPrefix() + "_SelectedModelYear");
@@ -79,7 +95,7 @@ model.Upload = function (params) {
         var gateways = gatewayList
             .find("a.gateway-item")
             .hide()
-            .filter("[data-filter='" + me.getSelectedCarLine() + "']")
+            .filter("[data-filter='" + me.getSelectedCarLine() + "|" + me.getSelectedModelYear() + "']")
             .show();
 
         if (gateways.length == 0) {
@@ -93,9 +109,29 @@ model.Upload = function (params) {
             selectedGateway.removeAttr("disabled");
         }
     };
+    me.filterDocuments = function() {
+        var selectedDocument = $("#" + me.getIdentifierPrefix() + "_SelectedDocument");
+        var documentList = $("#" + me.getIdentifierPrefix() + "_DocumentList")
+        var documents = documentList
+            .find("a.document-item")
+            .hide()
+            .filter("[data-filter='" + me.getSelectedCarLine() + "|" + me.getSelectedModelYear() + "|" + me.getSelectedGateway() + "']")
+            .show();
+
+        if (documents.length === 0) {
+            me.setSelectedDocument("N/A");
+            me.displaySelectedDocument();
+            selectedDocument.attr("disabled", "disabled");
+            return;
+        }
+            me.setSelectedDocument("");
+            me.displaySelectedDocument();
+            selectedDocument.removeAttr("disabled");
+    };
     me.gatewaySelectedEventHandler = function (sender) {
         me.setSelectedGateway($(sender.target).attr("data-target"));
         me.displaySelectedGateway();
+        me.filterDocuments();
     };
     me.getActionContentUri = function (action) {
         return privateStore[me.id].ModalContentUri;
@@ -124,6 +160,12 @@ model.Upload = function (params) {
     me.getSelectedCarLineDescription = function () {
         return privateStore[me.id].SelectedCarLineDescription;
     };
+    me.getSelectedDocumentId = function () {
+        return privateStore[me.id].SelectedDocumentId;
+    };
+    me.getSelectedDocument = function () {
+        return privateStore[me.id].SelectedDocument;
+    };
     me.getSelectedFile = function () {
         return $('input[type=file]')[0].files[0];
     };
@@ -138,6 +180,7 @@ model.Upload = function (params) {
         uploadParameters.CarLine = me.getSelectedCarLine();
         uploadParameters.ModelYear = me.getSelectedModelYear();
         uploadParameters.Gateway = me.getSelectedGateway();
+        uploadParameters.DocumentId = me.getSelectedDocumentId();
 
         return uploadParameters;
     };
@@ -146,6 +189,7 @@ model.Upload = function (params) {
         me.registerSubscribers();
         me.filterModelYears();
         me.filterGateways();
+        me.filterDocuments();
     };
     me.modelYearSelectedEventHandler = function (sender) {
         me.setSelectedModelYear($(sender.target).attr("data-target"));
@@ -169,6 +213,10 @@ model.Upload = function (params) {
         });
         $("#" + prefix + "_GatewayList").find("a.gateway-item").on("click", function (e) {
             me.gatewaySelectedEventHandler(e);
+            e.preventDefault();
+        });
+        $("#" + prefix + "_DocumentList").find("a.document-item").on("click", function (e) {
+            me.documentSelectedEventHandler(e);
             e.preventDefault();
         });
         $(document).on("change", ".btn-file :file", function () {
@@ -196,6 +244,12 @@ model.Upload = function (params) {
     };
     me.setSelectedGateway = function (gateway) {
         privateStore[me.id].SelectedGateway = gateway;
+    };
+    me.setSelectedDocument = function (document) {
+        privateStore[me.id].SelectedDocument = document;
+    };
+    me.setSelectedDocumentId = function (documentId) {
+        privateStore[me.id].SelectedDocumentId = documentId;
     };
 }
 

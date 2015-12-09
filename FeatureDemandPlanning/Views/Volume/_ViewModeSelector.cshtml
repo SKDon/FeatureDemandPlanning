@@ -14,6 +14,7 @@
     }
     <span class="caret"></span>
 </button>
+<input type="hidden" id="@(Model.IdentifierPrefix)_Mode" value="@Model.Volume.Mode"/>
 <ul class="dropdown-menu">
     @if (!(Model.Volume.Market is EmptyMarket))
     {

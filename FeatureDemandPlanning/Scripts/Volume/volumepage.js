@@ -7,21 +7,45 @@ model.Page = function (models) {
 
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Models = models;
-    privateStore[me.id].EventComplete = true;
-
+    privateStore[me.id].DataTable = null;
+    privateStore[me.id].ResultsMode = "PercentageTakeRate";
+    privateStore[me.id].Changeset = null;
+    
     me.initialise = function () {
-        me.registerEvents();
-        me.registerSubscribers();
-
         $(privateStore[me.id].Models).each(function () {
             this.initialise();
         });
+        me.setResultsMode($("#" + me.getIdentifierPrefix() + "_Mode").val());
         me.loadData();
+        me.registerEvents();
+        me.registerSubscribers();
+    };
+    me.configureChangeset = function () {
+        privateStore[me.id].Changeset = new FeatureDemandPlanning.Volume.Changeset();
+    };
+    me.getDataTable = function () {
+        return privateStore[me.id].DataTable;
+    };
+    me.setDataTable = function (dataTable) {
+        privateStore[me.id].DataTable = dataTable;
+    };
+    me.getResultsMode = function () {
+        return privateStore[me.id].ResultsMode;
+    };
+    me.setResultsMode = function (resultsMode) {
+        privateStore[me.id].ResultsMode = resultsMode;
     };
     me.loadData = function () {
+        me.initialiseControls();
         me.configureDataTables();
+        me.configureCellEditing();
         me.configureComments();
-        me.configureRules();
+        me.configureChangeset();
+        //me.configureRules();
+    };
+    me.initialiseControls = function () {
+        var prefix = me.getIdentifierPrefix();
+        $("#" + prefix + "_TakeRateDataPanel").height(me.calcPanelHeight());
     };
     me.getIdentifierPrefix = function () {
         return $("#Page_IdentifierPrefix").val();
@@ -41,18 +65,6 @@ model.Page = function (models) {
             retVal += ("<li>" + this.ErrorMessage + "</li>");
         });
         return retVal;
-    };
-    me.resetEvent = function () {
-        privateStore[me.id].EventComplete = true;
-    };
-    me.toggleEvent = function () {
-        privateStore[me.id].EventComplete = !privateStore[me.id].EventComplete;
-    };
-    me.isEventCompleted = function () {
-        return privateStore[me.id].EventComplete == true;
-    };
-    me.isEventForControl = function (control) {
-        return true;
     };
     me.getVolume = function () {
         return getVolumeModel().getVolume();
@@ -74,101 +86,196 @@ model.Page = function (models) {
         $(document)
             .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notifySuccess").trigger("OnSuccessDelegate", [eventArgs]); })
             .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notifyError").trigger("OnErrorDelegate", [eventArgs]); })
-            .unbind("MakesChanged").on("MakesChanged", function (sender, eventArgs) { $(".subscribers-notifyMakes").trigger("OnMakesChangedDelegate", [eventArgs]); })
-            .unbind("ProgrammesChanged").on("ProgrammesChanged", function (sender, eventArgs) { $(".subscribers-notifyProgrammes").trigger("OnProgrammesChangedDelegate", [eventArgs]); })
-            .unbind("ModelYearsChanged").on("ModelYearsChanged", function (sender, eventArgs) { $(".subscribers-notifyModelYears").trigger("OnModelYearsChangedDelegate", [eventArgs]); })
-            .unbind("GatewaysChanged").on("GatewaysChanged", function (sender, eventArgs) { $(".subscribers-notifyGateways").trigger("OnGatewaysChangedDelegate", [eventArgs]); })
             .unbind("FilterComplete").on("FilterComplete", function (sender, eventArgs) { $(".subscribers-notifyFilterComplete").trigger("OnFilterCompleteDelegate", [eventArgs]); })
-            .unbind("VehicleChanged").on("VehicleChanged", function (sender, eventArgs) { $(".subscribers-notifyVehicle").trigger("OnVehicleChangedDelegate", [eventArgs]); })
             .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notifyResults").trigger("OnResultsDelegate", [eventArgs]); })
             .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notifyUpdated").trigger("OnUpdatedDelegate", [eventArgs]); })
-            .unbind("BeforePageChanged").on("BeforePageChanged", function (sender, eventArgs) { $(".subscribers-notifyBeforePageChanged").trigger("OnBeforePageChangedDelegate", [eventArgs]); })
-            .unbind("PageChanged").on("PageChanged", function (sender, eventArgs) { $(".subscribers-notifyPageChanged").trigger("OnPageChangedDelegate", [eventArgs]); })
-            .unbind("FirstPage").on("FirstPage", function (sender, eventArgs) { $(".subscribers-notifyFirstPage").trigger("OnFirstPageDelegate", [eventArgs]); })
-            .unbind("LastPage").on("LastPage", function (sender, eventArgs) { $(".subscribers-notifyLastPage").trigger("OnLastPageDelegate", [eventArgs]); })
             .unbind("Validation").on("Validation", function (sender, eventArgs) { $(".subscribers-notifyValidation").trigger("OnValidationDelegate", [eventArgs]); })
+            .unbind("EditCell").on("EditCell", function (sender, eventArgs) { $(".subscribers-notifyEditCell").trigger("OnEditCellDelegate", [eventArgs]); });
+    };
+    me.calcPanelHeight = function () {
+        return ($(window).height()) - 135 + "px";
+    };
+    me.calcDataTableHeight = function () {
+        var panelHeight = $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel").height();
+        return (panelHeight - 220) + "px";
     };
     me.registerSubscribers = function () {
+        var prefix = me.getIdentifierPrefix();
         // The #notifier displays status changed message, therefore it makes sense for it to listen to status
         // events and dispatch accordingly
 
         $("#notifier")
             .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
-            .unbind("OnVehicleChangedDelegate").on("OnVehicleChangedDelegate", me.onVehicleChangedEventHandler)
             .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
             .unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
-            .unbind("OnBeforePageChangedDelegate").on("OnBeforePageChangedDelegate", me.onBeforePageChangedEventHandler)
             .unbind("OnValidationDelegate").on("OnValidationDelegate", me.onValidationEventHandler);
 
-        // The page and vehicle descriptions need to respond and update if the forecast vehicle is changed
-        // or the page is changed
+        $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel").on("OnEditCellDelegate", me.onEditCellEventHandler);
 
-        $("#lblPageDescription").unbind("OnPageChangedDelegate").on("OnPageChangedDelegate", me.onDescriptionPageChangedEventHandler);
-        $("#lblVehicleDescription").unbind("OnVehicleChangedDelegate").on("OnVehicleChangedDelegate", me.onVehicleDescriptionEventHandler);
-        $("#oxoDocuments").unbind("OnVehicleChangedDelegate").on("OnVehicleChangedDelegate", me.onVehicleDocumentsEventHandler);
-        $("#availableImports").unbind("OnVehicleChangedDelegate").on("OnVehicleChangedDelegate", me.onVehicleImportsEventHandler);
-
-        // Notify the pager buttons of any page changes so they can toggle visibility as appropriate
-
-        $("#btnPrevious,#btnNext").unbind("OnPageChangedDelegate").on("OnPageChangedDelegate", me.onPageChangedEventHandler);
-
-        // Notify the parent form of any page changes so we can actually render the appropriate content for the page
-
-        $("#frmContent").unbind("OnPageChangedDelegate").on("OnPageChangedDelegate", me.onPageContentChangedEventHandler);
-
-        // Each of the individual dropdowns and other controls for forecast / comparison will listen for
-        // broadcast changes to makes, programmes, etc.
-        // They will only respond if the message is intended for them
-
-        $(".vehicle-filter-make").unbind("OnMakesChangedDelegate").on("OnMakesChangedDelegate", me.onMakesChangedEventHandler);
-        $(".vehicle-filter-programme").unbind("OnProgrammesChangedDelegate").on("OnProgrammesChangedDelegate", me.onProgrammesChangedEventHandler);
-        $(".vehicle-filter-modelYear").unbind("OnModelYearsChangedDelegate").on("OnModelYearsChangedDelegate", me.onModelYearsChangedEventHandler);
-        $(".vehicle-filter-gateway").unbind("OnGatewaysChangedDelegate").on("OnGatewaysChangedDelegate", me.onGatewaysChangedEventHandler);
-
-        // Each of the dropdowns will listen for validation messages if the data the hold is somehow in error
-        // They will only respond if the validation message is intended for them
-
-        $(".vehicle-filter-make,.vehicle-filter-programme,.vehicle-filter-modelYear,.vehicle-filter-gateway,.vehicle-filter-trim")
-            .unbind("OnValidationDelegate").on("OnValidationDelegate", me.onValidationFilterEventHandler);
 
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
-
-        $(".vehicle-filter-make").each(function () {
-            $(this).unbind("change").on("change", me.makeChanged);
-        });
-        $(".vehicle-filter-programme").each(function () {
-            $(this).unbind("change").on("change", me.programmeChanged);
-        });
-        $(".vehicle-filter-modelYear").each(function () {
-            $(this).unbind("change").on("change", me.modelYearChanged);
-        });
-        $(".vehicle-filter-gateway").each(function () {
-            $(this).unbind("change").on("change", me.gatewayChanged);
-        });
-
-        $("#btnNext").unbind("click").on("click", me.nextPage);
-        $("#btnPrevious").unbind("click").on("click", me.previousPage);
-
-        $("#oxoDocumentsTable td").contextMenu({
-            menuSelector: "#oxoDocumentsContextMenu",
-            menuSelected: function (invokedOn, selectedMenu) {
-                var msg = "You selected the menu item '" + selectedMenu.text() +
-                    "' on the value '" + invokedOn.text() + "'";
-                alert(msg);
-            }
-        });
-
-        $("#availableImportsTable td").contextMenu({
-            menuSelector: "#availableImportsContextMenu",
-            menuSelected: function (invokedOn, selectedMenu) {
-                var msg = "You selected the menu item '" + selectedMenu.text() +
-                    "' on the value '" + invokedOn.text() + "'";
-                alert(msg);
-            }
-        });
-
-        $(".oxo-document-toggle").unbind("click").on("click", me.toggleOxoDocument);
         $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);
+
+        $("#" + prefix + "_FilterMessage").on("keyup", function (sender, eventArgs) {
+            var length = $("#" + prefix + "_FilterMessage").val().length;
+            if (length == 0 || length > 2) {
+                me.onFilterChangedEventHandler(sender, eventArgs);
+            }
+        });
+
+        $(window).resize(function () {
+            var panel = $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel");
+            var table = me.getDataTable();
+            //var settings = table.settings();
+            panel.height(me.calcPanelHeight());
+            $('div.dataTables_scrollBody').css('height', me.calcDataTableHeight());
+            table.draw();
+            me.configureScrollerOffsets();
+        });
+
+        //$(document).on({
+        //    mouseenter: function () {
+        //        var columnIndex = $(this).index().column;
+        //        var trIndex = $(this).closest("tr").index() + 5;
+        //        $("table.dataTable").each(function (index) {
+        //            $(this).find("tr:eq(" + trIndex + ")").children(".cross-tab-data-item").addClass("highlight");
+        //            $(this).column(columnIndex).nodes().addClass("highlight");
+        //        });
+        //    },
+        //    mouseleave: function () {
+        //        var columnIndex = $(this).index().column;
+        //        var trIndex = $(this).closest("tr").index() + 5;
+        //        $("table.dataTable").each(function (index) {
+        //            $(this).find("tr:eq(" + trIndex + ")").children(".cross-tab-data-item").removeClass("highlight");
+        //            $(this).column(columnIndex).nodes().removeClass("highlight");
+        //        });
+        //    }
+        //}, ".dataTables_wrapper tbody tr td");
+
+        
+    };
+    me.configureCellEditing = function () {
+        $(".editable").editable(me.cellEditCallback,
+        {
+            tooltip: "Click to edit percentage take / volume",
+            cssclass: "editable-cell",
+            data: me.parseInputData,
+            select: true,
+            onblur: "submit"
+        });
+
+        $(".editable-header").editable(me.cellEditCallback,
+        {
+            tooltip: "Click to edit percentage take / volume for model",
+            cssclass: "editable-cell",
+            data: me.parseInputData,
+            select: true,
+            onblur: "submit"
+        });
+    };
+    me.cellEditCallback = function (value, settings) {
+        
+        var identifiers = $(this).attr("data-target").split("|");
+        var modelIdentifier = null;
+        var featureIdentifier = null;
+
+        if (identifiers.length > 0) {
+            modelIdentifier = identifiers[0];
+        }
+        if (identifiers.length > 1) {
+            featureIdentifier = identifiers[1];
+        }
+        var change = new FeatureDemandPlanning.Volume.Change(modelIdentifier, featureIdentifier);
+        change.Mode = me.getResultsMode();
+        var formattedValue = "";
+        if (change.Mode === "PercentageTakeRate") {
+
+            change.setOriginalTakeRate(me.parseCellValue(this.revert));
+            change.setChangedTakeRate(me.parseCellValue(value));
+
+            if (change.isValid()) {
+                formattedValue = me.formatPercentageTakeRate(change.getChangedTakeRate());
+            } else {
+                formattedValue = me.formatPercentageTakeRate(change.getOriginalTakeRate());
+            }
+
+        } else {
+
+            change.setOriginalVolume(me.parseCellValue(this.revert));
+            change.setChangedVolume(me.parseCellValue(value));
+
+            if (change.getChangedVolume() == null && change.getOriginalVolume() != null) {
+                formattedValue = me.formatVolume(change.getOriginalVolume());
+            } else {
+                formattedValue = me.formatVolume(change.getChangedVolume());
+            }
+        }
+        $(document).trigger("EditCell", change);
+
+        return formattedValue;
+    };
+    me.parseCellValue = function (value) {
+        var retVal = null;
+        if (me.getResultsMode() === "PercentageTakeRate") {
+            var parsedValue = $.trim(value.replace("%", ""));
+            if (parsedValue !== "-" && parsedValue !== "") {
+                retVal = parseFloat(parsedValue);
+            }
+        }
+        else {
+            parsedValue = $.trim(value);
+            if (parsedValue !== "-" && parsedValue !== "") {
+                retVal = parseInt(parsedValue);
+            }
+        }
+        if (isNaN(retVal))
+            retVal = null;
+
+        return retVal;
+    };
+    me.formatPercentageTakeRate = function (takeRate) {
+        var formattedValue = "-"
+        if (takeRate !== null)
+            formattedValue = takeRate.toFixed(2) + " %";
+        
+        return formattedValue;
+    };
+    me.formatVolume = function (volume) {
+        var formattedValue = "-"
+        if (volume !== null)
+            formattedValue = volume;
+
+        return formattedValue;
+    };
+    me.onEditCellEventHandler = function (sender, eventArgs) {
+        var modelIdentifier = eventArgs.getModelIdentifier();
+        var featureIdentifier = eventArgs.getFeatureIdentifier();
+         
+        var editedCell = $("tbody td[data-target='" + modelIdentifier + "|" + featureIdentifier + "']");
+        var editedRow = $(".DTFC_Cloned tbody tr[data-target='" + featureIdentifier + "']");
+        var changeSet = getChangeset();
+
+        // If any changes have reverted back to the original value, we need to lower any change flags and remove from the changeset
+        var firstChange = changeSet.getChange(modelIdentifier, featureIdentifier);
+        if (firstChange != null && (
+                (eventArgs.Mode == "PercentageTakeRate" && eventArgs.getChangedTakeRate() === firstChange.getOriginalTakeRate()) ||
+                (eventArgs.Mode == "Raw" && eventArgs.getChangedVolume() === firstChange.getOriginalVolume())))
+        {
+            changeSet.removeChanges(modelIdentifier, featureIdentifier);
+            editedCell.removeClass("edited");
+
+            // If there are no other changes to the feature, lower the feature changed indicator
+            var otherFeatureChanges = changeSet.getChangesForFeature(featureIdentifier);
+            if (otherFeatureChanges == null || otherFeatureChanges.length == 0) {
+                editedRow.find(".changed-indicator").hide();
+            }
+        }
+        else if (eventArgs.isChanged())
+        {
+            changeSet.addChange(eventArgs);
+            editedCell.addClass("edited");
+            editedRow.find(".changed-indicator").show();
+        }
     };
     me.configureComments = function () {
         $(".comment-item").popover({ html: true, title: "Comments" });
@@ -176,10 +283,15 @@ model.Page = function (models) {
         $('.comment-item').on("click", function (e) {
             $('.comment-item').not(this).popover("hide");
         });
+    };
+    me.configureScrollerOffsets = function () {
+        var leftFixed = $(".DTFC_LeftBodyLiner");
+        var leftWrapper = $(".DTFC_LeftBodyWrapper");
+        leftFixed.height((leftFixed.height() + 38) + "px");
+        leftWrapper.height((leftWrapper.height() + 7) + "px");
     }
     me.configureDataTables = function () {
 
-       
         var table = $("#" + me.getIdentifierPrefix() + "_TakeRateData").DataTable({
             serverSide: false,
             paging: false,
@@ -187,7 +299,7 @@ model.Page = function (models) {
             processing: true,
             dom: "t",
             scrollX: true,
-            scrollY: "450px",
+            scrollY: me.calcDataTableHeight(),
             scrollCollapse: true
         });
 
@@ -290,164 +402,19 @@ model.Page = function (models) {
                         }
                         lastSubGroupName = subGroupName;
                     }
-
-                    //var liner = $(".DTFC_LeftBodyLiner");
-                    //$(liner).height($(liner).height() + 17, "px");
                 }
             }
         });
 
-        //$("#" + me.getIdentifierPrefix() + "_TakeRateData").rowGrouping();
-        //    "aoColumns": [
-        //        {
-        //            "sName": "TAKE_RATE_ID",
-        //            "bVisible": false
-        //        },
-        //        {
-        //            "sName": "CREATED_ON",
-        //            "bSearchable": true,
-        //            "bSortable": true,
-        //            "sClass": "text-center",
-        //            "render": function (data, type, full, meta) {
-        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
-        //            }
-        //        }
-        //        ,
-        //        {
-        //            "sName": "CREATED_BY",
-        //            "bSearchable": true,
-        //            "bSortable": true,
-        //            "sClass": "text-center",
-        //            "render": function (data, type, full, meta) {
-        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
-        //            }
-        //        },
-        //        {
-        //            "sName": "OXO_DOCUMENT",
-        //            "bSearchable": true,
-        //            "bSortable": true,
-        //            "render": function (data, type, full, meta) {
-        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
-        //            }
-        //        },
-        //        {
-        //            "sName": "STATUS",
-        //            "bSearchable": true,
-        //            "bSortable": true,
-        //            "sClass": "text-center",
-        //            "render": function (data, type, full, meta) {
-        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
-        //            }
-        //        },
-        //        {
-        //            "sName": "UPDATED_ON",
-        //            "bSearchable": true,
-        //            "bSortable": true,
-        //            "sClass": "text-center",
-        //            "render": function (data, type, full, meta) {
-        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
-        //            }
-        //        },
-        //        {
-        //            "sName": "UPDATED_BY",
-        //            "bSearchable": true,
-        //            "bSortable": true,
-        //            "sClass": "text-center",
-        //            "render": function (data, type, full, meta) {
-        //                return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
-        //            }
-        //        }
-        //    ],
-        //    "fnCreatedRow": function (row, data, index) {
-        //        var takeRateId = data[0];
-        //        $(row).attr("data-takeRate-id", takeRateId);
-        //    },
-        //    "fnDrawCallback": function (oSettings) {
-        //        $(document).trigger("Results", me.getSummary());
-        //        me.bindContextMenu();
-        //        $("#pnlTakeRates").show();
-        //    }
-        //});
+        me.setDataTable(table);
+        me.configureScrollerOffsets();
     };
-    me.initialiseControls = function () {
-        var prefix = me.getIdentifierPrefix();
-        //$("#oxoDocumentsTable").dataTable();
-        //$("#availableImportsTable").dataTable();
-        //$(".editable").editable(function (value, settings) {
-
-        //    // Update the total mix for the field
-        //    try 
-        //    {
-        //        var currentModelId = $(this).attr("modelid");
-        //        var featureId = $(this).attr("featureid");
-        //        var newValue = parseInt(value.trim());
-        //        var oldValue = parseInt(getVolumeModel().getCurrentEditValue());
-        //        var rowTotal = 0;
-
-        //        if (!($.isNumeric(newValue)) || newValue == oldValue)
-        //            return getVolumeModel().getCurrentEditValue();
-
-        //        $(this).closest("tr").find(".editable").each(function (value) {
-        //            var elementValue = parseInt($(this).html().trim());
-        //            if ($.isNumeric(elementValue) && currentModelId != $(this).attr("modelid")) {
-        //                rowTotal += elementValue;
-        //            }
-        //        });
-
-        //        rowTotal += newValue;
-
-        //        $(".row-total[featureid='" + featureId + "']").html(rowTotal).addClass("dirty");
-        //        getVolumeModel().setCurrentEditValue(null);
-
-        //        // Mark the field as dirty
-        //        //$(this).html($(this.html())).addClass("dirty");
-                
-        //    }
-        //    catch (ex) {
-        //        console.log(ex);
-        //    }
-
-        //    return value;
-        //}, {
-        //    tooltip: "Click to edit",
-        //    cssclass: "editable-cell",
-        //    data: function (value, settings)
-        //    {
-        //        var trimmedValue = $.trim(value);
-        //        getVolumeModel().setCurrentEditValue(trimmedValue);
-        //        return trimmedValue;
-        //    },
-        //    select: true,
-        //    onblur: "submit"
-        //});
-        //$(".editable-header").editable(function (value, settings) {
-        //    console.log(this);
-        //    console.log(value);
-        //    console.log(settings);
-
-            
-        //    return value;
-        //}, {
-        //    tooltip: "Click to edit",
-        //    cssclass: "editable-header",
-        //    data: function (string) { return $.trim(string) },
-        //    select: true,
-        //    onblur: "submit"
-        //});
-    };
-    me.nextPage = function (sender, eventArgs) {
-        getPager().nextPage();
-    };
-    me.previousPage = function (sender, eventArgs) {
-        getPager().previousPage();
-    };
-    me.onBeforePageChangedEventHandler = function (sender, eventArgs) {
-        if (!eventArgs.NextPage) {
-            return;
-        }
-        me.validate(eventArgs.PageIndex);
-        eventArgs.Cancel = !getVolumeModel().isValid();
-    };
+    me.parseInputData = function (value, settings) {
+        var parsedValue = value.replace("%", "");
+        parsedValue = parsedValue.replace("-", "");
+        var trimmedValue = $.trim(parsedValue);
+        return trimmedValue;
+    },
     me.onValidationEventHandler = function (sender, eventArgs) {
         me.getValidationMessage(eventArgs);
     };
@@ -514,191 +481,22 @@ model.Page = function (models) {
         }
         $("notifier").html(html).fadeIn("slow");
     };
-    me.onVehicleChangedEventHandler = function (sender, eventArgs) {
-        me.setVehicle(eventArgs.Vehicle)
-        me.toggleEvent();
-        me.validate(getPager().getPageIndex() + 1, true);
-    };
-    me.onVehicleDescriptionEventHandler = function (sender, eventArgs) {
-        if (eventArgs.Vehicle == null || eventArgs.Vehicle.ProgrammeId == null || eventArgs.MultipleResults == true) {
-            $(sender.target).html("");
-        } else {
-            $(sender.target).html(eventArgs.Vehicle.FullDescription);
-        }
-    };
-    me.onVehicleDocumentsEventHandler = function (sender, eventArgs) {
-        getVolumeModel().getAvailableDocuments(me.oxoDocumentsContentChangedCallback);
-    };
-    me.onVehicleImportsEventHandler = function (sender, eventArgs) {
-        getVolumeModel().getAvailableImports(me.importsContentChangedCallback);
-    };
-    me.oxoDocumentsContentChangedCallback = function (content) {
-        $("#oxoDocuments").html(content);
-        me.initialiseControls();
-        me.initialise();
-    };
-    me.importsContentChangedCallback = function (content) {
-        $("#availableImports").html(content);
-        me.initialiseControls();
-        me.initialise();
-    };
     me.onErrorEventHandler = function (sender, eventArgs) {
         $("#notifier").html("<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.statusText + "</div>");
+    };
+    me.onFilterChangedEventHandler = function (sender, eventArgs) {
+        var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
+        me.getDataTable().search(filter).draw();
+        me.configureScrollerOffsets();
     };
     me.onUpdatedEventHandler = function (sender, eventArgs) {
         $("#notifier").html("<div class=\"alert alert-dismissible alert-success\">" + eventArgs.StatusMessage + "</div>");
     };
-    me.onMakesChangedEventHandler = function (sender, eventArgs) {
-        var control = $(this);
-
-        control.empty();
-
-        $(".vehicle-filter-programme,.vehicle-filter-modelYear,.vehicle-filter-gateway").empty().attr("disabled", "disabled");
-
-        $(eventArgs.Makes).each(function () {
-            $("<option />", { val: this, text: this }).appendTo(control);
-        });
-        control.prepend("<option value='' selected='selected'>-- SELECT --</option>");
-
-        // As the make dropdown is actually hidden, populate the programmes on load
-
-        me.populateProgrammes();
-
-        $(".vehicle-filter-programme").removeAttr("disabled");
-    };
-    me.onProgrammesChangedEventHandler = function (sender, eventArgs) {
-        var control = $(this);
-        control.unbind();
-        control.empty().attr("disabled", "disabled");
-
-        $(".vehicle-filter-modelYear,.vehicle-filter-gateway").empty().attr("disabled", "disabled");
-
-        $(eventArgs.Programmes).each(function () {
-            $("<option />", { val: this.VehicleName, text: this.Description }).appendTo(control);
-        });
-        if (eventArgs.Programmes.length == 1) {
-            control.val(eventArgs.Programmes[0].VehicleName).removeAttr("disabled");
-            me.populateModelYears();
-        } else {
-            me.toggleEvent();
-            control.prepend("<option value='' selected='selected'>-- SELECT --</option>").removeAttr("disabled");
-        }
-        me.populateVehicle();
-    };
-    me.onModelYearsChangedEventHandler = function (sender, eventArgs) {
-        var control = $(this);
-        control.unbind();
-        control.empty().attr("disabled", "disabled");
-
-        $(".vehicle-filter-gateway").empty().attr("disabled", "disabled");
-
-        $(eventArgs.ModelYears).each(function () {
-            $("<option />", { val: this, text: this }).appendTo(control);
-        });
-        if (eventArgs.ModelYears.length == 1) {
-            control.val(eventArgs.ModelYears[0]);
-            me.populateGateways();
-        } else {
-            me.toggleEvent();
-            control.prepend("<option value='' selected='selected'>-- SELECT --</option>");
-        }
-        control.removeAttr("disabled");
-        me.registerEvents();
-        me.registerSubscribers();
-        me.populateVehicle();
-    };
-    me.onGatewaysChangedEventHandler = function (sender, eventArgs) {
-        var control = $(this);
-        control.unbind();
-        control.empty().attr("disabled", "disabled");
-
-        if (eventArgs.Filter.ModelYear == null) {
-            return;
-        }
-        $(eventArgs.Gateways).each(function () {
-            $("<option />", { val: this, text: this }).appendTo(control);
-        });
-        if (eventArgs.Gateways.length === 1) {
-            control.val(eventArgs.Gateways[0]).removeAttr("disabled");
-        } else {
-            control.prepend("<option value='' selected='selected'>-- SELECT --</option>").removeAttr("disabled");
-        }
-        me.toggleEvent();
-        me.registerEvents();
-        me.registerSubscribers();
-        me.populateVehicle();
-    };
-    me.onDescriptionPageChangedEventHandler = function (sender, eventArgs) {
-        var descriptions = $(".page-description").hide().filter(function () {
-            return $(this).attr("data-index") == eventArgs.PageIndex;
-        }).show();
-    };
-    me.onPageChangedEventHandler = function (sender, eventArgs) {
-        var button = $(sender.target);
-        if (eventArgs.IsFirstPage && button.attr("id") == "btnPrevious") {
-            button.hide();
-        } else if (eventArgs.IsLastPage && button.attr("id") == "btnNext") {
-            button.hide();
-        } else {
-            button.show();
-        }
-    };
-    me.onPageContentChangedEventHandler = function (sender, eventArgs) {
-        getPager().getPageContent(JSON.stringify({ volume: me.getVolume(), pageIndex: eventArgs.PageIndex }), me.notifyPageContentChangedCallback, me)
-    };
-    me.notifyPageContentChangedCallback = function (content) {
-        $("#frmContent").html(content);
-        me.initialiseControls();
-        me.initialise();
-    };
-    me.makeChanged = function (data) {
-        me.resetVehicle(true);
-        me.populateProgrammes();
-    };
-    me.programmeChanged = function (data) {
-        me.resetVehicle(true);
-        me.populateModelYears();
-    };
-    me.modelYearChanged = function (data) {
-        me.resetVehicle(true);
-        me.populateGateways();
-    };
-    me.gatewayChanged = function (data) {
-        me.resetVehicle(false);
-        me.populateVehicle();
-    };
-    me.populateProgrammes = function () {
-        getVehicleModel().getProgrammes(getVehicleFilter());
-    };
-    me.populateModelYears = function () {
-        getVehicleModel().getModelYears(getVehicleFilter());
-    };
-    me.populateGateways = function () {
-        getVehicleModel().getGateways(getVehicleFilter());
-    };
-    me.populateVehicle = function () {
-        if (me.isEventCompleted())
-            getVehicleModel().getVehicle(getVehicleFilter());
-    };
-    me.saveForecast = function () {
-        getVolumeModel().saveVolume();
+    me.redrawDataTable = function () {
+        me.getDataTable().draw();
     };
     me.validate = function (pageIndex, async) {
         getVolumeModel().validate(pageIndex, async);
-    };
-    me.toggleOxoDocument = function (data) {
-        var oxoDocId = parseInt($(this).attr("data-target"));
-        var model = getVolumeModel();
-
-        $(".oxo-document-toggle").removeClass("btn-danger").addClass("btn-primary");
-
-        if ($(this).text() == "Unselect") {
-            model.setDocument({});
-            $(this).text("Select");
-        } else {
-            model.setDocument({ Id: oxoDocId, ProgrammeId: model.getVehicle().ProgrammeId });
-            $(this).text("Select").removeClass("btn-primary").addClass("btn-danger");
-        }
     };
     me.toggleFdpVolumeHeader = function (data) {
         var fdpVolumeHeaderId = parseInt($(this).attr("data-target"));
@@ -719,80 +517,8 @@ model.Page = function (models) {
             } 
         });
     };
-    me.configureScroller = function (columnsToClone) {
-
-        // If we are resizing, destroy and scrollbars first, as this affects the positioning of any fixed columns
-        $("#scroller").mCustomScrollbar("destroy");
-
-        $("#scroller table").each(function () {
-
-            // Create a fixed table element at this location
-            $(this).parent().append("<div id='scrollerFixed'></div>");
-
-            var table = $(this),
-                fixedTable = table.clone(true),
-                fixedWidth = table.find("th").eq(0).width(),
-                fixedHeight = table.find("th").eq(0).height(),
-                tablePos = table.position(),
-                removeIndex = columnsToClone - 1;
-
-            // Remove all but the number of specified columns from the clones table
-            fixedTable.find("thead tr").each(function () {
-                $(this).find("th:gt(" + removeIndex + ")").remove();
-            });
-            fixedTable.find("tbody tr").each(function () {
-                $(this).find("td:gt(" + removeIndex + ")").remove();
-            });
-
-            // Set positioning so that cloned table overlays
-            // first column of original table
-            fixedTable.addClass("fixedTable");
-            fixedTable.css({
-                left: tablePos.left,
-                top: tablePos.top
-            });
-
-            // Do the same with the table cells, we will need to iterate each row
-            var clonedRows = fixedTable.find("thead tr");
-            var rowIndex = 0;
-            clonedRows.each(function () {
-                var clonedCells = $(this).find("th");
-                var originalRow = table.find("thead tr").eq(rowIndex++);
-
-                for (var i = 0; i < clonedCells.length; i++) {
-                    var originalCell = originalRow.find("th").eq(i);
-                    var width = originalCell.width();
-                    var height = originalCell.height();
-
-                    clonedCells.eq(i).css("width", width + "px").css("height", height + "px");
-                }
-            });
-
-            //clonedRows = fixedTable.find("tbody tr");
-            //rowIndex = 0;
-            //clonedRows.each(function () {
-            //    var clonedCells = $(this).find("td");
-            //    var originalRow = table.find("tbody tr").eq(rowIndex++);
-
-            //    for (var i = 0; i < clonedCells.length; i++) {
-            //        var originalCell = originalRow.find("td").eq(i);
-            //        var width = originalCell.width();
-            //        var height = originalCell.height();
-
-            //        clonedCells.eq(i).css("width", width + "px").css("height", height + "px");
-            //    }
-            //});
-
-            $("#scrollerFixed").html(fixedTable);
-
-            $("#scroller").mCustomScrollbar({
-                axis: "x",
-                theme: "inset-3"
-            });
-        });
-    };
-    function getVehicleModel() {
-        return getModel("Vehicle");
+    function getChangeset() {
+        return privateStore[me.id].Changeset;
     };
     function getVolumeModel() {
         return getModel("OxoVolume");
@@ -815,12 +541,6 @@ model.Page = function (models) {
     };
     function getModal() {
         return getModel("Modal");
-    };
-    function getPager() {
-        return getModel("Pager");
-    };
-    function getTrimMapping() {
-        return getModel("TrimMapping");
     };
     function getFilter() {
         var model = getTakeRatesModel();

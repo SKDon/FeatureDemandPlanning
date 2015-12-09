@@ -1,0 +1,139 @@
+﻿@using System.Data
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+
+<div class="panel panel-primary">
+    <div class="panel-heading" style="height:50px">
+        <div class="viewport-toolbar pull-left">
+            <div class="btn-group">
+                @Html.Partial("_ViewModeSelector", Model)
+            </div>
+            <div class="btn-group">
+                @Html.Partial("_MarketSelector", Model)
+            </div>
+            <div class="input-group input-group-sm">
+                <input id="@(Model.IdentifierPrefix)_FilterMessage" class="form-control" style="top:1px" type="text" maxlength="10" placeholder="Filter" aria-describedby="filter-addon" />
+            </div>
+        </div>
+        <div class="viewport-toolbar pull-right">
+            <div class="btn-group">
+                <button type="button" class="btn btn-default btn-sm" onclick="ToggleAllFolderWrapper();"><span class="glyphicon glyphicon-plus"></span> Toggle All</button>
+                <button type="button" class="btn btn-default btn-sm" id="butSaveChange"><i class="glyphicon glyphicon-floppy-disk"></i> Save Changes</button>
+                @*<button type="button" class="btn btn-default btn-sm" id="butChangeLog" onclick='changeLogWrapper();'><span class="glyphicon glyphicon-book"></span> Change Sets</button>*@
+                <button type="button" class="btn btn-default btn-sm" id="butValidate" onclick='validateDoc();'><span class="glyphicon glyphicon-check"></span> Validate</button>
+                <button type="button" class="btn btn-default btn-sm" id="btnMarketReview" onclick="marketReview"><span class="glyphicon glyphicon-flag"></span> Market Review</button>
+                <button type="button" class="btn btn-default btn-sm" id="butPublish"><span class="glyphicon glyphicon-pushpin"></span> Publish</button>
+                @*
+                <button type="button" class="btn btn-default btn-sm" id="butCancelChange" onclick='cancelOXODocument();' style="display:none"><i class="glyphicon glyphicon-remove"></i> Cancel Changes</button>*@
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
+                    <span class="glyphicon glyphicon-collapse-down"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="@(Model.IdentifierPrefix)_TakeRateDataPanel" class="panel-body subscribers-notifyEditCell" style="padding:5px;height:85%">
+        <div class="col-xs-12" style="padding:0px">
+            <table id="@(Model.IdentifierPrefix)_TakeRateData" class="table table-bordered table-condensed dataTable cross-tab">
+                <thead>
+                    <tr class="cross-tab-header">
+                        <th colspan="3" class="text-right first-cell"></th>
+                        @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
+                        {
+                            var modelClassName = string.Empty;
+                            if (availableModel.FdpModelId.HasValue)
+                            {
+                                modelClassName = "fdp-model";
+                            }
+                            <th class="text-center model @modelClassName" data="@availableModel.StringIdentifier">
+                                @foreach (string namePart in availableModel.NameWithBR.Split('#'))
+                                {
+                                    @namePart<br />
+                                }
+                            </th>
+                        }
+                    </tr>
+                    <tr class="cross-tab-header">
+                        <th colspan="3" class="text-right bmc">BMC</th>
+                        @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
+                        {
+                            var modelClassName = string.Empty;
+                            if (availableModel.FdpModelId.HasValue)
+                            {
+                                modelClassName = "fdp-model";
+                            }
+                            <th class="text-center bmc @modelClassName">
+                                @if (!string.IsNullOrEmpty(availableModel.BMC))
+                                {
+                                    <span>@availableModel.BMC</span>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </th>
+                        }
+                    </tr>
+                    <tr class="cross-tab-header" style="height:25px">
+                        <th colspan="3" class="text-right trim-level">Level</th>
+                        @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
+                        {
+                            var modelClassName = string.Empty;
+                            if (availableModel.FdpModelId.HasValue)
+                            {
+                                modelClassName = "fdp-model";
+                            }
+                            <th class="text-center trim-level @modelClassName">
+                                @if (!string.IsNullOrEmpty(availableModel.TrimLevel))
+                                {
+                                    <span>@availableModel.TrimLevel</span>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </th>
+                        }
+                    </tr>
+                    <tr class="cross-tab-header">
+                        <th colspan="3" class="text-right dpck">DPCK</th>
+                        @foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
+                        {
+                            var modelClassName = string.Empty;
+                            if (availableModel.FdpModelId.HasValue)
+                            {
+                                modelClassName = "fdp-model";
+                            }
+                            <th class="text-center dpck @modelClassName">
+                                @if (!string.IsNullOrEmpty(availableModel.DPCK))
+                                {
+                                    <span>@availableModel.DPCK</span>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </th>
+                        }
+                    </tr>
+                    <tr class="cross-tab-header" id="@(Model.IdentifierPrefix)_TakeRateByModel">
+                        @Html.Partial("_TakeRateDataByModel")
+                    </tr>
+                </thead>
+                <tbody id="@(Model.IdentifierPrefix)_TakeRateByFeature">
+                    @foreach (var featureRow in Model.Volume.VolumeData.RawData)
+                    {
+                        TempData["CurrentRow"] = featureRow;
+                        @Html.Partial("_TakeRateDataByFeature");
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+
+</div>

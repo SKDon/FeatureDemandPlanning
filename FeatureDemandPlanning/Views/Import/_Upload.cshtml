@@ -62,10 +62,27 @@
                             <ul id="@(Model.IdentifierPrefix)_GatewayList" class="dropdown-menu">
                                 @foreach (var gateway in Model.Gateways)
                                 {
-                                    <li><a class="gateway-item" href="#" data-filter="@gateway.VehicleName" data-target="@gateway.Name">@gateway.Name</a></li>
+                                    <li><a class="gateway-item" href="#" data-filter="@gateway.VehicleName|@gateway.ModelYear" data-target="@gateway.Name">@gateway.Name</a></li>
                                 }
                             </ul>
                           
+                        </div>
+                    </div>
+                    <div class="form-group-sm" style="margin-bottom:15px;">
+                        <label for="@(Model.IdentifierPrefix)_SelectDocument" class="col-lg-3 control-label">Document:</label>
+                        <div class="col-lg-9" style="margin-bottom:15px;">
+                            <button id="@(Model.IdentifierPrefix)_SelectDocument" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
+                                <span id="@(Model.IdentifierPrefix)_SelectedDocument">Select Document</span>
+                                <span class="caret"></span>
+                            </button>
+
+                            <ul id="@(Model.IdentifierPrefix)_DocumentList" class="dropdown-menu">
+                                @foreach (var document in Model.Documents)
+                                {
+                                    <li><a class="document-item" href="#" data-filter="@document.VehicleName|@document.ModelYear|@document.Gateway" data-target="@document.Id" data-content="@document.VersionId">@document.VersionId</a></li>
+                                }
+                            </ul>
+
                         </div>
                     </div>
                    

@@ -190,6 +190,10 @@ namespace FeatureDemandPlanning.DataStore
         {
             return _documentDataStore.GatewayGetMany().Where(g => string.IsNullOrEmpty(filter.Code) || g.VehicleName == filter.Code);
         }
+        public IEnumerable<OXODoc> ListPublishedDocuments(ProgrammeFilter filter)
+        {
+            return _documentDataStore.FdpOxoDocumentsGetMany(filter);
+        }
         public IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter)
         {
             return _transmissionDataStore.ModelTransmissionGetMany(filter.ProgrammeId.GetValueOrDefault());   

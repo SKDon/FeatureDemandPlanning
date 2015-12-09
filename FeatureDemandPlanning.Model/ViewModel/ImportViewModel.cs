@@ -35,6 +35,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public string Gateway { get; set; }
 
         public IEnumerable<Programme> AvailableProgrammes { get; set; }
+        public IEnumerable<OXODoc> AvailableDocuments { get; set; }
         public IEnumerable<ModelEngine> AvailableEngines { get; set; }
         public IEnumerable<ModelTransmission> AvailableTransmissions { get; set; }
         public IEnumerable<ModelBody> AvailableBodies { get; set; }
@@ -72,7 +73,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 return AvailableProgrammes.ListCarLines();
             }
         }
-
         public IEnumerable<Gateway> Gateways
         {
             get
@@ -80,10 +80,18 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 return AvailableProgrammes.Select(p => new Gateway()
                     {
                         VehicleName = p.VehicleName,
-                        Name = p.Gateway
+                        Name = p.Gateway,
+                        ModelYear = p.ModelYear
                     })
                     .Distinct(new GatewayComparer())
                     .OrderBy(p => p.Name);
+            }
+        }
+        public IEnumerable<OXODoc> Documents
+        {
+            get
+            {
+                return AvailableDocuments;
             }
         }
         public IEnumerable<ImportStatus> ImportStatuses
@@ -203,7 +211,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
  
             model.AvailableProgrammes = await
                 Task.FromResult<IEnumerable<Programme>>(context.Vehicle.ListProgrammes(new ProgrammeFilter()));
+            model.AvailableDocuments = await
+                Task.FromResult(context.Vehicle.ListPublishedDocuments(new ProgrammeFilter()));
             model.AvailableImportStatuses = await context.Import.ListImportStatuses();
+            model.AvailableDocuments = context.Vehicle.ListPublishedDocuments(new ProgrammeFilter());
 
             return model;
         }
@@ -222,6 +233,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.TotalDisplayRecords = model.ImportQueue.TotalDisplayRecords;
 
             model.AvailableProgrammes = context.Vehicle.ListProgrammes(new ProgrammeFilter());
+            model.AvailableDocuments = context.Vehicle.ListPublishedDocuments(new ProgrammeFilter());
 
             return model;
         }
@@ -312,6 +324,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             CurrentFeature = new EmptyFeature();
             CurrentMarket = new EmptyMarket();
 
+            AvailableDocuments = Enumerable.Empty<OXODoc>();
             AvailableEngines = Enumerable.Empty<ModelEngine>();
             AvailableTransmissions = Enumerable.Empty<ModelTransmission>();
             AvailableBodies = Enumerable.Empty<ModelBody>();

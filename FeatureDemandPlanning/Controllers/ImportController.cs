@@ -85,28 +85,13 @@ namespace FeatureDemandPlanning.Controllers
             return RedirectToAction(Enum.GetName(Parameters.Action.GetType(), Parameters.Action), 
                                     ImportParameters.GetActionSpecificParameters(Parameters));
         }
-        //[HttpPost]
-        //[HandleErrorWithJson]
-        //[ActionName("UploadEx")]
-        //public async Task<ActionResult> Upload(ImportParameters parameters)
-        //{
-        //    Parameters = parameters;
-        //    ValidateImportParameters(ImportParametersValidator.Upload);
-
-        //    SetProgrammeId();
-        //    SetUploadFilePath();
-        //    SaveImportFileToFileSystem();
-        //    QueueItemForProcessing();
-        //    ProcessQueuedItem();
-
-        //    return await Task.FromResult(JsonGetSuccess());
-        //}
         [HttpPost]
         [HandleErrorWithJson]
         public ActionResult Upload(HttpPostedFileBase fileToUpload,
-                                                string carLine,
-                                                string modelYear,
-                                                string gateway)
+                                    string carLine,
+                                    string modelYear,
+                                    string gateway,
+                                    int? documentId)
         {
             Parameters = new ImportParameters
             {
@@ -114,7 +99,8 @@ namespace FeatureDemandPlanning.Controllers
                 UploadFile = fileToUpload,
                 CarLine = carLine,
                 ModelYear = modelYear,
-                Gateway = gateway
+                Gateway = gateway,
+                DocumentId = documentId
             };
             ValidateImportParameters(ImportParametersValidator.Upload);
 
@@ -212,6 +198,7 @@ namespace FeatureDemandPlanning.Controllers
                 RuleFor(p => p.CarLine).NotEmpty().WithMessage("'Car Line' not specified");
                 RuleFor(p => p.ModelYear).NotEmpty().WithMessage("'Model Year' not specified");
                 RuleFor(p => p.Gateway).NotEmpty().WithMessage("'Gateway' not specified");
+                RuleFor(p => p.DocumentId).NotNull().WithMessage("'OXO Document' not specified");
                     
                 RuleFor(p => p)
                     .Cascade(CascadeMode.StopOnFirstFailure)

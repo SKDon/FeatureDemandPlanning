@@ -9,17 +9,9 @@
     <script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@Model.CurrentVersion"></script>
     <script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@Model.CurrentVersion"></script>
     <script src="@Url.Content("~/Scripts/Shared/cookie.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/pager.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Shared/vehicle.js")?v=@Model.CurrentVersion"></script>
     <script src="@Url.Content("~/Scripts/Volume/volume.js")?v=@Model.CurrentVersion"></script>
+    <script src="@Url.Content("~/Scripts/Volume/changeset.js")?v=@Model.CurrentVersion"></script>
     <script src="@Url.Content("~/Scripts/Volume/volumepage.js")?v=@Model.CurrentVersion"></script>
-
-    <!-- TO DO put these in the bundle -->
-    @*<script src="@Url.Content("~/Scripts/Shared/oxo-master.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Editor/oxo-editor-fbm.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Editor/oxo-editor-core.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Editor/oxo-model-filter.js")?v=@Model.CurrentVersion"></script>
-    <script src="@Url.Content("~/Scripts/Editor/oxo-change-log.js")?v=@Model.CurrentVersion"></script>*@
 
     <script type="text/javascript">
 
@@ -82,7 +74,7 @@
 
             <div class="col-lg-2 pull-right" style="padding-top: 20px">
                 <div class="panel panel-primary" style="margin-bottom: 0px; height:160px">
-                    <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Key</div></div>
+                    <div class="panel-heading" style="padding:3px 15px"><div class="panel-title">Key</div></div>
                     <div class="panel-body" >
 
                         <div>
@@ -99,30 +91,27 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-5 pull-right" style="padding-top: 20px; height:160px">
-                <div class="panel panel-primary" style="margin-bottom: 0px">
-                    <div class="panel-heading" style="padding:3px 15px"><div class="panel-title" style="font-size:14px">Volume Mix</div></div>
-                    <div class="panel-body" style="padding:5px">
+            <div class="col-lg-5 pull-right" style="padding-top: 20px; ">
+                <div class="panel panel-primary" style="margin-bottom: 0px; height:160px">
+                    <div class="panel-heading" style="padding:3px 15px"><div class="panel-title">Volume Mix</div></div>
+                    <div class="panel-body">
                         <form class="form-horizontal">
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
-                                <label for="txtVolume" class="col-sm-6 control-label">Total Volume (All Markets):</label>
-                                <div class="col-sm-5 input-group input-group-sm">
-                                    <input type="text" id="txtVolume" class="form-control" value="@Model.Volume.VolumeData.TotalVolume">
-                                    <span class="input-group-btn">
-                                    <button type="button" id="btnUpdateVolume" class="btn btn-sm btn-default">Update</button>
-                                        </span>
+                                <label for="txtVolume" class="col-sm-8 control-label">Total Volume (All Markets):</label>
+                                <div class="col-sm-4 form-control-static">
+                                    @Model.Volume.VolumeData.TotalVolume.ToString("N0")
                                 </div>
                             </div>
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
-                                <label class="col-sm-6 control-label">Filtered Volume (Selected Markets):</label>
-                                <div class="col-sm-6 form-control-static">
-                                    @Model.Volume.VolumeData.FilteredVolume.ToString("G")
+                                <label class="col-sm-8 control-label">Filtered Volume (Selected Markets):</label>
+                                <div class="col-sm-4 form-control-static">
+                                    @Model.Volume.VolumeData.FilteredVolume.ToString("N0")
                                 </div>
                             </div>
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
-                                <label class="col-sm-6 control-label">% of Total Volume:</label>
-                                <div class="col-sm-6 form-control-static">
-                                    @Model.Volume.VolumeData.PercentageOfTotalVolume.ToString("P2")
+                                <label class="col-sm-8 control-label">% of Total Volume:</label>
+                                <div class="col-sm-4 form-control-static">
+                                    @Model.Volume.VolumeData.PercentageOfTotalVolume.ToString("P0")
                                 </div>
                             </div>
                         </form>
@@ -142,44 +131,9 @@
 
     <form method="post" id="frmContent" action="@Url.Action("VolumePage")" class="form-group-sm subscribers-notifyPageChanged">
 
-        @{
-            switch (Model.PageIndex)
-            {
-                case 0:
-                    @Html.Partial("_Vehicle", Model);
-                    break;
-                case 1:
-                    @Html.Partial("_ImportedData");
-                    break;
-                case 2:
-                    @Html.Partial("_OXODocuments");
-                    break;
-                case 3:
-                    @Html.Partial("_Confirm");
-                    break;
-                case 4:
-                    @Html.Partial("_VolumeData");
-                    break;
-
-            }
-        }
-
+        @Html.Partial("_TakeRateData")
+ 
     </form>
-
-    @*@Html.Partial("_Pager", Model)*@
-    @Html.Partial("_VolumePages", Model)
-}
-
-@helper RenderPageIndexVisibility(int pageIndex)
-{
-    if (pageIndex == Model.PageIndex)
-    {
-        @:display:block    
-    }
-    else
-    {
-        @:display:none
-    }
 }
 
 @helper RenderSelectedVehicle()

@@ -22,7 +22,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IEnumerable<FdpModel> ListAvailableModels(ProgrammeFilter filter);
         IEnumerable<ModelBody> ListBodies(ProgrammeFilter filter);
         IEnumerable<Derivative> ListDerivatives(DerivativeFilter filter);
-        IEnumerable<Gateway> ListGateways(ProgrammeFilter programmeFilter);
+        IEnumerable<Gateway> ListGateways(ProgrammeFilter filter);
+        IEnumerable<OXODoc> ListPublishedDocuments(ProgrammeFilter filter);
         IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter);
         IEnumerable<ModelEngine> ListEngines(ProgrammeFilter filter);
         IEnumerable<FdpTrimMapping> ListTrim(TrimFilter filter);

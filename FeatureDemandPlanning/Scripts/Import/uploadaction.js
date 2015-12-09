@@ -25,6 +25,7 @@ model.UploadAction = function (params, model) {
         formData.append("carLine", model.getSelectedCarLine());
         formData.append("modelYear", model.getSelectedModelYear());
         formData.append("gateway", model.getSelectedGateway());
+        formData.append("documentId", model.getSelectedDocumentId());
        
         return formData;
     };

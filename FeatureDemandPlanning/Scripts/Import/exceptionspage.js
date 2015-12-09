@@ -120,7 +120,7 @@ page.ExceptionsPage = function (models) {
             "pagingType": "full_numbers",
             "processing": true,
             "ajax": me.getData,
-            "sDom": "ltip",
+            "sDom": "ltp",
             "aoColumns": [
                 {
                     "sName": "IMPORT_EXCEPTION_ID",

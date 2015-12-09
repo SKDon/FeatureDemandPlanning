@@ -30,15 +30,19 @@ namespace FeatureDemandPlanning.Model
         public string VehicleAKA { get; set; }
         public string ModelYear { get; set; }
         public string Gateway { get; set; }
+        public int? DocumentId { get; set; }
+        public string Document { get; set; }
+
         public string VehicleDescription
         {
             get
             {
-                return string.Format("{0} - {1} ({2}, {3})", 
+                return string.Format("{0} - {1} ({2}, {3}) - v{4}", 
                     VehicleName, 
                     VehicleAKA, 
                     ModelYear, 
-                    Gateway);
+                    Gateway,
+                    Document);
             }
         }
         public int? LineNumber { get; set; }
@@ -66,6 +70,7 @@ namespace FeatureDemandPlanning.Model
                 ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
                 ModelYear = parameters.ModelYear,
                 Gateway = parameters.Gateway,
+                DocumentId = parameters.DocumentId,
                 FilePath = parameters.UploadFilePath,
                 OriginalFileName = parameters.UploadFile.FileName
             };

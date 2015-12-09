@@ -22,6 +22,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public string CarLine { get; set; }
         public string ModelYear { get; set; }
         public string Gateway { get; set; }
+        public int? DocumentId { get; set; }
 
         public ImportParameters()
         {
@@ -44,6 +45,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                 parameters.CarLine = fromParameters.CarLine;
                 parameters.ModelYear = fromParameters.ModelYear;
                 parameters.Gateway = fromParameters.Gateway;
+                parameters.DocumentId = fromParameters.DocumentId;
             }
             return parameters;
         }

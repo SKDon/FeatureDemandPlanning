@@ -47,7 +47,7 @@ a:hover {
     z-index: -2;
     position: absolute;
     left: 0px;
-    top: 70px;
+    top: 0px;
 }
 
 .carousel-inner {
@@ -505,11 +505,11 @@ select
     width: 0;
     height: 0;
     border-style: solid;
-    border-width: 0 0 25px 25px;
-    border-color: transparent transparent #261758;
+    border-width: 0 0 10px 10px;
+    border-color: transparent transparent #f00;
     position:absolute;
-    bottom:0;
-    right:0;
+    bottom:-3px;
+    right:2px;
     cursor:pointer;
 }
 
@@ -654,7 +654,7 @@ th.header-A0 {
     border-right: none !important;
     font-size:11px;
     height:25px;
-    vertical-align:middle;
+    vertical-align:middle !important;
 }
 
 .sub-group {
@@ -666,7 +666,7 @@ th.header-A0 {
     border-right: none !important;
     font-size: 11px;
     height:25px;
-    vertical-align:middle;
+    vertical-align:middle !important;
 }
 
 tr.subgroup-item > td:first-of-type {
@@ -930,11 +930,13 @@ li.optionalFeature {
 }
 
 .editable-cell {
-    height: 20px
+    height: 20px !important;
+    text-align:right;
 }
 
 .editable-header {
-    height: 20px
+    height: 20px;
+    text-align:right;
 }
 
 .editable-cell input {
@@ -942,6 +944,7 @@ li.optionalFeature {
     padding: 0px !important;
     height: 20px !important;
     color: #061639;
+    font-weight:normal;
 }
 
 .editable-header input {
@@ -949,6 +952,7 @@ li.optionalFeature {
     padding: 0px !important;
     height: 20px !important;
     color: #061639;
+    font-weight: normal;
 }
 
 .dirty {
@@ -1028,7 +1032,7 @@ button.close {
 }
 
 .control-label {
-    margin-top: 5px;
+    /*margin-top: 5px;*/
 }
 
 .context-menu {
@@ -1041,8 +1045,8 @@ button.close {
 
 .form-horizontal .control-label {
     text-align: right;
-    margin-top: 5px;
-    padding: 0px;
+    /*margin-top: 5px;
+    padding: 0px;*/
 }
 
 th.model {
@@ -1076,9 +1080,10 @@ tr.cross-tab-header {
 }
 
 td.cross-tab-fixed {
-    background-color: #d4b06a;
+    background-color: #ffe2aa;
     border-color: #805b15 !important;
     color: #553800;
+    vertical-align: middle
 }
 
 td.cross-tab-fixed-last {
@@ -1164,7 +1169,8 @@ th.model-mix {
     /*border-top:none !important;*/
     border-bottom: none !important;
     border-right: solid 1px #2E4372 !important;
-    padding:2px;
+    vertical-align:middle !important;
+    padding:0px !important
 }
 
 th.feature-description {
@@ -1197,13 +1203,36 @@ th.feature-code {
 
 .popover {
     font-size: 11px;
-    background-color: #D4b06a;
+    background-color: #FFF;
     color: #061639;
 }
 
 .popover .popover-title {
     font-size: 11px;
     font-weight: bold;
-    background-color :#d4b06a;
+    background-color :#FFF;
     border-bottom: none;
+}
+
+.popover .arrow {
+    background-color: transparent !important;
+}
+
+.highlight {
+    background-color: #12073b !important;
+    color: #fff !important;
+}
+
+.edited {
+    font-weight:bold;
+    color: #48638e;
+}
+
+.indicator {
+    padding-left:2px;
+    padding-right:2px;
+}
+
+.changed-indicator {
+    color: #f00;
 }

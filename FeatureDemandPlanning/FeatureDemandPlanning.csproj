@@ -210,17 +210,16 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Content\bootstrap-slider.css" />
-    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\Bootstrap\css\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Bootstrap\css\bootstrap-theme.css" />
     <Content Include="Content\Bootstrap\css\bootstrap-theme.min.css" />
-    <Content Include="Content\Bootstrap\css\bootstrap.css" />
     <Content Include="Content\Bootstrap\css\bootstrap.min.css" />
     <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Bootstrap\js\bootstrap.js" />
     <Content Include="Content\Bootstrap\js\bootstrap.min.js" />
     <Content Include="Content\Bootstrap\js\npm.js" />
-    <Content Include="Content\BrushedMetal.css" />
+    <Content Include="Content\css\BrushedMetal.css" />
     <Content Include="Content\DataTables\css\dataTables.bootstrap.css" />
     <Content Include="Content\DataTables\css\dataTables.bootstrap.min.css" />
     <Content Include="Content\DataTables\css\dataTables.foundation.css" />
@@ -745,8 +744,6 @@
     <Content Include="Content\Images\Icons\users64.png" />
     <Content Include="Content\Images\Icons\validate.png" />
     <Content Include="Content\Images\Icons\viewer-small.png" />
-    <Content Include="Content\jquery.simplePager.css" />
-    <Content Include="Content\jquery.tipsy.css" />
     <Content Include="Content\JQuery\js\jquery-2.1.4.min.js" />
     <Content Include="Content\Reponsive\css\responsive.bootstrap.css" />
     <Content Include="Content\Reponsive\css\responsive.bootstrap.min.css" />
@@ -758,7 +755,7 @@
     <Content Include="Content\Reponsive\css\responsive.jqueryui.min.css" />
     <Content Include="Content\Reponsive\js\dataTables.responsive.js" />
     <Content Include="Content\Reponsive\js\dataTables.responsive.min.js" />
-    <Content Include="Content\Site.css" />
+    <Content Include="Content\css\Site.css" />
     <Content Include="Content\Spin\js\spin.min.js" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
@@ -1257,10 +1254,7 @@
     <Content Include="Scripts\jquery.dataTables.fixColumn.js" />
     <Content Include="Scripts\jquery.dataTables.grouping.mnh.js" />
     <Content Include="Scripts\jquery.dataTables.js" />
-    <Content Include="Scripts\jquery.mousewheel.js" />
     <Content Include="Scripts\jquery.simplePager.js" />
-    <Content Include="Scripts\jquery.smartmenu.js" />
-    <Content Include="Scripts\jquery.tipsy.js" />
     <Content Include="Scripts\MarketMapping\copy.js" />
     <Content Include="Scripts\MarketMapping\delete.js" />
     <Content Include="Scripts\MarketMapping\init.js" />
@@ -1321,10 +1315,7 @@
     <Content Include="Scripts\Import\importqueue.js" />
     <Content Include="Scripts\Import\importqueuepage.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
-    <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.form.min.js" />
-    <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\Shared\namespace.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -1346,6 +1337,7 @@
     <Content Include="Scripts\User\user.js" />
     <Content Include="Scripts\User\usersinit.js" />
     <Content Include="Scripts\User\userspage.js" />
+    <Content Include="Scripts\Volume\changeset.js" />
     <Content Include="Scripts\Volume\takerates.js" />
     <Content Include="Scripts\Volume\takeratesinit.js" />
     <Content Include="Scripts\Volume\takeratespage.js" />
@@ -1400,7 +1392,7 @@
     <Content Include="Views\Volume\_ImportedData.cshtml" />
     <Content Include="Views\Volume\_Confirm.cshtml" />
     <Content Include="Views\Volume\_Process.cshtml" />
-    <Content Include="Views\Volume\_VolumeData.cshtml" />
+    <Content Include="Views\Volume\_TakeRateData.cshtml" />
     <Content Include="Views\Volume\_MarketSelector.cshtml" />
     <Content Include="Views\Volume\_ViewModeSelector.cshtml" />
     <Content Include="Views\ImportException\ImportExceptionsPage.cshtml" />
@@ -1503,11 +1495,13 @@
     <Content Include="Views\ImportException\_ImportSummary.cshtml" />
     <Content Include="Views\ImportException\_Filter.cshtml" />
     <Content Include="Views\Volume\_VolumeData - Copy.cshtml" />
+    <Content Include="Views\Volume\_TakeRateDataByModel.cshtml" />
+    <Content Include="Views\Volume\_TakeRateDataByFeature.cshtml" />
+    <Content Include="Views\Volume\_TakeRateDataItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="bin\" />
-    <Folder Include="Content\css\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

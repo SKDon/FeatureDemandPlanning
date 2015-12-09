@@ -61,6 +61,27 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
+        public IEnumerable<OXODoc> FdpOxoDocumentsGetMany(ProgrammeFilter filter)
+        {
+            IEnumerable<OXODoc> retVal = Enumerable.Empty<OXODoc>();
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
+                    para.Add("@Gateway", filter.Gateway, DbType.String);
+                    retVal = conn.Query<OXODoc>("dbo.Fdp_OXODoc_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpOxoDocumentsGetMany.OXODocGetMany", ex.Message, CurrentCDSID);
+                }
+
+            }
+            return retVal;
+        }
+
         public IEnumerable<OXODoc> OXODocGetManyByVehicle(string vehicleName)
         {
             IEnumerable<OXODoc> retVal = null;
@@ -709,6 +730,5 @@ namespace FeatureDemandPlanning.DataStore
 
      
         }
-
     }
 }

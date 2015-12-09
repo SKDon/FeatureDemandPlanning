@@ -97,6 +97,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private void InitialiseMembers()
         {
             Volume = new EmptyVolume();
+            IdentifierPrefix = "Page";
         }
         private void InitialiseVolume()
         {

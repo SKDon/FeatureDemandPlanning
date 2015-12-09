@@ -29,7 +29,8 @@ namespace FeatureDemandPlanning.Model.Extensions
                 .Select(p => new Gateway()
                 {
                     VehicleName = p.VehicleName,
-                    Name = p.Gateway
+                    Name = p.Gateway,
+                    ModelYear = p.ModelYear
                 })
                 .Distinct(new GatewayComparer())
                 .OrderBy(p => p.Name);
