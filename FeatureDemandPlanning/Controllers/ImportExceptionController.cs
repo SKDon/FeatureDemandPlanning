@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using FeatureDemandPlanning.Model.Validators;
+using MvcSiteMapProvider.Web.Mvc.Filters;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -20,11 +21,13 @@ namespace FeatureDemandPlanning.Controllers
         }
         [HttpGet]
         [ActionName("Index")]
+        [SiteMapTitle("ImportName")]
         public ActionResult ImportExceptionsPage(int importQueueId)
         {
             return RedirectToAction("ImportExceptionsPage", new ImportExceptionParameters() { ImportQueueId = importQueueId });
         }
         [HttpGet]
+        [SiteMapTitle("ImportName")]
         public async Task<ActionResult> ImportExceptionsPage(ImportExceptionParameters parameters)
         {
             ImportExceptionParametersValidator
@@ -38,6 +41,9 @@ namespace FeatureDemandPlanning.Controllers
                                         PageSize = PageSize,
                                         Action = ImportAction.ImportQueueItem
                                     });
+
+            var displayName = string.Format("Import Exceptions - {0} - {1:dd/MM/yyyy}", importView.Programme.ToShortString(), importView.CurrentImport.CreatedOn);
+            ViewData["ImportName"] = displayName;
 
             return View(importView);
         }

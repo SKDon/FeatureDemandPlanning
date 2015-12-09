@@ -71,7 +71,7 @@ namespace FeatureDemandPlanning.Model
             } 
         }
 
-        public VolumeData VolumeData
+        public TakeRateData VolumeData
         {
             get
             {
@@ -129,7 +129,7 @@ namespace FeatureDemandPlanning.Model
         private OXODoc _document = new EmptyOxoDocument();
         private Market _market = new EmptyMarket();
         private MarketGroup _marketGroup = new EmptyMarketGroup();
-        private VolumeData _volumeData = new VolumeData();
+        private TakeRateData _volumeData = new TakeRateData();
         private TakeRateResultMode _mode = TakeRateResultMode.PercentageTakeRate;
     }
 }

@@ -16,7 +16,7 @@ namespace FeatureDemandPlanning.DataStore
             _vehicleDataStore = new VehicleDataStore(cdsId);
             _documentDataStore = new OXODocDataStore(cdsId);
             _programmeDataStore = new ProgrammeDataStore(cdsId);
-            _volumeDataStore = new FdpVolumeDataStore(cdsId);
+            _volumeDataStore = new TakeRateDataStore(cdsId);
             _modelDataStore = new ModelDataStore(cdsId);
             _marketDataStore = new MarketDataStore(cdsId);
             _marketGroupDataStore = new MarketGroupDataStore(cdsId);
@@ -425,7 +425,7 @@ namespace FeatureDemandPlanning.DataStore
         private VehicleDataStore _vehicleDataStore = null;
         private ProgrammeDataStore _programmeDataStore = null;
         private OXODocDataStore _documentDataStore = null;
-        private FdpVolumeDataStore _volumeDataStore = null;
+        private TakeRateDataStore _volumeDataStore = null;
         private ModelDataStore _modelDataStore = null;
         private MarketDataStore _marketDataStore = null;
         private MarketGroupDataStore _marketGroupDataStore = null;

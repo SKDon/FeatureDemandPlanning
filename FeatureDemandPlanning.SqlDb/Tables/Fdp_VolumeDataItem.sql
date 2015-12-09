@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[Fdp_VolumeDataItem] (
+CREATE TABLE [dbo].[Fdp_VolumeDataItem] (
     [FdpVolumeDataItemId] INT           IDENTITY (1, 1) NOT NULL,
     [CreatedOn]           DATETIME      CONSTRAINT [DF_Fdp_VolumeDataItem_CreatedOn] DEFAULT (getdate()) NOT NULL,
     [CreatedBy]           NVARCHAR (16) NULL,
@@ -24,6 +24,8 @@
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Model] FOREIGN KEY ([ModelId]) REFERENCES [dbo].[OXO_Programme_Model] ([Id]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id])
 );
+
+
 
 
 
@@ -60,13 +62,14 @@ CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_FeatureId]
 
 
 GO
-CREATE TRIGGER dbo.tr_Fdp_VolumeDataItem_Audit ON dbo.Fdp_VolumeDataItem FOR UPDATE
+
+CREATE TRIGGER [dbo].[tr_Fdp_TakeRateDataItem_Audit] ON [dbo].[Fdp_VolumeDataItem] FOR UPDATE
 AS
 	DECLARE @Type AS CHAR(1);
 	
 	-- Put the old "deleted" values into the audit as the primary table contains the new record values
 
-	INSERT INTO Fdp_VolumeDataItemAudit
+	INSERT INTO Fdp_TakeRateDataItemAudit
 	(
 		  AuditOn
 		, AuditBy

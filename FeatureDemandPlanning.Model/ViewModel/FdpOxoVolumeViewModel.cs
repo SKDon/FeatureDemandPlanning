@@ -43,6 +43,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             get { return (Volume)_volume; }
             set { _volume = value; InitialiseVolume(); }
         }
+        public TakeRateAction CurrentAction { get; set; }
 
         #endregion
 
@@ -287,10 +288,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return await context.Volume.ListTakeRateData(TakeRateFilter.FromVolume(forVolume));
         }
-        private static VolumeData ListVolumeData(IDataContext context, Volume forVolume)
+        private static TakeRateData ListVolumeData(IDataContext context, Volume forVolume)
         {
             if (forVolume.Document is EmptyOxoDocument)
-                return new VolumeData();
+                return new TakeRateData();
 
             return context.Volume.ListVolumeData(VolumeFilter.FromVolume(forVolume));
         }
@@ -331,5 +332,55 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private IVolume _volume = new EmptyVolume();
 
         #endregion
+
+        public static async Task<FdpOxoVolumeViewModel> GetModel(IDataContext context)
+        {
+            return await GetModel(context, new TakeRateFilter());
+        }
+        public static async Task<FdpOxoVolumeViewModel> GetModel(IDataContext context,
+                                                           TakeRateFilter filter,
+                                                           TakeRateAction action)
+        {
+            var model = await GetModel(context, filter);
+            model.CurrentAction = action;
+            if (action != TakeRateAction.NotSet)
+            {
+                model.IdentifierPrefix = Enum.GetName(action.GetType(), action);
+            }
+
+            return model;
+        }
+        public static async Task<FdpOxoVolumeViewModel> GetModel(IDataContext context,
+                                                           TakeRateFilter filter)
+        {
+            FdpOxoVolumeViewModel model = null;
+
+            if (filter.Action == TakeRateAction.Save)
+            {
+                model = await GetFullAndPartialViewModelForSave(context, filter);
+            }
+            //else if (filter.Action == TakeRateAction.Validate)
+            //{
+            //    model = await GetFullAndPartialViewModelForException(context, filter);
+            //}
+            //else if (filter.Action == TakeRateAction.MarketReview)
+            //{
+            //    model = await GetFullAndPartialViewModelForImportQueueItem(context, filter);
+            //}
+            //else if (filter.Action == TakeRateAction.Publish)
+            //{
+            //    model = await GetFullAndPartialViewModelForSummary(context, filter);
+            //}
+            //else
+            //{
+            //    model = await GetFullAndPartialViewModel(context, filter);
+            //}
+            return model;
+        }
+
+        private static Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModelForSave(IDataContext context, TakeRateFilter filter)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

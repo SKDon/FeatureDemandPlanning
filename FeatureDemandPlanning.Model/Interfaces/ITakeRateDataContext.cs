@@ -1,6 +1,7 @@
 ﻿using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Interfaces
 {
-    public interface IVolumeDataContext
+    public interface ITakeRateDataContext
     {
         TakeRateSummary GetVolumeHeader(VolumeFilter filter);
         Task<PagedResults<TakeRateSummary>> ListTakeRateData(TakeRateFilter filter);
@@ -22,20 +23,19 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IVolume GetVolume(VolumeFilter filter);
         void SaveVolume(IVolume volumeToSave);
 
-        FdpOxoVolumeDataItem GetData(FdpOxoVolumeDataItem forData);
-        VolumeData ListVolumeData(VolumeFilter filter);
-        void SaveData(FdpOxoVolumeDataItem dataItemToSave);
-        IEnumerable<FdpOxoVolumeDataItemHistory> ListHistory(FdpOxoVolumeDataItem forData);
-        IEnumerable<FdpOxoVolumeDataItemNote> ListNotes(FdpOxoVolumeDataItem forData);
+        TakeRateDataItem GetDataItem(TakeRateFilter filter);
+        TakeRateData ListVolumeData(VolumeFilter filter);
+        void SaveData(TakeRateDataItem dataItemToSave);
+        Task<IEnumerable<TakeRateDataItem>> SaveChangeset(TakeRateParameters parameters);
+
+        IEnumerable<FdpOxoVolumeDataItemHistory> ListHistory(TakeRateDataItem forData);
+        IEnumerable<TakeRateDataItemNote> ListNotes(TakeRateDataItem forData);
 
         OXODoc GetOxoDocument(VolumeFilter filter);
         IEnumerable<OXODoc> ListAvailableOxoDocuments(VehicleFilter filter);
 
         void ProcessMappedData(IVolume volumeToProcess);
 
-
-        IEnumerable<SpecialFeature> ListSpecialFeatures(ProgrammeFilter programmeFilter);
-
-        
+        IEnumerable<SpecialFeature> ListSpecialFeatures(ProgrammeFilter programmeFilter);        
     }
 }

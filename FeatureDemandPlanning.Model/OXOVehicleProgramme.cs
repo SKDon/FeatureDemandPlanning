@@ -57,6 +57,16 @@ namespace FeatureDemandPlanning.Model
 
         public int TotalRecords { get; set; }
         public int TotalPages { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} - {1} ({2}) ({3})", VehicleName, VehicleAKA, ModelYear, Gateway);
+        }
+
+        public string ToShortString()
+        {
+            return string.Format("{0} - {1} ({2})", VehicleName, ModelYear, Gateway);
+        }
     }
 
     public class ProgrammeComparer : IEqualityComparer<Programme>

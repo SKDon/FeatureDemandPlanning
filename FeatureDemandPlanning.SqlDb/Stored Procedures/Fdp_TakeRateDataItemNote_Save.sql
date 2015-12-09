@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_VolumeDataItemNote_Save]
+﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateDataItemNote_Save]
 	  @FdpVolumeDataItemId INT
 	, @CDSID NVARCHAR(16)
 	, @Note NVARCHAR(MAX)

@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.Attributes;
 using System.Web.Script.Serialization;
+using MvcSiteMapProvider.Web.Mvc.Filters;
+using System;
+using FeatureDemandPlanning.Model.Results;
+using System.Collections.Generic;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -74,38 +78,51 @@ namespace FeatureDemandPlanning.Controllers
             return Json(jQueryResult);
         }
         [HttpPost]
-        public ActionResult VolumePage(Volume volume, int pageIndex)
+        public async Task<ActionResult> ContextMenu(TakeRateParameters parameters)
         {
-            PageFilter.PageIndex = pageIndex;
-         
-            var model = FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volume, PageFilter).Result;
-            string view;
+            TakeRateParametersValidator
+                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            switch ((VolumePage)pageIndex)
-            {
-                case Model.Enumerations.VolumePage.Vehicle:
-                    view = "_Vehicle";
-                    break;
-                case Model.Enumerations.VolumePage.ImportedData:
-                    view = "_ImportedData";
-                    break;
-                case Model.Enumerations.VolumePage.OxoDocument:
-                    view = "_OXODocuments";
-                    break;
-                case Model.Enumerations.VolumePage.Confirm:
-                    view = "_Confirm";
-                    break;
-                case Model.Enumerations.VolumePage.VolumeData:
-                    view = "_VolumeData";
-                    ProcessVolumeData(model.Volume);
-                    break;
-                default:
-                    view = "_OXODocuments";
-                    break;
-            }
-            return PartialView(view, model);
+            var takeRateView = await TakeRateViewModel.GetModel(
+                DataContext,
+                TakeRateFilter.FromTakeRateId(parameters.TakeRateId.GetValueOrDefault()));
+
+            return PartialView("_ContextMenu", takeRateView);
         }
+        [HttpPost]
+        [HandleError(View = "_ModalError")]
+        public async Task<ActionResult> ModalContent(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
+            var takeRateView = await GetModelFromParameters(parameters);
+
+            return PartialView(GetContentPartialViewName(parameters.Action), takeRateView);
+        }
+        [HttpPost]
+        [HandleErrorWithJson]
+        public ActionResult ModalAction(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
+            TakeRateParametersValidator
+                .ValidateTakeRateParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+
+            return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
+        }
+        [HandleErrorWithJson]
+        [HttpPost]
+        public async Task<ActionResult> Save(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+               .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+
+            var filter = TakeRateFilter.FromTakeRateId(parameters.TakeRateId.Value);
+            var results = await DataContext.Volume.SaveChangeset(parameters);
+
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
+        }
         [HttpPost]
         public ActionResult Validate(Volume volumeToValidate,
                                      VolumeValidationSection sectionToValidate = VolumeValidationSection.All)
@@ -136,14 +153,13 @@ namespace FeatureDemandPlanning.Controllers
             };
             return jsonResult;
         }
-
         public ActionResult ValidationMessage(ValidationMessage message)
         {
             // Something is making a GET request to this page and I can't figure out what
             return PartialView("_ValidationMessage", message);
         }
-
         [HttpGet]
+        [SiteMapTitle("DocumentName")]
         public ActionResult Document(int? oxoDocId,
                                      int? marketGroupId,
                                      int? marketId,
@@ -158,29 +174,27 @@ namespace FeatureDemandPlanning.Controllers
                 MarketId = marketId,
                 Mode = resultsMode,
             };
-            return View("Document", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, filter, PageFilter).Result);
+            var model = FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, filter, PageFilter).Result;
+
+            ViewData["DocumentName"] = model.Volume.Document.Name;
+
+            return View("Document", model);
         }
-
-        //[HttpPost]
-        //public ActionResult OxoDocuments(Volume volume)
-        //{
-        //    return PartialView("_OxoDocuments", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volume, PageFilter));
-        //}
-
-        //[HttpPost]
-        //public ActionResult AvailableImports(Volume volume)
-        //{
-        //    return PartialView("_ImportedData", FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volume, PageFilter));
-        //}
 
         #region "Private Methods"
 
+        private async Task<FdpOxoVolumeViewModel> GetModelFromParameters(TakeRateParameters parameters)
+        {
+            return await FdpOxoVolumeViewModel.GetModel(
+                DataContext,
+                TakeRateFilter.FromTakeRateId(parameters.TakeRateId.Value),
+                parameters.Action);
+        }
         private void ProcessVolumeData(IVolume volume)
         {
             DataContext.Volume.SaveVolume(volume);
             DataContext.Volume.ProcessMappedData(volume);
         }
-
         private static void ValidateTakeRateParameters(TakeRateParameters parameters, string ruleSetName)
         {
             var validator = new TakeRateParametersValidator();
@@ -203,6 +217,7 @@ namespace FeatureDemandPlanning.Controllers
     internal class TakeRateParametersValidator : AbstractValidator<TakeRateParameters>
     {
         public const string TakeRateIdentifier = "TAKE_RATE_ID";
+        public const string TakeRateIdentifierWithChangeset = "TAKE_RATE_ID_WITH_CHANGESET";
         public const string NoValidation = "NO_VALIDATION";
 
         public TakeRateParametersValidator()
@@ -213,8 +228,27 @@ namespace FeatureDemandPlanning.Controllers
             });
             RuleSet(TakeRateIdentifier, () =>
             {
-                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'TakeRateId' not specified");
+                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'DocumentId' not specified");
             });
+            RuleSet(TakeRateIdentifierWithChangeset, () =>
+            {
+                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'DocumentId' not specified");
+                RuleFor(p => p.Changes).Must(NotBeAnEmptyChangeset).WithMessage("No changes to save");
+            });
+        }
+        public static bool NotBeAnEmptyChangeset(IEnumerable<DataChange> changeSet)
+        {
+            return changeSet != null && changeSet.Any();
+        }
+        public static TakeRateParametersValidator ValidateTakeRateParameters(TakeRateParameters parameters, string ruleSetName)
+        {
+            var validator = new TakeRateParametersValidator();
+            var result = validator.Validate(parameters, ruleSet: ruleSetName);
+            if (!result.IsValid)
+            {
+                throw new ValidationException(result.Errors);
+            }
+            return validator;
         }
     }
 }

@@ -93,6 +93,7 @@
     <Compile Include="Attributes\HandleJsonError.cs" />
     <Compile Include="Attributes\ValidateAjaxAttribute.cs" />
     <Compile Include="CarLine.cs" />
+    <Compile Include="DataChange.cs" />
     <Compile Include="Dapper\DynamicParameters.cs" />
     <Compile Include="Empty\EmptyFdpImportErrorExclusion.cs" />
     <Compile Include="Empty\EmptyFdpDerivativeMapping.cs" />
@@ -109,9 +110,12 @@
     <Compile Include="Empty\EmptyImportSummary.cs" />
     <Compile Include="Empty\EmptyModelTrim.cs" />
     <Compile Include="Empty\EmptySpecialFeatureType.cs" />
+    <Compile Include="Empty\EmptyTakeRateDataItem.cs" />
+    <Compile Include="Empty\EmptyTakeRateDataItemNote.cs" />
     <Compile Include="Empty\EmptyTakeRateSummary.cs" />
     <Compile Include="Empty\EmptyUser.cs" />
     <Compile Include="Enumerations\IgnoredExceptionAction.cs" />
+    <Compile Include="Enumerations\TakeRateAction.cs" />
     <Compile Include="Enumerations\SpecialFeatureMappingAction.cs" />
     <Compile Include="Enumerations\MarketAction.cs" />
     <Compile Include="Enumerations\FeatureAction.cs" />
@@ -155,7 +159,7 @@
     <Compile Include="Interfaces\INewsDataContext.cs" />
     <Compile Include="Interfaces\IReferenceDataContext.cs" />
     <Compile Include="Interfaces\IVolume.cs" />
-    <Compile Include="Interfaces\IVolumeDataContext.cs" />
+    <Compile Include="Interfaces\ITakeRateDataContext.cs" />
     <Compile Include="Derivative.cs" />
     <Compile Include="Empty\EmptyDerivative.cs" />
     <Compile Include="Empty\EmptyModelEngine.cs" />
@@ -174,12 +178,13 @@
     <Compile Include="Empty\EmptyVolume.cs" />
     <Compile Include="Empty\EmptyVolumeHeader.cs" />
     <Compile Include="FdpOxoDoc.cs" />
-    <Compile Include="FdpOxoVolumeDataItem.cs" />
     <Compile Include="FdpOxoVolumeDataItemHistory.cs" />
-    <Compile Include="FdpOxoVolumeDataItemNote.cs" />
+    <Compile Include="TakeRateDataItem.cs" />
+    <Compile Include="TakeRateDataItemNote.cs" />
     <Compile Include="FdpVolumeHeader.cs" />
     <Compile Include="Filters\PageFilter.cs" />
     <Compile Include="Filters\VolumeFilter.cs" />
+    <Compile Include="ModelTakeRateSummary.cs" />
     <Compile Include="ModelYear.cs" />
     <Compile Include="Parameters\IgnoredExceptionParameters.cs" />
     <Compile Include="Parameters\SpecialFeatureMappingParameters.cs" />
@@ -282,7 +287,6 @@
     <Compile Include="ProcessState.cs" />
     <Compile Include="ProgrammeByGatewayView.cs" />
     <Compile Include="Filters\ProgrammeFilter.cs" />
-    <Compile Include="Test.cs" />
     <Compile Include="ForecastTrimMapping.cs" />
     <Compile Include="Validators\ComparisonVehicleValidator.cs" />
     <Compile Include="Validators\ForecastValidator.cs" />
@@ -315,7 +319,7 @@
     <Compile Include="ViewModel\UserViewModel.cs" />
     <Compile Include="ViewModel\VehicleViewModel.cs" />
     <Compile Include="Volume.cs" />
-    <Compile Include="VolumeData.cs" />
+    <Compile Include="TakeRateData.cs" />
     <Compile Include="Comparers\StringArrayIndexComparer.cs" />
     <Compile Include="Comparers\UniqueVehicleByNameComparer.cs" />
     <Compile Include="Enumerations\ForecastValidationSection.cs" />

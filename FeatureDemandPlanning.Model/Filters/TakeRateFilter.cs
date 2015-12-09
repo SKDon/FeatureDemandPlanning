@@ -11,33 +11,18 @@ namespace FeatureDemandPlanning.Model.Filters
     public class TakeRateFilter : ProgrammeFilter
     {
         public int? TakeRateId { get; set; }
+        public int? TakeRateDataItemId { get; set; }
         public int? MarketId { get; set; }
         public int? MarketGroupId { get; set; }
         public int? TakeRateStatusId { get; set; }
-
-
-        public TakeRateResultMode Mode
+        public TakeRateAction Action { get; set; }
+        public TakeRateResultMode Mode { get; set; }
+        public IEnumerable<Model> Models { get; set; }
+        
+        public TakeRateFilter()
         {
-            get
-            {
-                return _resultMode;
-            }
-            set
-            {
-                _resultMode = value;
-            }
-        }
-
-        public IEnumerable<Model> Models
-        {
-            get
-            {
-                return _models;
-            }
-            set
-            {
-                _models = value;
-            }
+            Mode = TakeRateResultMode.PercentageTakeRate;
+            Models = Enumerable.Empty<Model>();
         }
 
         public static TakeRateFilter FromVolume(IVolume volume)
@@ -65,7 +50,12 @@ namespace FeatureDemandPlanning.Model.Filters
             return filter;
         }
 
-        private IEnumerable<Model> _models = Enumerable.Empty<Model>();
-        private TakeRateResultMode _resultMode = TakeRateResultMode.Raw;
+        public static TakeRateFilter FromTakeRateId(int takeRateId)
+        {
+            return new TakeRateFilter()
+            {
+                OxoDocId = takeRateId
+            };
+        }
     }
 }

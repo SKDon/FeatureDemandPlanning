@@ -19,7 +19,7 @@
         <div class="viewport-toolbar pull-right">
             <div class="btn-group">
                 <button type="button" class="btn btn-default btn-sm" onclick="ToggleAllFolderWrapper();"><span class="glyphicon glyphicon-plus"></span> Toggle All</button>
-                <button type="button" class="btn btn-default btn-sm" id="butSaveChange"><i class="glyphicon glyphicon-floppy-disk"></i> Save Changes</button>
+                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Save"><i class="glyphicon glyphicon-floppy-disk"></i> Save Changes</button>
                 @*<button type="button" class="btn btn-default btn-sm" id="butChangeLog" onclick='changeLogWrapper();'><span class="glyphicon glyphicon-book"></span> Change Sets</button>*@
                 <button type="button" class="btn btn-default btn-sm" id="butValidate" onclick='validateDoc();'><span class="glyphicon glyphicon-check"></span> Validate</button>
                 <button type="button" class="btn btn-default btn-sm" id="btnMarketReview" onclick="marketReview"><span class="glyphicon glyphicon-flag"></span> Market Review</button>
@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <div id="@(Model.IdentifierPrefix)_TakeRateDataPanel" class="panel-body subscribers-notifyEditCell" style="padding:5px;height:85%">
+    <div id="@(Model.IdentifierPrefix)_TakeRateDataPanel" class="panel-body subscribers-notifyEditCell subscribers-notifySave" style="padding:5px;height:85%">
         <div class="col-xs-12" style="padding:0px">
             <table id="@(Model.IdentifierPrefix)_TakeRateData" class="table table-bordered table-condensed dataTable cross-tab">
                 <thead>

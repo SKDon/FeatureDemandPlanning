@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_VolumeDataItemNote_GetMany]
+﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateDataItemNote_GetMany]
 	@FdpVolumeDataItemId INT
 AS
 	

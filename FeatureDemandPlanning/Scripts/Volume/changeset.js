@@ -2,6 +2,22 @@
 
 var model = namespace("FeatureDemandPlanning.Volume");
 
+model.DataChangeset = function () {
+    var me = this;
+    me.DocumentId = null;
+    me.DataChanges = [];
+};
+
+model.DataChange = function () {
+    var me = this;
+    me.ModelIdentifier = null,
+    me.FeatureIdentifier = null,
+    me.Mode = 0,
+    me.PercentageTakeRate = null,
+    me.Volume = null,
+    me.Comment = ""
+};
+
 model.Change = function (modelIdentifier, featureIdentifier) {
     var uid = 0;
     var privateStore = {};
@@ -73,6 +89,22 @@ model.Change = function (modelIdentifier, featureIdentifier) {
     };
     me.setIndex = function (index) {
         privateStore[me.id].Index = index;
+    };
+    me.toDataChange = function()
+    {
+        var dataChange = new FeatureDemandPlanning.Volume.DataChange();
+        dataChange.ModelIdentifier = me.getModelIdentifier();
+        dataChange.FeatureIdentifier = me.getFeatureIdentifier();
+        if (me.getMode() === "Raw") {
+            dataChange.Mode = 1
+        }
+        else {
+            dataChange.Mode = 2
+        }
+        dataChange.PercentageTakeRate = me.getChangedTakeRate();
+        dataChange.Volume = me.getChangedVolume();
+
+        return dataChange;
     }
 };
 model.Changeset = function (params) {
@@ -143,5 +175,13 @@ model.Changeset = function (params) {
     };
     me.clear = function () {
         privateStore[me.id].Changes = [];
+    };
+    me.getDataChanges = function () {
+        // Build up a collection of the changed data
+        var dataChanges = [];
+        for (var i = 0; i < privateStore[me.id].Changes.length; i++) {
+            dataChanges.push(privateStore[me.id].Changes[i].toDataChange());
+        }
+        return dataChanges;
     };
 };

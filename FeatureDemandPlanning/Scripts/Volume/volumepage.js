@@ -20,6 +20,13 @@ model.Page = function (models) {
         me.registerEvents();
         me.registerSubscribers();
     };
+    me.calcPanelHeight = function () {
+        return ($(window).height()) - 135 + "px";
+    };
+    me.calcDataTableHeight = function () {
+        var panelHeight = $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel").height();
+        return (panelHeight - 220) + "px";
+    };
     me.configureChangeset = function () {
         privateStore[me.id].Changeset = new FeatureDemandPlanning.Volume.Changeset();
     };
@@ -42,6 +49,9 @@ model.Page = function (models) {
         me.configureComments();
         me.configureChangeset();
         //me.configureRules();
+    };
+    me.saveData = function () {
+        getVolumeModel().saveVolume(getChangeset().getDataChanges());
     };
     me.initialiseControls = function () {
         var prefix = me.getIdentifierPrefix();
@@ -83,6 +93,7 @@ model.Page = function (models) {
         getVolumeModel().setVehicle(vehicle);
     };
     me.registerEvents = function () {
+        var prefix = me.getIdentifierPrefix();
         $(document)
             .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notifySuccess").trigger("OnSuccessDelegate", [eventArgs]); })
             .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notifyError").trigger("OnErrorDelegate", [eventArgs]); })
@@ -91,13 +102,8 @@ model.Page = function (models) {
             .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notifyUpdated").trigger("OnUpdatedDelegate", [eventArgs]); })
             .unbind("Validation").on("Validation", function (sender, eventArgs) { $(".subscribers-notifyValidation").trigger("OnValidationDelegate", [eventArgs]); })
             .unbind("EditCell").on("EditCell", function (sender, eventArgs) { $(".subscribers-notifyEditCell").trigger("OnEditCellDelegate", [eventArgs]); });
-    };
-    me.calcPanelHeight = function () {
-        return ($(window).height()) - 135 + "px";
-    };
-    me.calcDataTableHeight = function () {
-        var panelHeight = $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel").height();
-        return (panelHeight - 220) + "px";
+
+        $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notifySave").trigger("OnSaveDelegate", [eventArgs]); });
     };
     me.registerSubscribers = function () {
         var prefix = me.getIdentifierPrefix();
@@ -110,8 +116,9 @@ model.Page = function (models) {
             .unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
             .unbind("OnValidationDelegate").on("OnValidationDelegate", me.onValidationEventHandler);
 
-        $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel").on("OnEditCellDelegate", me.onEditCellEventHandler);
-
+        $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel")
+            .on("OnEditCellDelegate", me.onEditCellEventHandler)
+            .on("OnSaveDelegate", me.onSaveEventHandler);
 
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
         $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);
@@ -276,6 +283,9 @@ model.Page = function (models) {
             editedCell.addClass("edited");
             editedRow.find(".changed-indicator").show();
         }
+    };
+    me.onSaveEventHandler = function (sender, eventArgs) {
+        me.saveData();
     };
     me.configureComments = function () {
         $(".comment-item").popover({ html: true, title: "Comments" });

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Fdp_VolumeDataItemHistory_GetMany
+﻿CREATE PROCEDURE dbo.[Fdp_TakeRateDataItemHistory_GetMany]
 	  @DocumentId			INT
 	, @ModelIdentifier		NVARCHAR(10)
 	, @FeatureIdentifier	NVARCHAR(10)

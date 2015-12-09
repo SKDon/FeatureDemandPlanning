@@ -12,14 +12,16 @@ using System.Diagnostics;
 using System.Linq;
 using FeatureDemandPlanning.DataStore.DataStore;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Parameters;
+using FeatureDemandPlanning.Model.Empty;
 
 namespace FeatureDemandPlanning.DataStore
 {
-    public class FdpVolumeDataStore : DataStoreBase
+    public class TakeRateDataStore : DataStoreBase
     {
         #region "Constructors"
         
-        public FdpVolumeDataStore(string cdsid)
+        public TakeRateDataStore(string cdsid)
         {
             this.CurrentCDSID = cdsid;
         }
@@ -31,31 +33,33 @@ namespace FeatureDemandPlanning.DataStore
             throw new NotImplementedException();
         }
 
-        public FdpOxoVolumeDataItem FdpOxoVolumeDataItemGet(int fdpOxoVolumeDataItemId)
+        public TakeRateDataItem TakeRateDataItemGet(TakeRateFilter filter)
         {
-            FdpOxoVolumeDataItem retVal = null;
+            TakeRateDataItem retVal = null;
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpOxoVolumeDataItemId", fdpOxoVolumeDataItemId, dbType: DbType.Int32);
+                    para.Add("@FdpTakeRateDataItemId", filter.TakeRateDataItemId, dbType: DbType.Int32);
 
-                    retVal = conn.Query<FdpOxoVolumeDataItem>(fdpOxoVolumeDataGetStoredProcedureName, para, commandType: CommandType.StoredProcedure)
+                    retVal = conn.Query<TakeRateDataItem>(fdpTakeRateDataItemGetStoredProcedureName, para, commandType: CommandType.StoredProcedure)
                                  .FirstOrDefault();
+
+                    // Hydrate any notes for the item
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpOxoVolumeDataItemSave", ex.Message, CurrentCDSID);
+                    AppHelper.LogError("FdpVolumeDataStore.FdpTakeRateDataItemGet", ex.Message, CurrentCDSID);
+                    throw;
                 }
             }
             return retVal;
         }
-
-        public VolumeData FdpOxoVolumeDataItemList(VolumeFilter filter)
+        public TakeRateData TakeRateDataItemList(VolumeFilter filter)
         {
-            VolumeData retVal = new VolumeData();
+            TakeRateData retVal = new TakeRateData();
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
@@ -126,101 +130,78 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
-        public void FdpOxoVolumeDataItemSave(FdpOxoVolumeDataItem dataItemToSave)
+        public TakeRateDataItem TakeRateDataItemSave(TakeRateDataItem dataItemToSave)
         {
+            TakeRateDataItem retVal = new EmptyTakeRateDataItem();
+
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpOxoVolumeDataId", dataItemToSave.FdpOxoVolumeDataItemId.Value, dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
-                    para.Add("@Section", dataItemToSave.Section, dbType: DbType.String);
-                    para.Add("@ModelId", dataItemToSave.ModelId, dbType: DbType.Int32);
-                    para.Add("@MarketGroupId", dataItemToSave.MarketGroupId, dbType: DbType.Int32);
-                    para.Add("@MarketId", dataItemToSave.MarketId, dbType: DbType.Int32);
-                    para.Add("@OxoDocId", dataItemToSave.OxoDocId, dbType: DbType.Int32);
-                    para.Add("@Volume", dataItemToSave.Volume, dbType: DbType.Int32);
-                    para.Add("@PercentageTakeRate", dataItemToSave.PercentageTakeRate, dbType: DbType.Decimal);
-                    para.Add("@PackId", dataItemToSave.PackId, dbType: DbType.Int32);
-                    para.Add("@CDSID", this.CurrentCDSID, dbType: DbType.String);
+                    int? takeRateDataItemId = null;
+             
+                    para.Add("@FdpTakeRateDataItemId", dataItemToSave.FdpTakeRateDataItemId, DbType.Int32, ParameterDirection.InputOutput);
+                    para.Add("@DocumentId", dataItemToSave.DocumentId, DbType.Int32);
+                    para.Add("@ModelId", dataItemToSave.ModelId, DbType.Int32);
+                    para.Add("@FdpModelId", dataItemToSave.FdpModelId, DbType.Int32);
+                    para.Add("@FeatureId", dataItemToSave.FeatureId, DbType.Int32);
+                    para.Add("@FdpFeatureId", dataItemToSave.FdpFeatureId, DbType.Int32);
+                    para.Add("@MarketGroupId", dataItemToSave.MarketGroupId, DbType.Int32);
+                    para.Add("@MarketId", dataItemToSave.MarketId, DbType.Int32);
+                    para.Add("@Volume", dataItemToSave.Volume, DbType.Int32);
+                    para.Add("@PercentageTakeRate", dataItemToSave.PercentageTakeRate, DbType.Decimal);
+                    para.Add("@FeaturePackId", dataItemToSave.FeaturePackId, DbType.Int32);
+                    para.Add("@CDSID", this.CurrentCDSID, DbType.String);
 
-                    int results = conn.Execute(fdpOxoVolumeDataSaveStoredProcedureName, para, commandType: CommandType.StoredProcedure);
-
-                    if (results != 0)
+                    var rows = conn.Execute(fdpTakeRateDataItemSaveStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                    if (rows > 0)
                     {
-                        dataItemToSave.FdpOxoVolumeDataItemId = para.Get<int>("@FdpOxoVolumeDataId");
+                        takeRateDataItemId = para.Get<int?>("@FdpTakeRateDataItemId");
                     }
+                    
+                    // Save any notes 
+                    foreach (var note in dataItemToSave.Notes.Where(n => !n.FdpTakeRateDataItemNoteId.HasValue))
+                    {
+                        note.FdpTakeRateDataItemId = takeRateDataItemId;
+                        var savedNote = TakeRateDataItemNoteSave(note);
+                    }
+
+                    retVal = TakeRateDataItemGet(new TakeRateFilter() { TakeRateDataItemId = takeRateDataItemId });
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpOxoVolumeDataItemSave", ex.Message, CurrentCDSID);
+                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemSave", ex.Message, CurrentCDSID);
                 }
             }
-        }
-        public IEnumerable<FdpOxoVolumeDataItemNote> FdpOxoVolumeDataItemNoteGetMany(int fdpOxoVolumeDataItemId)
-        {
-            using (IDbConnection conn = DbHelper.GetDBConnection())
-            {
-                IEnumerable<FdpOxoVolumeDataItemNote> retVal = Enumerable.Empty<FdpOxoVolumeDataItemNote>();
-                try
-                {
-                    var para = new DynamicParameters();
-                    para.Add("@FdpOxoVolumeDataId", fdpOxoVolumeDataItemId, dbType: DbType.Int32);
 
-                    retVal = conn.Query<FdpOxoVolumeDataItemNote>(fdpOxoVolumeDataNoteGetManyStoredProcedureName, para, commandType: CommandType.StoredProcedure);
-                }
-                catch (Exception ex)
-                {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpOxoVolumeDataItemNoteGetMany", ex.Message, CurrentCDSID);
-                }
-
-                return retVal;
-            }
+            return retVal;
         }
-        public void FdpOxoVolumeDataItemNoteSave(FdpOxoVolumeDataItemNote noteToSave, FdpOxoVolumeDataItem forData)
+        public TakeRateDataItemNote TakeRateDataItemNoteSave(TakeRateDataItemNote noteToSave)
         {
+            TakeRateDataItemNote retVal = new EmptyTakeRateDataItemNote();
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpOxoVolumeDataId", forData.FdpOxoVolumeDataItemId.Value, dbType: DbType.Int32);
+                    para.Add("@FdpTakeRateDataItemId", noteToSave.FdpTakeRateDataItemId, DbType.Int32);
                     para.Add("@CDSID", this.CurrentCDSID, dbType: DbType.String);
                     para.Add("@Note", noteToSave.Note, dbType: DbType.String);
-                    para.Add("@FdpOxoVolumeDataNoteId", null, DbType.Int32, direction: ParameterDirection.Output);
-
-                    int results = conn.Execute(fdpOxoVolumeDataNoteSaveStoredProcedureName, para, commandType: CommandType.StoredProcedure);
-
-                    if (results != 0)
+                    
+                    var results = conn.Query<TakeRateDataItemNote>(fdpTakeRateDataItemNoteSaveStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
                     {
-                        noteToSave.FdpOxoVolumeDataItemNoteId = para.Get<int>("@FdpOxoVolumeDataNoteId");
+                        retVal = results.First();
                     }
                 }
                 catch (Exception ex)
                 {
                     AppHelper.LogError("FdpVolumeDataStore.FdpOxoVolumeDataNoteSave", ex.Message, CurrentCDSID);
+                    throw;
                 }
             }
-        }
-        public IEnumerable<FdpOxoVolumeDataItemHistory> FdpOxoVolumeDataItemHistoryGetMany(int fdpOxoVolumeDataItemId)
-        {
-            using (IDbConnection conn = DbHelper.GetDBConnection())
-            {
-                IEnumerable<FdpOxoVolumeDataItemHistory> retVal = Enumerable.Empty<FdpOxoVolumeDataItemHistory>();
-                try
-                {
-                    var para = new DynamicParameters();
-                    para.Add("@FdpOxoVolumeDataId", fdpOxoVolumeDataItemId, dbType: DbType.Int32);
-
-                    retVal = conn.Query<FdpOxoVolumeDataItemHistory>(fdpOxoVolumeDataHistoryGetManyStoredProcedureName, para, commandType: CommandType.StoredProcedure);
-                }
-                catch (Exception ex)
-                {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpOxoVolumeDataHistoryGetMany", ex.Message, CurrentCDSID);
-                }
-
-                return retVal;
-            }
+            return retVal;
         }
         public TakeRateSummary FdpVolumeHeaderGet(int fdpVolumeHeaderId)
         {
@@ -423,12 +404,12 @@ namespace FeatureDemandPlanning.DataStore
         private const string fdpVolumeHeaderSaveStoredProcedureName = "Fdp_VolumeHeader_Save";
         private const string fdpOxoDocSaveStoredProcedureName = "Fdp_OxoDoc_Save";
         private const string fdpOxoDocProcessStoredProcedureName = "Fdp_OxoDoc_Process";
-        private const string fdpOxoVolumeDataGetStoredProcedureName = "Fdp_OxoVolumeDataItem_Get";
-        private const string fdpOxoVolumeDataGetCrossTabStoredProcedureName = "Fdp_OxoVolumeDataItem_GetCrossTab";
-        private const string fdpOxoVolumeDataSaveStoredProcedureName = "Fdp_OxoVolumeDataItem_Save";
-        private const string fdpOxoVolumeDataNoteGetManyStoredProcedureName = "Fdp_OxoVolumeDataNote_GetMany";
-        private const string fdpOxoVolumeDataNoteSaveStoredProcedureName = "Fdp_OxoVolumeDataNote_Save";
-        private const string fdpOxoVolumeDataHistoryGetManyStoredProcedureName = "Fdp_OxoVolumeDataHistory_GetMany";
+        private const string fdpTakeRateDataItemGetStoredProcedureName = "Fdp_TakeRateDataItem_Get";
+        private const string fdpTakeRateDataGetCrossTabStoredProcedureName = "Fdp_TakeRateData_GetCrossTab";
+        private const string fdpTakeRateDataItemSaveStoredProcedureName = "Fdp_TakeRateDataItem_Save";
+        private const string fdpTakeRateDataItemNoteGetManyStoredProcedureName = "Fdp_TakeRateDataItemNote_GetMany";
+        private const string fdpTakeRateDataItemNoteSaveStoredProcedureName = "Fdp_TakeRateDataItemNote_Save";
+        private const string fdpTakeRateDataItemHistoryGetManyStoredProcedureName = "Fdp_TakeRateDataItemHistory_GetMany";
         private const string fdpSpecialFeatureTypeGetManyStoredProcedureName = "Fdp_SpecialFeatureType_GetMany";
 
         #endregion

@@ -8,7 +8,7 @@ model.OxoVolume = function (params) {
     var me = this;
 
     privateStore[me.id = uid++] = {};
-    privateStore[me.id].Document = params.Document;
+    privateStore[me.id].OxoDocId = params.OxoDocId;
     privateStore[me.id].Vehicle = params.Vehicle;
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].EditVolumeUri = params.EditVolumeUri;
@@ -27,8 +27,8 @@ model.OxoVolume = function (params) {
         var me = this;
         $(document).trigger("notifySuccess", me);
     };
-    me.getDocument = function () {
-        return privateStore[me.id].Document;
+    me.getOxoDocId = function () {
+        return privateStore[me.id].OxoDocId;
     };
     me.getVehicle = function () {
         return privateStore[me.id].Vehicle;
@@ -44,6 +44,9 @@ model.OxoVolume = function (params) {
     };
     me.getEditVolumeUri = function () {
         return privateStore[me.id].EditVolumeUri;
+    };
+    me.getSaveVolumeUri = function () {
+        return privateStore[me.id].SaveVolumeUri;
     };
     me.getValidateUri = function () {
         return privateStore[me.id].ValidateUri;
@@ -111,9 +114,24 @@ model.OxoVolume = function (params) {
             async: true
         });
     };
-    me.saveVolume = function (callback) {
-        var volume = me.getVolume();
-        var encodedVolume = JSON.stringify(volume);
+    me.saveVolume = function (changesToSave) {
+        var params = {
+            TakeRateId: me.getOxoDocId(),
+            Changes: changesToSave
+        };
+        $.ajax({
+            "dataType": "json",
+            "async": true,
+            "type": "POST",
+            "url": me.getSaveVolumeUri(),
+            "data": params,
+            "success": function (json) {
+                $(document).trigger("Success", json);
+            },
+            "error": function (jqXHR, textStatus, errorThrown) {
+                $(document).trigger("Error", JSON.parse(jqXHR.responseText));
+            }
+        });
     };
     me.validate = function (sectionToValidate, isAsync) {
         var volume = me.getVolume();

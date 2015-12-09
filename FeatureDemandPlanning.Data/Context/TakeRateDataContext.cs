@@ -2,6 +2,7 @@
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Parameters;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -9,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.DataStore
 {
-    public class VolumeDataContext : BaseDataContext, IVolumeDataContext
+    public class TakeRateDataContext : BaseDataContext, ITakeRateDataContext
     {
-        public VolumeDataContext(string cdsId) : base(cdsId)
+        public TakeRateDataContext(string cdsId) : base(cdsId)
         {
             _vehicleDataStore = new VehicleDataStore(cdsId);
             _documentDataStore = new OXODocDataStore(cdsId);
-            _volumeDataStore = new FdpVolumeDataStore(cdsId);
+            _takeRateDataStore = new TakeRateDataStore(cdsId);
             _modelDataStore = new ModelDataStore(cdsId);
         }
         public IVolume GetVolume(VolumeFilter filter)
@@ -34,7 +35,7 @@ namespace FeatureDemandPlanning.DataStore
                     Header = header,
                     Document = volumeToSave.Document
                 };
-                _volumeDataStore.FdpOxoDocSave(fdpOxoDoc);
+                _takeRateDataStore.FdpOxoDocSave(fdpOxoDoc);
             }
         }
         public TakeRateSummary GetVolumeHeader(VolumeFilter filter)
@@ -42,7 +43,7 @@ namespace FeatureDemandPlanning.DataStore
             if (filter.FdpVolumeHeaderId.GetValueOrDefault() == 0)
                 return new EmptyVolumeHeader();
 
-            return _volumeDataStore.FdpVolumeHeaderGet(filter.FdpVolumeHeaderId.Value);
+            return _takeRateDataStore.FdpVolumeHeaderGet(filter.FdpVolumeHeaderId.Value);
         }
         public async Task<PagedResults<TakeRateSummary>> ListLatestTakeRateData()
         {
@@ -55,11 +56,11 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<PagedResults<TakeRateSummary>> ListTakeRateData(TakeRateFilter filter)
         {
             return await Task.FromResult<PagedResults<TakeRateSummary>>(
-                _volumeDataStore.FdpVolumeHeaderGetManyByUsername(filter));
+                _takeRateDataStore.FdpVolumeHeaderGetManyByUsername(filter));
         }
         public void SaveVolumeHeader(FdpVolumeHeader header)
         {
-            _volumeDataStore.FdpVolumeHeaderSave(header);
+            _takeRateDataStore.FdpVolumeHeaderSave(header);
         }
         public OXODoc GetOxoDocument(VolumeFilter filter)
         {
@@ -70,7 +71,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<IEnumerable<TakeRateStatus>> ListTakeRateStatuses()
         {
-            return await Task.FromResult<IEnumerable<TakeRateStatus>>(_volumeDataStore.FdpTakeRateStatusGetMany());
+            return await Task.FromResult<IEnumerable<TakeRateStatus>>(_takeRateDataStore.FdpTakeRateStatusGetMany());
         }
         public IEnumerable<OXODoc> ListAvailableOxoDocuments(VehicleFilter filter)
         {
@@ -79,45 +80,40 @@ namespace FeatureDemandPlanning.DataStore
                         .Where(d => IsDocumentForVehicle(d, VehicleFilter.ToVehicle(filter)))
                         .Distinct(new OXODocComparer());
         }
-        public VolumeData ListVolumeData(VolumeFilter filter) 
+        public TakeRateData ListVolumeData(VolumeFilter filter) 
         {
             if (!IsFilterValidForVolumeData(filter))
-                return new VolumeData();
+                return new TakeRateData();
 
-            return _volumeDataStore.FdpOxoVolumeDataItemList(filter);
+            return _takeRateDataStore.TakeRateDataItemList(filter);
         }
-        public FdpOxoVolumeDataItem GetData(FdpOxoVolumeDataItem forData)
+        public TakeRateDataItem GetDataItem(TakeRateFilter filter)
         {
-            if (!forData.FdpOxoVolumeDataItemId.HasValue)
-                return null;
-            
-            var dataItem = _volumeDataStore.FdpOxoVolumeDataItemGet(forData.FdpOxoVolumeDataItemId.Value);
-            dataItem.History = _volumeDataStore.FdpOxoVolumeDataItemHistoryGetMany(forData.FdpOxoVolumeDataItemId.Value);
-            dataItem.Notes = _volumeDataStore.FdpOxoVolumeDataItemNoteGetMany(forData.FdpOxoVolumeDataItemId.Value).ToList();
-
-            return dataItem;
+            return _takeRateDataStore.TakeRateDataItemGet(filter);
         }
         public IEnumerable<SpecialFeature> ListSpecialFeatures(ProgrammeFilter programmeFilter)
         {
-            return _volumeDataStore.FdpSpecialFeatureTypeGetMany();
+            return _takeRateDataStore.FdpSpecialFeatureTypeGetMany();
         }
-        public void SaveData(FdpOxoVolumeDataItem dataItemToSave)
+        public void SaveData(TakeRateDataItem dataItemToSave)
         {
-            _volumeDataStore.FdpOxoVolumeDataItemSave(dataItemToSave);
-
-            foreach (var note in dataItemToSave.Notes)
-            {
-                if (!note.FdpOxoVolumeDataItemNoteId.HasValue)
-                {
-                    _volumeDataStore.FdpOxoVolumeDataItemNoteSave(note, dataItemToSave);
-                }
-            }
+            _takeRateDataStore.TakeRateDataItemSave(dataItemToSave);
         }
-        public IEnumerable<FdpOxoVolumeDataItemHistory> ListHistory(FdpOxoVolumeDataItem forData)
+        public async Task<IEnumerable<TakeRateDataItem>> SaveChangeset(TakeRateParameters parameters)
+        {
+            var results = new List<TakeRateDataItem>();
+            foreach (var change in parameters.Changes)
+            {
+                var result = await Task.FromResult(_takeRateDataStore.TakeRateDataItemSave(change.ToDataItem()));
+                results.Add(result);
+            }
+            return results;
+        }
+        public IEnumerable<FdpOxoVolumeDataItemHistory> ListHistory(TakeRateDataItem forData)
         {
             throw new System.NotImplementedException();
         }
-        public IEnumerable<FdpOxoVolumeDataItemNote> ListNotes(FdpOxoVolumeDataItem forData)
+        public IEnumerable<TakeRateDataItemNote> ListNotes(TakeRateDataItem forData)
         {
             throw new System.NotImplementedException();
         }
@@ -135,6 +131,6 @@ namespace FeatureDemandPlanning.DataStore
         private VehicleDataStore _vehicleDataStore = null;
         private ModelDataStore _modelDataStore = null;
         private OXODocDataStore _documentDataStore = null;
-        private FdpVolumeDataStore _volumeDataStore = null;
+        private TakeRateDataStore _takeRateDataStore = null;
     }
 }
