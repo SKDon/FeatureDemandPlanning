@@ -1,9 +1,4 @@
-﻿
-
-
-
-
-CREATE VIEW [dbo].[Fdp_Import_VW] AS
+﻿CREATE VIEW [dbo].[Fdp_Import_VW] AS
 
 	SELECT 
 		  Q.FdpImportQueueId
@@ -22,6 +17,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 		, I.[Count of Specific Order No]					AS ImportVolume
 		, IH.ProgrammeId
 		, IH.Gateway
+		, IH.DocumentId
 		, P.VehicleMake
 		, P.VehicleName
 		, P.VehicleAKA
@@ -170,8 +166,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 													
 	-- Get extended details for the features
 	
-	LEFT JOIN Fdp_VolumeHeader				AS CUR1		ON	IH.ProgrammeId				= CUR1.ProgrammeId
-														AND IH.Gateway					= CUR1.Gateway
+	LEFT JOIN Fdp_VolumeHeader				AS CUR1		ON	IH.DocumentId				= CUR1.DocumentId
 	LEFT JOIN Fdp_VolumeDataItem			AS CUR		ON	CUR1.FdpVolumeHeaderId		= CUR.FdpVolumeHeaderId
 														AND MMAP.Market_Id				= CUR.MarketId
 														AND 

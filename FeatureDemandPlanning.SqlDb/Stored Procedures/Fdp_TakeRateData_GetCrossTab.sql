@@ -5,6 +5,7 @@
   , @ModelIds		NVARCHAR(MAX)
   , @ShowPercentage	BIT = 0
   , @IsExport		BIT = 0
+  , @Filter			NVARCHAR(100) = NULL
 AS
 	SET NOCOUNT ON;
 
@@ -60,8 +61,8 @@ AS
 	);
 	CREATE TABLE #AggregateVolumeByFeature
 	(
-		AggregatedFeatureIdentifier NVARCHAR(10)
-		, AggregatedVolume INT
+		  AggregatedFeatureIdentifier	NVARCHAR(10)
+		, AggregatedVolume				INT
 	);
 	CREATE TABLE #Model
 	(
@@ -82,13 +83,6 @@ AS
 		  @ProgrammeId	= Programme_Id
 		, @Gateway		= Gateway
 	FROM OXO_Doc WHERE Id = @OxoDocId;
-	
-	SELECT TOP 1 @FdpOxoDocId = FdpOxoDocId 
-	FROM Fdp_OxoDoc 
-	WHERE 
-	OXODocId = @OxoDocId 
-	ORDER BY 
-	FdpOxoDocId DESC;
   
 	SELECT TOP 1 @MarketGroupId = Market_Group_Id 
 	FROM 
@@ -224,15 +218,17 @@ AS
 			, 1 AS S
 			  
 		FROM Fdp_FeatureMapping_VW		AS FEA
-		JOIN #RawTakeRateData		AS D	ON		FEA.FeatureId	= D.FeatureId
-		JOIN #FeatureApplicability	AS O	ON		D.FeatureId		= O.FeatureId
+		JOIN #RawTakeRateData			AS D	ON		FEA.FeatureId	= D.FeatureId
+		JOIN #FeatureApplicability		AS O	ON		D.FeatureId		= O.FeatureId
 												AND		D.ModelId		= O.ModelId
 		JOIN #Model						AS M	ON		D.ModelId		= M.ModelId
-												AND		M.IsFdpModel = 0
+												AND		M.IsFdpModel	= 0
 		WHERE 
 		FEA.ProgrammeId = @ProgrammeId
 		AND
-		FEA.Gateway = @Gateway	
+		FEA.Gateway = @Gateway
+		AND
+		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
 		
 		UNION
 		
@@ -262,14 +258,16 @@ AS
 			  AS FeatureIdentifier
 			, 2 AS S
 			  
-		FROM Fdp_FeatureMapping_VW		AS FEA
+		FROM Fdp_FeatureMapping_VW	AS FEA
 		JOIN #RawTakeRateData		AS D	ON		FEA.FeatureId	= D.FeatureId
-		JOIN #Model						AS M	ON		D.FdpModelId	= M.ModelId
-												AND		M.IsFdpModel = 1
+		JOIN #Model					AS M	ON		D.FdpModelId	= M.ModelId
+											AND		M.IsFdpModel = 1
 		WHERE 
 		FEA.ProgrammeId = @ProgrammeId
 		AND
 		FEA.Gateway = @Gateway
+		AND
+		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
 		
 		UNION
 		
@@ -299,14 +297,16 @@ AS
 			  AS FeatureIdentifier
 			, 3 AS S
 			  
-		FROM Fdp_FeatureMapping_VW		AS FEA
-		JOIN #RawTakeRateData		AS D	ON		FEA.FdpFeatureId	= D.FdpFeatureId
-		JOIN #Model				AS M	ON		D.FdpModelId		= M.ModelId
-												AND		M.IsFdpModel		= 1
+		FROM Fdp_FeatureMapping_VW	AS FEA
+		JOIN #RawTakeRateData		AS D	ON	FEA.FdpFeatureId	= D.FdpFeatureId
+		JOIN #Model					AS M	ON	D.FdpModelId		= M.ModelId
+											AND	M.IsFdpModel		= 1
 		WHERE 
 		FEA.ProgrammeId = @ProgrammeId
 		AND
 		FEA.Gateway = @Gateway
+		AND
+		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
 		
 		UNION
 		
@@ -341,6 +341,8 @@ AS
 		FEA.ProgrammeId = @ProgrammeId
 		AND
 		FEA.Gateway = @Gateway
+		AND
+		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
 	)	
 	INSERT INTO #TakeRateDataByFeature
 	(
@@ -392,13 +394,17 @@ AS
 		  AggregatedFeatureIdentifier
 		, AggregatedVolume
 	)
-	SELECT FeatureIdentifier, SUM(Volume) FROM #TakeRateDataByFeature
+	SELECT FeatureIdentifier, SUM(Volume) FROM #TakeRateDataByFeature AS T
 	WHERE
-	-- Not sure what's going on here, we have take information not associated with models
-	(ModelId IS NOT NULL AND FdpModelId IS NULL)
-	OR
-	(FdpModelId IS NOT NULL AND ModelId IS NULL)
-	GROUP BY FeatureIdentifier
+	(
+		(T.ModelId IS NOT NULL AND T.FdpModelId IS NULL)
+		OR
+		(T.FdpModelId IS NOT NULL AND T.ModelId IS NULL)
+	)
+	AND
+	(@Filter IS NULL OR T.FeatureCode LIKE '%' + @Filter + '%')
+	GROUP BY 
+	FeatureIdentifier
 	
 	-- Work out total volumes so we can calculate percentage take from the feature mix
 	
@@ -408,7 +414,7 @@ AS
 	WHERE
 	ProgrammeId = @ProgrammeId
 	AND
-	Gateway = @Gateway;
+	Gateway = @Gateway
 	
 	SELECT @FilteredVolume = SUM(S.TotalVolume)
 	FROM
@@ -553,13 +559,13 @@ AS
 			ELSE @FilteredVolume / CAST(@TotalVolume AS DECIMAL)
 		  END, 0.0) 
 									AS PercentageOfTotalVolume
-		, D.CreatedBy
-		, D.CreatedOn
+		, H.CreatedBy
+		, H.CreatedOn
 		
 	FROM
-	Fdp_OxoDoc AS D
+	Fdp_VolumeHeader AS H
 	WHERE
-	D.FdpOxoDocId = @FdpOxoDocId;
+	H.DocumentId = @OxoDocId;
 	
 	DROP TABLE #TakeRateDataByFeature;
 	DROP TABLE #RawTakeRateData;

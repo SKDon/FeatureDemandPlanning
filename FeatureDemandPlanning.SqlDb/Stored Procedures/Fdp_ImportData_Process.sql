@@ -14,6 +14,7 @@ AS
 	SELECT 
 		  @ProgrammeId = ProgrammeId
 		, @Gateway = Gateway
+		, @OxoDocId = DocumentId
 		, @FdpImportQueueId = FdpImportQueueId
 	FROM Fdp_Import
 	WHERE
@@ -40,9 +41,7 @@ AS
 	FROM Fdp_ImportQueue	AS Q
 	JOIN Fdp_Import			AS I ON Q.FdpImportQueueId = I.FdpImportQueueId
 	WHERE
-	I.ProgrammeId = @ProgrammeId
-	AND
-	I.Gateway = @Gateway
+	I.DocumentId = @OxoDocId
 	AND
 	I.FdpImportId <> @FdpImportId
 	AND
@@ -217,23 +216,19 @@ AS
 	(
 		  CreatedOn
 		, CreatedBy
-		, ProgrammeId
-		, Gateway
-		, FdpImportId
+		, DocumentId
 		, FdpTakeRateStatusId
 		, IsManuallyEntered
 	)
 	SELECT
 		  MAX(I.CreatedOn)	AS CreatedOn
 		, MAX(I.CreatedBy)	AS CreatedBy
-		, I.ProgrammeId
-		, I.Gateway
-		, I.FdpImportId
+		, I.DocumentId
 		, 1					AS FdpTakeRateStatusId
 		, 0					AS IsManuallyCreated
 	FROM 
 	FDP_Import_VW				AS I
-	LEFT JOIN Fdp_VolumeHeader	AS CUR ON I.FdpImportId = CUR.FdpImportId
+	LEFT JOIN Fdp_VolumeHeader	AS CUR ON I.DocumentId = CUR.DocumentId
 	WHERE 
 	I.IsExistingData = 0
 	AND
@@ -257,34 +252,13 @@ AS
 
 	GROUP BY
 	  I.FdpImportId
-	, I.ProgrammeId
-	, I.Gateway;
+	, I.DocumentId
 	
 	SELECT @FdpVolumeHeaderId = FdpVolumeHeaderId
 	FROM
 	Fdp_VolumeHeader
 	WHERE
-	FdpImportId = @FdpImportId;
-	
-	-- Create the link to the volume data and the most recent published document for the programme and gateway
-	
-	INSERT INTO Fdp_OxoDoc 
-	(
-		  CreatedBy
-		, FdpVolumeHeaderId
-		, OXODocId
-	)
-	SELECT TOP 1
-		  H.CreatedBy
-		, H.FdpVolumeHeaderId
-		, D.Id 
-	FROM Fdp_VolumeHeader	AS H
-	JOIN OXO_Doc			AS D	ON	H.ProgrammeId	= D.Programme_Id
-									AND H.Gateway		= D.Gateway
-									AND D.[Status]		= 'PUBLISHED'
-	LEFT JOIN Fdp_OxoDoc	AS CUR	ON	H.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
-	WHERE
-	CUR.FdpOxoDocId IS NULL;
+	DocumentId = @OxoDocId;
 
 	-- If there are no active errors for the import...
 	-- For every entry in the import, create an entry in FDP_VolumeDataItem
@@ -322,7 +296,7 @@ AS
 		, CAST(I.ImportVolume AS INT) 
 	FROM
 	Fdp_Import_VW					AS I
-	JOIN Fdp_VolumeHeader			AS H	ON	I.FdpImportId		= H.FdpImportId
+	JOIN Fdp_VolumeHeader			AS H	ON	I.DocumentId		= H.DocumentId
 	LEFT JOIN Fdp_VolumeDataItem	AS CUR	ON	H.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
 											AND I.MarketId			= CUR.MarketId
 											AND 
@@ -356,8 +330,6 @@ AS
 	I.FdpImportId = @FdpImportId
 	AND
 	CUR.FdpVolumeDataItemId IS NULL
-	--AND
-	--I.FdpImportStatusId <> 4
 	
 	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' data items added';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT
@@ -388,7 +360,7 @@ AS
 		, 0
 	FROM
 	Fdp_Import_VW					AS I
-	JOIN Fdp_VolumeHeader			AS H	ON	I.FdpImportId					= H.FdpImportId
+	JOIN Fdp_VolumeHeader			AS H	ON	I.DocumentId					= H.DocumentId
 	LEFT JOIN Fdp_TakeRateSummary	AS CUR	ON	H.FdpVolumeHeaderId				= CUR.FdpVolumeHeaderId
 											AND I.FdpSpecialFeatureMappingId	= CUR.FdpSpecialFeatureMappingId
 											AND I.MarketId						= CUR.MarketId
@@ -423,13 +395,13 @@ AS
 	JOIN Fdp_TakeRateSummary	AS S	ON H.FdpVolumeHeaderId			= S.FdpVolumeHeaderId
 	JOIN Fdp_SpecialFeature		AS SF	ON S.FdpSpecialFeatureMappingId = SF.FdpSpecialFeatureId
 	WHERE
-	H.FdpImportId = @FdpImportId
+	H.DocumentId = @OxoDocId
 	AND
 	SF.FdpSpecialFeatureTypeId = 1 -- Volume by derivative (full year)
 	
 	UPDATE Fdp_VolumeHeader SET TotalVolume = @TotalVolume
 	WHERE
-	FdpImportId = @FdpImportId
+	DocumentId = @OxoDocId
 	AND
 	TotalVolume <> @TotalVolume;
 	

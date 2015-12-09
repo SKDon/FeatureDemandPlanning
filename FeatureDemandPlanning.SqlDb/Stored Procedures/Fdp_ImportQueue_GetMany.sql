@@ -93,6 +93,7 @@ AS
 		, V.VehicleAKA
 		, V.ModelYear
 		, I.Gateway
+		, D.Version_Id AS Document
 		, CAST(CASE WHEN E.ErrorCount > 0 THEN 1 ELSE 0 END AS BIT) AS HasErrors
 		, ISNULL(E.ErrorCount, 0) AS ErrorCount
 		
@@ -101,6 +102,7 @@ AS
 										AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex
 	JOIN Fdp_Import				AS I	ON	Q.FdpImportQueueId	= I.FdpImportQueueId
 	JOIN OXO_Programme_VW		AS V	ON	I.ProgrammeId		= V.Id
+	JOIN OXO_Doc				AS D	ON	I.DocumentId		= D.Id
 	LEFT JOIN
 	(
 		SELECT 

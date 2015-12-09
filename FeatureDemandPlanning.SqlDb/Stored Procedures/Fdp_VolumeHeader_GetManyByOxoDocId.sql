@@ -26,11 +26,11 @@ AS
 	)
 	SELECT DISTINCT
 		  V.FdpVolumeHeaderId
-		, D.OXODocId
+		, D.Id AS OXODocId
 		, V.CreatedOn
 		, V.CreatedBy
 		, V.IsManuallyEntered
-		, I.FilePath			AS ImportFilePath
+		, NULL			AS ImportFilePath
 		, P.Id					AS ProgrammeId
 		, P.VehicleMake
 		, P.VehicleName + ' - ' + P.VehicleAKA AS CarLine
@@ -42,13 +42,11 @@ AS
 		, G.Display_Order
 		
 	FROM Fdp_VolumeHeader		AS V
-	JOIN Fdp_OxoDoc				AS D	ON V.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-	JOIN ProgrammePermissions	AS PP	ON V.ProgrammeId	= PP.ProgrammeId
-	JOIN OXO_Programme_VW		AS P	ON V.ProgrammeId	= P.Id
-	JOIN OXO_Gateway			AS G	ON V.Gateway		= G.Gateway
-	LEFT JOIN Fdp_Import		AS I1	ON V.FdpImportId	= I1.FdpImportId
-	LEFT JOIN ImportQueue_VW	AS I	ON I1.ImportQueueId	= I.ImportQueueId
+	JOIN OXO_Doc				AS D	ON V.DocumentId		= D.Id
+	JOIN ProgrammePermissions	AS PP	ON D.Programme_Id	= PP.ProgrammeId
+	JOIN OXO_Programme_VW		AS P	ON D.Programme_Id	= P.Id
+	JOIN OXO_Gateway			AS G	ON D.Gateway		= G.Gateway
 	WHERE
-	D.OXODocId = @OxoDocId
+	V.DocumentId = @OxoDocId
 	ORDER BY
 	G.Display_Order, V.CreatedOn DESC;

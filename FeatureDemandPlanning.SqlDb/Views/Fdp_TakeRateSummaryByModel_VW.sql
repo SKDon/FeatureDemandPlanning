@@ -1,4 +1,5 @@
-﻿CREATE VIEW Fdp_TakeRateSummaryByModel_VW AS
+﻿
+CREATE VIEW [dbo].[Fdp_TakeRateSummaryByModel_VW] AS
 
 	SELECT 
 		  VOL.ProgrammeId
@@ -16,17 +17,18 @@
 	FROM
 	(
 		SELECT 
-			  H.ProgrammeId
-			, H.Gateway
+			  D.Programme_Id AS ProgrammeId
+			, D.Gateway
 			, S.ModelId
 			, S.FdpModelId
 			, SUM(Volume) AS TotalVolume
 		FROM
 		Fdp_VolumeHeader			AS H
-		JOIN Fdp_TakeRateSummary	AS S ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
+		JOIN OXO_Doc				AS D	ON H.DocumentId = D.Id
+		JOIN Fdp_TakeRateSummary	AS S	ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
 		GROUP BY
-		  H.ProgrammeId
-		, H.Gateway
+		  D.Programme_Id
+		, D.Gateway
 		, S.ModelId
 		, S.FdpModelId
 	)

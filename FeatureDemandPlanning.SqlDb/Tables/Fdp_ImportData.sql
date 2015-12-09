@@ -18,6 +18,8 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_Import_DerivativeAndTrim]
     ON [dbo].[Fdp_ImportData]([Derivative Code] ASC, [Trim Pack Description] ASC)
@@ -43,5 +45,7 @@ CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_ImportData_Market]
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_ImportData_FdpImportId]
     ON [dbo].[Fdp_ImportData]([FdpImportId] ASC)
-    INCLUDE([LineNumber]);
+    INCLUDE([LineNumber], [NSC or Importer Description (Vista Market)], [Country Description], [Derivative Code], [Trim Pack Description], [Bff Feature Code], [Feature Description], [Count of Specific Order No]);
+
+
 

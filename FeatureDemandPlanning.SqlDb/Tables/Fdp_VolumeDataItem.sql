@@ -32,6 +32,8 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_FdpVolumeHeaderId]
     ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC)
@@ -56,3 +58,28 @@ GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_FeatureId]
     ON [dbo].[Fdp_VolumeDataItem]([FeatureId] ASC);
 
+
+GO
+CREATE TRIGGER dbo.tr_Fdp_VolumeDataItem_Audit ON dbo.Fdp_VolumeDataItem FOR UPDATE
+AS
+	DECLARE @Type AS CHAR(1);
+	
+	-- Put the old "deleted" values into the audit as the primary table contains the new record values
+
+	INSERT INTO Fdp_VolumeDataItemAudit
+	(
+		  AuditOn
+		, AuditBy
+		, FdpVolumeDataItemId
+		, Volume
+		, PercentageTakeRate
+	)
+	SELECT 
+		  ISNULL(D.UpdatedOn, D.CreatedOn)
+		, ISNULL(D.UpdatedBy, D.CreatedBy)
+		, D.FdpVolumeDataItemId
+		, D.Volume
+		, D.PercentageTakeRate
+		
+	FROM deleted	AS D
+	JOIN inserted	AS I ON D.FdpVolumeDataItemId = I.FdpVolumeDataItemId

@@ -33,8 +33,8 @@ AS
 	)
 	SELECT V.FdpVolumeHeaderId
 	FROM Fdp_VolumeHeader		AS V
-	JOIN Fdp_OxoDoc				AS D	ON V.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
-	JOIN OXO_Programme_VW		AS P	ON V.ProgrammeId		= P.Id
+	JOIN OXO_Doc				AS D	ON V.DocumentId		= D.Id
+	JOIN OXO_Programme_VW		AS P	ON D.Programme_Id	= P.Id
 	WHERE
 	(ISNULL(@FilterMessage, '') = '' 
 		OR P.VehicleName LIKE '%' + @FilterMessage + '%'
@@ -56,7 +56,7 @@ AS
 				WHEN 2 THEN P.VehicleName
 				WHEN 3 THEN P.VehicleAKA
 				WHEN 4 THEN P.ModelYear
-				WHEN 5 THEN V.Gateway
+				WHEN 5 THEN D.Gateway
 			END
 		END ASC,
 		CASE @SortDirection
@@ -67,7 +67,7 @@ AS
 				WHEN 2 THEN P.VehicleName
 				WHEN 3 THEN P.VehicleAKA
 				WHEN 4 THEN P.ModelYear
-				WHEN 5 THEN V.Gateway
+				WHEN 5 THEN D.Gateway
 			END	
 		END DESC
 	
@@ -88,13 +88,13 @@ AS
 		, V.CreatedBy
 		, V.UpdatedOn
 		, V.UpdatedBy
-		, O.Id AS OxoDocId
+		, D.Id AS OxoDocId
 		, P.VehicleName + 
 			' '  + P.VehicleAKA +
 			' '  + P.ModelYear +
-			' '  + O.Gateway +
-			' v' + CAST(O.Version_Id AS NVARCHAR(10)) +
-			' '  + O.[Status]
+			' '  + D.Gateway +
+			' v' + CAST(D.Version_Id AS NVARCHAR(10)) +
+			' '  + D.[Status]
 			AS OxoDocument
 		, S.FdpTakeRateStatusId
 		, S.[Status]
@@ -104,8 +104,5 @@ AS
 	JOIN Fdp_VolumeHeader		AS V	ON	PA.TakeRateId			= V.FdpVolumeHeaderId
 										AND PA.RowIndex BETWEEN @MinIndex AND @MaxIndex
 	JOIN Fdp_TakeRateStatus		AS S	ON	V.FdpTakeRateStatusId	= S.FdpTakeRateStatusId
-	JOIN Fdp_OxoDoc				AS D	ON	V.FdpVolumeHeaderId		= D.FdpVolumeHeaderId
-	JOIN OXO_Doc				AS O	ON	D.OXODocId				= O.Id
-	JOIN OXO_Programme_VW		AS P	ON	V.ProgrammeId			= P.Id
-	LEFT JOIN Fdp_Import		AS I1	ON	V.FdpImportId			= I1.FdpImportId
-	LEFT JOIN Fdp_ImportQueue_VW	AS I	ON	I1.FdpImportQueueId		= I.FdpImportQueueId
+	JOIN OXO_Doc				AS D	ON	V.DocumentId			= D.Id
+	JOIN OXO_Programme_VW		AS P	ON	D.Programme_Id			= P.Id
