@@ -18,11 +18,13 @@
     <mvcSiteMapNode title="Forecasts" controller="Forecast" action="Index"/>
     <mvcSiteMapNode title="Forecasts" controller="Forecast" action="ForecastPage"/>
     
-    <mvcSiteMapNode title="Take Rates" controller="Volume" action="Index">
-      <mvcSiteMapNode title="Take Rate" controller="Volume" action="Document"/>
+    <mvcSiteMapNode title="Take Rates" controller="TakeRate" action="Index">
+      <mvcSiteMapNode title="Take Rate" controller="TakeRateData" action="Index"/>
+      <mvcSiteMapNode title="Take Rate" controller="TakeRateData" action="TakeRateDataPage"/>
     </mvcSiteMapNode>
-    <mvcSiteMapNode title="Take Rates" controller="Volume" action="TakeRatePage">
-      <mvcSiteMapNode title="Take Rate" controller="Volume" action="Document"/>
+    <mvcSiteMapNode title="Take Rates" controller="TakeRate" action="TakeRatePage">
+      <mvcSiteMapNode title="Take Rate" controller="TakeRateData" action="Index"/>
+      <mvcSiteMapNode title="Take Rate" controller="TakeRateData" action="TakeRateDataPage"/>
     </mvcSiteMapNode>
     
   <mvcSiteMapNode title="Settings" controller="Admin" action="Index">

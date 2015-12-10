@@ -201,7 +201,8 @@
     <Compile Include="Controllers\ValidationErrorItem.cs" />
     <Compile Include="Controllers\ValidationMessage.cs" />
     <Compile Include="Controllers\VehicleController.cs" />
-    <Compile Include="Controllers\VolumeController.cs" />
+    <Compile Include="Controllers\TakeRateDataController.cs" />
+    <Compile Include="Controllers\TakeRateController.cs" />
     <Compile Include="DataContextFactory.cs" />
     <Compile Include="Helpers\HtmlHelperExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -1337,13 +1338,16 @@
     <Content Include="Scripts\User\user.js" />
     <Content Include="Scripts\User\usersinit.js" />
     <Content Include="Scripts\User\userspage.js" />
-    <Content Include="Scripts\Volume\changeset.js" />
+    <Content Include="Scripts\TakeRateData\changeset.js" />
+    <Content Include="Scripts\TakeRate\model.js" />
+    <Content Include="Scripts\TakeRate\init.js" />
+    <Content Include="Scripts\TakeRate\page.js" />
     <Content Include="Scripts\Volume\takerates.js" />
     <Content Include="Scripts\Volume\takeratesinit.js" />
     <Content Include="Scripts\Volume\takeratespage.js" />
-    <Content Include="Scripts\Volume\init.js" />
-    <Content Include="Scripts\Volume\volume.js" />
-    <Content Include="Scripts\Volume\volumepage.js" />
+    <Content Include="Scripts\TakeRateData\init.js" />
+    <Content Include="Scripts\TakeRateData\model.js" />
+    <Content Include="Scripts\TakeRateData\page.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1382,19 +1386,7 @@
     <Content Include="Views\Forecast\_ValidationMessage.cshtml" />
     <Content Include="Views\Forecast\_Modal.cshtml" />
     <Content Include="Views\Forecast\_ForecastTrimMapping.cshtml" />
-    <Content Include="Views\Volume\Document.cshtml" />
-    <Content Include="Views\Volume\_Modal.cshtml" />
-    <Content Include="Views\Volume\_VolumePages.cshtml" />
-    <Content Include="Views\Volume\_Vehicle.cshtml" />
-    <Content Include="Views\Volume\_Pager.cshtml" />
-    <Content Include="Views\Volume\_OXODocuments.cshtml" />
     <Content Include="Views\Shared\_ValidationMessage.cshtml" />
-    <Content Include="Views\Volume\_ImportedData.cshtml" />
-    <Content Include="Views\Volume\_Confirm.cshtml" />
-    <Content Include="Views\Volume\_Process.cshtml" />
-    <Content Include="Views\Volume\_TakeRateData.cshtml" />
-    <Content Include="Views\Volume\_MarketSelector.cshtml" />
-    <Content Include="Views\Volume\_ViewModeSelector.cshtml" />
     <Content Include="Views\ImportException\ImportExceptionsPage.cshtml" />
     <Content Include="Views\ImportException\_Modal.cshtml" />
     <Content Include="Views\ImportException\_ContextMenu.cshtml" />
@@ -1427,8 +1419,6 @@
     <Content Include="Views\DisplayTemplates\MetaRobotsHelperModel.cshtml" />
     <Content Include="Views\DisplayTemplates\MenuHelperModel.cshtml" />
     <Content Include="Views\DisplayTemplates\CanonicalHelperModel.cshtml" />
-    <Content Include="Views\Volume\TakeRatePage.cshtml" />
-    <Content Include="Views\Volume\_Scripts.cshtml" />
     <Content Include="Views\Import\_Modal.cshtml" />
     <Content Include="Views\Shared\_ModalError.cshtml" />
     <Content Include="Views\User\_Users.cshtml" />
@@ -1494,10 +1484,17 @@
     <Content Include="Views\IgnoredException\IgnoredExceptionPage.cshtml" />
     <Content Include="Views\ImportException\_ImportSummary.cshtml" />
     <Content Include="Views\ImportException\_Filter.cshtml" />
-    <Content Include="Views\Volume\_VolumeData - Copy.cshtml" />
-    <Content Include="Views\Volume\_TakeRateDataByModel.cshtml" />
-    <Content Include="Views\Volume\_TakeRateDataByFeature.cshtml" />
-    <Content Include="Views\Volume\_TakeRateDataItem.cshtml" />
+    <Content Include="Views\TakeRateData\TakeRateDataPage.cshtml" />
+    <Content Include="Views\TakeRateData\_ViewModeSelector.cshtml" />
+    <Content Include="Views\TakeRateData\_TakeRateDataItem.cshtml" />
+    <Content Include="Views\TakeRateData\_TakeRateDataByModel.cshtml" />
+    <Content Include="Views\TakeRateData\_TakeRateDataByFeature.cshtml" />
+    <Content Include="Views\TakeRateData\_TakeRateData.cshtml" />
+    <Content Include="Views\TakeRateData\_MarketSelector.cshtml" />
+    <Content Include="Views\TakeRateData\_Scripts.cshtml" />
+    <Content Include="Views\TakeRate\_Modal.cshtml" />
+    <Content Include="Views\TakeRate\_Scripts.cshtml" />
+    <Content Include="Views\TakeRate\TakeRatePage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

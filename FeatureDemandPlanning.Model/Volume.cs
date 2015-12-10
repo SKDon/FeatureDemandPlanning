@@ -121,6 +121,34 @@ namespace FeatureDemandPlanning.Model
 
             return volume;
         }
+        public static IVolume FromFilter(TakeRateFilter filter)
+        {
+            var volume = new Volume();
+
+            if (filter.OxoDocId.HasValue)
+            {
+                volume.Document = new OXODoc() { Id = filter.OxoDocId.Value };
+            }
+
+            if (filter.ProgrammeId.HasValue)
+            {
+                volume.Vehicle = new Vehicle() { ProgrammeId = filter.ProgrammeId.Value, Gateway = filter.Gateway };
+            }
+
+            if (filter.MarketGroupId.HasValue)
+            {
+                volume.MarketGroup = new MarketGroup() { Id = filter.MarketGroupId.Value };
+            }
+
+            if (filter.MarketId.HasValue)
+            {
+                volume.Market = new Market() { Id = filter.MarketId.Value };
+            }
+
+            volume.Mode = filter.Mode;
+
+            return volume;
+        }
 
         public IEnumerable<TakeRateSummary> VolumeSummary { get { return _summary; } set { _summary = value; } }
         

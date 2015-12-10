@@ -11,9 +11,12 @@ namespace FeatureDemandPlanning.Model.Parameters
     {
         public int? TakeRateId { get; set; }
         public int? TakeRateDataItemId { get; set; }
+        public int? MarketId { get; set; }
+        public int? MarketGroupId { get; set; }
         public string FilterMessage { get; set; }
         public int? TakeRateStatusId { get; set; }
         public TakeRateAction Action { get; set; }
+        public TakeRateResultMode Mode { get; set; }
 
         public IList<DataChange> Changes { get; set; }
 

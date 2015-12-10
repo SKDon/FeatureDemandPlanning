@@ -55,11 +55,37 @@ namespace FeatureDemandPlanning.Model.ViewModel
                                                 new VolumeFilter(), 
                                                 new PageFilter());
         }
+        public static Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context, TakeRateFilter filter)
+        {
+            var volume = context.Volume.GetVolume(filter);
+            return GetFullAndPartialViewModel(context, volume);
+        }
         public static Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context, VolumeFilter filter, PageFilter pageFilter)
         {
             var volume = context.Volume.GetVolume(filter);
             return GetFullAndPartialViewModel(context, volume, pageFilter);
         }
+        public static async Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context, IVolume forVolume)
+        {
+            var modelBase = GetBaseModel(context);
+            var volumeModel = new FdpOxoVolumeViewModel(modelBase)
+            {
+                Volume = (Volume)forVolume,
+                Configuration = context.ConfigurationSettings,
+                Countries = context.References.ListReferencesByKey(countryKey)
+            };
+
+            HydrateOxoDocument(context, volumeModel);
+            HydrateFdpVolumeHeaders(context, volumeModel);
+            await HydrateFdpVolumeHeadersFromOxoDocument(context, volumeModel);
+            HydrateVehicle(context, volumeModel);
+            HydrateLookups(context, forVolume, volumeModel);
+            HydrateMarkets(context, volumeModel);
+            HydrateData(context, volumeModel);
+
+            return volumeModel;
+        }
+
         public static async Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context, IVolume forVolume, PageFilter pageFilter)
         {
             var modelBase = GetBaseModel(context);

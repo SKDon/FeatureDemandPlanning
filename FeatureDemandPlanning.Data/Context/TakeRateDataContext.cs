@@ -19,6 +19,10 @@ namespace FeatureDemandPlanning.DataStore
             _takeRateDataStore = new TakeRateDataStore(cdsId);
             _modelDataStore = new ModelDataStore(cdsId);
         }
+        public IVolume GetVolume(TakeRateFilter filter)
+        {
+            return Volume.FromFilter(filter);
+        }
         public IVolume GetVolume(VolumeFilter filter)
         {
             return Volume.FromFilter(filter);

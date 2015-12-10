@@ -1,0 +1,103 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+@section PageScripts
+{
+    @Html.Partial("_Scripts", Model)
+}
+
+@section PageContentHeader
+{
+    <form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-lg-5 inverse pull-left" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-body" style="background:none !important">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <img src="~/Content/Images/Icons/edit64.png" style="margin-top:15px" />
+                        </div>
+                        <div class="col-lg-10">
+                            <h3 style="margin-top:5px">Take Rate Files for @Model.CurrentUser.CDSId </h3>
+
+                            <p class="page-description">Below is a list of take rate files that have been applied to published OXO documents. </p>
+                            <p>Select a take rate file to view or edit the information</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-lg-4 inverse pull-right" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-heading">
+                    <div class="panel-title">Filter Take Rate Files</div>
+                </div>
+                <div class="panel-body" style="background:none !important">
+                    <form class="form-horizontal">
+                        <div class="form-group-sm">
+                            <label for="@(Model.IdentifierPrefix)_Status" class="form-label col-xs-4 text-right" style="margin-top:5px">Status:</label>
+                            <div class="col-xs-8">
+                                <button class="btn btn-sm btn-default dropdown-toggle col-sm-12" data-toggle="dropdown">
+                                    <span id="@(Model.IdentifierPrefix)_SelectedStatus">All</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul id="@(Model.IdentifierPrefix)_StatusList" class="dropdown-menu">
+                                    <li><a class="filter-status" data-target="" data-content="All">All</a></li>
+                                    @foreach (var status in Model.Statuses)
+                                    {
+                                        <li><a class="filter-status" href="#" data-target="@status.StatusId" data-content="@status.Status">@status.Status</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="vertical-spacer" style="height:40px"></div>
+                        <div class="form-group-sm">
+                            <label for="@(Model.IdentifierPrefix)_FilterMessage" class="form-label col-xs-4 text-right" style="margin-top:5px">Filter:</label>
+                            <div class="col-xs-8">
+                                <input type="text" id="@(Model.IdentifierPrefix)_FilterMessage" placeholder="Enter search filter" class="form-control" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section PageBody
+{
+    <div id="dvFilter" class="subscribers-notifyFilterComplete"></div>
+    <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none"></ul>
+
+    <div id="notifier" class="subscribers-notify col-lg-12" style="float:unset"></div>
+
+    @Html.Partial("_Modal", Model)
+
+    <div id="pnlTakeRates" class="panel panel-primary" style="display:none;">
+        <div class="panel-heading">
+            <div class="panel-title"><span id="spnFilteredRecords" class="subscribers-notifyResults"></span> Take Rate Files</div>
+        </div>
+        <div class="panel-body">
+            <table id="tblTakeRates" class="table table-bordered table-condensed table-striped dataTable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="text-center col-lg-1">Created On</th>
+                        <th class="text-center col-lg-1">Created By</th>
+                        <th class="col-lg-6 text-left">OXO Document</th>
+                        <th class="text-center col-lg-2">Take Rate Status</th>
+                        <th class="text-center col-lg-1">Updated On</th>
+                        <th class="text-center col-lg-1">Updated By</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+}
+
+
+

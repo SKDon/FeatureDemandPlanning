@@ -21,6 +21,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         void SaveVolumeHeader(FdpVolumeHeader headerToSave);
         
         IVolume GetVolume(VolumeFilter filter);
+        IVolume GetVolume(TakeRateFilter filter);
         void SaveVolume(IVolume volumeToSave);
 
         TakeRateDataItem GetDataItem(TakeRateFilter filter);

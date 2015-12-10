@@ -17,11 +17,15 @@ namespace FeatureDemandPlanning.Model
         public string CreatedBy { get; set; }
 
         public IEnumerable<DataRow> RawData { get; set; }
-        public IEnumerable<DataRow> FeatureApplicabilityData { get { return _faData; } set { _faData = value; } }
-        public IEnumerable<ModelTakeRateSummary> TakeRateSummaryByModel { get { return _takeRateSummaryByModel; } set { _takeRateSummaryByModel = value; } }
+        public IEnumerable<DataRow> FeatureApplicabilityData { get; set; }
+        public IEnumerable<ModelTakeRateSummary> TakeRateSummaryByModel { get; set; }
 
-        private IEnumerable<DataRow> _rawData = Enumerable.Empty<DataRow>();
-        private IEnumerable<DataRow> _faData = Enumerable.Empty<DataRow>();
-        private IEnumerable<ModelTakeRateSummary> _takeRateSummaryByModel = Enumerable.Empty<ModelTakeRateSummary>();
+        public TakeRateData()
+        {
+            RawData = Enumerable.Empty<DataRow>();
+            FeatureApplicabilityData = Enumerable.Empty<DataRow>();
+            TakeRateSummaryByModel = Enumerable.Empty<ModelTakeRateSummary>();
+
+        }
     }
 }

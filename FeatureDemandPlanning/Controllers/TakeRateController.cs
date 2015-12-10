@@ -19,22 +19,16 @@ using System.Collections.Generic;
 namespace FeatureDemandPlanning.Controllers
 {
     /// <summary>
-    /// Primary controller for handling viewing / editing and updating of volume (take rate information)
+    /// Primary controller for handling take rate files
     /// </summary>
-    public class VolumeController : ControllerBase
+    public class TakeRateController : ControllerBase
     {
         #region "Constructors"
 
-        public VolumeController() : base()
+        public TakeRateController() : base()
         {
             ControllerType = ControllerType.SectionChild;
         }
-
-        #endregion
-
-        #region "Public Properties"
-
-        public PageFilter PageFilter { get { return _pageFilter; } }
 
         #endregion
 
@@ -55,7 +49,7 @@ namespace FeatureDemandPlanning.Controllers
         }
         [HttpPost]
         [HandleErrorWithJson]
-        public async Task<ActionResult> ListTakeRateData(TakeRateParameters parameters)
+        public async Task<ActionResult> ListTakeRates(TakeRateParameters parameters)
         {
             ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
 
@@ -111,89 +105,12 @@ namespace FeatureDemandPlanning.Controllers
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
-        [HandleErrorWithJson]
-        [HttpPost]
-        public async Task<ActionResult> Save(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-               .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
-
-            var filter = TakeRateFilter.FromTakeRateId(parameters.TakeRateId.Value);
-            var results = await DataContext.Volume.SaveChangeset(parameters);
-
-            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
-        }
-        [HttpPost]
-        public ActionResult Validate(Volume volumeToValidate,
-                                     VolumeValidationSection sectionToValidate = VolumeValidationSection.All)
-        {
-            var volumeModel = FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volumeToValidate, PageFilter).Result;
-            var validator = new VolumeValidator(volumeModel.Volume);
-            var ruleSets = VolumeValidator.GetRulesetsToValidate(sectionToValidate);
-            var jsonResult = new JsonResult()
-            {
-                Data = new { IsValid = true }
-            };
-
-            var results = validator.Validate(volumeModel.Volume, ruleSet: ruleSets);
-            if (results.IsValid) return jsonResult;
-            var errorModel = results.Errors
-                .Select(e => new ValidationError(new ValidationErrorItem
-                {
-                    ErrorMessage = e.ErrorMessage,
-                    CustomState = e.CustomState
-                })
-                {
-                    key = e.PropertyName
-                });
-
-            jsonResult = new JsonResult()
-            {
-                Data = new ValidationMessage(false, errorModel)
-            };
-            return jsonResult;
-        }
-        public ActionResult ValidationMessage(ValidationMessage message)
-        {
-            // Something is making a GET request to this page and I can't figure out what
-            return PartialView("_ValidationMessage", message);
-        }
-        [HttpGet]
-        [SiteMapTitle("DocumentName")]
-        public ActionResult Document(int? oxoDocId,
-                                     int? marketGroupId,
-                                     int? marketId,
-                                     TakeRateResultMode resultsMode = TakeRateResultMode.PercentageTakeRate)
-        {
-            ViewBag.PageTitle = "OXO Volume";
-
-            var filter = new VolumeFilter()
-            {
-                OxoDocId = oxoDocId,
-                MarketGroupId = marketGroupId,
-                MarketId = marketId,
-                Mode = resultsMode,
-            };
-            var model = FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, filter, PageFilter).Result;
-
-            ViewData["DocumentName"] = model.Volume.Document.Name;
-
-            return View("Document", model);
-        }
 
         #region "Private Methods"
 
-        private async Task<FdpOxoVolumeViewModel> GetModelFromParameters(TakeRateParameters parameters)
+        private async Task<TakeRateViewModel> GetModelFromParameters(TakeRateParameters parameters)
         {
-            return await FdpOxoVolumeViewModel.GetModel(
-                DataContext,
-                TakeRateFilter.FromTakeRateId(parameters.TakeRateId.Value),
-                parameters.Action);
-        }
-        private void ProcessVolumeData(IVolume volume)
-        {
-            DataContext.Volume.SaveVolume(volume);
-            DataContext.Volume.ProcessMappedData(volume);
+            return await TakeRateViewModel.GetModel(DataContext, TakeRateFilter.FromTakeRateParameters(parameters));
         }
         private static void ValidateTakeRateParameters(TakeRateParameters parameters, string ruleSetName)
         {

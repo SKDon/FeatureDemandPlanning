@@ -413,23 +413,18 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_VolumeDataItemNote_Save.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="Stored Procedures\Fdp_VolumeDataItemNote_GetMany.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
-    <Build Include="Stored Procedures\Fdp_VolumeDataItemHistory_GetMany.sql">
-      <AnsiNulls>On</AnsiNulls>
-      <QuotedIdentifier>On</QuotedIdentifier>
-    </Build>
     <Build Include="Stored Procedures\Fdp_OxoDoc_GetMany.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_VolumeHeader_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateDataItem_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateDataItem_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateDataItemHistory_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateDataItemNote_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateDataItemNote_Save.sql" />
+    <Build Include="Tables\Fdp_TakeRateDataItemAudit.sql" />
+    <Build Include="Tables\Fdp_TakeRateDataItemNote.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="..\..\Oxo\OxoSqlDb\Snapshots\Oxo.dacpac">

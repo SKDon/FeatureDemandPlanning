@@ -292,6 +292,7 @@
     <Compile Include="Validators\ForecastValidator.cs" />
     <Compile Include="Validators\ForecastVehicleValidator.cs" />
     <Compile Include="Validators\ImportExceptionParametersValidator.cs" />
+    <Compile Include="Validators\TakeRateParametersValidator.cs" />
     <Compile Include="Validators\VehicleValidator.cs" />
     <Compile Include="Validators\VolumeValidator.cs" />
     <Compile Include="ViewModel\AdminViewModel.cs" />

@@ -19,13 +19,13 @@ using System.Collections.Generic;
 namespace FeatureDemandPlanning.Controllers
 {
     /// <summary>
-    /// Primary controller for handling viewing / editing and updating of volume (take rate information)
+    /// Primary controller for handling viewing / editing and updating of take rate information
     /// </summary>
-    public class VolumeController : ControllerBase
+    public class TakeRateDataController : ControllerBase
     {
         #region "Constructors"
 
-        public VolumeController() : base()
+        public TakeRateDataController() : base()
         {
             ControllerType = ControllerType.SectionChild;
         }
@@ -40,18 +40,30 @@ namespace FeatureDemandPlanning.Controllers
 
         [HttpGet]
         [ActionName("Index")]
-        public ActionResult TakeRatePage()
+        public ActionResult TakeRatePage(int? oxoDocId,
+                                         int? marketGroupId,
+                                         int? marketId,
+                                         TakeRateResultMode resultsMode = TakeRateResultMode.PercentageTakeRate)
         {
-            return RedirectToAction("TakeRatePage", new TakeRateParameters());
+            return RedirectToAction("TakeRateDataPage", new TakeRateParameters()
+            {
+                TakeRateId = oxoDocId,
+                MarketGroupId = marketGroupId,
+                MarketId = marketId,
+                Mode = resultsMode
+            });
         }
         [HttpGet]
-        public async Task<ActionResult> TakeRatePage(TakeRateParameters parameters)
+        [SiteMapTitle("DocumentName")]
+        public async Task<ActionResult> TakeRateDataPage(TakeRateParameters parameters)
         {
-            ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
+            ViewBag.PageTitle = "OXO Volume";
 
-            var takeRateView = await TakeRateViewModel.GetModel(DataContext, new TakeRateFilter());
+            var model = await FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, TakeRateFilter.FromTakeRateParameters(parameters));
 
-            return View(takeRateView);
+            ViewData["DocumentName"] = model.Volume.Document.Name;
+
+            return View("TakeRateDataPage", model);
         }
         [HttpPost]
         [HandleErrorWithJson]
@@ -157,28 +169,6 @@ namespace FeatureDemandPlanning.Controllers
         {
             // Something is making a GET request to this page and I can't figure out what
             return PartialView("_ValidationMessage", message);
-        }
-        [HttpGet]
-        [SiteMapTitle("DocumentName")]
-        public ActionResult Document(int? oxoDocId,
-                                     int? marketGroupId,
-                                     int? marketId,
-                                     TakeRateResultMode resultsMode = TakeRateResultMode.PercentageTakeRate)
-        {
-            ViewBag.PageTitle = "OXO Volume";
-
-            var filter = new VolumeFilter()
-            {
-                OxoDocId = oxoDocId,
-                MarketGroupId = marketGroupId,
-                MarketId = marketId,
-                Mode = resultsMode,
-            };
-            var model = FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, filter, PageFilter).Result;
-
-            ViewData["DocumentName"] = model.Volume.Document.Name;
-
-            return View("Document", model);
         }
 
         #region "Private Methods"

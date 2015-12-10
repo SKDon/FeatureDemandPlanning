@@ -1,0 +1,37 @@
+﻿@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel 
+
+@{ var currentVersion = Model.CurrentVersion; }
+
+<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@Model.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@Model.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@Model.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/Shared/cookie.js")?v=@Model.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/TakeRateData/model.js")?v=@Model.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/TakeRateData/changeset.js")?v=@Model.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/TakeRateData/page.js")?v=@Model.CurrentVersion"></script>
+
+<script type="text/javascript">
+
+    var volume, vehicle, pager, page, modal;
+    var params = {
+        PageUri: "@Url.Action("VolumePage")",
+        SaveVolumeUri: "@Url.Action("Save")",
+        ValidateUri: "@Url.Action("Validate")",
+        ValidationMessageUri: "@Url.Action("ValidationMessage")",
+        ModalDialogId: "modal",
+        ModalContentId: "modalBody",
+        Configuration: {},
+        OXOVehicle: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        CookieKey: "@Model.CookieKey"
+    };
+
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+    params.Vehicle = @Html.Raw(Json.Encode(Model.Volume.Vehicle));
+    @if (Model.Volume.Document != null)
+    {
+        @:params.OxoDocId = @Model.Volume.Document.Id;
+    }
+</script>
+<script src="@Url.Content("~/Scripts/TakeRateData/init.js")?v=@Model.CurrentVersion"></script>

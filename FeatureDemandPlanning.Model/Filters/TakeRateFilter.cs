@@ -1,5 +1,6 @@
 ﻿using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,6 @@ namespace FeatureDemandPlanning.Model.Filters
     {
         public int? TakeRateId { get; set; }
         public int? TakeRateDataItemId { get; set; }
-        public int? MarketId { get; set; }
-        public int? MarketGroupId { get; set; }
         public int? TakeRateStatusId { get; set; }
         public TakeRateAction Action { get; set; }
         public TakeRateResultMode Mode { get; set; }
@@ -49,12 +48,24 @@ namespace FeatureDemandPlanning.Model.Filters
 
             return filter;
         }
-
         public static TakeRateFilter FromTakeRateId(int takeRateId)
         {
             return new TakeRateFilter()
             {
                 OxoDocId = takeRateId
+            };
+        }
+        public static TakeRateFilter FromTakeRateParameters(TakeRateParameters parameters)
+        {
+            return new TakeRateFilter()
+            {
+                OxoDocId = parameters.TakeRateId,
+                TakeRateDataItemId = parameters.TakeRateDataItemId,
+                TakeRateStatusId = parameters.TakeRateStatusId,
+                Mode = parameters.Mode,
+                Action = parameters.Action,
+                MarketGroupId = parameters.MarketGroupId,
+                MarketId = parameters.MarketId
             };
         }
     }
