@@ -2,7 +2,8 @@
    @ProgrammeId		INT,
    @Gateway			NVARCHAR(100),
    @OxoDocId		INT,
-   @MarketGroupId	INT
+   @MarketGroupId	INT,
+   @CDSId			NVARCHAR(16)
 AS
 	
 	WITH Set_A AS

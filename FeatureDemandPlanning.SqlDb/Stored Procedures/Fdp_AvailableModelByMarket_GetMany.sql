@@ -1,8 +1,9 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_AvailableModelByMarket_GetMany]   
    @ProgrammeId INT,
-   @Gateway		INT,
+   @Gateway		NVARCHAR(100),
    @OxoDocId	INT,
-   @MarketId	INT
+   @MarketId	INT,
+   @CDSId		NVARCHAR(16)
 AS
 	WITH OxoData AS
 	(

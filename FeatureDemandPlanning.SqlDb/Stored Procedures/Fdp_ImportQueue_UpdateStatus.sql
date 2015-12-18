@@ -5,11 +5,11 @@ AS
 
 SET NOCOUNT ON
 
-IF NOT EXISTS(SELECT TOP 1 1 FROM ImportStatus WHERE ImportStatusId = @ImportStatusId)
+IF NOT EXISTS(SELECT TOP 1 1 FROM Fdp_ImportStatus WHERE FdpImportStatusId = @ImportStatusId)
 	RAISERROR(N'Import status does not exist', 16, 1);
 	
-UPDATE ImportQueue SET 
-	  ImportStatusId = @ImportStatusId
+UPDATE Fdp_ImportQueue SET 
+	  FdpImportStatusId = @ImportStatusId
 	, UpdatedOn = GETDATE() 
 WHERE
-ImportQueueId = @ImportQueueId;
+FdpImportQueueId = @ImportQueueId;

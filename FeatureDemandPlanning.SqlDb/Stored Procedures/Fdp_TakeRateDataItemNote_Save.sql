@@ -7,9 +7,9 @@ AS
 	
 	SET NOCOUNT ON;
 
-	INSERT INTO Fdp_VolumeDataItemNote
+	INSERT INTO Fdp_TakeRateDataItemNote
 	(
-		  FdpVolumeDataItemId
+		  FdpTakeRateDataItemId
 		, EnteredBy
 		, Note
 	)

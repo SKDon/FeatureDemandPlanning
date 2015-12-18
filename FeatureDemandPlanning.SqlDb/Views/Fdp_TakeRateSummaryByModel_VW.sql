@@ -1,8 +1,10 @@
 ﻿
+
 CREATE VIEW [dbo].[Fdp_TakeRateSummaryByModel_VW] AS
 
-	SELECT 
-		  VOL.ProgrammeId
+	SELECT
+		  VOL.DocumentId 
+		, VOL.ProgrammeId
 		, VOL.Gateway
 		, VOL.ModelId
 		, VOL.FdpModelId
@@ -16,8 +18,9 @@ CREATE VIEW [dbo].[Fdp_TakeRateSummaryByModel_VW] AS
 		, VOL.TotalVolume
 	FROM
 	(
-		SELECT 
-			  D.Programme_Id AS ProgrammeId
+		SELECT
+			  H.DocumentId 
+			, D.Programme_Id AS ProgrammeId
 			, D.Gateway
 			, S.ModelId
 			, S.FdpModelId
@@ -27,7 +30,8 @@ CREATE VIEW [dbo].[Fdp_TakeRateSummaryByModel_VW] AS
 		JOIN OXO_Doc				AS D	ON H.DocumentId = D.Id
 		JOIN Fdp_TakeRateSummary	AS S	ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
 		GROUP BY
-		  D.Programme_Id
+		  H.DocumentId
+		, D.Programme_Id
 		, D.Gateway
 		, S.ModelId
 		, S.FdpModelId

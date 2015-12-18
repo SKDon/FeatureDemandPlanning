@@ -35,7 +35,7 @@ AS
 		, ModelId		INT NULL
 		, FdpModelId	INT NULL
 		, Volume		INT NULL
-		, PercentageTakeRate DECIMAL(5,2)
+		, PercentageTakeRate DECIMAL(8,2)
 	);
 	CREATE TABLE #TakeRateDataByFeature
 	(
@@ -51,7 +51,7 @@ AS
 		, HasRule				BIT
 		, LongDescription		NVARCHAR(MAX)	NULL
 		, Volume				INT
-		, PercentageTakeRate	DECIMAL(4, 2)
+		, PercentageTakeRate	DECIMAL(8,2)
 		, OxoCode				NVARCHAR(100)	NULL
 		, ModelId				INT
 		, FdpModelId			INT
@@ -235,6 +235,41 @@ AS
 		SELECT 
 			  FEA.DisplayOrder
 			, FEA.FeatureId
+			, FEA.FdpFeatureId
+			, FEA.MappedFeatureCode AS FeatureCode
+			, FEA.FeatureGroupId 
+			, FEA.FeatureGroup	
+			, FEA.FeatureSubGroup
+			, FEA.BrandDescription
+			, FEA.[Description]
+			, FEA.FeatureComment
+			, FEA.FeatureRuleText
+			, FEA.LongDescription
+			, D.ModelId
+			, CAST(NULL AS INT) AS FdpModelId 
+			, ISNULL(D.Volume, 0) AS Volume
+			, D.PercentageTakeRate
+			, CAST(NULL AS NVARCHAR(10)) AS OxoCode
+			, M.StringIdentifier
+			, 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10)) AS FeatureIdentifier
+			, 1 AS S
+			  
+		FROM Fdp_FeatureMapping_VW		AS FEA
+		JOIN #RawTakeRateData			AS D	ON		FEA.FdpFeatureId	= D.FdpFeatureId
+		JOIN #Model						AS M	ON		D.ModelId			= M.ModelId
+												AND		M.IsFdpModel		= 0
+		WHERE 
+		FEA.ProgrammeId = @ProgrammeId
+		AND
+		FEA.Gateway = @Gateway
+		AND
+		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
+		
+		UNION
+		
+		SELECT 
+			  FEA.DisplayOrder
+			, FEA.FeatureId
 			, CAST(NULL AS INT) AS FdpFeatureId
 			, FEA.MappedFeatureCode AS FeatureCode
 			, FEA.FeatureGroupId 
@@ -308,41 +343,41 @@ AS
 		AND
 		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
 		
-		UNION
+		--UNION
 		
-		SELECT 
-			  FEA.DisplayOrder
-			, FEA.FeatureId
-			, FEA.FdpFeatureId
-			, FEA.MappedFeatureCode AS FeatureCode
-			, FEA.FeatureGroupId 
-			, FEA.FeatureGroup	
-			, FEA.FeatureSubGroup
-			, FEA.BrandDescription
-			, FEA.[Description]
-			, FEA.FeatureComment
-			, FEA.FeatureRuleText
-			, FEA.LongDescription
-			, CAST(NULL AS INT) AS ModelId
-			, CAST(NULL AS INT) FdpModelId 
-			, 0 AS Volume
-			, 0 AS PercentageTakeRate
-			, CAST(NULL AS NVARCHAR(10)) AS OxoCode
-			, CAST(NULL AS NVARCHAR(10)) AS StringIdentifier
-			, CASE
-				WHEN FEA.FeatureId IS NOT NULL THEN 'O' + CAST(FEA.FeatureId AS NVARCHAR(10))
-				ELSE 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10))
-			  END
-			  AS FeatureIdentifier
-			, 4 AS S
+		--SELECT 
+		--	  FEA.DisplayOrder
+		--	, FEA.FeatureId
+		--	, FEA.FdpFeatureId
+		--	, FEA.MappedFeatureCode AS FeatureCode
+		--	, FEA.FeatureGroupId 
+		--	, FEA.FeatureGroup	
+		--	, FEA.FeatureSubGroup
+		--	, FEA.BrandDescription
+		--	, FEA.[Description]
+		--	, FEA.FeatureComment
+		--	, FEA.FeatureRuleText
+		--	, FEA.LongDescription
+		--	, CAST(NULL AS INT) AS ModelId
+		--	, CAST(NULL AS INT) FdpModelId 
+		--	, 0 AS Volume
+		--	, 0 AS PercentageTakeRate
+		--	, CAST(NULL AS NVARCHAR(10)) AS OxoCode
+		--	, CAST(NULL AS NVARCHAR(10)) AS StringIdentifier
+		--	, CASE
+		--		WHEN FEA.FeatureId IS NOT NULL THEN 'O' + CAST(FEA.FeatureId AS NVARCHAR(10))
+		--		ELSE 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10))
+		--	  END
+		--	  AS FeatureIdentifier
+		--	, 4 AS S
 			  
-		FROM Fdp_FeatureMapping_VW		AS FEA
-		WHERE
-		FEA.ProgrammeId = @ProgrammeId
-		AND
-		FEA.Gateway = @Gateway
-		AND
-		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
+		--FROM Fdp_FeatureMapping_VW		AS FEA
+		--WHERE
+		--FEA.ProgrammeId = @ProgrammeId
+		--AND
+		--FEA.Gateway = @Gateway
+		--AND
+		--(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
 	)	
 	INSERT INTO #TakeRateDataByFeature
 	(
@@ -394,7 +429,7 @@ AS
 		  AggregatedFeatureIdentifier
 		, AggregatedVolume
 	)
-	SELECT FeatureIdentifier, SUM(Volume) FROM #TakeRateDataByFeature AS T
+	SELECT FeatureIdentifier, SUM(ISNULL(Volume, 0)) FROM #TakeRateDataByFeature AS T
 	WHERE
 	(
 		(T.ModelId IS NOT NULL AND T.FdpModelId IS NULL)

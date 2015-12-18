@@ -1,22 +1,22 @@
-CREATE TABLE [dbo].[Fdp_VolumeDataItem] (
-    [FdpVolumeDataItemId] INT           IDENTITY (1, 1) NOT NULL,
-    [CreatedOn]           DATETIME      CONSTRAINT [DF_Fdp_VolumeDataItem_CreatedOn] DEFAULT (getdate()) NOT NULL,
-    [CreatedBy]           NVARCHAR (16) NULL,
-    [FdpVolumeHeaderId]   INT           NOT NULL,
-    [IsManuallyEntered]   BIT           CONSTRAINT [DF_Fdp_VolumeDataItem_IsManuallyEntered] DEFAULT ((1)) NOT NULL,
-    [MarketId]            INT           NOT NULL,
-    [MarketGroupId]       INT           NULL,
-    [ModelId]             INT           NULL,
-    [FdpModelId]          INT           NULL,
-    [TrimId]              INT           NULL,
-    [FdpTrimId]           INT           NULL,
-    [FeatureId]           INT           NULL,
-    [FdpFeatureId]        INT           NULL,
-    [FeaturePackId]       INT           NULL,
-    [Volume]              INT           CONSTRAINT [DF_Fdp_VolumeDataItem_Volume] DEFAULT ((0)) NOT NULL,
-    [PercentageTakeRate]  FLOAT (53)    CONSTRAINT [DF_Fdp_VolumeDataItem_PercentageTakeRate] DEFAULT ((0)) NOT NULL,
-    [UpdatedOn]           DATETIME      NULL,
-    [UpdatedBy]           NVARCHAR (16) NULL,
+﻿CREATE TABLE [dbo].[Fdp_VolumeDataItem] (
+    [FdpVolumeDataItemId] INT            IDENTITY (1, 1) NOT NULL,
+    [CreatedOn]           DATETIME       CONSTRAINT [DF_Fdp_VolumeDataItem_CreatedOn] DEFAULT (getdate()) NOT NULL,
+    [CreatedBy]           NVARCHAR (16)  NULL,
+    [FdpVolumeHeaderId]   INT            NOT NULL,
+    [IsManuallyEntered]   BIT            CONSTRAINT [DF_Fdp_VolumeDataItem_IsManuallyEntered] DEFAULT ((1)) NOT NULL,
+    [MarketId]            INT            NOT NULL,
+    [MarketGroupId]       INT            NULL,
+    [ModelId]             INT            NULL,
+    [FdpModelId]          INT            NULL,
+    [TrimId]              INT            NULL,
+    [FdpTrimId]           INT            NULL,
+    [FeatureId]           INT            NULL,
+    [FdpFeatureId]        INT            NULL,
+    [FeaturePackId]       INT            NULL,
+    [Volume]              INT            CONSTRAINT [DF_Fdp_VolumeDataItem_Volume] DEFAULT ((0)) NOT NULL,
+    [PercentageTakeRate]  DECIMAL (5, 4) CONSTRAINT [DF_Fdp_VolumeDataItem_PercentageTakeRate] DEFAULT ((0)) NOT NULL,
+    [UpdatedOn]           DATETIME       NULL,
+    [UpdatedBy]           NVARCHAR (16)  NULL,
     CONSTRAINT [PK_Fdp_VolumeDataItem] PRIMARY KEY CLUSTERED ([FdpVolumeDataItemId] ASC),
     CONSTRAINT [FK_Fdp_VolumeDataItem_Fdp_VolumeHeader] FOREIGN KEY ([FdpVolumeHeaderId]) REFERENCES [dbo].[Fdp_VolumeHeader] ([FdpVolumeHeaderId]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Feature_Ext] FOREIGN KEY ([FeatureId]) REFERENCES [dbo].[OXO_Feature_Ext] ([Id]),
@@ -24,6 +24,8 @@ CREATE TABLE [dbo].[Fdp_VolumeDataItem] (
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Model] FOREIGN KEY ([ModelId]) REFERENCES [dbo].[OXO_Programme_Model] ([Id]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id])
 );
+
+
 
 
 
@@ -62,8 +64,7 @@ CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_FeatureId]
 
 
 GO
-
-CREATE TRIGGER [dbo].[tr_Fdp_TakeRateDataItem_Audit] ON [dbo].[Fdp_VolumeDataItem] FOR UPDATE
+CREATE TRIGGER [dbo].[tr_Fdp_TakeRateDataItem_Audit] ON dbo.Fdp_VolumeDataItem FOR UPDATE
 AS
 	DECLARE @Type AS CHAR(1);
 	
@@ -78,8 +79,8 @@ AS
 		, PercentageTakeRate
 	)
 	SELECT 
-		  ISNULL(D.UpdatedOn, D.CreatedOn)
-		, ISNULL(D.UpdatedBy, D.CreatedBy)
+		  ISNULL(ISNULL(D.UpdatedOn, D.CreatedOn), GETDATE())
+		, ISNULL(ISNULL(D.UpdatedBy, D.CreatedBy), SUSER_SNAME())
 		, D.FdpVolumeDataItemId
 		, D.Volume
 		, D.PercentageTakeRate
