@@ -43,27 +43,16 @@ namespace FeatureDemandPlanning.Model.ViewModel
             get { return (Volume)_volume; }
             set { _volume = value; InitialiseVolume(); }
         }
-        public TakeRateAction CurrentAction { get; set; }
+        public TakeRateDataItemAction CurrentAction { get; set; }
 
         #endregion
 
         #region "Public Methods"
 
-        public static Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context)
-        {
-            return GetFullAndPartialViewModel(context, 
-                                                new VolumeFilter(), 
-                                                new PageFilter());
-        }
         public static Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context, TakeRateFilter filter)
         {
             var volume = context.Volume.GetVolume(filter);
             return GetFullAndPartialViewModel(context, volume);
-        }
-        public static Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context, VolumeFilter filter, PageFilter pageFilter)
-        {
-            var volume = context.Volume.GetVolume(filter);
-            return GetFullAndPartialViewModel(context, volume, pageFilter);
         }
         public static async Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context, IVolume forVolume)
         {
@@ -85,36 +74,9 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return volumeModel;
         }
-
-        public static async Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModel(IDataContext context, IVolume forVolume, PageFilter pageFilter)
+        private static Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModelForSave(IDataContext context, TakeRateFilter filter)
         {
-            var modelBase = GetBaseModel(context);
-            var volumeModel = new FdpOxoVolumeViewModel(modelBase) 
-            { 
-                Volume = (Volume)forVolume, 
-                PageSize = pageFilter.PageSize,
-                Configuration = context.ConfigurationSettings,
-                Countries = context.References.ListReferencesByKey(countryKey)
-            };
-               
-            HydrateOxoDocument(context, volumeModel);
-            HydrateFdpVolumeHeaders(context, volumeModel);
-            await HydrateFdpVolumeHeadersFromOxoDocument(context, volumeModel);
-            HydrateVehicle(context, volumeModel);
-            HydrateLookups(context, forVolume, volumeModel);
-            HydrateMarkets(context, volumeModel);
-            HydrateData(context, volumeModel);
-
-            if (!(volumeModel.Volume.Document is EmptyOxoDocument))
-            {
-                volumeModel.PageIndex = (int)FeatureDemandPlanning.Model.Enumerations.VolumePage.VolumeData;
-            }
-            else
-            {
-                volumeModel.PageIndex = pageFilter.PageIndex;
-            }
-
-            return volumeModel;
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -314,7 +276,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return await context.Volume.ListTakeRateData(TakeRateFilter.FromVolume(forVolume));
         }
-        private static TakeRateData ListVolumeData(IDataContext context, Volume forVolume)
+        private static Task<TakeRateData> ListVolumeData(IDataContext context, Volume forVolume)
         {
             if (forVolume.Document is EmptyOxoDocument)
                 return new TakeRateData();
@@ -365,11 +327,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
         }
         public static async Task<FdpOxoVolumeViewModel> GetModel(IDataContext context,
                                                            TakeRateFilter filter,
-                                                           TakeRateAction action)
+                                                           TakeRateDataItemAction action)
         {
             var model = await GetModel(context, filter);
             model.CurrentAction = action;
-            if (action != TakeRateAction.NotSet)
+            if (action != TakeRateDataItemAction.NotSet)
             {
                 model.IdentifierPrefix = Enum.GetName(action.GetType(), action);
             }
@@ -377,36 +339,15 @@ namespace FeatureDemandPlanning.Model.ViewModel
             return model;
         }
         public static async Task<FdpOxoVolumeViewModel> GetModel(IDataContext context,
-                                                           TakeRateFilter filter)
+                                                                 TakeRateFilter filter)
         {
             FdpOxoVolumeViewModel model = null;
 
-            if (filter.Action == TakeRateAction.Save)
+            if (filter.Action == TakeRateDataItemAction.SaveChanges)
             {
                 model = await GetFullAndPartialViewModelForSave(context, filter);
             }
-            //else if (filter.Action == TakeRateAction.Validate)
-            //{
-            //    model = await GetFullAndPartialViewModelForException(context, filter);
-            //}
-            //else if (filter.Action == TakeRateAction.MarketReview)
-            //{
-            //    model = await GetFullAndPartialViewModelForImportQueueItem(context, filter);
-            //}
-            //else if (filter.Action == TakeRateAction.Publish)
-            //{
-            //    model = await GetFullAndPartialViewModelForSummary(context, filter);
-            //}
-            //else
-            //{
-            //    model = await GetFullAndPartialViewModel(context, filter);
-            //}
             return model;
-        }
-
-        private static Task<FdpOxoVolumeViewModel> GetFullAndPartialViewModelForSave(IDataContext context, TakeRateFilter filter)
-        {
-            throw new NotImplementedException();
         }
     }
 }

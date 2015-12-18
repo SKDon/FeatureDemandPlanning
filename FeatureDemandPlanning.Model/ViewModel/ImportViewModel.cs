@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Empty;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {
@@ -249,6 +250,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.CurrentException = await context.Import.GetException(filter);
 
             var programmeFilter = new ProgrammeFilter(model.CurrentException.ProgrammeId);
+            var featureFilter = new FeatureFilter() { ProgrammeId = model.CurrentException.ProgrammeId };
 
             model.Programme = context.Vehicle.GetProgramme(programmeFilter);
             programmeFilter.VehicleId = model.Programme.VehicleId;
@@ -257,9 +259,9 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.AvailableEngines = context.Vehicle.ListEngines(programmeFilter);
             model.AvailableTransmissions = context.Vehicle.ListTransmissions(programmeFilter);
             model.AvailableBodies = context.Vehicle.ListBodies(programmeFilter);
-            model.AvailableSpecialFeatures = context.Volume.ListSpecialFeatures(programmeFilter);
-            model.AvailableMarkets = context.Market.ListAvailableMarkets();
-            model.AvailableFeatures = context.Vehicle.ListFeatures(programmeFilter);
+            model.AvailableSpecialFeatures = await context.TakeRate.ListSpecialFeatures(programmeFilter);
+            model.AvailableMarkets = await context.Market.ListAvailableMarkets();
+            model.AvailableFeatures = await context.Vehicle.ListFeatures(featureFilter);
             model.AvailableFeatureGroups = context.Vehicle.ListFeatureGroups(programmeFilter);
             model.AvailableTrimLevels = context.Vehicle.ListTrimLevels(programmeFilter);
 

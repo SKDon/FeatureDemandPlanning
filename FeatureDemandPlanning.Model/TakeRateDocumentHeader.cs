@@ -2,7 +2,7 @@
 
 namespace FeatureDemandPlanning.Model
 {
-    public class FdpVolumeHeader
+    public class TakeRateDocumentHeader
     {
         public int? FdpVolumeHeaderId { get; set; }
         public DateTime CreatedOn { get; set; }

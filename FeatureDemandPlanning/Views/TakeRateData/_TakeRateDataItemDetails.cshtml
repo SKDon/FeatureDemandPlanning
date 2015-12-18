@@ -1,0 +1,81 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+@Html.Partial("_TakeRateDataItemHeader", Model)
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="panel-title">Notes</div>
+    </div>
+    <div class="panel-body">
+        @if (Model.CurrentTakeRateDataItem.Notes.Any()) { 
+         <table id="@(Model.IdentifierPrefix)_Notes" class="table table-bordered table-condensed table-responsive dataTable" style="font-size:11px">
+            <thead>
+                <tr>
+                    <th class="text-center">Added On</th>
+                    <th class="text-center">Added By</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var note in Model.CurrentTakeRateDataItem.Notes)
+                {
+                    <tr>
+                        <td class="text-center">@note.EnteredOn.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="text-center">@note.EnteredBy</td>
+                        <td>@note.Note</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        }
+        <div class="form-group-sm">
+            <label for="@(Model.IdentifierPrefix)_NoteText">Add Note:</label>
+            <textarea class="form-control" id="@(Model.IdentifierPrefix)_NoteText" rows="1" style="min-width: 100%;margin-bottom:10px;"></textarea>
+            <button class="btn btn-sm btn-default pull-right" id="@(Model.IdentifierPrefix)_AddButton">Add</button>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="panel-title">History</div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered table-condensed table-responsive dataTable" style="font-size:11px">
+            <thead>
+                <tr>
+                    <th class="text-center">Updated On</th>
+                    <th class="text-center">Updated By</th>
+                    <th>Volume</th>
+                    <th>% Take Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var historyItem in Model.CurrentTakeRateDataItem.History)
+                {
+                    <tr>
+                        
+                        @if (historyItem.IsUncommittedChange)
+                        {
+                            <td class="edited text-center">@historyItem.AuditOn.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="edited text-center">@historyItem.AuditBy</td>
+                            <td class="edited">@historyItem.Volume</td>
+                            <td class="edited">@historyItem.PercentageTakeRate.GetValueOrDefault().ToString("P2")</td>
+                        }
+                        else
+                        {
+                            <td class="text-center">@historyItem.AuditOn.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">@historyItem.AuditBy</td>
+                            <td>@historyItem.Volume</td>
+                            <td>@historyItem.PercentageTakeRate.GetValueOrDefault().ToString("P2")</td>
+                        }
+                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

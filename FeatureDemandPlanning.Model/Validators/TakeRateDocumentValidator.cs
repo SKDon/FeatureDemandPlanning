@@ -9,32 +9,32 @@ using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Validators
 {
-    public class VolumeValidator : AbstractValidator<Volume>
+    public class TakeRateDocumentValidator : AbstractValidator<TakeRateDocument>
     {
         public const string noImportData = "No import data exists for the selected vehicle(s).";
         public const string noOxoDocuments = "No OXO documents exist for the selected vehicle(s).";
         public const string noMappedImportData = "No import files have been selected";
         public const string noMappedOxoDocument = "No OXO document has been selected";
 
-        public VolumeValidator(Volume volumeToValidate)
+        public TakeRateDocumentValidator(TakeRateDocument takeRateDocumentToValidate)
         {
-            InstantiateValidators(volumeToValidate);
-            SetupValidationRulesForVolume();
+            InstantiateValidators(takeRateDocumentToValidate);
+            SetupValidationRulesFortakeRateDocument();
         }
 
-        public static string GetRulesetsToValidate(VolumeValidationSection sectionToValidate)
+        public static string GetRulesetsToValidate(TakeRateDocumentValidationSection sectionToValidate)
         {
             var ruleSets = "*";
 
             switch (sectionToValidate)
             {
-                case VolumeValidationSection.Vehicle:
+                case TakeRateDocumentValidationSection.Vehicle:
                     ruleSets = "ForecastVehicle";
                     break;
-                case VolumeValidationSection.Import:
+                case TakeRateDocumentValidationSection.Import:
                     ruleSets = "Import";
                     break;
-                case VolumeValidationSection.Document:
+                case TakeRateDocumentValidationSection.Document:
                     ruleSets = "Document";
                     break;
                 default:
@@ -44,7 +44,7 @@ namespace FeatureDemandPlanning.Model.Validators
             return ruleSets;
         }
 
-        private void SetupValidationRulesForVolume()
+        private void SetupValidationRulesFortakeRateDocument()
         {
             RuleSet("ForecastVehicle", () =>
             {
@@ -84,34 +84,34 @@ namespace FeatureDemandPlanning.Model.Validators
             });
         }
 
-        private bool HaveImportData(Volume volume)
+        private bool HaveImportData(TakeRateDocument takeRateDocument)
         {
-            return volume.Vehicle.AvailableImports.Any();
+            return takeRateDocument.Vehicle.AvailableImports.Any();
         }
 
-        private bool HaveMappedImportData(Volume volume)
+        private bool HaveMappedImportData(TakeRateDocument takeRateDocument)
         {
-            return volume.VolumeSummary.Any();
+            return takeRateDocument.TakeRateSummary.Any();
         }
 
-        private bool HasMappedOxoDocument(Volume volume)
+        private bool HasMappedOxoDocument(TakeRateDocument takeRateDocument)
         {
-            return volume.Document != null;
+            return takeRateDocument.UnderlyingOxoDocument != null;
         }
 
-        private bool HaveAnOxoDocument(Volume volume)
+        private bool HaveAnOxoDocument(TakeRateDocument takeRateDocument)
         {
-            return volume.Vehicle.AvailableDocuments.Any();
+            return takeRateDocument.Vehicle.AvailableDocuments.Any();
         }
 
-        private bool InstantiateValidators(Volume volume)
+        private bool InstantiateValidators(TakeRateDocument takeRateDocument)
         {
-            volumeToValidate = volume;
+            takeRateDocumentToValidate = takeRateDocument;
             vehicleValidator = new ForecastVehicleValidator();
             return true;
         }
 
-        private Volume volumeToValidate = null;
+        private TakeRateDocument takeRateDocumentToValidate = null;
         private ForecastVehicleValidator vehicleValidator = null;
     }
 }

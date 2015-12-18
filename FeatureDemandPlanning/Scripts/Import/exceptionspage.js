@@ -254,7 +254,7 @@ page.ExceptionsPage = function (models) {
             ErrorMessage: $(this).attr("data-content")
         };
         $(document).trigger("Action", eventArgs);
-    }
+    };
     me.onActionEventHandler = function (sender, eventArgs) {
         var action = eventArgs.Action;
         var model = getModelForExceptionTypeAndAction(action);

@@ -1,4 +1,6 @@
-﻿@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel 
+﻿@using FeatureDemandPlanning.Model.Empty
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel 
 
 @{ var currentVersion = Model.CurrentVersion; }
 
@@ -8,30 +10,50 @@
 <script src="@Url.Content("~/Scripts/Shared/cookie.js")?v=@Model.CurrentVersion"></script>
 <script src="@Url.Content("~/Scripts/TakeRateData/model.js")?v=@Model.CurrentVersion"></script>
 <script src="@Url.Content("~/Scripts/TakeRateData/changeset.js")?v=@Model.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/TakeRateData/details.js")?v=@Model.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/TakeRateData/addnoteaction.js")?v=@Model.CurrentVersion"></script>
 <script src="@Url.Content("~/Scripts/TakeRateData/page.js")?v=@Model.CurrentVersion"></script>
 
 <script type="text/javascript">
 
     var volume, vehicle, pager, page, modal;
     var params = {
-        PageUri: "@Url.Action("VolumePage")",
-        SaveVolumeUri: "@Url.Action("Save")",
-        ValidateUri: "@Url.Action("Validate")",
-        ValidationMessageUri: "@Url.Action("ValidationMessage")",
+        ActionsUri: "@Url.Action("ContextMenu")",
+        ModalContentUri: "@Url.Action("ModalContent")",
+        ModalActionUri: "@Url.Action("ModalAction")",
         ModalDialogId: "modal",
         ModalContentId: "modalBody",
+        GetChangesetUri: "@Url.Action("GetLatestChangeset")",
+        RevertChangesetUri: "@Url.Action("RevertLatestChangeset")",
+        SaveChangesetUri: "@Url.Action("SaveChangeset")",
+        UpdateFilteredDataUri: "@Url.Action("UpdateFilteredData")",
+        ValidateUri: "@Url.Action("Validate")",
+        ValidationMessageUri: "@Url.Action("ValidationMessage")",
+        AddNoteUri: "@Url.Action("AddNoteUri")",
+        RefreshNotesUri: "@Url.Action("RefreshNotesUri")",
         Configuration: {},
         OXOVehicle: {},
         PageSize: @Model.PageSize,
         PageIndex: @Model.PageIndex,
-        CookieKey: "@Model.CookieKey"
+        CookieKey: "@Model.CookieKey",
+        OxoDocId: null,
+        MarketGroupId: null,
+        MarketId: null
     };
 
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
-    params.Vehicle = @Html.Raw(Json.Encode(Model.Volume.Vehicle));
-    @if (Model.Volume.Document != null)
+    params.Vehicle = @Html.Raw(Json.Encode(Model.Document.Vehicle));
+    @if (Model.Document.UnderlyingOxoDocument != null)
     {
-        @:params.OxoDocId = @Model.Volume.Document.Id;
+        @:params.OxoDocId = @Model.Document.UnderlyingOxoDocument.Id;
+    }
+    @if (!(Model.Document.Market is EmptyMarket))
+    {
+        @:params.MarketId = @Model.Document.Market.Id
+    }
+    @if (!(Model.Document.MarketGroup is EmptyMarketGroup))
+    {
+        @:params.MarketGroupId = @Model.Document.MarketGroup.Id
     }
 </script>
 <script src="@Url.Content("~/Scripts/TakeRateData/init.js")?v=@Model.CurrentVersion"></script>

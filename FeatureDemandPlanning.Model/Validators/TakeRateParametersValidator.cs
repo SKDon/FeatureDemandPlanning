@@ -27,12 +27,12 @@ namespace FeatureDemandPlanning.Model.Validators
             RuleSet(TakeRateIdentifierWithChangeset, () =>
             {
                 RuleFor(p => p.TakeRateId).NotNull().WithMessage("'DocumentId' not specified");
-                RuleFor(p => p.Changes).Must(NotBeAnEmptyChangeset).WithMessage("No changes to save");
+                RuleFor(p => p.Changeset).Must(NotBeAnEmptyChangeset).WithMessage("No changes to save");
             });
         }
-        public static bool NotBeAnEmptyChangeset(IEnumerable<DataChange> changeSet)
+        public static bool NotBeAnEmptyChangeset(FdpChangeset changeSet)
         {
-            return changeSet != null && changeSet.Any();
+            return changeSet != null && changeSet.Changes.Any();
         }
         public static TakeRateParametersValidator ValidateTakeRateParameters(TakeRateParameters parameters, string ruleSetName)
         {

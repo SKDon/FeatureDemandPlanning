@@ -16,7 +16,7 @@ namespace FeatureDemandPlanning.Model
         public DateTime? UpdatedOn { get; set; }
         public string UpdatedBy { get; set; }
 
-        public string OxoDocId { get; set; }
+        public int OxoDocId { get; set; }
         public string OxoDocument { get; set; }
 
         public int FdpTakeRateStatusId { get; set; }

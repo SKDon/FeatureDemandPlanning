@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Empty;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {
@@ -170,10 +172,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
             return model;
         }
 
-        public static LookupViewModel GetModelForVehicle(IVehicle forVehicle, IDataContext context)
+        public static async Task<LookupViewModel> GetModelForVehicle(IVehicle forVehicle, IDataContext context)
         {
             var model = GetModel(context);
-            model.LookupVehicle = context.Vehicle.GetVehicle(VehicleFilter.FromVehicle(forVehicle));
+            model.LookupVehicle = await context.Vehicle.GetVehicle(VehicleFilter.FromVehicle(forVehicle));
             model.Makes = model.ListMakes();
             model.Programmes = model.ListProgrammes();
             model.ModelYears = model.ListModelYears();

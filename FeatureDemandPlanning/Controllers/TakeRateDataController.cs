@@ -15,6 +15,7 @@ using MvcSiteMapProvider.Web.Mvc.Filters;
 using System;
 using FeatureDemandPlanning.Model.Results;
 using System.Collections.Generic;
+using FeatureDemandPlanning.Model.Empty;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -29,12 +30,6 @@ namespace FeatureDemandPlanning.Controllers
         {
             ControllerType = ControllerType.SectionChild;
         }
-
-        #endregion
-
-        #region "Public Properties"
-
-        public PageFilter PageFilter { get { return _pageFilter; } }
 
         #endregion
 
@@ -59,35 +54,13 @@ namespace FeatureDemandPlanning.Controllers
         {
             ViewBag.PageTitle = "OXO Volume";
 
-            var model = await FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, TakeRateFilter.FromTakeRateParameters(parameters));
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.TakeRateDataPage;
+            var model = await TakeRateViewModel.GetModel(DataContext, filter);
 
-            ViewData["DocumentName"] = model.Volume.Document.Name;
+            ViewData["DocumentName"] = model.Document.UnderlyingOxoDocument.Name;
 
             return View("TakeRateDataPage", model);
-        }
-        [HttpPost]
-        [HandleErrorWithJson]
-        public async Task<ActionResult> ListTakeRateData(TakeRateParameters parameters)
-        {
-            ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
-
-            var js = new JavaScriptSerializer();
-            var filter = new TakeRateFilter()
-            {
-                FilterMessage = parameters.FilterMessage,
-                TakeRateStatusId = parameters.TakeRateStatusId
-            };
-            filter.InitialiseFromJson(parameters);
-
-            var results = await TakeRateViewModel.GetModel(DataContext, filter);
-            var jQueryResult = new JQueryDataTableResultModel(results);
-
-            foreach (var result in results.TakeRates.CurrentPage)
-            {
-                jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
-            }
-
-            return Json(jQueryResult);
         }
         [HttpPost]
         public async Task<ActionResult> ContextMenu(TakeRateParameters parameters)
@@ -95,9 +68,11 @@ namespace FeatureDemandPlanning.Controllers
             TakeRateParametersValidator
                 .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.TakeRateDataItemDetails;
             var takeRateView = await TakeRateViewModel.GetModel(
                 DataContext,
-                TakeRateFilter.FromTakeRateId(parameters.TakeRateId.GetValueOrDefault()));
+                filter);
 
             return PartialView("_ContextMenu", takeRateView);
         }
@@ -125,45 +100,152 @@ namespace FeatureDemandPlanning.Controllers
         }
         [HandleErrorWithJson]
         [HttpPost]
-        public async Task<ActionResult> Save(TakeRateParameters parameters)
+        public async Task<ActionResult> SaveChangeset(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+
+            var savedChangeset = await DataContext.TakeRate.SaveChangeset(TakeRateFilter.FromTakeRateParameters(parameters), parameters.Changeset);
+
+            return Json(savedChangeset);
+        }
+        [HandleErrorWithJson]
+        [HttpPost]
+        public async Task<ActionResult> GetLatestChangeset(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
+
+            var changeset = await DataContext.TakeRate.GetUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
+
+            return Json(changeset);
+        }
+        [HandleErrorWithJson]
+        [HttpPost]
+        public async Task<ActionResult> RevertLatestChangeset(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
+
+            var changeset = await DataContext.TakeRate.RevertUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
+
+            return Json(changeset);
+        }
+        [HandleErrorWithJson]
+        [HttpPost]
+        public async Task<ActionResult> PersistChangeset(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
 
-            var filter = TakeRateFilter.FromTakeRateId(parameters.TakeRateId.Value);
-            var results = await DataContext.Volume.SaveChangeset(parameters);
+            var persistedChangeset = await DataContext.TakeRate.PersistChangeset(TakeRateFilter.FromTakeRateParameters(parameters), parameters.Changeset);
 
-            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
+            return Json(persistedChangeset);
         }
+    
+        //private DataChange GetWholeMarketChange(TakeRateParameters parameters)
+        //{
+        //    var wholeMarketChange = parameters.Changeset.Changes.Where(c => c.IsWholeMarketChange()).FirstOrDefault();
+        //    if (wholeMarketChange == null)
+        //        return new EmptyDataChange();
+
+        //    return wholeMarketChange;
+        //}
+        //private FdpChangeset RecalculateDataForMarket(TakeRateParameters parameters) 
+        //{
+        //    FdpChangeset retVal = new EmptyFdpChangeset();
+
+        //    var wholeMarketChange = GetWholeMarketChange(parameters);
+        //    if (wholeMarketChange is EmptyDataChange) {
+        //        return retVal;
+        //    }
+        //    if (wholeMarketChange.Mode == TakeRateResultMode.PercentageTakeRate) 
+        //    {
+        //        retVal = RecalculateVolumeDataForMarket(parameters);
+        //    }
+        //    else
+        //    {
+        //        retVal = RecalculateTakeRateDataForMarket(parameters);
+        //    }
+        //    return retVal;
+        //}
+        //private FdpChangeset RecalculateVolumeAndTakeRateDataForMarket(TakeRateParameters parameters) 
+        //{
+        //    var retVal = parameters.Changeset;
+        //    var wholeMarketChange = GetWholeMarketChange(parameters);
+
+        //    // Compute the new volume information based on the new take rate
+
+        //    var calculatedValues = DataContext.TakeRate.CalculateTakeRateAndVolumeByMarket(
+        //        TakeRateFilter.FromTakeRateParameters(parameters), 
+        //        wholeMarketChange);
+
+        //    // Append or replace and changes with the recalculated data
+            
+        //    return retVal;
+        //}
+        //private FdpChangeset RecalculateVolumeDataForMarket(TakeRateParameters parameters)
+        //{
+        //    var newChanges = new List<DataChange>();
+        //    var wholeMarketChange = GetWholeMarketChange(parameters);
+
+        //    return parameters.Changeset;
+        //}
+        //private FdpChangeset RecalculateTakeRateDataForMarket(TakeRateParameters parameters) 
+        //{
+        //    var newChanges = new List<DataChange>();
+        //    var wholeMarketChange = GetWholeMarketChange(parameters);
+
+        //    return parameters.Changeset;
+        //}
         [HttpPost]
-        public ActionResult Validate(Volume volumeToValidate,
-                                     VolumeValidationSection sectionToValidate = VolumeValidationSection.All)
+        public async Task<ActionResult> Validate(TakeRateParameters parameters,
+                                                 TakeRateDocumentValidationSection sectionToValidate = TakeRateDocumentValidationSection.All)
         {
-            var volumeModel = FdpOxoVolumeViewModel.GetFullAndPartialViewModel(DataContext, volumeToValidate, PageFilter).Result;
-            var validator = new VolumeValidator(volumeModel.Volume);
-            var ruleSets = VolumeValidator.GetRulesetsToValidate(sectionToValidate);
-            var jsonResult = new JsonResult()
-            {
-                Data = new { IsValid = true }
-            };
+            //var volumeModel = TakeRateViewModel.GetModel(DataContext, volumeToValidate).Result;
+            //var validator = new VolumeValidator(volumeModel.Volume);
+            //var ruleSets = VolumeValidator.GetRulesetsToValidate(sectionToValidate);
+            //var jsonResult = new JsonResult()
+            //{
+            //    Data = new { IsValid = true }
+            //};
 
-            var results = validator.Validate(volumeModel.Volume, ruleSet: ruleSets);
-            if (results.IsValid) return jsonResult;
-            var errorModel = results.Errors
-                .Select(e => new ValidationError(new ValidationErrorItem
-                {
-                    ErrorMessage = e.ErrorMessage,
-                    CustomState = e.CustomState
-                })
-                {
-                    key = e.PropertyName
-                });
+            //var results = validator.Validate(volumeModel.Volume, ruleSet: ruleSets);
+            //if (results.IsValid) return jsonResult;
+            //var errorModel = results.Errors
+            //    .Select(e => new ValidationError(new ValidationErrorItem
+            //    {
+            //        ErrorMessage = e.ErrorMessage,
+            //        CustomState = e.CustomState
+            //    })
+            //    {
+            //        key = e.PropertyName
+            //    });
 
-            jsonResult = new JsonResult()
+            //jsonResult = new JsonResult()
+            //{
+            //    Data = new ValidationMessage(false, errorModel)
+            //};
+            //return jsonResult;
+
+            ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
+
+            var filter = new TakeRateFilter()
             {
-                Data = new ValidationMessage(false, errorModel)
+                FilterMessage = parameters.FilterMessage,
+                TakeRateStatusId = parameters.TakeRateStatusId
             };
-            return jsonResult;
+            filter.InitialiseFromJson(parameters);
+
+            var results = await TakeRateViewModel.GetModel(DataContext, filter);
+            var jQueryResult = new JQueryDataTableResultModel(results);
+
+            foreach (var result in results.TakeRates.CurrentPage)
+            {
+                jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
+            }
+
+            return Json(jQueryResult);
         }
         public ActionResult ValidationMessage(ValidationMessage message)
         {
@@ -173,17 +255,16 @@ namespace FeatureDemandPlanning.Controllers
 
         #region "Private Methods"
 
-        private async Task<FdpOxoVolumeViewModel> GetModelFromParameters(TakeRateParameters parameters)
+        private async Task<TakeRateViewModel> GetModelFromParameters(TakeRateParameters parameters)
         {
-            return await FdpOxoVolumeViewModel.GetModel(
+            return await TakeRateViewModel.GetModel(
                 DataContext,
-                TakeRateFilter.FromTakeRateId(parameters.TakeRateId.Value),
-                parameters.Action);
+                TakeRateFilter.FromTakeRateParameters(parameters));
         }
-        private void ProcessVolumeData(IVolume volume)
+        private void ProcessTakeRateData(ITakeRateDocument document)
         {
-            DataContext.Volume.SaveVolume(volume);
-            DataContext.Volume.ProcessMappedData(volume);
+            DataContext.TakeRate.SaveTakeRateDocument(document);
+            DataContext.TakeRate.ProcessMappedData(document);
         }
         private static void ValidateTakeRateParameters(TakeRateParameters parameters, string ruleSetName)
         {
@@ -194,12 +275,6 @@ namespace FeatureDemandPlanning.Controllers
                 throw new ValidationException(result.Errors);
             }
         }
-
-        #endregion
-
-        #region "Private Members"
-
-        private PageFilter _pageFilter = new PageFilter();
 
         #endregion
     }

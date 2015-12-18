@@ -13,30 +13,36 @@ namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface ITakeRateDataContext
     {
-        TakeRateSummary GetVolumeHeader(VolumeFilter filter);
-        Task<PagedResults<TakeRateSummary>> ListTakeRateData(TakeRateFilter filter);
-        Task<PagedResults<TakeRateSummary>> ListLatestTakeRateData();
+        Task<PagedResults<TakeRateSummary>> ListTakeRateDocuments(TakeRateFilter filter);
+        Task<PagedResults<TakeRateSummary>> ListLatestTakeRateDocuments();
         Task<IEnumerable<TakeRateStatus>> ListTakeRateStatuses();
-
-        void SaveVolumeHeader(FdpVolumeHeader headerToSave);
         
-        IVolume GetVolume(VolumeFilter filter);
-        IVolume GetVolume(TakeRateFilter filter);
-        void SaveVolume(IVolume volumeToSave);
+        Task<TakeRateSummary> GetTakeRateDocumentHeader(TakeRateFilter filter);
+        Task<ITakeRateDocument> GetTakeRateDocument(TakeRateFilter filter);
+        
+        Task<TakeRateData> GetTakeRateDocumentData(TakeRateFilter filter);
 
-        TakeRateDataItem GetDataItem(TakeRateFilter filter);
-        TakeRateData ListVolumeData(VolumeFilter filter);
-        void SaveData(TakeRateDataItem dataItemToSave);
-        Task<IEnumerable<TakeRateDataItem>> SaveChangeset(TakeRateParameters parameters);
+        Task<TakeRateDataItem> GetDataItem(TakeRateFilter filter);
+        Task<IEnumerable<TakeRateDataItemNote>> ListDataItemNotes(TakeRateFilter filter);
 
-        IEnumerable<FdpOxoVolumeDataItemHistory> ListHistory(TakeRateDataItem forData);
-        IEnumerable<TakeRateDataItemNote> ListNotes(TakeRateDataItem forData);
+        Task<TakeRateDocumentHeader> SaveTakeRateDocumentHeader(TakeRateDocumentHeader headerToSave);
+        Task<ITakeRateDocument> SaveTakeRateDocument(ITakeRateDocument documentToSave);
+        Task<TakeRateDataItem> SaveDataItem(TakeRateDataItem dataItemToSave);
 
-        OXODoc GetOxoDocument(VolumeFilter filter);
-        IEnumerable<OXODoc> ListAvailableOxoDocuments(VehicleFilter filter);
+        Task<ITakeRateDocument> ProcessMappedData(ITakeRateDocument documentToProcess);
+        
+        Task<OXODoc> GetUnderlyingOxoDocument(TakeRateFilter filter);
+        Task<IEnumerable<SpecialFeature>> ListSpecialFeatures(ProgrammeFilter programmeFilter);
 
-        void ProcessMappedData(IVolume volumeToProcess);
+        Task<IEnumerable<TakeRateDataItem>> CalculateTakeRateAndVolumeByMarket(TakeRateFilter filter, DataChange forChange);
 
-        IEnumerable<SpecialFeature> ListSpecialFeatures(ProgrammeFilter programmeFilter);        
+        Task<FdpChangeset> GetUnsavedChangesForUser(TakeRateFilter filter);
+        Task<FdpChangeset> SaveChangeset(TakeRateFilter filter, FdpChangeset changesetToSave);
+        Task<DataChange> SaveChangesetDataChange(TakeRateFilter filter, DataChange changeToSave);
+
+        Task<FdpChangeset> PersistChangeset(TakeRateFilter takeRateFilter, FdpChangeset changesetToPersist);
+        Task<DataChange> PersistChangesetDataChange(TakeRateFilter filter, DataChange changeToPersist);
+
+        Task<FdpChangeset> RevertUnsavedChangesForUser(TakeRateFilter takeRateFilter);
     }
 }

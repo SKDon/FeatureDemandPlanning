@@ -1,5 +1,6 @@
 ﻿using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
 using System;
@@ -28,7 +29,7 @@ namespace FeatureDemandPlanning.DataStore
             _featureDataStore = new FeatureDataStore(cdsId);
             _derivativeDataStore = new DerivativeDataStore(cdsId);
         }
-        public IVehicle GetVehicle(VehicleFilter filter)
+        public async Task<IVehicle> GetVehicle(VehicleFilter filter)
         {
             IVehicle vehicle = new EmptyVehicle();
 
@@ -41,10 +42,10 @@ namespace FeatureDemandPlanning.DataStore
             if (programme == null)
                 return vehicle;
 
-            var availableDocuments = ListAvailableOxoDocuments(filter);
-            var availableImports = ListAvailableImports(filter, programme);
-            var availableModels = ListAvailableModels(filter);
-            var availableMarketGroups = ListAvailableMarketGroups(filter, programme);
+            var availableDocuments = await ListAvailableOxoDocuments(filter);
+            var availableImports = await ListAvailableImports(filter, programme);
+            var availableModels = await ListAvailableModels(filter);
+            var availableMarketGroups = await ListAvailableMarketGroups(filter, programme);
             //var availableMarkets = ListAvailableMarkets(filter, programme);
 
             vehicle = HydrateVehicleFromProgramme(programme);
@@ -58,32 +59,32 @@ namespace FeatureDemandPlanning.DataStore
 
             return vehicle;
         }
-        public IVehicle GetVehicle(ProgrammeFilter filter)
+        public async Task<IVehicle> GetVehicle(ProgrammeFilter filter)
         {
             var vehicleFilter = new VehicleFilter()
             {
                 ProgrammeId = filter.ProgrammeId,
                 Code = filter.Code
             };
-            return GetVehicle(vehicleFilter);
+            return await GetVehicle(vehicleFilter);
         }
-        public IEnumerable<OXODoc> ListAvailableOxoDocuments(VehicleFilter filter)
+        public async Task<IEnumerable<OXODoc>> ListAvailableOxoDocuments(VehicleFilter filter)
         {
-            return _documentDataStore
+            return await Task.FromResult(_documentDataStore
                         .OXODocGetManyByUser(this.CDSID)
                         .Where(d => IsDocumentForVehicle(d, VehicleFilter.ToVehicle(filter)))
-                        .Distinct(new OXODocComparer());
+                        .Distinct(new OXODocComparer()));
         }
-        public IEnumerable<TakeRateSummary> ListAvailableImports(VehicleFilter filter, Programme forProgramme)
+        public async Task<IEnumerable<TakeRateSummary>> ListAvailableImports(VehicleFilter filter, Programme forProgramme)
         {
-            var imports = _volumeDataStore
+            var imports = await Task.FromResult(_volumeDataStore
                             .FdpVolumeHeaderGetManyByUsername(new TakeRateFilter()
                             {
                                 ProgrammeId = filter.ProgrammeId,
                                 Gateway = filter.Gateway
                             })
                             .CurrentPage
-                            .ToList();
+                            .ToList());
 
             foreach (var import in imports) {
                 //import.Vehicle = (Vehicle)HydrateVehicleFromProgramme(forProgramme);
@@ -93,29 +94,29 @@ namespace FeatureDemandPlanning.DataStore
             return imports;
         }
 
-        public IEnumerable<FdpModel> ListAvailableModels(ProgrammeFilter filter)
+        public async Task<IEnumerable<FdpModel>> ListAvailableModels(ProgrammeFilter filter)
         {
-            var models = _modelDataStore
+            var models = await Task.FromResult(_modelDataStore
                             .ModelGetMany(filter)
-                            .ToList();
+                            .ToList());
 
             return models;
         }
-        public IEnumerable<MarketGroup> ListAvailableMarketGroups(VehicleFilter filter, Programme forProgramme)
+        public async Task<IEnumerable<MarketGroup>> ListAvailableMarketGroups(VehicleFilter filter, Programme forProgramme)
         {
             IEnumerable<MarketGroup> marketGroups = Enumerable.Empty<MarketGroup>();
             if (filter.OxoDocId.HasValue) {
-                marketGroups =  _marketGroupDataStore
-                                   .MarketGroupGetMany(forProgramme.Id, filter.OxoDocId.Value, true);
+                marketGroups =  await Task.FromResult(_marketGroupDataStore
+                                   .MarketGroupGetMany(forProgramme.Id, filter.OxoDocId.Value, true));
             } else {
-                marketGroups = _marketGroupDataStore
-                                   .MarketGroupGetMany(true);
+                marketGroups = await Task.FromResult(_marketGroupDataStore
+                                   .MarketGroupGetMany(true));
             }
             return marketGroups;
         }
-        public IEnumerable<string> ListAvailableMakes()
+        public async Task<IEnumerable<string>> ListAvailableMakes()
         {
-            var programmes = _programmeDataStore.ProgrammeGetMany();
+            var programmes = await Task.FromResult(_programmeDataStore.ProgrammeGetMany());
             if (programmes == null || !programmes.Any())
             {
                 return Enumerable.Empty<string>();
@@ -124,47 +125,47 @@ namespace FeatureDemandPlanning.DataStore
             return programmes.Select(p => p.VehicleMake).Distinct().OrderBy(p => p);
         }
 
-        public PagedResults<EngineCodeMapping> ListEngineCodeMappings(EngineCodeFilter filter)
-        {
-            var results = new PagedResults<EngineCodeMapping>();
+        //public PagedResults<EngineCodeMapping> ListEngineCodeMappings(EngineCodeFilter filter)
+        //{
+        //    var results = new PagedResults<EngineCodeMapping>();
 
-            var engineCodeMappings = _programmeDataStore.EngineCodeMappingGetMany();
-            if (engineCodeMappings == null || !engineCodeMappings.Any())
-                return results;
+        //    var engineCodeMappings = _programmeDataStore.EngineCodeMappingGetMany();
+        //    if (engineCodeMappings == null || !engineCodeMappings.Any())
+        //        return results;
 
-            // Filter the results 
-            // TODO, get this in the database as parameters
+        //    // Filter the results 
+        //    // TODO, get this in the database as parameters
 
-            engineCodeMappings = engineCodeMappings
-                .Where(e => !filter.ProgrammeId.HasValue || e.Id == filter.ProgrammeId.Value)
-                .Where(e => !filter.VehicleId.HasValue || e.VehicleId == filter.VehicleId.Value)
-                .Where(e => string.IsNullOrEmpty(filter.Code) || e.VehicleName.Equals(filter.Code, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => string.IsNullOrEmpty(filter.Make) || e.VehicleMake.Equals(filter.Make, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => string.IsNullOrEmpty(filter.ModelYear) || e.ModelYear.Equals(filter.ModelYear, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => string.IsNullOrEmpty(filter.Gateway) || e.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => string.IsNullOrEmpty(filter.DerivativeCode) || (string.IsNullOrEmpty(e.ExternalEngineCode) ? string.Empty : e.ExternalEngineCode.ToUpper()).Contains(filter.DerivativeCode.ToUpper()))
-                .Where(e => !filter.EngineId.HasValue || e.EngineId == filter.EngineId.Value)
-                .Where(e => string.IsNullOrEmpty(filter.EngineSize) || e.EngineSize.Equals(filter.EngineSize, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => string.IsNullOrEmpty(filter.Cylinder) || e.Cylinder.Equals(filter.Cylinder, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => string.IsNullOrEmpty(filter.Fuel) || e.Fuel.Equals(filter.Fuel, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => string.IsNullOrEmpty(filter.Power) || e.Power.Equals(filter.Power, StringComparison.InvariantCultureIgnoreCase))
-                .Where(e => string.IsNullOrEmpty(filter.Electrification) || e.Electrification.Equals(filter.Electrification, StringComparison.InvariantCultureIgnoreCase));
+        //    engineCodeMappings = engineCodeMappings
+        //        .Where(e => !filter.ProgrammeId.HasValue || e.Id == filter.ProgrammeId.Value)
+        //        .Where(e => !filter.VehicleId.HasValue || e.VehicleId == filter.VehicleId.Value)
+        //        .Where(e => string.IsNullOrEmpty(filter.Code) || e.VehicleName.Equals(filter.Code, StringComparison.InvariantCultureIgnoreCase))
+        //        .Where(e => string.IsNullOrEmpty(filter.Make) || e.VehicleMake.Equals(filter.Make, StringComparison.InvariantCultureIgnoreCase))
+        //        .Where(e => string.IsNullOrEmpty(filter.ModelYear) || e.ModelYear.Equals(filter.ModelYear, StringComparison.InvariantCultureIgnoreCase))
+        //        .Where(e => string.IsNullOrEmpty(filter.Gateway) || e.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase))
+        //        .Where(e => string.IsNullOrEmpty(filter.DerivativeCode) || (string.IsNullOrEmpty(e.ExternalEngineCode) ? string.Empty : e.ExternalEngineCode.ToUpper()).Contains(filter.DerivativeCode.ToUpper()))
+        //        .Where(e => !filter.EngineId.HasValue || e.EngineId == filter.EngineId.Value)
+        //        .Where(e => string.IsNullOrEmpty(filter.EngineSize) || e.EngineSize.Equals(filter.EngineSize, StringComparison.InvariantCultureIgnoreCase))
+        //        .Where(e => string.IsNullOrEmpty(filter.Cylinder) || e.Cylinder.Equals(filter.Cylinder, StringComparison.InvariantCultureIgnoreCase))
+        //        .Where(e => string.IsNullOrEmpty(filter.Fuel) || e.Fuel.Equals(filter.Fuel, StringComparison.InvariantCultureIgnoreCase))
+        //        .Where(e => string.IsNullOrEmpty(filter.Power) || e.Power.Equals(filter.Power, StringComparison.InvariantCultureIgnoreCase))
+        //        .Where(e => string.IsNullOrEmpty(filter.Electrification) || e.Electrification.Equals(filter.Electrification, StringComparison.InvariantCultureIgnoreCase));
 
-            results.TotalRecords = engineCodeMappings.Count();
+        //    results.TotalRecords = engineCodeMappings.Count();
 
-            if (filter.PageIndex.HasValue && filter.PageSize.HasValue)
-            {
-                results.CurrentPage = engineCodeMappings.Skip((filter.PageIndex.Value - 1) * filter.PageSize.Value).Take(filter.PageSize.Value);
-                results.PageIndex = filter.PageIndex.Value;
-                results.PageSize = filter.PageSize.Value;
-            }
-            else
-            {
-                results.CurrentPage = engineCodeMappings;
-            }
+        //    if (filter.PageIndex.HasValue && filter.PageSize.HasValue)
+        //    {
+        //        results.CurrentPage = engineCodeMappings.Skip((filter.PageIndex.Value - 1) * filter.PageSize.Value).Take(filter.PageSize.Value);
+        //        results.PageIndex = filter.PageIndex.Value;
+        //        results.PageSize = filter.PageSize.Value;
+        //    }
+        //    else
+        //    {
+        //        results.CurrentPage = engineCodeMappings;
+        //    }
 
-            return results;
-        }
+        //    return results;
+        //}
 
         public IEnumerable<ModelBody> ListBodies(ProgrammeFilter filter)
         {
@@ -206,9 +207,13 @@ namespace FeatureDemandPlanning.DataStore
         {
             return _trimDataStore.ModelTrimGetMany(filter);
         }
-        public IEnumerable<Feature> ListFeatures(ProgrammeFilter filter)
+        public async Task<IEnumerable<Feature>> ListFeatures(ProgrammeFilter filter)
         {
-            return _featureDataStore.FeatureGetMany("fdp", filter.VehicleId.GetValueOrDefault());
+            return await Task.FromResult(_featureDataStore.FeatureGetMany("fdp", paramId: filter.VehicleId.Value));
+        }
+        public async Task<IEnumerable<FdpFeature>> ListFeatures(FeatureFilter filter)
+        {
+            return await Task.FromResult(_featureDataStore.FeatureGetManyByDocumentId(filter));
         }
         public IEnumerable<FeatureGroup> ListFeatureGroups(ProgrammeFilter filter)
         {

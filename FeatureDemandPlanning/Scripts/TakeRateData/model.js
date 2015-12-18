@@ -9,17 +9,27 @@ model.OxoVolume = function (params) {
 
     privateStore[me.id = uid++] = {};
     privateStore[me.id].OxoDocId = params.OxoDocId;
+    privateStore[me.id].MarketGroupId = params.MarketGroupId;
+    privateStore[me.id].MarketId = params.MarketId;
+    privateStore[me.id].ModalContentUri = params.ModalContentUri;
+    privateStore[me.id].ModalActionUri = params.ModalActionUri;
     privateStore[me.id].Vehicle = params.Vehicle;
     privateStore[me.id].Config = params.Configuration;
+    privateStore[me.id].ActionsUri = params.ActionsUri;
     privateStore[me.id].EditVolumeUri = params.EditVolumeUri;
-    privateStore[me.id].SaveVolumeUri = params.SaveVolumeUri;
-    privateStore[me.id].AvailableDocumentsUri = params.AvailableDocumentsUri;
-    privateStore[me.id].AvailableImportsUri = params.AvailableImportsUri;
+    privateStore[me.id].GetChangesetUri = params.GetChangesetUri;
+    privateStore[me.id].RevertChangesetUri = params.RevertChangesetUri;
+    privateStore[me.id].SaveChangesetUri = params.SaveChangesetUri;
+    privateStore[me.id].PersistChangesetUri = params.PersistChangesetUri;
+    privateStore[me.id].UpdateFilteredDataUri = params.UpdateFilteredDataUri;
     privateStore[me.id].ValidateUri = params.ValidateUri;
     privateStore[me.id].ValidationMessageUri = params.ValidationMessageUri;
+    privateStore[me.id].AddNoteUri = params.AddNoteUri;
+    privateStore[me.id].RefreshNotesUri = params.RefreshNotesUri;
     privateStore[me.id].IsValid = true;
     privateStore[me.id].FdpVolumeHeaders = [];
     privateStore[me.id].CurrentEditValue = null;
+    privateStore[me.id].Parameters = params;
 
     me.ModelName = "OxoVolume";
 
@@ -27,8 +37,26 @@ model.OxoVolume = function (params) {
         var me = this;
         $(document).trigger("notifySuccess", me);
     };
+    me.getActionsUri = function () {
+        return privateStore[me.id].ActionsUri;
+    };
+    me.getActionModel = function (action) {
+        return new FeatureDemandPlanning.Volume.DetailsAction(me.getParameters());
+    };
+    me.getActionContentUri = function (action) {
+        return privateStore[me.id].ModalContentUri;
+    };
     me.getOxoDocId = function () {
         return privateStore[me.id].OxoDocId;
+    };
+    me.getMarketGroupId = function () {
+        return privateStore[me.id].MarketGroupId;
+    };
+    me.getMarketId = function () {
+        return privateStore[me.id].MarketId;
+    };
+    me.getParameters = function () {
+        return privateStore[me.id].Parameters;
     };
     me.getVehicle = function () {
         return privateStore[me.id].Vehicle;
@@ -45,8 +73,20 @@ model.OxoVolume = function (params) {
     me.getEditVolumeUri = function () {
         return privateStore[me.id].EditVolumeUri;
     };
-    me.getSaveVolumeUri = function () {
-        return privateStore[me.id].SaveVolumeUri;
+    me.getChangesetUri = function () {
+        return privateStore[me.id].GetChangesetUri;
+    };
+    me.getRevertChangsetUri = function () {
+        return privateStore[me.id].RevertChangesetUri;
+    };
+    me.getSaveChangesetUri = function () {
+        return privateStore[me.id].SaveChangesetUri;
+    };
+    me.getPersistChangesetUri = function () {
+        return privateStore[me.id].PersistChangesetUri;
+    };
+    me.getUpdateFilteredDataUri = function () {
+        return privateStore[me.id].UpdateFilteredDataUri;
     };
     me.getValidateUri = function () {
         return privateStore[me.id].ValidateUri;
@@ -76,54 +116,64 @@ model.OxoVolume = function (params) {
             FdpVolumeHeaders: me.getFdpVolumeHeaders()
         }
     };
-    me.getAvailableDocuments = function (callback) {
-        var volume = me.getVolume();
-        var encodedVolume = JSON.stringify(volume);
-
-        $.ajax({
-            type: "POST",
-            url: me.getAvailableDocumentsUri(),
-            data: encodedVolume,
-            context: this,
-            contentType: "application/json",
-            success: function (response) {
-                callback.call(this, response);
-            },
-            error: function (response) {
-                alert(response.responseText);
-            },
-            async: true
-        });
-    };
-    me.getAvailableImports = function (callback) {
-        var volume = me.getVolume();
-        var encodedVolume = JSON.stringify(volume);
-
-        $.ajax({
-            type: "POST",
-            url: me.getAvailableImportsUri(),
-            data: encodedVolume,
-            context: this,
-            contentType: "application/json",
-            success: function (response) {
-                callback.call(this, response);
-            },
-            error: function (response) {
-                alert(response.responseText);
-            },
-            async: true
-        });
-    };
-    me.saveVolume = function (changesToSave) {
-        var params = {
-            TakeRateId: me.getOxoDocId(),
-            Changes: changesToSave
-        };
+    me.loadChangeset = function (callback) {
+        var params = getFilter();
         $.ajax({
             "dataType": "json",
             "async": true,
             "type": "POST",
-            "url": me.getSaveVolumeUri(),
+            "url": me.getChangesetUri(),
+            "data": params,
+            "success": function (response) {
+                callback(response);
+            },
+            "error": function (jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    };
+    me.revertChangeset = function (callback) {
+        var params = getFilter();
+        $.ajax({
+            "dataType": "json",
+            "async": true,
+            "type": "POST",
+            "url": me.getRevertChangesetUri(),
+            "data": params,
+            "success": function (response) {
+                callback(response);
+            },
+            "error": function (jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    };
+    me.saveData = function (changesToSave, callback) {
+        var params = getFilter();
+        params.Changeset = changesToSave;
+        $.ajax({
+            "dataType": "json",
+            "async": true,
+            "type": "POST",
+            "url": me.getSaveChangesetUri(),
+            "data": params,
+            "success": function (json) {
+                $(document).trigger("Success", json);
+                callback();
+            },
+            "error": function (jqXHR, textStatus, errorThrown) {
+                $(document).trigger("Error", JSON.parse(jqXHR.responseText));
+            }
+        });
+    };
+    me.persistData = function (changesToPersist) {
+        var params = getFilter();
+        params.Changeset = changesToPersist;
+        $.ajax({
+            "dataType": "json",
+            "async": true,
+            "type": "POST",
+            "url": me.getPersistChangesetUri(),
             "data": params,
             "success": function (json) {
                 $(document).trigger("Success", json);
@@ -210,6 +260,12 @@ model.OxoVolume = function (params) {
             $(document).trigger("Validation", [json]);
         } else {
             $(document).trigger("Error", response);
+        }
+    };
+    function getFilter() {
+        return {
+            TakeRateId: me.getOxoDocId(),
+            Changeset: null
         }
     };
 }

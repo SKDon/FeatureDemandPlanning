@@ -1,4 +1,5 @@
-﻿using FeatureDemandPlanning.Model.Enumerations;
+﻿using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,20 +16,31 @@ namespace FeatureDemandPlanning.Model.Parameters
         public int? MarketGroupId { get; set; }
         public string FilterMessage { get; set; }
         public int? TakeRateStatusId { get; set; }
-        public TakeRateAction Action { get; set; }
+        public TakeRateDataItemAction Action { get; set; }
         public TakeRateResultMode Mode { get; set; }
+        public string ModelIdentifier { get; set; }
+        public string FeatureIdentifier { get; set; }
 
-        public IList<DataChange> Changes { get; set; }
+        public FdpChangeset Changeset { get; set; }
 
         public TakeRateParameters()
         {
-            Action = TakeRateAction.NotSet;
-            Changes = new List<DataChange>();
+            Action = TakeRateDataItemAction.NotSet;
+            Changeset = new EmptyFdpChangeset();
         }
 
-        public string GetActionSpecificParameters()
+        public object GetActionSpecificParameters()
         {
-            throw new NotImplementedException();
+            if (Action == TakeRateDataItemAction.TakeRateDataItemDetails)
+            {
+                return new
+                {
+                    TakeRateDataItemId = TakeRateDataItemId,
+                    Action = Action
+                };
+            }
+
+            return new { };
         }
     }
 }

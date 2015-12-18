@@ -1,4 +1,5 @@
-﻿using FeatureDemandPlanning.Model.Enumerations;
+﻿using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Parameters;
 using System;
@@ -14,37 +15,45 @@ namespace FeatureDemandPlanning.Model.Filters
         public int? TakeRateId { get; set; }
         public int? TakeRateDataItemId { get; set; }
         public int? TakeRateStatusId { get; set; }
-        public TakeRateAction Action { get; set; }
+        public TakeRateDataItemAction Action { get; set; }
         public TakeRateResultMode Mode { get; set; }
-        public IEnumerable<Model> Models { get; set; }
+        public IEnumerable<FdpModel> Models { get; set; }
+        public int? ModelId { get; set; }
+        public int? FdpModelId { get; set; }
+        public int? FeatureId { get; set; }
+        public int? FdpFeatureId { get; set; }
+
+        // For updating take rate and volume for summary items
+        public int? NewTakeRate { get; set; }
+        public int? NewVolume { get; set; }
         
         public TakeRateFilter()
         {
             Mode = TakeRateResultMode.PercentageTakeRate;
-            Models = Enumerable.Empty<Model>();
+            Models = Enumerable.Empty<FdpModel>();
         }
 
-        public static TakeRateFilter FromVolume(IVolume volume)
+        public static TakeRateFilter FromTakeRateDocument(ITakeRateDocument document)
         {
             var filter = new TakeRateFilter()
             {
-                ProgrammeId = volume.Vehicle.ProgrammeId,
-                Gateway = volume.Vehicle.Gateway
+                ProgrammeId = document.Vehicle.ProgrammeId,
+                Gateway = document.Vehicle.Gateway
             };
 
-            if (!(volume.Document is EmptyOxoDocument))
-                filter.OxoDocId = volume.Document.Id;
+            if (!(document.UnderlyingOxoDocument is EmptyOxoDocument))
+                filter.OxoDocId = document.UnderlyingOxoDocument.Id;
 
-            if (!(volume.Market is EmptyMarket))
-                filter.MarketId = volume.Market.Id;
+            if (!(document.Market is EmptyMarket))
+                filter.MarketId = document.Market.Id;
 
-            if (!(volume.MarketGroup is EmptyMarketGroup))
-                filter.MarketGroupId = volume.MarketGroup.Id;
+            if (!(document.MarketGroup is EmptyMarketGroup))
+                filter.MarketGroupId = document.MarketGroup.Id;
 
-            if (!(volume.Vehicle is EmptyVehicle))
-                filter.Models = volume.Vehicle.AvailableModels;
+            if (!(document.Vehicle is EmptyVehicle))
+                filter.Models = document.Vehicle.AvailableModels;
 
-            filter.Mode = volume.Mode;
+            filter.Mode = document.Mode;
 
             return filter;
         }
@@ -57,7 +66,7 @@ namespace FeatureDemandPlanning.Model.Filters
         }
         public static TakeRateFilter FromTakeRateParameters(TakeRateParameters parameters)
         {
-            return new TakeRateFilter()
+            var filter = new TakeRateFilter()
             {
                 OxoDocId = parameters.TakeRateId,
                 TakeRateDataItemId = parameters.TakeRateDataItemId,
@@ -67,6 +76,32 @@ namespace FeatureDemandPlanning.Model.Filters
                 MarketGroupId = parameters.MarketGroupId,
                 MarketId = parameters.MarketId
             };
+
+            if (!string.IsNullOrEmpty(parameters.ModelIdentifier))
+            {
+                if (parameters.ModelIdentifier.StartsWith("O"))
+                {
+                    filter.ModelId = int.Parse(parameters.ModelIdentifier.Substring(1));
+                }
+                else
+                {
+                    filter.FdpModelId = int.Parse(parameters.ModelIdentifier.Substring(1));
+                }
+            }
+
+            if (!string.IsNullOrEmpty(parameters.FeatureIdentifier))
+            {
+                if (parameters.FeatureIdentifier.StartsWith("O"))
+                {
+                    filter.FeatureId = int.Parse(parameters.FeatureIdentifier.Substring(1));
+                }
+                else
+                {
+                    filter.FdpFeatureId = int.Parse(parameters.FeatureIdentifier.Substring(1));
+                }
+            }
+
+            return filter;
         }
     }
 }

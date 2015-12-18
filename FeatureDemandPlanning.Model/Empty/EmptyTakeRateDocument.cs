@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FeatureDemandPlanning.Model.Empty;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model
 {
-    public class EmptyVolume : Volume
+    public class EmptyTakeRateDocument : TakeRateDocument
     {
-        public EmptyVolume()
+        public EmptyTakeRateDocument()
         {
-            Document = new EmptyOxoDocument();
+            UnderlyingOxoDocument = new EmptyOxoDocument();
             Vehicle = new EmptyVehicle();
             Market = new EmptyMarket();
             MarketGroup = new EmptyMarketGroup();

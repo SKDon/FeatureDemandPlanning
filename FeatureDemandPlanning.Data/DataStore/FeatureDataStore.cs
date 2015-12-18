@@ -21,6 +21,28 @@ namespace FeatureDemandPlanning.DataStore
             this.CurrentCDSID = cdsid;
         }
 
+        public IEnumerable<FdpFeature> FeatureGetManyByDocumentId(FeatureFilter filter)
+        {
+            IEnumerable<FdpFeature> retVal = Enumerable.Empty<FdpFeature>();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@DocumentId", filter.DocumentId.Value, dbType: DbType.Int32);
+
+                    retVal = conn.Query<FdpFeature>("Fdp_ProgrammeFeature_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FeatureGetManyByDocumentId", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
         public IEnumerable<Feature> FeatureGetMany(string mode = "generic", int paramId = 0, int docid = 0, string lookup = null, string group = null, int excludeObjId = 0, int excludeDocId = 0, bool useOACode = false)
         {
             IEnumerable<Feature> retVal = new List<Feature>();

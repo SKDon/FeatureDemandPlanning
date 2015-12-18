@@ -43,7 +43,9 @@ namespace FeatureDemandPlanning.Controllers
         {
             ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
 
-            var takeRateView = await TakeRateViewModel.GetModel(DataContext, new TakeRateFilter());
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.TakeRates;
+            var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
 
             return View(takeRateView);
         }
@@ -57,7 +59,8 @@ namespace FeatureDemandPlanning.Controllers
             var filter = new TakeRateFilter()
             {
                 FilterMessage = parameters.FilterMessage,
-                TakeRateStatusId = parameters.TakeRateStatusId
+                TakeRateStatusId = parameters.TakeRateStatusId,
+                Action = TakeRateDataItemAction.TakeRates
             };
             filter.InitialiseFromJson(parameters);
 

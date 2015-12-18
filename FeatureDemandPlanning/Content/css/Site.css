@@ -1126,6 +1126,7 @@ th.first-cell {
     border-top:none !important;
     border-bottom: none !important;
     border-right: solid 1px #2E4372 !important;
+    vertical-align:middle !important
 }
 
 th.bmc {
@@ -1225,7 +1226,17 @@ th.feature-code {
 
 .edited {
     font-weight:bold;
-    color: #48638e;
+    color: #801505 !important;
+}
+
+.edited-fdp {
+    font-weight:bold;
+    color: #801505 !important;
+}
+
+.edited-fdp-data {
+    font-weight:bold;
+    color: #801505  !important;
 }
 
 .indicator {
@@ -1234,5 +1245,5 @@ th.feature-code {
 }
 
 .changed-indicator {
-    color: #f00;
+    color: #AA3939;
 }

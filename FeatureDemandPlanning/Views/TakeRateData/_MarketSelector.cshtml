@@ -1,91 +1,93 @@
 ﻿@using FeatureDemandPlanning.Model
+@using FeatureDemandPlanning.Model.Empty
 @using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 @{
-    var totalDerivatives = Model.Volume.TotalDerivatives;
-    var totalDerivativesForSelection = Model.Volume.Vehicle.AvailableModels.Count();
+    var totalDerivatives = Model.Document.TotalDerivatives;
+    var totalDerivativesForSelection = Model.Document.Vehicle.AvailableModels.Count();
 }
-
-<!-- Single button -->
-<button id="btnMarket" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    @if (!(Model.Volume.MarketGroup is EmptyMarketGroup))
-    {
-        @:Market Group: @Model.Volume.MarketGroup.GroupName (@totalDerivativesForSelection)
-            }
-    else if (!(Model.Volume.Market is EmptyMarket))
-    {
-        @:Market: @Model.Volume.Market.Name (@totalDerivativesForSelection)
-            }
-    else
-    {
-        @:All Markets (@totalDerivatives)
-            }
-    <span class="caret"></span>
-</button>
-<ul class="dropdown-menu">
-    @{
-        var allMarketsLink = string.Format("All Markets ({0})", totalDerivatives);
-    }
-    <li>@Html.ActionLink(allMarketsLink, "Document", new { oxoDocId = Model.Volume.Document.Id, resultsMode = Model.Volume.Mode })</li>
-    @foreach (var marketGroup in Model.Volume.Vehicle.AvailableMarketGroups)
-    {
-        var selectedGroup = string.Empty;
-        if (!(Model.Volume.MarketGroup is EmptyMarketGroup) && marketGroup.Id == Model.Volume.MarketGroup.Id)
+<div class="btn-group" role="group" aria-label="Market Selector">
+    <!-- Single button -->
+    <button id="btnMarket" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @if (!(Model.Document.MarketGroup is EmptyMarketGroup))
         {
-            selectedGroup = "selected";
-        }
-        if (marketGroup.VariantCount > 0)
+            @:Market Group: @Model.Document.MarketGroup.GroupName (@totalDerivativesForSelection)
+            }
+        else if (!(Model.Document.Market is EmptyMarket))
         {
-            <li class="dropdown-submenu @selectedGroup">
-                @RenderUrlForMarketGroup(marketGroup)
-                <ul class="dropdown-menu">
-                    @{
-                        var markets = marketGroup.Markets.OrderBy(p => p.SubRegionOrder);
-                        var prevSubRegion = string.Empty;
-                    }
-                    @foreach (var market in markets)
-                    {
-                        var selectedMarket = string.Empty;
-                        if (!(Model.Volume.Market is EmptyMarket) && market.Id == Model.Volume.Market.Id)
-                        {
-                            selectedMarket = "selected";
-                        }
-                        if (prevSubRegion != market.SubRegion)
-                        {
-                            prevSubRegion = market.SubRegion;
-                            <li class="dropdown-header">@market.SubRegion</li>
-                        }
-                        if (market.VariantCount > 0)
-                        {
-                            <li class="@selectedMarket">@RenderUrlForMarket(market)</li>
-                        }
-                        else
-                        {
-                            <li><span>@market.Name</span></li>
-                        }
-                    }
-
-                </ul>
-            </li>
-        }
+            @:Market: @Model.Document.Market.Name (@totalDerivativesForSelection)
+            }
         else
         {
-            <li>
-                <span>@marketGroup.GroupName</span>
-            </li>
+            @:All Markets (@totalDerivatives)
+            }
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        @{
+            var allMarketsLink = string.Format("All Markets ({0})", totalDerivatives);
         }
-    }
-</ul>
+        <li>@Html.ActionLink(allMarketsLink, "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, resultsMode = Model.Document.Mode })</li>
+        @foreach (var marketGroup in Model.Document.Vehicle.AvailableMarketGroups)
+        {
+            var selectedGroup = string.Empty;
+            if (!(Model.Document.MarketGroup is EmptyMarketGroup) && marketGroup.Id == Model.Document.MarketGroup.Id)
+            {
+                selectedGroup = "selected";
+            }
+            if (marketGroup.VariantCount > 0)
+            {
+                <li class="dropdown-submenu @selectedGroup">
+                    @RenderUrlForMarketGroup(marketGroup)
+                    <ul class="dropdown-menu">
+                        @{
+                var markets = marketGroup.Markets.OrderBy(p => p.SubRegionOrder);
+                var prevSubRegion = string.Empty;
+                        }
+                        @foreach (var market in markets)
+                        {
+                            var selectedMarket = string.Empty;
+                            if (!(Model.Document.Market is EmptyMarket) && market.Id == Model.Document.Market.Id)
+                            {
+                                selectedMarket = "selected";
+                            }
+                            if (prevSubRegion != market.SubRegion)
+                            {
+                                prevSubRegion = market.SubRegion;
+                                <li class="dropdown-header">@market.SubRegion</li>
+                            }
+                            if (market.VariantCount > 0)
+                            {
+                                <li class="@selectedMarket">@RenderUrlForMarket(market)</li>
+                            }
+                            else
+                            {
+                                <li><span>@market.Name</span></li>
+                            }
+                        }
+
+                    </ul>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <span>@marketGroup.GroupName</span>
+                </li>
+            }
+        }
+    </ul>
+</div>
 
 @helper RenderUrlForMarketGroup(MarketGroup marketGroup)
 {
     var groupName = string.Format("{0} ({1})", marketGroup.GroupName, marketGroup.VariantCount);
-    @Html.ActionLink(groupName, "Document", new { oxoDocId = Model.Volume.Document.Id, marketGroupId = marketGroup.Id, resultsMode = Model.Volume.Mode });
+    @Html.ActionLink(groupName, "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, marketGroupId = marketGroup.Id, resultsMode = Model.Document.Mode });
 }
 
 @helper RenderUrlForMarket(Market market)
 {
     var marketName = string.Format("{0} ({1})", market.Name, market.VariantCount);
-    @Html.ActionLink(marketName, "Document", new { oxoDocId = Model.Volume.Document.Id, marketId = market.Id, resultsMode = Model.Volume.Mode });
+    @Html.ActionLink(marketName, "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, marketId = market.Id, resultsMode = Model.Document.Mode });
 }

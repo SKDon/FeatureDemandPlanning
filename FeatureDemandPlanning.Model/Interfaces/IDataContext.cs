@@ -11,7 +11,7 @@
         IForecastDataContext Forecast { get; }
         IImportDataContext Import { get; }
         IMarketDataContext Market { get; }
-        ITakeRateDataContext Volume { get; }
+        ITakeRateDataContext TakeRate { get; }
         IReferenceDataContext References { get; }
         INewsDataContext News { get; }
 

@@ -36,7 +36,7 @@ namespace FeatureDemandPlanning.DataStore
         public IForecastDataContext Forecast { get { return _forecastContext; } }
         public IImportDataContext Import { get { return _importContext; } }
         public IMarketDataContext Market { get { return _marketContext; } }
-        public ITakeRateDataContext Volume { get { return _volumeContext; } }
+        public ITakeRateDataContext TakeRate { get { return _volumeContext; } }
         public IReferenceDataContext References { get { return _referenceDataContext; } }
         public INewsDataContext News { get { return _newsDataContext; } }
 

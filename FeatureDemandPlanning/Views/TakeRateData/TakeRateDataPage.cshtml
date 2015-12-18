@@ -1,7 +1,8 @@
 ﻿@using FeatureDemandPlanning.Model
+@using FeatureDemandPlanning.Model.Empty
 @using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
 @section PageScripts
 {
@@ -63,19 +64,19 @@
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
                                 <label for="txtVolume" class="col-sm-8 control-label">Total Volume (All Markets):</label>
                                 <div class="col-sm-4 form-control-static">
-                                    @Model.Volume.VolumeData.TotalVolume.ToString("N0")
+                                    @Model.Document.TakeRateData.TotalVolume.ToString("N0")
                                 </div>
                             </div>
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
                                 <label class="col-sm-8 control-label">Filtered Volume (Selected Markets):</label>
                                 <div class="col-sm-4 form-control-static">
-                                    @Model.Volume.VolumeData.FilteredVolume.ToString("N0")
+                                    @Model.Document.TakeRateData.FilteredVolume.ToString("N0")
                                 </div>
                             </div>
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
                                 <label class="col-sm-8 control-label">% of Total Volume:</label>
                                 <div class="col-sm-4 form-control-static">
-                                    @Model.Volume.VolumeData.PercentageOfTotalVolume.ToString("P0")
+                                    @Model.Document.TakeRateData.PercentageOfTotalVolume.ToString("P0")
                                 </div>
                             </div>
                         </form>
@@ -89,7 +90,8 @@
 
 @section PageBody
 {
-    <div id="notifier" class="subscribers-notifySuccess subscribers-notifyError subscribers-notifyVehicle subscribers-notifyUpdated subscribers-notifyBeforePageChanged subscribers-notifyValidation col-lg-12" style="float:unset"></div>
+    <ul id="@(Model.IdentifierPrefix)_ContextMenu" class="dropdown-menu context-menu" role="menu" style="display:none"></ul>
+    <div id="notifier" class="subscribers-notify col-lg-12" style="float:none"></div>
 
     @Html.Partial("_Modal", Model)
 
@@ -102,12 +104,12 @@
 
 @helper RenderSelectedVehicle()
 {
-    if (!(Model.Volume.Document is EmptyOxoDocument)) {
-        @Model.Volume.Document.Name
+    if (!(Model.Document.UnderlyingOxoDocument is EmptyOxoDocument)) {
+        @Model.Document.UnderlyingOxoDocument.Name
     }
-    else if (!(Model.Volume.Vehicle is EmptyVehicle))
+    else if (!(Model.Document.Vehicle is EmptyVehicle))
     {
-        @Model.Volume.Vehicle.FullDescription
+        @Model.Document.Vehicle.FullDescription
     }
 }
 

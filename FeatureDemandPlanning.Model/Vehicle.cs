@@ -106,6 +106,18 @@ namespace FeatureDemandPlanning.Model
             }
         }
 
+        public IEnumerable<FdpFeature> AvailableFeatures
+        {
+            get
+            {
+                return _availableFeatures;
+            }
+            set
+            {
+                _availableFeatures = value;
+            }
+        }
+
         //public IEnumerable<Market> AvailableMarkets
         //{
         //    get
@@ -246,6 +258,7 @@ namespace FeatureDemandPlanning.Model
         private IEnumerable<TakeRateSummary> _availableImports = new List<TakeRateSummary>();
         private IEnumerable<FdpModel> _availableModels = new List<FdpModel>();
         private IEnumerable<MarketGroup> _availableMarketGroups = new List<MarketGroup>();
+        private IEnumerable<FdpFeature> _availableFeatures = new List<FdpFeature>();
         //private IEnumerable<Market> _availableMarkets = new List<Market>();
     }
 }

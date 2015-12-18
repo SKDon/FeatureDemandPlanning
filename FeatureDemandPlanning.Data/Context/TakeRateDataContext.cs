@@ -1,5 +1,6 @@
 ﻿using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Parameters;
@@ -12,6 +13,8 @@ namespace FeatureDemandPlanning.DataStore
 {
     public class TakeRateDataContext : BaseDataContext, ITakeRateDataContext
     {
+        #region "Constructors"
+
         public TakeRateDataContext(string cdsId) : base(cdsId)
         {
             _vehicleDataStore = new VehicleDataStore(cdsId);
@@ -19,122 +22,171 @@ namespace FeatureDemandPlanning.DataStore
             _takeRateDataStore = new TakeRateDataStore(cdsId);
             _modelDataStore = new ModelDataStore(cdsId);
         }
-        public IVolume GetVolume(TakeRateFilter filter)
-        {
-            return Volume.FromFilter(filter);
-        }
-        public IVolume GetVolume(VolumeFilter filter)
-        {
-            return Volume.FromFilter(filter);
-        }
-        public void ProcessMappedData(IVolume volumeToProcess)
-        {
 
-        }
-        public void SaveVolume(IVolume volumeToSave)
-        {
-            foreach(var header in volumeToSave.VolumeSummary) {
+        #endregion
 
-                var fdpOxoDoc = new FdpOxoDoc() {
-                    Header = header,
-                    Document = volumeToSave.Document
-                };
-                _takeRateDataStore.FdpOxoDocSave(fdpOxoDoc);
-            }
-        }
-        public TakeRateSummary GetVolumeHeader(VolumeFilter filter)
-        {
-            if (filter.FdpVolumeHeaderId.GetValueOrDefault() == 0)
-                return new EmptyVolumeHeader();
+        #region "Public Methods"
 
-            return _takeRateDataStore.FdpVolumeHeaderGet(filter.FdpVolumeHeaderId.Value);
-        }
-        public async Task<PagedResults<TakeRateSummary>> ListLatestTakeRateData()
+        public async Task<PagedResults<TakeRateSummary>> ListTakeRateDocuments(TakeRateFilter filter)
         {
-            var takeRates = await ListTakeRateData(new TakeRateFilter());
-
-            takeRates.CurrentPage = takeRates.CurrentPage.Take(2);
-
-            return takeRates;
+            return await Task.FromResult(_takeRateDataStore.FdpVolumeHeaderGetManyByUsername(filter));
         }
-        public async Task<PagedResults<TakeRateSummary>> ListTakeRateData(TakeRateFilter filter)
+        public async Task<PagedResults<TakeRateSummary>> ListLatestTakeRateDocuments()
         {
-            return await Task.FromResult<PagedResults<TakeRateSummary>>(
-                _takeRateDataStore.FdpVolumeHeaderGetManyByUsername(filter));
-        }
-        public void SaveVolumeHeader(FdpVolumeHeader header)
-        {
-            _takeRateDataStore.FdpVolumeHeaderSave(header);
-        }
-        public OXODoc GetOxoDocument(VolumeFilter filter)
-        {
-            if (!filter.ProgrammeId.HasValue || filter.OxoDocId.GetValueOrDefault() == 0)
-                return new EmptyOxoDocument();
-
-            return _documentDataStore.OXODocGet(filter.OxoDocId.Value, filter.ProgrammeId.Value);
+            var documents = await ListTakeRateDocuments(new TakeRateFilter());
+            documents.CurrentPage = documents.CurrentPage.Take(2);
+            return documents;
         }
         public async Task<IEnumerable<TakeRateStatus>> ListTakeRateStatuses()
         {
             return await Task.FromResult<IEnumerable<TakeRateStatus>>(_takeRateDataStore.FdpTakeRateStatusGetMany());
         }
-        public IEnumerable<OXODoc> ListAvailableOxoDocuments(VehicleFilter filter)
+        public async Task<TakeRateSummary> GetTakeRateDocumentHeader(TakeRateFilter filter)
         {
-            return _documentDataStore
-                        .OXODocGetManyByUser(this.CDSID)
-                        .Where(d => IsDocumentForVehicle(d, VehicleFilter.ToVehicle(filter)))
-                        .Distinct(new OXODocComparer());
+            return await Task.FromResult(_takeRateDataStore.TakeRateDocumentHeaderGet(filter));
         }
-        public TakeRateData ListVolumeData(VolumeFilter filter) 
+        public async Task<ITakeRateDocument> GetTakeRateDocument(TakeRateFilter filter)
         {
-            if (!IsFilterValidForVolumeData(filter))
+            return await Task.FromResult(TakeRateDocument.FromFilter(filter));
+        }
+        public async Task<TakeRateData> GetTakeRateDocumentData(TakeRateFilter filter)
+        {
+            if (!IsFilterValidForTakeRateData(filter))
                 return new TakeRateData();
 
-            return _takeRateDataStore.TakeRateDataItemList(filter);
+            return await Task.FromResult(_takeRateDataStore.TakeRateDataItemList(filter));
         }
-        public TakeRateDataItem GetDataItem(TakeRateFilter filter)
+        public async Task<TakeRateDataItem> GetDataItem(TakeRateFilter filter)
         {
-            return _takeRateDataStore.TakeRateDataItemGet(filter);
+            return await Task.FromResult(_takeRateDataStore.TakeRateDataItemGet(filter));
         }
-        public IEnumerable<SpecialFeature> ListSpecialFeatures(ProgrammeFilter programmeFilter)
+        public async Task<IEnumerable<TakeRateDataItemNote>> ListDataItemNotes(TakeRateFilter filter)
         {
-            return _takeRateDataStore.FdpSpecialFeatureTypeGetMany();
+            return await Task.FromResult(_takeRateDataStore.TakeRateDataItemNoteGetMany(filter));
         }
-        public void SaveData(TakeRateDataItem dataItemToSave)
+        public async Task<TakeRateDocumentHeader> SaveTakeRateDocumentHeader(TakeRateDocumentHeader headerToSave)
         {
-            _takeRateDataStore.TakeRateDataItemSave(dataItemToSave);
+            return await Task.FromResult(_takeRateDataStore.FdpVolumeHeaderSave(headerToSave));
         }
-        public async Task<IEnumerable<TakeRateDataItem>> SaveChangeset(TakeRateParameters parameters)
+        public async Task<ITakeRateDocument> SaveTakeRateDocument(ITakeRateDocument documentToSave)
         {
-            var results = new List<TakeRateDataItem>();
-            foreach (var change in parameters.Changes)
+            throw new System.NotImplementedException();
+        }
+        public async Task<TakeRateDataItem> SaveDataItem(TakeRateDataItem dataItemToSave)
+        {
+            return await Task.FromResult(_takeRateDataStore.TakeRateDataItemSave(dataItemToSave));
+        }
+        public async Task<ITakeRateDocument> ProcessMappedData(ITakeRateDocument documentToProcess)
+        {
+            throw new System.NotImplementedException();
+        }
+        public async Task<OXODoc> GetUnderlyingOxoDocument(TakeRateFilter filter)
+        {
+            OXODoc document = new EmptyOxoDocument();
+            if (!filter.OxoDocId.HasValue)
+                return document;
+
+            return await Task.FromResult(_documentDataStore.OXODocGet(filter.OxoDocId.Value, filter.ProgrammeId.GetValueOrDefault()));
+        }
+        public async Task<IEnumerable<SpecialFeature>> ListSpecialFeatures(ProgrammeFilter programmeFilter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpSpecialFeatureTypeGetMany());
+        }
+        public async Task<IEnumerable<TakeRateDataItem>> CalculateTakeRateAndVolumeByMarket(TakeRateFilter filter, DataChange forChange)
+        {
+            IEnumerable<TakeRateDataItem> retVal = Enumerable.Empty<TakeRateDataItem>();
+            if (filter.Mode == Model.Enumerations.TakeRateResultMode.PercentageTakeRate)
             {
-                var result = await Task.FromResult(_takeRateDataStore.TakeRateDataItemSave(change.ToDataItem()));
-                results.Add(result);
+                retVal = await Task.FromResult(_takeRateDataStore.FdpTakeRateByMarketGetMany(filter, forChange.PercentageTakeRate));
             }
-            return results;
+            else
+            {
+                retVal = await Task.FromResult(_takeRateDataStore.FdpVolumeByMarketGetMany(filter, forChange.Volume));
+            }
+            return retVal;
         }
-        public IEnumerable<FdpOxoVolumeDataItemHistory> ListHistory(TakeRateDataItem forData)
+        public async Task<FdpChangeset> GetUnsavedChangesForUser(TakeRateFilter filter)
         {
-            throw new System.NotImplementedException();
+            return await Task.FromResult(_takeRateDataStore.FdpLatestUnsavedChangesetByUserGet(filter));
         }
-        public IEnumerable<TakeRateDataItemNote> ListNotes(TakeRateDataItem forData)
+        public async Task<FdpChangeset> SaveChangeset(TakeRateFilter filter, FdpChangeset changesetToSave)
         {
-            throw new System.NotImplementedException();
+            var savedChangeset = await Task.FromResult(_takeRateDataStore.FdpChangesetSave(filter, changesetToSave));
+            var savedDataChanges = new List<DataChange>();
+
+            foreach (var dataChange in changesetToSave.Changes)
+            {
+                dataChange.FdpChangesetId = savedChangeset.FdpChangesetId;
+                var savedDataChange = await SaveChangesetDataChange(filter, dataChange);
+                if (!(savedDataChange is EmptyDataChange))
+                {
+                    savedDataChanges.Add(savedDataChange);
+                }
+                var recalculatedDataChange = await RecalculateChangesetDataChange(savedDataChange);
+            }
+            savedChangeset.Changes = savedDataChanges;
+
+            return savedChangeset;
         }
+        public async Task<DataChange> SaveChangesetDataChange(TakeRateFilter filter, DataChange changeToSave)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpChangesetDataItemSave(filter, changeToSave));
+        }
+        public async Task<DataChange> RecalculateChangesetDataChange(DataChange changeToRecalculate) 
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpChangesetDataItemRecalculate(changeToRecalculate));
+        }
+        public async Task<FdpChangeset> PersistChangeset(TakeRateFilter filter, FdpChangeset changesetToPersist)
+        {
+            var persistedChangeset = await Task.FromResult(_takeRateDataStore.FdpChangesetPersist(filter, changesetToPersist));
+            var persistedDataChanges = new List<DataChange>();
+
+            foreach (var dataChange in changesetToPersist.Changes)
+            {
+                dataChange.FdpChangesetId = persistedChangeset.FdpChangesetId;
+                var savedDataChange = await PersistChangesetDataChange(filter, dataChange);
+                if (!(savedDataChange is EmptyDataChange))
+                {
+                    persistedDataChanges.Add(savedDataChange);
+                }
+            }
+            persistedChangeset.Changes = persistedDataChanges;
+
+            return persistedChangeset;
+        }
+        public async Task<DataChange> PersistChangesetDataChange(TakeRateFilter filter, DataChange changeToPersist)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpChangesetDataItemPersist(filter, changeToPersist));
+        }
+        public async Task<FdpChangeset> RevertUnsavedChangesForUser(TakeRateFilter takeRateFilter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpChangesetRevert(takeRateFilter));
+        }
+
+        #endregion
+
+        #region "Private Methods"
+
         private bool IsDocumentForVehicle(OXODoc documentToCheck, IVehicle vehicle)
         {
             return (!vehicle.ProgrammeId.HasValue || documentToCheck.ProgrammeId == vehicle.ProgrammeId.Value) &&
                 (string.IsNullOrEmpty(vehicle.Gateway) || documentToCheck.Gateway == vehicle.Gateway);
         }
-        private bool IsFilterValidForVolumeData(VolumeFilter filter)
+        private bool IsFilterValidForTakeRateData(TakeRateFilter filter)
         {
             //return filter.OxoDocId.HasValue && (filter.MarketId.HasValue || filter.MarketGroupId.HasValue);
             return filter.OxoDocId.HasValue;
         }
 
+        #endregion
+
+        #region "Private Members"
+
         private VehicleDataStore _vehicleDataStore = null;
         private ModelDataStore _modelDataStore = null;
         private OXODocDataStore _documentDataStore = null;
         private TakeRateDataStore _takeRateDataStore = null;
+
+        #endregion
     }
 }

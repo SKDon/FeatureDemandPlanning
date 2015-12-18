@@ -1,0 +1,65 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+<form>
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+</form>
+
+<div class="well">
+
+    <div class="row">
+        <div class="col-xs-4 text-right"><strong>Market:</strong></div>
+        <div class="col-xs-8">
+            @Model.Document.Market.Name
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4 text-right"><strong>Model:</strong></div>
+        <div class="col-xs-8">
+            @Model.CurrentTakeRateDataItem.Model.Name
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4 text-right"><strong>Feature Code:</strong></div>
+        <div class="col-xs-8">
+            @Model.CurrentTakeRateDataItem.Feature.FeatureCode
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4 text-right"><strong>Description:</strong></div>
+        <div class="col-xs-8">
+            @Model.CurrentTakeRateDataItem.Feature.BrandDescription
+        </div>
+    </div>
+    @if (Model.CurrentTakeRateDataItem.HasUncommittedChanges) 
+    { 
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Volume:</strong></div>
+            <div class="col-xs-8 edited">
+                @Model.CurrentTakeRateDataItem.Volume.ToString("G")
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>% Take Rate:</strong></div>
+            <div class="col-xs-8 edited">
+                @Model.CurrentTakeRateDataItem.PercentageTakeRate.ToString("P2")
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Volume:</strong></div>
+            <div class="col-xs-8">
+                @Model.CurrentTakeRateDataItem.Volume.ToString("G")
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>% Take Rate:</strong></div>
+            <div class="col-xs-8">
+                @Model.CurrentTakeRateDataItem.PercentageTakeRate.ToString("P2")
+            </div>
+        </div>
+    }
+</div>

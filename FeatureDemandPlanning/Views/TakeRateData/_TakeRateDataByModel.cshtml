@@ -1,11 +1,11 @@
 ﻿@using enums = FeatureDemandPlanning.Model.Enumerations
 
-@model FeatureDemandPlanning.Model.ViewModel.FdpOxoVolumeViewModel
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
 <th class="cross-tab-data-item feature-description">Description</th>
 <th class="cross-tab-data-item feature-code">Code</th>
 <th class="text-right model-mix">
-    @if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+    @if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
     {
         @:% Mix
     }
@@ -14,18 +14,18 @@
         @:Volume
     }
 </th>
-@foreach (var availableModel in Model.Volume.Vehicle.AvailableModels)
+@foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
 {
     var modelClassName = string.Empty;
     if (availableModel.FdpModelId.HasValue)
     {
         modelClassName = "fdp-model";
     }
-    if (Model.Volume.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+    if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
     {
-        <th class="text-center model-mix editable-header @modelClassName">
+        <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="@Model.Document.Market.Id|@availableModel.StringIdentifier">
             @{
-        var summary = Model.Volume.VolumeData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
+        var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
         var percentage = "-";
         if (summary != null)
         {
@@ -37,9 +37,9 @@
     }
     else
     {
-        <th class="text-center model-mix editable-header @modelClassName" data-target="@availableModel.StringIdentifier">
+        <th class="text-center model-mix editable-header @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
             @{
-        var summary = Model.Volume.VolumeData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
+        var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
         var volume = "-";
         if (summary != null)
         {
@@ -48,5 +48,17 @@
         @volume
             }
         </th>
+    }
+}
+
+@helper RenderEditableClass()
+{
+    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket))
+    {
+        @("editable-header")
+    }
+    else
+    {
+        @(string.Empty)
     }
 }

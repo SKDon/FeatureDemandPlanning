@@ -19,6 +19,7 @@ model.Page = function (models) {
         me.loadData();
         me.registerEvents();
         me.registerSubscribers();
+        me.loadChangeset();
     };
     me.calcPanelHeight = function () {
         return ($(window).height()) - 135 + "px";
@@ -50,8 +51,15 @@ model.Page = function (models) {
         me.configureChangeset();
         //me.configureRules();
     };
-    me.saveData = function () {
-        getVolumeModel().saveVolume(getChangeset().getDataChanges());
+    me.persistData = function () {
+        getTakeRateDataModel().persistData(getChangeset().getDataChanges());
+    };
+    me.saveData = function (callback) {
+        var changes = getChangeset().getDataChanges();
+        getTakeRateDataModel().saveData(changes, callback);
+    };
+    me.updateFilteredData = function () {
+        getTakeRateDataModel().updateFilteredData(getChangeset().getDataChanges());
     };
     me.initialiseControls = function () {
         var prefix = me.getIdentifierPrefix();
@@ -77,33 +85,31 @@ model.Page = function (models) {
         return retVal;
     };
     me.getVolume = function () {
-        return getVolumeModel().getVolume();
+        return getTakeRateDataModel().getVolume();
     }
-    me.getOxoDocId = function () {
-        var document = getVolumeModel().getDocument();
-        if (document != null) {
-            return document.Id;
-        }
-        return null;
-    };
     me.getVehicle = function () {
-        return getVolumeModel().getVehicle();
+        return getTakeRateDataModel().getVehicle();
     };
     me.setVehicle = function (vehicle) {
-        getVolumeModel().setVehicle(vehicle);
+        getTakeRateDataModel().setVehicle(vehicle);
     };
     me.registerEvents = function () {
         var prefix = me.getIdentifierPrefix();
         $(document)
-            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notifySuccess").trigger("OnSuccessDelegate", [eventArgs]); })
-            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notifyError").trigger("OnErrorDelegate", [eventArgs]); })
-            .unbind("FilterComplete").on("FilterComplete", function (sender, eventArgs) { $(".subscribers-notifyFilterComplete").trigger("OnFilterCompleteDelegate", [eventArgs]); })
-            .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notifyResults").trigger("OnResultsDelegate", [eventArgs]); })
-            .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notifyUpdated").trigger("OnUpdatedDelegate", [eventArgs]); })
-            .unbind("Validation").on("Validation", function (sender, eventArgs) { $(".subscribers-notifyValidation").trigger("OnValidationDelegate", [eventArgs]); })
-            .unbind("EditCell").on("EditCell", function (sender, eventArgs) { $(".subscribers-notifyEditCell").trigger("OnEditCellDelegate", [eventArgs]); });
+            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
+            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
+            .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnResultsDelegate", [eventArgs]); })
+            .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdatedDelegate", [eventArgs]); })
+            .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
+            .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
+            .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
+            .unbind("Validation").on("Validation", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnValidationDelegate", [eventArgs]); })
+            .unbind("EditCell").on("EditCell", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnEditCellDelegate", [eventArgs]); })
+            .unbind("Save").on("Save", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSaveDelegate", [eventArgs]); })
+            .unbind("UpdateFilterVolume").on("UpdateFilterVolume", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdateFilterVolumeDelegate", [eventArgs]); });
 
-        $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notifySave").trigger("OnSaveDelegate", [eventArgs]); });
+        $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
+        $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
     };
     me.registerSubscribers = function () {
         var prefix = me.getIdentifierPrefix();
@@ -114,11 +120,14 @@ model.Page = function (models) {
             .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
             .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
             .unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
-            .unbind("OnValidationDelegate").on("OnValidationDelegate", me.onValidationEventHandler);
+            .unbind("OnValidationDelegate").on("OnValidationDelegate", me.onValidationEventHandler)
+            .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
+            .unbind("OnUpdateFilterVolumeDelegate").on("OnUpdateFilterVolumeDelegate", me.onUpdateFilterVolumeEventHandler);
 
         $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel")
             .on("OnEditCellDelegate", me.onEditCellEventHandler)
-            .on("OnSaveDelegate", me.onSaveEventHandler);
+            .on("OnSaveDelegate", me.onSaveEventHandler)
+            .on("OnPersistDelegate", me.onPersistEventHandler)
 
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
         $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);
@@ -159,9 +168,11 @@ model.Page = function (models) {
         //    }
         //}, ".dataTables_wrapper tbody tr td");
 
+        //$("#notifier").unbind("OnUpdateFilterDelegate").on("OnUpdateFilterDelegate", me.onUpdateFilterEventHandler);
         
     };
     me.configureCellEditing = function () {
+        
         $(".editable").editable(me.cellEditCallback,
         {
             tooltip: "Click to edit percentage take / volume",
@@ -185,14 +196,18 @@ model.Page = function (models) {
         var identifiers = $(this).attr("data-target").split("|");
         var modelIdentifier = null;
         var featureIdentifier = null;
+        var marketIdentifier = null;
 
         if (identifiers.length > 0) {
-            modelIdentifier = identifiers[0];
+            marketIdentifier = identifiers[0];
         }
         if (identifiers.length > 1) {
-            featureIdentifier = identifiers[1];
+            modelIdentifier = identifiers[1];
         }
-        var change = new FeatureDemandPlanning.Volume.Change(modelIdentifier, featureIdentifier);
+        if (identifiers.length > 2) {
+            featureIdentifier = identifiers[2];
+        }
+        var change = new FeatureDemandPlanning.Volume.Change(marketIdentifier, modelIdentifier, featureIdentifier);
         change.Mode = me.getResultsMode();
         var formattedValue = "";
         if (change.Mode === "PercentageTakeRate") {
@@ -255,20 +270,21 @@ model.Page = function (models) {
         return formattedValue;
     };
     me.onEditCellEventHandler = function (sender, eventArgs) {
+        var marketIdentifier = eventArgs.getMarketIdentifier();
         var modelIdentifier = eventArgs.getModelIdentifier();
         var featureIdentifier = eventArgs.getFeatureIdentifier();
          
-        var editedCell = $("tbody td[data-target='" + modelIdentifier + "|" + featureIdentifier + "']");
-        var editedRow = $(".DTFC_Cloned tbody tr[data-target='" + featureIdentifier + "']");
+        var editedCell = $("tbody td[data-target='" + marketIdentifier + "|" + modelIdentifier + "|" + featureIdentifier + "']");
+        var editedRow = $(".DTFC_Cloned tbody tr[data-target='" + marketIdentifier + "|" + featureIdentifier + "']");
         var changeSet = getChangeset();
 
         // If any changes have reverted back to the original value, we need to lower any change flags and remove from the changeset
-        var firstChange = changeSet.getChange(modelIdentifier, featureIdentifier);
-        if (firstChange != null && (
-                (eventArgs.Mode == "PercentageTakeRate" && eventArgs.getChangedTakeRate() === firstChange.getOriginalTakeRate()) ||
-                (eventArgs.Mode == "Raw" && eventArgs.getChangedVolume() === firstChange.getOriginalVolume())))
+        var priorChanges = changeSet.getChange(marketIdentifier, modelIdentifier, featureIdentifier);
+        if (priorChanges != null && priorChanges.length > 0 && (
+                (eventArgs.Mode == "PercentageTakeRate" && eventArgs.getChangedTakeRate() === priorChanges[0].getOriginalTakeRate()) ||
+                (eventArgs.Mode == "Raw" && eventArgs.getChangedVolume() === priorChanges[0].getOriginalVolume())))
         {
-            changeSet.removeChanges(modelIdentifier, featureIdentifier);
+            changeSet.removeChanges(marketIdentifier, modelIdentifier, featureIdentifier);
             editedCell.removeClass("edited");
 
             // If there are no other changes to the feature, lower the feature changed indicator
@@ -282,10 +298,132 @@ model.Page = function (models) {
             changeSet.addChange(eventArgs);
             editedCell.addClass("edited");
             editedRow.find(".changed-indicator").show();
+
+            // Now we have added to the client changeset, raise the save event to store the changeset on the database and perform any
+            // recalculation necessary
+
+            $(document).trigger("Save");
         }
     };
     me.onSaveEventHandler = function (sender, eventArgs) {
-        me.saveData();
+        me.saveData(me.saveCallback);
+    };
+    me.saveCallback = function () {
+        me.loadChangeset();
+    };
+    me.loadChangeset = function () {
+        getTakeRateDataModel().loadChangeset(me.loadChangesetCallback);
+    };
+    me.loadChangesetCallback = function (changesetData) {
+        var changeset = getChangeset();
+        var prefix = me.getIdentifierPrefix();
+        changeset.clear();
+        
+        $("#" + prefix + "_Save").prop("disabled", changesetData.Changes.length === 0)
+
+        for (var i = 0; i < changesetData.Changes.length; i++) {
+            var currentChange = changesetData.Changes[i];
+            var displayValue = "";
+            if (me.getResultsMode() === "PercentageTakeRate") {
+                displayValue = me.formatPercentageTakeRate(currentChange.PercentageTakeRate);
+            }
+            else
+            {
+                displayValue = me.formatVolume(currentChange.Volume);
+            }
+            var selector = $();
+            if (currentChange.IsFeatureSummary) {
+                selector = $("tbody span[data-target='FS|" + currentChange.DataTarget + "']");
+            }
+            else if (currentChange.IsModelSummary) {
+                selector = $("thead th[data-target='" + currentChange.DataTarget + "']").first();
+            }
+            else {
+                selector = $("tbody td[data-target='" + currentChange.DataTarget + "']");
+            }
+            selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
+        }
+    };
+    me.revertChangeset = function () {
+        getTakeRateDataModel().revertChangeset(me.revertChangesetCallback);
+    };
+    me.revertChangesetCallback = function (revertedData) {
+        var changeset = getChangeset();
+        changeset.clear();
+
+        for (var i = 0; i < revertedData.Changes.length; i++) {
+            if (me.getResultsMode() === "PercentageTakeRate") {
+                var currentChange = changesetData.Changes[i];
+                var displayValue = me.formatPercentageTakeRate(currentChange.PercentageTakeRate);
+
+                var selector = $();
+                if (currentChange.IsFeatureSummary) {
+                    selector = $("tbody span[data-target='FS|" + currentChange.DataTarget + "']");
+                }
+                else if (currentChange.IsModelSummary) {
+                    selector = $("thead th[data-target='" + currentChange.DataTarget + "']");
+                }
+                else {
+                    selector = $("tbody td[data-target='" + currentChange.DataTarget + "']");
+                }
+                selector.removeClass(me.getEditedDataClass(currentChange)).html(displayValue);
+            }
+        }
+    };
+    me.getEditedDataClass = function (changesetChange) {
+        var className = "edited";
+        if (changesetChange.IsFeatureSummary) {
+            className = me.getEditedDataClassForFeatureSummary(changesetChange);
+        }
+        else if (changesetChange.IsModelSummary) {
+            className = me.getEditedDataClassForModelSummary(changesetChange);
+        }
+        else {
+            className = me.getEditedDataClassForDataItem(changesetChange);
+        }
+        return className;
+    };
+    me.getEditedDataClassForFeatureSummary = function (changesetChange) {
+        var className = "edited";
+        if (changesetChange.FeatureIdentifier.charAt(0) === "F") {
+            className = "edited-fdp";
+        }
+        return className;
+    };
+    me.getEditedDataClassForModelSummary = function (changesetChange) {
+        var className = "edited";
+        if (changesetChange.ModelIdentifier.charAt(0) === "F") {
+            className = "edited-fdp";
+        }
+        return className;
+    };
+    me.getEditedDataClassForDataItem = function (changesetChange) {
+        var className = "edited";
+        if (changesetChange.FeatureIdentifier.charAt(0) === "F") {
+            className = "edited-fdp-data";
+        }
+        return className;
+    };
+    me.onPersistEventHandler = function (sender, eventArgs) {
+        me.persistData();
+    };
+    me.onUpdateFilterVolumeEventHandler = function (sender, eventArgs) {
+        var prefix = me.getIdentifierPrefix();
+        var marketIdentifier = getTakeRateDataModel().getMarketId();
+        var changeSet = getChangeset();
+        var priorChanges = changeSet.getChangesForMarket(marketIdentifier);
+
+        if (priorChanges.length > 0 && (
+                (eventArgs.Mode == "PercentageTakeRate" && eventArgs.getChangedTakeRate() === priorChanges[0].getOriginalTakeRate()) ||
+                (eventArgs.Mode == "Raw" && eventArgs.getChangedVolume() === priorChanges[0].getOriginalVolume())))
+        {
+            changeSet.removeChangesForMarket(marketIdentifier);
+        }
+        else
+        {
+            changeSet.addChange(eventArgs);
+        }
+        me.updateFilteredData();
     };
     me.configureComments = function () {
         $(".comment-item").popover({ html: true, title: "Comments" });
@@ -413,25 +551,128 @@ model.Page = function (models) {
                         lastSubGroupName = subGroupName;
                     }
                 }
+                me.bindContextMenu();
+                me.bindTableEvents();
             }
         });
 
         me.setDataTable(table);
         me.configureScrollerOffsets();
     };
+    me.bindContextMenu = function () {
+        $("#Page_TakeRateData .cross-tab-data-item").contextMenu({
+            menuSelector: "#" + me.getIdentifierPrefix() + "_ContextMenu",
+            dynamicContent: me.getContextMenu,
+            contentIdentifier: me.getDataItemId,
+            menuSelected: me.actionTriggered
+        });
+    };
+    me.bindTableEvents = function () {
+        var prefix = me.getIdentifierPrefix();
+        
+        //$(".input-filted-volume").on("blur", me.setPercentageOfTotalVolume);
+    };
+    //me.setPercentageOfTotalVolume = function (sender) {
+    //    var test = sender.val();
+    //};
+    me.raiseFilteredVolumeChanged = function () {
+
+        var marketIdentifier = getTakeRateDataModel().getMarketId();
+        var change = new FeatureDemandPlanning.Volume.Change(marketIdentifier, null, null);
+        change.Mode = me.getResultsMode();
+        var formattedValue = "";
+        if (change.Mode === "PercentageTakeRate") {
+
+            change.setOriginalTakeRate(me.getOriginalTakeRateByMarket());
+            change.setChangedTakeRate(me.parseCellValue(me.getChangedTakeRateByMarket()));
+
+            if (change.isValid()) {
+                formattedValue = me.formatPercentageTakeRate(change.getChangedTakeRate());
+            } else {
+                formattedValue = me.formatPercentageTakeRate(change.getOriginalTakeRate());
+            }
+
+        } else {
+
+            change.setOriginalVolume(me.getOriginalVolumeByMarket());
+            change.setChangedVolume(me.parseCellValue(me.getChangedVolumeByMarket()));
+
+            if (change.getChangedVolume() == null && change.getOriginalVolume() != null) {
+                formattedValue = me.formatVolume(change.getOriginalVolume());
+            } else {
+                formattedValue = me.formatVolume(change.getChangedVolume());
+            }
+        }
+        $(document).trigger("UpdateFilterVolume", change);
+    };
+    me.getOriginalTakeRateByMarket = function () {
+        var prefix = me.getIdentifierPrefix();
+        return parseFloat($("#" + prefix + "_OriginalTakeRateByMarket").val()).toFixed(2);
+    };
+    me.getChangedTakeRateByMarket = function () {
+        var prefix = me.getIdentifierPrefix();
+        return $(".input-filtered-volume").val();
+    };
+    me.getOriginalVolumeByMarket = function () {
+        var prefix = me.getIdentifierPrefix();
+        return parseInt($("#" + prefix + "_OriginalVolumeByMarket").val());
+    };
+    me.getChangedVolumeByMarket = function () {
+        var prefix = me.getIdentifierPrefix();
+        return $(".input-filtered-volume").val();
+    };
+    me.getDataItemId = function (cell) {
+        return $(cell).attr("data-target");
+    };
+    me.getContextMenu = function (dataItemString) {
+        var params = getFilter(dataItemString)
+        $.ajax({
+            "dataType": "html",
+            "async": true,
+            "type": "POST",
+            "url": getTakeRateDataModel().getActionsUri(),
+            "data": params,
+            "success": function (response) {
+                $("#" + me.getIdentifierPrefix() + "_ContextMenu").html(response);
+            },
+            "error": function (jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    };
+    me.actionTriggered = function (invokedOn, action) {
+        var dataItemString = $(this).attr("data-target")
+        var filter = getFilter(dataItemString);
+        filter.Action = parseInt($(this).attr("data-role")),
+
+        $(document).trigger("Action", filter);
+    };
+    me.onActionEventHandler = function (sender, eventArgs) {
+        var action = eventArgs.Action;
+        var model = getModelForAction(action);
+        var actionModel = model.getActionModel(action);
+
+        getModal().showModal({
+            Title: model.getActionTitle(action),
+            Uri: model.getActionContentUri(action),
+            Data: JSON.stringify(eventArgs),
+            Model: model,
+            ActionModel: actionModel
+        });
+    };
     me.parseInputData = function (value, settings) {
         var parsedValue = value.replace("%", "");
         parsedValue = parsedValue.replace("-", "");
         var trimmedValue = $.trim(parsedValue);
         return trimmedValue;
-    },
+    };
     me.onValidationEventHandler = function (sender, eventArgs) {
         me.getValidationMessage(eventArgs);
     };
     me.getValidationMessage = function (validationResults) {
         $.ajax({
             method: "POST",
-            url: getVolumeModel().getValidationMessageUri(),
+            url: getTakeRateDataModel().getValidationMessageUri(),
             data: JSON.stringify(validationResults),
             context: this,
             contentType: "application/json",
@@ -492,7 +733,7 @@ model.Page = function (models) {
         $("notifier").html(html).fadeIn("slow");
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
-        $("#notifier").html("<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.statusText + "</div>");
+        $("#notifier").html("<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.Message + "</div>");
     };
     me.onFilterChangedEventHandler = function (sender, eventArgs) {
         var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
@@ -506,11 +747,11 @@ model.Page = function (models) {
         me.getDataTable().draw();
     };
     me.validate = function (pageIndex, async) {
-        getVolumeModel().validate(pageIndex, async);
+        getTakeRateDataModel().validate(pageIndex, async);
     };
     me.toggleFdpVolumeHeader = function (data) {
         var fdpVolumeHeaderId = parseInt($(this).attr("data-target"));
-        var model = getVolumeModel();
+        var model = getTakeRateDataModel();
  
         $(".fdp-volume-header-toggle").text("Select").removeClass("btn-danger").addClass("btn-primary");
 
@@ -530,7 +771,7 @@ model.Page = function (models) {
     function getChangeset() {
         return privateStore[me.id].Changeset;
     };
-    function getVolumeModel() {
+    function getTakeRateDataModel() {
         return getModel("OxoVolume");
     };
     function getModels() {
@@ -549,18 +790,40 @@ model.Page = function (models) {
     function getCookies() {
         return getModel("Cookies");
     };
+    function getDetailsModel() {
+        return getModel("Details");
+    };
     function getModal() {
         return getModel("Modal");
     };
-    function getFilter() {
-        var model = getTakeRatesModel();
-        var pageSize = model.getPageSize();
-        var pageIndex = model.getPageIndex();
-        var filter = new FeatureDemandPlanning.TakeRate.TakeRateFilter();
+    function getModelForAction(actionId) {
+        // TODO we may have other actions from the context menu. Change to a switch and implement here
+        return getDetailsModel();
+    };
+    function getFilter(dataItemString) {
+        var identifiers = dataItemString.split("|");
+        var modelIdentifier = null;
+        var featureIdentifier = null;
+        var volume = getTakeRateDataModel();
+        var documentId = volume.getOxoDocId();
+        var marketId = volume.getMarketId();
+        var marketGroupId = volume.getMarketGroupId();
 
-        filter.PageIndex = pageIndex;
-        filter.PageSize = pageSize;
-
-        return filter;
+        if (identifiers.length > 0) {
+            marketId = identifiers[0];
+        }
+        if (identifiers.length > 1) {
+            modelIdentifier = identifiers[1];
+        }
+        if (identifiers.length > 1) {
+            featureIdentifier = identifiers[2];
+        }
+        return {
+            TakeRateId: documentId,
+            ModelIdentifier: modelIdentifier,
+            FeatureIdentifier: featureIdentifier,
+            MarketId: marketId,
+            MarketGroupId: marketGroupId
+        };
     };
 };

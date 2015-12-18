@@ -1,4 +1,5 @@
-﻿using FeatureDemandPlanning.Model.Interfaces;
+﻿using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
 
 namespace FeatureDemandPlanning.Model.Validators

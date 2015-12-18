@@ -1,36 +1,18 @@
-﻿using System;
+﻿using FeatureDemandPlanning.Model.Empty;
+using System;
 
 namespace FeatureDemandPlanning.Model
 {
     public class FdpOxoDoc
     {
         public int? FdpOxoDocId { get; set; }
+        public TakeRateSummary Header { get; set; }
+        public OXODoc Document { get; set; }
 
-        public TakeRateSummary Header 
-        { 
-            get 
-            { 
-                return _header; 
-            } 
-            set 
-            { 
-                _header = value; 
-            } 
-        }
-
-        public OXODoc Document
+        public FdpOxoDoc()
         {
-            get
-            {
-                return _document;
-            }
-            set
-            {
-                _document = value;
-            }
+            Header = new EmptyTakeRateSummary();
+            Document = new EmptyOxoDocument();
         }
-
-        private TakeRateSummary _header = new EmptyVolumeHeader();
-        private OXODoc _document = new EmptyOxoDocument();
     }
 }

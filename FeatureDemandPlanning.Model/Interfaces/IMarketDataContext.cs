@@ -11,18 +11,18 @@ namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IMarketDataContext
     {
-        IEnumerable<Market> ListAvailableMarkets();
-        IEnumerable<Market> ListTopMarkets();
+        Task<IEnumerable<Market>> ListAvailableMarkets();
+        Task<IEnumerable<Market>> ListTopMarkets();
 
-        Market GetMarket(VolumeFilter filter);
-        MarketGroup GetMarketGroup(VolumeFilter filter);
+        Market GetMarket(TakeRateFilter filter);
+        MarketGroup GetMarketGroup(TakeRateFilter filter);
         
         Market GetTopMarket(int marketId);
         Market AddTopMarket(int marketId);
         Market DeleteTopMarket(int marketId);
 
-        IEnumerable<FdpModel> ListAvailableModelsByMarket(ProgrammeFilter filter, Market byMarket);
-        IEnumerable<FdpModel> ListAvailableModelsByMarketGroup(ProgrammeFilter filter, MarketGroup byMarketGroup);
+        Task<IEnumerable<FdpModel>> ListAvailableModelsByMarket(ProgrammeFilter filter, Market byMarket);
+        Task<IEnumerable<FdpModel>> ListAvailableModelsByMarketGroup(ProgrammeFilter filter, MarketGroup byMarketGroup);
 
         // Mappings
 

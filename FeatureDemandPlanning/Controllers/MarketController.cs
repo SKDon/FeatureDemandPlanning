@@ -4,6 +4,7 @@ using FeatureDemandPlanning.Model.ViewModel;
 using System;
 using System.Linq;
 using System.Web.Mvc;
+using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -17,12 +18,12 @@ namespace FeatureDemandPlanning.Controllers
         }
 
         [HttpGet]
-        public ActionResult Market()
+        public async Task<ActionResult> Market()
         {
             MarketViewModel marketModel = new MarketViewModel()
             {
-                AvailableMarkets = DataContext.Market.ListAvailableMarkets(),
-                TopMarkets = DataContext.Market.ListTopMarkets()
+                AvailableMarkets = await DataContext.Market.ListAvailableMarkets(),
+                TopMarkets = await DataContext.Market.ListTopMarkets()
             };
 
             if (!marketModel.TopMarkets.Any())
@@ -40,30 +41,30 @@ namespace FeatureDemandPlanning.Controllers
         }
 
         [HttpGet]
-        public PartialViewResult TopMarkets()
+        public async Task<PartialViewResult> TopMarkets()
         {
             var marketModel = new MarketViewModel()
             {
-                AvailableMarkets = DataContext.Market.ListAvailableMarkets(),
-                TopMarkets = DataContext.Market.ListTopMarkets()
+                AvailableMarkets = await DataContext.Market.ListAvailableMarkets(),
+                TopMarkets = await DataContext.Market.ListTopMarkets()
             };
 
             return PartialView("TopMarkets", marketModel);
         }
 
         [HttpPost]
-        public ActionResult AddTopMarket(int marketId)
+        public async Task<ActionResult> AddTopMarket(int marketId)
         {
             var marketModel = new MarketViewModel();
             try
             {
-                marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets();
-                marketModel.TopMarkets = DataContext.Market.ListTopMarkets();
+                marketModel.AvailableMarkets = await DataContext.Market.ListAvailableMarkets();
+                marketModel.TopMarkets = await DataContext.Market.ListTopMarkets();
 
                 var addedMarket = DataContext.Market.AddTopMarket(marketId);
 
-                marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets();
-                marketModel.TopMarkets = DataContext.Market.ListTopMarkets();
+                marketModel.AvailableMarkets = await DataContext.Market.ListAvailableMarkets();
+                marketModel.TopMarkets = await DataContext.Market.ListTopMarkets();
 
                 marketModel.SetProcessState(new Model.ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Success,
                 String.Format("Market '{0}' was added successfully", addedMarket.Name)));
@@ -77,19 +78,19 @@ namespace FeatureDemandPlanning.Controllers
         }
 
         [HttpPost]
-        public ActionResult DeleteTopMarket(int marketId)
+        public async Task<ActionResult> DeleteTopMarket(int marketId)
         {
             MarketViewModel marketModel = new MarketViewModel();
 
             try
             {
-                marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets();
-                marketModel.TopMarkets = DataContext.Market.ListTopMarkets();
+                marketModel.AvailableMarkets = await DataContext.Market.ListAvailableMarkets();
+                marketModel.TopMarkets = await DataContext.Market.ListTopMarkets();
 
                 var deletedMarket = DataContext.Market.DeleteTopMarket(marketId);
 
-                marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets();
-                marketModel.TopMarkets = DataContext.Market.ListTopMarkets();
+                marketModel.AvailableMarkets = await DataContext.Market.ListAvailableMarkets();
+                marketModel.TopMarkets = await DataContext.Market.ListTopMarkets();
 
                 if (!marketModel.TopMarkets.Any())
                 {
@@ -112,11 +113,11 @@ namespace FeatureDemandPlanning.Controllers
         }
 
         [HttpPost]
-        public ActionResult ListAvailableMarkets(ProgrammeFilter filter)
+        public async Task<ActionResult> ListAvailableMarkets(ProgrammeFilter filter)
         {
             MarketViewModel marketModel = new MarketViewModel();
 
-            marketModel.AvailableMarkets = DataContext.Market.ListAvailableMarkets();
+            marketModel.AvailableMarkets = await DataContext.Market.ListAvailableMarkets();
 
             return Json(marketModel);
         }

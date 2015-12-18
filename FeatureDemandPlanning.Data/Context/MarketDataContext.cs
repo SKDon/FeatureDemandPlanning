@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using enums = FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Empty;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -22,17 +23,17 @@ namespace FeatureDemandPlanning.DataStore
             _marketGroupDataStore = new MarketGroupDataStore(cdsId);
             _documentDataStore = new OXODocDataStore(cdsId);
         }
-        public IEnumerable<Market> ListAvailableMarkets()
+        public async Task<IEnumerable<Market>> ListAvailableMarkets()
         {
-            return _marketDataStore.FdpMarketAvailableGetMany();
+            return await Task.FromResult(_marketDataStore.FdpMarketAvailableGetMany());
         }
         
-        public IEnumerable<Market> ListTopMarkets()
+        public async Task<IEnumerable<Market>> ListTopMarkets()
         {
-            return _marketDataStore.TopMarketGetMany()
-                .OrderBy(m => m.Name);
+            return await Task.FromResult(_marketDataStore.TopMarketGetMany()
+                .OrderBy(m => m.Name));
         }
-        public Market GetMarket(VolumeFilter filter)
+        public Market GetMarket(TakeRateFilter filter)
         {
             if (!filter.MarketId.HasValue)
                 return new EmptyMarket();
@@ -42,16 +43,16 @@ namespace FeatureDemandPlanning.DataStore
             if (market == null)
                 return new EmptyMarket();
 
-            // Populate the list of available derivatives for that market
+            // Populate the list of available derivatives for that market (including FDP derivatives)
             if (filter.OxoDocId.HasValue && filter.ProgrammeId.HasValue)
             {
-                var variants = _documentDataStore.OXODocAvailableModelsByMarket(filter.ProgrammeId.Value, filter.OxoDocId.Value, market.Id);
+                var variants = _modelDataStore.FdpAvailableModelByMarketGetMany(filter, market);
                 market.VariantCount = variants.Count();
             }
 
             return market;
         }
-        public MarketGroup GetMarketGroup(VolumeFilter filter)
+        public MarketGroup GetMarketGroup(TakeRateFilter filter)
         {
             if (!filter.MarketGroupId.HasValue || !filter.OxoDocId.HasValue || !filter.ProgrammeId.HasValue)
                 return new EmptyMarketGroup();
@@ -63,10 +64,10 @@ namespace FeatureDemandPlanning.DataStore
             if (marketGroup == null)
                 return new EmptyMarketGroup();
 
-            // Populate the list of available derivatives for that market
+            // Populate the list of available derivatives for that market (including FDP derivatives)
             if (filter.OxoDocId.HasValue && filter.ProgrammeId.HasValue)
             {
-                var variants = _documentDataStore.OXODocAvailableModelsByMarketGroup(filter.ProgrammeId.Value, filter.OxoDocId.Value, marketGroup.Id);
+                var variants = _modelDataStore.FdpAvailableModelByMarketGroupGetMany(filter, marketGroup);
                 marketGroup.VariantCount = variants.Count();
             }
 
@@ -93,15 +94,15 @@ namespace FeatureDemandPlanning.DataStore
 
             return _marketDataStore.TopMarketDelete(market);
         }
-        public IEnumerable<FdpModel> ListAvailableModelsByMarket(ProgrammeFilter filter, Market byMarket)
+        public async Task<IEnumerable<FdpModel>> ListAvailableModelsByMarket(ProgrammeFilter filter, Market byMarket)
         {
-            return _modelDataStore.FdpAvailableModelByMarketGetMany(filter, byMarket)
-                .Where(m => m.Available == true);
+            return await Task.FromResult(_modelDataStore.FdpAvailableModelByMarketGetMany(filter, byMarket)
+                .Where(m => m.Available == true));
         }
-        public IEnumerable<FdpModel> ListAvailableModelsByMarketGroup(ProgrammeFilter filter, MarketGroup byMarketGroup)
+        public async Task<IEnumerable<FdpModel>> ListAvailableModelsByMarketGroup(ProgrammeFilter filter, MarketGroup byMarketGroup)
         {
-            return _modelDataStore.FdpAvailableModelByMarketGroupGetMany(filter, byMarketGroup)
-                .Where(m => m.Available == true);
+            return await Task.FromResult(_modelDataStore.FdpAvailableModelByMarketGroupGetMany(filter, byMarketGroup)
+                .Where(m => m.Available == true));
         }
         public async Task<FdpMarketMapping> DeleteFdpMarketMapping(FdpMarketMapping marketMappingToDelete)
         {

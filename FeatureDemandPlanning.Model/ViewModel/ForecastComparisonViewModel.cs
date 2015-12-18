@@ -9,6 +9,7 @@ using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Validators;
 using FeatureDemandPlanning.Model.Enumerations;
 using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Empty;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {
@@ -141,23 +142,24 @@ namespace FeatureDemandPlanning.Model.ViewModel
             return model;
         }
 
-        private static void InitialiseForecast(IForecast forecast, IDataContext context)
+        private static async void InitialiseForecast(IForecast forecast, IDataContext context)
         {
-            InitialiseForecastVehicle(forecast, context);
+            await InitialiseForecastVehicle(forecast, context);
             InitialiseComparisonVehicles(forecast, context);
         }
-        private static void InitialiseForecastVehicle(IForecast forecast, IDataContext context)
+        private static async Task<IVehicle> InitialiseForecastVehicle(IForecast forecast, IDataContext context)
         {
             if (forecast.ForecastVehicle is EmptyVehicle)
             {
-                return;
+                return forecast.ForecastVehicle;
             }
 
-            forecast.ForecastVehicle = (Vehicle)InitialiseVehicle(forecast.ForecastVehicle, context);
+            forecast.ForecastVehicle = (Vehicle)(await InitialiseVehicle(forecast.ForecastVehicle, context));
+            return forecast.ForecastVehicle;
         }
-        private static IVehicle InitialiseVehicle(IVehicle vehicle, IDataContext context)
+        private static async Task<IVehicle> InitialiseVehicle(IVehicle vehicle, IDataContext context)
         {
-            var returnValue = context.Vehicle.GetVehicle(VehicleFilter.FromVehicle(vehicle));
+            var returnValue = await context.Vehicle.GetVehicle(VehicleFilter.FromVehicle(vehicle));
             returnValue.TrimMappings = vehicle.TrimMappings;
 
             return returnValue;
@@ -167,7 +169,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         /// Initialises the comparison vehicles.
         /// The list is re-ordered, placing empty vehicles at the end of the list
         /// </summary>
-        private static void InitialiseComparisonVehicles(IForecast forecast, IDataContext context)
+        private static async void InitialiseComparisonVehicles(IForecast forecast, IDataContext context)
         {
             var newComparisonVehicles = EmptyVehicleList.CreateEmptyVehicleList();
             var nonEmptyVehicles = new List<IVehicle>();
@@ -178,7 +180,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 {
                     continue;
                 }
-                nonEmptyVehicles.Add(InitialiseVehicle(comparisonVehicle, context));
+                nonEmptyVehicles.Add(await InitialiseVehicle(comparisonVehicle, context));
             }
 
             for (var i = 0; i < nonEmptyVehicles.Count(); i++)

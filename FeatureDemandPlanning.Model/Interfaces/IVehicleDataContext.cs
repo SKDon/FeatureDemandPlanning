@@ -11,15 +11,15 @@ namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IVehicleDataContext
     {
-        IVehicle GetVehicle(VehicleFilter filter);
-        IVehicle GetVehicle(ProgrammeFilter filter);
+        Task<IVehicle> GetVehicle(VehicleFilter filter);
+        Task<IVehicle> GetVehicle(ProgrammeFilter filter);
 
         IEnumerable<IVehicle> ListAvailableVehicles(VehicleFilter filter);
         
         IEnumerable<Programme> ListProgrammes(ProgrammeFilter filter);
         Programme GetProgramme(ProgrammeFilter filter);
 
-        IEnumerable<FdpModel> ListAvailableModels(ProgrammeFilter filter);
+        Task<IEnumerable<FdpModel>> ListAvailableModels(ProgrammeFilter filter);
         IEnumerable<ModelBody> ListBodies(ProgrammeFilter filter);
         IEnumerable<Derivative> ListDerivatives(DerivativeFilter filter);
         IEnumerable<Gateway> ListGateways(ProgrammeFilter filter);
@@ -27,7 +27,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter);
         IEnumerable<ModelEngine> ListEngines(ProgrammeFilter filter);
         IEnumerable<FdpTrimMapping> ListTrim(TrimFilter filter);
-        IEnumerable<Feature> ListFeatures(ProgrammeFilter filter);
+        Task<IEnumerable<Feature>> ListFeatures(ProgrammeFilter filter); // Get rid of this one
+        Task<IEnumerable<FdpFeature>> ListFeatures(FeatureFilter filter);
         IEnumerable<FeatureGroup> ListFeatureGroups(ProgrammeFilter filter);
         IEnumerable<TrimLevel> ListTrimLevels(ProgrammeFilter programmeFilter);
 

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Interfaces
 {
-    public interface IVolume
+    public interface ITakeRateDocument
     {
-        OXODoc Document { get; set; }
+        OXODoc UnderlyingOxoDocument { get; set; }
         Vehicle Vehicle { get; set; }
 
         Market Market { get; set; }
@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         int TotalDerivatives { get; set; }
 
-        IEnumerable<TakeRateSummary> VolumeSummary { get; set; }
-        TakeRateData VolumeData { get; set; }
+        IEnumerable<TakeRateSummary> TakeRateSummary { get; set; }
+        TakeRateData TakeRateData { get; set; }
     }
 }

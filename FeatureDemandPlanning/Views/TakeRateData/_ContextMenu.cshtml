@@ -1,0 +1,10 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+<li>
+    <a tabindex="-1" href="#" data-role="@((int)enums.TakeRateDataItemAction.TakeRateDataItemDetails)" data-target="@(Model.Document.Market.Id)|@(Model.CurrentTakeRateDataItem.ModelIdentifier)|@(Model.CurrentTakeRateDataItem.FeatureIdentifier)">
+        <span class="glyphicon glyphicon-info-sign pull-left"></span> View details...
+    </a>
+</li>
+

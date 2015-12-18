@@ -42,22 +42,29 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpTakeRateDataItemId", filter.TakeRateDataItemId, dbType: DbType.Int32);
+                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    para.Add("@MarketGroupId", filter.MarketGroupId, DbType.Int32);
+                    para.Add("@ModelId", filter.ModelId, DbType.Int32);
+                    para.Add("@FdpModelId", filter.FdpModelId, DbType.Int32);
+                    para.Add("@FeatureId", filter.FeatureId, DbType.Int32);
+                    para.Add("@FdpFeatureId", filter.FdpFeatureId, DbType.Int32);
 
-                    retVal = conn.Query<TakeRateDataItem>(fdpTakeRateDataItemGetStoredProcedureName, para, commandType: CommandType.StoredProcedure)
-                                 .FirstOrDefault();
+                    var results = conn.QueryMultiple(fdpTakeRateDataItemGetStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                    retVal = results.Read<TakeRateDataItem>().First();
 
-                    // Hydrate any notes for the item
+                    retVal.Notes = results.Read<TakeRateDataItemNote>();
+                    retVal.History = results.Read<TakeRateDataItemAudit>();
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpTakeRateDataItemGet", ex.Message, CurrentCDSID);
+                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemGet", ex.Message, CurrentCDSID);
                     throw;
                 }
             }
             return retVal;
         }
-        public TakeRateData TakeRateDataItemList(VolumeFilter filter)
+        public TakeRateData TakeRateDataItemList(TakeRateFilter filter)
         {
             TakeRateData retVal = new TakeRateData();
 
@@ -123,7 +130,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpOxoVolumeDataItemGetCrossTab", ex.Message, CurrentCDSID);
+                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemList", ex.Message, CurrentCDSID);
                     throw;
                 }
             }
@@ -197,21 +204,63 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpOxoVolumeDataNoteSave", ex.Message, CurrentCDSID);
+                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemNoteSave", ex.Message, CurrentCDSID);
                     throw;
                 }
             }
             return retVal;
         }
-        public TakeRateSummary FdpVolumeHeaderGet(int fdpVolumeHeaderId)
+        public IEnumerable<TakeRateDataItemNote> TakeRateDataItemNoteGetMany(TakeRateFilter filter)
         {
-            var volumeHeaders = FdpVolumeHeaderGetManyByUsername(new TakeRateFilter());
+            IEnumerable<TakeRateDataItemNote> retVal = Enumerable.Empty<TakeRateDataItemNote>();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpTakeRateDataItemId", filter.TakeRateDataItemId, dbType: DbType.Int32);
+
+                    retVal = conn.Query<TakeRateDataItemNote>(fdpTakeRateDataItemNoteGetManyStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemNoteGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public IEnumerable<TakeRateDataItemAudit> TakeRateDataItemHistoryGetMany(TakeRateFilter filter)
+        {
+            IEnumerable<TakeRateDataItemAudit> retVal = Enumerable.Empty<TakeRateDataItemAudit>();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpTakeRateDataItemId", filter.TakeRateDataItemId, dbType: DbType.Int32);
+
+                    retVal = conn.Query<TakeRateDataItemAudit>(fdpTakeRateDataItemHistoryGetManyStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemHistoryGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public TakeRateSummary TakeRateDocumentHeaderGet(TakeRateFilter filter)
+        {
+            var volumeHeaders = FdpVolumeHeaderGetManyByUsername(filter);
             if (volumeHeaders == null || !volumeHeaders.CurrentPage.Any())
                 return null;
 
-            return volumeHeaders.CurrentPage.Where(v => v.TakeRateId == fdpVolumeHeaderId).FirstOrDefault();
+            return volumeHeaders.CurrentPage.Where(v => v.OxoDocId == filter.OxoDocId).FirstOrDefault();
         }
-        public void FdpVolumeHeaderSave(FdpVolumeHeader header)
+        public TakeRateDocumentHeader FdpVolumeHeaderSave(TakeRateDocumentHeader header)
         {
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
@@ -225,11 +274,10 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpImportId", header.FdpImportId, dbType: DbType.Int32);
                     para.Add("@IsManuallyEntered", header.IsManuallyEntered, dbType: DbType.Boolean);
                     
-                    var rows = conn.Execute(fdpVolumeHeaderSaveStoredProcedureName, para, commandType: CommandType.StoredProcedure);
-
-                    if (rows != 0)
+                    var results = conn.Query<TakeRateDocumentHeader>(fdpVolumeHeaderSaveStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
                     {
-                        header.FdpVolumeHeaderId = para.Get<int>("@FdpVolumeHeaderId");
+                        header = results.First();
                     }
                 }
                 catch (Exception ex)
@@ -237,6 +285,7 @@ namespace FeatureDemandPlanning.DataStore
                     AppHelper.LogError("FdpVolumeDataStore.FdpVolumeHeaderSave", ex.Message, CurrentCDSID);
                 }
             }
+            return header;
         }
         public PagedResults<TakeRateSummary> FdpVolumeHeaderGetManyByUsername(TakeRateFilter filter)
         {
@@ -413,5 +462,276 @@ namespace FeatureDemandPlanning.DataStore
         private const string fdpSpecialFeatureTypeGetManyStoredProcedureName = "Fdp_SpecialFeatureType_GetMany";
 
         #endregion
+
+        public IEnumerable<TakeRateDataItem> FdpTakeRateByMarketGetMany(TakeRateFilter filter, decimal? newTakeRate)
+        {
+            IEnumerable<TakeRateDataItem> retVal = Enumerable.Empty<TakeRateDataItem>();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+      
+                    if (newTakeRate.HasValue) {
+                        para.Add("@NewTakeRate", filter.NewTakeRate, DbType.Decimal);
+                    }
+
+                    retVal = conn.Query<TakeRateDataItem>("dbo.Fdp_TakeRateByMarket_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public IEnumerable<TakeRateDataItem> FdpVolumeByMarketGetMany(TakeRateFilter filter, int? newVolume)
+        {
+            IEnumerable<TakeRateDataItem> retVal = Enumerable.Empty<TakeRateDataItem>();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    if (newVolume.HasValue) {
+                        para.Add("@NewVolume", filter.NewVolume, DbType.Int32);
+                    }
+
+                    retVal = conn.Query<TakeRateDataItem>("dbo.Fdp_TakeRateByVolume_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+    
+        public FdpChangeset FdpLatestUnsavedChangesetByUserGet(TakeRateFilter filter)
+        {
+ 	        FdpChangeset retVal = new EmptyFdpChangeset();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@CDSID", CurrentCDSID, DbType.String);
+                    para.Add("@IsSaved", false, DbType.Boolean);
+
+                    // First resultset is the header information
+
+                    var results = conn.QueryMultiple("dbo.Fdp_Changeset_GetLatestByUser", para, commandType: CommandType.StoredProcedure);
+                    var firstResultSet = results.Read<FdpChangeset>();
+                    if (firstResultSet == null)
+                    {
+                        return retVal;
+                    }
+                    retVal = firstResultSet.First();
+
+                    // Second resultset contains the data changes themselves
+
+                    var secondResultSet = results.Read<DataChange>();
+                    if (secondResultSet != null)
+                    {
+                        retVal.Changes = secondResultSet.ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FdpLatestUnsavedChangesetByUserGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public FdpChangeset FdpChangesetSave(TakeRateFilter filter, FdpChangeset changeSetToSave)
+        {
+            FdpChangeset retVal = new EmptyFdpChangeset();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@CDSID", CurrentCDSID, DbType.String);
+                   
+                    var results = conn.Query<FdpChangeset>("dbo.Fdp_Changeset_Save", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FdpChangesetSave", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public FdpChangeset FdpChangesetRevert(TakeRateFilter filter)
+        {
+            FdpChangeset retVal = new EmptyFdpChangeset();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@CDSID", CurrentCDSID, DbType.String);
+
+                    var results = conn.QueryMultiple("dbo.Fdp_Changeset_Revert", para, commandType: CommandType.StoredProcedure);
+                    var firstResultSet = results.Read<FdpChangeset>();
+                    if (firstResultSet == null)
+                    {
+                        return retVal;
+                    }
+                    retVal = firstResultSet.First();
+
+                    var secondResultSet = results.Read<DataChange>();
+                    if (secondResultSet == null)
+                    {
+                        return retVal;
+                    }
+                    retVal.Changes = secondResultSet.ToList();
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FdpChangesetRevert", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public FdpChangeset FdpChangesetPersist(TakeRateFilter filter, FdpChangeset changeSetToPersist)
+        {
+            FdpChangeset retVal = new EmptyFdpChangeset();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpChangesetId", changeSetToPersist.FdpChangesetId.GetValueOrDefault(), DbType.Int32);
+
+                    var results = conn.Query("dbo.Fdp_Changeset_Persist", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("TakeRateDataStore.FdpChangesetPersist", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public DataChange FdpChangesetDataItemSave(TakeRateFilter filter, DataChange dataItemToSave)
+        {
+            DataChange retVal = new EmptyDataChange();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpChangesetId", dataItemToSave.FdpChangesetId.GetValueOrDefault(), DbType.Int32);
+                    para.Add("@MarketId", dataItemToSave.MarketId, DbType.Int32);
+                    if (!dataItemToSave.IsFdpModel)
+                    {
+                        para.Add("@ModelId", dataItemToSave.GetModelId(), DbType.Int32);
+                    }
+                    else
+                    {
+                        para.Add("@FdpModelId", dataItemToSave.GetModelId(), DbType.Int32);
+                    }
+                    if (!dataItemToSave.IsFdpFeature)
+                    {
+                        para.Add("@FeatureId", dataItemToSave.GetFeatureId(), DbType.Int32);
+                    }
+                    else
+                    {
+                        para.Add("@FdpFeatureId", dataItemToSave.GetFeatureId(), DbType.Int32);
+                    }
+
+                    if (dataItemToSave.Volume.HasValue)
+                    {
+                        para.Add("@TotalVolume", dataItemToSave.Volume, DbType.Int32);
+                    }
+                    if (dataItemToSave.PercentageTakeRateAsFraction.HasValue)
+                    {
+                        para.Add("@PercentageTakeRate", dataItemToSave.PercentageTakeRateAsFraction, DbType.Decimal);
+                    }
+                    var results = conn.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Save", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FdpChangesetSave", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public DataChange FdpChangesetDataItemPersist(TakeRateFilter filter, DataChange dataItemToPersist)
+        {
+            DataChange retVal = new EmptyDataChange();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpChangesetDataItemId", dataItemToPersist.FdpChangesetDataItemId.GetValueOrDefault(), DbType.Int32);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FdpChangesetSave", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public DataChange FdpChangesetDataItemRecalculate(DataChange changeToRecalculate)
+        {
+            DataChange retVal = new EmptyDataChange();
+
+            using (IDbConnection conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpChangesetDataItemId", changeToRecalculate.FdpChangesetDataItemId.GetValueOrDefault(), DbType.Int32);
+                    var results = conn.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Recalculate", para, commandType: CommandType.StoredProcedure);
+                    if (results.Any())
+                    {
+                        retVal = results.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.FdpChangesetDataItemRecalculate", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
     }
 }

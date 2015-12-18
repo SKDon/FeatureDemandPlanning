@@ -180,6 +180,20 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="500.aspx.cs">
+      <DependentUpon>500.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="500.aspx.designer.cs">
+      <DependentUpon>500.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="404.aspx.cs">
+      <DependentUpon>404.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="404.aspx.designer.cs">
+      <DependentUpon>404.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\IgnoredExceptionController.cs" />
     <Compile Include="Controllers\SpecialFeatureMappingController.cs" />
@@ -250,6 +264,8 @@
     <Content Include="Content\Editor\oxo-logentry-editor.css" />
     <Content Include="Content\Editor\oxo-model-filter.css" />
     <Content Include="Content\Editor\oxo-viewer.css" />
+    <Content Include="500.aspx" />
+    <Content Include="404.aspx" />
     <Content Include="Content\Images\Brand\jag_logo.jpg" />
     <Content Include="Content\Images\Brand\jag_logo_transparent.png" />
     <Content Include="Content\Images\Brand\lr_logo_v2.jpg" />
@@ -1320,6 +1336,8 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\Shared\namespace.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\TakeRateData\addnoteaction.js" />
+    <Content Include="Scripts\TakeRateData\details.js" />
     <Content Include="Scripts\TrimMapping\copy.js" />
     <Content Include="Scripts\TrimMapping\delete.js" />
     <Content Include="Scripts\TrimMapping\init.js" />
@@ -1495,6 +1513,9 @@
     <Content Include="Views\TakeRate\_Modal.cshtml" />
     <Content Include="Views\TakeRate\_Scripts.cshtml" />
     <Content Include="Views\TakeRate\TakeRatePage.cshtml" />
+    <Content Include="Views\TakeRateData\_ContextMenu.cshtml" />
+    <Content Include="Views\TakeRateData\_TakeRateDataItemDetails.cshtml" />
+    <Content Include="Views\TakeRateData\_TakeRateDataItemHeader.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

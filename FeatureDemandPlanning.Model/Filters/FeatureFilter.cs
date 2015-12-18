@@ -6,6 +6,7 @@ namespace FeatureDemandPlanning.Model.Filters
     {
         public int? FeatureId { get; set; }
 
+        public int? DocumentId { get; set; }
         public string CarLine { get; set; }
         public string ModelYear { get; set; }
         public int? ProgrammeId { get; set; }
@@ -25,6 +26,13 @@ namespace FeatureDemandPlanning.Model.Filters
             return new FeatureFilter()
             {
                 FeatureId = featureId
+            };
+        }
+        public static FeatureFilter FromOxoDocumentId(int documentId)
+        {
+            return new FeatureFilter()
+            {
+                DocumentId = documentId
             };
         }
         public static FeatureFilter FromParameters(FeatureParameters parameters)

@@ -13,6 +13,7 @@ using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.Validators;
 using FeatureDemandPlanning.Model.ViewModel;
 using FluentValidation;
+using System.Web;
 
 
 namespace FeatureDemandPlanning.Controllers
@@ -112,7 +113,7 @@ namespace FeatureDemandPlanning.Controllers
 			if (forecastComparisonModel.Forecast.ForecastVehicle == null)
 			{
 				forecastComparisonModel.SetProcessState(
-					new ProcessState(ProcessStatus.Warning, "No programmes available matching search criteria"));
+					new ProcessState(FeatureDemandPlanning.Model.Enumerations.ProcessStatus.Warning, "No programmes available matching search criteria"));
 			}
 
 			return View("ForecastComparison", forecastComparisonModel);
@@ -348,16 +349,16 @@ namespace FeatureDemandPlanning.Controllers
 
 			// TO DO, get the trim mappings if anything has been saved to the database
 		}
-		private void HydrateLookups(IForecast forecast, ForecastComparisonViewModel forecastComparisonModel)
+		private async void HydrateLookups(IForecast forecast, ForecastComparisonViewModel forecastComparisonModel)
 		{
-			forecastComparisonModel.ForecastVehicleLookup = GetLookup(forecast.ForecastVehicle, HttpContext.Cache, DataContext);
+			forecastComparisonModel.ForecastVehicleLookup = await GetLookup(forecast.ForecastVehicle, HttpContext.Cache, DataContext);
             forecastComparisonModel.ComparisonVehicleLookup = new List<LookupViewModel>();
 			foreach (var comparisonVehicle in forecast.ComparisonVehicles)
 			{
-				forecastComparisonModel.ComparisonVehicleLookup.Add(GetLookup(comparisonVehicle, HttpContext.Cache, DataContext));
+				forecastComparisonModel.ComparisonVehicleLookup.Add(await GetLookup(comparisonVehicle, HttpContext.Cache, DataContext));
 			}
 		}
-		private static LookupViewModel GetLookup(IVehicle forVehicle, Cache cache, IDataContext dataContext)
+		private static async Task<LookupViewModel> GetLookup(IVehicle forVehicle, Cache cache, IDataContext dataContext)
 		{
             LookupViewModel lookup;
 			var cacheKey = string.Format("ProgrammeLookup_{0}", forVehicle.GetHashCode());
@@ -366,7 +367,7 @@ namespace FeatureDemandPlanning.Controllers
                 lookup = (LookupViewModel)cachedLookup;
 			}
 			else {
-                lookup = LookupViewModel.GetModelForVehicle(forVehicle, dataContext);
+                lookup = await LookupViewModel.GetModelForVehicle(forVehicle, dataContext);
 				cache.Add(cacheKey, lookup, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
 			}
 			return lookup;

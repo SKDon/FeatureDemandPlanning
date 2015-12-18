@@ -3,6 +3,7 @@ using FeatureDemandPlanning.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using FeatureDemandPlanning.Model.Empty;
 
 namespace FeatureDemandPlanning.Model.Validators
 {
