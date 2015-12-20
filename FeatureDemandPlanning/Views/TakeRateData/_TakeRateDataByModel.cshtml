@@ -37,7 +37,7 @@
     }
     else
     {
-        <th class="text-center model-mix editable-header @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
+        <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
             @{
         var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
         var volume = "-";

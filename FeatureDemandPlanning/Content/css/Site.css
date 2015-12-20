@@ -419,7 +419,7 @@ textarea {
 }
 
 .table-bordered.dataTable > tbody > tr > td:last-of-type {
-    border-right: 1px solid #7788aa;
+    /*border-right: 1px solid #7788aa;*/
 }
 
 .table-bordered.dataTable > tbody > tr:last-of-type > td {
@@ -661,9 +661,10 @@ th.header-A0 {
     background-color: #4e638e;
     color: #fff;
     cursor: pointer;
-    border-top: none !important;
+    border-top: solid 1px #78a !important;
     border-left: none !important;
     border-right: none !important;
+    border-bottom: solid 1px #78a !important;
     font-size: 11px;
     height:25px;
     vertical-align:middle !important;
@@ -711,6 +712,10 @@ td.collapsed-group[data-group-level="1"] {
   padding-bottom:0px;
   vertical-align:middle;
     height: 27px;
+}
+
+table.dataTable {
+    margin-top:0px !important
 }
 
 table.dataTable.table-condensed thead > tr > th {
@@ -872,8 +877,8 @@ td.nonApplicableFeature {
 }
 
 td.packFeature {
-    background-color: #403075 !important;
-    color: #887cb0;
+    background-color: #645495 !important;
+    color: #b4abd0;
     width: 100%;
 }
 td.standardFeature {
@@ -884,7 +889,7 @@ td.standardFeature {
 
 td.optionalFeature {
     background-color: #4e638e !important;
-    color: #12073b;
+    color: #fff;
     width:100%;
     border-color:#78a !important;
 }
@@ -895,8 +900,8 @@ li.nonApplicableFeature {
 }
 
 li.packFeature {
-    background-color: #403075 !important;
-    color: #887cb0;
+    background-color: #645495 !important;
+    color: #b4abd0;
 }
 
 li.standardFeature {
@@ -927,16 +932,6 @@ li.optionalFeature {
     border-bottom: medium none;
     padding-right: 8px;
     color: #887cb0;
-}
-
-.editable-cell {
-    height: 20px !important;
-    text-align:right;
-}
-
-.editable-header {
-    height: 20px;
-    text-align:right;
 }
 
 .editable-cell input {
@@ -1060,11 +1055,11 @@ th.model {
     color:#fff;
     font-size:8pt;
     vertical-align:middle !important;
-    padding:0px !important;
+    padding:3px;
 }
 
 th.fdp-model {
-    color:#887cb0 !important;
+    color:#b4abd0 !important;
     padding:0px !important;
     vertical-align:middle !important;
     font-size:8pt;
@@ -1082,12 +1077,14 @@ tr.cross-tab-header {
 td.cross-tab-fixed {
     background-color: #ffe2aa;
     border-color: #805b15 !important;
+    border-top:none !important;
+    border-bottom: #805b15 !important;
     color: #553800;
     vertical-align: middle
 }
 
 td.cross-tab-fixed-last {
-    border-right: solid 2px #553800 !important;
+    /*border-right: solid 2px #553800 !important;*/
 }
 
 td.cross-tab-data-item {
@@ -1096,6 +1093,7 @@ td.cross-tab-data-item {
     max-width:80px;
     font-size:8pt;
     padding-top:10px !important;
+    border-top:none !important;
     height:25px;
 }
 
@@ -1103,20 +1101,20 @@ td.fdp-data-item {
     width:80px;
     min-width:80px;
     max-width:80px;
-    background-color: #887cb0;
-    color: #12073b;
+    background-color: #DCD7EA;
+    color: #413075;
     height:25px;
     padding-top:10px !important;
 }
 
 td.fdp-data-item-fixed {
-    background-color: #605292;
-    border-color: #887cb0 !important;
-    color: #fff;
+    background-color: #b4abd0;
+    border-color: #887cb0;
+    color: #12073b;
 }
 
 td.fdp-data-item-fixed-last {
-    border-right: solid 2px #261758 !important;
+    /*border-right: solid 2px #261758 !important;*/
 }
 
 th.first-cell {
@@ -1181,7 +1179,7 @@ th.feature-description {
     /*border-top:none !important;*/
     border-bottom: none !important;
     border-right: solid 1px #2E4372 !important;
-    min-width:300px;
+    min-width:200px;
 }
 
 th.feature-code {
@@ -1195,7 +1193,15 @@ th.feature-code {
 }
 
 .DTFC_LeftBodyWrapper {
-    top:-14px !important;
+    margin-top: 6px !important;
+}
+
+.DTFC_LeftBodyLiner {
+    top: -14px !important;
+}
+
+.DTFC_Cloned {
+    border-right: none !important;
 }
 
 .comment-item, .rule-item {
@@ -1241,9 +1247,41 @@ th.feature-code {
 
 .indicator {
     padding-left:2px;
-    padding-right:2px;
+    padding-right:2px;S
 }
 
 .changed-indicator {
     color: #AA3939;
+}
+
+.small-panel-heading {
+    padding-top:5px;
+    padding-bottom:5px;
+}
+
+.small-panel-title {
+    font-size:14px;
+}
+
+.small-well {
+    font-size:11px;
+    padding:9px;
+    margin-bottom:10px;
+}
+
+.modal-header-sm {
+    padding-top:8px;
+    padding-bottom:8px;
+}
+
+.modal-title-sm {
+    font-size:16px;
+}
+
+.modal-body-sm {
+    padding:10px;
+}
+
+.panel-sm {
+    margin-bottom:10px;
 }

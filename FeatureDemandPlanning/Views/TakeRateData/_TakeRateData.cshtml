@@ -118,8 +118,8 @@
                             </th>
                         }
                     </tr>
-                    <tr class="cross-tab-header" style="height:25px">
-                        <th colspan="3" class="text-right trim-level">Level</th>
+                    <tr class="cross-tab-header">
+                        <th colspan="3" class="text-right trim-level">Trim Level / DPCK</th>
                         @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
                         {
                             var modelClassName = string.Empty;
@@ -130,7 +130,13 @@
                             <th class="text-center trim-level @modelClassName">
                                 @if (!string.IsNullOrEmpty(availableModel.TrimLevel))
                                 {
-                                    <span>@availableModel.TrimLevel</span>
+                                    <span>
+                                        @availableModel.TrimLevel
+                                    </span>
+                                    if (!string.IsNullOrEmpty(availableModel.DPCK))
+                                        {
+                                            <span>&nbsp;/ @availableModel.DPCK</span>
+                                        }
                                 }
                                 else
                                 {
@@ -139,7 +145,7 @@
                             </th>
                         }
                     </tr>
-                    <tr class="cross-tab-header">
+                    @*<tr class="cross-tab-header">
                         <th colspan="3" class="text-right dpck">DPCK</th>
                         @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
                         {
@@ -159,7 +165,7 @@
                                 }
                             </th>
                         }
-                    </tr>
+                    </tr>*@
                     <tr class="cross-tab-header" id="@(Model.IdentifierPrefix)_TakeRateByModel">
                         @Html.Partial("_TakeRateDataByModel")
                     </tr>

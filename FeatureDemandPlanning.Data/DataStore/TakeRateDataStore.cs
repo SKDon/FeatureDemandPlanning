@@ -532,7 +532,7 @@ namespace FeatureDemandPlanning.DataStore
 
                     var results = conn.QueryMultiple("dbo.Fdp_Changeset_GetLatestByUser", para, commandType: CommandType.StoredProcedure);
                     var firstResultSet = results.Read<FdpChangeset>();
-                    if (firstResultSet == null)
+                    if (firstResultSet == null || !firstResultSet.Any())
                     {
                         return retVal;
                     }
