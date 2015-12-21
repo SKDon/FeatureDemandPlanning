@@ -142,62 +142,6 @@ namespace FeatureDemandPlanning.Controllers
 
             return Json(persistedChangeset);
         }
-    
-        //private DataChange GetWholeMarketChange(TakeRateParameters parameters)
-        //{
-        //    var wholeMarketChange = parameters.Changeset.Changes.Where(c => c.IsWholeMarketChange()).FirstOrDefault();
-        //    if (wholeMarketChange == null)
-        //        return new EmptyDataChange();
-
-        //    return wholeMarketChange;
-        //}
-        //private FdpChangeset RecalculateDataForMarket(TakeRateParameters parameters) 
-        //{
-        //    FdpChangeset retVal = new EmptyFdpChangeset();
-
-        //    var wholeMarketChange = GetWholeMarketChange(parameters);
-        //    if (wholeMarketChange is EmptyDataChange) {
-        //        return retVal;
-        //    }
-        //    if (wholeMarketChange.Mode == TakeRateResultMode.PercentageTakeRate) 
-        //    {
-        //        retVal = RecalculateVolumeDataForMarket(parameters);
-        //    }
-        //    else
-        //    {
-        //        retVal = RecalculateTakeRateDataForMarket(parameters);
-        //    }
-        //    return retVal;
-        //}
-        //private FdpChangeset RecalculateVolumeAndTakeRateDataForMarket(TakeRateParameters parameters) 
-        //{
-        //    var retVal = parameters.Changeset;
-        //    var wholeMarketChange = GetWholeMarketChange(parameters);
-
-        //    // Compute the new volume information based on the new take rate
-
-        //    var calculatedValues = DataContext.TakeRate.CalculateTakeRateAndVolumeByMarket(
-        //        TakeRateFilter.FromTakeRateParameters(parameters), 
-        //        wholeMarketChange);
-
-        //    // Append or replace and changes with the recalculated data
-            
-        //    return retVal;
-        //}
-        //private FdpChangeset RecalculateVolumeDataForMarket(TakeRateParameters parameters)
-        //{
-        //    var newChanges = new List<DataChange>();
-        //    var wholeMarketChange = GetWholeMarketChange(parameters);
-
-        //    return parameters.Changeset;
-        //}
-        //private FdpChangeset RecalculateTakeRateDataForMarket(TakeRateParameters parameters) 
-        //{
-        //    var newChanges = new List<DataChange>();
-        //    var wholeMarketChange = GetWholeMarketChange(parameters);
-
-        //    return parameters.Changeset;
-        //}
         [HttpPost]
         public async Task<ActionResult> Validate(TakeRateParameters parameters,
                                                  TakeRateDocumentValidationSection sectionToValidate = TakeRateDocumentValidationSection.All)

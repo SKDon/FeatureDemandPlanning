@@ -1,27 +1,25 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_ChangesetDataItem_CalculateVolumeForAllFeatures]
+﻿CREATE PROCEDURE [dbo].[Fdp_ChangesetDataItem_CalculateVolumeForAllModels]
 	@FdpChangesetDataItemId AS INT
 AS
 	SET NOCOUNT ON;
 
-	DECLARE @TotalVolumeByModel AS INT;
-	DECLARE @DataForFeature AS TABLE
+	DECLARE @TotalVolumeByMarket AS INT;
+	DECLARE @DataForModel AS TABLE
 	(
 		  Id					INT PRIMARY KEY IDENTITY(1,1)
 		, FdpChangesetId		INT
 		, MarketId				INT
 		, ModelId				INT NULL
-		, FeatureId				INT NULL
 		, FdpModelId			INT NULL
-		, FdpFeatureId			INT NULL
 		, TotalVolume			INT
 		, PercentageTakeRate	DECIMAL(5, 4)
-		, FdpVolumeDataItemId	INT 
+		, FdpTakeRateSummaryId	INT 
 	)
-	
-	-- Determine the total volume for the model for the market
+
+	-- Determine the total volume for the market
 	
 	SELECT 
-		@TotalVolumeByModel = TotalVolume
+		@TotalVolumeByMarket = TotalVolume
 	FROM
 	Fdp_ChangesetDataItem AS D
 	WHERE
@@ -32,36 +30,33 @@ AS
 	
 	PRINT 'Calculating new changeset data from existing changes...'
 	
-	INSERT INTO @DataForFeature
+	INSERT INTO @DataForModel
 	(
 		  FdpChangesetId
 		, MarketId
 		, ModelId
 		, FdpModelId
-		, FeatureId
-		, FdpFeatureId
 		, TotalVolume
 		, PercentageTakeRate
-		, FdpVolumeDataItemId
+		, FdpTakeRateSummaryId
 	)
 	SELECT 
 		  C.FdpChangesetId
 		, D.MarketId
 		, D.ModelId
 		, D.FdpModelId
-		, D1.FeatureId
-		, D1.FdpFeatureId
-		, @TotalVolumeByModel * D1.PercentageTakeRate
+		, @TotalVolumeByMarket * D1.PercentageTakeRate
 		, D1.PercentageTakeRate
-		, D1.FdpVolumeDataItemId
+		, D1.FdpTakeRateSummaryId
 		
 	FROM Fdp_Changeset AS C
 	JOIN Fdp_ChangesetDataItem AS D ON C.FdpChangesetId		= D.FdpChangesetId
 	JOIN Fdp_ChangesetDataItem AS D1	ON D.FdpChangesetId = C.FdpChangesetId
 										AND D.MarketId		= D1.MarketId
 										AND D.FdpChangesetDataItemId <> D1.FdpChangesetDataItemId
-										AND D.ModelId		= D1.ModelId								-- Specific to model being updated level
-										AND (D1.FeatureId	IS NOT NULL OR D1.FdpFeatureId IS NOT NULL) -- Feature level, not summary
+										AND D.ModelId		= D1.ModelId
+										AND D1.FeatureId	IS NULL
+										AND D1.FdpFeatureId IS NULL
 										AND D1.IsDeleted	= 0
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId
@@ -73,19 +68,18 @@ AS
 		, D.MarketId
 		, D.ModelId
 		, D.FdpModelId
-		, D1.FeatureId
-		, D1.FdpFeatureId
-		, @TotalVolumeByModel * D1.PercentageTakeRate
+		, @TotalVolumeByMarket * D1.PercentageTakeRate
 		, D1.PercentageTakeRate
-		, D1.FdpVolumeDataItemId
+		, D1.FdpTakeRateSummaryId
 		
 	FROM Fdp_Changeset AS C
 	JOIN Fdp_ChangesetDataItem AS D ON C.FdpChangesetId		= D.FdpChangesetId
 	JOIN Fdp_ChangesetDataItem AS D1	ON D.FdpChangesetId = C.FdpChangesetId
 										AND D.MarketId		= D1.MarketId
 										AND D.FdpChangesetDataItemId <> D1.FdpChangesetDataItemId
-										AND D.FdpModelId	= D1.FdpModelId								-- Specific to model being updated level
-										AND (D1.FeatureId	IS NOT NULL OR D1.FdpFeatureId IS NOT NULL) -- Feature level, not summary
+										AND D.FdpModelId	= D1.FdpModelId
+										AND D1.FeatureId	IS NULL
+										AND D1.FdpFeatureId IS NULL
 										AND D1.IsDeleted	= 0
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
@@ -94,39 +88,34 @@ AS
 	
 	PRINT 'Calculating new changeset data...'
 	
-	INSERT INTO @DataForFeature
+	INSERT INTO @DataForModel
 	(
 		  FdpChangesetId
 		, MarketId
 		, ModelId
 		, FdpModelId
-		, FeatureId
-		, FdpFeatureId
 		, TotalVolume
 		, PercentageTakeRate
-		, FdpVolumeDataItemId
+		, FdpTakeRateSummaryId
 	)
 	SELECT
 		  C.FdpChangesetId
-		, D1.MarketId
-		, D1.ModelId
-		, D1.FdpModelId
-		, D1.FeatureId
-		, D1.FdpFeatureId
-		, @TotalVolumeByModel * D1.PercentageTakeRate
-		, D1.PercentageTakeRate
-		, D1.FdpVolumeDataItemId
+		, S.MarketId
+		, S.ModelId
+		, S.FdpModelId
+		, @TotalVolumeByMarket * S.PercentageTakeRate
+		, S.PercentageTakeRate
+		, S.FdpTakeRateSummaryId
 	FROM
 	Fdp_Changeset				AS C
 	JOIN Fdp_VolumeHeader		AS H	ON	C.FdpVolumeHeaderId			= H.FdpVolumeHeaderId
 	JOIN Fdp_ChangesetDataItem	AS D	ON	C.FdpChangesetId			= D.FdpChangesetId
 										AND D.FdpChangesetDataItemId	= @FdpChangesetDataItemId
-	JOIN Fdp_VolumeDataItem		AS D1	ON	H.FdpVolumeHeaderId			= D1.FdpVolumeHeaderId
-										AND D.MarketId					= D1.MarketId
-										AND (D1.FeatureId IS NOT NULL OR D1.FdpFeatureId IS NOT NULL)
-										AND D.ModelId					= D1.ModelId
+	JOIN Fdp_TakeRateSummary	AS S	ON	H.FdpVolumeHeaderId			= S.FdpVolumeHeaderId
+										AND D.MarketId					= S.MarketId
+										AND D.ModelId					= S.ModelId
 	LEFT JOIN Fdp_ChangesetDataItem AS CUR
-										ON	D1.FdpVolumeDataItemId		= CUR.FdpVolumeDataItemId
+										ON	S.FdpTakeRateSummaryId		= CUR.FdpTakeRateSummaryId
 										AND CUR.IsDeleted				= 0
 	WHERE
 	CUR.FdpChangesetDataItemId IS NULL
@@ -135,28 +124,25 @@ AS
 	
 	SELECT
 		  C.FdpChangesetId
-		, D1.MarketId
-		, D1.ModelId
-		, D1.FdpModelId
-		, D1.FeatureId
-		, D1.FdpFeatureId
-		, @TotalVolumeByModel * D1.PercentageTakeRate
-		, D1.PercentageTakeRate
-		, D1.FdpVolumeDataItemId
+		, S.MarketId
+		, S.ModelId
+		, S.FdpModelId
+		, @TotalVolumeByMarket * S.PercentageTakeRate
+		, S.PercentageTakeRate
+		, S.FdpTakeRateSummaryId
 	FROM
 	Fdp_Changeset				AS C
 	JOIN Fdp_VolumeHeader		AS H	ON	C.FdpVolumeHeaderId			= H.FdpVolumeHeaderId
 	JOIN Fdp_ChangesetDataItem	AS D	ON	C.FdpChangesetId			= D.FdpChangesetId
 										AND D.FdpChangesetDataItemId	= @FdpChangesetDataItemId
-	JOIN Fdp_VolumeDataItem		AS D1	ON	H.FdpVolumeHeaderId			= D1.FdpVolumeHeaderId
-										AND D.MarketId					= D1.MarketId
-										AND (D1.FeatureId IS NOT NULL OR D1.FdpFeatureId IS NOT NULL)
-										AND D.FdpModelId				= D1.FdpModelId
+	JOIN Fdp_TakeRateSummary	AS S	ON	H.FdpVolumeHeaderId			= S.FdpVolumeHeaderId
+										AND D.MarketId					= S.MarketId
+										AND D.FdpModelId				= S.FdpModelId
 	LEFT JOIN Fdp_ChangesetDataItem AS CUR
-										ON	D1.FdpVolumeDataItemId		= CUR.FdpVolumeDataItemId
+										ON	S.FdpTakeRateSummaryId		= CUR.FdpTakeRateSummaryId
 										AND CUR.IsDeleted				= 0
 	WHERE
-	CUR.FdpChangesetDataItemId IS NULL;
+	CUR.FdpChangesetDataItemId IS NULL
 	
 	-- Delete any existing changeset rows
 	
@@ -169,7 +155,8 @@ AS
 	JOIN Fdp_ChangesetDataItem AS D1	ON	C.FdpChangesetId	= D1.FdpChangesetId
 										AND D1.IsDeleted		= 0
 										AND D.ModelId			= D1.ModelId
-										AND (D1.FeatureId IS NOT NULL OR D1.FdpFeatureId IS NOT NULL)
+										AND D1.FeatureId		IS NULL 
+										AND D1.FdpFeatureId		IS NULL
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	
@@ -180,7 +167,8 @@ AS
 	JOIN Fdp_ChangesetDataItem AS D1	ON	C.FdpChangesetId	= D1.FdpChangesetId
 										AND D1.IsDeleted		= 0
 										AND D.FdpModelId		= D1.FdpModelId
-										AND (D1.FeatureId IS NOT NULL OR D1.FdpFeatureId IS NOT NULL)
+										AND D1.FeatureId		IS NULL 
+										AND D1.FdpFeatureId		IS NULL
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	
@@ -194,25 +182,21 @@ AS
 		, MarketId
 		, ModelId
 		, FdpModelId
-		, FeatureId
-		, FdpFeatureId
 		, TotalVolume
 		, PercentageTakeRate
 		, IsVolumeUpdate
 		, IsPercentageUpdate
-		, FdpVolumeDataItemId
+		, FdpTakeRateSummaryId
 	)
 	SELECT 
 		  FdpChangesetId
 		, MarketId
 		, ModelId
 		, FdpModelId
-		, FeatureId
-		, FdpFeatureId
 		, TotalVolume
 		, PercentageTakeRate
 		, 1
 		, 0
-		, FdpVolumeDataItemId
+		, FdpTakeRateSummaryId
 	FROM 
-	@DataForFeature
+	@DataForModel

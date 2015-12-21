@@ -15,15 +15,19 @@
     [OriginalVolume]             INT            NULL,
     [OriginalPercentageTakeRate] DECIMAL (5, 4) NULL,
     [FdpVolumeDataItemId]        INT            NULL,
+    [FdpTakeRateSummaryId]       INT            NULL,
     CONSTRAINT [PK_Fdp_ChangesetDataItem] PRIMARY KEY CLUSTERED ([FdpChangesetDataItemId] ASC),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_Feature] FOREIGN KEY ([FdpFeatureId]) REFERENCES [dbo].[Fdp_Feature] ([FdpFeatureId]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_Model] FOREIGN KEY ([FdpModelId]) REFERENCES [dbo].[Fdp_Model] ([FdpModelId]),
+    CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_TakeRateSummary] FOREIGN KEY ([FdpTakeRateSummaryId]) REFERENCES [dbo].[Fdp_TakeRateSummary] ([FdpTakeRateSummaryId]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_VolumeDataItem] FOREIGN KEY ([FdpVolumeDataItemId]) REFERENCES [dbo].[Fdp_VolumeDataItem] ([FdpVolumeDataItemId]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_OXO_Feature_Ext] FOREIGN KEY ([FeatureId]) REFERENCES [dbo].[OXO_Feature_Ext] ([Id]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_OXO_Master_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[OXO_Master_Market] ([Id]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_OXO_Programme_Model] FOREIGN KEY ([ModelId]) REFERENCES [dbo].[OXO_Programme_Model] ([Id]),
     CONSTRAINT [FK_FdpChangesetDataItem_Fdp_Changeset] FOREIGN KEY ([FdpChangesetId]) REFERENCES [dbo].[Fdp_Changeset] ([FdpChangesetId])
 );
+
+
 
 
 GO

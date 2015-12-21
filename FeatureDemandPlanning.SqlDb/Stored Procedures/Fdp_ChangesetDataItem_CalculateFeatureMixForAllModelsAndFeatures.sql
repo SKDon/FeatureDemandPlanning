@@ -1,10 +1,10 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_ChangesetDataItem_CalculateFeatureMixForAllFeatures]
+﻿CREATE PROCEDURE [dbo].[Fdp_ChangesetDataItem_CalculateFeatureMixForAllModelsAndFeatures]
 	@FdpChangesetDataItemId AS INT
 AS
 	SET NOCOUNT ON;
 
 	DECLARE @TotalVolumeByMarket AS INT;
-	DECLARE @DataForFeature AS TABLE
+	DECLARE @DataForModelAndFeature AS TABLE
 	(
 		  Id					INT PRIMARY KEY IDENTITY(1,1)
 		, FdpChangesetId		INT
@@ -18,7 +18,7 @@ AS
 		, FdpVolumeDataItemId	INT 
 	)
 	
-	-- Determine the total volume for the car line by market
+	-- Determine the total volume for the car line by market (include any unsaved changes that may have been made to the figure)
 	
 	SELECT 
 		@TotalVolumeByMarket = 
@@ -42,7 +42,7 @@ AS
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
 												
-	-- Mark previous market mix changset entries as deleted
+	-- Mark previous feature mix changeset entries as deleted
 	
 	UPDATE D1 SET IsDeleted = 1
 	FROM Fdp_Changeset AS C
@@ -59,7 +59,7 @@ AS
 	
 	-- Add all volume data existing rows to our data table
 	
-	INSERT INTO @DataForFeature
+	INSERT INTO @DataForModelAndFeature
 	(
 		  FdpChangesetId
 		, MarketId
@@ -95,7 +95,7 @@ AS
 	UPDATE D SET
 		  D.TotalVolume = D1.TotalVolume
 		, D.PercentageTakeRate = D1.PercentageTakeRate
-	FROM @DataForFeature		AS D
+	FROM @DataForModelAndFeature		AS D
 	JOIN Fdp_Changeset			AS C	ON	D.FdpChangesetId	= C.FdpChangesetId
 	JOIN Fdp_ChangesetDataItem	AS D1	ON	C.FdpChangesetId	= D1.FdpChangesetId
 										AND D.MarketId			= D1.MarketId
@@ -106,7 +106,7 @@ AS
 	UPDATE D SET
 		  D.TotalVolume = D1.TotalVolume
 		, D.PercentageTakeRate = D1.PercentageTakeRate
-	FROM @DataForFeature		AS D
+	FROM @DataForModelAndFeature		AS D
 	JOIN Fdp_Changeset			AS C	ON	D.FdpChangesetId	= C.FdpChangesetId
 	JOIN Fdp_ChangesetDataItem	AS D1	ON	C.FdpChangesetId	= D1.FdpChangesetId
 										AND D.MarketId			= D1.MarketId
@@ -117,7 +117,7 @@ AS
 	UPDATE D SET
 		  D.TotalVolume = D1.TotalVolume
 		, D.PercentageTakeRate = D1.PercentageTakeRate
-	FROM @DataForFeature		AS D
+	FROM @DataForModelAndFeature		AS D
 	JOIN Fdp_Changeset			AS C	ON	D.FdpChangesetId	= C.FdpChangesetId
 	JOIN Fdp_ChangesetDataItem	AS D1	ON	C.FdpChangesetId	= D1.FdpChangesetId
 										AND D.MarketId			= D1.MarketId
@@ -128,7 +128,7 @@ AS
 	UPDATE D SET
 		  D.TotalVolume = D1.TotalVolume
 		, D.PercentageTakeRate = D1.PercentageTakeRate
-	FROM @DataForFeature		AS D
+	FROM @DataForModelAndFeature		AS D
 	JOIN Fdp_Changeset			AS C	ON	D.FdpChangesetId	= C.FdpChangesetId
 	JOIN Fdp_ChangesetDataItem	AS D1	ON	C.FdpChangesetId	= D1.FdpChangesetId
 										AND D.MarketId			= D1.MarketId
@@ -156,7 +156,7 @@ AS
 			ELSE 0
 		  END AS PercentageTakeRate
 	FROM 
-	@DataForFeature
+	@DataForModelAndFeature
 	GROUP BY
 	  FdpChangesetId
 	, MarketId

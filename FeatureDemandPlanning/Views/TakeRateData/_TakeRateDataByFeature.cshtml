@@ -65,18 +65,18 @@
             <div class="@RenderEditableClass()" data-target="@marketIdentifier|@modelIdentifier|@featureIdentifier">
                 @RenderDataItem(availableModel.StringIdentifier, featureRow)
             </div>
-            @{
-        var note = Model.Document.TakeRateData.NoteAvailability.Where(n => n.FeatureIdentifier == featureIdentifier && n.ModelIdentifier == modelIdentifier).FirstOrDefault();
-        if (note != null)
+                                    @{
+        var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => n.FeatureIdentifier == featureIdentifier && n.ModelIdentifier == modelIdentifier);
+        if (notes.Any())
         {
-            <div class="triangle"></div>
+            <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Details...&quot for additional information"><div class="triangle"></div></div>
         }
         else
         {
             <div class="triangle" style="display:none"></div>
         }
             }
-            
+
         </td>
     }
 </tr>

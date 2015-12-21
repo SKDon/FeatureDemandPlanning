@@ -602,6 +602,46 @@ AS
 	WHERE
 	H.DocumentId = @OxoDocId;
 	
+	-- Additional dataset returning whether or not a data item has a note associated with it
+
+	SELECT 
+		  D.FdpVolumeDataItemId
+		, D.MarketId
+		, D.MarketGroupId
+		, D.ModelId
+		, D.FdpModelId
+		, D.FeatureId
+		, D.FdpFeatureId
+		
+	FROM Fdp_VolumeHeader	AS H
+	JOIN
+	(
+		SELECT
+			  H.DocumentId
+			, H.FdpVolumeHeaderId
+			, D.FdpVolumeDataItemId
+		FROM 
+		Fdp_VolumeHeader AS H
+		JOIN Fdp_VolumeDataItem AS D ON	H.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
+		JOIN Fdp_TakeRateDataItemNote AS N ON D.FdpVolumeDataItemId = N.FdpTakeRateDataItemId
+		GROUP BY
+		  H.DocumentId
+		, H.FdpVolumeHeaderId
+		, D.FdpVolumeDataItemId
+	)
+							AS N	ON	H.FdpVolumeHeaderId		= N.FdpVolumeHeaderId
+	JOIN Fdp_VolumeDataItem	AS D	ON	N.FdpVolumeDataItemId	= D.FdpVolumeDataItemId
+	WHERE 
+	H.DocumentId = @OxoDocId
+	AND
+	(
+		(@Mode = 'M' AND (@ObjectId IS NULL OR D.MarketId = @ObjectId))
+		OR
+		(@Mode = 'MG' AND (@ObjectId IS NULL OR D.MarketGroupId = @ObjectId))
+	)
+	
+	-- Tidy up
+	
 	DROP TABLE #TakeRateDataByFeature;
 	DROP TABLE #RawTakeRateData;
 	DROP TABLE #FeatureApplicability;

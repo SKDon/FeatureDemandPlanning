@@ -45,7 +45,7 @@
                                     <label for="@(Model.IdentifierPrefix)_FilteredVolume" class="control-label text-right" style="font-size:11px">Filtered Volume:</label>
                                 </div>
                                 <div class="input-group col-xs-8">
-                                    <input type="text" id="@(Model.IdentifierPrefix)_FilteredTotalVolume" class="form-control input-filtered-volume col-xs-3" value="@Model.Document.TakeRateData.FilteredVolume" />
+                                    <input type="text" id="@(Model.IdentifierPrefix)_FilteredTotalVolume" class="form-control input-filtered-volume col-xs-3" value="@Model.Document.TakeRateData.FilteredVolume" data-target="@Model.Document.Market.Id"/>
                                     <span class="input-group-btn">
                                         <button type="button" id="@(Model.IdentifierPrefix)_UpdateFilteredVolume" class="btn btn-sm btn-default update-filtered-volume">
                                             <span class="glyphicon glyphicon-refresh"></span> Update
@@ -97,7 +97,7 @@
                             </th>
                         }
                     </tr>
-                    <tr class="cross-tab-header">
+                    <tr class="cross-tab-header" style="height:27px">
                         <th colspan="3" class="text-right bmc">BMC</th>
                         @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
                         {

@@ -58,9 +58,9 @@ model.Page = function (models) {
         var changes = getChangeset().getDataChanges();
         getTakeRateDataModel().saveData(changes, callback);
     };
-    me.updateFilteredData = function () {
-        getTakeRateDataModel().updateFilteredData(getChangeset().getDataChanges());
-    };
+    //me.updateFilteredData = function () {
+    //    getTakeRateDataModel().updateFilteredData(getChangeset().getDataChanges());
+    //};
     me.initialiseControls = function () {
         var prefix = me.getIdentifierPrefix();
         $("#" + prefix + "_TakeRateDataPanel").height(me.calcPanelHeight());
@@ -277,8 +277,17 @@ model.Page = function (models) {
         var modelIdentifier = eventArgs.getModelIdentifier();
         var featureIdentifier = eventArgs.getFeatureIdentifier();
          
-        var editedCell = $("tbody div[data-target='" + marketIdentifier + "|" + modelIdentifier + "|" + featureIdentifier + "']");
-        var editedRow = $(".DTFC_Cloned tbody tr[data-target='" + marketIdentifier + "|" + featureIdentifier + "']");
+        var editedCell = $();
+        var editedRow = $();
+        if (featureIdentifier !== null)
+        {
+            editedCell = $("tbody div[data-target='" + marketIdentifier + "|" + modelIdentifier + "|" + featureIdentifier + "']");
+        }
+        else
+        {
+            editedCell = $("thead th[data-target='MS|" + marketIdentifier + "|" + modelIdentifier + "']");
+        }
+        //var editedRow = $(".DTFC_Cloned tbody tr[data-target='" + marketIdentifier + "|" + featureIdentifier + "']");
         var changeSet = getChangeset();
 
         // If any changes have reverted back to the original value, we need to lower any change flags and remove from the changeset
@@ -291,16 +300,16 @@ model.Page = function (models) {
             editedCell.removeClass("edited");
 
             // If there are no other changes to the feature, lower the feature changed indicator
-            var otherFeatureChanges = changeSet.getChangesForFeature(featureIdentifier);
-            if (otherFeatureChanges == null || otherFeatureChanges.length == 0) {
-                editedRow.find(".changed-indicator").hide();
-            }
+            //var otherFeatureChanges = changeSet.getChangesForFeature(featureIdentifier);
+            //if (otherFeatureChanges == null || otherFeatureChanges.length == 0) {
+            //    editedRow.find(".changed-indicator").hide();
+            //}
         }
         else if (eventArgs.isChanged())
         {
             changeSet.addChange(eventArgs);
             editedCell.addClass("edited");
-            editedRow.find(".changed-indicator").show();
+            //editedRow.find(".changed-indicator").show();
 
             // Now we have added to the client changeset, raise the save event to store the changeset on the database and perform any
             // recalculation necessary
@@ -426,10 +435,10 @@ model.Page = function (models) {
         {
             changeSet.addChange(eventArgs);
         }
-        me.updateFilteredData();
+        me.saveData(me.saveCallback);
     };
     me.configureComments = function () {
-        $(".comment-item").popover({ html: true, title: "Comments" });
+        $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover" });
 
         $('.comment-item').on("click", function (e) {
             $('.comment-item').not(this).popover("hide");
