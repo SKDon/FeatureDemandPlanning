@@ -646,46 +646,49 @@ namespace FeatureDemandPlanning.DataStore
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
-                try
+                using (var tran = conn.BeginTransaction())
                 {
-                    var para = new DynamicParameters();
-                    para.Add("@FdpChangesetId", dataItemToSave.FdpChangesetId.GetValueOrDefault(), DbType.Int32);
-                    para.Add("@MarketId", dataItemToSave.MarketId, DbType.Int32);
-                    if (!dataItemToSave.IsFdpModel)
+                    try
                     {
-                        para.Add("@ModelId", dataItemToSave.GetModelId(), DbType.Int32);
-                    }
-                    else
-                    {
-                        para.Add("@FdpModelId", dataItemToSave.GetModelId(), DbType.Int32);
-                    }
-                    if (!dataItemToSave.IsFdpFeature)
-                    {
-                        para.Add("@FeatureId", dataItemToSave.GetFeatureId(), DbType.Int32);
-                    }
-                    else
-                    {
-                        para.Add("@FdpFeatureId", dataItemToSave.GetFeatureId(), DbType.Int32);
-                    }
+                        var para = new DynamicParameters();
+                        para.Add("@FdpChangesetId", dataItemToSave.FdpChangesetId.GetValueOrDefault(), DbType.Int32);
+                        para.Add("@MarketId", dataItemToSave.MarketId, DbType.Int32);
+                        if (!dataItemToSave.IsFdpModel)
+                        {
+                            para.Add("@ModelId", dataItemToSave.GetModelId(), DbType.Int32);
+                        }
+                        else
+                        {
+                            para.Add("@FdpModelId", dataItemToSave.GetModelId(), DbType.Int32);
+                        }
+                        if (!dataItemToSave.IsFdpFeature)
+                        {
+                            para.Add("@FeatureId", dataItemToSave.GetFeatureId(), DbType.Int32);
+                        }
+                        else
+                        {
+                            para.Add("@FdpFeatureId", dataItemToSave.GetFeatureId(), DbType.Int32);
+                        }
 
-                    if (dataItemToSave.Volume.HasValue)
-                    {
-                        para.Add("@TotalVolume", dataItemToSave.Volume, DbType.Int32);
+                        if (dataItemToSave.Volume.HasValue)
+                        {
+                            para.Add("@TotalVolume", dataItemToSave.Volume, DbType.Int32);
+                        }
+                        if (dataItemToSave.PercentageTakeRateAsFraction.HasValue)
+                        {
+                            para.Add("@PercentageTakeRate", dataItemToSave.PercentageTakeRateAsFraction, DbType.Decimal);
+                        }
+                        var results = conn.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Save", para, commandType: CommandType.StoredProcedure);
+                        if (results.Any())
+                        {
+                            retVal = results.First();
+                        }
                     }
-                    if (dataItemToSave.PercentageTakeRateAsFraction.HasValue)
+                    catch (Exception ex)
                     {
-                        para.Add("@PercentageTakeRate", dataItemToSave.PercentageTakeRateAsFraction, DbType.Decimal);
+                        AppHelper.LogError("FdpVolumeDataStore.FdpChangesetSave", ex.Message, CurrentCDSID);
+                        throw;
                     }
-                    var results = conn.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Save", para, commandType: CommandType.StoredProcedure);
-                    if (results.Any())
-                    {
-                        retVal = results.First();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpChangesetSave", ex.Message, CurrentCDSID);
-                    throw;
                 }
             }
             return retVal;
@@ -696,15 +699,18 @@ namespace FeatureDemandPlanning.DataStore
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
-                try
+                using (var tran = conn.BeginTransaction())
                 {
-                    var para = new DynamicParameters();
-                    para.Add("@FdpChangesetDataItemId", dataItemToPersist.FdpChangesetDataItemId.GetValueOrDefault(), DbType.Int32);
-                }
-                catch (Exception ex)
-                {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpChangesetSave", ex.Message, CurrentCDSID);
-                    throw;
+                    try
+                    {
+                        var para = new DynamicParameters();
+                        para.Add("@FdpChangesetDataItemId", dataItemToPersist.FdpChangesetDataItemId.GetValueOrDefault(), DbType.Int32);
+                    }
+                    catch (Exception ex)
+                    {
+                        AppHelper.LogError("FdpVolumeDataStore.FdpChangesetSave", ex.Message, CurrentCDSID);
+                        throw;
+                    }
                 }
             }
             return retVal;
@@ -715,20 +721,23 @@ namespace FeatureDemandPlanning.DataStore
 
             using (IDbConnection conn = DbHelper.GetDBConnection())
             {
-                try
+                using (var tran = conn.BeginTransaction())
                 {
-                    var para = new DynamicParameters();
-                    para.Add("@FdpChangesetDataItemId", changeToRecalculate.FdpChangesetDataItemId.GetValueOrDefault(), DbType.Int32);
-                    var results = conn.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Recalculate", para, commandType: CommandType.StoredProcedure);
-                    if (results.Any())
+                    try
                     {
-                        retVal = results.First();
+                        var para = new DynamicParameters();
+                        para.Add("@FdpChangesetDataItemId", changeToRecalculate.FdpChangesetDataItemId.GetValueOrDefault(), DbType.Int32);
+                        var results = conn.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Recalculate", para, commandType: CommandType.StoredProcedure);
+                        if (results.Any())
+                        {
+                            retVal = results.First();
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpChangesetDataItemRecalculate", ex.Message, CurrentCDSID);
-                    throw;
+                    catch (Exception ex)
+                    {
+                        AppHelper.LogError("FdpVolumeDataStore.FdpChangesetDataItemRecalculate", ex.Message, CurrentCDSID);
+                        throw;
+                    }
                 }
             }
             return retVal;
