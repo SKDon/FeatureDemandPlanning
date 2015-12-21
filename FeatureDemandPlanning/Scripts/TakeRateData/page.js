@@ -336,7 +336,7 @@ model.Page = function (models) {
                 selector = $("tbody span[data-target='FS|" + currentChange.DataTarget + "']");
             }
             else if (currentChange.IsModelSummary) {
-                selector = $("thead th[data-target='" + currentChange.DataTarget + "']").first();
+                selector = $("thead th[data-target='MS|" + currentChange.DataTarget + "']").first();
             }
             else {
                 selector = $("tbody td[data-target='" + currentChange.DataTarget + "']");
