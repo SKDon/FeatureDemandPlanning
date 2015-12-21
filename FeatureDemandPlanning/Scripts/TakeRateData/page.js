@@ -277,7 +277,7 @@ model.Page = function (models) {
         var modelIdentifier = eventArgs.getModelIdentifier();
         var featureIdentifier = eventArgs.getFeatureIdentifier();
          
-        var editedCell = $("tbody td[data-target='" + marketIdentifier + "|" + modelIdentifier + "|" + featureIdentifier + "']");
+        var editedCell = $("tbody div[data-target='" + marketIdentifier + "|" + modelIdentifier + "|" + featureIdentifier + "']");
         var editedRow = $(".DTFC_Cloned tbody tr[data-target='" + marketIdentifier + "|" + featureIdentifier + "']");
         var changeSet = getChangeset();
 
@@ -342,7 +342,7 @@ model.Page = function (models) {
                 selector = $("thead th[data-target='MS|" + currentChange.DataTarget + "']").first();
             }
             else {
-                selector = $("tbody td[data-target='" + currentChange.DataTarget + "']");
+                selector = $("tbody div[data-target='" + currentChange.DataTarget + "']");
             }
             selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
         }
@@ -625,7 +625,7 @@ model.Page = function (models) {
         return $(".input-filtered-volume").val();
     };
     me.getDataItemId = function (cell) {
-        return $(cell).attr("data-target");
+        return $(cell).children().first().attr("data-target");
     };
     me.getContextMenu = function (dataItemString) {
         var params = getFilter(dataItemString)

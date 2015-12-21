@@ -61,8 +61,22 @@
         {
             modelClassName = "";
         }
-        <td class="text-center cross-tab-data-item @RenderEditableClass() @modelClassName @RenderDataClass(modelIdentifier, featureRow)" data-target="@marketIdentifier|@modelIdentifier|@featureIdentifier">
-            @RenderDataItem(availableModel.StringIdentifier, featureRow)
+        <td class="text-center cross-tab-data-item  @modelClassName @RenderDataClass(modelIdentifier, featureRow)">
+            <div class="@RenderEditableClass()" data-target="@marketIdentifier|@modelIdentifier|@featureIdentifier">
+                @RenderDataItem(availableModel.StringIdentifier, featureRow)
+            </div>
+            @{
+        var note = Model.Document.TakeRateData.NoteAvailability.Where(n => n.FeatureIdentifier == featureIdentifier && n.ModelIdentifier == modelIdentifier).FirstOrDefault();
+        if (note != null)
+        {
+            <div class="triangle"></div>
+        }
+        else
+        {
+            <div class="triangle" style="display:none"></div>
+        }
+            }
+            
         </td>
     }
 </tr>

@@ -127,6 +127,17 @@ namespace FeatureDemandPlanning.DataStore
                     retVal.PercentageOfTotalVolume = summary.Field<decimal>("PercentageOfTotalVolume");
                     retVal.CreatedBy = summary.Field<string>("CreatedBy");
                     retVal.CreatedOn = summary.Field<DateTime>("CreatedOn");
+
+                    // 5. Notes
+                    retVal.NoteAvailability = ds.Tables[4].AsEnumerable().Select(n => new TakeRateDataItemNote()
+                    {
+                        MarketId = n.Field<int?>("MarketId"),
+                        MarketGroupId = n.Field<int?>("MarketGroupId"),
+                        ModelId = n.Field<int?>("ModelId"),
+                        FdpModelId = n.Field<int?>("FdpModelId"),
+                        FeatureId = n.Field<int?>("FeatureId"),
+                        FdpFeatureId = n.Field<int?>("FdpFeatureId")
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -678,11 +689,13 @@ namespace FeatureDemandPlanning.DataStore
                         {
                             para.Add("@PercentageTakeRate", dataItemToSave.PercentageTakeRateAsFraction, DbType.Decimal);
                         }
-                        var results = conn.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Save", para, commandType: CommandType.StoredProcedure);
+                        var results = conn.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Save", para, tran, commandType: CommandType.StoredProcedure);
                         if (results.Any())
                         {
                             retVal = results.First();
                         }
+
+                        tran.Commit();
                     }
                     catch (Exception ex)
                     {
@@ -705,6 +718,8 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         var para = new DynamicParameters();
                         para.Add("@FdpChangesetDataItemId", dataItemToPersist.FdpChangesetDataItemId.GetValueOrDefault(), DbType.Int32);
+
+                        tran.Commit();
                     }
                     catch (Exception ex)
                     {
@@ -727,11 +742,13 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         var para = new DynamicParameters();
                         para.Add("@FdpChangesetDataItemId", changeToRecalculate.FdpChangesetDataItemId.GetValueOrDefault(), DbType.Int32);
-                        var results = conn.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Recalculate", para, commandType: CommandType.StoredProcedure);
+                        var results = conn.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Recalculate", para, tran, commandType: CommandType.StoredProcedure);
                         if (results.Any())
                         {
                             retVal = results.First();
                         }
+
+                        tran.Commit();
                     }
                     catch (Exception ex)
                     {
