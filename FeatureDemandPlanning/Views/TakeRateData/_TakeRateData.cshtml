@@ -145,27 +145,6 @@
                             </th>
                         }
                     </tr>
-                    @*<tr class="cross-tab-header">
-                        <th colspan="3" class="text-right dpck">DPCK</th>
-                        @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
-                        {
-                            var modelClassName = string.Empty;
-                            if (availableModel.FdpModelId.HasValue)
-                            {
-                                modelClassName = "fdp-model";
-                            }
-                            <th class="text-center dpck @modelClassName">
-                                @if (!string.IsNullOrEmpty(availableModel.DPCK))
-                                {
-                                    <span>@availableModel.DPCK</span>
-                                }
-                                else
-                                {
-                                    <span>-</span>
-                                }
-                            </th>
-                        }
-                    </tr>*@
                     <tr class="cross-tab-header" id="@(Model.IdentifierPrefix)_TakeRateByModel">
                         @Html.Partial("_TakeRateDataByModel")
                     </tr>

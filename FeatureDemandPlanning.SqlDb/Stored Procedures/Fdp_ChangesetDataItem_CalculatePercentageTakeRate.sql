@@ -17,6 +17,8 @@ AS
 	
 	IF @IsFeatureUpdate = 1
 	BEGIN
+		PRINT 'Updating % take at feature level'
+		
 		-- Oxo Models
 		
 		UPDATE D SET PercentageTakeRate = 
@@ -52,12 +54,13 @@ AS
 	END
 	ELSE
 	BEGIN
-	
+		PRINT 'Calculating % take at model level'
+		
 		-- Oxo and Fdp Models
 		
 		UPDATE D SET PercentageTakeRate = 
 			CASE 
-				WHEN ISNULL(S.TotalVolume, 0) > 0 THEN CEILING(D.TotalVolume / CAST(S.TotalVolume AS DECIMAL))
+				WHEN ISNULL(S.TotalVolume, 0) > 0 THEN D.TotalVolume / CAST(S.TotalVolume AS DECIMAL)
 				ELSE 0
 			END
 		FROM Fdp_Changeset						AS C

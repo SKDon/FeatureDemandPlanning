@@ -23,7 +23,7 @@
     }
     if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
     {
-        <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="@Model.Document.Market.Id|@availableModel.StringIdentifier">
+        <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
             @{
         var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
         var percentage = "-";

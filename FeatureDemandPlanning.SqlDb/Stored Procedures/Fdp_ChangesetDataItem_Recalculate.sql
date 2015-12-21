@@ -20,20 +20,27 @@ AS
 	
 	IF @IsVolumeUpdate = 1
 	BEGIN
+		PRINT 'Updating % take based on volume'
 		EXEC Fdp_ChangesetDataItem_CalculatePercentageTakeRate @FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	END
 	ELSE
 	BEGIN
+		PRINT 'Updating volume based on % take'
 		EXEC Fdp_ChangesetDataItem_CalculateVolume @FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	END
 	
 	-- Calculate the feature mix (both percentage and volume)
 	IF @IsModelUpdate = 1
 	BEGIN
+		PRINT 'Calculating volume for all features'
+		EXEC Fdp_ChangesetDataItem_CalculateVolumeForAllFeatures @FdpChangesetDataItemId = @FdpChangesetDataItemId;
+		
+		PRINT 'Calculating feature mix for all features'
 		EXEC Fdp_ChangesetDataItem_CalculateFeatureMixForAllFeatures @FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	END
 	ELSE
 	BEGIN
+		PRINT 'Calculating feature mix for feature'
 		EXEC Fdp_ChangesetDataItem_CalculateFeatureMix @FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	END
 	
