@@ -193,7 +193,10 @@ model.Page = function (models) {
     };
     me.cellEditCallback = function (value, settings) {
         
-        var identifiers = $(this).attr("data-target").split("|");
+        var target = $(this).attr("data-target");
+        target = target.replace("MS|", "");
+        var identifiers = target.split("|");
+
         var modelIdentifier = null;
         var featureIdentifier = null;
         var marketIdentifier = null;
