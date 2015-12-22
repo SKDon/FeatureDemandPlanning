@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_VolumeHeader_GetManyByUsername]
+﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateHeader_GetManyByUsername]
 	  @TakeRateId			INT				= NULL
 	, @FdpTakeRateStatusId	INT				= NULL
 	, @VehicleName			NVARCHAR(1000)	= NULL
@@ -83,11 +83,11 @@ AS
 	SELECT @TotalDisplayRecords = COUNT(1) FROM @PageRecords WHERE RowIndex BETWEEN @MinIndex AND @MaxIndex;
 
 	SELECT DISTINCT
-		  V.FdpVolumeHeaderId	AS TakeRateId
-		, V.CreatedOn
-		, V.CreatedBy
-		, V.UpdatedOn
-		, V.UpdatedBy
+		  T.FdpVolumeHeaderId	AS TakeRateId
+		, T.CreatedOn
+		, T.CreatedBy
+		, T.UpdatedOn
+		, T.UpdatedBy
 		, D.Id AS OxoDocId
 		, P.VehicleName + 
 			' '  + P.VehicleAKA +
@@ -99,10 +99,12 @@ AS
 		, S.FdpTakeRateStatusId
 		, S.[Status]
 		, S.[Description] AS StatusDescription
+		, V.VersionString AS [Version]
 		
 	FROM @PageRecords			AS PA
-	JOIN Fdp_VolumeHeader		AS V	ON	PA.TakeRateId			= V.FdpVolumeHeaderId
+	JOIN Fdp_VolumeHeader		AS T	ON	PA.TakeRateId			= T.FdpVolumeHeaderId
 										AND PA.RowIndex BETWEEN @MinIndex AND @MaxIndex
-	JOIN Fdp_TakeRateStatus		AS S	ON	V.FdpTakeRateStatusId	= S.FdpTakeRateStatusId
-	JOIN OXO_Doc				AS D	ON	V.DocumentId			= D.Id
+	JOIN Fdp_TakeRateStatus		AS S	ON	T.FdpTakeRateStatusId	= S.FdpTakeRateStatusId
+	JOIN OXO_Doc				AS D	ON	T.DocumentId			= D.Id
 	JOIN OXO_Programme_VW		AS P	ON	D.Programme_Id			= P.Id
+	JOIN Fdp_Version_VW			AS V	ON	T.FdpVolumeHeaderId		= V.FdpVolumeHeaderId

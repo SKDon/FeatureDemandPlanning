@@ -29,7 +29,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public async Task<PagedResults<TakeRateSummary>> ListTakeRateDocuments(TakeRateFilter filter)
         {
-            return await Task.FromResult(_takeRateDataStore.FdpVolumeHeaderGetManyByUsername(filter));
+            return await Task.FromResult(_takeRateDataStore.FdpTakeRateHeaderGetManyByUsername(filter));
         }
         public async Task<PagedResults<TakeRateSummary>> ListLatestTakeRateDocuments()
         {

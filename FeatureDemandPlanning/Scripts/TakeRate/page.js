@@ -72,6 +72,15 @@ page.TakeRatesPage = function (models) {
                     }
                 },
                 {
+                    "sName": "VERSION",
+                    "bSearchable": true,
+                    "bSortable": true,
+                    "sClass": "text-center",
+                    "render": function (data, type, full, meta) {
+                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    }
+                },
+                {
                     "sName": "STATUS",
                     "bSearchable": true,
                     "bSortable": true,

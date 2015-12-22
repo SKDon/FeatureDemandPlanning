@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_VolumeHeader_Save]
+﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateHeader_Save]
 	  @FdpVolumeHeaderId	INT = NULL OUTPUT
 	, @DocumentId			INT
 	, @IsManuallyEntered	BIT = 1
@@ -28,6 +28,23 @@ AS
 		)
 		
 		SET @FdpVolumeHeaderId = SCOPE_IDENTITY();
+		
+		-- Add an initial version for the document
+		
+		INSERT INTO Fdp_TakeRateVersion
+		(
+			  FdpTakeRateHeaderId
+			, MajorVersion
+			, MinorVersion
+			, Revision
+		)
+		VALUES
+		(
+			  @FdpVolumeHeaderId
+			, 0
+			, 0
+			, 0
+		)
 	END
 	ELSE
 	BEGIN

@@ -78,7 +78,7 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<IEnumerable<TakeRateSummary>> ListAvailableImports(VehicleFilter filter, Programme forProgramme)
         {
             var imports = await Task.FromResult(_volumeDataStore
-                            .FdpVolumeHeaderGetManyByUsername(new TakeRateFilter()
+                            .FdpTakeRateHeaderGetManyByUsername(new TakeRateFilter()
                             {
                                 ProgrammeId = filter.ProgrammeId,
                                 Gateway = filter.Gateway

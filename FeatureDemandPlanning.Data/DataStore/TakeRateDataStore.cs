@@ -265,7 +265,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public TakeRateSummary TakeRateDocumentHeaderGet(TakeRateFilter filter)
         {
-            var volumeHeaders = FdpVolumeHeaderGetManyByUsername(filter);
+            var volumeHeaders = FdpTakeRateHeaderGetManyByUsername(filter);
             if (volumeHeaders == null || !volumeHeaders.CurrentPage.Any())
                 return null;
 
@@ -298,7 +298,7 @@ namespace FeatureDemandPlanning.DataStore
             }
             return header;
         }
-        public PagedResults<TakeRateSummary> FdpVolumeHeaderGetManyByUsername(TakeRateFilter filter)
+        public PagedResults<TakeRateSummary> FdpTakeRateHeaderGetManyByUsername(TakeRateFilter filter)
         {
             var retVal = new PagedResults<TakeRateSummary>();
 
@@ -346,7 +346,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                    var results = conn.Query<TakeRateSummary>("dbo.Fdp_VolumeHeader_GetManyByUsername", para, commandType: CommandType.StoredProcedure);
+                    var results = conn.Query<TakeRateSummary>("dbo.Fdp_TakeRateHeader_GetManyByUsername", para, commandType: CommandType.StoredProcedure);
 
                     if (results.Any())
                     {
@@ -461,7 +461,7 @@ namespace FeatureDemandPlanning.DataStore
 
         private const string fdpVolumeHeaderStoredProcedureName = "Fdp_VolumeHeader_GetManyByUsername";
         private const string fdpVolumeHeaderByOxoDocumentStoredProcedureName = "Fdp_VolumeHeader_GetManyByOxoDocId";
-        private const string fdpVolumeHeaderSaveStoredProcedureName = "Fdp_VolumeHeader_Save";
+        private const string fdpVolumeHeaderSaveStoredProcedureName = "Fdp_TakeRateHeader_Save";
         private const string fdpOxoDocSaveStoredProcedureName = "Fdp_OxoDoc_Save";
         private const string fdpOxoDocProcessStoredProcedureName = "Fdp_OxoDoc_Process";
         private const string fdpTakeRateDataItemGetStoredProcedureName = "Fdp_TakeRateDataItem_Get";

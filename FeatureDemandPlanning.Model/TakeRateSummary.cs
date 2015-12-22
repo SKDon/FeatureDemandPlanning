@@ -23,6 +23,8 @@ namespace FeatureDemandPlanning.Model
         public string Status { get; set; }
         public string StatusDescription { get; set; }
 
+        public string Version { get; set; }
+
         public string[] ToJQueryDataTableResult()
         {
             return new string[] 
@@ -31,6 +33,7 @@ namespace FeatureDemandPlanning.Model
                 CreatedOn.ToString("dd/MM/yyyy"),
                 CreatedBy,
                 OxoDocument,
+                Version,
                 Status,
                 UpdatedOn.HasValue ? UpdatedOn.Value.ToString("dd/MM/yyyy HH:mm") : "-",
                 !string.IsNullOrEmpty(UpdatedBy) ? UpdatedBy : "-",

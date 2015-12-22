@@ -255,8 +255,6 @@
     <Build Include="Stored Procedures\Fdp_User_SetIsAdmin.sql" />
     <Build Include="Stored Procedures\Fdp_UserProgramme_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_VolumeHeader_GetManyByOxoDocId.sql" />
-    <Build Include="Stored Procedures\Fdp_VolumeHeader_GetManyByUsername.sql" />
-    <Build Include="Stored Procedures\Fdp_VolumeHeader_Save.sql" />
     <Build Include="Views\Fdp_SpecialFeatureMapping_VW.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
@@ -495,6 +493,27 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_ChangesetDataItem_CalculateFeatureMixForAllModelsAndFeatures.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_TakeRateVersion.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_Version_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_IncrementRevision.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_IncrementMinor.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_GetManyByUsername.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
