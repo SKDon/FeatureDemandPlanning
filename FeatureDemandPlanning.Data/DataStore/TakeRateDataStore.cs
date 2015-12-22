@@ -526,7 +526,7 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
     
-        public FdpChangeset FdpLatestUnsavedChangesetByUserGet(TakeRateFilter filter)
+        public FdpChangeset FdpLatestUnsavedChangesetByUserGetMany(TakeRateFilter filter)
         {
  	        FdpChangeset retVal = new EmptyFdpChangeset();
 

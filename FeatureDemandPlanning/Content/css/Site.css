@@ -1254,7 +1254,22 @@ div.edited {
 
 th.edited {
     font-weight:bold;
-    color: #801605 !important;
+    color: #c2503e !important;
+}
+
+input.edited {
+    font-weight:bold;
+    color: #801605;
+}
+
+span.edited {
+    font-weight:bold;
+    color: #801605;
+}
+
+span.edited-fdp {
+    font-weight:bold;
+    color: #801505;
 }
 
 div.edited-fdp {
@@ -1268,7 +1283,7 @@ div.edited-fdp {
     max-width: 80px;
     border-left: medium none;
     border-right: 1px solid #2E4372;
-    color: #801505;
+    color: #c2503e;
     font-size: 8pt;
     vertical-align: middle;
     padding: 3px;

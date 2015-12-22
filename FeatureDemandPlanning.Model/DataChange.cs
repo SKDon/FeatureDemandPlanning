@@ -26,7 +26,7 @@ namespace FeatureDemandPlanning.Model
             get
             {
                 var dataTarget = string.Empty;
-                if (IsWholeMarketChange())
+                if (IsWholeMarketChange)
                 {
                     dataTarget = MarketId.ToString();
                 }
@@ -88,6 +88,15 @@ namespace FeatureDemandPlanning.Model
                 return !string.IsNullOrEmpty(FeatureIdentifier) && FeatureIdentifier.StartsWith("F");
             }
         }
+        public bool IsWholeMarketChange
+        {
+            get 
+            {
+                return MarketId.HasValue &&
+                string.IsNullOrEmpty(ModelIdentifier) &&
+                string.IsNullOrEmpty(FeatureIdentifier);
+            }
+        }
         public TakeRateDataItem ToDataItem()
         {
             var dataItem = new TakeRateDataItem()
@@ -104,12 +113,6 @@ namespace FeatureDemandPlanning.Model
                 dataItem.Notes = new List<TakeRateDataItemNote>() { new TakeRateDataItemNote(Note) };
             }
             return dataItem;
-        }
-        public bool IsWholeMarketChange()
-        {
-            return MarketId.HasValue && 
-                string.IsNullOrEmpty(ModelIdentifier) && 
-                string.IsNullOrEmpty(FeatureIdentifier);
         }
 
         public decimal? PercentageTakeRateAsFraction

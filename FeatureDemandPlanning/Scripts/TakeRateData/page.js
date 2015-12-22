@@ -26,7 +26,7 @@ model.Page = function (models) {
     };
     me.calcDataTableHeight = function () {
         var panelHeight = $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel").height();
-        return (panelHeight - 220) + "px";
+        return (panelHeight - 190) + "px";
     };
     me.configureChangeset = function () {
         privateStore[me.id].Changeset = new FeatureDemandPlanning.Volume.Changeset();
@@ -350,10 +350,18 @@ model.Page = function (models) {
             else if (currentChange.IsModelSummary) {
                 selector = $("thead th[data-target='MS|" + currentChange.DataTarget + "']").first();
             }
+            else if (currentChange.IsWholeMarketChange) {
+                selector = $(".input-filtered-volume");
+            }
             else {
                 selector = $("tbody div[data-target='" + currentChange.DataTarget + "']");
             }
-            selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
+
+            if (currentChange.IsWholeMarketChange) {
+                selector.addClass(me.getEditedDataClass(currentChange)).val(displayValue);
+            } else {
+                selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
+            }
         }
     };
     me.revertChangeset = function () {
@@ -397,21 +405,21 @@ model.Page = function (models) {
     };
     me.getEditedDataClassForFeatureSummary = function (changesetChange) {
         var className = "edited";
-        if (changesetChange.FeatureIdentifier.charAt(0) === "F") {
+        if (changesetChange.FeatureIdentifier !== null && changesetChange.FeatureIdentifier.charAt(0) === "F") {
             className = "edited-fdp";
         }
         return className;
     };
     me.getEditedDataClassForModelSummary = function (changesetChange) {
         var className = "edited";
-        if (changesetChange.ModelIdentifier.charAt(0) === "F") {
+        if (changesetChange.ModelIdentifier !== null && changesetChange.ModelIdentifier.charAt(0) === "F") {
             className = "edited-fdp";
         }
         return className;
     };
     me.getEditedDataClassForDataItem = function (changesetChange) {
         var className = "edited";
-        if (changesetChange.FeatureIdentifier.charAt(0) === "F") {
+        if (changesetChange.FeatureIdentifier !== null && changesetChange.FeatureIdentifier.charAt(0) === "F") {
             className = "edited-fdp-data";
         }
         return className;
@@ -447,8 +455,8 @@ model.Page = function (models) {
     me.configureScrollerOffsets = function () {
         var leftFixed = $(".DTFC_LeftBodyLiner");
         var leftWrapper = $(".DTFC_LeftBodyWrapper");
-        leftFixed.height((leftFixed.height() + 38) + "px");
-        leftWrapper.height((leftWrapper.height() + 7) + "px");
+        //leftFixed.height((leftFixed.height() + 1) + "px");
+        //leftWrapper.height((leftWrapper.height() + 7) + "px");
     }
     me.configureDataTables = function () {
 
