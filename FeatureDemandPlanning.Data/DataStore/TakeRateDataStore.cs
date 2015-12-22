@@ -459,7 +459,7 @@ namespace FeatureDemandPlanning.DataStore
 
         #region "Private Members"
 
-        private const string fdpVolumeHeaderStoredProcedureName = "Fdp_VolumeHeader_GetManyByUsername";
+        private const string fdpVolumeHeaderStoredProcedureName = "Fdp_TakeRateHeader_GetManyByUsername";
         private const string fdpVolumeHeaderByOxoDocumentStoredProcedureName = "Fdp_VolumeHeader_GetManyByOxoDocId";
         private const string fdpVolumeHeaderSaveStoredProcedureName = "Fdp_TakeRateHeader_Save";
         private const string fdpOxoDocSaveStoredProcedureName = "Fdp_OxoDoc_Save";

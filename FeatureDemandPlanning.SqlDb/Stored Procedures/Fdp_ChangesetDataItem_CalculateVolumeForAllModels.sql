@@ -45,7 +45,10 @@ AS
 		, D.MarketId
 		, D.ModelId
 		, D.FdpModelId
-		, @TotalVolumeByMarket * D1.PercentageTakeRate
+		, CASE 
+			WHEN (@TotalVolumeByMarket * D1.PercentageTakeRate) > 0 AND (@TotalVolumeByMarket * D1.PercentageTakeRate) < 1 THEN 1
+			ELSE (@TotalVolumeByMarket * D1.PercentageTakeRate)
+		  END
 		, D1.PercentageTakeRate
 		, D1.FdpTakeRateSummaryId
 		
@@ -68,7 +71,10 @@ AS
 		, D.MarketId
 		, D.ModelId
 		, D.FdpModelId
-		, @TotalVolumeByMarket * D1.PercentageTakeRate
+		, CASE 
+			WHEN (@TotalVolumeByMarket * D1.PercentageTakeRate) > 0 AND (@TotalVolumeByMarket * D1.PercentageTakeRate) < 1 THEN 1
+			ELSE (@TotalVolumeByMarket * D1.PercentageTakeRate)
+		  END
 		, D1.PercentageTakeRate
 		, D1.FdpTakeRateSummaryId
 		
@@ -103,7 +109,10 @@ AS
 		, S.MarketId
 		, S.ModelId
 		, S.FdpModelId
-		, @TotalVolumeByMarket * S.PercentageTakeRate
+		, CASE 
+			WHEN (@TotalVolumeByMarket * S.PercentageTakeRate) > 0 AND (@TotalVolumeByMarket * S.PercentageTakeRate) < 1 THEN 1
+			ELSE (@TotalVolumeByMarket * S.PercentageTakeRate)
+		  END
 		, S.PercentageTakeRate
 		, S.FdpTakeRateSummaryId
 	FROM
@@ -113,31 +122,6 @@ AS
 										AND D.FdpChangesetDataItemId	= @FdpChangesetDataItemId
 	JOIN Fdp_TakeRateSummary	AS S	ON	H.FdpVolumeHeaderId			= S.FdpVolumeHeaderId
 										AND D.MarketId					= S.MarketId
-										AND D.ModelId					= S.ModelId
-	LEFT JOIN Fdp_ChangesetDataItem AS CUR
-										ON	S.FdpTakeRateSummaryId		= CUR.FdpTakeRateSummaryId
-										AND CUR.IsDeleted				= 0
-	WHERE
-	CUR.FdpChangesetDataItemId IS NULL
-	
-	UNION
-	
-	SELECT
-		  C.FdpChangesetId
-		, S.MarketId
-		, S.ModelId
-		, S.FdpModelId
-		, @TotalVolumeByMarket * S.PercentageTakeRate
-		, S.PercentageTakeRate
-		, S.FdpTakeRateSummaryId
-	FROM
-	Fdp_Changeset				AS C
-	JOIN Fdp_VolumeHeader		AS H	ON	C.FdpVolumeHeaderId			= H.FdpVolumeHeaderId
-	JOIN Fdp_ChangesetDataItem	AS D	ON	C.FdpChangesetId			= D.FdpChangesetId
-										AND D.FdpChangesetDataItemId	= @FdpChangesetDataItemId
-	JOIN Fdp_TakeRateSummary	AS S	ON	H.FdpVolumeHeaderId			= S.FdpVolumeHeaderId
-										AND D.MarketId					= S.MarketId
-										AND D.FdpModelId				= S.FdpModelId
 	LEFT JOIN Fdp_ChangesetDataItem AS CUR
 										ON	S.FdpTakeRateSummaryId		= CUR.FdpTakeRateSummaryId
 										AND CUR.IsDeleted				= 0

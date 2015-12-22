@@ -584,7 +584,7 @@ AS
 	GROUP BY
 	M.StringIdentifier, M.IsFdpModel
 	
-	---- Summary dataset returning the meta information for the data (created by, updated, total volume mix, volume for market, etc)
+	-- Summary dataset returning the meta information for the data (created by, updated, total volume mix, volume for market, etc)
 	
 	SELECT TOP 1
 		  ISNULL(@TotalVolume, 0)				AS TotalVolume

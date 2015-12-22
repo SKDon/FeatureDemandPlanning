@@ -31,7 +31,7 @@ page.TakeRatesPage = function (models) {
     me.configureDataTables = function (filter) {
 
         var takeRateUri = getTakeRatesModel().getTakeRateUri();
-        var oxoDocIndex = 7;
+        var oxoDocIndex = 8;
 
         $("#tblTakeRates").DataTable({
             "serverSide": true,
