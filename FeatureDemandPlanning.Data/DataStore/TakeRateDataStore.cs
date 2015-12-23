@@ -759,5 +759,15 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
+
+        public int FdpVolumeByMarketAndModelGet(TakeRateFilter filter)
+        {
+            return 0;
+        }
+
+        public int FdpVolumeByMarketGet(TakeRateFilter filter)
+        {
+            return 0;
+        }
     }
 }

@@ -125,5 +125,13 @@ namespace FeatureDemandPlanning.Model
                 return PercentageTakeRate / 100;
             }
         }
+
+        public bool IsFeatureChange
+        {
+            get
+            {
+                return !IsModelSummary && !IsFeatureSummary && !IsWholeMarketChange;
+            }
+        }
     }
 }

@@ -882,14 +882,14 @@ td.packFeature {
     width: 100%;
 }
 td.standardFeature {
-    background-color: #7788aa !important;
-    color: #fff;
+    background-color: #aac9aa !important;
+    color: #1c271c;
     width:100%;
 }
 
 td.optionalFeature {
-    background-color: #4e638e !important;
-    color: #fff;
+    background-color: #f9d5d5 !important;
+    color: #312222;
     width:100%;
     border-color:#78a !important;
 }
@@ -1057,7 +1057,7 @@ button.close {
     border-top:none;
     border-bottom: none;
     border-right: solid 1px #2E4372;
-    color:#fff;
+    color:#cecece;
     font-size:8pt;
     vertical-align:middle;
     padding:3px;
@@ -1139,46 +1139,40 @@ th.first-cell {
 
 .table-condensed > thead > tr > th.bmc {
     font-size:8pt;
-    /*color:#fff !important;*/
-    /*padding: 2px !important;*/
     border-left:none !important;
-    /*border-top:none !important;*/
-    border-bottom: none; /*!important;*/
+    border-bottom: none;
     border-right: solid 1px #2E4372;
     height:20px;
     padding:0px;
     vertical-align:middle;
+    color: #cecece;
 }
 
 .table-condensed > thead > tr > th.dpck {
     font-size:8pt;
-    /*color:#fff !important;*/
-    /*padding: 2px !important;*/
     border-left:none !important;
-    /*border-top:none !important;*/
-    border-bottom: none; /*!important;*/
+    border-bottom: none;
     border-right: solid 1px #2E4372;
     height:20px;
     padding:0px;
     vertical-align:middle;
+    color: #cecece;
 }
 
 .table-condensed > thead > tr > th.trim-level {
     font-size:8pt;
-    /*color:#fff !important;*/
-    /*padding: 2px !important;*/
     border-left:none !important;
-    /*border-top:none !important;*/
-    border-bottom: none; /*!important;*/
+    border-bottom: none;
     border-right: solid 1px #2E4372;
     height:20px;
     padding:0px;
     vertical-align:middle;
+    color: #cecece;
 }
 
-th.model-mix {
+.table-condensed > thead > tr > th.model-mix {
     font-size:8pt;
-    color:#fff;
+    color:#cecece;
     text-align:center;
     border-left:none !important;
     /*border-top:none !important;*/
@@ -1188,9 +1182,9 @@ th.model-mix {
     padding:0px !important
 }
 
-th.feature-description {
+.table-condensed > thead > tr > th.feature-description {
     font-size:8pt;
-    color:#fff;
+    color:#cecece;
     border-left:none !important;
     /*border-top:none !important;*/
     border-bottom: none !important;
@@ -1198,9 +1192,9 @@ th.feature-description {
     min-width:200px;
 }
 
-th.feature-code {
+.table-condensed > thead > tr > th.feature-code {
     font-size:11px;
-    color:#fff;
+    color:#cecece;
     text-align:center;
     border-left:none !important;
     /*border-top:none !important;*/

@@ -66,7 +66,7 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> ContextMenu(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
-                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
+                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
             var filter = TakeRateFilter.FromTakeRateParameters(parameters);
             filter.Action = TakeRateDataItemAction.TakeRateDataItemDetails;
@@ -81,7 +81,7 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> ModalContent(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
-                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
+                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
             var takeRateView = await GetModelFromParameters(parameters);
 
@@ -92,9 +92,9 @@ namespace FeatureDemandPlanning.Controllers
         public ActionResult ModalAction(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
-                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
+                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
             TakeRateParametersValidator
-                .ValidateTakeRateParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+                .ValidateTakeRateParameters(DataContext, parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
@@ -103,7 +103,7 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> SaveChangeset(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
-                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
 
             var savedChangeset = await DataContext.TakeRate.SaveChangeset(TakeRateFilter.FromTakeRateParameters(parameters), parameters.Changeset);
 
@@ -114,7 +114,7 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> GetLatestChangeset(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
-                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
+                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
             var changeset = await DataContext.TakeRate.GetUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
 
@@ -125,7 +125,7 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> RevertLatestChangeset(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
-                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
+                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
             var changeset = await DataContext.TakeRate.RevertUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
 
@@ -136,61 +136,61 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> PersistChangeset(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
-               .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
 
             var persistedChangeset = await DataContext.TakeRate.PersistChangeset(TakeRateFilter.FromTakeRateParameters(parameters), parameters.Changeset);
 
             return Json(persistedChangeset);
         }
-        [HttpPost]
-        public async Task<ActionResult> Validate(TakeRateParameters parameters,
-                                                 TakeRateDocumentValidationSection sectionToValidate = TakeRateDocumentValidationSection.All)
-        {
-            //var volumeModel = TakeRateViewModel.GetModel(DataContext, volumeToValidate).Result;
-            //var validator = new VolumeValidator(volumeModel.Volume);
-            //var ruleSets = VolumeValidator.GetRulesetsToValidate(sectionToValidate);
-            //var jsonResult = new JsonResult()
-            //{
-            //    Data = new { IsValid = true }
-            //};
+        //[HttpPost]
+        //public async Task<ActionResult> Validate(TakeRateParameters parameters,
+        //                                         TakeRateDocumentValidationSection sectionToValidate = TakeRateDocumentValidationSection.All)
+        //{
+        //    //var volumeModel = TakeRateViewModel.GetModel(DataContext, volumeToValidate).Result;
+        //    //var validator = new VolumeValidator(volumeModel.Volume);
+        //    //var ruleSets = VolumeValidator.GetRulesetsToValidate(sectionToValidate);
+        //    //var jsonResult = new JsonResult()
+        //    //{
+        //    //    Data = new { IsValid = true }
+        //    //};
 
-            //var results = validator.Validate(volumeModel.Volume, ruleSet: ruleSets);
-            //if (results.IsValid) return jsonResult;
-            //var errorModel = results.Errors
-            //    .Select(e => new ValidationError(new ValidationErrorItem
-            //    {
-            //        ErrorMessage = e.ErrorMessage,
-            //        CustomState = e.CustomState
-            //    })
-            //    {
-            //        key = e.PropertyName
-            //    });
+        //    //var results = validator.Validate(volumeModel.Volume, ruleSet: ruleSets);
+        //    //if (results.IsValid) return jsonResult;
+        //    //var errorModel = results.Errors
+        //    //    .Select(e => new ValidationError(new ValidationErrorItem
+        //    //    {
+        //    //        ErrorMessage = e.ErrorMessage,
+        //    //        CustomState = e.CustomState
+        //    //    })
+        //    //    {
+        //    //        key = e.PropertyName
+        //    //    });
 
-            //jsonResult = new JsonResult()
-            //{
-            //    Data = new ValidationMessage(false, errorModel)
-            //};
-            //return jsonResult;
+        //    //jsonResult = new JsonResult()
+        //    //{
+        //    //    Data = new ValidationMessage(false, errorModel)
+        //    //};
+        //    //return jsonResult;
 
-            ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
+        //    ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
 
-            var filter = new TakeRateFilter()
-            {
-                FilterMessage = parameters.FilterMessage,
-                TakeRateStatusId = parameters.TakeRateStatusId
-            };
-            filter.InitialiseFromJson(parameters);
+        //    var filter = new TakeRateFilter()
+        //    {
+        //        FilterMessage = parameters.FilterMessage,
+        //        TakeRateStatusId = parameters.TakeRateStatusId
+        //    };
+        //    filter.InitialiseFromJson(parameters);
 
-            var results = await TakeRateViewModel.GetModel(DataContext, filter);
-            var jQueryResult = new JQueryDataTableResultModel(results);
+        //    var results = await TakeRateViewModel.GetModel(DataContext, filter);
+        //    var jQueryResult = new JQueryDataTableResultModel(results);
 
-            foreach (var result in results.TakeRates.CurrentPage)
-            {
-                jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
-            }
+        //    foreach (var result in results.TakeRates.CurrentPage)
+        //    {
+        //        jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
+        //    }
 
-            return Json(jQueryResult);
-        }
+        //    return Json(jQueryResult);
+        //}
         public ActionResult ValidationMessage(ValidationMessage message)
         {
             // Something is making a GET request to this page and I can't figure out what
@@ -210,15 +210,15 @@ namespace FeatureDemandPlanning.Controllers
             DataContext.TakeRate.SaveTakeRateDocument(document);
             DataContext.TakeRate.ProcessMappedData(document);
         }
-        private static void ValidateTakeRateParameters(TakeRateParameters parameters, string ruleSetName)
-        {
-            var validator = new TakeRateParametersValidator();
-            var result = validator.Validate(parameters, ruleSet: ruleSetName);
-            if (!result.IsValid)
-            {
-                throw new ValidationException(result.Errors);
-            }
-        }
+        //private static void ValidateTakeRateParameters(TakeRateParameters parameters, string ruleSetName)
+        //{
+        //    var validator = new TakeRateParametersValidator(DataContext);
+        //    var result = validator.Validate(parameters, ruleSet: ruleSetName);
+        //    if (!result.IsValid)
+        //    {
+        //        throw new ValidationException(result.Errors);
+        //    }
+        //}
 
         #endregion
     }

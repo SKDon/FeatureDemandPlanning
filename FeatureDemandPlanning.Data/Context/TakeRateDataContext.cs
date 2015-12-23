@@ -162,6 +162,15 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_takeRateDataStore.FdpChangesetRevert(takeRateFilter));
         }
+        public async Task<int> GetVolumeForModel(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpVolumeByMarketAndModelGet(filter));
+        }
+
+        public async Task<int> GetVolumeForMarket(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpVolumeByMarketGet(filter));
+        }
 
         #endregion
 

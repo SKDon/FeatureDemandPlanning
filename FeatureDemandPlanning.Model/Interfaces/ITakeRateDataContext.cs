@@ -44,5 +44,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<DataChange> PersistChangesetDataChange(TakeRateFilter filter, DataChange changeToPersist);
 
         Task<FdpChangeset> RevertUnsavedChangesForUser(TakeRateFilter takeRateFilter);
+
+        Task<int> GetVolumeForModel(TakeRateFilter filter);
+        Task<int> GetVolumeForMarket(TakeRateFilter filter);
     }
 }

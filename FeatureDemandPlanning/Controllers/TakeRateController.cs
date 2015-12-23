@@ -41,7 +41,8 @@ namespace FeatureDemandPlanning.Controllers
         [HttpGet]
         public async Task<ActionResult> TakeRatePage(TakeRateParameters parameters)
         {
-            ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
+            TakeRateParametersValidator
+                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.NoValidation);
 
             var filter = TakeRateFilter.FromTakeRateParameters(parameters);
             filter.Action = TakeRateDataItemAction.TakeRates;
@@ -53,7 +54,8 @@ namespace FeatureDemandPlanning.Controllers
         [HandleErrorWithJson]
         public async Task<ActionResult> ListTakeRates(TakeRateParameters parameters)
         {
-            ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
+            TakeRateParametersValidator
+                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.NoValidation);
 
             var js = new JavaScriptSerializer();
             var filter = new TakeRateFilter()
@@ -78,7 +80,7 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> ContextMenu(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
-                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
+                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
             var takeRateView = await TakeRateViewModel.GetModel(
                 DataContext,
@@ -91,7 +93,7 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> ModalContent(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
-                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
+                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
             var takeRateView = await GetModelFromParameters(parameters);
 
@@ -102,9 +104,9 @@ namespace FeatureDemandPlanning.Controllers
         public ActionResult ModalAction(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
-                .ValidateTakeRateParameters(parameters, TakeRateParametersValidator.TakeRateIdentifier);
+                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
             TakeRateParametersValidator
-                .ValidateTakeRateParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+                .ValidateTakeRateParameters(DataContext, parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
@@ -114,15 +116,6 @@ namespace FeatureDemandPlanning.Controllers
         private async Task<TakeRateViewModel> GetModelFromParameters(TakeRateParameters parameters)
         {
             return await TakeRateViewModel.GetModel(DataContext, TakeRateFilter.FromTakeRateParameters(parameters));
-        }
-        private static void ValidateTakeRateParameters(TakeRateParameters parameters, string ruleSetName)
-        {
-            var validator = new TakeRateParametersValidator();
-            var result = validator.Validate(parameters, ruleSet: ruleSetName);
-            if (!result.IsValid)
-            {
-                throw new ValidationException(result.Errors);
-            }
         }
 
         #endregion
