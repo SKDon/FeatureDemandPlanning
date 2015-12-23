@@ -17,16 +17,19 @@ namespace FeatureDemandPlanning.DataStore
 
         public TakeRateDataContext(string cdsId) : base(cdsId)
         {
-            _vehicleDataStore = new VehicleDataStore(cdsId);
             _documentDataStore = new OXODocDataStore(cdsId);
             _takeRateDataStore = new TakeRateDataStore(cdsId);
-            _modelDataStore = new ModelDataStore(cdsId);
+            _marketGroupDataStore = new MarketGroupDataStore(cdsId);
         }
 
         #endregion
 
         #region "Public Methods"
 
+        public async Task<IEnumerable<MarketGroup>> ListAvailableMarketGroups(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_marketGroupDataStore.FdpMarketGroupGetMany(filter));
+        }
         public async Task<PagedResults<TakeRateSummary>> ListTakeRateDocuments(TakeRateFilter filter)
         {
             return await Task.FromResult(_takeRateDataStore.FdpTakeRateHeaderGetManyByUsername(filter));
@@ -166,7 +169,6 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_takeRateDataStore.FdpVolumeByMarketAndModelGet(filter));
         }
-
         public async Task<int> GetVolumeForMarket(TakeRateFilter filter)
         {
             return await Task.FromResult(_takeRateDataStore.FdpVolumeByMarketGet(filter));
@@ -191,10 +193,9 @@ namespace FeatureDemandPlanning.DataStore
 
         #region "Private Members"
 
-        private VehicleDataStore _vehicleDataStore = null;
-        private ModelDataStore _modelDataStore = null;
-        private OXODocDataStore _documentDataStore = null;
-        private TakeRateDataStore _takeRateDataStore = null;
+        private readonly OXODocDataStore _documentDataStore;
+        private readonly TakeRateDataStore _takeRateDataStore;
+        private readonly MarketGroupDataStore _marketGroupDataStore;
 
         #endregion
     }

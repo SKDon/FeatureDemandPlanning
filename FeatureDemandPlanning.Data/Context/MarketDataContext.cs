@@ -44,11 +44,10 @@ namespace FeatureDemandPlanning.DataStore
                 return new EmptyMarket();
 
             // Populate the list of available derivatives for that market (including FDP derivatives)
-            if (filter.OxoDocId.HasValue && filter.ProgrammeId.HasValue)
-            {
-                var variants = _modelDataStore.FdpAvailableModelByMarketGetMany(filter, market);
-                market.VariantCount = variants.Count();
-            }
+            if (!filter.OxoDocId.HasValue || !filter.ProgrammeId.HasValue) return market;
+
+            var variants = _modelDataStore.FdpAvailableModelByMarketGetMany(filter, market);
+            market.VariantCount = variants.Count();
 
             return market;
         }
@@ -65,11 +64,10 @@ namespace FeatureDemandPlanning.DataStore
                 return new EmptyMarketGroup();
 
             // Populate the list of available derivatives for that market (including FDP derivatives)
-            if (filter.OxoDocId.HasValue && filter.ProgrammeId.HasValue)
-            {
-                var variants = _modelDataStore.FdpAvailableModelByMarketGroupGetMany(filter, marketGroup);
-                marketGroup.VariantCount = variants.Count();
-            }
+            if (!filter.OxoDocId.HasValue || !filter.ProgrammeId.HasValue) return marketGroup;
+
+            var variants = _modelDataStore.FdpAvailableModelByMarketGroupGetMany(filter, marketGroup);
+            marketGroup.VariantCount = variants.Count();
 
             return marketGroup;
         }

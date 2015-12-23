@@ -1,4 +1,5 @@
-﻿CREATE VIEW dbo.Fdp_Version_VW AS
+﻿
+CREATE VIEW [dbo].[Fdp_Version_VW] AS
 
 	WITH LatestVersion AS
 	(
@@ -19,17 +20,17 @@
 		, P.ModelYear
 		, D.Gateway
 		, D.Version_Id						AS DocumentVersion
-		, V.MajorVersion
-		, V.MinorVersion
-		, V.Revision
-		,	CAST(V.MajorVersion AS NVARCHAR)	+ '.' +
-			CAST(V.MinorVersion AS NVARCHAR)	+ '.' +
-			CAST(V.Revision AS NVARCHAR)	AS VersionString
+		, ISNULL(V.MajorVersion, 0)			AS MajorVersion
+		, ISNULL(V.MinorVersion, 0)			AS MinorVersion
+		, ISNULL(V.Revision, 0)				AS Revision
+		,	CAST(ISNULL(V.MajorVersion, 0) AS NVARCHAR)	+ '.' +
+			CAST(ISNULL(V.MinorVersion, 0) AS NVARCHAR)	+ '.' +
+			CAST(ISNULL(V.Revision, 0) AS NVARCHAR)	AS VersionString
 		, S.[Status]
 			
-	FROM Fdp_VolumeHeader		AS H
-	JOIN OXO_Doc				AS D	ON	H.DocumentId			= D.Id
-	JOIN OXO_Programme_VW		AS P	ON	D.Programme_Id			= P.Id
-	JOIN LatestVersion			AS L	ON	H.FdpVolumeHeaderId		= L.FdpTakeRateHeaderId
-	JOIN Fdp_TakeRateVersion	AS V	ON	L.FdpTakeRateVersionId	= V.FdpTakeRateVersionId
-	JOIN Fdp_TakeRateStatus		AS S	ON	H.FdpTakeRateStatusId	= S.FdpTakeRateStatusId
+	FROM Fdp_VolumeHeader			AS H
+	JOIN OXO_Doc					AS D	ON	H.DocumentId			= D.Id
+	JOIN OXO_Programme_VW			AS P	ON	D.Programme_Id			= P.Id
+	JOIN Fdp_TakeRateStatus			AS S	ON	H.FdpTakeRateStatusId	= S.FdpTakeRateStatusId
+	LEFT JOIN LatestVersion			AS L	ON	H.FdpVolumeHeaderId		= L.FdpTakeRateHeaderId
+	LEFT JOIN Fdp_TakeRateVersion	AS V	ON	L.FdpTakeRateVersionId	= V.FdpTakeRateVersionId

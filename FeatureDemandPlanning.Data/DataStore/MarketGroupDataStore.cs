@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
@@ -14,7 +14,41 @@ namespace FeatureDemandPlanning.DataStore
     
         public MarketGroupDataStore(string cdsid)
         {
-            this.CurrentCDSID = cdsid;
+            CurrentCDSID = cdsid;
+        }
+
+        public IEnumerable<MarketGroup> FdpMarketGroupGetMany(TakeRateFilter filter)
+        {
+            IEnumerable<MarketGroup> retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@DocumentId", filter.TakeRateId, DbType.Int32);
+
+                    using (var results = conn.QueryMultiple("dbo.Fdp_MarketGroup_GetMany", para, commandType: CommandType.StoredProcedure))
+                    {
+                        var marketGroups = results.Read<MarketGroup>().ToList();
+
+                        var markets = results.Read<Market>().ToList();
+                        foreach (var marketGroup in marketGroups)
+                        {
+                            marketGroup.Markets = markets.Where(c => c.ParentId == marketGroup.Id).ToList();
+                        }
+
+                        retVal = marketGroups;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("MarketGroupDataStore.MarketGroupGetMany", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
         }
 
         public IEnumerable<MarketGroup> MarketGroupGetMany(bool deepGet = false)
@@ -27,7 +61,7 @@ namespace FeatureDemandPlanning.DataStore
                     List<MarketGroup> marketGroups;
 
                     var para = new DynamicParameters();
-                    para.Add("@p_deep_get", deepGet, dbType: DbType.Boolean);
+                    para.Add("@p_deep_get", deepGet, DbType.Boolean);
 
                     using (var multi = conn.QueryMultiple("dbo.OXO_Master_MarketGroup_GetMany", para, commandType: CommandType.StoredProcedure))
                     {
@@ -205,5 +239,7 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
+
+   
     }
 }

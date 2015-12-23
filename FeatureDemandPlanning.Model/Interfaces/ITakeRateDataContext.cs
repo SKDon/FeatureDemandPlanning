@@ -13,6 +13,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface ITakeRateDataContext
     {
+        Task<IEnumerable<MarketGroup>> ListAvailableMarketGroups(TakeRateFilter filter);
         Task<PagedResults<TakeRateSummary>> ListTakeRateDocuments(TakeRateFilter filter);
         Task<PagedResults<TakeRateSummary>> ListLatestTakeRateDocuments();
         Task<IEnumerable<TakeRateStatus>> ListTakeRateStatuses();

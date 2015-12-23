@@ -107,7 +107,7 @@
     <Compile Include="DataStore\FeatureDataStore.cs" />
     <Compile Include="DataStore\OXOFeatureRequestDS.cs" />
     <Compile Include="DataStore\MarketDataStore.cs" />
-    <Compile Include="DataStore\OXOMarketGroupDS.cs" />
+    <Compile Include="DataStore\MarketGroupDataStore.cs" />
     <Compile Include="DataStore\OXOModelBodyDS.cs" />
     <Compile Include="DataStore\ModelDataStore.cs" />
     <Compile Include="DataStore\OXOModelEngineDS.cs" />

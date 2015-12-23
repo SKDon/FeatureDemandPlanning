@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public IEnumerable<FdpModel> FdpAvailableModelByMarketGetMany(ProgrammeFilter filter, Market market)
         {
-            IEnumerable<FdpModel> retVal = Enumerable.Empty<FdpModel>();
+            var retVal = Enumerable.Empty<FdpModel>();
 
             using (var conn = DbHelper.GetDBConnection())
             {
