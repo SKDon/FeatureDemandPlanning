@@ -6,7 +6,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Feature Demand Planning</title>
+    @if (!string.IsNullOrEmpty(@ViewBag.Title))
+    {
+        <title>FDP - @ViewBag.Title</title>
+    }
+    else
+    {
+        <title>FDP</title>
+    }
 
     @Styles.Render("~/bundles/css/bootstrap")
     @Styles.Render("~/bundles/site/css")

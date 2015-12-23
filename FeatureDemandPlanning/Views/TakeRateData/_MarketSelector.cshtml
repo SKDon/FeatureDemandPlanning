@@ -28,7 +28,8 @@
         @{
             var allMarketsLink = string.Format("All Markets ({0})", totalDerivatives);
         }
-        <li>@Html.ActionLink(allMarketsLink, "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, resultsMode = Model.Document.Mode })</li>
+        <li class="dropdown-nosubmenu">@Html.ActionLink(allMarketsLink, "Index", new {oxoDocId = Model.Document.UnderlyingOxoDocument.Id, resultsMode = Model.Document.Mode})</li>
+        <li class="dropdown-header">Market Groups</li>
         @foreach (var marketGroup in Model.Document.Vehicle.AvailableMarketGroups)
         {
             var selectedGroup = string.Empty;

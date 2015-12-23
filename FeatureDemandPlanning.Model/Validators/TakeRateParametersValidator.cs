@@ -1,10 +1,7 @@
-﻿using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Interfaces;
+﻿using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Parameters;
 using FluentValidation;
-using FluentValidation.Validators;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,78 +46,7 @@ namespace FeatureDemandPlanning.Model.Validators
             return validator;
         }
     }
-    public class AllFeatureVolumesMustBeLessThanModelVolume : PropertyValidator
-    {
-        public AllFeatureVolumesMustBeLessThanModelVolume(IDataContext context)
-            : base("Feature volume cannot be greater than the volume for the model")
-        {
-            _context = context;
-        }
 
-        protected TakeRateParameters Parameters { get; set; }
-
-        protected override bool IsValid(PropertyValidatorContext context)
-        {
-            Parameters = context.ParentContext.InstanceToValidate as TakeRateParameters;
-            var changes = context.PropertyValue as IEnumerable<DataChange>;
-
-            if (changes != null)
-            {
-                return !changes.Any(c => IsFeatureVolumeGreaterThanVolumeForModel(c));
-            }
-
-            return true;
-        }
-
-        private bool IsFeatureVolumeGreaterThanVolumeForModel(DataChange change)
-        {
-            if (!change.IsFeatureChange)
-                return false;
-
-            var filter = TakeRateFilter.FromTakeRateParameters(Parameters);
-            var modelVolume = _context.TakeRate.GetVolumeForModel(filter).Result;
-
-            return change.Volume > modelVolume;
-        }
-
-        private IDataContext _context;
-    }
-    public class AllModelVolumesMustBeLessThanMarketVolume : PropertyValidator
-    {
-        public AllModelVolumesMustBeLessThanMarketVolume(IDataContext context)
-            : base("Feature volume cannot be greater than the volume for the model")
-        {
-            _context = context;
-        }
-
-        protected TakeRateParameters Parameters { get; set; }
-
-        protected override bool IsValid(PropertyValidatorContext context)
-        {
-            Parameters = context.ParentContext.InstanceToValidate as TakeRateParameters;
-            var changes = context.PropertyValue as IEnumerable<DataChange>;
-
-            if (changes != null)
-            {
-                return !changes.Any(c => IsVolumeGreaterThanVolumeForMarket(c));
-            }
-
-            return true;
-        }
-
-        private bool IsVolumeGreaterThanVolumeForMarket(DataChange change)
-        {
-            if (!change.IsModelSummary)
-                return false;
-
-            var filter = TakeRateFilter.FromTakeRateParameters(Parameters);
-            var marketVolume = _context.TakeRate.GetVolumeForMarket(filter).Result;
-
-            return change.Volume > marketVolume;
-        }
-
-        private IDataContext _context;
-    }
     /// <summary>
     /// Validator for a whole changeset
     /// </summary>

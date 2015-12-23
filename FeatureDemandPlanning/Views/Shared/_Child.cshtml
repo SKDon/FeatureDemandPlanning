@@ -3,7 +3,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Feature Demand Planning</title>
+    @if (!string.IsNullOrEmpty(@ViewBag.Title))
+    {
+        <title>FDP - @ViewBag.Title</title>
+    }
+    else
+    {
+        <title>FDP</title>
+    }
 
     @Styles.Render("~/bundles/css/dataTables")
     @Styles.Render("~/bundles/css/bootstrap")
@@ -21,14 +28,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                
+
                 <a href="@Url.Action("Index", "Home")">
                     <div class="navbar-brand metal linear">
                         <div style="margin-top:-3px">F.D.P</div>
                         <p>Powered by RADS</p>
                     </div>
                 </a>
-                
+
             </div>
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
@@ -38,14 +45,14 @@
                             <span class="glyphicon glyphicon-cog"></span> Settings
                         </a>
                     </li>
-                </ul> 
+                </ul>
                 <div class="pull-left breadcrumb">
                     @Html.MvcSiteMap().SiteMapPath()
                 </div>
-                    
-                <div class ="nav navbar-nav navbar-right" style="position:relative;width:230px;height:60px;">
-                    <img class="navbar-right" src="~/Content/Images/Brand/jag_logo_transparent.png" style="position:absolute;left:0;bottom:0;"/>
-                    <img class="navbar-right" src="~/Content/Images/Brand/lr_logo_v2_transparent.png" style="position:absolute;left:108px;bottom:0;"/>
+
+                <div class="nav navbar-nav navbar-right" style="position:relative;width:230px;height:60px;">
+                    <img class="navbar-right" src="~/Content/Images/Brand/jag_logo_transparent.png" style="position:absolute;left:0;bottom:0;" />
+                    <img class="navbar-right" src="~/Content/Images/Brand/lr_logo_v2_transparent.png" style="position:absolute;left:108px;bottom:0;" />
                 </div>
             </div>
         </div>
@@ -56,10 +63,10 @@
     </div>
 
     <img class="banner hidden-xs" src="~/Content/Images/Carousel/multiple.png" />
-    
+
     <div class="container body-content-header">
         @RenderSection("PageContentHeader", false)
-    </div>     
+    </div>
 
     <div id="body" class="container body-content-header">
         @RenderSection("PageBody", true)
@@ -68,21 +75,15 @@
     <div id="footer">
         @RenderSection("PageFooter", false)
     </div>
-    
+
     @Scripts.Render("~/bundles/shared")
 
     <script src="~/Content/jquery/js/jquery-2.1.4.min.js"></script>
     <script src="~/Scripts/jquery-ui-1.11.4.min.js"></script>
     <script src="~/Extensions/Jeditable/jquery.jeditable.mini.js"></script>
     <script src="~/Scripts/jquery.cookie.js"></script>
-    <script src="~/Scripts/jquery.tipsy.js"></script>
-    <script src="~/Scripts/jquery.simplePager.js"></script>
-    <script src="~/Scripts/jquery.smartmenu.js"></script>
-    <script src="~/Scripts/jquery.mouseWheel.js"></script>
-    <script src="~/Scripts/jqueryFileTree.js"></script>
-    <script src="~/Extensions/jquery.nivo.slider/jquery.nivo.slider.js"></script>
     <script src="~/Content/Spin/js/spin.min.js"></script>
-    
+
     @Scripts.Render("~/bundles/js/dataTables")
     @Scripts.Render("~/bundles/js/bootstrap")
     @RenderSection("PageScripts", required: false)

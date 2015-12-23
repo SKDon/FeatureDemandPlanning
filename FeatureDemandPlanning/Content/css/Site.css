@@ -790,12 +790,14 @@ ul.dropdown-menu > li span.glyphicon {
 
 .dropdown-header {
     display: block;
-    padding: 2px 20px;
+    padding: 3px 20px;
     font-size: 12px;
     line-height: 1.42857;
     color: #fff0aa;
     white-space: nowrap;
     background-color:#2e4372;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .dropdown-submenu {
@@ -815,6 +817,11 @@ ul.dropdown-menu > li span.glyphicon {
 }
 .dropdown-submenu:hover>.dropdown-menu {
     display:block;
+}
+.dropdown-nosubmenu {
+    position:relative;
+    font-size: 11px;
+    color:#2E4372;
 }
 .dropdown-submenu>a:after {
     display:block;
@@ -995,10 +1002,10 @@ button.close {
     .dropdown-menu.columns-3 {
     	min-width: 600px;
     }
-    .dropdown-menu li a {
+    /*.dropdown-menu li a {
     	padding: 5px 15px;
     	font-weight: 300;
-    }
+    }*/
     .multi-column-dropdown {
     	list-style: none;
     }

@@ -52,13 +52,13 @@ namespace FeatureDemandPlanning.Controllers
         [SiteMapTitle("DocumentName")]
         public async Task<ActionResult> TakeRateDataPage(TakeRateParameters parameters)
         {
-            ViewBag.PageTitle = "OXO Volume";
-
             var filter = TakeRateFilter.FromTakeRateParameters(parameters);
             filter.Action = TakeRateDataItemAction.TakeRateDataPage;
             var model = await TakeRateViewModel.GetModel(DataContext, filter);
 
             ViewData["DocumentName"] = model.Document.UnderlyingOxoDocument.Name;
+            ViewBag.Title = string.Format("{0} - {1} ({2}) - {3}", model.Document.Vehicle.Code,
+                model.Document.Vehicle.ModelYear, model.Document.UnderlyingOxoDocument.Gateway, model.Document.TakeRateSummary.First().Version);
 
             return View("TakeRateDataPage", model);
         }

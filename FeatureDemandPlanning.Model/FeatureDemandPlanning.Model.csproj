@@ -214,6 +214,8 @@
     <Compile Include="ImportResult.cs" />
     <Compile Include="TrimLevel.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="Validators\AllFeatureVolumesMustBeLessThanModelVolume.cs" />
+    <Compile Include="Validators\AllModelVolumesMustBeLessThanMarketVolume.cs" />
     <Compile Include="Validators\ComparisonVehicleExtensions.cs" />
     <Compile Include="Validators\ExtendedValidationResult.cs" />
     <Compile Include="Interfaces\IConfigurationDataContext.cs" />
