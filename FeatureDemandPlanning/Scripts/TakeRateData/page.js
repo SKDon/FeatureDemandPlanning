@@ -49,7 +49,7 @@ model.Page = function (models) {
         me.configureCellEditing();
         me.configureComments();
         me.configureChangeset();
-        //me.configureRules();
+        me.configureRowHighlight();
     };
     me.persistData = function () {
         getTakeRateDataModel().persistData(getChangeset().getDataChanges());
@@ -58,24 +58,12 @@ model.Page = function (models) {
         var changes = getChangeset().getDataChanges();
         getTakeRateDataModel().saveData(changes, callback);
     };
-    //me.updateFilteredData = function () {
-    //    getTakeRateDataModel().updateFilteredData(getChangeset().getDataChanges());
-    //};
     me.initialiseControls = function () {
         var prefix = me.getIdentifierPrefix();
         $("#" + prefix + "_TakeRateDataPanel").height(me.calcPanelHeight());
     };
     me.getIdentifierPrefix = function () {
         return $("#Page_IdentifierPrefix").val();
-    };
-    me.clearVehicle = function () {
-        me.setVehicle(getVehicleModel().getEmptyVehicle());
-    };
-    me.resetVehicle = function (startEventChain) {
-        me.clearVehicle();
-        me.resetEvent();
-        if (startEventChain)
-            me.toggleEvent();
     };
     me.parseError = function (error) {
         var retVal = "";
@@ -147,32 +135,9 @@ model.Page = function (models) {
             $('div.dataTables_scrollBody').css('height', me.calcDataTableHeight());
             table.draw();
             me.configureScrollerOffsets();
-        });
-
-        //$(document).on({
-        //    mouseenter: function () {
-        //        var columnIndex = $(this).index().column;
-        //        var trIndex = $(this).closest("tr").index() + 5;
-        //        $("table.dataTable").each(function (index) {
-        //            $(this).find("tr:eq(" + trIndex + ")").children(".cross-tab-data-item").addClass("highlight");
-        //            $(this).column(columnIndex).nodes().addClass("highlight");
-        //        });
-        //    },
-        //    mouseleave: function () {
-        //        var columnIndex = $(this).index().column;
-        //        var trIndex = $(this).closest("tr").index() + 5;
-        //        $("table.dataTable").each(function (index) {
-        //            $(this).find("tr:eq(" + trIndex + ")").children(".cross-tab-data-item").removeClass("highlight");
-        //            $(this).column(columnIndex).nodes().removeClass("highlight");
-        //        });
-        //    }
-        //}, ".dataTables_wrapper tbody tr td");
-
-        //$("#notifier").unbind("OnUpdateFilterDelegate").on("OnUpdateFilterDelegate", me.onUpdateFilterEventHandler);
-        
+        });       
     };
     me.configureCellEditing = function () {
-        
         $(".editable").editable(me.cellEditCallback,
         {
             tooltip: "Click to edit percentage take / volume",
@@ -191,6 +156,23 @@ model.Page = function (models) {
             onblur: "submit"
         });
     };
+    me.configureRowHighlight = function() {
+        $(document).on({
+            mouseenter: function () {
+                var columnIndex = $(this).index();
+                var trIndex = $(this).closest("tr").index() + 4;
+                var selector = $("table.dataTable");
+                selector.find("tr:eq(" + trIndex + ")").children(".cross-tab-data-item").addClass("highlight");
+                selector.find("tr td:nth-child(" + (columnIndex + 1) + ")").filter(function () {
+                    return !$(this).hasClass("group") && !$(this).hasClass("sub-group") &&
+                        !$(this).hasClass("cross-tab-fixed") && !$(this).hasClass("fdp-data-item-fixed");
+                }).addClass("highlight");
+            },
+            mouseleave: function () {
+                $("table.dataTable").find("tbody tr td").removeClass("highlight");
+            }
+        }, ".dataTables_wrapper tbody tr td");
+    }
     me.cellEditCallback = function (value, settings) {
         
         var target = $(this).attr("data-target");
@@ -703,7 +685,7 @@ model.Page = function (models) {
     };
     me.getValidationMessageCallback = function (response, textStatus, jqXHR) {
         var html = "";
-        if (response != "") {
+        if (response !== "") {
             html = response;
         }
         me.fadeInNotify(html);
@@ -713,10 +695,10 @@ model.Page = function (models) {
         if (control.is(":visible")) {
             control.fadeOut("slow", function () {
                 control.html(displayHtml);
-                if (displayHtml != "") control.fadeIn("slow");
+                if (displayHtml !== "") control.fadeIn("slow");
             });
         } else {
-            if (displayHtml != "") control.fadeIn("slow");
+            if (displayHtml !== "") control.fadeIn("slow");
         }
     };
     me.getValidationMessageError = function (jqXHR, textStatus, errorThrown) {

@@ -878,24 +878,24 @@ ul.dropdown-menu > li span.glyphicon {
 }
 
 td.nonApplicableFeature {
-    background-color: transparent !important;
+    background-color: transparent;
     color: #061639;
     width:100%;
 }
 
 td.packFeature {
-    background-color: #645495 !important;
+    background-color: #645495;
     color: #b4abd0;
     width: 100%;
 }
 td.standardFeature {
-    background-color: #aac9aa !important;
+    background-color: #aac9aa;
     color: #1c271c;
     width:100%;
 }
 
 td.optionalFeature {
-    background-color: #f9d5d5 !important;
+    background-color: #f9d5d5;
     color: #312222;
     width:100%;
     border-color:#78a !important;
