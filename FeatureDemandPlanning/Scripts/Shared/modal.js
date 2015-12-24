@@ -34,7 +34,7 @@ model.Modal = function (params) {
     me.getModalParameters = function () {
         return privateStore[me.id].ModalParameters;
     };
-    me.setActionModel = function (model) {
+    me.setActionModel = function () {
         return privateStore[me.id].ActionModel;
     }
     me.setModalParameters = function (parameters) {
@@ -52,7 +52,7 @@ model.Modal = function (params) {
             dataType: "html",
             contentType: "application/json",
             data: data,
-            success: function (response, status, jqXHR) {
+            success: function (response) {
                 showModalCallback(response, title);
             },
             error: showModalError
@@ -63,19 +63,16 @@ model.Modal = function (params) {
     };
     me.initialise = function () {
     };
-    me.raiseEvents = function (sender, eventArgs) {
-        var target = $(sender.target);
-        var params = me.getModel().getUpdateParameters();
-        if (target.attr("id") == "btnModalOk") {
-            $(document).trigger("ModalOk", [params]);
-        } else {
-            $(document).trigger("ModalCancel", []);
-        }
-    };
     me.raiseLoadedEvent = function () {
         $(document).trigger("ModalLoaded", me.getData());
     };
     me.registerEvents = function () {
+    };
+    me.registerConfirmEvents = function(confirmCallback) {
+        $("#Modal_OK").on("click", function () {
+            $("#" + me.getModalDialogId()).modal("hide");
+            confirmCallback(me.getModalParameters().Data);
+        });
     };
     me.setActionModel = function (model) {
         privateStore[me.id].ActionModel = model;
@@ -98,7 +95,7 @@ model.Modal = function (params) {
         me.setActionModel(parameters.ActionModel);
 
         dialog
-            .unbind("shown.bs.modal").on('shown.bs.modal', function () {
+            .unbind("shown.bs.modal").on("shown.bs.modal", function () {
                 me.getModelContent(parameters.Title, parameters.Uri, parameters.Data);
             })
             .modal();
@@ -106,7 +103,34 @@ model.Modal = function (params) {
         $("#Modal_OK").show();
         $("#Modal_Cancel").html("Cancel");
     };
-    function showModalCallback(response, title) {
+    me.showConfirm = function(title, message, confirmCallback) {
+        var dialog = $("#" + me.getModalDialogId());
+        dialog
+            .unbind("shown.bs.modal").on("shown.bs.modal", function () {
+                me.getConfirmContent(title, message, confirmCallback);
+            })
+            .modal();
+
+        $("#Modal_OK").show();
+        $("#Modal_Cancel").html("Cancel");
+    };
+    me.getConfirmContent = function(title, message, confirmCallback) {
+        var dialog = $("#" + me.getModalDialogId());
+        var content = dialog.find("#Modal_Content");
+        var titleSelector = dialog.find("#Modal_Title");
+        var notifier = dialog.find("#Modal_Notify");
+        titleSelector.html(title);
+
+        content.html(me.getConfirmHtml(message));
+        titleSelector.html(title);
+        notifier.html("").hide();
+
+        me.registerConfirmEvents(confirmCallback);
+    }
+    me.getConfirmHtml = function(message) {
+        return "<div class=\"alert alert-info alert-less-margin\">" + message + "</div>";
+    }
+    function showModalCallback(response) {
         var dialog = $("#" + me.getModalDialogId());
         var content = dialog.find("#Modal_Content");
         
@@ -122,9 +146,9 @@ model.Modal = function (params) {
         me.registerEvents();
         me.raiseLoadedEvent();
     };
-    function showModalError(jqXHR, textStatus, errorThrown) {
+    function showModalError(jqXhr) {
         var dialog = $("#" + me.getModalDialogId());
         dialog.find("#Modal_Title").html("Error");
-        dialog.find("#Modal_Content").html(jqXHR.responseText);
+        dialog.find("#Modal_Content").html(jqXhr.responseText);
     }
 };

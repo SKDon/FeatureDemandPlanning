@@ -52,7 +52,15 @@ model.Page = function (models) {
         me.configureRowHighlight();
     };
     me.persistData = function () {
-        getTakeRateDataModel().persistData(getChangeset().getDataChanges());
+        var modal = getModal();
+        modal.setModalParameters({ Data: getChangeset().getDataChanges() });
+        modal.showConfirm("Commit Changes", me.getCommitMessage(), me.persistDataConfirm);
+    };
+    me.getCommitMessage = function() {
+        return "Are you sure you wish to commit your changes to the details for this market?<br/><br/>Please note that this cannot be undone.";
+    };
+    me.persistDataConfirm = function(dataChanges) {
+        //SgetTakeRateDataModel().persistData(dataChanges);
     };
     me.saveData = function (callback) {
         var changes = getChangeset().getDataChanges();
@@ -115,7 +123,7 @@ model.Page = function (models) {
         $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel")
             .on("OnEditCellDelegate", me.onEditCellEventHandler)
             .on("OnSaveDelegate", me.onSaveEventHandler)
-            .on("OnPersistDelegate", me.onPersistEventHandler)
+            .on("OnPersistDelegate", me.onPersistEventHandler);
 
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
         $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);
@@ -132,7 +140,7 @@ model.Page = function (models) {
             var table = me.getDataTable();
             //var settings = table.settings();
             panel.height(me.calcPanelHeight());
-            $('div.dataTables_scrollBody').css('height', me.calcDataTableHeight());
+            $("div.dataTables_scrollBody").css("height", me.calcDataTableHeight());
             table.draw();
             me.configureScrollerOffsets();
         });       
@@ -308,24 +316,19 @@ model.Page = function (models) {
     me.loadChangeset = function () {
         getTakeRateDataModel().loadChangeset(me.loadChangesetCallback);
     };
-    me.loadChangesetCallback = function (changesetData) {
-        var changeset = getChangeset();
-        var prefix = me.getIdentifierPrefix();
-        changeset.clear();
-        
-        $("#" + prefix + "_Save").prop("disabled", changesetData.Changes.length === 0)
+    me.confirmLoadChangeset = function(changesetData) {
+        $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", changesetData.Changes.length === 0);
 
         for (var i = 0; i < changesetData.Changes.length; i++) {
             var currentChange = changesetData.Changes[i];
-            var displayValue = "";
+            var displayValue;
             if (me.getResultsMode() === "PercentageTakeRate") {
                 displayValue = me.formatPercentageTakeRate(currentChange.PercentageTakeRate);
             }
-            else
-            {
+            else {
                 displayValue = me.formatVolume(currentChange.Volume);
             }
-            var selector = $();
+            var selector;
             if (currentChange.IsFeatureSummary) {
                 selector = $("tbody span[data-target='FS|" + currentChange.DataTarget + "']");
             }
@@ -344,6 +347,19 @@ model.Page = function (models) {
             } else {
                 selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
             }
+        }
+    }
+    me.loadChangesetCallback = function (changesetData) {
+        var changeset = getChangeset();
+        changeset.clear();
+
+        $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", true);
+
+        if (changesetData.Changes.length > 0) {
+            var modal = getModal();
+            modal.setModalParameters({ Data: changesetData });
+            getModal().showConfirm("Load Uncommitted Data?",
+                "You have uncommitted changes to the data for this market.<br/><br/>Do you wish to load these changes?", me.confirmLoadChangeset);
         }
     };
     me.revertChangeset = function () {
@@ -430,8 +446,8 @@ model.Page = function (models) {
     me.configureComments = function () {
         $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover" });
 
-        $('.comment-item').on("click", function (e) {
-            $('.comment-item').not(this).popover("hide");
+        $(".comment-item").on("click", function (e) {
+            $(".comment-item").not(this).popover("hide");
         });
     };
     me.configureScrollerOffsets = function () {
@@ -473,8 +489,8 @@ model.Page = function (models) {
 
                     if (groupName != lastGroupName) {
                         /* Cell to insert into main table */
-                        nGroup = document.createElement('tr');
-                        nCell = document.createElement('td');
+                        nGroup = document.createElement("tr");
+                        nCell = document.createElement("td");
                         nCell.colSpan = iColspan;
                         nCell.className = "group";
                         nCell.innerHTML = "&nbsp;";
@@ -487,14 +503,14 @@ model.Page = function (models) {
                         });
 
                         /* Cell to insert into the frozen columns */
-                        nGroup = document.createElement('tr');
-                        nCell = document.createElement('td');
+                        nGroup = document.createElement("tr");
+                        nCell = document.createElement("td");
                         nCell.className = "group";
                         nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + groupName;
                         nCell.colSpan = 3;
                         $(nGroup).attr("data-toggle", groupName);
                         nGroup.appendChild(nCell);
-                        $(nGroup).insertBefore($('tbody tr:eq(' + (i + corrector) + ')', left.body)[0]);
+                        $(nGroup).insertBefore($("tbody tr:eq(" + (i + corrector) + ")", left.body)[0]);
                         $(nGroup).on("click", function (sender, eventArgs) {
                             var clickedGroup = $(this).attr("data-toggle");
                             var rows = $("tbody tr[data-group='" + clickedGroup + "']").toggle();
@@ -510,11 +526,11 @@ model.Page = function (models) {
                         lastGroupName = groupName;
                     }
 
-                    if (subGroupName != lastSubGroupName) {
+                    if (subGroupName !== lastSubGroupName) {
                         if (subGroupName != "") {
                             /* Cell to insert into main table */
-                            nSubGroup = document.createElement('tr');
-                            nCell = document.createElement('td');
+                            nSubGroup = document.createElement("tr");
+                            nCell = document.createElement("td");
                             nCell.colSpan = iColspan;
                             nCell.className = "sub-group";
                             nCell.innerHTML = "&nbsp;";
@@ -528,15 +544,15 @@ model.Page = function (models) {
                             });
 
                             /* Cell to insert into the frozen columns */
-                            nSubGroup = document.createElement('tr');
-                            nCell = document.createElement('td');
+                            nSubGroup = document.createElement("tr");
+                            nCell = document.createElement("td");
                             nCell.className = "sub-group";
                             nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + subGroupName;
                             nCell.colSpan = 3;
                             $(nSubGroup).attr("data-group", groupName);
                             $(nSubGroup).attr("data-toggle", subGroupName);
                             nSubGroup.appendChild(nCell);
-                            $(nSubGroup).insertBefore($('tbody tr:eq(' + (i + corrector) + ')', left.body)[0]);
+                            $(nSubGroup).insertBefore($("tbody tr:eq(" + (i + corrector) + ")", left.body)[0]);
                             $(nSubGroup).on("click", function (sender, eventArgs) {
                                 var clickedGroup = $(this).attr("data-toggle");
                                 var rows = $("tbody tr[data-subgroup='" + clickedGroup + "']").toggle();

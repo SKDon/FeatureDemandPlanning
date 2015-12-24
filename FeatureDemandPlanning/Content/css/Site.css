@@ -23,7 +23,7 @@ a:hover {
 .banner {
     position: fixed;
     top: -45px; /*70px;*/
-    left: 0px;
+    left: 0;
     height:300px;
     width:100%;
     z-index:-10;
@@ -33,7 +33,7 @@ a:hover {
 .carousel {
     /*position: absolute;
     top: 70px;
-    left: 0px;*/
+    left: 0;*/
     z-index: -2;
     /*border-bottom: solid 1px #4e638e;*/
     height:100%;
@@ -46,8 +46,8 @@ a:hover {
 .carousel-outer {
     z-index: -2;
     position: absolute;
-    left: 0px;
-    top: 0px;
+    left: 0;
+    top: 0;
 }
 
 .carousel-inner {
@@ -70,7 +70,7 @@ a:hover {
 }
 
 .nopadding {
-    padding:0px;
+    padding:0;
 }
 
 .carousel-indicators {
@@ -89,7 +89,7 @@ a:hover {
 .carousel-overlay {
     position:fixed;
     top:69px;
-    left:0px;
+    left:0;
     width:100%;
     height:100%;
     z-index:-1;
@@ -116,14 +116,14 @@ a:hover {
 .body-content-header {
     /*position: fixed;*/
     top:60px;
-    left:0px;
+    left:0;
     width:100%;
-    padding-bottom: 0px;
+    padding-bottom: 0;
 }
 
 .body-content {
     /*position:absolute;*/
-    left:0px;
+    left:0;
     /*top:240px;*/
     width:100%;
     z-index:auto;
@@ -185,7 +185,7 @@ textarea {
 }
 
 .navbar-header h1 {
-    margin-left:0px !important;
+    margin-left:0 !important;
 }
 
 /*.navbar-brand img {
@@ -338,8 +338,8 @@ textarea {
 
 .form-control:focus {
     border-color: #887cb0;
-    outline: 0px none;
-    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(136, 124, 176, 0.8);
+    outline: 0 none;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(136, 124, 176, 0.8);
 }
 
 .label-primary {
@@ -508,8 +508,8 @@ select
     border-width: 0 0 10px 10px;
     border-color: transparent transparent #801505;
     position:absolute;
-    bottom:0px;
-    right:0px;
+    bottom:0;
+    right:0;
     cursor:pointer;
 }
 
@@ -528,7 +528,7 @@ div.text-center-insets {
 
 .text-center {
     position:relative;
-    padding:0px;
+    padding:0;
 }
 
 #scrollerFixed .table.fixedTable {
@@ -537,12 +537,12 @@ div.text-center-insets {
     z-index: 10;
     /* below styles are specific for borderd Bootstrap tables
        to remove rounded corners on cloned table */
-    -webkit-border-top-right-radius: 0px;
-    -webkit-border-bottom-right-radius: 0px;
-       -moz-border-radius-topright: 0px;
-       -moz-border-radius-bottomright: 0px;
-            border-top-right-radius: 0px;
-            border-bottom-right-radius: 0px;
+    -webkit-border-top-right-radius: 0;
+    -webkit-border-bottom-right-radius: 0;
+       -moz-border-radius-topright: 0;
+       -moz-border-radius-bottomright: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
 }
 
 #scrollerFixed .table.fixedTable > thead {
@@ -580,12 +580,12 @@ div.text-center-insets {
     z-index: 10;
     /* below styles are specific for borderd Bootstrap tables
        to remove rounded corners on cloned table */
-    -webkit-border-top-right-radius: 0px;
-    -webkit-border-bottom-right-radius: 0px;
-       -moz-border-radius-topright: 0px;
-       -moz-border-radius-bottomright: 0px;
-            border-top-right-radius: 0px;
-            border-bottom-right-radius: 0px;
+    -webkit-border-top-right-radius: 0;
+    -webkit-border-bottom-right-radius: 0;
+       -moz-border-radius-topright: 0;
+       -moz-border-radius-bottomright: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
 }
 
 .mCS-inset-3.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
@@ -672,8 +672,8 @@ th.header-A0 {
 
 tr.subgroup-item > td:first-of-type {
     padding-left: 33px;
-    padding-top: 0px;
-    padding-bottom: 0px;
+    padding-top: 0;
+    padding-bottom: 0;
     vertical-align: middle;
   height: 27px;
 }
@@ -681,8 +681,8 @@ tr.subgroup-item > td:first-of-type {
 td.expanded-group[data-group-level="0"] {
   background: #152a55 url("Images/Icons/close-but.png") no-repeat scroll 9px 6px;
   padding-left: 28px;
-  padding-top:0px;
-  padding-bottom:0px;
+  padding-top:0;
+  padding-bottom:0;
   vertical-align:middle;
   height: 27px;
 }
@@ -690,8 +690,8 @@ td.expanded-group[data-group-level="0"] {
 td.expanded-group[data-group-level="1"] {
   background: #2e4372 url("Images/Icons/close-but.png") no-repeat scroll 9px 6px;
   padding-left: 33px;
-  padding-top:0px;
-  padding-bottom:0px;
+  padding-top:0;
+  padding-bottom:0;
   vertical-align:middle;
   height: 27px;
 }
@@ -699,8 +699,8 @@ td.expanded-group[data-group-level="1"] {
 td.collapsed-group[data-group-level="0"] {
     background: #152a55 url("Images/Icons/open-but.png") no-repeat scroll 9px 6px;
     padding-left: 28px;
-    padding-top:0px;
-  padding-bottom:0px;
+    padding-top:0;
+  padding-bottom:0;
   vertical-align:middle;
     height: 27px;
 }
@@ -708,14 +708,14 @@ td.collapsed-group[data-group-level="0"] {
 td.collapsed-group[data-group-level="1"] {
     background: #2e4372 url("Images/Icons/open-but.png") no-repeat scroll 9px 6px;
     padding-left: 33px;
-    padding-top:0px;
-  padding-bottom:0px;
+    padding-top:0;
+  padding-bottom:0;
   vertical-align:middle;
     height: 27px;
 }
 
 table.dataTable {
-    margin-top:0px !important
+    margin-top:0 !important
 }
 
 table.dataTable.table-condensed thead > tr > th {
@@ -725,7 +725,7 @@ table.dataTable.table-condensed thead > tr > th {
 div#viewport {
     width: 100%;
     height: 100%;
-    padding: 0px;
+    padding: 0;
     overflow: hidden;
 }
 
@@ -752,7 +752,7 @@ div#viewport p {
 
 div#innerbody {
     position: relative;
-    top: 0px;
+    top: 0;
     overflow: visible;
 }
 
@@ -943,7 +943,7 @@ li.optionalFeature {
 
 .editable-cell input {
     width:75px !important;
-    padding: 0px !important;
+    padding: 0 !important;
     height: 20px !important;
     color: #061639;
     font-weight:normal;
@@ -956,7 +956,7 @@ li.optionalFeature {
 
 .editable-header input {
     width:75px !important;
-    padding: 0px !important;
+    padding: 0 !important;
     height: 20px !important;
     color: #061639;
     font-weight: normal;
@@ -969,7 +969,7 @@ li.optionalFeature {
 button, input, optgroup, select, textarea {
     color: #2e4372;
     font: inherit;
-    margin: 0px;
+    margin: 0;
 }
 
 .modal-header {
@@ -1053,7 +1053,7 @@ button.close {
 .form-horizontal .control-label {
     text-align: right;
     /*margin-top: 5px;
-    padding: 0px;*/
+    padding: 0;*/
 }
 
 .table-bordered.dataTable > thead > tr > th.model {
@@ -1150,7 +1150,7 @@ th.first-cell {
     border-bottom: none;
     border-right: solid 1px #2E4372;
     height:20px;
-    padding:0px;
+    padding:0;
     vertical-align:middle;
     color: #cecece;
 }
@@ -1161,7 +1161,7 @@ th.first-cell {
     border-bottom: none;
     border-right: solid 1px #2E4372;
     height:20px;
-    padding:0px;
+    padding:0;
     vertical-align:middle;
     color: #cecece;
 }
@@ -1172,7 +1172,7 @@ th.first-cell {
     border-bottom: none;
     border-right: solid 1px #2E4372;
     height:20px;
-    padding:0px;
+    padding:0;
     vertical-align:middle;
     color: #cecece;
 }
@@ -1186,7 +1186,7 @@ th.first-cell {
     border-bottom: none !important;
     border-right: solid 1px #2E4372 !important;
     vertical-align:middle !important;
-    padding:0px !important
+    padding:0 !important
 }
 
 .table-condensed > thead > tr > th.feature-description {
@@ -1334,4 +1334,8 @@ div.edited-fdp {
 
 .panel-sm {
     margin-bottom:10px;
+}
+
+.alert-less-margin {
+    margin-bottom: 0;
 }
