@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_ChangesetDataItem_CalculateVolumeForAllModels]
+﻿CREATE PROCEDURE [dbo].[Fdp_ChangesetDataItem_CalculateVolumeForAllModelsInMarket]
 	@FdpChangesetDataItemId AS INT
 AS
 	SET NOCOUNT ON;
@@ -19,9 +19,9 @@ AS
 	-- Determine the total volume for the market
 	
 	SELECT 
-		@TotalVolumeByMarket = TotalVolume
+		@TotalVolumeByMarket = dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, D.CDSId)
 	FROM
-	Fdp_ChangesetDataItem AS D
+	Fdp_ChangesetDataItem_VW AS D
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
 												
@@ -41,7 +41,7 @@ AS
 		, FdpTakeRateSummaryId
 	)
 	SELECT 
-		  C.FdpChangesetId
+		  D.FdpChangesetId
 		, D.MarketId
 		, D.ModelId
 		, D.FdpModelId
@@ -52,22 +52,19 @@ AS
 		, D1.PercentageTakeRate
 		, D1.FdpTakeRateSummaryId
 		
-	FROM Fdp_Changeset AS C
-	JOIN Fdp_ChangesetDataItem AS D ON C.FdpChangesetId		= D.FdpChangesetId
-	JOIN Fdp_ChangesetDataItem AS D1	ON D.FdpChangesetId = C.FdpChangesetId
-										AND D.MarketId		= D1.MarketId
+	FROM Fdp_ChangesetDataItem AS D
+	JOIN Fdp_ChangesetDataItem_VW AS D1 ON D.FdpChangesetId = D1.FdpChangesetId
+										AND D.MarketId = D1.MarketId
 										AND D.FdpChangesetDataItemId <> D1.FdpChangesetDataItemId
-										AND D.ModelId		= D1.ModelId
-										AND D1.FeatureId	IS NULL
-										AND D1.FdpFeatureId IS NULL
-										AND D1.IsDeleted	= 0
+										AND D.ModelId = D1.ModelId
+										AND D1.IsModelUpdate = 1
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId
 	
 	UNION
 	
 	SELECT 
-		  C.FdpChangesetId
+		  D.FdpChangesetId
 		, D.MarketId
 		, D.ModelId
 		, D.FdpModelId
@@ -78,15 +75,12 @@ AS
 		, D1.PercentageTakeRate
 		, D1.FdpTakeRateSummaryId
 		
-	FROM Fdp_Changeset AS C
-	JOIN Fdp_ChangesetDataItem AS D ON C.FdpChangesetId		= D.FdpChangesetId
-	JOIN Fdp_ChangesetDataItem AS D1	ON D.FdpChangesetId = C.FdpChangesetId
-										AND D.MarketId		= D1.MarketId
+	FROM Fdp_ChangesetDataItem AS D
+	JOIN Fdp_ChangesetDataItem_VW AS D1 ON D.FdpChangesetId = D1.FdpChangesetId
+										AND D.MarketId = D1.MarketId
 										AND D.FdpChangesetDataItemId <> D1.FdpChangesetDataItemId
-										AND D.FdpModelId	= D1.FdpModelId
-										AND D1.FeatureId	IS NULL
-										AND D1.FdpFeatureId IS NULL
-										AND D1.IsDeleted	= 0
+										AND D.ModelId = D1.ModelId
+										AND D1.IsModelUpdate = 1
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	
@@ -105,7 +99,7 @@ AS
 		, FdpTakeRateSummaryId
 	)
 	SELECT
-		  C.FdpChangesetId
+		  D.FdpChangesetId
 		, S.MarketId
 		, S.ModelId
 		, S.FdpModelId
@@ -116,16 +110,13 @@ AS
 		, S.PercentageTakeRate
 		, S.FdpTakeRateSummaryId
 	FROM
-	Fdp_Changeset				AS C
-	JOIN Fdp_VolumeHeader		AS H	ON	C.FdpVolumeHeaderId			= H.FdpVolumeHeaderId
-	JOIN Fdp_ChangesetDataItem	AS D	ON	C.FdpChangesetId			= D.FdpChangesetId
-										AND D.FdpChangesetDataItemId	= @FdpChangesetDataItemId
-	JOIN Fdp_TakeRateSummary	AS S	ON	H.FdpVolumeHeaderId			= S.FdpVolumeHeaderId
-										AND D.MarketId					= S.MarketId
-	LEFT JOIN Fdp_ChangesetDataItem AS CUR
-										ON	S.FdpTakeRateSummaryId		= CUR.FdpTakeRateSummaryId
-										AND CUR.IsDeleted				= 0
+	Fdp_ChangesetDataItem_VW			AS D
+	JOIN Fdp_TakeRateSummary			AS S	ON	D.FdpVolumeHeaderId			= S.FdpVolumeHeaderId
+												AND D.MarketId					= S.MarketId
+	LEFT JOIN Fdp_ChangesetDataItem_VW	AS CUR	ON	S.FdpTakeRateSummaryId		= CUR.FdpTakeRateSummaryId
 	WHERE
+	D.FdpChangesetDataItemId = @FdpChangesetDataItemId
+	AND
 	CUR.FdpChangesetDataItemId IS NULL
 	
 	-- Delete any existing changeset rows
@@ -134,25 +125,10 @@ AS
 	
 	UPDATE D1 SET IsDeleted = 1
 	FROM
-	Fdp_Changeset AS C
-	JOIN Fdp_ChangesetDataItem AS D		ON	C.FdpChangesetId	= D.FdpChangesetId
-	JOIN Fdp_ChangesetDataItem AS D1	ON	C.FdpChangesetId	= D1.FdpChangesetId
-										AND D1.IsDeleted		= 0
-										AND D.ModelId			= D1.ModelId
-										AND D1.FeatureId		IS NULL 
-										AND D1.FdpFeatureId		IS NULL
-	WHERE
-	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
-	
-	UPDATE D1 SET IsDeleted = 1
-	FROM
-	Fdp_Changeset AS C
-	JOIN Fdp_ChangesetDataItem AS D		ON	C.FdpChangesetId	= D.FdpChangesetId
-	JOIN Fdp_ChangesetDataItem AS D1	ON	C.FdpChangesetId	= D1.FdpChangesetId
-										AND D1.IsDeleted		= 0
-										AND D.FdpModelId		= D1.FdpModelId
-										AND D1.FeatureId		IS NULL 
-										AND D1.FdpFeatureId		IS NULL
+	Fdp_ChangesetDataItem_VW		AS D
+	JOIN Fdp_ChangesetDataItem_VW	AS D1	ON	D.FdpChangesetId			= D1.FdpChangesetId
+											AND D1.IsModelUpdate			= 1
+	JOIN Fdp_ChangesetDataItem		AS D2	ON	D1.FdpChangesetDataItemId	= D2.FdpChangesetDataItemId
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	

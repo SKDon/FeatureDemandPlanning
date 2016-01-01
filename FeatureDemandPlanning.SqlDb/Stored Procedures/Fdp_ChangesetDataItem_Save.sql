@@ -38,17 +38,20 @@ AS
 	DECLARE @OriginalVolume INT;
 	DECLARE @OriginalPercentageTakeRate DECIMAL(5, 4);
 	DECLARE @FdpVolumeDataItemId INT;
+	DECLARE @FdpTakeRateSummaryId INT;
 	
 	SELECT TOP 1 
 		  @OriginalVolume = OLD.Volume
 		, @OriginalPercentageTakeRate = OLD.PercentageTakeRate
 		, @FdpVolumeDataItemId = OLD.FdpVolumeDataItemId
+		, @FdpTakeRateSummaryId = OLD.FdpTakeRateSummaryId
 	FROM
 	(
 		SELECT 
 			Volume
 		  , PercentageTakeRate
 		  , FdpVolumeDataItemId
+		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
 		FROM
 		Fdp_Changeset			AS C
 		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
@@ -63,6 +66,7 @@ AS
 			Volume
 		  , PercentageTakeRate
 		  , FdpVolumeDataItemId
+		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
 		FROM
 		Fdp_Changeset			AS C
 		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
@@ -77,6 +81,7 @@ AS
 			Volume
 		  , PercentageTakeRate
 		  , FdpVolumeDataItemId
+		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
 		FROM
 		Fdp_Changeset			AS C
 		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
@@ -88,16 +93,45 @@ AS
 		UNION
 		
 		SELECT 
-			Volume
-		  , PercentageTakeRate
-		  , FdpVolumeDataItemId
+			D.Volume
+		  , D.PercentageTakeRate
+		  , D.FdpVolumeDataItemId
+		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
 		FROM
 		Fdp_Changeset			AS C
 		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
 		JOIN Fdp_VolumeDataItem AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-									 AND D.MarketId = @MarketId
-									 AND D.FdpModelId = @FdpModelId
-									 AND D.FdpFeatureId = @FdpFeatureId
+									 AND D.MarketId			= @MarketId
+									 AND D.FdpModelId		= @FdpModelId
+									 AND D.FdpFeatureId		= @FdpFeatureId
+
+		UNION
+
+		SELECT
+			  S.Volume
+			, S.PercentageTakeRate
+			, CAST(NULL AS INT) AS FdpVolumeDataItemId
+			, S.FdpTakeRateSummaryId
+		FROM
+		Fdp_Changeset				AS C
+		JOIN Fdp_VolumeHeader		AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
+		JOIN Fdp_TakeRateSummary	AS S ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
+										 AND S.MarketId			= @MarketId
+										 AND S.ModelId			= @ModelId
+
+		UNION
+
+		SELECT
+			  S.Volume
+			, S.PercentageTakeRate
+			, CAST(NULL AS INT) AS FdpVolumeDataItemId
+			, S.FdpTakeRateSummaryId
+		FROM
+		Fdp_Changeset				AS C
+		JOIN Fdp_VolumeHeader		AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
+		JOIN Fdp_TakeRateSummary	AS S ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
+										 AND S.MarketId			= @MarketId
+										 AND S.FdpModelId		= @FdpModelId
 	)
 	AS OLD
 
@@ -116,6 +150,7 @@ AS
 		, OriginalVolume
 		, OriginalPercentageTakeRate
 		, FdpVolumeDataItemId
+		, FdpTakeRateSummaryId
 	)
 	VALUES
 	(
@@ -132,6 +167,7 @@ AS
 		, @OriginalVolume
 		, @OriginalPercentageTakeRate
 		, @FdpVolumeDataItemId
+		, @FdpTakeRateSummaryId
 	);
 	
 	SET @FdpChangesetDataItemId = SCOPE_IDENTITY();

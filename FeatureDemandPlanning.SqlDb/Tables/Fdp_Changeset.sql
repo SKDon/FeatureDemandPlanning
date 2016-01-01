@@ -5,12 +5,18 @@
     [FdpVolumeHeaderId] INT           NOT NULL,
     [IsDeleted]         BIT           CONSTRAINT [DF_Fdp_Changeset_IsDeleted] DEFAULT ((0)) NOT NULL,
     [IsSaved]           BIT           CONSTRAINT [DF_Fdp_Changeset_IsSaved] DEFAULT ((0)) NOT NULL,
+    [MarketId]          INT           NOT NULL,
     CONSTRAINT [PK_Fdp_Changeset] PRIMARY KEY CLUSTERED ([FdpChangesetId] ASC),
-    CONSTRAINT [FK_Fdp_Changeset_Fdp_VolumeHeader] FOREIGN KEY ([FdpVolumeHeaderId]) REFERENCES [dbo].[Fdp_VolumeHeader] ([FdpVolumeHeaderId])
+    CONSTRAINT [FK_Fdp_Changeset_Fdp_VolumeHeader] FOREIGN KEY ([FdpVolumeHeaderId]) REFERENCES [dbo].[Fdp_VolumeHeader] ([FdpVolumeHeaderId]),
+    CONSTRAINT [FK_Fdp_Changeset_OXO_Master_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[OXO_Master_Market] ([Id])
 );
+
+
 
 
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_Changeset_Cover]
-    ON [dbo].[Fdp_Changeset]([FdpVolumeHeaderId] ASC, [CreatedBy] ASC, [IsDeleted] ASC, [IsSaved] ASC);
+    ON [dbo].[Fdp_Changeset]([FdpVolumeHeaderId] ASC, [CreatedBy] ASC, [IsDeleted] ASC, [IsSaved] ASC, [MarketId] ASC);
+
+
 

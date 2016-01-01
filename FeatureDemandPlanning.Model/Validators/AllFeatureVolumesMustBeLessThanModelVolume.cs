@@ -36,6 +36,14 @@ namespace FeatureDemandPlanning.Model.Validators
                 return false;
 
             var filter = TakeRateFilter.FromTakeRateParameters(Parameters);
+            if (change.IsFdpModel)
+            {
+                filter.FdpModelId = change.GetModelId();
+            }
+            else
+            {
+                filter.ModelId = change.GetModelId();
+            }
             var modelVolume = _context.TakeRate.GetVolumeForModel(filter).Result;
 
             return change.Volume > modelVolume;

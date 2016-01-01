@@ -1,12 +1,6 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Context;
+﻿using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Parameters;
-using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Interfaces
@@ -41,9 +35,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<FdpChangeset> SaveChangeset(TakeRateFilter filter, FdpChangeset changesetToSave);
         Task<DataChange> SaveChangesetDataChange(TakeRateFilter filter, DataChange changeToSave);
 
-        Task<FdpChangeset> PersistChangeset(TakeRateFilter takeRateFilter, FdpChangeset changesetToPersist);
-        Task<DataChange> PersistChangesetDataChange(TakeRateFilter filter, DataChange changeToPersist);
-
+        Task<FdpChangeset> PersistChangeset(TakeRateFilter takeRateFilter);
         Task<FdpChangeset> RevertUnsavedChangesForUser(TakeRateFilter takeRateFilter);
 
         Task<int> GetVolumeForModel(TakeRateFilter filter);

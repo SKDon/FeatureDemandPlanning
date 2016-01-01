@@ -50,9 +50,15 @@ AS
 		, D.UpdatedBy
 		, CAST(CASE WHEN D1.FdpChangesetDataItemId IS NOT NULL THEN 1 ELSE 0 END AS BIT) AS HasUncommittedChanges
 	FROM
-	Fdp_VolumeDataItem				AS D
-	LEFT JOIN Fdp_ChangesetDataItem AS D1	ON	D.FdpVolumeDataItemId = D1.FdpVolumeDataItemId
-											AND D1.IsDeleted		= 0
+	Fdp_VolumeHeader				AS H
+	JOIN Fdp_VolumeDataItem			AS D	ON	H.FdpVolumeHeaderId		= D.FdpVolumeHeaderId
+	LEFT JOIN Fdp_Changeset			AS C	ON	H.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
+											AND C.IsDeleted				= 0
+											AND C.IsSaved				= 0
+	LEFT JOIN Fdp_ChangesetDataItem AS D1	ON	D.FdpVolumeDataItemId	= D1.FdpVolumeDataItemId
+											AND D1.IsDeleted			= 0
+											AND C.FdpChangesetId		= D1.FdpChangesetId
+
 	WHERE
 	D.FdpVolumeDataItemId = @FdpVolumeDataItemId;
 	

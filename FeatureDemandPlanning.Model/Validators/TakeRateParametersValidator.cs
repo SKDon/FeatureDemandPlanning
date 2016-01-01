@@ -1,10 +1,7 @@
 ﻿using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Parameters;
 using FluentValidation;
-using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Validators
 {

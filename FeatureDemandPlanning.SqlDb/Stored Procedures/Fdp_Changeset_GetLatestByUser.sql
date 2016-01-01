@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_Changeset_GetLatestByUser]
 	  @DocumentId	AS INT
+	, @MarketId		AS INT
 	, @CDSID		AS NVARCHAR(16)
 	, @IsSaved		AS BIT = 0
 AS
@@ -19,6 +20,8 @@ AS
 	C.IsDeleted = 0
 	AND
 	C.IsSaved = @IsSaved
+	AND
+	C.MarketId = @MarketId
 	ORDER BY
 	C.CreatedOn DESC;
 	

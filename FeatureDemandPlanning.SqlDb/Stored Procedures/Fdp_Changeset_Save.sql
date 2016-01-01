@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_Changeset_Save]
 	  @DocumentId	AS INT
+	, @MarketId		AS INT
 	, @CDSID		AS NVARCHAR(16)
 	, @IsSaved		AS BIT = 0
 AS
@@ -18,17 +19,21 @@ AS
 	AND
 	C.IsDeleted = 0
 	AND
-	C.IsSaved = 0;
+	C.IsSaved = 0
+	AND
+	C.MarketId = @MarketId;
 	
 	IF @FdpChangesetId IS NULL
 	BEGIN
 		INSERT INTO Fdp_Changeset
 		(
 			  CreatedBy
+			, MarketId
 			, FdpVolumeHeaderId
 		)
 		SELECT
 			  @CDSID 
+			, @MarketId
 			, FdpVolumeHeaderId
 		FROM 
 		Fdp_VolumeHeader AS H

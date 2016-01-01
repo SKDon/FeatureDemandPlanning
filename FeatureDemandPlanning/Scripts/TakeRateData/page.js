@@ -10,6 +10,7 @@ model.Page = function (models) {
     privateStore[me.id].DataTable = null;
     privateStore[me.id].ResultsMode = "PercentageTakeRate";
     privateStore[me.id].Changeset = null;
+    privateStore[me.id].Initial = true;
     
     me.initialise = function () {
         $(privateStore[me.id].Models).each(function () {
@@ -59,8 +60,19 @@ model.Page = function (models) {
     me.getCommitMessage = function() {
         return "Are you sure you wish to commit your changes to the details for this market?<br/><br/>Please note that this cannot be undone.";
     };
+    me.getPersistSuccessMessage = function() {
+        return "Changes committed successfully. Data will now reload";
+    };
     me.persistDataConfirm = function(dataChanges) {
-        //SgetTakeRateDataModel().persistData(dataChanges);
+        getTakeRateDataModel().persistData(dataChanges, me.persistDataCallback);
+    };
+    me.persistDataCallback = function() {
+        var modal = getModal();
+        modal.setModalParameters({ Data: getChangeset().getDataChanges() });
+        modal.showConfirm("Changes Committed", me.getPersistSuccessMessage(), me.reloadPage);
+    };
+    me.reloadPage = function() {
+        location.reload();
     };
     me.saveData = function (callback) {
         var changes = getChangeset().getDataChanges();
@@ -130,7 +142,7 @@ model.Page = function (models) {
 
         $("#" + prefix + "_FilterMessage").on("keyup", function (sender, eventArgs) {
             var length = $("#" + prefix + "_FilterMessage").val().length;
-            if (length == 0 || length > 2) {
+            if (length === 0 || length > 2) {
                 me.onFilterChangedEventHandler(sender, eventArgs);
             }
         });
@@ -231,8 +243,9 @@ model.Page = function (models) {
     };
     me.parseCellValue = function (value) {
         var retVal = null;
+        var parsedValue;
         if (me.getResultsMode() === "PercentageTakeRate") {
-            var parsedValue = $.trim(value.replace("%", ""));
+            parsedValue = $.trim(value.replace("%", ""));
             if (parsedValue !== "-" && parsedValue !== "") {
                 retVal = parseFloat(parsedValue);
             }
@@ -249,14 +262,14 @@ model.Page = function (models) {
         return retVal;
     };
     me.formatPercentageTakeRate = function (takeRate) {
-        var formattedValue = "-"
+        var formattedValue = "-";
         if (takeRate !== null)
             formattedValue = takeRate.toFixed(2) + " %";
         
         return formattedValue;
     };
     me.formatVolume = function (volume) {
-        var formattedValue = "-"
+        var formattedValue = "-";
         if (volume !== null)
             formattedValue = volume;
 
@@ -267,8 +280,7 @@ model.Page = function (models) {
         var modelIdentifier = eventArgs.getModelIdentifier();
         var featureIdentifier = eventArgs.getFeatureIdentifier();
          
-        var editedCell = $();
-        var editedRow = $();
+        var editedCell;
         if (featureIdentifier !== null)
         {
             editedCell = $("tbody div[data-target='" + marketIdentifier + "|" + modelIdentifier + "|" + featureIdentifier + "']");
@@ -283,8 +295,8 @@ model.Page = function (models) {
         // If any changes have reverted back to the original value, we need to lower any change flags and remove from the changeset
         var priorChanges = changeSet.getChange(marketIdentifier, modelIdentifier, featureIdentifier);
         if (priorChanges != null && priorChanges.length > 0 && (
-                (eventArgs.Mode == "PercentageTakeRate" && eventArgs.getChangedTakeRate() === priorChanges[0].getOriginalTakeRate()) ||
-                (eventArgs.Mode == "Raw" && eventArgs.getChangedVolume() === priorChanges[0].getOriginalVolume())))
+                (eventArgs.Mode === "PercentageTakeRate" && eventArgs.getChangedTakeRate() === priorChanges[0].getOriginalTakeRate()) ||
+                (eventArgs.Mode === "Raw" && eventArgs.getChangedVolume() === priorChanges[0].getOriginalVolume())))
         {
             changeSet.removeChanges(marketIdentifier, modelIdentifier, featureIdentifier);
             editedCell.removeClass("edited");
@@ -307,17 +319,24 @@ model.Page = function (models) {
             $(document).trigger("Save");
         }
     };
-    me.onSaveEventHandler = function (sender, eventArgs) {
+    me.onSaveEventHandler = function () {
         me.saveData(me.saveCallback);
     };
+    me.getInitial = function() {
+        return privateStore[me.id].Initial;
+    }
+    me.setInitial = function(initial) {
+        privateStore[me.id].Initial = initial;
+    };
     me.saveCallback = function () {
+        me.setInitial(false);
         me.loadChangeset();
     };
     me.loadChangeset = function () {
         getTakeRateDataModel().loadChangeset(me.loadChangesetCallback);
     };
     me.confirmLoadChangeset = function(changesetData) {
-        $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", changesetData.Changes.length === 0);
+        $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", changesetData === null || changesetData.Changes.length === 0);
 
         for (var i = 0; i < changesetData.Changes.length; i++) {
             var currentChange = changesetData.Changes[i];
@@ -355,11 +374,16 @@ model.Page = function (models) {
 
         $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", true);
 
-        if (changesetData.Changes.length > 0) {
+        if (changesetData.Changes.length === 0)
+            return;
+
+        if (me.getInitial()) {
             var modal = getModal();
             modal.setModalParameters({ Data: changesetData });
             getModal().showConfirm("Load Uncommitted Data?",
                 "You have uncommitted changes to the data for this market.<br/><br/>Do you wish to load these changes?", me.confirmLoadChangeset);
+        } else {
+            me.confirmLoadChangeset(changesetData);
         }
     };
     me.revertChangeset = function () {
@@ -371,7 +395,7 @@ model.Page = function (models) {
 
         for (var i = 0; i < revertedData.Changes.length; i++) {
             if (me.getResultsMode() === "PercentageTakeRate") {
-                var currentChange = changesetData.Changes[i];
+                var currentChange = revertedData.Changes[i];
                 var displayValue = me.formatPercentageTakeRate(currentChange.PercentageTakeRate);
 
                 var selector = $();
@@ -422,18 +446,17 @@ model.Page = function (models) {
         }
         return className;
     };
-    me.onPersistEventHandler = function (sender, eventArgs) {
+    me.onPersistEventHandler = function () {
         me.persistData();
     };
     me.onUpdateFilterVolumeEventHandler = function (sender, eventArgs) {
-        var prefix = me.getIdentifierPrefix();
         var marketIdentifier = getTakeRateDataModel().getMarketId();
         var changeSet = getChangeset();
         var priorChanges = changeSet.getChangesForMarket(marketIdentifier);
 
         if (priorChanges.length > 0 && (
-                (eventArgs.Mode == "PercentageTakeRate" && eventArgs.getChangedTakeRate() === priorChanges[0].getOriginalTakeRate()) ||
-                (eventArgs.Mode == "Raw" && eventArgs.getChangedVolume() === priorChanges[0].getOriginalVolume())))
+                (eventArgs.Mode === "PercentageTakeRate" && eventArgs.getChangedTakeRate() === priorChanges[0].getOriginalTakeRate()) ||
+                (eventArgs.Mode === "Raw" && eventArgs.getChangedVolume() === priorChanges[0].getOriginalVolume())))
         {
             changeSet.removeChangesForMarket(marketIdentifier);
         }
@@ -678,7 +701,7 @@ model.Page = function (models) {
             ActionModel: actionModel
         });
     };
-    me.parseInputData = function (value, settings) {
+    me.parseInputData = function (value) {
         var parsedValue = value.replace("%", "");
         parsedValue = parsedValue.replace("-", "");
         var trimmedValue = $.trim(parsedValue);
@@ -699,7 +722,7 @@ model.Page = function (models) {
             async: true
         });
     };
-    me.getValidationMessageCallback = function (response, textStatus, jqXHR) {
+    me.getValidationMessageCallback = function (response) {
         var html = "";
         if (response !== "") {
             html = response;
@@ -716,6 +739,11 @@ model.Page = function (models) {
         } else {
             if (displayHtml !== "") control.fadeIn("slow");
         }
+    };
+    me.scrollToNotify = function() {
+        $("html, body").animate({
+            scrollTop: $("#notifier").offset().top - 80
+    }, 500);
     };
     me.getValidationMessageError = function (jqXHR, textStatus, errorThrown) {
         console.log("Validate: " + errorThrown);
@@ -751,7 +779,9 @@ model.Page = function (models) {
         $("notifier").html(html).fadeIn("slow");
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
-        $("#notifier").html("<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.Message + "</div>");
+        var html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.responseJSON.Message + "</div>";
+        me.scrollToNotify();
+        me.fadeInNotify(html);
     };
     me.onFilterChangedEventHandler = function (sender, eventArgs) {
         var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
@@ -764,6 +794,7 @@ model.Page = function (models) {
     me.redrawDataTable = function () {
         me.getDataTable().draw();
     };
+    
     me.validate = function (pageIndex, async) {
         getTakeRateDataModel().validate(pageIndex, async);
     };

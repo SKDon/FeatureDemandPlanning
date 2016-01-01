@@ -6,28 +6,14 @@ AS
 	DECLARE @IsFeatureUpdate AS BIT;
 	DECLARE @IsModelUpdate AS BIT;
 	DECLARE @IsMarketUpdate AS BIT;
+	DECLARE @Volume AS INT;
 	
 	SELECT TOP 1 
-		@IsFeatureUpdate = 
-		CASE
-			WHEN D.FeatureId IS NOT NULL THEN 1
-			WHEN D.FdpFeatureId IS NOT NULL THEN 1
-			ELSE 0
-		END
-		, @IsModelUpdate =
-		CASE
-			WHEN D.ModelId IS NOT NULL THEN 1
-			WHEN D.FdpModelId IS NOT NULL THEN 1
-			ELSE 0
-		END
-		, @IsMarketUpdate = 
-		CASE
-			WHEN D.FeatureId IS NULL AND D.FdpFeatureId IS NULL AND
-			D.ModelId IS NULL AND D.FdpModelId IS NULL THEN 1
-			ELSE 0
-		END
+		  @IsFeatureUpdate	= D.IsFeatureUpdate
+		, @IsModelUpdate	= D.IsModelUpdate
+		, @IsMarketUpdate	= D.IsMarketUpdate
 	FROM
-	Fdp_ChangesetDataItem AS D
+	Fdp_ChangesetDataItem_VW AS D
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	
@@ -35,92 +21,45 @@ AS
 	BEGIN
 		PRINT 'Updating % take at feature level'
 		
-		-- Oxo Models
-		
-		UPDATE D SET PercentageTakeRate = 
-			CASE 
-				WHEN ISNULL(S.TotalVolume, 0) > 0 THEN D.TotalVolume / CAST(S.TotalVolume AS DECIMAL)
-				ELSE 0
-			END
-		FROM Fdp_Changeset							AS C
-		JOIN Fdp_VolumeHeader						AS H	ON	C.FdpVolumeHeaderId = H.FdpVolumeHeaderId	
-		JOIN Fdp_ChangesetDataItem					AS D	ON	C.FdpChangesetId	= D.FdpChangesetId
-		JOIN Fdp_TakeRateSummaryByModelAndMarket_VW	AS S	ON	H.DocumentId = S.DocumentId
-															AND	D.MarketId	 = S.MarketId
-															AND D.ModelId	 = S.ModelId												
+		-- Calculate the volume for the model
+
+		SELECT @Volume = dbo.fn_Fdp_VolumeByModel_Get(FdpVolumeHeaderId, ModelId, FdpModelId, MarketId, CDSId)
+		FROM
+		Fdp_ChangesetDataItem_VW 
 		WHERE
-		D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
-		
-		-- Fdp Models
-		
-		UPDATE D SET PercentageTakeRate = 
-			CASE 
-				WHEN ISNULL(S.TotalVolume, 0) > 0 THEN D.TotalVolume / CAST(S.TotalVolume AS DECIMAL)
-				ELSE 0
-			END
-		FROM Fdp_Changeset							AS C
-		JOIN Fdp_VolumeHeader						AS H	ON	C.FdpVolumeHeaderId = H.FdpVolumeHeaderId	
-		JOIN Fdp_ChangesetDataItem					AS D	ON	C.FdpChangesetId	= D.FdpChangesetId
-		JOIN Fdp_TakeRateSummaryByModelAndMarket_VW	AS S	ON	H.DocumentId = S.DocumentId
-															AND	D.MarketId	 = S.MarketId
-															AND D.FdpModelId = S.FdpModelId												
-		WHERE
-		D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
-		
+		FdpChangesetDataItemId = @FdpChangesetDataItemId;
+								
 	END
 	ELSE IF @IsModelUpdate = 1
 	BEGIN
 		PRINT 'Calculating % take at model level'
+
+		-- Calculate the volume for the market
 		
-		-- Oxo and Fdp Models
-		
-		UPDATE D SET PercentageTakeRate = 
-			CASE 
-				WHEN ISNULL(S.TotalVolume, 0) > 0 THEN D.TotalVolume / CAST(S.TotalVolume AS DECIMAL)
-				ELSE 0
-			END
-		FROM Fdp_Changeset						AS C
-		JOIN Fdp_VolumeHeader					AS H	ON	C.FdpVolumeHeaderId = H.FdpVolumeHeaderId	
-		JOIN Fdp_ChangesetDataItem				AS D	ON	C.FdpChangesetId	= D.FdpChangesetId
-		JOIN Fdp_TakeRateSummaryByMarket_VW		AS S	ON	H.DocumentId		= S.DocumentId
-															AND	D.MarketId		= S.MarketId												
+		SELECT @Volume = dbo.fn_Fdp_VolumeByMarket_Get(FdpVolumeHeaderId, MarketId, CDSId)
+		FROM
+		Fdp_ChangesetDataItem_VW 
 		WHERE
-		D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
-	
+		FdpChangesetDataItemId = @FdpChangesetDataItemId;
+
 	END
 	ELSE IF @IsMarketUpdate = 1
 	BEGIN
 		PRINT 'Calculating % take at market level'
-		
-		DECLARE @TotalVolumeForAllMarkets AS INT;
-		SELECT @TotalVolumeForAllMarkets =
-		SUM(
-			CASE 
-				WHEN S1.FdpChangesetDataItemId IS NOT NULL THEN S1.TotalVolume
-				ELSE S.TotalVolume
-			END
-		)
-		FROM 
-		Fdp_Changeset AS C
-		JOIN Fdp_VolumeHeader				AS H	ON	C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
-		JOIN Fdp_ChangesetDataItem			AS D	ON	C.FdpChangesetId	= D.FdpChangesetId
-		JOIN Fdp_TakeRateSummaryByMarket_VW AS S	ON	H.DocumentId		= S.DocumentId
-		LEFT JOIN Fdp_ChangesetDataItem		AS S1	ON	C.FdpChangesetId	= S1.FdpChangesetId
-													AND S1.IsDeleted		= 0
-													AND S.MarketId			= S1.MarketId
-													AND S1.ModelId			IS NULL
-													AND S1.FdpModelId		IS NULL
-													AND S1.FeatureId		IS NULL
-													AND S1.FdpFeatureId		IS NULL
+
+		SELECT @Volume = SUM(M.Volume)
+		FROM
+		Fdp_ChangesetDataItem_VW AS D
+		CROSS APPLY dbo.fn_Fdp_VolumeByMarket_GetMany(D.FdpVolumeHeaderId, D.CDSId) AS M
 		WHERE
 		D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
-		
-		UPDATE D SET PercentageTakeRate =
-			D.TotalVolume / CAST(@TotalVolumeForAllMarkets AS DECIMAL)
-		FROM Fdp_Changeset			AS C
-		JOIN Fdp_VolumeHeader		AS H	ON	C.FdpVolumeHeaderId = H.FdpVolumeHeaderId	
-		JOIN Fdp_ChangesetDataItem	AS D	ON	C.FdpChangesetId	= D.FdpChangesetId
-		WHERE
-		D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
-		
 	END
+
+	UPDATE D SET PercentageTakeRate = 
+		CASE 
+			WHEN ISNULL(@Volume, 0) > 0 THEN D.TotalVolume / CAST(@Volume AS DECIMAL)
+			ELSE 0
+		END
+	FROM Fdp_ChangesetDataItem AS D
+	WHERE 
+	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;

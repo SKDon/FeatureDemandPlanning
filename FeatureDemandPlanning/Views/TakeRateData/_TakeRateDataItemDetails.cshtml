@@ -59,10 +59,10 @@
                         
                         @if (historyItem.IsUncommittedChange)
                         {
-                            <td class="edited text-center">@historyItem.AuditOn.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td class="edited text-center">@historyItem.AuditBy</td>
-                            <td class="edited">@historyItem.Volume</td>
-                            <td class="edited">@historyItem.PercentageTakeRate.GetValueOrDefault().ToString("P2")</td>
+                            <td class="text-center"><span class="edited">@historyItem.AuditOn.ToString("dd/MM/yyyy HH:mm")</span></td>
+                            <td class="text-center"><span class="edited">@historyItem.AuditBy</span></td>
+                            <td><span class="edited">@historyItem.Volume</span></td>
+                            <td><span class="edited">@historyItem.PercentageTakeRate.GetValueOrDefault().ToString("P2")</span></td>
                         }
                         else
                         {

@@ -138,7 +138,7 @@ namespace FeatureDemandPlanning.Controllers
             TakeRateParametersValidator
                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
 
-            var persistedChangeset = await DataContext.TakeRate.PersistChangeset(TakeRateFilter.FromTakeRateParameters(parameters), parameters.Changeset);
+            var persistedChangeset = await DataContext.TakeRate.PersistChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
 
             return Json(persistedChangeset);
         }

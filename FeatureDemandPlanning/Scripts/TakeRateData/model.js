@@ -34,7 +34,6 @@ model.OxoVolume = function (params) {
     me.ModelName = "OxoVolume";
 
     me.initialise = function () {
-        var me = this;
         $(document).trigger("notifySuccess", me);
     };
     me.getActionsUri = function () {
@@ -63,12 +62,6 @@ model.OxoVolume = function (params) {
     }
     me.getConfiguration = function () {
         return privateStore[me.id].Configuration;
-    };
-    me.getAvailableDocumentsUri = function () {
-        return privateStore[me.id].AvailableDocumentsUri;
-    };
-    me.getAvailableImportsUri = function () {
-        return privateStore[me.id].AvailableImportsUri;
     };
     me.getEditVolumeUri = function () {
         return privateStore[me.id].EditVolumeUri;
@@ -127,8 +120,8 @@ model.OxoVolume = function (params) {
             "success": function (response) {
                 callback(response);
             },
-            "error": function (jqXHR, textStatus, errorThrown) {
-                alert(errorThrown);
+            "error": function (response) {
+                genericErrorCallback(response);
             }
         });
     };
@@ -143,8 +136,8 @@ model.OxoVolume = function (params) {
             "success": function (response) {
                 callback(response);
             },
-            "error": function (jqXHR, textStatus, errorThrown) {
-                alert(errorThrown);
+            "error": function (response) {
+                genericErrorCallback(response);
             }
         });
     };
@@ -158,15 +151,15 @@ model.OxoVolume = function (params) {
             "url": me.getSaveChangesetUri(),
             "data": params,
             "success": function (json) {
-                $(document).trigger("Success", json);
+                //$(document).trigger("Success", json);
                 callback();
             },
-            "error": function (jqXHR, textStatus, errorThrown) {
-                $(document).trigger("Error", JSON.parse(jqXHR.responseText));
+            "error": function (response) {
+                genericErrorCallback(response);
             }
         });
     };
-    me.persistData = function (changesToPersist) {
+    me.persistData = function (changesToPersist, callback) {
         var params = getFilter();
         params.Changeset = changesToPersist;
         $.ajax({
@@ -177,9 +170,10 @@ model.OxoVolume = function (params) {
             "data": params,
             "success": function (json) {
                 $(document).trigger("Success", json);
+                callback();
             },
-            "error": function (jqXHR, textStatus, errorThrown) {
-                $(document).trigger("Error", JSON.parse(jqXHR.responseText));
+            "error": function (response) {
+                genericErrorCallback(response);
             }
         });
     };
@@ -225,7 +219,7 @@ model.OxoVolume = function (params) {
 
         var i = 0;
         $(me.getFdpVolumeHeaders()).each(function () {
-            if (this.FdpVolumeHeaderId == fdpVolumeHeaderId) {
+            if (this.FdpVolumeHeaderId === fdpVolumeHeaderId) {
                 return false;
             }
             i++;
@@ -235,18 +229,12 @@ model.OxoVolume = function (params) {
     me.hasFdpVolumeHeader = function (fdpVolumeHeaderId) {
         var exists = false;
         $(me.getFdpVolumeHeaders()).each(function () {
-            if (this.FdpVolumeHeaderId == fdpVolumeHeaderId) {
+            if (this.FdpVolumeHeaderId === fdpVolumeHeaderId) {
                 exists = true;
                 return false;
             }
         });
         return exists;
-    };
-    function loadVolumeCallback(response) {
-        $(document).trigger("Results", response);
-    };
-    function saveVolumeCallback(response) {
-        $(document).trigger("Updated", response);
     };
     function validateVolumeCallback(response) {
         var json = JSON.parse(response.responseText);
@@ -254,7 +242,7 @@ model.OxoVolume = function (params) {
         $(document).trigger("Validation", [json]);
     };
     function genericErrorCallback(response) {
-        if (response.status == 400) {
+        if (response.status === 400) {
             var json = JSON.parse(response.responseText);
             privateStore[me.id].IsValid = false;
             $(document).trigger("Validation", [json]);
@@ -265,6 +253,7 @@ model.OxoVolume = function (params) {
     function getFilter() {
         return {
             TakeRateId: me.getOxoDocId(),
+            MarketId: me.getMarketId(),
             Changeset: null
         }
     };

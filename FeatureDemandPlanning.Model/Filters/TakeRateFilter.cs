@@ -2,11 +2,8 @@
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Parameters;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Filters
 {
@@ -59,14 +56,14 @@ namespace FeatureDemandPlanning.Model.Filters
         }
         public static TakeRateFilter FromTakeRateId(int takeRateId)
         {
-            return new TakeRateFilter()
+            return new TakeRateFilter
             {
                 OxoDocId = takeRateId
             };
         }
         public static TakeRateFilter FromTakeRateParameters(TakeRateParameters parameters)
         {
-            var filter = new TakeRateFilter()
+            var filter = new TakeRateFilter
             {
                 OxoDocId = parameters.TakeRateId,
                 TakeRateDataItemId = parameters.TakeRateDataItemId,

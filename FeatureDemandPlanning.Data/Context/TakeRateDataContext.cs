@@ -125,7 +125,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     savedDataChanges.Add(savedDataChange);
                 }
-                var recalculatedDataChange = await RecalculateChangesetDataChange(savedDataChange);
+                await RecalculateChangesetDataChange(savedDataChange);
             }
             savedChangeset.Changes = savedDataChanges;
 
@@ -139,27 +139,10 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_takeRateDataStore.FdpChangesetDataItemRecalculate(changeToRecalculate));
         }
-        public async Task<FdpChangeset> PersistChangeset(TakeRateFilter filter, FdpChangeset changesetToPersist)
+        public async Task<FdpChangeset> PersistChangeset(TakeRateFilter filter)
         {
-            var persistedChangeset = await Task.FromResult(_takeRateDataStore.FdpChangesetPersist(filter, changesetToPersist));
-            var persistedDataChanges = new List<DataChange>();
-
-            foreach (var dataChange in changesetToPersist.Changes)
-            {
-                dataChange.FdpChangesetId = persistedChangeset.FdpChangesetId;
-                var savedDataChange = await PersistChangesetDataChange(filter, dataChange);
-                if (!(savedDataChange is EmptyDataChange))
-                {
-                    persistedDataChanges.Add(savedDataChange);
-                }
-            }
-            persistedChangeset.Changes = persistedDataChanges;
-
-            return persistedChangeset;
-        }
-        public async Task<DataChange> PersistChangesetDataChange(TakeRateFilter filter, DataChange changeToPersist)
-        {
-            return await Task.FromResult(_takeRateDataStore.FdpChangesetDataItemPersist(filter, changeToPersist));
+            var changeset = await GetUnsavedChangesForUser(filter);
+            return await Task.FromResult(_takeRateDataStore.FdpChangesetPersist(filter, changeset));
         }
         public async Task<FdpChangeset> RevertUnsavedChangesForUser(TakeRateFilter takeRateFilter)
         {
