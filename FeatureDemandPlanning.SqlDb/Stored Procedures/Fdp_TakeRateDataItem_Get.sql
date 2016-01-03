@@ -1,22 +1,25 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateDataItem_Get]
-	  @DocumentId		INT
-	, @MarketId			INT = NULL
-	, @MarketGroupId	INT = NULL
-	, @ModelId			INT = NULL
-	, @FdpModelId		INT = NULL
-	, @FeatureId		INT = NULL
-	, @FdpFeatureId		INT = NULL
+	  @DocumentId			INT = NULL
+	, @FdpVolumeHeaderId	INT = NULL
+	, @MarketId				INT = NULL
+	, @MarketGroupId		INT = NULL
+	, @ModelId				INT = NULL
+	, @FdpModelId			INT = NULL
+	, @FeatureId			INT = NULL
+	, @FdpFeatureId			INT = NULL
 AS
 	SET NOCOUNT ON;
 	
 	DECLARE @FdpVolumeDataItemId INT;
+
+	IF @FdpVolumeHeaderId IS NULL
+		SET @FdpVolumeHeaderId = dbo.fn_Fdp_LatestTakeRateFileByDocument_Get(@DocumentId);
 	
 	SELECT TOP 1 @FdpVolumeDataItemId = D.FdpVolumeDataItemId
 	FROM
-	Fdp_VolumeHeader				AS H
-	JOIN Fdp_VolumeDataItem			AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+	Fdp_VolumeDataItem_VW AS D
 	WHERE
-	H.DocumentId = @DocumentId
+	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
 	AND
@@ -50,9 +53,8 @@ AS
 		, D.UpdatedBy
 		, CAST(CASE WHEN D1.FdpChangesetDataItemId IS NOT NULL THEN 1 ELSE 0 END AS BIT) AS HasUncommittedChanges
 	FROM
-	Fdp_VolumeHeader				AS H
-	JOIN Fdp_VolumeDataItem			AS D	ON	H.FdpVolumeHeaderId		= D.FdpVolumeHeaderId
-	LEFT JOIN Fdp_Changeset			AS C	ON	H.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
+	Fdp_VolumeDataItem_VW			AS D
+	LEFT JOIN Fdp_Changeset			AS C	ON	D.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
 											AND C.IsDeleted				= 0
 											AND C.IsSaved				= 0
 	LEFT JOIN Fdp_ChangesetDataItem AS D1	ON	D.FdpVolumeDataItemId	= D1.FdpVolumeDataItemId
@@ -114,8 +116,21 @@ AS
 		UNION
 		
 		SELECT
-			  D.CreatedOn AS EnteredOn
-			, D.CreatedBy AS EnteredBy
+			  D.CreatedOn AS AuditOn
+			, D.CreatedBy AS AuditBy
+			, D.Volume
+			, D.PercentageTakeRate
+			, CAST(0 AS BIT) AS IsUncommittedChange
+		FROM
+		Fdp_VolumeDataItem AS D
+		WHERE
+		D.FdpVolumeDataItemId = @FdpVolumeDataItemId
+
+		UNION
+		
+		SELECT
+			  D.UpdatedOn AS AuditOn
+			, D.UpdatedBy AS AuditBy
 			, D.Volume
 			, D.PercentageTakeRate
 			, CAST(0 AS BIT) AS IsUncommittedChange
