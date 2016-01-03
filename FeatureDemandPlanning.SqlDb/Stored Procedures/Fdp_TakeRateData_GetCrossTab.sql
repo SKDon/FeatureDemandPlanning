@@ -1,11 +1,12 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateData_GetCrossTab] 
-    @OxoDocId		INT
-  , @Mode			NVARCHAR(2)
-  , @ObjectId		INT = NULL
-  , @ModelIds		NVARCHAR(MAX)
-  , @ShowPercentage	BIT = 0
-  , @IsExport		BIT = 0
-  , @Filter			NVARCHAR(100) = NULL
+    @FdpVolumeHeaderId	INT = NULL
+  , @OxoDocId			INT = NULL
+  , @Mode				NVARCHAR(2)
+  , @ObjectId			INT = NULL
+  , @ModelIds			NVARCHAR(MAX)
+  , @ShowPercentage		BIT = 0
+  , @IsExport			BIT = 0
+  , @Filter				NVARCHAR(100) = NULL
 AS
 	SET NOCOUNT ON;
 
@@ -15,6 +16,7 @@ AS
 	DECLARE @MarketGroupId		INT;
 	DECLARE @FdpOxoDocId		INT;
 	DECLARE @FilteredVolume		INT;
+	DECLARE @FilteredPercentage	DECIMAL(5,4);
 	DECLARE @TotalVolume		INT;
 	DECLARE @ModelTotals		NVARCHAR(MAX) = N'';
 	DECLARE @OxoModelIds		NVARCHAR(MAX) = N'';
@@ -78,11 +80,20 @@ AS
 	)
 	SELECT ModelId, StringIdentifier, IsFdpModel 
 	FROM dbo.fn_Fdp_SplitModelIds(@ModelIds);
+
+	-- If the take rate file has not been specified explicitly work out the latest file
+	-- from the document id
+	IF @FdpVolumeHeaderId IS NULL
+		SELECT @FdpVolumeHeaderId = dbo.fn_Fdp_LatestTakeRateFileByDocument_Get(@OxoDocId)
 	
 	SELECT TOP 1 
 		  @ProgrammeId	= Programme_Id
 		, @Gateway		= Gateway
-	FROM OXO_Doc WHERE Id = @OxoDocId;
+	FROM 
+	Fdp_VolumeHeader AS H
+	JOIN OXO_Doc AS D ON H.DocumentId = D.Id
+	WHERE 
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId;
   
 	SELECT TOP 1 @MarketGroupId = Market_Group_Id 
 	FROM 
@@ -126,7 +137,7 @@ AS
 			, TR.Volume
 			, TR.PercentageTakeRate 
 		FROM 
-		dbo.fn_Fdp_TakeRateData_ByMarketGroup_Get(@OxoDocId, @MarketGroupId, @ModelIds) AS TR;
+		dbo.fn_Fdp_TakeRateData_ByMarketGroup_Get(@FdpVolumeHeaderId, @MarketGroupId, @ModelIds) AS TR;
 		
 		INSERT INTO #FeatureApplicability
 		(
@@ -142,7 +153,7 @@ AS
 			, Model_Id
 			, OXO_Code
 			, 'O' + CAST(Model_Id AS NVARCHAR(10))
-		FROM dbo.FN_OXO_Data_Get_FBM_MarketGroup(@OxoDocId, @MarketGroupId, @OxoModelIds)
+		FROM dbo.FN_OXO_Data_Get_FBM_MarketGroup(@FdpVolumeHeaderId, @MarketGroupId, @OxoModelIds)
 	END
 	ELSE
 	BEGIN
@@ -165,7 +176,7 @@ AS
 			, TR.Volume
 			, TR.PercentageTakeRate 
 		FROM 
-		dbo.fn_Fdp_TakeRateData_ByMarket_Get(@OxoDocId, @ObjectId, @ModelIds) AS TR;
+		dbo.fn_Fdp_TakeRateData_ByMarket_Get(@FdpVolumeHeaderId, @ObjectId, @ModelIds) AS TR;
 		
 		INSERT INTO #FeatureApplicability
 		(
@@ -445,44 +456,31 @@ AS
 	
 	SELECT @TotalVolume = SUM(S.TotalVolume)
 	FROM
-	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+	Fdp_TakeRateSummaryByMarket_VW AS S
 	WHERE
-	ProgrammeId = @ProgrammeId
-	AND
-	Gateway = @Gateway
-	
-	SELECT @FilteredVolume = SUM(S.TotalVolume)
-	FROM
-	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
-	JOIN #Model AS M ON S.ModelId = M.ModelId
-					 AND M.IsFdpModel = 0
-	WHERE
-	S.ProgrammeId = @ProgrammeId
-	AND
-	S.Gateway = @Gateway
-	AND
-	(
-		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
-		OR
-		(@Mode = 'MG' AND (@MarketGroupId IS NULL OR S.MarketGroupId = @MarketGroupId))
-	)
-	
-	SELECT @FilteredVolume = @FilteredVolume + SUM(S.TotalVolume)
-	FROM
-	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
-	JOIN #Model AS M ON S.FdpModelId = M.ModelId
-					 AND M.IsFdpModel = 1
-	WHERE
-	ProgrammeId = @ProgrammeId
-	AND
-	Gateway = @Gateway
-	AND
-	(
-		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
-		OR
-		(@Mode = 'MG' AND (@ObjectId IS NULL OR S.MarketGroupId = @ObjectId))
-	)
+	FdpVolumeHeaderId = @FdpVolumeHeaderId
 
+	IF @Mode = 'MG'
+	BEGIN
+		SELECT @FilteredVolume = SUM(TotalVolume)
+		FROM Fdp_TakeRateSummaryByMarket_VW
+		WHERE
+		FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		MarketGroupId = @MarketGroupId;
+
+		SELECT @FilteredPercentage = @FilteredVolume / CAST(@TotalVolume AS DECIMAL);
+	END
+	ELSE
+	BEGIN
+		SELECT @FilteredVolume = TotalVolume, @FilteredPercentage = PercentageTakeRate
+		FROM Fdp_TakeRateSummaryByMarket_VW
+		WHERE
+		FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		MarketId = @ObjectId;
+	END
+	
 	-- If we are showing volume information, use the raw volume figures,
 	-- otherwise return the percentage take rate for each feature / market
 	
@@ -538,69 +536,88 @@ AS
 	-- Third dataset returning volume and percentage take rate by derivative
 	-- Calculate the total volumes for the whole unfiltered dataset and the filtered dataset
 
-	SELECT 
+	IF @Mode = 'MG'
+	BEGIN
+		SELECT 
 		  M.StringIdentifier
 		, M.IsFdpModel
 		, SUM(S.TotalVolume) AS Volume
 		, SUM(S.TotalVolume) / CAST(@FilteredVolume AS DECIMAL) AS PercentageOfFilteredVolume
-	FROM
-	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
-	JOIN #Model AS M ON S.ModelId = M.ModelId
-					 AND M.IsFdpModel = 0
-	WHERE
-	ProgrammeId = @ProgrammeId
-	AND
-	Gateway = @Gateway
-	AND
-	(
-		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
-		OR
-		(@Mode = 'MG' AND (@ObjectId IS NULL OR S.MarketGroupId = @ObjectId))
-	)
-	GROUP BY
-	M.StringIdentifier, M.IsFdpModel
+		FROM
+		Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+		JOIN #Model AS M ON S.ModelId = M.ModelId
+						 AND M.IsFdpModel = 0
+		WHERE
+		S.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		S.MarketGroupId = @MarketGroupId
+		GROUP BY
+		M.StringIdentifier, M.IsFdpModel
 
-	UNION
+		UNION
 
+		SELECT 
+			  M.StringIdentifier
+			, M.IsFdpModel
+			, SUM(S.TotalVolume) AS Volume
+			, SUM(S.TotalVolume) / CAST(@FilteredVolume AS DECIMAL) AS PercentageOfFilteredVolume
+		FROM
+		Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+		JOIN #Model AS M ON S.FdpModelId = M.ModelId
+						 AND M.IsFdpModel = 1
+		WHERE
+		S.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		S.MarketGroupId = @MarketGroupId
+		GROUP BY
+		M.StringIdentifier, M.IsFdpModel
+	END
+	ELSE
+	BEGIN
 	SELECT 
 		  M.StringIdentifier
 		, M.IsFdpModel
-		, SUM(S.TotalVolume) AS Volume
-		, SUM(S.TotalVolume) / CAST(@FilteredVolume AS DECIMAL) AS PercentageOfFilteredVolume
-	FROM
-	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
-	JOIN #Model AS M ON S.FdpModelId = M.ModelId
-					 AND M.IsFdpModel = 1
-	WHERE
-	ProgrammeId = @ProgrammeId
-	AND
-	Gateway = @Gateway
-	AND
-	(
-		(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
-		OR
-		(@Mode = 'MG' AND (@ObjectId IS NULL OR S.MarketGroupId = @ObjectId))
-	)
-	GROUP BY
-	M.StringIdentifier, M.IsFdpModel
+		, S.TotalVolume AS Volume
+		, S.PercentageTakeRate AS PercentageOfFilteredVolume
+		FROM
+		Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+		JOIN #Model AS M ON S.ModelId = M.ModelId
+						 AND M.IsFdpModel = 0
+		WHERE
+		S.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		S.MarketId = @ObjectId
+
+		UNION
+
+		SELECT 
+			  M.StringIdentifier
+			, M.IsFdpModel
+			, S.TotalVolume
+			, S.PercentageTakeRate AS PercentageOfFilteredVolume
+		FROM
+		Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+		JOIN #Model AS M ON S.FdpModelId = M.ModelId
+						 AND M.IsFdpModel = 1
+		WHERE
+		S.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		S.MarketId = @ObjectId
+	END
 	
 	-- Summary dataset returning the meta information for the data (created by, updated, total volume mix, volume for market, etc)
 	
 	SELECT TOP 1
 		  ISNULL(@TotalVolume, 0)				AS TotalVolume
 		, ISNULL(@FilteredVolume, 0)			AS FilteredVolume
-		, ISNULL(CASE 
-			WHEN ISNULL(@TotalVolume, 0) = 0 THEN 0.0
-			ELSE @FilteredVolume / CAST(@TotalVolume AS DECIMAL)
-		  END, 0.0) 
-									AS PercentageOfTotalVolume
+		, ISNULL(@FilteredPercentage, 0.0)		AS PercentageOfTotalVolume
 		, H.CreatedBy
 		, H.CreatedOn
 		
 	FROM
 	Fdp_VolumeHeader AS H
 	WHERE
-	H.DocumentId = @OxoDocId;
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	
 	-- Additional dataset returning whether or not a data item has a note associated with it
 
@@ -632,7 +649,7 @@ AS
 							AS N	ON	H.FdpVolumeHeaderId		= N.FdpVolumeHeaderId
 	JOIN Fdp_VolumeDataItem	AS D	ON	N.FdpVolumeDataItemId	= D.FdpVolumeDataItemId
 	WHERE 
-	H.DocumentId = @OxoDocId
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	(
 		(@Mode = 'M' AND (@ObjectId IS NULL OR D.MarketId = @ObjectId))

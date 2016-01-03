@@ -32,11 +32,13 @@ BEGIN
 		IF @VolumeByMarket IS NOT NULL
 			RETURN @VolumeByMarket
 
-		-- Otherwise aggregate the volumes for all models for that market
+		-- Otherwise aggregate the volumes for all models for that market (but don't use any changsets), as changes
 
-		SELECT @VolumeByMarket = SUM(VOL.Volume)
-		FROM 
-		dbo.fn_Fdp_VolumeByModel_GetMany(@FdpVolumeHeaderId, @MarketId, @CdsId) AS VOL
+		SELECT TOP 1 
+			@VolumeByMarket = TotalVolume
+		FROM Fdp_TakeRateSummaryByMarket_VW AS M
+		WHERE 
+		M.MarketId = @MarketId
 
 	END
 		

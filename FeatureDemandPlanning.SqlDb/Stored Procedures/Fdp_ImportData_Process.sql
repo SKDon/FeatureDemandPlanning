@@ -10,6 +10,16 @@ AS
 	DECLARE @FdpVolumeHeaderId	INT;
 	DECLARE @FdpImportQueueId	INT;
 	DECLARE @Message			NVARCHAR(400);
+	DECLARE @MarketMix AS TABLE
+	(
+		  FdpVolumeHeaderId INT
+		, CreatedBy NVARCHAR(16)
+		, FdpSpecialFeatureMappingId INT
+		, MarketId INT
+		, Volume INT
+		, PercentageTakeRate DECIMAL(5, 4)
+	)
+	DECLARE @TotalVolume AS INT;
 	
 	SELECT 
 		  @ProgrammeId = ProgrammeId
@@ -339,10 +349,13 @@ AS
 	
 	SET @Message = 'Adding summary information...';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT
+
+	SELECT DISTINCT FdpImportId FROM Fdp_Import_VW
 	
 	INSERT INTO Fdp_TakeRateSummary
 	(
 		  FdpVolumeHeaderId
+		, CreatedBy
 		, FdpSpecialFeatureMappingId
 		, MarketId
 		, ModelId
@@ -352,6 +365,7 @@ AS
 	)
 	SELECT
 		  H.FdpVolumeHeaderId
+		, I.CreatedBy
 		, I.FdpSpecialFeatureMappingId
 		, I.MarketId
 		, I.ModelId 
@@ -386,18 +400,125 @@ AS
 	
 	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' summary items added';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT
-	
-	-- Update the total volume mix based on the sum of the total volumes for each market and derivative
-	
-	DECLARE @TotalVolume INT
-	SELECT @TotalVolume = SUM(S.Volume)
-	FROM Fdp_VolumeHeader		AS H
-	JOIN Fdp_TakeRateSummary	AS S	ON H.FdpVolumeHeaderId			= S.FdpVolumeHeaderId
-	JOIN Fdp_SpecialFeature		AS SF	ON S.FdpSpecialFeatureMappingId = SF.FdpSpecialFeatureId
+
+	-- Add summary rows for the volume and % take at market level, ignoring the model mix
+
+	INSERT INTO @MarketMix
+	(
+		  FdpVolumeHeaderId
+		, CreatedBy
+		, FdpSpecialFeatureMappingId
+		, MarketId
+		, Volume
+		, PercentageTakeRate
+	)
+	SELECT
+		  H.FdpVolumeHeaderId
+		, H.CreatedBy
+		, I.FdpSpecialFeatureMappingId
+		, I.MarketId
+		, SUM(CAST(I.ImportVolume AS INT))
+		, 0
+	FROM
+	Fdp_Import_VW					AS I
+	JOIN Fdp_VolumeHeader			AS H	ON	I.DocumentId					= H.DocumentId
 	WHERE
-	H.DocumentId = @OxoDocId
+	I.FdpImportId = @FdpImportId
 	AND
-	SF.FdpSpecialFeatureTypeId = 1 -- Volume by derivative (full year)
+	I.IsSpecialFeatureCode = 1
+	AND
+	I.IsMarketMissing = 0
+	AND
+	I.IsDerivativeMissing = 0
+	AND
+	I.IsTrimMissing = 0
+	GROUP BY
+	  H.FdpVolumeHeaderId
+	, H.CreatedBy
+	, I.FdpSpecialFeatureMappingId
+	, I.MarketId
+
+	-- Update existing summary entries at market level
+
+	--SELECT M.* FROM @MarketMix AS M
+	--JOIN Fdp_TakeRateSummary AS S ON M.FdpVolumeHeaderId = S.FdpVolumeHeaderId
+	--										AND M.MarketId = S.MarketId
+	--										AND S.ModelId IS NULL
+	--										AND S.FdpModelId IS NULL
+	--										AND M.FdpSpecialFeatureMappingId = S.FdpSpecialFeatureMappingId;
+
+	UPDATE S SET 
+		Volume = M.Volume
+		, PercentageTakeRate = M.PercentageTakeRate
+	FROM @MarketMix AS M
+	JOIN Fdp_TakeRateSummary AS S ON M.FdpVolumeHeaderId = S.FdpVolumeHeaderId
+											AND M.MarketId = S.MarketId
+											AND S.ModelId IS NULL
+											AND S.FdpModelId IS NULL
+											AND M.FdpSpecialFeatureMappingId = S.FdpSpecialFeatureMappingId;
+
+	-- Add new summary entries at market level
+
+	--SELECT M.* 
+	--FROM @MarketMix AS M
+	--LEFT JOIN Fdp_TakeRateSummary AS S ON M.FdpVolumeHeaderId = S.FdpVolumeHeaderId
+	--										AND M.MarketId = S.MarketId
+	--										AND S.ModelId IS NULL
+	--										AND S.FdpModelId IS NULL
+	--										AND M.FdpSpecialFeatureMappingId = S.FdpSpecialFeatureMappingId
+	--WHERE
+	--S.FdpTakeRateSummaryId IS NULL;
+
+	INSERT INTO Fdp_TakeRateSummary
+	(
+		  CreatedBy
+		, FdpVolumeHeaderId
+		, FdpSpecialFeatureMappingId
+		, MarketId
+		, Volume
+		, PercentageTakeRate
+	)
+	SELECT
+		  M.CreatedBy  
+		, M.FdpVolumeHeaderId
+		, M.FdpSpecialFeatureMappingId
+		, M.MarketId
+		, M.Volume
+		, M.PercentageTakeRate 
+
+	FROM @MarketMix AS M
+	LEFT JOIN Fdp_TakeRateSummary AS S ON M.FdpVolumeHeaderId = S.FdpVolumeHeaderId
+											AND M.MarketId = S.MarketId
+											AND S.ModelId IS NULL
+											AND S.FdpModelId IS NULL
+											AND M.FdpSpecialFeatureMappingId = S.FdpSpecialFeatureMappingId
+	WHERE
+	S.FdpTakeRateSummaryId IS NULL;
+
+	-- Update the percentage take rates for each market
+	-- We need to do this afterwards as the import may only contain partial data
+	-- any % take needs to be computed on the whole dataset
+
+	SELECT @TotalVolume = SUM(VOL.Volume)
+	FROM
+	Fdp_VolumeHeader AS H
+	CROSS APPLY dbo.fn_Fdp_VolumeByMarket_GetMany(H.FdpVolumeHeaderId, NULL) AS VOL
+	WHERE
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId;
+
+	--SELECT @TotalVolume AS TotalVolume;
+
+	UPDATE S SET PercentageTakeRate = Volume / CAST(@TotalVolume AS DECIMAL)
+	FROM
+	Fdp_TakeRateSummary AS S
+	WHERE
+	S.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	S.ModelId IS NULL
+	AND
+	S.FdpModelId IS NULL;
+
+	-- Update the total volume based on the sum of the total volumes for each market
 	
 	UPDATE Fdp_VolumeHeader SET TotalVolume = @TotalVolume
 	WHERE

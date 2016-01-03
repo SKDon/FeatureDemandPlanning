@@ -55,11 +55,7 @@ AS
 		D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	END
 
-	UPDATE D SET PercentageTakeRate = 
-		CASE 
-			WHEN ISNULL(@Volume, 0) > 0 THEN D.TotalVolume / CAST(@Volume AS DECIMAL)
-			ELSE 0
-		END
+	UPDATE D SET PercentageTakeRate = dbo.fn_Fdp_PercentageTakeRate_Get(D.TotalVolume, @Volume)
 	FROM Fdp_ChangesetDataItem AS D
 	WHERE 
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;

@@ -1,4 +1,6 @@
-﻿CREATE VIEW Fdp_ChangesetDataItem_VW
+﻿
+
+CREATE VIEW [dbo].[Fdp_ChangesetDataItem_VW]
 AS
 	SELECT
 	  D.FdpChangesetDataItemId
@@ -20,6 +22,7 @@ AS
 	, D.OriginalPercentageTakeRate
 	, D.FdpVolumeDataItemId
 	, D.FdpTakeRateSummaryId
+	, C.IsSaved
 	, CAST(CASE
 		WHEN 
 		(D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL) 
@@ -77,3 +80,5 @@ AS
 	JOIN Fdp_ChangesetDataItem AS D ON C.FdpChangesetId = D.FdpChangesetId
 	WHERE
 	D.IsDeleted = 0
+	AND
+	C.IsDeleted = 0

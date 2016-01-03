@@ -12,6 +12,7 @@ AS
 		  @IsVolumeUpdate	= D.IsVolumeUpdate
 		, @IsMarketUpdate	= D.IsMarketUpdate
 		, @IsFeatureUpdate	= D.IsFeatureUpdate
+		, @IsModelUpdate	= D.IsModelUpdate
 	FROM Fdp_ChangesetDataItem_VW AS D
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;

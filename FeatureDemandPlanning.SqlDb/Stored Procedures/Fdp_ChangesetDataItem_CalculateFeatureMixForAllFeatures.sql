@@ -15,7 +15,7 @@ AS
 		, FdpFeatureId			INT NULL
 		, TotalVolume			INT
 		, PercentageTakeRate	DECIMAL(5, 4)
-		, FdpVolumeDataItemId	INT 
+		, FdpVolumeDataItemId	INT
 	)
 	DECLARE @FeatureMix AS TABLE
 	(
@@ -113,16 +113,13 @@ AS
 		, D.FeatureId
 		, CAST(NULL AS INT) AS FdpFeatureId
 		, SUM(D.TotalVolume) AS TotalVolume
-		, CASE 
-			WHEN ISNULL(@TotalVolumeByMarket, 0) <> 0 THEN SUM(D.TotalVolume) / CAST(@TotalVolumeByMarket AS DECIMAL)
-			ELSE 0
-		  END AS PercentageTakeRate
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
 	FROM 
 	@DataForFeature AS D
 	WHERE
 	D.FeatureId IS NOT NULL
 	GROUP BY
-	D.FdpChangesetId
+	  D.FdpChangesetId
 	, D.MarketId
 	, D.FeatureId
 
@@ -134,18 +131,15 @@ AS
 		, CAST(NULL AS INT) AS FeatureId
 		, FdpFeatureId
 		, SUM(TotalVolume) AS TotalVolume
-		, CASE 
-			WHEN ISNULL(@TotalVolumeByMarket, 0) <> 0 THEN SUM(TotalVolume) / CAST(@TotalVolumeByMarket AS DECIMAL)
-			ELSE 0
-		  END AS PercentageTakeRate
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
 	FROM 
-	@DataForFeature
+	@DataForFeature AS D
 	WHERE
-	FdpFeatureId IS NOT NULL
+	D.FdpFeatureId IS NOT NULL
 	GROUP BY
-	  FdpChangesetId
-	, MarketId
-	, FdpFeatureId;
+	  D.FdpChangesetId
+	, D.MarketId
+	, D.FdpFeatureId;
 
 	SELECT * FROM @FeatureMix
 

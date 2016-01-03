@@ -45,10 +45,10 @@ BEGIN
 		SELECT TOP 1 @VolumeByModel = VOL.Volume
 		FROM
 		(
-			SELECT ISNULL(C.TotalVolume, S.Volume) AS Volume
+			SELECT ISNULL(C.TotalVolume, S.TotalVolume) AS Volume
 			FROM
 			Fdp_VolumeHeader				AS	H
-			JOIN Fdp_TakeRateSummary		AS	S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
+			JOIN Fdp_TakeRateSummaryByModelAndMarket_VW		AS	S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
 													AND S.MarketId				= @MarketId
 													AND S.ModelId				= @ModelId
 			LEFT JOIN Fdp_ChangesetModel_VW	AS	C	ON	H.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
@@ -59,10 +59,10 @@ BEGIN
 			
 			UNION
 
-			SELECT ISNULL(C.TotalVolume, S.Volume) AS Volume
+			SELECT ISNULL(C.TotalVolume, S.TotalVolume) AS Volume
 			FROM
 			Fdp_VolumeHeader				AS	H
-			JOIN Fdp_TakeRateSummary		AS	S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
+			JOIN Fdp_TakeRateSummaryByModelAndMarket_VW		AS	S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
 													AND S.MarketId				= @MarketId
 													AND S.FdpModelId			= @FdpModelId
 			LEFT JOIN Fdp_ChangesetModel_VW	AS	C	ON	H.FdpVolumeHeaderId		= C.FdpVolumeHeaderId

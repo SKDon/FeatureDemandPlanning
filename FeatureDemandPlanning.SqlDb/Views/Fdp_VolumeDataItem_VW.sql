@@ -1,30 +1,32 @@
-﻿CREATE VIEW Fdp_VolumeDataItem_VW
+﻿
+CREATE VIEW [dbo].[Fdp_VolumeDataItem_VW]
 AS
 	SELECT
-		  FdpVolumeDataItemId
-		, CreatedOn
-		, CreatedBy
-		, FdpVolumeHeaderId
-		, IsManuallyEntered
-		, MarketId
-		, MarketGroupId
-		, ModelId
-		, FdpModelId
-		, TrimId
-		, FdpTrimId
-		, FeatureId
-		, FdpFeatureId
-		, FeaturePackId
-		, Volume
-		, PercentageTakeRate
-		, UpdatedOn
-		, UpdatedBy
+		  D.FdpVolumeDataItemId
+		, D.CreatedOn
+		, D.CreatedBy
+		, H.FdpVolumeHeaderId
+		, H.DocumentId
+		, D.IsManuallyEntered
+		, D.MarketId
+		, D.MarketGroupId
+		, D.ModelId
+		, D.FdpModelId
+		, D.TrimId
+		, D.FdpTrimId
+		, D.FeatureId
+		, D.FdpFeatureId
+		, D.FeaturePackId
+		, D.Volume
+		, D.PercentageTakeRate
+		, D.UpdatedOn
+		, D.UpdatedBy
 		, CAST(
 			CASE
 				WHEN
-				(ModelId IS NOT NULL OR FdpModelId IS NOT NULL)
+				(D.ModelId IS NOT NULL OR D.FdpModelId IS NOT NULL)
 				AND
-				(FeatureId IS NOT NULL OR FdpFeatureId IS NOT NULL)
+				(D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL)
 				THEN
 				1
 				ELSE
@@ -36,13 +38,13 @@ AS
 		, CAST(
 			CASE
 				WHEN
-				ModelId IS NULL
+				D.ModelId IS NULL
 				AND
-				FdpModelId IS NULL
+				D.FdpModelId IS NULL
 				AND
-				FeatureId IS NULL 
+				D.FeatureId IS NULL 
 				AND
-				FdpFeatureId IS NULL
+				D.FdpFeatureId IS NULL
 				THEN
 				1
 				ELSE
@@ -54,11 +56,11 @@ AS
 		, CAST(
 			CASE
 				WHEN
-				ModelId IS NULL
+				D.ModelId IS NULL
 				AND
-				FdpModelId IS NULL
+				D.FdpModelId IS NULL
 				AND
-				(FeatureId IS NOT NULL OR FdpFeatureId IS NOT NULL)
+				(D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL)
 				THEN
 				1
 				ELSE
@@ -68,4 +70,5 @@ AS
 		  )
 		  AS IsFeatureMix
 	FROM
-	Fdp_VolumeDataItem AS D
+	Fdp_VolumeHeader AS H
+	JOIN Fdp_VolumeDataItem AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId

@@ -2,19 +2,11 @@
 
 
 
+
+
 CREATE VIEW [dbo].[Fdp_TakeRateSummaryByMarket_VW] AS
 
-	SELECT
-		  VOL.FdpVolumeHeaderId
-		, VOL.DocumentId 
-		, VOL.ProgrammeId
-		, VOL.Gateway
-		, VOL.MarketId
-		, M.Market_Name			AS MarketName
-		, M.Market_Group_Id		AS MarketGroupId
-		, M.Market_Group_Name	AS MarketGroup
-		, VOL.TotalVolume
-	FROM
+	WITH TotalsByMarket AS
 	(
 		SELECT
 			  H.FdpVolumeHeaderId 
@@ -22,18 +14,26 @@ CREATE VIEW [dbo].[Fdp_TakeRateSummaryByMarket_VW] AS
 			, D.Programme_Id AS ProgrammeId
 			, D.Gateway
 			, S.MarketId
-			, SUM(Volume) AS TotalVolume
+			, S.Volume AS TotalVolume
+			, S.PercentageTakeRate
 		FROM
 		Fdp_VolumeHeader			AS H
 		JOIN OXO_Doc				AS D	ON H.DocumentId			= D.Id
 		JOIN Fdp_TakeRateSummary	AS S	ON H.FdpVolumeHeaderId	= S.FdpVolumeHeaderId
-		GROUP BY
-		  H.FdpVolumeHeaderId
-		, H.DocumentId
-		, D.Programme_Id
-		, D.Gateway
-		, S.MarketId
+											AND S.ModelId			IS NULL
+											AND S.FdpModelId		IS NULL
 	)
-	AS VOL
-	JOIN OXO_Programme_MarketGroupMarket_VW AS M ON		VOL.ProgrammeId = M.Programme_Id
-												 AND	VOL.MarketId	= M.Market_Id
+	SELECT
+		  T.FdpVolumeHeaderId
+		, T.DocumentId 
+		, T.ProgrammeId
+		, T.Gateway
+		, T.MarketId
+		, M.Market_Name			AS MarketName
+		, M.Market_Group_Id		AS MarketGroupId
+		, M.Market_Group_Name	AS MarketGroup
+		, T.TotalVolume
+		, T.PercentageTakeRate
+	FROM TotalsByMarket AS T
+	JOIN OXO_Programme_MarketGroupMarket_VW AS M ON		T.ProgrammeId = M.Programme_Id
+												 AND	T.MarketId	= M.Market_Id

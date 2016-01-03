@@ -21,37 +21,16 @@ BEGIN
 			, FdpModelId
 			, Volume
 		)
-		SELECT
-			  VOL.ModelId
-			, VOL.FdpModelId
-			, VOL.Volume
-		FROM
-		(
-			SELECT 
+		SELECT 
 				  S.ModelId
 				, S.FdpModelId
-				, S.Volume
+				, S.TotalVolume AS Volume
 			FROM
-			Fdp_VolumeHeader			AS H
-			JOIN Fdp_TakeRateSummary	AS S	ON	H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
-												AND S.MarketId			= @MarketId
+			Fdp_TakeRateSummaryByModelAndMarket_VW	AS S
 			WHERE
-			H.FdpVolumeHeaderId = @FdpVolumeHeaderId
-		
-			UNION
-
-			SELECT 
-				  S.ModelId
-				, S.FdpModelId
-				, S.Volume
-			FROM
-			Fdp_VolumeHeader			AS H
-			JOIN Fdp_TakeRateSummary	AS S	ON	H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
-												AND S.MarketId			= @MarketId
-			WHERE
-			H.FdpVolumeHeaderId = @FdpVolumeHeaderId
-		)
-		AS VOL
+			S.FdpVolumeHeaderId = @FdpVolumeHeaderId
+			AND
+			S.MarketId = @MarketId
 	END
 	ELSE
 	BEGIN
@@ -65,17 +44,18 @@ BEGIN
 		SELECT 
 				S.ModelId
 			, S.FdpModelId
-			, ISNULL(C.TotalVolume, S.Volume) AS Volume
+			, ISNULL(C.TotalVolume, S.TotalVolume) AS Volume
 		FROM
-		Fdp_VolumeHeader				AS	H
-		JOIN Fdp_TakeRateSummary		AS	S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
-												AND S.MarketId				= @MarketId
-		LEFT JOIN Fdp_ChangesetModel_VW AS	C	ON	H.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
+		Fdp_TakeRateSummaryByModelAndMarket_VW	AS S
+		LEFT JOIN Fdp_ChangesetModel_VW AS	C	ON	S.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
 												AND C.MarketId				= @MarketId
 												AND C.CDSId					= @CdsId
 												AND S.FdpTakeRateSummaryId	= C.FdpTakeRateSummaryId
 		WHERE
-		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		S.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		S.MarketId = @MarketId
+
 		
 	END
 

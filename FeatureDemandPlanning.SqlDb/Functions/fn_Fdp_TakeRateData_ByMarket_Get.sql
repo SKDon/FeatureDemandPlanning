@@ -1,8 +1,8 @@
 ﻿CREATE FUNCTION [dbo].[fn_Fdp_TakeRateData_ByMarket_Get]
 (
-	@OxoDocId		INT
-  , @MarketId		INT
-  , @ModelIds		NVARCHAR(MAX)
+	@FdpVolumeHeaderId		INT
+  , @MarketId				INT
+  , @ModelIds				NVARCHAR(MAX)
 )
 RETURNS 
 @VolumeData TABLE 
@@ -49,18 +49,17 @@ BEGIN
 	SELECT 
 		  D.FeatureId
 		, D.FdpFeatureId
-		, 0						AS PackId
+		, 0								AS PackId
 		, D.ModelId
-		, CAST(NULL AS INT) AS FdpModelId
-		, SUM(D.Volume)			AS Volume
-		, MAX(D.PercentageTakeRate)  AS PercentageTakeRate
+		, CAST(NULL AS INT)				AS FdpModelId
+		, SUM(D.Volume)					AS Volume
+		, MAX(D.PercentageTakeRate)		AS PercentageTakeRate
     FROM 
-    Fdp_VolumeHeader		AS H
-    JOIN Fdp_VolumeDataItem AS D	ON	H.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
+    Fdp_VolumeDataItem_VW	AS D
     JOIN @Models			AS M	ON	D.ModelId			= M.ModelId
 									AND M.IsFdpModel		= 0
 	WHERE 
-	H.DocumentId = @OxoDocId
+	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
 	GROUP BY
@@ -80,12 +79,11 @@ BEGIN
 		, SUM(D.Volume)			AS Volume
 		, MAX(D.PercentageTakeRate)	AS PercentageTakeRate
     FROM 
-    Fdp_VolumeHeader		AS H
-    JOIN Fdp_VolumeDataItem AS D	ON	H.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
+    Fdp_VolumeDataItem_VW	AS D
     JOIN @Models			AS M	ON	D.FdpModelId		= M.ModelId
 									AND M.IsFdpModel		= 1
 	WHERE 
-	H.DocumentId = @OxoDocId
+	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
 	GROUP BY

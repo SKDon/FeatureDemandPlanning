@@ -172,10 +172,7 @@ AS
 		, FeatureId
 		, CAST(NULL AS INT) AS FdpFeatureId
 		, SUM(TotalVolume) AS TotalVolume
-		, CASE 
-			WHEN ISNULL(@TotalVolumeByMarket, 0) <> 0 THEN SUM(TotalVolume) / CAST(@TotalVolumeByMarket AS DECIMAL)
-			ELSE 0
-		  END AS PercentageTakeRate
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
 	FROM 
 	@DataForFeature
 	WHERE
@@ -193,10 +190,7 @@ AS
 		, CAST(NULL AS INT) AS FeatureId
 		, FdpFeatureId
 		, SUM(TotalVolume) AS TotalVolume
-		, CASE 
-			WHEN ISNULL(@TotalVolumeByMarket, 0) <> 0 THEN SUM(TotalVolume) / CAST(@TotalVolumeByMarket AS DECIMAL)
-			ELSE 0
-		  END AS PercentageTakeRate
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
 	FROM 
 	@DataForFeature
 	WHERE

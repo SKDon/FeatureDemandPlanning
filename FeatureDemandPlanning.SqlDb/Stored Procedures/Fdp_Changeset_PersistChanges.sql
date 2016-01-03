@@ -9,17 +9,16 @@ AS
 		  Volume				= D.TotalVolume
 		, PercentageTakeRate	= D.PercentageTakeRate
 		, UpdatedOn				= D.CreatedOn
-		, UpdatedBy				= C.CreatedBy
+		, UpdatedBy				= D.CDSId
 	FROM
-	Fdp_Changeset				AS C
-	JOIN Fdp_ChangesetDataItem	AS D	ON	C.FdpChangesetId		= D.FdpChangesetId
-										AND D.IsDeleted				= 0
-										AND (D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL)
+	Fdp_ChangesetDataItem_VW	AS D
 	JOIN Fdp_VolumeDataItem		AS D1	ON	D.FdpVolumeDataItemId	= D1.FdpVolumeDataItemId
 	WHERE
-	C.FdpChangesetId = @FdpChangesetId
+	D.FdpChangesetId = @FdpChangesetId
 	AND
-	C.IsSaved = 0;
+	D.IsSaved = 0
+	AND
+	D.IsFeatureUpdate = 1
 
 	-- Model summary rows
 
@@ -27,41 +26,16 @@ AS
 		  Volume				= D.TotalVolume
 		, PercentageTakeRate	= D.PercentageTakeRate
 		, UpdatedOn				= D.CreatedOn
-		, UpdatedBy				= C.CreatedBy
+		, UpdatedBy				= D.CDSId
 	FROM
-	Fdp_Changeset				AS C
-	JOIN Fdp_VolumeHeader		AS H	ON	C.FdpVolumeHeaderId		= H.FdpVolumeHeaderId
-	JOIN Fdp_ChangesetDataItem	AS D	ON	C.FdpChangesetId		= D.FdpChangesetId
-										AND D.IsDeleted				= 0
-										AND (D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL)
-	JOIN Fdp_TakeRateSummary	AS S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
-										AND D.MarketId				= S.MarketId
-										AND D.ModelId				= S.ModelId
-										AND (D.FeatureId IS NULL AND D.FdpFeatureId IS NULL)
+	Fdp_ChangesetDataItem_VW	AS D
+	JOIN Fdp_TakeRateSummary	AS S	ON	D.FdpTakeRateSummaryId	= S.FdpTakeRateSummaryId
 	WHERE
-	C.FdpChangesetId = @FdpChangesetId
+	D.FdpChangesetId = @FdpChangesetId
 	AND
-	C.IsSaved = 0;
-
-	UPDATE S SET
-		  Volume				= D.TotalVolume
-		, PercentageTakeRate	= D.PercentageTakeRate
-		, UpdatedOn				= D.CreatedOn
-		, UpdatedBy				= C.CreatedBy
-	FROM
-	Fdp_Changeset				AS C
-	JOIN Fdp_VolumeHeader		AS H	ON	C.FdpVolumeHeaderId		= H.FdpVolumeHeaderId
-	JOIN Fdp_ChangesetDataItem	AS D	ON	C.FdpChangesetId		= D.FdpChangesetId
-										AND D.IsDeleted				= 0
-										AND (D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL)
-	JOIN Fdp_TakeRateSummary	AS S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
-										AND D.MarketId				= S.MarketId
-										AND D.FdpModelId			= S.FdpModelId
-										AND (D.FeatureId IS NULL AND D.FdpFeatureId IS NULL)
-	WHERE
-	C.FdpChangesetId = @FdpChangesetId
+	D.IsSaved = 0
 	AND
-	C.IsSaved = 0;
+	D.IsModelUpdate = 1
 	
 	-- Add any new ones
 

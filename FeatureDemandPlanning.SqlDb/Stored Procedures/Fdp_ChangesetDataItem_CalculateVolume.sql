@@ -35,9 +35,9 @@ AS
 		WHERE
 		D.FdpChangesetDataItemId = @FdpChangesetDataItemId																				
 
-		-- Now that the volume has been updated for the model, we need to recalculate the volumes
-		-- for all features under that model
+		---- Now that the volume has been updated for the model, we need to recalculate the volumes
+		---- for all features under that model
 
-		EXEC Fdp_ChangesetDataItem_CalculateFeatureVolumes @FdpChangesetDataItemId = @FdpChangesetDataItemId;
+		--EXEC Fdp_ChangesetDataItem_CalculateFeatureVolumes @FdpChangesetDataItemId = @FdpChangesetDataItemId;
 		
 	END

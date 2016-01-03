@@ -17,6 +17,8 @@ AS
 		, TotalVolume			INT
 		, PercentageTakeRate	DECIMAL(5, 4)
 		, FdpVolumeDataItemId	INT 
+		, OriginalVolume		INT	NULL
+		, OriginalPercentageTakeRate INT NULL
 	)
 	
 	-- Determine the total volume for the model for the market
@@ -43,6 +45,8 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, FdpVolumeDataItemId
+		, OriginalVolume
+		, OriginalPercentageTakeRate
 	)
 	SELECT 
 		  D.FdpChangesetId
@@ -54,6 +58,8 @@ AS
 		, @TotalVolumeForModel * D1.PercentageTakeRate
 		, D1.PercentageTakeRate
 		, D1.FdpVolumeDataItemId
+		, D1.OriginalVolume
+		, D1.OriginalPercentageTakeRate
 		
 	FROM Fdp_ChangesetDataItem_VW	AS D
 	JOIN Fdp_ChangesetDataItem_VW	AS D1	ON	D.FdpChangesetId			= D1.FdpChangesetId
@@ -78,6 +84,8 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, FdpVolumeDataItemId
+		, OriginalVolume
+		, OriginalPercentageTakeRate
 	)
 	SELECT
 		  D.FdpChangesetId
@@ -89,6 +97,8 @@ AS
 		, @TotalVolumeForModel * D1.PercentageTakeRate
 		, D1.PercentageTakeRate
 		, D1.FdpVolumeDataItemId
+		, D1.Volume
+		, D1.PercentageTakeRate
 	FROM
 	Fdp_ChangesetDataItem_VW			AS D
 	JOIN Fdp_VolumeDataItem_VW			AS D1		ON	D.FdpVolumeHeaderId			= D1.FdpVolumeHeaderId
@@ -114,6 +124,8 @@ AS
 		, @TotalVolumeForModel * D1.PercentageTakeRate
 		, D1.PercentageTakeRate
 		, D1.FdpVolumeDataItemId
+		, D1.Volume
+		, D1.PercentageTakeRate
 	FROM
 	Fdp_ChangesetDataItem_VW			AS D
 	JOIN Fdp_VolumeDataItem_VW			AS D1		ON	D.FdpVolumeHeaderId			= D1.FdpVolumeHeaderId
@@ -157,6 +169,8 @@ AS
 		, IsVolumeUpdate
 		, IsPercentageUpdate
 		, FdpVolumeDataItemId
+		, OriginalVolume
+		, OriginalPercentageTakeRate
 	)
 	SELECT 
 		  FdpChangesetId
@@ -170,5 +184,7 @@ AS
 		, 1
 		, 0
 		, FdpVolumeDataItemId
+		, OriginalVolume
+		, OriginalPercentageTakeRate
 	FROM 
 	@DataForFeature

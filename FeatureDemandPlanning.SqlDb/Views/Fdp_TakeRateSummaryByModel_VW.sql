@@ -1,5 +1,6 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_TakeRateSummaryByModel_VW] AS
 
 	SELECT
@@ -29,6 +30,7 @@ CREATE VIEW [dbo].[Fdp_TakeRateSummaryByModel_VW] AS
 		Fdp_VolumeHeader			AS H
 		JOIN OXO_Doc				AS D	ON H.DocumentId = D.Id
 		JOIN Fdp_TakeRateSummary	AS S	ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
+											AND (S.ModelId IS NOT NULL OR S.FdpModelId IS NOT NULL)
 		GROUP BY
 		  H.DocumentId
 		, D.Programme_Id
