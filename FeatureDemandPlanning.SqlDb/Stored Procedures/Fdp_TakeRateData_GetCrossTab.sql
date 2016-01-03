@@ -502,7 +502,7 @@ AS
 	END
 	ELSE
 	BEGIN
-		SET @Sql =		  'SELECT DATASET.*, ISNULL(AggregatedVolume, 0) / CAST(' + CAST(@FilteredVolume AS NVARCHAR(10)) + ' AS DECIMAL) AS TotalPercentageTakeRate '
+		SET @Sql =		  'SELECT DATASET.*, dbo.fn_Fdp_PercentageTakeRate_Get(AggregatedVolume, ' + CAST(@FilteredVolume AS NVARCHAR(10)) + ') AS TotalPercentageTakeRate '
 		SET @Sql = @Sql + 'FROM ( '
 		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, StringIdentifier, '
 		SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, PercentageTakeRate '
@@ -542,7 +542,7 @@ AS
 		  M.StringIdentifier
 		, M.IsFdpModel
 		, SUM(S.TotalVolume) AS Volume
-		, SUM(S.TotalVolume) / CAST(@FilteredVolume AS DECIMAL) AS PercentageOfFilteredVolume
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(S.TotalVolume), @FilteredVolume) AS PercentageOfFilteredVolume
 		FROM
 		Fdp_TakeRateSummaryByModelAndMarket_VW AS S
 		JOIN #Model AS M ON S.ModelId = M.ModelId
@@ -560,7 +560,7 @@ AS
 			  M.StringIdentifier
 			, M.IsFdpModel
 			, SUM(S.TotalVolume) AS Volume
-			, SUM(S.TotalVolume) / CAST(@FilteredVolume AS DECIMAL) AS PercentageOfFilteredVolume
+			, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(S.TotalVolume), @FilteredVolume) AS PercentageOfFilteredVolume
 		FROM
 		Fdp_TakeRateSummaryByModelAndMarket_VW AS S
 		JOIN #Model AS M ON S.FdpModelId = M.ModelId
