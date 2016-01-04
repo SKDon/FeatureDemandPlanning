@@ -130,7 +130,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             return await context.Vehicle.GetVehicle(new VehicleFilter()
             {
-                ProgrammeId = forVehicle.ProgrammeId, Gateway = forVehicle.Gateway, OxoDocId = forDocument.Id,
+                ProgrammeId = forVehicle.ProgrammeId, Gateway = forVehicle.Gateway, DocumentId = forDocument.Id,
             });
         }
         private static async Task<Market> GetMarket(IDataContext context, Market forMarket, OXODoc forDocument)
@@ -144,7 +144,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             }
             else
             {
-                market = await Task.FromResult(context.Market.GetMarket(new TakeRateFilter() {MarketId = forMarket.Id, OxoDocId = forDocument.Id, ProgrammeId = forDocument.ProgrammeId}));
+                market = await Task.FromResult(context.Market.GetMarket(new TakeRateFilter() {MarketId = forMarket.Id, DocumentId = forDocument.Id, ProgrammeId = forDocument.ProgrammeId}));
                 if (!(market is EmptyMarket) && market.Id != 0)
                     HttpContext.Current.Cache.Add(cacheKey, market, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             }
@@ -162,7 +162,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             }
             else
             {
-                marketGroup = await Task.FromResult(context.Market.GetMarketGroup(new TakeRateFilter() {MarketGroupId = forMarketGroup.Id, OxoDocId = forDocument.Id, ProgrammeId = forDocument.ProgrammeId}));
+                marketGroup = await Task.FromResult(context.Market.GetMarketGroup(new TakeRateFilter() {MarketGroupId = forMarketGroup.Id, DocumentId = forDocument.Id, ProgrammeId = forDocument.ProgrammeId}));
                 if (!(marketGroup is EmptyMarketGroup) && marketGroup.Id != 0)
                     HttpContext.Current.Cache.Add(cacheKey, marketGroup, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             }
@@ -180,7 +180,24 @@ namespace FeatureDemandPlanning.Model.ViewModel
             }
             else
             {
-                oxoDocument = await context.TakeRate.GetUnderlyingOxoDocument(new TakeRateFilter() {OxoDocId = forOxoDocument.Id, ProgrammeId = forOxoDocument.ProgrammeId});
+                oxoDocument = await context.TakeRate.GetUnderlyingOxoDocument(new TakeRateFilter() {DocumentId = forOxoDocument.Id, ProgrammeId = forOxoDocument.ProgrammeId});
+                HttpContext.Current.Cache.Add(cacheKey, oxoDocument, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+            }
+            return oxoDocument;
+        }
+
+        private static async Task<OXODoc> GetOxoDocumentFromTakeRateFile(IDataContext context, TakeRateDocument takeRateFile)
+        {
+            OXODoc oxoDocument;
+            var cacheKey = string.Format("TakeRateFile_{0}", takeRateFile.TakeRateId.GetValueOrDefault());
+            var cachedLookup = HttpContext.Current.Cache.Get(cacheKey);
+            if (cachedLookup != null)
+            {
+                oxoDocument = (OXODoc)cachedLookup;
+            }
+            else
+            {
+                oxoDocument = await context.TakeRate.GetUnderlyingOxoDocument(new TakeRateFilter() { TakeRateId = takeRateFile.TakeRateId });
                 HttpContext.Current.Cache.Add(cacheKey, oxoDocument, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             }
             return oxoDocument;
@@ -197,7 +214,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             }
             else
             {
-                header = await context.TakeRate.GetTakeRateDocumentHeader(new TakeRateFilter() {OxoDocId = forHeader.OxoDocId});
+                header = await context.TakeRate.GetTakeRateDocumentHeader(new TakeRateFilter() {DocumentId = forHeader.OxoDocId});
                 HttpContext.Current.Cache.Add(cacheKey, header, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             }
             return header;
@@ -237,7 +254,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             return await context.TakeRate.ListAvailableMarketGroups(new TakeRateFilter()
             {
-                TakeRateId = document.UnderlyingOxoDocument.Id
+                DocumentId = document.UnderlyingOxoDocument.Id
             });
         }
         private static async Task<FdpModel> HydrateCurrentModel(IDataContext context, TakeRateViewModel takeRateModel)
@@ -294,12 +311,25 @@ namespace FeatureDemandPlanning.Model.ViewModel
         }
         private static async Task<OXODoc> HydrateOxoDocument(IDataContext context, TakeRateViewModel volumeModel)
         {
-            volumeModel.Document.UnderlyingOxoDocument = await GetOxoDocument(context, volumeModel.Document.UnderlyingOxoDocument);
+            OXODoc retVal = new EmptyOxoDocument();
+
+            if (!(volumeModel.Document.UnderlyingOxoDocument is EmptyOxoDocument))
+            {
+                volumeModel.Document.UnderlyingOxoDocument =
+                    await GetOxoDocument(context, volumeModel.Document.UnderlyingOxoDocument);
+            }
+            else
+            {
+                volumeModel.Document.UnderlyingOxoDocument =
+                    await GetOxoDocumentFromTakeRateFile(context, volumeModel.Document);
+            }
 
             volumeModel.Document.Vehicle.ProgrammeId = volumeModel.Document.UnderlyingOxoDocument.ProgrammeId;
             volumeModel.Document.Vehicle.Gateway = volumeModel.Document.UnderlyingOxoDocument.Gateway;
 
-            return volumeModel.Document.UnderlyingOxoDocument;
+            retVal = volumeModel.Document.UnderlyingOxoDocument;
+
+            return retVal;
         }
         private static async Task<TakeRateData> HydrateData(IDataContext context, TakeRateViewModel takeRateModel)
         {
@@ -341,7 +371,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             var filter = new ProgrammeFilter()
             {
-                ProgrammeId = forVolume.UnderlyingOxoDocument.ProgrammeId, Gateway = forVolume.UnderlyingOxoDocument.Gateway, OxoDocId = forVolume.UnderlyingOxoDocument.Id
+                ProgrammeId = forVolume.UnderlyingOxoDocument.ProgrammeId, Gateway = forVolume.UnderlyingOxoDocument.Gateway, DocumentId = forVolume.UnderlyingOxoDocument.Id
             };
 
             if (!(forVolume.Market is EmptyMarket))

@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_AvailableModelByMarket_GetMany]   
    @ProgrammeId INT,
    @Gateway		NVARCHAR(100),
-   @OxoDocId	INT,
+   @DocumentId	INT,
    @MarketId	INT,
    @CDSId		NVARCHAR(16)
 AS
@@ -9,7 +9,7 @@ AS
 	(
 		SELECT OD.Model_Id 
 		FROM OXO_ITEM_DATA_MBM OD WITH(NOLOCK)
-		WHERE OD.OXO_Doc_Id = @OxoDocId
+		WHERE OD.OXO_Doc_Id = @DocumentId
 		AND OD.OXO_Code = 'Y'	
 		AND OD.Market_Id = @MarketId
 		AND Active = 1
@@ -90,7 +90,7 @@ AS
 		ELSE 1
 		END AS Available
 	                 
-		FROM dbo.FN_Programme_Models_Get(@ProgrammeId, @OxoDocId)  M
+		FROM dbo.FN_Programme_Models_Get(@ProgrammeId, @DocumentId)  M
 		LEFT OUTER JOIN OxoData A
 		ON M.ID = A.Model_Id
 	    

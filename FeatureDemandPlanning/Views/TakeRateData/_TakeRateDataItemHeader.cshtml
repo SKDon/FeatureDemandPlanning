@@ -1,4 +1,5 @@
-﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+﻿@using FeatureDemandPlanning.Model
+@using enums = FeatureDemandPlanning.Model.Enumerations
 
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
@@ -15,23 +16,29 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-4 text-right"><strong>Model:</strong></div>
+        <div class="col-xs-4 text-right"><strong>Model:</strong>
+        </div>
         <div class="col-xs-8">
             @Model.CurrentTakeRateDataItem.Model.Name
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-4 text-right"><strong>Feature Code:</strong></div>
-        <div class="col-xs-8">
-            @Model.CurrentTakeRateDataItem.Feature.FeatureCode
+    @if (Model.CurrentTakeRateDataItem.FeatureId.HasValue || Model.CurrentTakeRateDataItem.FdpFeatureId.HasValue)
+    {
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Feature Code:</strong>
+            </div>
+            <div class="col-xs-8">
+                @Model.CurrentTakeRateDataItem.Feature.FeatureCode
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-4 text-right"><strong>Description:</strong></div>
-        <div class="col-xs-8">
-            @Model.CurrentTakeRateDataItem.Feature.BrandDescription
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Description:</strong>
+            </div>
+            <div class="col-xs-8">
+                @Model.CurrentTakeRateDataItem.Feature.BrandDescription
+            </div>
         </div>
-    </div>
+    }
     @if (Model.CurrentTakeRateDataItem.HasUncommittedChanges) 
     { 
         <div class="row">

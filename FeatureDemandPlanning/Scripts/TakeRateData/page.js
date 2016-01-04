@@ -601,10 +601,17 @@ model.Page = function (models) {
         me.configureScrollerOffsets();
     };
     me.bindContextMenu = function () {
-        $("#Page_TakeRateData .cross-tab-data-item").contextMenu({
-            menuSelector: "#" + me.getIdentifierPrefix() + "_ContextMenu",
+        var prefix = me.getIdentifierPrefix();
+        $("#" + prefix + "_TakeRateData .cross-tab-data-item").contextMenu({
+            menuSelector: "#" + prefix + "_ContextMenu",
             dynamicContent: me.getContextMenu,
             contentIdentifier: me.getDataItemId,
+            menuSelected: me.actionTriggered
+        });
+        $("#" + prefix + "_TakeRateDataPanel .model-mix").contextMenu({
+            menuSelector: "#" + prefix + "_ContextMenu",
+            dynamicContent: me.getContextMenu,
+            contentIdentifier: me.getModelMixDataItemId,
             menuSelected: me.actionTriggered
         });
     };
@@ -651,7 +658,6 @@ model.Page = function (models) {
         return parseFloat($("#" + prefix + "_OriginalTakeRateByMarket").val()).toFixed(2);
     };
     me.getChangedTakeRateByMarket = function () {
-        var prefix = me.getIdentifierPrefix();
         return $(".input-filtered-volume").val();
     };
     me.getOriginalVolumeByMarket = function () {
@@ -659,14 +665,16 @@ model.Page = function (models) {
         return parseInt($("#" + prefix + "_OriginalVolumeByMarket").val());
     };
     me.getChangedVolumeByMarket = function () {
-        var prefix = me.getIdentifierPrefix();
         return $(".input-filtered-volume").val();
     };
     me.getDataItemId = function (cell) {
         return $(cell).children().first().attr("data-target");
     };
+    me.getModelMixDataItemId = function(cell) {
+        return $(cell).attr("data-target").replace("MS|", "");
+    };
     me.getContextMenu = function (dataItemString) {
-        var params = getFilter(dataItemString)
+        var params = getFilter(dataItemString);
         $.ajax({
             "dataType": "html",
             "async": true,
@@ -854,6 +862,7 @@ model.Page = function (models) {
         var modelIdentifier = null;
         var featureIdentifier = null;
         var volume = getTakeRateDataModel();
+        var takeRateId = volume.getTakeRateId();
         var documentId = volume.getOxoDocId();
         var marketId = volume.getMarketId();
         var marketGroupId = volume.getMarketGroupId();
@@ -864,11 +873,12 @@ model.Page = function (models) {
         if (identifiers.length > 1) {
             modelIdentifier = identifiers[1];
         }
-        if (identifiers.length > 1) {
+        if (identifiers.length > 2) {
             featureIdentifier = identifiers[2];
         }
         return {
-            TakeRateId: documentId,
+            TakeRateId: takeRateId,
+            DocumentId: documentId,
             ModelIdentifier: modelIdentifier,
             FeatureIdentifier: featureIdentifier,
             MarketId: marketId,

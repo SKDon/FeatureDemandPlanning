@@ -28,10 +28,11 @@ page.TakeRatesPage = function (models) {
             menuSelected: me.actionTriggered
         });
     };
-    me.configureDataTables = function (filter) {
+    me.configureDataTables = function () {
 
         var takeRateUri = getTakeRatesModel().getTakeRateUri();
         var oxoDocIndex = 8;
+        var takeRateIndex = 0;
 
         $("#tblTakeRates").DataTable({
             "serverSide": true,
@@ -49,8 +50,8 @@ page.TakeRatesPage = function (models) {
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center",
-                    "render": function (data, type, full, meta) {
-                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    "render": function (data, type, full) {
+                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 }
                 ,
@@ -59,16 +60,16 @@ page.TakeRatesPage = function (models) {
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center",
-                    "render": function (data, type, full, meta) {
-                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    "render": function (data, type, full) {
+                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
                     "sName": "OXO_DOCUMENT",
                     "bSearchable": true,
                     "bSortable": true,
-                    "render": function (data, type, full, meta) {
-                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    "render": function (data, type, full) {
+                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -76,8 +77,8 @@ page.TakeRatesPage = function (models) {
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center",
-                    "render": function (data, type, full, meta) {
-                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    "render": function (data, type, full) {
+                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -85,8 +86,8 @@ page.TakeRatesPage = function (models) {
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center",
-                    "render": function (data, type, full, meta) {
-                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    "render": function (data, type, full) {
+                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -94,8 +95,8 @@ page.TakeRatesPage = function (models) {
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center",
-                    "render": function (data, type, full, meta) {
-                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    "render": function (data, type, full) {
+                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -103,16 +104,16 @@ page.TakeRatesPage = function (models) {
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center",
-                    "render": function (data, type, full, meta) {
-                        return "<a href='" + takeRateUri + "?oxoDocId=" + full[oxoDocIndex] + "'>" + data + "</a>";
+                    "render": function (data, type, full) {
+                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 }
             ],
-            "fnCreatedRow": function (row, data, index) {
+            "fnCreatedRow": function (row, data) {
                 var takeRateId = data[0];
                 $(row).attr("data-takeRate-id", takeRateId);
             },
-            "fnDrawCallback": function (oSettings) {
+            "fnDrawCallback": function () {
                 $(document).trigger("Results", me.getSummary());
                 me.bindContextMenu();
                 $("#pnlTakeRates").show();

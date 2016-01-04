@@ -26,7 +26,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@DocumentId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
 
                     using (var results = conn.QueryMultiple("dbo.Fdp_MarketGroup_GetMany", para, commandType: CommandType.StoredProcedure))
                     {

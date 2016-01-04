@@ -1151,7 +1151,7 @@ namespace FeatureDemandPlanning.Model.Helpers
 
                 // car models
                 ModelDataStore mds = new ModelDataStore(cdsid);
-                var carModels = mds.ModelGetMany(new ProgrammeFilter() { ProgrammeId = progid, OxoDocId = docid });
+                var carModels = mds.ModelGetMany(new ProgrammeFilter() { ProgrammeId = progid, DocumentId = docid });
                 string modelIds = string.Join(",", carModels.Select(p => string.Format("[{0}]", p.Id.ToString())));
                 int modelCount = carModels.Count();
             
@@ -1559,7 +1559,7 @@ namespace FeatureDemandPlanning.Model.Helpers
 
                 // car models
                 ModelDataStore mds = new ModelDataStore(cdsid);
-                var carModels = mds.ModelGetMany(new ProgrammeFilter() { ProgrammeId = progid, OxoDocId = docid });
+                var carModels = mds.ModelGetMany(new ProgrammeFilter() { ProgrammeId = progid, DocumentId = docid });
                 string modelIds = string.Join(",", carModels.Select(p => string.Format("[{0}]", p.Id.ToString())));
                 int modelCount = carModels.Count();
 

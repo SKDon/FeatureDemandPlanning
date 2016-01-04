@@ -2,9 +2,20 @@
 
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
-<li>
-    <a tabindex="-1" href="#" data-role="@((int)enums.TakeRateDataItemAction.TakeRateDataItemDetails)" data-target="@(Model.Document.Market.Id)|@(Model.CurrentTakeRateDataItem.ModelIdentifier)|@(Model.CurrentTakeRateDataItem.FeatureIdentifier)">
-        <span class="glyphicon glyphicon-info-sign pull-left"></span> View details...
-    </a>
-</li>
+@if (Model.CurrentTakeRateDataItem.FeatureId.HasValue || Model.CurrentTakeRateDataItem.FdpFeatureId.HasValue)
+{
+    <li>
+        <a tabindex="-1" href="#" data-role="@((int) enums.TakeRateDataItemAction.TakeRateDataItemDetails)" data-target="@(Model.Document.Market.Id)|@(Model.CurrentTakeRateDataItem.ModelIdentifier)|@(Model.CurrentTakeRateDataItem.FeatureIdentifier)">
+            <span class="glyphicon glyphicon-info-sign pull-left"></span> View details...
+        </a>
+    </li>
+}
+else
+{
+    <li>
+        <a tabindex="-1" href="#" data-role="@((int) enums.TakeRateDataItemAction.TakeRateDataItemDetails)" data-target="@(Model.Document.Market.Id)|@(Model.CurrentTakeRateDataItem.ModelIdentifier)">
+            <span class="glyphicon glyphicon-info-sign pull-left"></span> View model details...
+        </a>
+    </li>
+}
 

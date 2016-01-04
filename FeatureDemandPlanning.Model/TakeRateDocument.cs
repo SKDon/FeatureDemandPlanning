@@ -13,6 +13,7 @@ namespace FeatureDemandPlanning.Model
 {
     public class TakeRateDocument : ITakeRateDocument
     {
+        public int? TakeRateId { get; set; }
         public OXODoc UnderlyingOxoDocument { get; set; }
         public Market Market { get; set; }
         public MarketGroup MarketGroup { get; set; }
@@ -36,9 +37,18 @@ namespace FeatureDemandPlanning.Model
         {
             var volume = new TakeRateDocument();
 
-            if (filter.OxoDocId.HasValue)
+            if (filter.TakeRateId.HasValue)
             {
-                volume.UnderlyingOxoDocument = new OXODoc() { Id = filter.OxoDocId.Value };
+                volume.TakeRateId = filter.TakeRateId;
+            }
+
+            if (filter.DocumentId.HasValue)
+            {
+                volume.UnderlyingOxoDocument = new OXODoc() {Id = filter.DocumentId.Value};
+            }
+            else
+            {
+                volume.UnderlyingOxoDocument = new EmptyOxoDocument();
             }
 
             if (filter.ProgrammeId.HasValue)

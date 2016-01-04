@@ -495,7 +495,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
-                    para.Add("@OxoDocId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
                     retVal = conn.Query<FdpModel>("dbo.Fdp_AvailableModelByMarket_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
@@ -516,7 +516,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
-                    para.Add("@OxoDocId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@MarketGroupId", filter.MarketGroupId, DbType.Int32);
                     retVal = conn.Query<FdpModel>("dbo.Fdp_AvailableModelByMarketGroup_GetMany", para, commandType: CommandType.StoredProcedure);
                 }

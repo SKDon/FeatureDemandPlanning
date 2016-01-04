@@ -39,7 +39,8 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
                     para.Add("@MarketGroupId", filter.MarketGroupId, DbType.Int32);
                     para.Add("@ModelId", filter.ModelId, DbType.Int32);
@@ -48,6 +49,35 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpFeatureId", filter.FdpFeatureId, DbType.Int32);
 
                     var results = conn.QueryMultiple(fdpTakeRateDataItemGetStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                    retVal = results.Read<TakeRateDataItem>().First();
+
+                    retVal.Notes = results.Read<TakeRateDataItemNote>();
+                    retVal.History = results.Read<TakeRateDataItemAudit>();
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemGet", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public TakeRateDataItem TakeRateModelSummaryItemGet(TakeRateFilter filter)
+        {
+            TakeRateDataItem retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    para.Add("@ModelId", filter.ModelId, DbType.Int32);
+                    para.Add("@FdpModelId", filter.FdpModelId, DbType.Int32);
+
+                    var results = conn.QueryMultiple(fdpTakeRateModelSummaryItemGetStoredProcedureName, para, commandType: CommandType.StoredProcedure);
                     retVal = results.Read<TakeRateDataItem>().First();
 
                     retVal.Notes = results.Read<TakeRateDataItemNote>();
@@ -74,8 +104,8 @@ namespace FeatureDemandPlanning.DataStore
                     cmd.CommandText = "Fdp_TakeRateData_GetCrossTab";
                     cmd.CommandTimeout = 0;
 
-                    if (filter.OxoDocId != null)
-                        cmd.Parameters.Add(new SqlParameter("@OxoDocId", SqlDbType.Int) { Value = filter.OxoDocId.Value });
+                    if (filter.DocumentId != null)
+                        cmd.Parameters.Add(new SqlParameter("@DocumentId", SqlDbType.Int) { Value = filter.DocumentId.Value });
                     cmd.Parameters.Add(new SqlParameter("@ModelIds", SqlDbType.NVarChar, -1) { Value = filter.Models.ToCommaSeperatedString() });
 
                     if (filter.MarketGroupId.HasValue)
@@ -270,7 +300,9 @@ namespace FeatureDemandPlanning.DataStore
             if (volumeHeaders == null || !volumeHeaders.CurrentPage.Any())
                 return null;
 
-            return volumeHeaders.CurrentPage.FirstOrDefault(v => v.OxoDocId == filter.OxoDocId);
+            var summary = filter.TakeRateId.HasValue ? volumeHeaders.CurrentPage.FirstOrDefault(v => v.TakeRateId == filter.TakeRateId) : volumeHeaders.CurrentPage.FirstOrDefault(v => v.OxoDocId == filter.DocumentId);
+
+            return summary;
         }
         public TakeRateDocumentHeader FdpVolumeHeaderSave(TakeRateDocumentHeader header)
         {
@@ -311,9 +343,13 @@ namespace FeatureDemandPlanning.DataStore
                     var totalRecords = 0;
                     var totalDisplayRecords = 0;
 
+                    if (filter.DocumentId.HasValue)
+                    {
+                        para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
+                    }
                     if (filter.TakeRateId.HasValue)
                     {
-                        para.Add("@TakeRateId", filter.TakeRateId.Value, DbType.Int32);
+                        para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
                     }
                     if (!string.IsNullOrEmpty(filter.FilterMessage))
                     {
@@ -384,7 +420,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     para.Add("@CDSID", CurrentCDSID, DbType.String, size: 16);
-                    //para.Add("@OxoDocId", filter.OxoDocId, dbType: DbType.Int32);
+                    //para.Add("@DocumentId", filter.DocumentId, dbType: DbType.Int32);
                     
                     retVal = conn.Query<TakeRateSummary>(fdpVolumeHeaderByOxoDocumentStoredProcedureName, para, commandType: CommandType.StoredProcedure);
                 }
@@ -405,7 +441,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
                     para.Add("@CDSID", CurrentCDSID, DbType.String, size: 16);
                     para.Add("@FdpVolumeHeaderId", fdpOxoDocumentToSave.Header.TakeRateId, DbType.Int32);
-                    para.Add("@OxoDocId", fdpOxoDocumentToSave.Document.Id, DbType.Int32);
+                    para.Add("@DocumentId", fdpOxoDocumentToSave.Document.Id, DbType.Int32);
 
                     conn.Execute(fdpOxoDocSaveStoredProcedureName, para, commandType: CommandType.StoredProcedure);
                 }
@@ -462,6 +498,7 @@ namespace FeatureDemandPlanning.DataStore
         private const string fdpOxoDocSaveStoredProcedureName = "Fdp_OxoDoc_Save";
         private const string fdpOxoDocProcessStoredProcedureName = "Fdp_OxoDoc_Process";
         private const string fdpTakeRateDataItemGetStoredProcedureName = "Fdp_TakeRateDataItem_Get";
+        private const string fdpTakeRateModelSummaryItemGetStoredProcedureName = "Fdp_TakeRateModelSummaryItem_Get";
         private const string fdpTakeRateDataGetCrossTabStoredProcedureName = "Fdp_TakeRateData_GetCrossTab";
         private const string fdpTakeRateDataItemSaveStoredProcedureName = "Fdp_TakeRateDataItem_Save";
         private const string fdpTakeRateDataItemNoteGetManyStoredProcedureName = "Fdp_TakeRateDataItemNote_GetMany";
@@ -480,7 +517,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
       
                     if (newTakeRate.HasValue) {
@@ -506,7 +543,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
                     if (newVolume.HasValue) {
                         para.Add("@NewVolume", filter.NewVolume, DbType.Int32);
@@ -570,7 +607,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
 
                     retVal = conn.Query<FdpChangeset>("dbo.FdpMarketReviewChangesetGetMany", para, commandType: CommandType.StoredProcedure);
                 }
@@ -592,7 +629,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
                     para.Add("@CDSID", CurrentCDSID, DbType.String);
                     para.Add("@IsSaved", false, DbType.Boolean);
@@ -633,7 +670,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
                    
                     var results = conn.Query<FdpChangeset>("dbo.Fdp_Changeset_Save", para, commandType: CommandType.StoredProcedure);
@@ -660,7 +697,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@CDSID", CurrentCDSID, DbType.String);
 
                     var results = conn.QueryMultiple("dbo.Fdp_Changeset_Revert", para, commandType: CommandType.StoredProcedure);
@@ -809,7 +846,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
 
-                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
                     para.Add("@ModelId", filter.ModelId, DbType.Int32);
                     para.Add("@FdpModelId", filter.FdpModelId, DbType.Int32);
@@ -838,7 +875,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@DocumentId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
 
                     var results = conn.Query<int>("dbo.Fdp_VolumeByMarket_Get", para, commandType: CommandType.StoredProcedure);

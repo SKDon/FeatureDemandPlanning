@@ -1,9 +1,8 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateHeader_GetManyByUsername]
-	  @TakeRateId			INT				= NULL
+	  @DocumentId			INT				= NULL
+	, @FdpVolumeHeaderId	INT				= NULL
 	, @FdpTakeRateStatusId	INT				= NULL
 	, @VehicleName			NVARCHAR(1000)	= NULL
-	, @ModelYear			NVARCHAR(100)	= NULL
-	, @Gateway				NVARCHAR(50)	= NULL
 	, @FilterMessage		NVARCHAR(50)	= NULL
 	-- TODO - Implement permissions over which take rate files can be viewed
 	, @CDSId				NVARCHAR(16)	= NULL
@@ -41,7 +40,9 @@ AS
 		OR P.VehicleAKA LIKE '%' + @FilterMessage + '%'
 		OR P.ModelYear LIKE '%' + @FilterMessage + '%')
 	AND
-	(@TakeRateId IS NULL OR V.FdpVolumeHeaderId = @TakeRateId)
+	(@FdpVolumeHeaderId IS NULL OR V.FdpVolumeHeaderId = @FdpVolumeHeaderId)
+	AND
+	(@DocumentId IS NULL OR V.DocumentId = @DocumentId)
 	AND
 	(@FdpTakeRateStatusId IS NULL OR V.FdpTakeRateStatusId = @FdpTakeRateStatusId)
 	ORDER BY	

@@ -42,7 +42,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<IEnumerable<TakeRateStatus>> ListTakeRateStatuses()
         {
-            return await Task.FromResult<IEnumerable<TakeRateStatus>>(_takeRateDataStore.FdpTakeRateStatusGetMany());
+            return await Task.FromResult(_takeRateDataStore.FdpTakeRateStatusGetMany());
         }
         public async Task<TakeRateSummary> GetTakeRateDocumentHeader(TakeRateFilter filter)
         {
@@ -61,7 +61,15 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<TakeRateDataItem> GetDataItem(TakeRateFilter filter)
         {
-            return await Task.FromResult(_takeRateDataStore.TakeRateDataItemGet(filter));
+            if (filter.FeatureId.HasValue || filter.FdpFeatureId.HasValue)
+            {
+                return await Task.FromResult(_takeRateDataStore.TakeRateDataItemGet(filter));
+            }
+            if (filter.ModelId.HasValue || filter.FdpModelId.HasValue)
+            {
+                return await Task.FromResult(_takeRateDataStore.TakeRateModelSummaryItemGet(filter));
+            }
+            return new EmptyTakeRateDataItem();
         }
         public async Task<IEnumerable<TakeRateDataItemNote>> ListDataItemNotes(TakeRateFilter filter)
         {
@@ -86,10 +94,17 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<OXODoc> GetUnderlyingOxoDocument(TakeRateFilter filter)
         {
             OXODoc document = new EmptyOxoDocument();
-            if (!filter.OxoDocId.HasValue)
-                return document;
+            if (!filter.DocumentId.HasValue)
+            {
+                var summary = _takeRateDataStore.TakeRateDocumentHeaderGet(filter);
+                document = _documentDataStore.OXODocGet(summary.OxoDocId, filter.ProgrammeId.GetValueOrDefault());
+            }
+            else
+            {
+                document = _documentDataStore.OXODocGet(filter.DocumentId.Value, filter.ProgrammeId.GetValueOrDefault());
+            }
 
-            return await Task.FromResult(_documentDataStore.OXODocGet(filter.OxoDocId.Value, filter.ProgrammeId.GetValueOrDefault()));
+            return await Task.FromResult(document);
         }
         public async Task<IEnumerable<SpecialFeature>> ListSpecialFeatures(ProgrammeFilter programmeFilter)
         {
@@ -168,8 +183,8 @@ namespace FeatureDemandPlanning.DataStore
         }
         private bool IsFilterValidForTakeRateData(TakeRateFilter filter)
         {
-            //return filter.OxoDocId.HasValue && (filter.MarketId.HasValue || filter.MarketGroupId.HasValue);
-            return filter.OxoDocId.HasValue;
+            //return filter.DocumentId.HasValue && (filter.MarketId.HasValue || filter.MarketGroupId.HasValue);
+            return filter.DocumentId.HasValue;
         }
 
         #endregion

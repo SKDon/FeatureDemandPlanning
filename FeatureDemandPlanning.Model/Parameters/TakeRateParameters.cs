@@ -1,15 +1,11 @@
 ﻿using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Enumerations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Parameters
 {
     public class TakeRateParameters : JQueryDataTableParameters
     {
+        public int? DocumentId { get; set; }
         public int? TakeRateId { get; set; }
         public int? TakeRateDataItemId { get; set; }
         public int? MarketId { get; set; }
@@ -35,8 +31,8 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    TakeRateDataItemId = TakeRateDataItemId,
-                    Action = Action
+                    TakeRateDataItemId,
+                    Action
                 };
             }
 

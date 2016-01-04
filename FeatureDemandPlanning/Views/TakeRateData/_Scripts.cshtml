@@ -38,6 +38,7 @@
         PageIndex: @Model.PageIndex,
         CookieKey: "@Model.CookieKey",
         OxoDocId: null,
+        TakeRateId: null,
         MarketGroupId: null,
         MarketId: null
     };
@@ -50,11 +51,15 @@
     }
     @if (!(Model.Document.Market is EmptyMarket))
     {
-        @:params.MarketId = @Model.Document.Market.Id
+        @:params.MarketId = @Model.Document.Market.Id;
     }
     @if (!(Model.Document.MarketGroup is EmptyMarketGroup))
     {
-        @:params.MarketGroupId = @Model.Document.MarketGroup.Id
+        @:params.MarketGroupId = @Model.Document.MarketGroup.Id;
+    }
+    @if (Model.Document.TakeRateId.HasValue)
+    {
+        @:params.TakeRateId = @Model.Document.TakeRateId.Value;
     }
 </script>
 <script src="@Url.Content("~/Scripts/TakeRateData/init.js")?v=@Model.CurrentVersion"></script>

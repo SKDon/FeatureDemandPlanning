@@ -105,9 +105,9 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<IEnumerable<MarketGroup>> ListAvailableMarketGroups(VehicleFilter filter, Programme forProgramme)
         {
             var marketGroups = Enumerable.Empty<MarketGroup>();
-            if (filter.OxoDocId.HasValue) {
+            if (filter.DocumentId.HasValue) {
                 marketGroups =  await Task.FromResult(_marketGroupDataStore
-                                   .MarketGroupGetMany(forProgramme.Id, filter.OxoDocId.Value, true));
+                                   .MarketGroupGetMany(forProgramme.Id, filter.DocumentId.Value, true));
             } else {
                 marketGroups = await Task.FromResult(_marketGroupDataStore
                                    .MarketGroupGetMany(true));

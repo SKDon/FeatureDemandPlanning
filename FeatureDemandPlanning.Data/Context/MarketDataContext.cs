@@ -44,7 +44,7 @@ namespace FeatureDemandPlanning.DataStore
                 return new EmptyMarket();
 
             // Populate the list of available derivatives for that market (including FDP derivatives)
-            if (!filter.OxoDocId.HasValue || !filter.ProgrammeId.HasValue) return market;
+            if (!filter.DocumentId.HasValue || !filter.ProgrammeId.HasValue) return market;
 
             var variants = _modelDataStore.FdpAvailableModelByMarketGetMany(filter, market);
             market.VariantCount = variants.Count();
@@ -53,18 +53,18 @@ namespace FeatureDemandPlanning.DataStore
         }
         public MarketGroup GetMarketGroup(TakeRateFilter filter)
         {
-            if (!filter.MarketGroupId.HasValue || !filter.OxoDocId.HasValue || !filter.ProgrammeId.HasValue)
+            if (!filter.MarketGroupId.HasValue || !filter.DocumentId.HasValue || !filter.ProgrammeId.HasValue)
                 return new EmptyMarketGroup();
 
             var marketGroup = _marketGroupDataStore.MarketGroupGet(string.Empty, 
                                                         filter.MarketGroupId.Value, 
                                                         progid:filter.ProgrammeId.Value, 
-                                                        docid:filter.OxoDocId.Value);
+                                                        docid:filter.DocumentId.Value);
             if (marketGroup == null)
                 return new EmptyMarketGroup();
 
             // Populate the list of available derivatives for that market (including FDP derivatives)
-            if (!filter.OxoDocId.HasValue || !filter.ProgrammeId.HasValue) return marketGroup;
+            if (!filter.DocumentId.HasValue || !filter.ProgrammeId.HasValue) return marketGroup;
 
             var variants = _modelDataStore.FdpAvailableModelByMarketGroupGetMany(filter, marketGroup);
             marketGroup.VariantCount = variants.Count();

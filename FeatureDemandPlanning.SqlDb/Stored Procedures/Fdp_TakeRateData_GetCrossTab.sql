@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateData_GetCrossTab] 
     @FdpVolumeHeaderId	INT = NULL
-  , @OxoDocId			INT = NULL
+  , @DocumentId			INT = NULL
   , @Mode				NVARCHAR(2)
   , @ObjectId			INT = NULL
   , @ModelIds			NVARCHAR(MAX)
@@ -84,7 +84,7 @@ AS
 	-- If the take rate file has not been specified explicitly work out the latest file
 	-- from the document id
 	IF @FdpVolumeHeaderId IS NULL
-		SELECT @FdpVolumeHeaderId = dbo.fn_Fdp_LatestTakeRateFileByDocument_Get(@OxoDocId)
+		SELECT @FdpVolumeHeaderId = dbo.fn_Fdp_LatestTakeRateFileByDocument_Get(@DocumentId)
 	
 	SELECT TOP 1 
 		  @ProgrammeId	= Programme_Id
@@ -192,7 +192,7 @@ AS
 			, Model_Id
 			, OXO_Code
 			, 'O' + CAST(Model_Id AS NVARCHAR(10))
-		FROM dbo.FN_OXO_Data_Get_FBM_Market(@OxoDocId, @MarketGroupId, @ObjectId, @OxoModelIds)
+		FROM dbo.FN_OXO_Data_Get_FBM_Market(@DocumentId, @MarketGroupId, @ObjectId, @OxoModelIds)
 	END
 	
 	CREATE NONCLUSTERED INDEX Ix_TmpRawTakeRateData_Code ON #RawTakeRateData

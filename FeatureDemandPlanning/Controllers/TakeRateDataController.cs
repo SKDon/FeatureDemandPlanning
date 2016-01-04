@@ -35,14 +35,16 @@ namespace FeatureDemandPlanning.Controllers
 
         [HttpGet]
         [ActionName("Index")]
-        public ActionResult TakeRatePage(int? oxoDocId,
+        public ActionResult TakeRatePage(int? documentId,
+                                         int? takeRateId,
                                          int? marketGroupId,
                                          int? marketId,
                                          TakeRateResultMode resultsMode = TakeRateResultMode.PercentageTakeRate)
         {
             return RedirectToAction("TakeRateDataPage", new TakeRateParameters()
             {
-                TakeRateId = oxoDocId,
+                DocumentId = documentId,
+                TakeRateId = takeRateId,
                 MarketGroupId = marketGroupId,
                 MarketId = marketId,
                 Mode = resultsMode

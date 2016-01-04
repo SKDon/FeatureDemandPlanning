@@ -1,10 +1,10 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_Model_GetMany]   
    @ProgrammeId INT,
    @Gateway		NVARCHAR(100) = NULL,
-   @OxoDocId	INT
+   @DocumentId	INT
 AS
 	IF @Gateway IS NULL
-		SELECT @Gateway = Gateway FROM OXO_Doc WHERE Id = @OxoDocId;
+		SELECT @Gateway = Gateway FROM OXO_Doc WHERE Id = @DocumentId;
 
    SELECT 
     DISTINCT 
@@ -35,7 +35,7 @@ AS
     M.Last_Updated  AS LastUpdated,
     Shape,
     M.KD             
-    FROM dbo.FN_Programme_Models_Get(@ProgrammeId, @OxoDocId)  M
+    FROM dbo.FN_Programme_Models_Get(@ProgrammeId, @DocumentId)  M
     
     UNION
     

@@ -9,6 +9,7 @@ model.OxoVolume = function (params) {
 
     privateStore[me.id = uid++] = {};
     privateStore[me.id].OxoDocId = params.OxoDocId;
+    privateStore[me.id].TakeRateId = params.TakeRateId;
     privateStore[me.id].MarketGroupId = params.MarketGroupId;
     privateStore[me.id].MarketId = params.MarketId;
     privateStore[me.id].ModalContentUri = params.ModalContentUri;
@@ -45,6 +46,9 @@ model.OxoVolume = function (params) {
     me.getActionContentUri = function (action) {
         return privateStore[me.id].ModalContentUri;
     };
+    me.getTakeRateId = function() {
+        return privateStore[me.id].TakeRateId;
+    }
     me.getOxoDocId = function () {
         return privateStore[me.id].OxoDocId;
     };

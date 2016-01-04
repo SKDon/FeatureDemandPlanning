@@ -39,7 +39,7 @@ namespace FeatureDemandPlanning.Model.Filters
             };
 
             if (!(document.UnderlyingOxoDocument is EmptyOxoDocument))
-                filter.OxoDocId = document.UnderlyingOxoDocument.Id;
+                filter.DocumentId = document.UnderlyingOxoDocument.Id;
 
             if (!(document.Market is EmptyMarket))
                 filter.MarketId = document.Market.Id;
@@ -58,14 +58,15 @@ namespace FeatureDemandPlanning.Model.Filters
         {
             return new TakeRateFilter
             {
-                OxoDocId = takeRateId
+                DocumentId = takeRateId
             };
         }
         public static TakeRateFilter FromTakeRateParameters(TakeRateParameters parameters)
         {
             var filter = new TakeRateFilter
             {
-                OxoDocId = parameters.TakeRateId,
+                TakeRateId = parameters.TakeRateId,
+                DocumentId = parameters.DocumentId,
                 TakeRateDataItemId = parameters.TakeRateDataItemId,
                 TakeRateStatusId = parameters.TakeRateStatusId,
                 Mode = parameters.Mode,

@@ -13,7 +13,7 @@ namespace FeatureDemandPlanning.Model.Filters
     {
         public int? ProgrammeId { get; set; }
         public int? VehicleId { get; set; }
-        public int? OxoDocId { get; set; }
+        public int? DocumentId { get; set; }
 
         public string Make { get; set; }
         public string Code { get; set; }

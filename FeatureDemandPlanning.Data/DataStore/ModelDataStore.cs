@@ -31,7 +31,7 @@ namespace FeatureDemandPlanning.DataStore
 
                     para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
                     para.Add("@Gateway", filter.Gateway, DbType.String);
-                    para.Add("@OxoDocId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@MarketId", market.Id, DbType.Int32);
 
                     retVal = conn.Query<FdpModel>("dbo.Fdp_AvailableModelByMarket_GetMany", para, commandType: CommandType.StoredProcedure);
@@ -56,7 +56,7 @@ namespace FeatureDemandPlanning.DataStore
 
                     para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
                     para.Add("@Gateway", filter.Gateway, DbType.String);
-                    para.Add("@OxoDocId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@MarketGroupId", marketGroup.Id, DbType.Int32);
 
                     retVal = conn.Query<FdpModel>("dbo.Fdp_AvailableModelByMarketGroup_GetMany", para, commandType: CommandType.StoredProcedure);
@@ -86,7 +86,7 @@ namespace FeatureDemandPlanning.DataStore
 				{
 					var para = new DynamicParameters();    
 					para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
-                    para.Add("@OxoDocId", filter.OxoDocId, DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     retVal = conn.Query<FdpModel>("dbo.Fdp_Model_GetMany", para, commandType: CommandType.StoredProcedure);
 				}
 				catch (Exception ex)
