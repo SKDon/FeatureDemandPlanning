@@ -85,6 +85,12 @@ AS
 	-- from the document id
 	IF @FdpVolumeHeaderId IS NULL
 		SELECT @FdpVolumeHeaderId = dbo.fn_Fdp_LatestTakeRateFileByDocument_Get(@DocumentId)
+
+	IF @DocumentId IS NULL
+		SELECT @DocumentId = DocumentId
+		FROM Fdp_VolumeHeader
+		WHERE
+		FdpVolumeHeaderId = @DocumentId;
 	
 	SELECT TOP 1 
 		  @ProgrammeId	= Programme_Id
@@ -153,7 +159,7 @@ AS
 			, Model_Id
 			, OXO_Code
 			, 'O' + CAST(Model_Id AS NVARCHAR(10))
-		FROM dbo.FN_OXO_Data_Get_FBM_MarketGroup(@FdpVolumeHeaderId, @MarketGroupId, @OxoModelIds)
+		FROM dbo.FN_OXO_Data_Get_FBM_MarketGroup(@DocumentId, @MarketGroupId, @OxoModelIds)
 	END
 	ELSE
 	BEGIN
@@ -467,7 +473,7 @@ AS
 		WHERE
 		FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND
-		MarketGroupId = @MarketGroupId;
+		(@MarketGroupId IS NULL OR MarketGroupId = @MarketGroupId);
 
 		SELECT @FilteredPercentage = @FilteredVolume / CAST(@TotalVolume AS DECIMAL);
 	END
@@ -514,7 +520,7 @@ AS
 		SET @Sql = @Sql + 'ORDER BY DisplayOrder, FeatureCode';			
 	END
 
-	PRINT @Sql;
+	PRINT 'Take Rate: ' + @Sql;
 	EXEC sp_executesql @Sql;
 	
 	-- For the second dataset, return the OXO Code to determine the feature applicability
@@ -530,7 +536,7 @@ AS
 	SET @Sql = @Sql + 'IN (' + @ModelIds + ')) AS DATASET '
 	SET @Sql = @Sql + 'ORDER BY DisplayOrder, FeatureCode';
 
-	PRINT @Sql;
+	PRINT 'Feature Applicability: ' + @Sql;
 	EXEC sp_executesql @Sql;
 	
 	-- Third dataset returning volume and percentage take rate by derivative
@@ -550,7 +556,7 @@ AS
 		WHERE
 		S.FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND
-		S.MarketGroupId = @MarketGroupId
+		(@MarketGroupId IS NULL OR S.MarketGroupId = @MarketGroupId)
 		GROUP BY
 		M.StringIdentifier, M.IsFdpModel
 
@@ -568,7 +574,7 @@ AS
 		WHERE
 		S.FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND
-		S.MarketGroupId = @MarketGroupId
+		(@MarketGroupId IS NULL OR S.MarketGroupId = @MarketGroupId)
 		GROUP BY
 		M.StringIdentifier, M.IsFdpModel
 	END

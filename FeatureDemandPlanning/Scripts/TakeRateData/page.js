@@ -164,7 +164,6 @@ model.Page = function (models) {
             panel.height(me.calcPanelHeight());
             $("div.dataTables_scrollBody").css("height", me.calcDataTableHeight());
             table.draw();
-            me.configureScrollerOffsets();
         });       
     };
     me.configureCellEditing = function () {
@@ -440,7 +439,7 @@ model.Page = function (models) {
                 var currentChange = revertedData.Changes[i];
                 var displayValue = me.formatPercentageTakeRate(currentChange.PercentageTakeRate);
 
-                var selector = $();
+                var selector;
                 if (currentChange.IsFeatureSummary) {
                     selector = $("tbody span[data-target='FS|" + currentChange.DataTarget + "']");
                 }
@@ -455,7 +454,7 @@ model.Page = function (models) {
         }
     };
     me.getEditedDataClass = function (changesetChange) {
-        var className = "edited";
+        var className;
         if (changesetChange.IsFeatureSummary) {
             className = me.getEditedDataClassForFeatureSummary(changesetChange);
         }
@@ -514,16 +513,10 @@ model.Page = function (models) {
     me.configureComments = function () {
         $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover" });
 
-        $(".comment-item").on("click", function (e) {
+        $(".comment-item").on("click", function () {
             $(".comment-item").not(this).popover("hide");
         });
     };
-    me.configureScrollerOffsets = function () {
-        var leftFixed = $(".DTFC_LeftBodyLiner");
-        var leftWrapper = $(".DTFC_LeftBodyWrapper");
-        //leftFixed.height((leftFixed.height() + 1) + "px");
-        //leftWrapper.height((leftWrapper.height() + 7) + "px");
-    }
     me.configureDataTables = function () {
 
         var table = $("#" + me.getIdentifierPrefix() + "_TakeRateData").DataTable({
@@ -539,9 +532,9 @@ model.Page = function (models) {
 
         new $.fn.dataTable.FixedColumns(table, {
             leftColumns: 3,
-            drawCallback: function (left, right) {
+            drawCallback: function (left) {
                 var settings = table.settings();
-                if (settings.data().length == 0) {
+                if (settings.data().length === 0) {
                     return;
                 }
 
@@ -555,7 +548,7 @@ model.Page = function (models) {
                     groupName = $(nTrs[i]).attr("data-group"); //settings.data()[index][0];
                     subGroupName = $(nTrs[i]).attr("data-subgroup");
 
-                    if (groupName != lastGroupName) {
+                    if (groupName !== lastGroupName) {
                         /* Cell to insert into main table */
                         nGroup = document.createElement("tr");
                         nCell = document.createElement("td");
@@ -565,7 +558,7 @@ model.Page = function (models) {
                         nGroup.appendChild(nCell);
                         $(nGroup).attr("data-toggle", groupName);
                         nTrs[i].parentNode.insertBefore(nGroup, nTrs[i]);
-                        $(nGroup).on("click", function (sender, eventArgs) {
+                        $(nGroup).on("click", function () {
                             var clickedGroup = $(this).attr("data-toggle");
                             $("tbody tr[data-group='" + clickedGroup + "']").toggle();
                         });
@@ -595,7 +588,7 @@ model.Page = function (models) {
                     }
 
                     if (subGroupName !== lastSubGroupName) {
-                        if (subGroupName != "") {
+                        if (subGroupName !== "") {
                             /* Cell to insert into main table */
                             nSubGroup = document.createElement("tr");
                             nCell = document.createElement("td");
@@ -638,12 +631,10 @@ model.Page = function (models) {
                     }
                 }
                 me.bindContextMenu();
-                me.bindTableEvents();
             }
         });
 
         me.setDataTable(table);
-        me.configureScrollerOffsets();
     };
     me.bindContextMenu = function () {
         var prefix = me.getIdentifierPrefix();
@@ -660,14 +651,6 @@ model.Page = function (models) {
             menuSelected: me.actionTriggered
         });
     };
-    me.bindTableEvents = function () {
-        var prefix = me.getIdentifierPrefix();
-        
-        //$(".input-filted-volume").on("blur", me.setPercentageOfTotalVolume);
-    };
-    //me.setPercentageOfTotalVolume = function (sender) {
-    //    var test = sender.val();
-    //};
     me.raiseFilteredVolumeChanged = function () {
 
         var marketIdentifier = getTakeRateDataModel().getMarketId();
@@ -836,10 +819,9 @@ model.Page = function (models) {
         me.scrollToNotify();
         me.fadeInNotify(html);
     };
-    me.onFilterChangedEventHandler = function (sender, eventArgs) {
+    me.onFilterChangedEventHandler = function () {
         var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
         me.getDataTable().search(filter).draw();
-        me.configureScrollerOffsets();
     };
     me.onUpdatedEventHandler = function (sender, eventArgs) {
         $("#notifier").html("<div class=\"alert alert-dismissible alert-success\">" + eventArgs.StatusMessage + "</div>");
@@ -882,7 +864,7 @@ model.Page = function (models) {
     function getModel(modelName) {
         var model = null;
         $(getModels()).each(function () {
-            if (this.ModelName == modelName) {
+            if (this.ModelName === modelName) {
                 model = this;
                 return false;
             }
