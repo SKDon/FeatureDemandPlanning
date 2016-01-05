@@ -1,8 +1,8 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_Changeset_Save]
-	  @DocumentId	AS INT
-	, @MarketId		AS INT
-	, @CDSID		AS NVARCHAR(16)
-	, @IsSaved		AS BIT = 0
+	  @FdpVolumeHeaderId	AS INT
+	, @MarketId				AS INT
+	, @CDSID				AS NVARCHAR(16)
+	, @IsSaved				AS BIT = 0
 AS
 	SET NOCOUNT ON;
 	
@@ -10,10 +10,9 @@ AS
 	
 	SELECT TOP 1 
 		@FdpChangesetId = C.FdpChangesetId
-	FROM Fdp_VolumeHeader AS H 
-	JOIN Fdp_Changeset AS C ON H.FdpVolumeHeaderId = C.FdpVolumeHeaderId
+	FROM Fdp_Changeset AS C
 	WHERE
-	H.DocumentId = @DocumentId
+	C.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	C.CreatedBy = @CDSID
 	AND
@@ -34,11 +33,7 @@ AS
 		SELECT
 			  @CDSID 
 			, @MarketId
-			, FdpVolumeHeaderId
-		FROM 
-		Fdp_VolumeHeader AS H
-		WHERE
-		H.DocumentId = @DocumentId;
+			, @FdpVolumeHeaderId
 		
 		SET @FdpChangesetId = SCOPE_IDENTITY();
 	END

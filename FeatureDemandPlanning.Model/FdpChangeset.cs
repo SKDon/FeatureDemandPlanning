@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -15,10 +12,12 @@ namespace FeatureDemandPlanning.Model
         public bool IsSaved { get; set; }
 
         public IList<DataChange> Changes { get; set; }
+        public IList<DataChange> Reverted { get; set; }
 
         public FdpChangeset()
         {
             Changes = new List<DataChange>();
+            Reverted = new List<DataChange>();
         }
     }
 }

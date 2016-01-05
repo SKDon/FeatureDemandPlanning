@@ -7,18 +7,19 @@ AS
 	
 	DECLARE @DataForFeature AS TABLE
 	(
-		  Id					INT PRIMARY KEY IDENTITY(1,1)
-		, FdpChangesetId		INT
-		, MarketId				INT
-		, ModelId				INT NULL
-		, FeatureId				INT NULL
-		, FdpModelId			INT NULL
-		, FdpFeatureId			INT NULL
-		, TotalVolume			INT
-		, PercentageTakeRate	DECIMAL(5, 4)
-		, FdpVolumeDataItemId	INT 
-		, OriginalVolume		INT	NULL
-		, OriginalPercentageTakeRate INT NULL
+		  Id							INT PRIMARY KEY IDENTITY(1,1)
+		, FdpChangesetId				INT
+		, MarketId						INT
+		, ModelId						INT NULL
+		, FeatureId						INT NULL
+		, FdpModelId					INT NULL
+		, FdpFeatureId					INT NULL
+		, TotalVolume					INT
+		, PercentageTakeRate			DECIMAL(5, 4)
+		, FdpVolumeDataItemId			INT 
+		, OriginalVolume				INT	NULL
+		, OriginalPercentageTakeRate	INT NULL
+		, ParentFdpChangesetDataItemId	INT
 	)
 	
 	-- Determine the total volume for the model for the market
@@ -47,6 +48,7 @@ AS
 		, FdpVolumeDataItemId
 		, OriginalVolume
 		, OriginalPercentageTakeRate
+		, ParentFdpChangesetDataItemId
 	)
 	SELECT 
 		  D.FdpChangesetId
@@ -60,6 +62,7 @@ AS
 		, D1.FdpVolumeDataItemId
 		, D1.OriginalVolume
 		, D1.OriginalPercentageTakeRate
+		, D.FdpChangesetDataItemId
 		
 	FROM Fdp_ChangesetDataItem_VW	AS D
 	JOIN Fdp_ChangesetDataItem_VW	AS D1	ON	D.FdpChangesetId			= D1.FdpChangesetId
@@ -86,6 +89,7 @@ AS
 		, FdpVolumeDataItemId
 		, OriginalVolume
 		, OriginalPercentageTakeRate
+		, ParentFdpChangesetDataItemId
 	)
 	SELECT
 		  D.FdpChangesetId
@@ -99,6 +103,7 @@ AS
 		, D1.FdpVolumeDataItemId
 		, D1.Volume
 		, D1.PercentageTakeRate
+		, D.FdpChangesetDataItemId
 	FROM
 	Fdp_ChangesetDataItem_VW			AS D
 	JOIN Fdp_VolumeDataItem_VW			AS D1		ON	D.FdpVolumeHeaderId			= D1.FdpVolumeHeaderId
@@ -126,6 +131,7 @@ AS
 		, D1.FdpVolumeDataItemId
 		, D1.Volume
 		, D1.PercentageTakeRate
+		, D.FdpChangesetDataItemId
 	FROM
 	Fdp_ChangesetDataItem_VW			AS D
 	JOIN Fdp_VolumeDataItem_VW			AS D1		ON	D.FdpVolumeHeaderId			= D1.FdpVolumeHeaderId
@@ -171,6 +177,7 @@ AS
 		, FdpVolumeDataItemId
 		, OriginalVolume
 		, OriginalPercentageTakeRate
+		, ParentFdpChangesetDataItemId
 	)
 	SELECT 
 		  FdpChangesetId
@@ -186,5 +193,6 @@ AS
 		, FdpVolumeDataItemId
 		, OriginalVolume
 		, OriginalPercentageTakeRate
+		, ParentFdpChangesetDataItemId
 	FROM 
 	@DataForFeature

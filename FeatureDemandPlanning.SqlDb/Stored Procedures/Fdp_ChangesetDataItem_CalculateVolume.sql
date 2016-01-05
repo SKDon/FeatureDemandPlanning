@@ -34,10 +34,4 @@ AS
 		JOIN Fdp_ChangesetDataItem_VW AS D1 ON D.FdpChangesetDataItemId = D1.FdpChangesetDataItemId
 		WHERE
 		D.FdpChangesetDataItemId = @FdpChangesetDataItemId																				
-
-		---- Now that the volume has been updated for the model, we need to recalculate the volumes
-		---- for all features under that model
-
-		--EXEC Fdp_ChangesetDataItem_CalculateFeatureVolumes @FdpChangesetDataItemId = @FdpChangesetDataItemId;
-		
 	END

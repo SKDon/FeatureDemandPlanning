@@ -22,6 +22,7 @@ AS
 	, D.OriginalPercentageTakeRate
 	, D.FdpVolumeDataItemId
 	, D.FdpTakeRateSummaryId
+	, D.ParentFdpChangesetDataItemId
 	, C.IsSaved
 	, CAST(CASE
 		WHEN 

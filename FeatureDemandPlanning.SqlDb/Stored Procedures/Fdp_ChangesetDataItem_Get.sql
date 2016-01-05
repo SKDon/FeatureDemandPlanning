@@ -21,6 +21,7 @@ AS
 		, D.TotalVolume
 		, D.OriginalPercentageTakeRate
 		, D.OriginalVolume
+		, D.ParentFdpChangesetDataItemId
 	FROM
 	Fdp_ChangesetDataItem AS D
 	WHERE

@@ -57,6 +57,9 @@ model.Page = function (models) {
         modal.setModalParameters({ Data: getChangeset().getDataChanges() });
         modal.showConfirm("Commit Changes", me.getCommitMessage(), me.persistDataConfirm);
     };
+    me.undoData = function() {
+        getTakeRateDataModel().undoData({ Data: getChangeset().getDataChanges() }, me.undoDataCallback);
+    };
     me.getCommitMessage = function() {
         return "Are you sure you wish to commit your changes to the details for this market?<br/><br/>Please note that this cannot be undone.";
     };
@@ -70,6 +73,11 @@ model.Page = function (models) {
         var modal = getModal();
         modal.setModalParameters({ Data: getChangeset().getDataChanges() });
         modal.showConfirm("Changes Committed", me.getPersistSuccessMessage(), me.reloadPage);
+    };
+    me.undoDataCallback = function(revertedData) {
+        me.setInitial(false);
+        me.loadChangeset();
+        me.revertData(revertedData);
     };
     me.reloadPage = function() {
         location.reload();
@@ -117,6 +125,7 @@ model.Page = function (models) {
             .unbind("UpdateFilterVolume").on("UpdateFilterVolume", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdateFilterVolumeDelegate", [eventArgs]); });
 
         $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
+        $("#" + prefix + "_Undo").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoDelegate", [eventArgs]); });
         $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
     };
     me.registerSubscribers = function () {
@@ -135,7 +144,8 @@ model.Page = function (models) {
         $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel")
             .on("OnEditCellDelegate", me.onEditCellEventHandler)
             .on("OnSaveDelegate", me.onSaveEventHandler)
-            .on("OnPersistDelegate", me.onPersistEventHandler);
+            .on("OnPersistDelegate", me.onPersistEventHandler)
+            .on("OnUndoDelegate", me.onUndoEventHandler);
 
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
         $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);
@@ -263,11 +273,18 @@ model.Page = function (models) {
     };
     me.formatPercentageTakeRate = function (takeRate) {
         var formattedValue = "-";
-        if (takeRate !== null)
+        if (takeRate !== null && takeRate !== undefined)
             formattedValue = takeRate.toFixed(2) + " %";
         
         return formattedValue;
     };
+    me.formatFractionalPercentageTakeRate = function(takeRate) {
+        var formattedValue = "-";
+        if (takeRate !== null && takeRate !== undefined)
+            formattedValue = (takeRate * 100).toFixed(2) + " %";
+
+        return formattedValue;
+    }
     me.formatVolume = function (volume) {
         var formattedValue = "-";
         if (volume !== null)
@@ -337,27 +354,24 @@ model.Page = function (models) {
     };
     me.confirmLoadChangeset = function(changesetData) {
         $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", changesetData === null || changesetData.Changes.length === 0);
+        $("#" + me.getIdentifierPrefix() + "_Undo").prop("disabled", changesetData === null || changesetData.Changes.length === 0);
 
         for (var i = 0; i < changesetData.Changes.length; i++) {
             var currentChange = changesetData.Changes[i];
             var displayValue;
             if (me.getResultsMode() === "PercentageTakeRate") {
                 displayValue = me.formatPercentageTakeRate(currentChange.PercentageTakeRate);
-            }
-            else {
+            } else {
                 displayValue = me.formatVolume(currentChange.Volume);
             }
             var selector;
             if (currentChange.IsFeatureSummary) {
                 selector = $("tbody span[data-target='FS|" + currentChange.DataTarget + "']");
-            }
-            else if (currentChange.IsModelSummary) {
+            } else if (currentChange.IsModelSummary) {
                 selector = $("thead th[data-target='MS|" + currentChange.DataTarget + "']").first();
-            }
-            else if (currentChange.IsWholeMarketChange) {
+            } else if (currentChange.IsWholeMarketChange) {
                 selector = $(".input-filtered-volume");
-            }
-            else {
+            } else {
                 selector = $("tbody div[data-target='" + currentChange.DataTarget + "']");
             }
 
@@ -367,24 +381,52 @@ model.Page = function (models) {
                 selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
             }
         }
-    }
+    };
+    me.revertData = function(revertedData) {
+        for (var i = 0; i < revertedData.Reverted.length; i++) {
+            var revertedChange = revertedData.Reverted[i];
+            var displayValue;
+            if (me.getResultsMode() === "PercentageTakeRate") {
+                displayValue = me.formatFractionalPercentageTakeRate(revertedChange.OriginalPercentageTakeRate);
+            } else {
+                displayValue = me.formatVolume(revertedChange.OriginalVolume);
+            }
+            var selector;
+            if (revertedChange.IsFeatureSummary) {
+                selector = $("tbody span[data-target='FS|" + revertedChange.DataTarget + "']");
+            } else if (revertedChange.IsModelSummary) {
+                selector = $("thead th[data-target='MS|" + revertedChange.DataTarget + "']").first();
+            } else if (revertedChange.IsWholeMarketChange) {
+                selector = $(".input-filtered-volume");
+            } else {
+                selector = $("tbody div[data-target='" + revertedChange.DataTarget + "']");
+            }
+
+            if (revertedChange.IsWholeMarketChange) {
+                selector.removeClass(me.getEditedDataClass(revertedChange)).val(displayValue);
+            } else {
+                selector.removeClass("edited").removeClass(me.getEditedDataClass(revertedChange)).html(displayValue);
+            }
+        }
+    };
     me.loadChangesetCallback = function (changesetData) {
         var changeset = getChangeset();
         changeset.clear();
 
         $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", true);
+        $("#" + me.getIdentifierPrefix() + "_Undo").prop("disabled", true);
 
         if (changesetData.Changes.length === 0)
             return;
 
-        if (me.getInitial()) {
-            var modal = getModal();
-            modal.setModalParameters({ Data: changesetData });
-            getModal().showConfirm("Load Uncommitted Data?",
-                "You have uncommitted changes to the data for this market.<br/><br/>Do you wish to load these changes?", me.confirmLoadChangeset);
-        } else {
+        //if (me.getInitial()) {
+        //    var modal = getModal();
+        //    modal.setModalParameters({ Data: changesetData });
+        //    getModal().showConfirm("Load Uncommitted Data?",
+        //        "You have uncommitted changes to the data for this market.<br/><br/>Do you wish to load these changes?", me.confirmLoadChangeset);
+        //} else {
             me.confirmLoadChangeset(changesetData);
-        }
+        //}
     };
     me.revertChangeset = function () {
         getTakeRateDataModel().revertChangeset(me.revertChangesetCallback);
@@ -428,14 +470,14 @@ model.Page = function (models) {
     me.getEditedDataClassForFeatureSummary = function (changesetChange) {
         var className = "edited";
         if (changesetChange.FeatureIdentifier !== null && changesetChange.FeatureIdentifier.charAt(0) === "F") {
-            className = "edited-fdp";
+            className = "edited-fdp-data";
         }
         return className;
     };
     me.getEditedDataClassForModelSummary = function (changesetChange) {
         var className = "edited";
         if (changesetChange.ModelIdentifier !== null && changesetChange.ModelIdentifier.charAt(0) === "F") {
-            className = "edited-fdp";
+            className = "edited";
         }
         return className;
     };
@@ -448,6 +490,9 @@ model.Page = function (models) {
     };
     me.onPersistEventHandler = function () {
         me.persistData();
+    };
+    me.onUndoEventHandler = function() {
+        me.undoData();
     };
     me.onUpdateFilterVolumeEventHandler = function (sender, eventArgs) {
         var marketIdentifier = getTakeRateDataModel().getMarketId();
