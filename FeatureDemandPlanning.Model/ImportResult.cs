@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FeatureDemandPlanning.Model.Enumerations;
+﻿using System.Collections.Generic;
 
 namespace FeatureDemandPlanning.Model
 {

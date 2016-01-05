@@ -1,13 +1,7 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Context;
-using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Enumerations;
-using FeatureDemandPlanning.Model.Interfaces;
-using System;
+﻿using FeatureDemandPlanning.Model.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {

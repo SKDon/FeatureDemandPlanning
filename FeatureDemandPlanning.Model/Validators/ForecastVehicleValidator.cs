@@ -1,6 +1,5 @@
 ﻿using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
-using FluentValidation.Mvc;
 using System.Linq;
 
 namespace FeatureDemandPlanning.Model.Validators

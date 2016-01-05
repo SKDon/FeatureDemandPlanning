@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace FeatureDemandPlanning.Model
@@ -32,20 +29,20 @@ namespace FeatureDemandPlanning.Model
         {
             get
             {
-                return (Id > 0 ? false : true);
+                return (Id <= 0);
             }
         }
 
         public void Save(string cdsid)
         {
-            if (this.IsNew)
+            if (IsNew)
             {
-                this.CreatedBy = cdsid;
-                this.CreatedOn = DateTime.Now;
+                CreatedBy = cdsid;
+                CreatedOn = DateTime.Now;
             }
 
-            this.UpdatedBy = cdsid;
-            this.LastUpdated = DateTime.Now;
+            UpdatedBy = cdsid;
+            LastUpdated = DateTime.Now;
 
         }
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FeatureDemandPlanning.Model.Enumerations
+﻿namespace FeatureDemandPlanning.Model.Enumerations
 {
     public enum VolumeMarketMode
     {

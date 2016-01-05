@@ -1,6 +1,4 @@
-﻿using FeatureDemandPlanning.Model.Interfaces;
-
-namespace FeatureDemandPlanning.Model
+﻿namespace FeatureDemandPlanning.Model
 {
     public class BaseDataContext
     {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using enums = FeatureDemandPlanning.Model.Enumerations;
+﻿using enums = FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Runtime.Serialization;
-using FeatureDemandPlanning.Model.Interfaces;
+﻿using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {

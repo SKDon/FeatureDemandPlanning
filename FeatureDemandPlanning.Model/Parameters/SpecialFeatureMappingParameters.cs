@@ -1,5 +1,4 @@
 ﻿using FeatureDemandPlanning.Model.Enumerations;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace FeatureDemandPlanning.Model.Parameters
