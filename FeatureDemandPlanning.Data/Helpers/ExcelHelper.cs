@@ -49,17 +49,16 @@ namespace FeatureDemandPlanning.Model.Helpers
         public static DataTable ReadExcelAsDataTable(string filePath)
         {
             var result = new DataTable();
-            using (XLWorkbook workBook = new XLWorkbook(filePath))
+            using (var workBook = new XLWorkbook(filePath))
             {
-                IXLWorksheet workSheet = workBook.Worksheet(1);
+                var firstRow = true;
 
-                bool firstRow = true;
-                foreach (IXLRow row in workSheet.Rows())
+                foreach (var row in workBook.Worksheets.SelectMany(workSheet => workSheet.Rows()))
                 {
                     // Use the first row to add columns to DataTable.
                     if (firstRow)
                     {
-                        foreach (IXLCell cell in row.Cells())
+                        foreach (var cell in row.Cells())
                         {
                             result.Columns.Add(cell.Value.ToString());
                         }
@@ -68,8 +67,8 @@ namespace FeatureDemandPlanning.Model.Helpers
                     else
                     {
                         result.Rows.Add();
-                        int i = 0;
-                        foreach (IXLCell cell in row.Cells())
+                        var i = 0;
+                        foreach (var cell in row.Cells())
                         {
                             result.Rows[result.Rows.Count - 1][i] = cell.Value.ToString();
                             i++;

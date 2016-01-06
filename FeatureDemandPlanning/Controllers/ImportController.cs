@@ -135,9 +135,8 @@ namespace FeatureDemandPlanning.Controllers
             var importView = GetModelFromParameters().Result;
             Parameters.ProgrammeId =
                 importView.AvailableProgrammes
-                    .Where(p => p.VehicleName.Equals(Parameters.CarLine, StringComparison.InvariantCultureIgnoreCase) &&
-                                p.ModelYear.Equals(Parameters.ModelYear, StringComparison.InvariantCultureIgnoreCase))
-                    .First().Id;
+                    .First(p => p.VehicleName.Equals(Parameters.CarLine, StringComparison.InvariantCultureIgnoreCase) &&
+                                p.ModelYear.Equals(Parameters.ModelYear, StringComparison.InvariantCultureIgnoreCase)).Id;
         }
         private void SetUploadFilePath()
         {
