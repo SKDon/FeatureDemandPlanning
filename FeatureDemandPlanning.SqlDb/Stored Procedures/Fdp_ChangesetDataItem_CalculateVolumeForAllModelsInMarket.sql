@@ -6,14 +6,15 @@ AS
 	DECLARE @TotalVolumeByMarket AS INT;
 	DECLARE @DataForModel AS TABLE
 	(
-		  Id					INT PRIMARY KEY IDENTITY(1,1)
-		, FdpChangesetId		INT
-		, MarketId				INT
-		, ModelId				INT NULL
-		, FdpModelId			INT NULL
-		, TotalVolume			INT
-		, PercentageTakeRate	DECIMAL(5, 4)
-		, FdpTakeRateSummaryId	INT 
+		  Id							INT PRIMARY KEY IDENTITY(1,1)
+		, FdpChangesetId				INT
+		, MarketId						INT
+		, ModelId						INT NULL
+		, FdpModelId					INT NULL
+		, TotalVolume					INT
+		, PercentageTakeRate			DECIMAL(5, 4)
+		, FdpTakeRateSummaryId			INT 
+		, ParentFdpChangesetDataItemId	INT
 	)
 
 	-- Determine the total volume for the market
@@ -39,6 +40,7 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, FdpTakeRateSummaryId
+		, ParentFdpChangesetDataItemId
 	)
 	SELECT 
 		  D.FdpChangesetId
@@ -51,6 +53,7 @@ AS
 		  END
 		, D1.PercentageTakeRate
 		, D1.FdpTakeRateSummaryId
+		, D.FdpChangesetDataItemId
 		
 	FROM Fdp_ChangesetDataItem AS D
 	JOIN Fdp_ChangesetDataItem_VW AS D1 ON D.FdpChangesetId = D1.FdpChangesetId
@@ -74,6 +77,7 @@ AS
 		  END
 		, D1.PercentageTakeRate
 		, D1.FdpTakeRateSummaryId
+		, D.FdpChangesetDataItemId
 		
 	FROM Fdp_ChangesetDataItem AS D
 	JOIN Fdp_ChangesetDataItem_VW AS D1 ON D.FdpChangesetId = D1.FdpChangesetId
@@ -97,6 +101,7 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, FdpTakeRateSummaryId
+		, ParentFdpChangesetDataItemId
 	)
 	SELECT
 		  D.FdpChangesetId
@@ -109,6 +114,7 @@ AS
 		  END
 		, S.PercentageTakeRate
 		, S.FdpTakeRateSummaryId
+		, D.FdpChangesetDataItemId
 	FROM
 	Fdp_ChangesetDataItem_VW			AS D
 	JOIN Fdp_TakeRateSummary			AS S	ON	D.FdpVolumeHeaderId			= S.FdpVolumeHeaderId
@@ -147,6 +153,7 @@ AS
 		, IsVolumeUpdate
 		, IsPercentageUpdate
 		, FdpTakeRateSummaryId
+		, ParentFdpChangesetDataItemId
 	)
 	SELECT 
 		  FdpChangesetId
@@ -158,5 +165,6 @@ AS
 		, 1
 		, 0
 		, FdpTakeRateSummaryId
+		, ParentFdpChangesetDataItemId
 	FROM 
 	@DataForModel

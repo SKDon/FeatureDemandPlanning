@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model
@@ -11,6 +7,7 @@ namespace FeatureDemandPlanning.Model
     {
         public int? FdpChangesetId { get; set; }
         public int? FdpChangesetDataItemId { get; set; }
+        public int? ParentFdpChangesetDataItemId { get; set; }
 
         public int? MarketId { get; set; }
         public string ModelIdentifier { get; set; }
@@ -21,11 +18,14 @@ namespace FeatureDemandPlanning.Model
         public TakeRateResultMode Mode { get; set; }
         public string Note { get; set; }
 
+        public int? OriginalVolume { get; set; }
+        public decimal OriginalPercentageTakeRate { get; set; }
+
         public string DataTarget
         {
             get
             {
-                var dataTarget = string.Empty;
+                string dataTarget;
                 if (IsWholeMarketChange)
                 {
                     dataTarget = MarketId.ToString();
@@ -119,9 +119,6 @@ namespace FeatureDemandPlanning.Model
         {
             get
             {
-                if (!PercentageTakeRate.HasValue)
-                    return null;
-
                 return PercentageTakeRate / 100;
             }
         }

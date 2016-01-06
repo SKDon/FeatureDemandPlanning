@@ -1,12 +1,7 @@
 ﻿using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Empty;
 
 namespace FeatureDemandPlanning.Model
@@ -42,14 +37,7 @@ namespace FeatureDemandPlanning.Model
                 volume.TakeRateId = filter.TakeRateId;
             }
 
-            if (filter.DocumentId.HasValue)
-            {
-                volume.UnderlyingOxoDocument = new OXODoc() {Id = filter.DocumentId.Value};
-            }
-            else
-            {
-                volume.UnderlyingOxoDocument = new EmptyOxoDocument();
-            }
+            volume.UnderlyingOxoDocument = filter.DocumentId.HasValue ? new OXODoc() {Id = filter.DocumentId.Value} : new EmptyOxoDocument();
 
             if (filter.ProgrammeId.HasValue)
             {

@@ -1,10 +1,6 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Interfaces;
-using System;
+﻿using FeatureDemandPlanning.Model.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Web;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {

@@ -1,10 +1,6 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Context;
+﻿using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.Model.Interfaces

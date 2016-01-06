@@ -670,7 +670,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
                    
                     var results = conn.Query<FdpChangeset>("dbo.Fdp_Changeset_Save", para, commandType: CommandType.StoredProcedure);
@@ -743,6 +743,39 @@ namespace FeatureDemandPlanning.DataStore
                     catch (Exception ex)
                     {
                         AppHelper.LogError("TakeRateDataStore.FdpChangesetPersist", ex.Message, CurrentCDSID);
+                        throw;
+                    }
+                }
+            }
+            return retVal;
+        }
+        public FdpChangeset FdpChangesetUndo(TakeRateFilter takeRateFilter, FdpChangeset changesetToUndo)
+        {
+            FdpChangeset retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                using (var tran = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        var para = new DynamicParameters();
+                        para.Add("@FdpChangesetId", changesetToUndo.FdpChangesetId, DbType.Int32);
+
+                        var revertedItems = conn.Query<DataChange>("dbo.Fdp_Changeset_Undo", para, tran, commandType: CommandType.StoredProcedure);
+
+                        tran.Commit();
+
+                        retVal = FdpChangesetGet(changesetToUndo);
+                        var dataChanges = revertedItems as IList<DataChange> ?? revertedItems.ToList();
+                        if (dataChanges.Any())
+                        {
+                            retVal.Reverted = dataChanges.ToList();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        AppHelper.LogError("TakeRateDataStore.FdpChangesetUndo", ex.Message, CurrentCDSID);
                         throw;
                     }
                 }

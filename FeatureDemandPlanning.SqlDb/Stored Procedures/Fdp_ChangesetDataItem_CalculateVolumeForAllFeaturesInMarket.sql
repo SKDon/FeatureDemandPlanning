@@ -5,16 +5,17 @@ AS
 
 	DECLARE @DataForFeature AS TABLE
 	(
-		  Id					INT PRIMARY KEY IDENTITY(1,1)
-		, FdpChangesetId		INT
-		, MarketId				INT
-		, ModelId				INT NULL
-		, FeatureId				INT NULL
-		, FdpModelId			INT NULL
-		, FdpFeatureId			INT NULL
-		, TotalVolume			INT
-		, PercentageTakeRate	DECIMAL(5, 4)
-		, FdpVolumeDataItemId	INT 
+		  Id							INT PRIMARY KEY IDENTITY(1,1)
+		, FdpChangesetId				INT
+		, MarketId						INT
+		, ModelId						INT NULL
+		, FeatureId						INT NULL
+		, FdpModelId					INT NULL
+		, FdpFeatureId					INT NULL
+		, TotalVolume					INT
+		, PercentageTakeRate			DECIMAL(5, 4)
+		, FdpVolumeDataItemId			INT 
+		, ParentFdpChangesetDataItemId	INT
 	)
 												
 	-- Create new changeset entries based on older changeset entries
@@ -33,6 +34,7 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, FdpVolumeDataItemId
+		, ParentFdpChangesetDataItemId
 	)
 	SELECT 
 		  D.FdpChangesetId
@@ -44,6 +46,7 @@ AS
 		, dbo.fn_Fdp_VolumeByModel_Get(D.FdpVolumeHeaderId, D1.ModelId, D1.FdpModelId, D.MarketId, D.CDSId) * D1.PercentageTakeRate
 		, D1.PercentageTakeRate
 		, D1.FdpVolumeDataItemId
+		, D.FdpChangesetDataItemId
 		
 	FROM Fdp_ChangesetDataItem_VW AS D
 	JOIN Fdp_ChangesetDataItem_VW AS D1	ON D.FdpChangesetId = D1.FdpChangesetId
@@ -68,6 +71,7 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, FdpVolumeDataItemId
+		, ParentFdpChangesetDataItemId
 	)
 	SELECT
 		  D.FdpChangesetId
@@ -79,6 +83,7 @@ AS
 		, dbo.fn_Fdp_VolumeByModel_Get(D.FdpVolumeHeaderId, D1.ModelId, D1.FdpModelId, D.MarketId, D.CDSId) * D1.PercentageTakeRate
 		, D1.PercentageTakeRate
 		, D1.FdpVolumeDataItemId
+		, D.FdpChangesetDataItemId
 	FROM
 	Fdp_ChangesetDataItem_VW	AS D
 	JOIN Fdp_VolumeDataItem_VW	AS D1	ON	D.FdpVolumeHeaderId			= D1.FdpVolumeHeaderId
@@ -123,6 +128,7 @@ AS
 		, IsVolumeUpdate
 		, IsPercentageUpdate
 		, FdpVolumeDataItemId
+		, ParentFdpChangesetDataItemId
 	)
 	SELECT 
 		  FdpChangesetId
@@ -136,5 +142,6 @@ AS
 		, 1
 		, 0
 		, FdpVolumeDataItemId
+		, ParentFdpChangesetDataItemId
 	FROM 
 	@DataForFeature

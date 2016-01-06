@@ -144,6 +144,17 @@ namespace FeatureDemandPlanning.Controllers
 
             return Json(persistedChangeset);
         }
+        [HandleErrorWithJson]
+        [HttpPost]
+        public async Task<ActionResult> UndoChangeset(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+
+            var undoneChangeset = await DataContext.TakeRate.UndoChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
+
+            return Json(undoneChangeset);
+        }
         //[HttpPost]
         //public async Task<ActionResult> Validate(TakeRateParameters parameters,
         //                                         TakeRateDocumentValidationSection sectionToValidate = TakeRateDocumentValidationSection.All)

@@ -1,5 +1,6 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_ChangesetFeatureMix_VW]
 AS
 	SELECT
@@ -16,6 +17,7 @@ AS
 		, D.PercentageTakeRate
 		, D.OriginalVolume
 		, D.OriginalPercentageTakeRate
+		, D.FdpTakeRateFeatureMixId
 
 	FROM Fdp_Changeset			AS C
 	JOIN Fdp_ChangesetDataItem	AS D	ON	C.FdpChangesetId = D.FdpChangesetId

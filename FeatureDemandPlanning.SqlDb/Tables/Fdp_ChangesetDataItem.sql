@@ -1,22 +1,25 @@
 ﻿CREATE TABLE [dbo].[Fdp_ChangesetDataItem] (
-    [FdpChangesetDataItemId]     INT            IDENTITY (1, 1) NOT NULL,
-    [CreatedOn]                  DATETIME       CONSTRAINT [DF_Fdp_ChangesetDataItem_CreatedOn] DEFAULT (getdate()) NOT NULL,
-    [FdpChangesetId]             INT            NOT NULL,
-    [MarketId]                   INT            NOT NULL,
-    [ModelId]                    INT            NULL,
-    [FdpModelId]                 INT            NULL,
-    [FeatureId]                  INT            NULL,
-    [FdpFeatureId]               INT            NULL,
-    [TotalVolume]                INT            NULL,
-    [PercentageTakeRate]         DECIMAL (5, 4) CONSTRAINT [DF_FdpChangesetDataItem_PercentageTakeRate] DEFAULT ((0)) NULL,
-    [IsDeleted]                  BIT            CONSTRAINT [DF_Fdp_ChangesetDataItem_IsDeleted] DEFAULT ((0)) NOT NULL,
-    [IsVolumeUpdate]             BIT            CONSTRAINT [DF_Fdp_ChangesetDataItem_IsVolumeUpdate] DEFAULT ((0)) NOT NULL,
-    [IsPercentageUpdate]         BIT            CONSTRAINT [DF_Fdp_ChangesetDataItem_IsPercentageUpdate] DEFAULT ((0)) NOT NULL,
-    [OriginalVolume]             INT            NULL,
-    [OriginalPercentageTakeRate] DECIMAL (5, 4) NULL,
-    [FdpVolumeDataItemId]        INT            NULL,
-    [FdpTakeRateSummaryId]       INT            NULL,
+    [FdpChangesetDataItemId]       INT            IDENTITY (1, 1) NOT NULL,
+    [CreatedOn]                    DATETIME       CONSTRAINT [DF_Fdp_ChangesetDataItem_CreatedOn] DEFAULT (getdate()) NOT NULL,
+    [FdpChangesetId]               INT            NOT NULL,
+    [MarketId]                     INT            NOT NULL,
+    [ModelId]                      INT            NULL,
+    [FdpModelId]                   INT            NULL,
+    [FeatureId]                    INT            NULL,
+    [FdpFeatureId]                 INT            NULL,
+    [TotalVolume]                  INT            NULL,
+    [PercentageTakeRate]           DECIMAL (5, 4) CONSTRAINT [DF_FdpChangesetDataItem_PercentageTakeRate] DEFAULT ((0)) NULL,
+    [IsDeleted]                    BIT            CONSTRAINT [DF_Fdp_ChangesetDataItem_IsDeleted] DEFAULT ((0)) NOT NULL,
+    [IsVolumeUpdate]               BIT            CONSTRAINT [DF_Fdp_ChangesetDataItem_IsVolumeUpdate] DEFAULT ((0)) NOT NULL,
+    [IsPercentageUpdate]           BIT            CONSTRAINT [DF_Fdp_ChangesetDataItem_IsPercentageUpdate] DEFAULT ((0)) NOT NULL,
+    [OriginalVolume]               INT            NULL,
+    [OriginalPercentageTakeRate]   DECIMAL (5, 4) NULL,
+    [FdpVolumeDataItemId]          INT            NULL,
+    [FdpTakeRateSummaryId]         INT            NULL,
+    [FdpTakeRateFeatureMixId]      INT            NULL,
+    [ParentFdpChangesetDataItemId] INT            NULL,
     CONSTRAINT [PK_Fdp_ChangesetDataItem] PRIMARY KEY CLUSTERED ([FdpChangesetDataItemId] ASC),
+    CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_ChangesetDataItem] FOREIGN KEY ([ParentFdpChangesetDataItemId]) REFERENCES [dbo].[Fdp_ChangesetDataItem] ([FdpChangesetDataItemId]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_Feature] FOREIGN KEY ([FdpFeatureId]) REFERENCES [dbo].[Fdp_Feature] ([FdpFeatureId]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_Model] FOREIGN KEY ([FdpModelId]) REFERENCES [dbo].[Fdp_Model] ([FdpModelId]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_TakeRateSummary] FOREIGN KEY ([FdpTakeRateSummaryId]) REFERENCES [dbo].[Fdp_TakeRateSummary] ([FdpTakeRateSummaryId]),
@@ -30,7 +33,11 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_ChangesetDataItem_Cover]
-    ON [dbo].[Fdp_ChangesetDataItem]([FdpChangesetId] ASC, [MarketId] ASC, [ModelId] ASC, [FeatureId] ASC, [FdpModelId] ASC, [FdpFeatureId] ASC, [FdpVolumeDataItemId] ASC);
+    ON [dbo].[Fdp_ChangesetDataItem]([FdpChangesetId] ASC, [MarketId] ASC, [ModelId] ASC, [FeatureId] ASC, [FdpModelId] ASC, [FdpFeatureId] ASC, [FdpVolumeDataItemId] ASC, [FdpTakeRateSummaryId] ASC, [FdpTakeRateFeatureMixId] ASC);
+
+
 

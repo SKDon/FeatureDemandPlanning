@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -22,31 +19,15 @@ namespace FeatureDemandPlanning.Model
 
         public string ModelIdentifier
         {
-            get
-            {
-                if (ModelId.HasValue)
-                {
-                    return string.Format("O{0}", ModelId);
-                }
-                else
-                {
-                    return string.Format("F{0}", FdpModelId);
-                }
+            get {
+                return ModelId.HasValue ? string.Format("O{0}", ModelId) : string.Format("F{0}", FdpModelId);
             }
         }
 
         public string FeatureIdentifier
         {
-            get
-            {
-                if (FeatureId.HasValue)
-                {
-                    return string.Format("O{0}", FeatureId);
-                }
-                else
-                {
-                    return string.Format("F{0}", FdpFeatureId);
-                }
+            get {
+                return FeatureId.HasValue ? string.Format("O{0}", FeatureId) : string.Format("F{0}", FdpFeatureId);
             }
         }
 

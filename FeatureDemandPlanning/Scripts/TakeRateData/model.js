@@ -22,6 +22,7 @@ model.OxoVolume = function (params) {
     privateStore[me.id].RevertChangesetUri = params.RevertChangesetUri;
     privateStore[me.id].SaveChangesetUri = params.SaveChangesetUri;
     privateStore[me.id].PersistChangesetUri = params.PersistChangesetUri;
+    privateStore[me.id].UndoChangesetUri = params.UndoChangesetUri;
     privateStore[me.id].UpdateFilteredDataUri = params.UpdateFilteredDataUri;
     privateStore[me.id].ValidateUri = params.ValidateUri;
     privateStore[me.id].ValidationMessageUri = params.ValidationMessageUri;
@@ -81,6 +82,9 @@ model.OxoVolume = function (params) {
     };
     me.getPersistChangesetUri = function () {
         return privateStore[me.id].PersistChangesetUri;
+    };
+    me.getUndoChangesetUri = function() {
+        return privateStore[me.id].UndoChangesetUri;
     };
     me.getUpdateFilteredDataUri = function () {
         return privateStore[me.id].UpdateFilteredDataUri;
@@ -181,6 +185,24 @@ model.OxoVolume = function (params) {
             }
         });
     };
+    me.undoData = function(changesToUndo, callback) {
+        var params = getFilter();
+        params.Changeset = changesToUndo;
+        $.ajax({
+            "dataType": "json",
+            "async": true,
+            "type": "POST",
+            "url": me.getUndoChangesetUri(),
+            "data": params,
+            "success": function (json) {
+                $(document).trigger("Success", json);
+                callback(json);
+            },
+            "error": function (response) {
+                genericErrorCallback(response);
+            }
+        });
+    }
     me.validate = function (sectionToValidate, isAsync) {
         var volume = me.getVolume();
         var encodedVolume = JSON.stringify({ volumeToValidate: volume, sectionToValidate: sectionToValidate });
@@ -256,7 +278,8 @@ model.OxoVolume = function (params) {
     };
     function getFilter() {
         return {
-            TakeRateId: me.getOxoDocId(),
+            TakeRateId: me.getTakeRateId(),
+            DocumentId: me.getOxoDocId(),
             MarketId: me.getMarketId(),
             Changeset: null
         }

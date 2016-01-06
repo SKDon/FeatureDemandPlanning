@@ -36,6 +36,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<DataChange> SaveChangesetDataChange(TakeRateFilter filter, DataChange changeToSave);
 
         Task<FdpChangeset> PersistChangeset(TakeRateFilter takeRateFilter);
+        Task<FdpChangeset> UndoChangeset(TakeRateFilter takeRateFilter);
         Task<FdpChangeset> RevertUnsavedChangesForUser(TakeRateFilter takeRateFilter);
 
         Task<int> GetVolumeForModel(TakeRateFilter filter);

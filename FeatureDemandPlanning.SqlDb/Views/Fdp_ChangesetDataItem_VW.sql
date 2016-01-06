@@ -1,5 +1,6 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_ChangesetDataItem_VW]
 AS
 	SELECT
@@ -22,6 +23,8 @@ AS
 	, D.OriginalPercentageTakeRate
 	, D.FdpVolumeDataItemId
 	, D.FdpTakeRateSummaryId
+	, D.FdpTakeRateFeatureMixId
+	, D.ParentFdpChangesetDataItemId
 	, C.IsSaved
 	, CAST(CASE
 		WHEN 
