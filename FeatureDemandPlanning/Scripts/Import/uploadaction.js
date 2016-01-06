@@ -14,6 +14,7 @@ model.UploadAction = function (params, model) {
     privateStore[me.id].Model = model;
 
     me.action = function () {
+        $("#Modal_Notify").html("").hide();
         $("#Modal_OK").html("Uploading...Wait").attr("disabled", true);
         sendData(me.getActionUri(), me.getActionParameters());
     };
