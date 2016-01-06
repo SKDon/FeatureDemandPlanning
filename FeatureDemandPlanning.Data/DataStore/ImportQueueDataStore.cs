@@ -17,27 +17,29 @@ namespace FeatureDemandPlanning.DataStore
     {
         public ImportQueueDataStore(string cdsid)
         {
-            this.CurrentCDSID = cdsid;
+            CurrentCDSID = cdsid;
         }
         public ImportQueue ImportQueueBulkImport(ImportQueue importQueue)
         {
             using (var conn = DbHelper.GetDBConnection())
             {
-                using (var bulk = new SqlBulkCopy((SqlConnection)conn))
+                using (var bulk = new SqlBulkCopy((SqlConnection)conn)
+                {
+                    BulkCopyTimeout = 60
+                })
                 {
                     bulk.DestinationTableName = "dbo.Fdp_ImportData";
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(0, "FdpImportId"));
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(1, "LineNumber"));
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(2, "Pipeline Code"));
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(3, "Model Year Desc"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(4, "LineNumber"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(5, "NSC or Importer Description (Vista Market)"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(6, "Country Description"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(7, "Derivative Code"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(8, "Trim Pack Description"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(9, "Bff Feature Code"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(10, "Feature Description"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(11, "Count of Specific Order No"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(4, "NSC or Importer Description (Vista Market)"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(5, "Country Description"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(6, "Derivative Code"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(7, "Trim Pack Description"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(8, "Bff Feature Code"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(9, "Feature Description"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(10, "Count of Specific Order No"));
 
                     bulk.WriteToServer(importQueue.ImportData);
                     bulk.Close();
@@ -47,7 +49,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public ImportQueue ImportQueueBulkImportProcess(ImportQueue importQueue)
         {
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {

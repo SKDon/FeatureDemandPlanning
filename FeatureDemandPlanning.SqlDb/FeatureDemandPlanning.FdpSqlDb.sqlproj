@@ -234,7 +234,10 @@
     <Build Include="Stored Procedures\Fdp_MarketMapping_Save.sql" />
     <Build Include="Stored Procedures\Fdp_News_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_News_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_ProgrammeByGateway_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ProgrammeByGateway_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_SpecialFeatureType_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_TakeRateStatus_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_TopMarket_Delete.sql" />
