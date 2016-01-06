@@ -11,14 +11,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
 using FeatureDemandPlanning.Model.Interfaces;
 using System.Data.SqlClient;
-using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
 
@@ -29,14 +27,14 @@ namespace FeatureDemandPlanning.DataStore
 	
 		public ForecastDataStore(string cdsid)
 		{
-			this.CurrentCDSID = cdsid;
+			CurrentCDSID = cdsid;
 		}
 
         public PagedResults<ForecastSummary> ForecastGetMany(ForecastFilter filter)
         {
-            var retVal = new PagedResults<ForecastSummary>();
+            PagedResults<ForecastSummary> retVal;
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -46,53 +44,54 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (filter.ForecastId.HasValue)
                     {
-                        para.Add("@ForecastId", filter.ForecastId.Value, dbType: DbType.Int32);
+                        para.Add("@ForecastId", filter.ForecastId.Value, DbType.Int32);
                     }
                     if (!string.IsNullOrEmpty(filter.FilterMessage))
                     {
-                        para.Add("@FilterMessage", filter.FilterMessage, dbType: DbType.String, size: 50);
+                        para.Add("@FilterMessage", filter.FilterMessage, DbType.String, size: 50);
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.Value, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
                     if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
                     {
                         var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
 
                     // TODO implement the CDSId to get only those forecasts the user has permissions for
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                     var results = conn.Query<ForecastSummary>("dbo.Fdp_Forecast_GetMany", para, commandType: CommandType.StoredProcedure);
 
-                    if (results.Any())
+                    var forecastSummaries = results as IList<ForecastSummary> ?? results.ToList();
+                    if (forecastSummaries.Any())
                     {
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
                     retVal = new PagedResults<ForecastSummary>()
                     {
-                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        PageIndex = filter.PageIndex ?? 1,
                         TotalRecords = totalRecords,
                         TotalDisplayRecords = totalDisplayRecords,
-                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                        PageSize = filter.PageSize ?? totalRecords
                     };
 
                     var currentPage = new List<ForecastSummary>();
-                    foreach (var result in results)
+                    foreach (var result in forecastSummaries)
                     {
                         currentPage.Add(result);
                     }
@@ -111,14 +110,14 @@ namespace FeatureDemandPlanning.DataStore
 
         public IForecast ForecastGet(int id)
         {
-            Forecast forecast = null;
+            Forecast forecast;
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@ForecastId", id, dbType: DbType.Int32);
+                    para.Add("@ForecastId", id, DbType.Int32);
 
                     var results = conn.QueryMultiple("dbo.Fdp_Forecast_Get", para, commandType: CommandType.StoredProcedure);
 
@@ -190,16 +189,16 @@ namespace FeatureDemandPlanning.DataStore
 		{
 			try
 			{
-				using (IDbConnection connection = DbHelper.GetDBConnection())
+				using (var connection = DbHelper.GetDBConnection())
 				{
 					var para = new DynamicParameters();
 
-					para.Add("@ForecastId", forecastToSave.ForecastId, dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
-					para.Add("@SystemUser", CurrentCDSID, dbType: DbType.String, size: 16);
-					para.Add("@ProgrammeId", forecastToSave.ForecastVehicle.ProgrammeId, dbType: DbType.Int32);
-					para.Add("@Gateway", forecastToSave.ForecastVehicle.Gateway, dbType: DbType.String, size: 50);
+					para.Add("@ForecastId", forecastToSave.ForecastId, DbType.Int32, ParameterDirection.InputOutput);
+					para.Add("@SystemUser", CurrentCDSID, DbType.String, size: 16);
+					para.Add("@ProgrammeId", forecastToSave.ForecastVehicle.ProgrammeId, DbType.Int32);
+					para.Add("@Gateway", forecastToSave.ForecastVehicle.Gateway, DbType.String, size: 50);
 
-					IDbTransaction trans = connection.BeginTransaction();
+					var trans = connection.BeginTransaction();
 
 					connection.Execute("Fdp_Forecast_Save", para, commandType: CommandType.StoredProcedure, transaction: trans);
 
@@ -261,17 +260,17 @@ namespace FeatureDemandPlanning.DataStore
 												IDbConnection connection,
 												IDbTransaction transaction)
         {
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@ForecastId", forecastToSave.ForecastId, dbType: DbType.Int32);
-                    para.Add("@SystemUser", CurrentCDSID, dbType: DbType.String, size: 16);
+                    para.Add("@ForecastId", forecastToSave.ForecastId, DbType.Int32);
+                    para.Add("@SystemUser", CurrentCDSID, DbType.String, size: 16);
                     //para.Add("@ForecastVehicleTrimId", mappingToSave.ForecastVehicleTrimId, dbType: DbType.Int32);
                     //para.Add("@ComparisonVehicleProgrammeId", mappingToSave.ComparisonVehicleProgrammeId, dbType: DbType.Int32);
                     //para.Add("@ComparisonVehicleTrimId", mappingToSave.ComparisonVehicleTrimId.Value, dbType: DbType.Int32);
-                    para.Add("@ForecastComparisonTrimId", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@ForecastComparisonTrimId", null, DbType.Int32, ParameterDirection.Output);
 
                     connection.Execute("Fdp_ForecastComparisonTrim_Save", para, commandType: CommandType.StoredProcedure, transaction: transaction);
 
@@ -293,18 +292,18 @@ namespace FeatureDemandPlanning.DataStore
             }
         }
 
-        public void ForecastComparisonTrimDelete(   IForecast forecastToSave, 
+	    public void ForecastComparisonTrimDelete(   IForecast forecastToSave, 
 												    ForecastTrimMapping mappingToDelete,
 												    IDbConnection connection,
 												    IDbTransaction transaction)
         {
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@ForecastId", forecastToSave.ForecastId, dbType: DbType.Int32);
-                    para.Add("@SystemUser", CurrentCDSID, dbType: DbType.String, size: 16);
+                    para.Add("@ForecastId", forecastToSave.ForecastId, DbType.Int32);
+                    para.Add("@SystemUser", CurrentCDSID, DbType.String, size: 16);
                     //para.Add("@ForecastVehicleTrimId", mappingToDelete.ForecastVehicleTrimId, dbType: DbType.Int32);
                     //para.Add("@ComparisonVehicleProgrammeId", mappingToDelete.ComparisonVehicleProgrammeId, dbType: DbType.Int32);
 
@@ -324,21 +323,20 @@ namespace FeatureDemandPlanning.DataStore
 												    IDbTransaction transaction,
 												    int vehicleIndex)
 		{
-			using (IDbConnection conn = DbHelper.GetDBConnection())
+			using (var conn = DbHelper.GetDBConnection())
 			{
 				try
 				{
-					int? forecastComparisonId = null;
-                    var para = new DynamicParameters();
-					para.Add("@ForecastId", forecastToSave.ForecastId, dbType: DbType.Int32);
-					para.Add("@SystemUser", CurrentCDSID, dbType: DbType.String, size: 16);
-					para.Add("@ProgrammeId", vehicleToSave.ProgrammeId, dbType: DbType.Int32);
-					para.Add("@VehicleIndex", vehicleIndex, dbType: DbType.Int32);
-                    para.Add("@ForecastComparisonId", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
+				    var para = new DynamicParameters();
+					para.Add("@ForecastId", forecastToSave.ForecastId, DbType.Int32);
+					para.Add("@SystemUser", CurrentCDSID, DbType.String, size: 16);
+					para.Add("@ProgrammeId", vehicleToSave.ProgrammeId, DbType.Int32);
+					para.Add("@VehicleIndex", vehicleIndex, DbType.Int32);
+                    para.Add("@ForecastComparisonId", null, DbType.Int32, ParameterDirection.Output);
 
 					connection.Execute("Fdp_ForecastComparisonVehicle_Save", para, commandType: CommandType.StoredProcedure, transaction: transaction);
 
-                    forecastComparisonId = para.Get<int>("@ForecastComparisonId");
+                    para.Get<int>("@ForecastComparisonId");
 				}
                 catch (SqlException sqex)
                 {
@@ -355,21 +353,21 @@ namespace FeatureDemandPlanning.DataStore
 
 		public bool ForecastDelete(int id)
 		{
-			bool retVal = true;
+			var retVal = true;
 			
-			using (IDbConnection conn = DbHelper.GetDBConnection())
+			using (DbHelper.GetDBConnection())
 			{
-				try
-				{
-					var para = new DynamicParameters();
-					para.Add("@ForecastId", id, dbType: DbType.Int32);
-					para.Add("@SystemUser", CurrentCDSID, dbType: DbType.String, size: 16);               
-				}
-				catch (Exception ex)
-				{
-					AppHelper.LogError("ForecastDataStore.ForecastDelete", ex.Message, CurrentCDSID);
-					retVal = false;
-				}
+			    try
+			    {
+			        var para = new DynamicParameters();
+			        para.Add("@ForecastId", id, DbType.Int32);
+			        para.Add("@SystemUser", CurrentCDSID, DbType.String, size: 16);               
+			    }
+			    catch (Exception ex)
+			    {
+			        AppHelper.LogError("ForecastDataStore.ForecastDelete", ex.Message, CurrentCDSID);
+			        retVal = false;
+			    }
 			}
 
 			return retVal;
@@ -378,12 +376,12 @@ namespace FeatureDemandPlanning.DataStore
         public IEnumerable<ForecastTrimMapping> TrimMappingGetMany(int forecastId)
         {
             IEnumerable<ForecastTrimMapping> retVal = null;
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@ForecastId", forecastId, dbType: DbType.Int32);
+                    para.Add("@ForecastId", forecastId, DbType.Int32);
 
                     retVal = conn.Query<ForecastTrimMapping>("dbo.Fdp_ForecastComparisonTrim_GetMany", para, commandType: CommandType.StoredProcedure);
                 }

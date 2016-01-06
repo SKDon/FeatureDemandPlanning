@@ -149,7 +149,9 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="Tables\Fdp_PermissionObjectType.sql" />
-    <Build Include="Tables\Fdp_PermissionOperation.sql" />
+    <Build Include="Tables\Fdp_PermissionOperation.sql">
+      <AnsiNulls>Off</AnsiNulls>
+    </Build>
     <Build Include="Tables\Fdp_PermissionType.sql" />
     <Build Include="Tables\Fdp_SpecialFeature.sql" />
     <Build Include="Tables\Fdp_SpecialFeatureType.sql" />
@@ -588,12 +590,9 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Security\RoleMemberships_1.sql" />
   </ItemGroup>
   <ItemGroup>
-    <ArtifactReference Include="..\..\Oxo\OxoSqlDb\Snapshots\Oxo.dacpac">
-      <HintPath>..\..\Oxo\OxoSqlDb\Snapshots\Oxo.dacpac</HintPath>
-      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
-    </ArtifactReference>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">
       <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac</HintPath>
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
@@ -604,8 +603,18 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
+    <ArtifactReference Include="..\..\OXO\OxoSqlDb\bin\Debug\OxoSqlDb.dacpac">
+      <HintPath>..\..\OXO\OxoSqlDb\bin\Debug\OxoSqlDb.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
+    </ArtifactReference>
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment1.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <SqlCmdVariable Include="OxoSqlDb">
+      <DefaultValue>OxoSqlDb</DefaultValue>
+      <Value>$(SqlCmdVar__1)</Value>
+    </SqlCmdVariable>
   </ItemGroup>
 </Project>

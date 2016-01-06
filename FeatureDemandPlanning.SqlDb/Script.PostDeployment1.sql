@@ -6,7 +6,7 @@ Post-Deployment Script Template
  Example:      :r .\myfile.sql								
  Use SQLCMD syntax to reference a variable in the post-deployment script.		
  Example:      :setvar TableName MyTable							
-               SELECT * FROM [$(TableName)]					
+			   SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
 
@@ -22,6 +22,8 @@ USING (VALUES
 	, (N'FdpUploadFilePath', N'C:\Users\bweston2\Documents\FDPUpload', N'The location where uploaded files are placed', N'System.String')
 	, (N'NumberOfComparisonVehicles', N'5', N'The number of vehicles to use for comparison data', N'System.Int32')
 	, (N'NumberOfTopMarkets', N'28', N'The number of markets to use for comparison data', N'System.Int32')
+	, (N'ShowAllOXODocuments', N'0', N'Determines whether or not to show all OXO documents, regardless as to published state', N'System.Boolean')
+	, (N'SkipFirstXRowsInImportFile', N'3', N'Specifies the number of rows to skip for FDP import files. Eliminates header information', N'System.Int32')
 )
 AS SOURCE (ConfigurationKey, Value, [Description], DataType) ON TARGET.ConfigurationKey = SOURCE.ConfigurationKey
 WHEN MATCHED THEN

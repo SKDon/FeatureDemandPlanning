@@ -1,17 +1,14 @@
-﻿using FeatureDemandPlanning.Model;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Threading.Tasks;
+using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Enumerations;
-using FeatureDemandPlanning.Model.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using enums = FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Helpers;
-using System.IO;
-using System.Data;
+using FeatureDemandPlanning.Model.Interfaces;
+using enums = FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -30,7 +27,7 @@ namespace FeatureDemandPlanning.DataStore
             if (!filter.ImportQueueId.HasValue)
                 throw new ArgumentNullException("ImportQueueId not specified");
             
-            return await Task.FromResult<ImportQueue>(_importDataStore.ImportQueueGet(filter.ImportQueueId.Value));
+            return await Task.FromResult(_importDataStore.ImportQueueGet(filter.ImportQueueId.Value));
         }
         public async Task<ImportSummary> GetImportSummary(ImportQueueFilter filter)
         {
@@ -38,14 +35,14 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<PagedResults<ImportQueue>> ListImportQueue(ImportQueueFilter filter)
         {
-            var results = await Task.FromResult<PagedResults<ImportQueue>>(
+            var results = await Task.FromResult(
                 _importDataStore.ImportQueueGetMany(filter));
                 
             return results;
         }
         public async Task<ImportError> SaveException(ImportQueueFilter filter)
         {
-            return await Task.FromResult<ImportError>(_importDataStore.ImportExceptionSave(filter));
+            return await Task.FromResult(_importDataStore.ImportExceptionSave(filter));
         }
         public ImportQueue SaveImportQueue(ImportQueue importItem)
         {
@@ -55,62 +52,62 @@ namespace FeatureDemandPlanning.DataStore
         {
             var importQueueId = importItem.ImportQueueId.GetValueOrDefault();
             
-            return await Task.FromResult<ImportQueue>(_importDataStore.ImportQueueGet(importQueueId));
+            return await Task.FromResult(_importDataStore.ImportQueueGet(importQueueId));
         }
 
-        Task<Model.ImportStatus> IImportDataContext.GetProcessStatus(ImportQueue importItem)
+        Task<ImportStatus> IImportDataContext.GetProcessStatus(ImportQueue importItem)
         {
             throw new NotImplementedException();
         }
         public async Task<ImportError> IgnoreException(ImportQueueFilter filter)
         {
-            return await Task.FromResult<ImportError>(_importDataStore.ImportExceptionIgnore(filter));
+            return await Task.FromResult(_importDataStore.ImportExceptionIgnore(filter));
         }
         public async Task<ImportError> MapMarket(ImportQueueFilter filter, FdpMarketMapping mapping)
         {
-            var task = await Task.FromResult<FdpMarketMapping>(_marketDataStore.FdpMarketMappingSave(mapping));
-            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
+            var task = await Task.FromResult(_marketDataStore.FdpMarketMappingSave(mapping));
+            return await Task.FromResult(_importDataStore.ImportErrorGet(filter));
         }
         public async Task<ImportError> AddDerivative(ImportQueueFilter filter, FdpDerivative derivativeToAdd)
         {
-            var task = await Task.FromResult<FdpDerivative>(_derivativeDataStore.FdpDerivativeSave(derivativeToAdd));
-            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
+            var task = await Task.FromResult(_derivativeDataStore.FdpDerivativeSave(derivativeToAdd));
+            return await Task.FromResult(_importDataStore.ImportErrorGet(filter));
         }
         public async Task<ImportError> MapDerivative(ImportQueueFilter filter, FdpDerivativeMapping derivativeMapping)
         {
-            var task = await Task.FromResult<FdpDerivativeMapping>(_derivativeDataStore.FdpDerivativeMappingSave(derivativeMapping));
-            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
+            var task = await Task.FromResult(_derivativeDataStore.FdpDerivativeMappingSave(derivativeMapping));
+            return await Task.FromResult(_importDataStore.ImportErrorGet(filter));
         }
         public async Task<ImportError> AddFeature(ImportQueueFilter filter, FdpFeature featureToAdd)
         {
-            var task = await Task.FromResult<FdpFeature>(_featureDataStore.FdpFeatureSave(featureToAdd));
-            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
+            var task = await Task.FromResult(_featureDataStore.FdpFeatureSave(featureToAdd));
+            return await Task.FromResult(_importDataStore.ImportErrorGet(filter));
         }
         public async Task<ImportError> AddSpecialFeature(ImportQueueFilter filter, FdpSpecialFeature specialFeature)
         {
-            var task = await Task.FromResult<FdpSpecialFeature>(_featureDataStore.FdpSpecialFeatureSave(specialFeature));
-            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
+            var task = await Task.FromResult(_featureDataStore.FdpSpecialFeatureSave(specialFeature));
+            return await Task.FromResult(_importDataStore.ImportErrorGet(filter));
         }
         public async Task<ImportError> MapFeature(ImportQueueFilter filter, FdpFeatureMapping featureMapping)
         {
-            var task = await Task.FromResult<FdpFeatureMapping>(_featureDataStore.FeatureMappingSave(featureMapping));
-            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
+            var task = await Task.FromResult(_featureDataStore.FeatureMappingSave(featureMapping));
+            return await Task.FromResult(_importDataStore.ImportErrorGet(filter));
         }
         public async Task<ImportError> AddTrim(ImportQueueFilter filter, FdpTrim trimToAdd)
         {
-            var task = await Task.FromResult<FdpTrim>(_trimDataStore.FdpTrimSave(trimToAdd));
-            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
+            var task = await Task.FromResult(_trimDataStore.FdpTrimSave(trimToAdd));
+            return await Task.FromResult(_importDataStore.ImportErrorGet(filter));
         }
         public async Task<ImportError> MapTrim(ImportQueueFilter filter, FdpTrimMapping trimMapping)
         {
-            var task = await Task.FromResult<FdpTrimMapping>(_trimDataStore.TrimMappingSave(trimMapping));
-            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
+            var task = await Task.FromResult(_trimDataStore.TrimMappingSave(trimMapping));
+            return await Task.FromResult(_importDataStore.ImportErrorGet(filter));
         }
-        public ImportResult ProcessImportQueue(ImportQueue queuedItem)
+        public ImportResult ProcessImportQueue(ImportQueue queuedItem, ImportFileSettings fileSettings)
         {
             var result = new ImportResult();
 
-            queuedItem.ImportData = GetImportFileAsDataTable(queuedItem);
+            queuedItem.ImportData = GetImportFileAsDataTable(queuedItem, fileSettings);
             queuedItem = BulkImportDataTableToDataStore(queuedItem);
             queuedItem = ProcessImportData(queuedItem);
 
@@ -130,22 +127,22 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<ImportError> GetException(ImportQueueFilter filter)
         {
-            return await Task.FromResult<ImportError>(_importDataStore.ImportErrorGet(filter));
+            return await Task.FromResult(_importDataStore.ImportErrorGet(filter));
         }
         public async Task<PagedResults<ImportError>> ListExceptions(ImportQueueFilter filter)
         {
-            return await Task.FromResult<PagedResults<ImportError>>(
+            return await Task.FromResult(
                 _importDataStore.ImportErrorGetMany(filter));
 
         }
-        public async Task<IEnumerable<FeatureDemandPlanning.Model.ImportExceptionType>> ListExceptionTypes(ImportQueueFilter filter)
+        public async Task<IEnumerable<ImportExceptionType>> ListExceptionTypes(ImportQueueFilter filter)
         {
-            return await Task.FromResult<IEnumerable<FeatureDemandPlanning.Model.ImportExceptionType>>(
+            return await Task.FromResult(
                 _importDataStore.ImportExceptionTypeGetMany(filter));
         }
-        public async Task<IEnumerable<FeatureDemandPlanning.Model.ImportStatus>> ListImportStatuses()
+        public async Task<IEnumerable<ImportStatus>> ListImportStatuses()
         {
-            return await Task.FromResult<IEnumerable<FeatureDemandPlanning.Model.ImportStatus>>(
+            return await Task.FromResult(
                 _importDataStore.ImportStatusGetMany());
         }
         public async Task<FdpImportErrorExclusion> GetFdpImportErrorExclusion(IgnoredExceptionFilter filter)
@@ -163,9 +160,9 @@ namespace FeatureDemandPlanning.DataStore
             return await Task.FromResult(_importDataStore.FdpImportErrorExclusionDelete(fdpImportErrorExclusion));
         }
 
-        private DataTable GetImportFileAsDataTable(ImportQueue queuedItem)
+        private static DataTable GetImportFileAsDataTable(ImportQueue queuedItem, ImportFileSettings settings)
         {
-            return ExcelReader.ReadExcelAsDataTable(queuedItem.FilePath);
+            return ExcelReader.ReadExcelAsDataTable(queuedItem.FilePath, settings);
         }
         private ImportQueue BulkImportDataTableToDataStore(ImportQueue importQueue)
         {

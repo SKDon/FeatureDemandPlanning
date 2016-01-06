@@ -9,6 +9,12 @@ CREATE PROCEDURE [dbo].[Fdp_ProgrammeByGateway_GetMany]
 AS
 	SET NOCOUNT ON;
 	
+	DECLARE @ShowAll AS BIT;
+	SELECT @ShowAll = CAST(Value AS BIT) 
+	FROM Fdp_Configuration
+	WHERE
+	ConfigurationKey = 'ShowAllOXODocuments'
+	
 	SELECT 
 		  P.Id
 		, P.VehicleId
@@ -32,7 +38,12 @@ AS
 		, P.LastUpdated
 	FROM dbo.OXO_Programme_VW	AS P
 	JOIN dbo.OXO_Doc			AS D ON		P.Id		= D.Programme_Id
-									 AND	D.[Status]	= 'PUBLISHED'
+									 AND	
+									 (
+										@ShowAll = 1
+										OR
+										(@ShowAll = 0 AND D.[Status] = 'PUBLISHED')
+									 )
 	JOIN dbo.OXO_Gateway		AS G ON		D.Gateway	= G.Gateway
 	WHERE
 	(@Make IS NULL OR P.VehicleMake = @Make)

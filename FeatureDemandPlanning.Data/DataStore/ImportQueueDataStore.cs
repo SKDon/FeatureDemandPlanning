@@ -28,13 +28,16 @@ namespace FeatureDemandPlanning.DataStore
                     bulk.DestinationTableName = "dbo.Fdp_ImportData";
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(0, "FdpImportId"));
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(1, "LineNumber"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(2, "NSC or Importer Description (Vista Market)"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(3, "Country Description"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(4, "Derivative Code"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(5, "Trim Pack Description"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(6, "Bff Feature Code"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(7, "Feature Description"));
-                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(8, "Count of Specific Order No"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(2, "Pipeline Code"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(3, "Model Year Desc"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(4, "LineNumber"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(5, "NSC or Importer Description (Vista Market)"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(6, "Country Description"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(7, "Derivative Code"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(8, "Trim Pack Description"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(9, "Bff Feature Code"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(10, "Feature Description"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(11, "Count of Specific Order No"));
 
                     bulk.WriteToServer(importQueue.ImportData);
                     bulk.Close();

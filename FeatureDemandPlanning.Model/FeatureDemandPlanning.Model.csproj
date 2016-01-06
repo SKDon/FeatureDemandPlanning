@@ -182,6 +182,7 @@
     <Compile Include="Empty\EmptyVehicleList.cs" />
     <Compile Include="Empty\EmptyTakeRateDocument.cs" />
     <Compile Include="FdpOxoDoc.cs" />
+    <Compile Include="ImportFileSettings.cs" />
     <Compile Include="TakeRateDataItem.cs" />
     <Compile Include="TakeRateDataItemAudit.cs" />
     <Compile Include="TakeRateDataItemNote.cs" />

@@ -44,12 +44,19 @@ namespace FeatureDemandPlanning.Model.Helpers
     {
         public static DataTable ReadExcelAsDataTable(string filePath)
         {
+            return ReadExcelAsDataTable(filePath, new ImportFileSettings());
+        }
+
+        public static DataTable ReadExcelAsDataTable(string filePath, ImportFileSettings settings)
+        {
             var result = new DataTable();
             using (var workBook = new XLWorkbook(filePath))
             {
                 var firstRow = true;
 
-                foreach (var row in workBook.Worksheets.SelectMany(workSheet => workSheet.Rows()))
+                foreach (var row in workBook.Worksheets
+                    .SelectMany(workSheet => workSheet.Rows())
+                    .Skip(settings.SkipFirstXRows.GetValueOrDefault()))
                 {
                     // Use the first row to add columns to DataTable.
                     if (firstRow)

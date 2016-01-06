@@ -62,7 +62,7 @@ AS
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
 
-	IF ISNULL(@PageSize, 0) = 0
+	IF ISNULL(@PageSize, 0) = 0 AND @TotalRecords > 0 
 		SET @PageSize = @TotalRecords;
 	
 	SET @TotalPages = CEILING(@TotalRecords / CAST(@PageSize AS DECIMAL));

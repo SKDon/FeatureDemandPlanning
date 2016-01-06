@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -67,7 +68,6 @@ namespace FeatureDemandPlanning.Controllers
         }
         [HttpPost]
         [HandleError(View = "_ModalError")]
-        [OutputCache(Duration = 600, VaryByParam = "ImportParameter.Action")]
         public async Task<ActionResult> ModalContent(ImportParameters parameters)
         {
             Parameters = parameters;
@@ -142,7 +142,7 @@ namespace FeatureDemandPlanning.Controllers
         {
             var extension = Path.GetExtension(Parameters.UploadFile.FileName);
             Parameters.UploadFilePath = Path.Combine(DataContext.Configuration.Configuration.FdpUploadFilePath,
-                                          String.Format("{0}{1}", Guid.NewGuid().ToString(), extension));
+                                          string.Format("{0}{1}", Guid.NewGuid(), extension));
         }
         private void QueueItemForProcessing()
         {
@@ -150,8 +150,12 @@ namespace FeatureDemandPlanning.Controllers
         }
         private void ProcessQueuedItem()
         {
+            var settings = new ImportFileSettings()
+            {
+                SkipFirstXRows = ConfigurationSettings.SkipFirstXRowsInImportFile
+            };
             if (!(CurrentQueuedItem is EmptyImportQueue))
-                DataContext.Import.ProcessImportQueue(CurrentQueuedItem);
+                DataContext.Import.ProcessImportQueue(CurrentQueuedItem, settings);
         }
         private void ValidateImportParameters(string ruleSetName)
         {

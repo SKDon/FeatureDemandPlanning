@@ -4,7 +4,11 @@
 
 @if (Model.LatestNews.Count() == 0)
 {
-    <h5>No News</h5>
+    <div class="row inverse" style="font-size:0.8em;">
+        <div class="col-lg-12">
+            No news available
+        </div>
+    </div>
 }
 
 @foreach (var news in Model.LatestNews.Take(2))

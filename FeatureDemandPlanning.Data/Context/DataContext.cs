@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Interfaces;
+﻿using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
+using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -42,16 +37,16 @@ namespace FeatureDemandPlanning.DataStore
 
         public dynamic ConfigurationSettings { get { return _configurationContext.Configuration; } }
 
-        private IEmailDataContext _emailContext = null;
-        private IUserDataContext _userContext = null;
-        private IDocumentDataContext _documentContext = null;
-        private IConfigurationDataContext _configurationContext = null;
-        private IVehicleDataContext _vehicleContext = null;
-        private IForecastDataContext _forecastContext = null;
-        private IImportDataContext _importContext = null;
-        private IMarketDataContext _marketContext = null;
-        private ITakeRateDataContext _volumeContext = null;
-        private IReferenceDataContext _referenceDataContext = null;
-        private INewsDataContext _newsDataContext = null;
+        private readonly IEmailDataContext _emailContext;
+        private readonly IUserDataContext _userContext;
+        private readonly IDocumentDataContext _documentContext;
+        private readonly IConfigurationDataContext _configurationContext;
+        private readonly IVehicleDataContext _vehicleContext;
+        private readonly IForecastDataContext _forecastContext;
+        private readonly IImportDataContext _importContext;
+        private readonly IMarketDataContext _marketContext;
+        private readonly ITakeRateDataContext _volumeContext;
+        private readonly IReferenceDataContext _referenceDataContext;
+        private readonly INewsDataContext _newsDataContext;
     }
 }

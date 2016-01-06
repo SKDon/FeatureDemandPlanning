@@ -155,7 +155,7 @@ AS
 		) 
 		SELECT 
 			  Feature_Id
-			, Pack_Id
+			, NULL
 			, Model_Id
 			, OXO_Code
 			, 'O' + CAST(Model_Id AS NVARCHAR(10))
@@ -194,7 +194,7 @@ AS
 		) 
 		SELECT 
 			  Feature_Id
-			, Pack_Id
+			, NULL
 			, Model_Id
 			, OXO_Code
 			, 'O' + CAST(Model_Id AS NVARCHAR(10))

@@ -2,6 +2,8 @@
     [FdpImportDataId]                            INT            IDENTITY (1, 1) NOT NULL,
     [FdpImportId]                                INT            NOT NULL,
     [LineNumber]                                 INT            NULL,
+	[Pipeline Code]								 NVARCHAR (50)  NULL,
+	[Model Year Desc]							 NVARCHAR (50)  NULL,
     [NSC or Importer Description (Vista Market)] NVARCHAR (100) NULL,
     [Country Description]                        NVARCHAR (100) NULL,
     [Derivative Code]                            NVARCHAR (10)  NULL,
