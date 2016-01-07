@@ -49,11 +49,18 @@ namespace FeatureDemandPlanning.DataStore
         }
         public User FdpUserGet(UserFilter filter)
         {
-            User user = new EmptyUser();
+            User user;
             var results = FdpUserGetMany(filter);
             if (results.CurrentPage.Any())
             {
                 user = results.CurrentPage.First();
+            }
+            else
+            {
+                user = new User()
+                {
+                    CDSId = filter.CDSId
+                };
             }
             return user;
         }

@@ -186,28 +186,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 case enums.ImportAction.Summary:
                     model = await GetFullAndPartialViewModelForSummary(context, filter);
                     break;
-                case enums.ImportAction.NotSet:
-                    break;
-                case enums.ImportAction.MapMissingMarket:
-                    break;
-                case enums.ImportAction.AddMissingDerivative:
-                    break;
-                case enums.ImportAction.MapMissingDerivative:
-                    break;
-                case enums.ImportAction.AddMissingFeature:
-                    break;
-                case enums.ImportAction.MapMissingFeature:
-                    break;
-                case enums.ImportAction.AddMissingTrim:
-                    break;
-                case enums.ImportAction.MapMissingTrim:
-                    break;
-                case enums.ImportAction.IgnoreException:
-                    break;
-                case enums.ImportAction.AddSpecialFeature:
-                    break;
-                case enums.ImportAction.Upload:
-                    break;
                 default:
                     model = await GetFullAndPartialViewModel(context);
                     break;

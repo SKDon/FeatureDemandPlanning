@@ -629,4 +629,7 @@
       <Value>$(SqlCmdVar__1)</Value>
     </SqlCmdVariable>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="FeatureDemandPlanning.FdpSqlDb.publish.xml" />
+  </ItemGroup>
 </Project>
