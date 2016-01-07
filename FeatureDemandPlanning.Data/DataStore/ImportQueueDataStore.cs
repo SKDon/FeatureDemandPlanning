@@ -281,17 +281,18 @@ namespace FeatureDemandPlanning.DataStore
         {
             ImportError retVal = new EmptyImportError();
 
-            using (IDbConnection connection = DbHelper.GetDBConnection())
+            using (var connection = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@ExceptionId", filter.ExceptionId.Value, dbType: DbType.Int32);
+                    para.Add("@ExceptionId", filter.ExceptionId, DbType.Int32);
 
                     var results = connection.Query<ImportError>("dbo.Fdp_ImportError_Get", para, commandType: CommandType.StoredProcedure);
-                    if (results.Any())
+                    var importErrors = results as IList<ImportError> ?? results.ToList();
+                    if (importErrors.Any())
                     {
-                        retVal = results.First();
+                        retVal = importErrors.First();
                     }
                 }
                 catch (Exception ex)

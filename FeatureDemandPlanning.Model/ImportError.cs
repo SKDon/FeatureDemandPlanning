@@ -10,6 +10,7 @@ namespace FeatureDemandPlanning.Model
         public int FdpImportErrorId { get; set; }
         public int ProgrammeId { get; set; }
         public string Gateway { get; set; }
+        public int DocumentId { get; set; }
 
         public string LineNumber { get; set; }
         public int FdpImportErrorTypeId { get; set; }

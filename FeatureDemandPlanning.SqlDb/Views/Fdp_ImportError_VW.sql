@@ -1,10 +1,12 @@
 ﻿
+
 CREATE VIEW [dbo].[Fdp_ImportError_VW] AS
 
 	SELECT 
 		  I.FdpImportId
 		, I.ProgrammeId
 		, I.Gateway
+		, I.DocumentId
 		, E.FdpImportQueueId
 		, E.FdpImportErrorId
 		, E.LineNumber

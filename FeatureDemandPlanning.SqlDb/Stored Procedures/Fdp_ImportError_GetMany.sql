@@ -100,6 +100,7 @@ AS
 		, E.FdpImportQueueId AS ImportQueueId
 		, E.ProgrammeId
 		, E.Gateway
+		, E.DocumentId
 		, E.FdpImportErrorId
 		, RIGHT('0000000000' + CAST(E.LineNumber AS VARCHAR(10)), 10) AS LineNumber
 		, E.FdpImportErrorTypeId

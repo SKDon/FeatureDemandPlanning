@@ -9,6 +9,7 @@ AS
 		, E.FdpImportQueueId AS ImportQueueId
 		, E.ProgrammeId
 		, E.Gateway
+		, E.DocumentId
 		, E.FdpImportErrorId
 		, E.LineNumber
 		, E.FdpImportErrorTypeId

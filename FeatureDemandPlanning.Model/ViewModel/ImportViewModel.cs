@@ -1,14 +1,13 @@
-﻿using FeatureDemandPlanning.Model.Context;
-using FeatureDemandPlanning.Model.Extensions;
-using FeatureDemandPlanning.Model.Filters;
-using enums = FeatureDemandPlanning.Model.Enumerations;
-using FeatureDemandPlanning.Model.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Extensions;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Interfaces;
+using enums = FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {
@@ -52,7 +51,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         #region "Constructors"
 
-        public ImportViewModel() : base()
+        public ImportViewModel()
         {
             InitialiseMembers();
         }
@@ -76,8 +75,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             get
             {
-                return AvailableProgrammes.Select(p => new Gateway()
-                    {
+                return AvailableProgrammes.Select(p => new Gateway
+                {
                         VehicleName = p.VehicleName,
                         Name = p.Gateway,
                         ModelYear = p.ModelYear
@@ -106,8 +105,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             get
             {
-                return AvailableProgrammes.Select(p => new ModelYear()
-                    {
+                return AvailableProgrammes.Select(p => new ModelYear
+                {
                         VehicleName = p.VehicleName,
                         Name = p.ModelYear
                     })
@@ -173,25 +172,45 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             ImportViewModel model = null;
 
-            if (filter.Action == ImportAction.ImportQueue)
+            switch (filter.Action)
             {
-                model = await GetFullAndPartialViewModelForImportQueue(context, filter);
-            }
-            else if (filter.Action == ImportAction.Exception)
-            {
-                model = await GetFullAndPartialViewModelForException(context, filter);
-            }
-            else if (filter.Action == ImportAction.ImportQueueItem)
-            {
-                model = await GetFullAndPartialViewModelForImportQueueItem(context, filter);
-            }
-            else if (filter.Action == ImportAction.Summary)
-            {
-                model = await GetFullAndPartialViewModelForSummary(context, filter);
-            }
-            else
-            {
-                model = await GetFullAndPartialViewModel(context, filter);
+                case enums.ImportAction.ImportQueue:
+                    model = await GetFullAndPartialViewModelForImportQueue(context, filter);
+                    break;
+                case enums.ImportAction.Exception:
+                    model = await GetFullAndPartialViewModelForException(context, filter);
+                    break;
+                case enums.ImportAction.ImportQueueItem:
+                    model = await GetFullAndPartialViewModelForImportQueueItem(context, filter);
+                    break;
+                case enums.ImportAction.Summary:
+                    model = await GetFullAndPartialViewModelForSummary(context, filter);
+                    break;
+                case enums.ImportAction.NotSet:
+                    break;
+                case enums.ImportAction.MapMissingMarket:
+                    break;
+                case enums.ImportAction.AddMissingDerivative:
+                    break;
+                case enums.ImportAction.MapMissingDerivative:
+                    break;
+                case enums.ImportAction.AddMissingFeature:
+                    break;
+                case enums.ImportAction.MapMissingFeature:
+                    break;
+                case enums.ImportAction.AddMissingTrim:
+                    break;
+                case enums.ImportAction.MapMissingTrim:
+                    break;
+                case enums.ImportAction.IgnoreException:
+                    break;
+                case enums.ImportAction.AddSpecialFeature:
+                    break;
+                case enums.ImportAction.Upload:
+                    break;
+                default:
+                    model = await GetFullAndPartialViewModel(context);
+                    break;
             }
             return model;
         }
@@ -200,19 +219,18 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         #region "Private Members"
 
-        private static async Task<ImportViewModel> GetFullAndPartialViewModel(IDataContext context,
-                                                                              ImportQueueFilter filter)
+        private static async Task<ImportViewModel> GetFullAndPartialViewModel(IDataContext context)
         {
-            var model = new ImportViewModel(SharedModelBase.GetBaseModel(context))
+            var model = new ImportViewModel(GetBaseModel(context))
             {
-                Configuration = context.ConfigurationSettings
+                Configuration = context.ConfigurationSettings,
+                AvailableProgrammes = await
+                    Task.FromResult(context.Vehicle.ListProgrammes(new ProgrammeFilter())),
+                AvailableDocuments = await
+                    Task.FromResult(context.Vehicle.ListPublishedDocuments(new ProgrammeFilter())),
+                AvailableImportStatuses = await context.Import.ListImportStatuses()
             };
- 
-            model.AvailableProgrammes = await
-                Task.FromResult<IEnumerable<Programme>>(context.Vehicle.ListProgrammes(new ProgrammeFilter()));
-            model.AvailableDocuments = await
-                Task.FromResult(context.Vehicle.ListPublishedDocuments(new ProgrammeFilter()));
-            model.AvailableImportStatuses = await context.Import.ListImportStatuses();
+
             model.AvailableDocuments = context.Vehicle.ListPublishedDocuments(new ProgrammeFilter());
 
             return model;
@@ -220,13 +238,13 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static async Task<ImportViewModel> GetFullAndPartialViewModelForImportQueue(IDataContext context,
                                                                                             ImportQueueFilter filter)
         {
-            var model = new ImportViewModel(SharedModelBase.GetBaseModel(context))
+            var model = new ImportViewModel(GetBaseModel(context))
             {
-                PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
-                Configuration = context.ConfigurationSettings
+                PageIndex = filter.PageIndex ?? 1,
+                PageSize = filter.PageSize ?? int.MaxValue,
+                Configuration = context.ConfigurationSettings,
+                ImportQueue = await context.Import.ListImportQueue(filter)
             };
-            model.ImportQueue = await context.Import.ListImportQueue(filter);
             model.TotalPages = model.ImportQueue.TotalPages;
             model.TotalRecords = model.ImportQueue.TotalRecords;
             model.TotalDisplayRecords = model.ImportQueue.TotalDisplayRecords;
@@ -239,16 +257,16 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static async Task<ImportViewModel> GetFullAndPartialViewModelForException(IDataContext context,
                                                                                           ImportQueueFilter filter)
         {
-            var model = new ImportViewModel(SharedModelBase.GetBaseModel(context))
+            var model = new ImportViewModel(GetBaseModel(context))
             {
-                PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
-                Configuration = context.ConfigurationSettings
+                PageIndex = filter.PageIndex ?? 1,
+                PageSize = filter.PageSize ?? int.MaxValue,
+                Configuration = context.ConfigurationSettings,
+                CurrentException = await context.Import.GetException(filter)
             };
-            model.CurrentException = await context.Import.GetException(filter);
 
-            var programmeFilter = new ProgrammeFilter(model.CurrentException.ProgrammeId);
-            var featureFilter = new FeatureFilter() { ProgrammeId = model.CurrentException.ProgrammeId };
+            var programmeFilter = new ProgrammeFilter(model.CurrentException.ProgrammeId) { DocumentId = model.CurrentException.DocumentId };
+            var featureFilter = new FeatureFilter { ProgrammeId = model.CurrentException.ProgrammeId, DocumentId = model.CurrentException.DocumentId };
 
             model.Programme = context.Vehicle.GetProgramme(programmeFilter);
             programmeFilter.VehicleId = model.Programme.VehicleId;
@@ -263,7 +281,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.AvailableFeatureGroups = context.Vehicle.ListFeatureGroups(programmeFilter);
             model.AvailableTrimLevels = context.Vehicle.ListTrimLevels(programmeFilter);
 
-            var trimFilter = new TrimMappingFilter()
+            var trimFilter = new TrimMappingFilter
             {
                 CarLine = model.Programme.VehicleName,
                 ModelYear = model.Programme.ModelYear,
@@ -272,7 +290,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
             model.AvailableTrim = context.Vehicle.ListTrim(trimFilter);
 
-            var derivativeFilter = new DerivativeFilter()
+            var derivativeFilter = new DerivativeFilter
             {
                 CarLine = model.Programme.VehicleName,
                 ModelYear = model.Programme.ModelYear,
@@ -285,14 +303,14 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static async Task<ImportViewModel> GetFullAndPartialViewModelForImportQueueItem(IDataContext context,
                                                                                                 ImportQueueFilter filter)
         {
-            var model = new ImportViewModel(SharedModelBase.GetBaseModel(context))
+            var model = new ImportViewModel(GetBaseModel(context))
             {
-                PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
-                Configuration = context.ConfigurationSettings
+                PageIndex = filter.PageIndex ?? 1,
+                PageSize = filter.PageSize ?? int.MaxValue,
+                Configuration = context.ConfigurationSettings,
+                CurrentImport = await context.Import.GetImportQueue(filter),
+                AvailableExceptionTypes = await context.Import.ListExceptionTypes(filter)
             };
-            model.CurrentImport = await context.Import.GetImportQueue(filter);
-            model.AvailableExceptionTypes = await context.Import.ListExceptionTypes(filter);
 
             var programmeFilter = new ProgrammeFilter(model.CurrentImport.ProgrammeId);
             model.Exceptions = await context.Import.ListExceptions(filter);
@@ -306,10 +324,12 @@ namespace FeatureDemandPlanning.Model.ViewModel
             return model;
         }
 
-        private async static Task<ImportViewModel> GetFullAndPartialViewModelForSummary(IDataContext context, ImportQueueFilter filter)
+        private static async Task<ImportViewModel> GetFullAndPartialViewModelForSummary(IDataContext context, ImportQueueFilter filter)
         {
-            var model = new ImportViewModel(SharedModelBase.GetBaseModel(context));
-            model.Summary = await context.Import.GetImportSummary(filter);
+            var model = new ImportViewModel(GetBaseModel(context))
+            {
+                Summary = await context.Import.GetImportSummary(filter)
+            };
 
             return model;
         }

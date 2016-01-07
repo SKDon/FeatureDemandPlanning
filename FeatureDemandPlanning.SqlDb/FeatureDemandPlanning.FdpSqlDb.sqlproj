@@ -171,7 +171,10 @@
     <Build Include="Views\Fdp_ForecastComparison_VW.sql" />
     <Build Include="Views\Fdp_Gateways_VW.sql" />
     <Build Include="Views\Fdp_Import_VW.sql" />
-    <Build Include="Views\Fdp_ImportError_VW.sql" />
+    <Build Include="Views\Fdp_ImportError_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Views\Fdp_ImportQueue_VW.sql" />
     <Build Include="Views\Fdp_ImportQueueError_VW.sql" />
     <Build Include="Views\Fdp_MarketMapping_VW.sql">
@@ -212,8 +215,14 @@
     <Build Include="Stored Procedures\Fdp_ForecastComparisonTrim_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ForecastComparisonVehicle_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ImportData_Process.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportError_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportError_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportError_Get.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ImportError_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_ImportError_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_Save.sql" />
