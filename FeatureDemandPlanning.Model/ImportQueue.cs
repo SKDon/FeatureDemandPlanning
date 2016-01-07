@@ -30,6 +30,8 @@ namespace FeatureDemandPlanning.Model
         public int? DocumentId { get; set; }
         public string Document { get; set; }
 
+        public string Error { get; set; }
+
         public string VehicleDescription
         {
             get

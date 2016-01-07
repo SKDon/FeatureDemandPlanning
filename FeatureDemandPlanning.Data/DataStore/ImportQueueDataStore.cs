@@ -1,15 +1,15 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Dapper;
-using enums = FeatureDemandPlanning.Model.Enumerations;
-using FeatureDemandPlanning.Model.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using FeatureDemandPlanning.Model.Context;
-using FeatureDemandPlanning.Model.Filters;
 using System.Data.SqlClient;
+using System.Linq;
+using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Helpers;
+using enums = FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -54,7 +54,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpImportId", importQueue.ImportId, dbType: DbType.Int32);
+                    para.Add("@FdpImportId", importQueue.ImportId, DbType.Int32);
                     if (importQueue.LineNumber.HasValue)
                     {
                         para.Add("@LineNumber", importQueue.LineNumber, DbType.Int32);
@@ -84,30 +84,30 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                         
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
                     }
                     if (filter.ImportStatus != enums.ImportStatus.NotSet)
                     {
-                        para.Add("@FdpImportStatusId", (int)filter.ImportStatus, dbType: DbType.Int32);
+                        para.Add("@FdpImportStatusId", (int)filter.ImportStatus, DbType.Int32);
                     }
                     if (!string.IsNullOrEmpty(filter.FilterMessage))
                     {
-                        para.Add("@FilterMessage", filter.FilterMessage, dbType: DbType.String, size: 50);
+                        para.Add("@FilterMessage", filter.FilterMessage, DbType.String, size: 50);
                     }
                     //if (filter.SortIndex.HasValue)
                     //{
                     //    para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
                     //}
-                    para.Add("@SortIndex", filter.SortIndex.GetValueOrDefault(), dbType: DbType.Int32);
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    para.Add("@SortIndex", filter.SortIndex.GetValueOrDefault(), DbType.Int32);
+                    if (filter.SortDirection != enums.SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        var direction = filter.SortDirection == enums.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
                     else
                     {
@@ -124,7 +124,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<ImportQueue>() 
+                    retVal = new PagedResults<ImportQueue>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -164,7 +164,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpImportQueueId", importQueueId, dbType: DbType.Int32);
+                    para.Add("@FdpImportQueueId", importQueueId, DbType.Int32);
                     
                     var result = conn.Query<ImportQueueDataItem>("dbo.Fdp_ImportQueue_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
 
@@ -192,7 +192,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpImportQueueId", importQueueId, dbType: DbType.Int32);
+                    para.Add("@FdpImportQueueId", importQueueId, DbType.Int32);
 
                     var results = conn.Query<ImportSummary>("dbo.Fdp_ImportQueueSummary_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -221,7 +221,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
 
-                    para.Add("@ImportQueueId", importError.ImportQueueId, dbType: DbType.Int32);
+                    para.Add("@ImportQueueId", importError.ImportQueueId, DbType.Int32);
                     para.Add("@Error", dbType: DbType.String, size: -1);
 
                     conn.Execute(procName, para, commandType: CommandType.StoredProcedure);
@@ -240,21 +240,21 @@ namespace FeatureDemandPlanning.DataStore
 
         public ImportQueue ImportQueueSave(ImportQueue importQueue)
         {
-            ImportQueue retVal = new EmptyImportQueue();
+            ImportQueue retVal;
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
 
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String, size: 16);
-                    para.Add("@OriginalFileName", importQueue.OriginalFileName, dbType: DbType.String);
-                    para.Add("@FilePath", importQueue.FilePath, dbType: DbType.String);
-                    para.Add("@FdpImportTypeId", (int)importQueue.ImportType.ImportTypeDefinition, dbType: DbType.Int32);
-                    para.Add("@FdpImportStatusId", (int)importQueue.ImportStatus.ImportStatusCode, dbType: DbType.Int32);
-                    para.Add("@ProgrammeId", importQueue.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@Gateway", importQueue.Gateway, dbType: DbType.String);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String, size: 16);
+                    para.Add("@OriginalFileName", importQueue.OriginalFileName, DbType.String);
+                    para.Add("@FilePath", importQueue.FilePath, DbType.String);
+                    para.Add("@FdpImportTypeId", (int)importQueue.ImportType.ImportTypeDefinition, DbType.Int32);
+                    para.Add("@FdpImportStatusId", (int)importQueue.ImportStatus.ImportStatusCode, DbType.Int32);
+                    para.Add("@ProgrammeId", importQueue.ProgrammeId, DbType.Int32);
+                    para.Add("@Gateway", importQueue.Gateway, DbType.String);
                     para.Add("@DocumentId", importQueue.DocumentId, DbType.Int32);
 
                     var result = conn
@@ -276,6 +276,37 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
 
+        }
+
+        public ImportQueue ImportQueueUpdateStatus(ImportQueueFilter filter)
+        {
+            ImportQueue retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    para.Add("@ImportQueueId", filter.ImportQueueId, DbType.Int32);
+                    para.Add("@ImportStatusId", (int)filter.ImportStatus, DbType.Int32);
+                    if (!string.IsNullOrEmpty(filter.ErrorMessage))
+                    {
+                        para.Add("@ErrorMessage", filter.ErrorMessage, DbType.String);
+                    }
+             
+                    retVal = conn
+                        .Query<ImportQueue>("dbo.Fdp_ImportQueue_UpdateStatus", para, commandType: CommandType.StoredProcedure)
+                        .FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("ImportQueueDataStore.ImportQueueUpdateStatus", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
         }
         public ImportError ImportErrorGet(ImportQueueFilter filter)
         {
@@ -319,34 +350,34 @@ namespace FeatureDemandPlanning.DataStore
                     var totalImportedRecords = 0;
                     var totalFailedRecords = 0;
 
-                    para.Add("@FdpImportQueueId", filter.ImportQueueId.Value, dbType: DbType.Int32);
+                    para.Add("@FdpImportQueueId", filter.ImportQueueId.Value, DbType.Int32);
 
                     if (filter.ExceptionType != enums.ImportExceptionType.NotSet)
                     {
-                        para.Add("@FdpImportExceptionTypeId", (int)filter.ExceptionType, dbType: DbType.Int32);
+                        para.Add("@FdpImportExceptionTypeId", (int)filter.ExceptionType, DbType.Int32);
                     }
                     if (!string.IsNullOrEmpty(filter.FilterMessage))
                     {
-                        para.Add("@FilterMessage", filter.FilterMessage, dbType: DbType.String, size: 50);
+                        para.Add("@FilterMessage", filter.FilterMessage, DbType.String, size: 50);
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
-                    para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 100, dbType: DbType.Int32);
+                    para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 100, DbType.Int32);
                     
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.GetValueOrDefault(), dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.GetValueOrDefault(), DbType.Int32);
                     }
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    if (filter.SortDirection != enums.SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        var direction = filter.SortDirection == enums.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -363,7 +394,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalImportedRecords = para.Get<int>("@TotalImportedRecords");
                         totalFailedRecords = para.Get<int>("@TotalFailedRecords");
                     }
-                    retVal = new PagedResults<ImportError>()
+                    retVal = new PagedResults<ImportError>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -393,9 +424,9 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@ExceptionId", filter.ExceptionId.Value, dbType: DbType.Int32);
-                    para.Add("@IsExcluded", true, dbType:DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@ExceptionId", filter.ExceptionId.Value, DbType.Int32);
+                    para.Add("@IsExcluded", true, DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var results = connection.Query<ImportError>("dbo.Fdp_ImportErrorExclusion_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -421,9 +452,9 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpImportErrorId", filter.ExceptionId.Value, dbType: DbType.Int32);
-                    para.Add("@IsExcluded", true, dbType: DbType.Boolean);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@FdpImportErrorId", filter.ExceptionId.Value, DbType.Int32);
+                    para.Add("@IsExcluded", true, DbType.Boolean);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var results = connection.Query<ImportError>("dbo.Fdp_ImportError_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -449,8 +480,8 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpImportQueueId", filter.ImportQueueId.Value, dbType: DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@FdpImportQueueId", filter.ImportQueueId.Value, DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     results = connection.Query<ImportExceptionType>("dbo.Fdp_ImportErrorType_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
@@ -465,7 +496,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public IEnumerable<ImportStatus> ImportStatusGetMany()
         {
-            var retVal = new List<FeatureDemandPlanning.Model.ImportStatus>();
+            var retVal = new List<ImportStatus>();
 
             using (IDbConnection connection = DbHelper.GetDBConnection())
             {
@@ -477,7 +508,7 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         foreach (var result in results)
                         {
-                            retVal.Add(new ImportStatus()
+                            retVal.Add(new ImportStatus
                             {
                                 ImportStatusCode = (enums.ImportStatus)result.FdpImportStatusId,
                                 Status = result.Status,
@@ -503,8 +534,8 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpImportErrorExclusionId", fdpImportErrorExclusion.FdpImportErrorExclusionId.GetValueOrDefault(), dbType: DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@FdpImportErrorExclusionId", fdpImportErrorExclusion.FdpImportErrorExclusionId.GetValueOrDefault(), DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<FdpImportErrorExclusion>("Fdp_ImportErrorExclusion_Delete", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -528,7 +559,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpImportErrorExclusionId", filter.IgnoredExceptionId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpImportErrorExclusionId", filter.IgnoredExceptionId.GetValueOrDefault(), DbType.Int32);
 
                     var results = conn.Query<FdpImportErrorExclusion>("Fdp_ImportErrorExclusion_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -558,32 +589,32 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (!string.IsNullOrEmpty(filter.CarLine))
                     {
-                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                        para.Add("@CarLine", filter.CarLine, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.ModelYear))
                     {
-                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                        para.Add("@ModelYear", filter.ModelYear, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    if (filter.SortDirection != enums.SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        var direction = filter.SortDirection == enums.SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -596,7 +627,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<FdpImportErrorExclusion>()
+                    retVal = new PagedResults<FdpImportErrorExclusion>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -623,7 +654,7 @@ namespace FeatureDemandPlanning.DataStore
         private void HydrateImportErrors(ImportQueueDataItem importQueue, IDbConnection connection)
         {
             var para = new DynamicParameters();
-            para.Add("@FdpImportQueueId", importQueue.ImportQueueId, dbType: DbType.Int32);
+            para.Add("@FdpImportQueueId", importQueue.ImportQueueId, DbType.Int32);
 
             importQueue.Errors = connection.Query<ImportError>("dbo.Fdp_ImportError_GetMany", para, commandType: CommandType.StoredProcedure);
         }
@@ -634,7 +665,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public static ImportStatus ToImportStatus(ImportQueueDataItem dataItem)
         {
-            return new ImportStatus()
+            return new ImportStatus
             {
                 ImportStatusCode = (enums.ImportStatus)dataItem.FdpImportStatusId,
                 Status = dataItem.Status
@@ -647,7 +678,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public static ImportType ToImportType(ImportQueueDataItem dataItem)
         {
-            return new ImportType()
+            return new ImportType
             {
                 ImportTypeDefinition = (enums.ImportType)dataItem.FdpImportTypeId,
                 Type = dataItem.Type
@@ -665,7 +696,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public static ImportQueue ToImportQueue(ImportQueueDataItem dataItem)
         {
-            return new ImportQueue()
+            return new ImportQueue
             {
                 ImportQueueId = dataItem.FdpImportQueueId,
                 ImportId = dataItem.FdpImportId,
@@ -684,7 +715,8 @@ namespace FeatureDemandPlanning.DataStore
                 VehicleAKA = dataItem.VehicleAKA,
                 ModelYear = dataItem.ModelYear,
                 HasErrors = dataItem.HasErrors,
-                ErrorCount = dataItem.ErrorCount
+                ErrorCount = dataItem.ErrorCount,
+                Error = dataItem.Error
             };
         }
     }

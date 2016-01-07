@@ -54,7 +54,10 @@ namespace FeatureDemandPlanning.DataStore
             
             return await Task.FromResult(_importDataStore.ImportQueueGet(importQueueId));
         }
-
+        public async Task<ImportQueue> UpdateStatus(ImportQueueFilter filter)
+        {
+            return await Task.FromResult(_importDataStore.ImportQueueUpdateStatus(filter));
+        }
         Task<ImportStatus> IImportDataContext.GetProcessStatus(ImportQueue importItem)
         {
             throw new NotImplementedException();

@@ -155,7 +155,7 @@ page.ImportQueuePage = function (models) {
                     "sClass": "text-center",
                 }
                 ,{
-                    "sTitle": "Errors",
+                    "sTitle": "Data Errors",
                     "sName": "ERRORS",
                     "bSearchable": false,
                     "bSortable": false,

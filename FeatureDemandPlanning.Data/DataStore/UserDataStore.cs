@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using FeatureDemandPlanning.Model;
 using System.Data;
-using FeatureDemandPlanning.Model.Helpers;
-using FeatureDemandPlanning.Model.Dapper;
-using System.Threading.Tasks;
+using System.Linq;
+using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
-using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -17,7 +16,7 @@ namespace FeatureDemandPlanning.DataStore
     {
         public UserDataStore(string cdsid)
         {
-            this.CurrentCDSID = cdsid;
+            CurrentCDSID = cdsid;
         }
         public User FdpUserSave(User userToAdd)
         {
@@ -28,14 +27,15 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@CDSId", userToAdd.CDSId, dbType: DbType.String);
-                    para.Add("@FullName", userToAdd.FullName, dbType: DbType.String);
-                    para.Add("@IsAdmin", userToAdd.IsAdmin, dbType: DbType.Boolean);
-                    para.Add("@CreatorCDSId", this.CurrentCDSID, dbType: DbType.String);
+                    para.Add("@CDSId", userToAdd.CDSId, DbType.String);
+                    para.Add("@FullName", userToAdd.FullName, DbType.String);
+                    para.Add("@IsAdmin", userToAdd.IsAdmin, DbType.Boolean);
+                    para.Add("@CreatorCDSId", CurrentCDSID, DbType.String);
                     
                     var results = conn.Query<User>("dbo.Fdp_User_Save", para, commandType: CommandType.StoredProcedure);
-                    if (results.Any()) {
-                        retVal = results.First();
+                    var enumerable = results as IList<User> ?? results.ToList();
+                    if (enumerable.Any()) {
+                        retVal = enumerable.First();
                     }
                 }
                 catch (Exception ex)
@@ -57,7 +57,7 @@ namespace FeatureDemandPlanning.DataStore
             }
             else
             {
-                user = new User()
+                user = new User
                 {
                     CDSId = filter.CDSId
                 };
@@ -79,32 +79,32 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (!string.IsNullOrEmpty(filter.CDSId))
                     {
-                        para.Add("@CDSId", filter.CDSId, dbType: DbType.String);
+                        para.Add("@CDSId", filter.CDSId, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.FilterMessage))
                     {
-                        para.Add("@FilterMessage", filter.FilterMessage, dbType: DbType.String);
+                        para.Add("@FilterMessage", filter.FilterMessage, DbType.String);
                     }
                     if (filter.HideInactiveUsers.HasValue)
                     {
-                        para.Add("@HideInactiveUsers", filter.HideInactiveUsers, dbType: DbType.Boolean);
+                        para.Add("@HideInactiveUsers", filter.HideInactiveUsers, DbType.Boolean);
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    if (filter.SortDirection != SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        var direction = filter.SortDirection == SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -117,7 +117,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<User>()
+                    retVal = new PagedResults<User>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -152,9 +152,9 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@CDSId", userToEnable.CDSId, dbType: DbType.String);
-                    para.Add("@IsActive", true, dbType: DbType.Boolean);
-                    para.Add("@UpdatedByCDSId", this.CurrentCDSID, dbType: DbType.String);
+                    para.Add("@CDSId", userToEnable.CDSId, DbType.String);
+                    para.Add("@IsActive", true, DbType.Boolean);
+                    para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<User>("dbo.Fdp_User_SetIsActive", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -179,9 +179,9 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@CDSId", userToDisable.CDSId, dbType: DbType.String);
-                    para.Add("@IsActive", false, dbType: DbType.Boolean);
-                    para.Add("@UpdatedByCDSId", this.CurrentCDSID, dbType: DbType.String);
+                    para.Add("@CDSId", userToDisable.CDSId, DbType.String);
+                    para.Add("@IsActive", false, DbType.Boolean);
+                    para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<User>("dbo.Fdp_User_SetIsActive", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -206,9 +206,9 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@CDSId", userToSet.CDSId, dbType: DbType.String);
-                    para.Add("@IsAdmin", true, dbType: DbType.Boolean);
-                    para.Add("@UpdatedByCDSId", this.CurrentCDSID, dbType: DbType.String);
+                    para.Add("@CDSId", userToSet.CDSId, DbType.String);
+                    para.Add("@IsAdmin", true, DbType.Boolean);
+                    para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<User>("dbo.Fdp_User_SetIsAdmin", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -233,9 +233,9 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@CDSId", userToUnset.CDSId, dbType: DbType.String);
-                    para.Add("@IsAdmin", false, dbType: DbType.Boolean);
-                    para.Add("@UpdatedByCDSId", this.CurrentCDSID, dbType: DbType.String);
+                    para.Add("@CDSId", userToUnset.CDSId, DbType.String);
+                    para.Add("@IsAdmin", false, DbType.Boolean);
+                    para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<User>("dbo.Fdp_User_SetIsAdmin", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())

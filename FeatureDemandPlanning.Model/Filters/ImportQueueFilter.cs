@@ -12,6 +12,7 @@ namespace FeatureDemandPlanning.Model.Filters
         public enums.ImportStatus ImportStatus { get; set; }
         public enums.ImportExceptionType ExceptionType { get; set;}
         public bool? IsActive { get; set; }
+        public string ErrorMessage { get; set; }
         
         public ImportQueueFilter()
         {

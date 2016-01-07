@@ -3,6 +3,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_ImportQueue_VW] AS
 
 	SELECT 
@@ -16,7 +17,7 @@ CREATE VIEW [dbo].[Fdp_ImportQueue_VW] AS
 		, Q.OriginalFileName
 		, Q.FilePath
 		, Q.UpdatedOn
-		, NULL AS Error
+		, E2.Error
 		, E1.ErrorOn
 		
 	FROM Fdp_ImportQueue			AS Q
@@ -26,10 +27,12 @@ CREATE VIEW [dbo].[Fdp_ImportQueue_VW] AS
 	(
 		SELECT 
 			  FdpImportQueueId
+			, MAX(E.FdpImportQueueErrorId) AS FdpImportQueueErrorId
 			, MAX(E.ErrorOn) AS ErrorOn
 		FROM Fdp_ImportQueueError_VW AS E
 		GROUP BY FdpImportQueueId
 	)
 	AS E1 ON Q.FdpImportQueueId = E1.FdpImportQueueId
+	LEFT JOIN Fdp_ImportQueueError_VW AS E2 ON E1.FdpImportQueueErrorId = E2.FdpImportQueueErrorId
 	WHERE
 	Q.FdpImportStatusId <> 5; -- Don't show cancelled items, as they have been cancelled by the system and should not be visible

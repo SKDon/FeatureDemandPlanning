@@ -108,13 +108,16 @@ namespace FeatureDemandPlanning.Controllers
             SaveImportFileToFileSystem();
             QueueItemForProcessing();
             ProcessQueuedItem();
+            RefreshQueuedItem();
 
-            return JsonGetSuccess();
+            return CurrentQueuedItem.HasErrors ? 
+                JsonGetFailure(CurrentQueuedItem.Error) : 
+                JsonGetSuccess();
         }
      
         #region "Private Methods"
 
-        private string GetContentPartialViewName(ImportAction forAction)
+        private static string GetContentPartialViewName(ImportAction forAction)
         {
             return string.Format("_{0}", Enum.GetName(forAction.GetType(), forAction));
         }
@@ -149,12 +152,42 @@ namespace FeatureDemandPlanning.Controllers
         }
         private void ProcessQueuedItem()
         {
-            var settings = new ImportFileSettings()
+            Exception errorState = null;
+
+            try
             {
-                SkipFirstXRows = ConfigurationSettings.SkipFirstXRowsInImportFile
-            };
-            if (!(CurrentQueuedItem is EmptyImportQueue))
-                DataContext.Import.ProcessImportQueue(CurrentQueuedItem, settings);
+                var settings = new ImportFileSettings()
+                {
+                    SkipFirstXRows = ConfigurationSettings.SkipFirstXRowsInImportFile
+                };
+                if (!(CurrentQueuedItem is EmptyImportQueue))
+                    DataContext.Import.ProcessImportQueue(CurrentQueuedItem, settings);
+            }
+            catch (Exception ex)
+            {
+                errorState = ex;
+            }
+            finally
+            {
+                if (errorState != null)
+                {
+                    DataContext.Import.UpdateStatus(new ImportQueueFilter()
+                    {
+                        ImportQueueId = CurrentQueuedItem.ImportQueueId,
+                        ImportStatus = enums.ImportStatus.Error,
+                        ErrorMessage = errorState.Message
+                    });
+                }
+            }
+        }
+
+        private void RefreshQueuedItem()
+        {
+            if (CurrentQueuedItem == null || CurrentQueuedItem is EmptyImportQueue)
+                return;
+
+            CurrentQueuedItem = 
+                DataContext.Import.GetImportQueue(new ImportQueueFilter(CurrentQueuedItem.ImportQueueId.GetValueOrDefault())).Result;
         }
         private void ValidateImportParameters(string ruleSetName)
         {
