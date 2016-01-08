@@ -1,5 +1,6 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_Feature_VW]
 AS
 
@@ -21,7 +22,7 @@ SELECT
 	, GR.Id					AS FeatureGroupId
 	, F.FeatureGroup
 	, F.FeatureSubGroup
-	, P.Id					AS FeaturePackId
+	, P.PackId				AS FeaturePackId
 	, P.PackName			AS FeaturePackName
 	, P.PackFeatureCode		AS FeaturePackCode
 	, F.DisplayOrder
@@ -44,7 +45,7 @@ LEFT JOIN OXO_Feature_Group		AS GR	ON F.FeatureGroup	= GR.Group_Name
 											F.FeatureSubGroup IS NULL
 										)
 LEFT JOIN OXO_Pack_Feature_VW	AS P	ON F.ProgrammeId	= P.ProgrammeId
-										AND F.ID			= P.Id
+										AND F.FeatureCode	= P.FeatureCode
 
 UNION
 

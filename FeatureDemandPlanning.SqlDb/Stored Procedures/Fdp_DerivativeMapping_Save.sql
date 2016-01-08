@@ -2,7 +2,7 @@
 	  @ImportDerivativeCode NVARCHAR(20)
 	, @ProgrammeId			INT
 	, @Gateway				NVARCHAR(100)
-	, @DerivativeCode		NVARCHAR(10)
+	, @DerivativeCode		NVARCHAR(10) = NULL
 	, @BodyId				INT
 	, @EngineId				INT
 	, @TransmissionId		INT
@@ -24,7 +24,7 @@ BEGIN
 					  AND
 					  Gateway = @Gateway
 					  AND
-					  DerivativeCode = @DerivativeCode)
+					  (@DerivativeCode IS NULL OR DerivativeCode = @DerivativeCode))
 					  
 			INSERT INTO Fdp_DerivativeMapping
 			(

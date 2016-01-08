@@ -217,64 +217,121 @@ AS
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 	
 	-- From the import data, create an FDP_VolumeHeader entry for each distinct programme 
-	-- in the import
+	-- in the import. Note that if a volume header (take rate file) already exists
+	-- data will be added to that
+	-- If the last take rate file has been published, a new file will be created if necessary
 	
-	SET @Message = 'Adding header information...';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT;
-	
-	INSERT INTO Fdp_VolumeHeader
+	IF NOT EXISTS
 	(
-		  CreatedOn
-		, CreatedBy
-		, DocumentId
-		, FdpTakeRateStatusId
-		, IsManuallyEntered
+		SELECT TOP 1 1 
+		FROM Fdp_VolumeHeader
+		WHERE
+		DocumentId = @OxoDocId
+		AND
+		FdpTakeRateStatusId <> 3
 	)
-	SELECT
-		  MAX(I.CreatedOn)	AS CreatedOn
-		, MAX(I.CreatedBy)	AS CreatedBy
-		, I.DocumentId
-		, 1					AS FdpTakeRateStatusId
-		, 0					AS IsManuallyCreated
-	FROM 
-	FDP_Import_VW				AS I
-	LEFT JOIN Fdp_VolumeHeader	AS CUR ON I.DocumentId = CUR.DocumentId
-	WHERE 
-	I.IsExistingData = 0
-	AND
-	I.IsMarketMissing = 0
-	AND 
-	I.IsDerivativeMissing = 0
-	AND
-	I.IsTrimMissing = 0
-	AND 
-	I.IsFeatureMissing = 0
-	AND
-	I.IsSpecialFeatureCode = 0
-	AND
-	I.FdpImportId = @FdpImportId
-	AND
-	I.FdpImportQueueId = @FdpImportQueueId
-	AND
-	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
-	AND
-	CUR.FdpVolumeHeaderId IS NULL
-
-	GROUP BY
-	  I.FdpImportId
-	, I.DocumentId
+	BEGIN
+		SET @Message = 'Adding take rate file...';
+		RAISERROR(@Message, 0, 1) WITH NOWAIT;
 	
-	SELECT @FdpVolumeHeaderId = FdpVolumeHeaderId
-	FROM
-	Fdp_VolumeHeader
-	WHERE
-	DocumentId = @OxoDocId;
+		INSERT INTO Fdp_VolumeHeader
+		(
+			  CreatedOn
+			, CreatedBy
+			, DocumentId
+			, FdpTakeRateStatusId
+			, IsManuallyEntered
+		)
+		SELECT
+			  I.CreatedOn
+			, I.CreatedBy
+			, I.DocumentId
+			, 1					AS FdpTakeRateStatusId
+			, 0					AS IsManuallyCreated
+		FROM 
+		FDP_Import	AS I
+		WHERE 
+		I.DocumentId = @OxoDocId
+		
+		SELECT @FdpVolumeHeaderId = SCOPE_IDENTITY();
+		
+		SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' take rate file added';
+		RAISERROR(@Message, 0, 1) WITH NOWAIT;
+		
+	END
+	ELSE
+	BEGIN
+		SELECT @FdpVolumeHeaderId = MAX(FdpVolumeHeaderId)
+		FROM
+		Fdp_VolumeHeader
+		WHERE
+		DocumentId = @OxoDocId
+		AND
+		FdpTakeRateStatusId <> 3;
+	END
 
 	-- If there are no active errors for the import...
 	-- For every entry in the import, create an entry in FDP_VolumeDataItem
 	
 	SET @Message = 'Adding volume data...';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+	
+	CREATE TABLE #NewData
+	(
+		  FdpVolumeHeaderId INT
+		, IsManuallyEntered BIT
+		, MarketId INT
+		, MarketGroupId INT
+		, ModelId INT NULL
+		, FdpModelId INT NULL
+		, TrimId INT NULL
+		, FdpTrimId INT NULL
+		, FeatureId INT NULL
+		, FdpFeatureId INT NULL
+		, FeaturePackId INT NULL
+		, Volume INT
+		, IsMarketMissing BIT
+		, IsDerivativeMissing BIT
+		, IsTrimMissing BIT
+		, IsFeatureMissing BIT
+		, IsSpecialFeatureCode BIT
+	)
+	INSERT INTO #NewData
+	SELECT
+		  @FdpVolumeHeaderId AS FdpVolumeHeaderId
+		, 0
+		, I.MarketId
+		, I.MarketGroupId
+		, I.ModelId
+		, I.FdpModelId
+		, I.TrimId
+		, I.FdpTrimId
+		, I.FeatureId
+		, I.FdpFeatureId
+		, I.FeaturePackId
+		, CAST(I.ImportVolume AS INT) 
+		, I.IsMarketMissing
+		, I.IsDerivativeMissing
+		, I.IsTrimMissing
+		, I.IsFeatureMissing
+		, I.IsSpecialFeatureCode
+	FROM
+	Fdp_Import_VW					AS I
+	WHERE 
+	I.IsExistingData = 0
+	AND
+	I.FdpImportId = @FdpImportId
+	AND
+	I.FdpImportQueueId = @FdpImportQueueId;
+	
+	CREATE NONCLUSTERED INDEX Tmp_Ix_NewData ON #NewData
+	(
+		  IsMarketMissing
+		, IsDerivativeMissing
+		, IsTrimMissing
+		, IsFeatureMissing
+		, IsSpecialFeatureCode
+	);
 
 	INSERT INTO Fdp_VolumeDataItem
 	(
@@ -292,54 +349,38 @@ AS
 		, Volume
 	)
 	SELECT
-		  H.FdpVolumeHeaderId
-		, 0
-		, I.MarketId
-		, I.MarketGroupId
-		, I.ModelId
-		, I.FdpModelId
-		, I.TrimId
-		, I.FdpTrimId
-		, I.FeatureId
-		, I.FdpFeatureId
-		, I.FeaturePackId
-		, CAST(I.ImportVolume AS INT) 
-	FROM
-	Fdp_Import_VW					AS I
-	JOIN Fdp_VolumeHeader			AS H	ON	I.DocumentId		= H.DocumentId
-	LEFT JOIN Fdp_VolumeDataItem	AS CUR	ON	H.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
-											AND I.MarketId			= CUR.MarketId
-											AND 
-											(
-												I.ModelId = CUR.ModelId
-												OR
-												I.FdpModelId = CUR.FdpModelId
-											)
-											AND 
-											(
-												I.FeatureId = CUR.FeatureId
-												OR
-												I.FdpFeatureId = CUR.FdpFeatureId
-											)
-											AND I.FeaturePackId				= CUR.FeaturePackId
-											AND CAST(I.ImportVolume AS INT) = CUR.Volume
-											AND CUR.IsManuallyEntered = 1
-	WHERE 
-	I.IsExistingData = 0
+		  FdpVolumeHeaderId
+		, IsManuallyEntered
+		, MarketId
+		, MarketGroupId
+		, ModelId
+		, FdpModelId
+		, TrimId
+		, FdpTrimId
+		, FeatureId
+		, FdpFeatureId
+		, FeaturePackId
+		, Volume 
+	FROM #NewData
+	WHERE
+	IsMarketMissing = 0
 	AND
-	I.IsMarketMissing = 0
+	IsDerivativeMissing = 0
 	AND
-	I.IsDerivativeMissing = 0
-	AND 
-	I.IsTrimMissing = 0
+	IsTrimMissing = 0
 	AND
-	I.IsFeatureMissing = 0
+	IsFeatureMissing = 0
 	AND
-	I.IsSpecialFeatureCode = 0
-	AND
-	I.FdpImportId = @FdpImportId
-	AND
-	CUR.FdpVolumeDataItemId IS NULL
+	IsSpecialFeatureCode = 0;
+	
+	-- Increment the revision version if any new rows have been added
+	-- This will either end up as 1 if there is no prior data, or up the minor version
+	IF @@ROWCOUNT > 0
+	BEGIN
+		EXEC Fdp_TakeRateHeader_IncrementRevision @FdpVolumeHeaderId = @FdpVolumeHeaderId
+	END
+	
+	DROP TABLE #NewData;
 	
 	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' data items added';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT

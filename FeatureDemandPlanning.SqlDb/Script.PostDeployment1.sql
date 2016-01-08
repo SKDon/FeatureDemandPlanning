@@ -24,6 +24,7 @@ USING (VALUES
 	, (N'NumberOfTopMarkets', N'28', N'The number of markets to use for comparison data', N'System.Int32')
 	, (N'ShowAllOXODocuments', N'0', N'Determines whether or not to show all OXO documents, regardless as to published state', N'System.Boolean')
 	, (N'SkipFirstXRowsInImportFile', N'3', N'Specifies the number of rows to skip for FDP import files. Eliminates header information', N'System.Int32')
+	, (N'ReprocessImportAfterHandleError', N'0', N'Whether to reprocess the entire dataset each time an error is handled in the worktray', N'System.Boolean')
 )
 AS SOURCE (ConfigurationKey, Value, [Description], DataType) ON TARGET.ConfigurationKey = SOURCE.ConfigurationKey
 WHEN MATCHED THEN

@@ -43,6 +43,20 @@ namespace FeatureDemandPlanning.DataStore
 
             return trim.CurrentPage.Where(d => !d.FdpTrimMappingId.HasValue);
         }
+
+        public IEnumerable<FdpTrimMapping> ModelTrimOxoTrimGetMany(TrimFilter filter)
+        {
+            filter.PageSize = 1000;
+            
+            var trim = FdpTrimMappingGetMany(filter);
+            if (trim == null || trim.CurrentPage == null || !trim.CurrentPage.Any())
+            {
+                return Enumerable.Empty<FdpTrimMapping>();
+            }
+
+            return trim.CurrentPage.Where(d => !d.FdpTrimMappingId.HasValue);
+        }
+
         public ModelTrim ModelTrimGet(int id)
         {
             ModelTrim retVal = null;

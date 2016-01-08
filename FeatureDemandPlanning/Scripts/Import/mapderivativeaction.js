@@ -58,7 +58,7 @@ model.MapDerivativeAction = function (params) {
             .removeClass("alert-danger")
             .removeClass("alert-warning")
             .addClass("alert-success")
-            .html("Derivative '" + me.getImportDerivativeCode() + "' mapped successfully to '" + me.getSelectedDerivativeCode() + "'")
+            .html("Derivative '" + me.getImportDerivativeCode() + "' mapped successfully to '" + me.getSelectedDerivative() + "'")
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");

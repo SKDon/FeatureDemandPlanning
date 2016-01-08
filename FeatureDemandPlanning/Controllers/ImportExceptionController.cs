@@ -205,13 +205,12 @@ namespace FeatureDemandPlanning.Controllers
         [HandleErrorWithJson]
         public async Task<ActionResult> MapMissingDerivative(ImportExceptionParameters parameters)
         {
-            var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value);
+            var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.GetValueOrDefault());
+            var derivative = Derivative.FromIdentifier(parameters.DerivativeCode);
             var importView = await GetModelFromParameters(parameters);
 
-            // As we don't have the body, engine and transmission passed in, we can pick this up from the model
-            var derivative = importView.AvailableDerivatives
-                .Where(d => d.DerivativeCode.Equals(parameters.DerivativeCode, StringComparison.InvariantCultureIgnoreCase))
-                .First();
+            //var derivative = importView.AvailableDerivatives
+            //    .First(d => d.DerivativeCode.Equals(parameters.DerivativeCode, StringComparison.InvariantCultureIgnoreCase));
 
             var derivativeMapping = new FdpDerivativeMapping()
             {
@@ -219,7 +218,7 @@ namespace FeatureDemandPlanning.Controllers
                 
                 ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
                 Gateway = parameters.Gateway,
-                DerivativeCode = parameters.DerivativeCode,
+                DerivativeCode = derivative.DerivativeCode,
                 BodyId = derivative.BodyId.GetValueOrDefault(),
                 EngineId = derivative.EngineId.GetValueOrDefault(),
                 TransmissionId = derivative.TransmissionId.GetValueOrDefault()
@@ -330,6 +329,9 @@ namespace FeatureDemandPlanning.Controllers
         }
         private async Task<ImportResult> ReProcessException(ImportError exception)
         {
+            if (!ConfigurationSettings.ReprocessImportAfterHandleError)
+                return null;
+
             var queuedItem = new ImportQueue()
             {
                 ImportId = exception.FdpImportId,

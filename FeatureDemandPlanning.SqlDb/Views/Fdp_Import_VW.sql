@@ -1,7 +1,23 @@
-﻿CREATE VIEW [dbo].[Fdp_Import_VW] AS
+﻿
 
+CREATE VIEW [dbo].[Fdp_Import_VW] AS
+
+	WITH TakeRateFiles AS
+	(
+		SELECT DocumentId, MAX(FdpVolumeHeaderId) AS FdpVolumeHeaderId
+		FROM
+		Fdp_VolumeHeader
+		WHERE
+		FdpTakeRateStatusId <> 3
+		GROUP BY
+		DocumentId
+	)
 	SELECT 
-		  Q.FdpImportQueueId
+		B.Id AS Bid
+		, E.Id AS Eid
+		, TM.Id AS Tid
+		, TMAP.TrimId AS Trid
+		, Q.FdpImportQueueId
 		, IH.FdpImportId
 		, Q.CreatedBy
 		, Q.CreatedOn
@@ -166,7 +182,7 @@
 													
 	-- Get extended details for the features
 	
-	LEFT JOIN Fdp_VolumeHeader				AS CUR1		ON	IH.DocumentId				= CUR1.DocumentId
+	LEFT JOIN TakeRateFiles					AS CUR1		ON	IH.DocumentId				= CUR1.DocumentId
 	LEFT JOIN Fdp_VolumeDataItem			AS CUR		ON	CUR1.FdpVolumeHeaderId		= CUR.FdpVolumeHeaderId
 														AND MMAP.Market_Id				= CUR.MarketId
 														AND 

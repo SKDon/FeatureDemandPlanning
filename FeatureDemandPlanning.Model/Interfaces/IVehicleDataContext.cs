@@ -23,6 +23,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter);
         IEnumerable<ModelEngine> ListEngines(ProgrammeFilter filter);
         IEnumerable<FdpTrimMapping> ListTrim(TrimFilter filter);
+        IEnumerable<FdpTrimMapping> ListOxoTrim(TrimFilter filter); 
         Task<IEnumerable<Feature>> ListFeatures(ProgrammeFilter filter); // Get rid of this one
         Task<IEnumerable<FdpFeature>> ListFeatures(FeatureFilter filter);
         IEnumerable<FeatureGroup> ListFeatureGroups(ProgrammeFilter filter);

@@ -34,6 +34,8 @@ AS
 	FROM
 	Fdp_TrimMapping_VW AS T
 	JOIN OXO_Programme_VW	 AS P ON T.ProgrammeId = P.Id
+	LEFT JOIN OXO_Programme_Model AS M ON P.Id  = M.Programme_Id
+										AND M.Active = 1
 	WHERE
 	(@CarLine IS NULL OR P.VehicleName = @CarLine)
 	AND
@@ -42,7 +44,15 @@ AS
 	(@Gateway IS NULL OR T.Gateway = @Gateway)
 	AND
 	(
-		(@IncludeAllTrim = 0 AND T.IsMappedTrim = 0)
+		(
+			@IncludeAllTrim = 0 
+			AND
+			M.Trim_Id = T.TrimId
+			AND
+			(@DerivativeCode IS NULL OR M.BMC = @DerivativeCode)
+			AND
+			T.IsMappedTrim = 0
+		)
 		OR
 		(@IncludeAllTrim = 1)
 	)

@@ -264,9 +264,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 CarLine = model.Programme.VehicleName,
                 ModelYear = model.Programme.ModelYear,
                 Gateway = model.Gateway,
-                DerivativeCode = model.CurrentException.ImportDerivativeCode
+                DerivativeCode = model.CurrentException.ImportDerivativeCode,
+                IncludeAllTrim = false
             };
-            model.AvailableTrim = context.Vehicle.ListTrim(trimFilter);
+            model.AvailableTrim = context.Vehicle.ListOxoTrim(trimFilter);
 
             var derivativeFilter = new DerivativeFilter
             {

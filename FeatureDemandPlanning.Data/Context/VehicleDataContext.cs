@@ -207,6 +207,10 @@ namespace FeatureDemandPlanning.DataStore
         {
             return _trimDataStore.ModelTrimGetMany(filter);
         }
+        public IEnumerable<FdpTrimMapping> ListOxoTrim(TrimFilter filter)
+        {
+            return _trimDataStore.ModelTrimOxoTrimGetMany(filter);
+        }
         public async Task<IEnumerable<Feature>> ListFeatures(ProgrammeFilter filter)
         {
             return await Task.FromResult(_featureDataStore.FeatureGetMany("fdp", paramId: filter.VehicleId.Value));

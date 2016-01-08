@@ -32,7 +32,7 @@
                     <ul id="@(Model.IdentifierPrefix)_DerivativeList" class="dropdown-menu">
                         @foreach (var derivative in Model.AvailableDerivatives)
                         {
-                            <li><a class="derivative-item" href="#" data-target="@derivative.DerivativeCode" data-content="@derivative.Name">@derivative.Name</a></li>
+                            <li><a class="derivative-item" href="#" data-target="@derivative.Identifier" data-content="@derivative.Name">@derivative.Name</a></li>
                         }
                     </ul>
                 </div>

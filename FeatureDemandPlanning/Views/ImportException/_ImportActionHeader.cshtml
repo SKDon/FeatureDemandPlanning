@@ -19,17 +19,17 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-4 text-right"><strong>Import Derivative:</strong></div>
+            <div class="col-xs-4 text-right"><strong>Description:</strong></div> 
             <div class="col-xs-8">
                 @Model.CurrentException.ImportDerivative
             </div>
         </div>
-    <div class="row">
-        <div class="col-xs-4 text-right"><strong>Import Market:</strong></div>
-        <div class="col-xs-8">
-            @Model.CurrentException.ImportMarket
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Import Market:</strong></div>
+            <div class="col-xs-8">
+                @Model.CurrentException.ImportMarket
+            </div>
         </div>
-    </div>
     }
 
     @if (Model.CurrentAction == enums.ImportAction.AddMissingFeature ||

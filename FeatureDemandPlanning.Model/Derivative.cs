@@ -1,4 +1,6 @@
-﻿namespace FeatureDemandPlanning.Model
+﻿using System;
+
+namespace FeatureDemandPlanning.Model
 {
     public class Derivative
     {
@@ -19,7 +21,19 @@
                 if (Body is EmptyModelBody || Engine is EmptyModelEngine || Transmission is EmptyModelTransmission)
                     return DerivativeCode;
 
-                return string.Format("{0} - {1} {2} {3}", DerivativeCode, Body.Name, Engine.Name, Transmission.Name);
+                return string.IsNullOrEmpty(DerivativeCode) ? 
+                    string.Format("{0} {1} {2}", Body.Name, Engine.Name, Transmission.Name) : 
+                    string.Format("{0} - {1} {2} {3}", DerivativeCode, Body.Name, Engine.Name, Transmission.Name);
+            }
+        }
+
+        public string Identifier
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(DerivativeCode) ? 
+                    string.Format("{0}|{1}|{2}|{3}", DerivativeCode, BodyId, EngineId, TransmissionId) : 
+                    string.Format("{0}|{1}|{2}", BodyId, EngineId, TransmissionId);
             }
         }
 
@@ -28,6 +42,27 @@
             Body = new EmptyModelBody();
             Engine = new EmptyModelEngine();
             Transmission = new EmptyModelTransmission();
+        }
+
+        public static Derivative FromIdentifier(string identifier)
+        {
+            var elements = identifier.Split('|');
+            if (elements.Length == 4)
+            {
+                return new Derivative()
+                {
+                    DerivativeCode = elements[0],
+                    BodyId = int.Parse(elements[1]),
+                    EngineId = int.Parse(elements[2]),
+                    TransmissionId = int.Parse(elements[3])
+                };
+            }
+            return new Derivative()
+            {
+                BodyId = int.Parse(elements[0]),
+                EngineId = int.Parse(elements[1]),
+                TransmissionId = int.Parse(elements[2])
+            };
         }
     }
 }

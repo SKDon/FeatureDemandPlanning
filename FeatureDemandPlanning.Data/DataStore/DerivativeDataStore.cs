@@ -1,14 +1,15 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Dapper;
-using FeatureDemandPlanning.Model.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Dapper;
+using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Extensions;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -18,7 +19,7 @@ namespace FeatureDemandPlanning.DataStore
         
         public DerivativeDataStore(string cdsid)
         {
-            this.CurrentCDSID = cdsid;
+            CurrentCDSID = cdsid;
         }
 
         #endregion
@@ -44,8 +45,8 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpDerivativeMappingId", derivativeMapping.FdpDerivativeMappingId, dbType: DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@FdpDerivativeMappingId", derivativeMapping.FdpDerivativeMappingId, DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<FdpDerivativeMapping>("Fdp_DerivativeMapping_Delete", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -69,7 +70,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpDerivativeMappingId", filter.DerivativeMappingId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpDerivativeMappingId", filter.DerivativeMappingId.GetValueOrDefault(), DbType.Int32);
 
                     var results = conn.Query<FdpDerivativeMapping>("Fdp_DerivativeMapping_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -99,11 +100,11 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (!string.IsNullOrEmpty(filter.CarLine))
                     {
-                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                        para.Add("@CarLine", filter.CarLine, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.ModelYear))
                     {
-                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                        para.Add("@ModelYear", filter.ModelYear, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
@@ -121,9 +122,9 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    if (filter.SortDirection != SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
+                        var direction = filter.SortDirection == SortDirection.Descending ? "DESC" : "ASC";
                         para.Add("@SortDirection", direction, DbType.String);
                     }
                     if (filter.IncludeAllDerivatives)
@@ -141,7 +142,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<FdpDerivativeMapping>()
+                    retVal = new PagedResults<FdpDerivativeMapping>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -173,19 +174,24 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@ImportDerivativeCode", derivativeMapping.ImportDerivativeCode, dbType: DbType.String);
-                    para.Add("@ProgrammeId", derivativeMapping.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@Gateway", derivativeMapping.Gateway, dbType: DbType.String);
-                    para.Add("@DerivativeCode", derivativeMapping.DerivativeCode, dbType: DbType.String);
-                    para.Add("@BodyId", derivativeMapping.BodyId, dbType: DbType.Int32);
-                    para.Add("@EngineId", derivativeMapping.EngineId, dbType: DbType.Int32);
-                    para.Add("@TransmissionId", derivativeMapping.TransmissionId, dbType: DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+
+                    para.Add("@ImportDerivativeCode", derivativeMapping.ImportDerivativeCode, DbType.String);
+                    para.Add("@ProgrammeId", derivativeMapping.ProgrammeId, DbType.Int32);
+                    para.Add("@Gateway", derivativeMapping.Gateway, DbType.String);
+                    if (!string.IsNullOrEmpty(derivativeMapping.DerivativeCode))
+                    {
+                        para.Add("@DerivativeCode", derivativeMapping.DerivativeCode, DbType.String);
+                    }
+                    para.Add("@BodyId", derivativeMapping.BodyId, DbType.Int32);
+                    para.Add("@EngineId", derivativeMapping.EngineId, DbType.Int32);
+                    para.Add("@TransmissionId", derivativeMapping.TransmissionId, DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<FdpDerivativeMapping>("Fdp_DerivativeMapping_Save", para, commandType: CommandType.StoredProcedure);
-                    if (results.Any())
+                    var fdpDerivativeMappings = results as IList<FdpDerivativeMapping> ?? results.ToList();
+                    if (fdpDerivativeMappings.Any())
                     {
-                        retVal = results.First();
+                        retVal = fdpDerivativeMappings.First();
                     }
                 }
                 catch (Exception ex)
@@ -204,7 +210,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@FdpDerivativeId", derivativeToDelete.FdpDerivativeId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpDerivativeId", derivativeToDelete.FdpDerivativeId.GetValueOrDefault(), DbType.Int32);
 
                     retVal = conn.Query<FdpDerivative>("dbo.Fdp_Derivative_Delete", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -224,7 +230,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpDerivativeId", filter.DerivativeId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpDerivativeId", filter.DerivativeId.GetValueOrDefault(), DbType.Int32);
                     retVal = conn.Query<FdpDerivative>("dbo.Fdp_Derivative_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
@@ -249,40 +255,40 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (!string.IsNullOrEmpty(filter.CarLine))
                     {
-                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                        para.Add("@CarLine", filter.CarLine, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.ModelYear))
                     {
-                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                        para.Add("@ModelYear", filter.ModelYear, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    if (filter.SortDirection != SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        var direction = filter.SortDirection == SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
                     if (filter.ProgrammeId.HasValue)
                     {
-                        para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
+                        para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -295,7 +301,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<FdpDerivative>()
+                    retVal = new PagedResults<FdpDerivative>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -327,12 +333,12 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@ProgrammeId", derivative.ProgrammeId.GetValueOrDefault(), dbType: DbType.Int32);
-                    para.Add("@Gateway", derivative.Gateway, dbType: DbType.String);
-                    para.Add("@DerivativeCode", derivative.DerivativeCode, dbType: DbType.String);
-                    para.Add("@BodyId", derivative.BodyId.GetValueOrDefault(), dbType: DbType.Int32);
-                    para.Add("@EngineId", derivative.EngineId.GetValueOrDefault(), dbType: DbType.String);
-                    para.Add("@TransmissionId", derivative.TransmissionId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@ProgrammeId", derivative.ProgrammeId.GetValueOrDefault(), DbType.Int32);
+                    para.Add("@Gateway", derivative.Gateway, DbType.String);
+                    para.Add("@DerivativeCode", derivative.DerivativeCode, DbType.String);
+                    para.Add("@BodyId", derivative.BodyId.GetValueOrDefault(), DbType.Int32);
+                    para.Add("@EngineId", derivative.EngineId.GetValueOrDefault(), DbType.String);
+                    para.Add("@TransmissionId", derivative.TransmissionId.GetValueOrDefault(), DbType.Int32);
 
                     retVal = conn.Query<FdpDerivative>("dbo.Fdp_Derivative_Save", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -355,11 +361,11 @@ namespace FeatureDemandPlanning.DataStore
 
                     para.Add("@FdpDerivativeMappingId", derivativeMappingToCopy.FdpDerivativeMappingId, DbType.Int32);
                     para.Add("@Gateways", gateways.ToCommaSeperatedList(), DbType.String);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var rows = conn.Execute("Fdp_DerivativeMapping_Copy", para, commandType: CommandType.StoredProcedure);
 
-                    retVal = FdpDerivativeMappingGet(new DerivativeMappingFilter() { DerivativeMappingId = derivativeMappingToCopy.FdpDerivativeMappingId });
+                    retVal = FdpDerivativeMappingGet(new DerivativeMappingFilter { DerivativeMappingId = derivativeMappingToCopy.FdpDerivativeMappingId });
                 }
                 catch (Exception ex)
                 {
