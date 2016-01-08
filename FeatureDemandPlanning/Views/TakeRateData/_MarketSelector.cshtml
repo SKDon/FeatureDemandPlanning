@@ -28,7 +28,7 @@
         @{
             var allMarketsLink = string.Format("All Markets ({0})", totalDerivatives);
         }
-        <li class="dropdown-nosubmenu">@Html.ActionLink(allMarketsLink, "Index", new {oxoDocId = Model.Document.UnderlyingOxoDocument.Id, resultsMode = Model.Document.Mode})</li>
+        <li class="dropdown-nosubmenu">@Html.ActionLink(allMarketsLink, "Index", new {takeRateId = Model.Document.TakeRateId, resultsMode = Model.Document.Mode})</li>
         <li class="dropdown-header">Market Groups</li>
         @foreach (var marketGroup in Model.Document.Vehicle.AvailableMarketGroups)
         {
@@ -84,11 +84,11 @@
 @helper RenderUrlForMarketGroup(MarketGroup marketGroup)
 {
     var groupName = string.Format("{0} ({1})", marketGroup.GroupName, marketGroup.VariantCount);
-    @Html.ActionLink(groupName, "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, marketGroupId = marketGroup.Id, resultsMode = Model.Document.Mode });
+    @Html.ActionLink(groupName, "Index", new { takeRateId = Model.Document.TakeRateId, marketGroupId = marketGroup.Id, resultsMode = Model.Document.Mode });
 }
 
 @helper RenderUrlForMarket(Market market)
 {
     var marketName = string.Format("{0} ({1})", market.Name, market.VariantCount);
-    @Html.ActionLink(marketName, "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, marketId = market.Id, resultsMode = Model.Document.Mode });
+    @Html.ActionLink(marketName, "Index", new { takeRateId = Model.Document.TakeRateId, marketId = market.Id, resultsMode = Model.Document.Mode });
 }
