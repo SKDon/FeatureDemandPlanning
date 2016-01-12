@@ -41,5 +41,22 @@ AS
 		AND
 		E.ErrorMessage = @ErrorMessage
 	)	
+	
+	IF @IsExcluded = 1
+	BEGIN
+		DECLARE @FdpVolumeHeaderId AS INT;
+		SELECT @FdpVolumeHeaderId = MAX(H.FdpVolumeHeaderId)
+		FROM 
+		Fdp_VolumeHeader		AS H
+		JOIN Fdp_Import			AS I ON H.DocumentId = I.DocumentId
+		JOIN Fdp_ImportError	AS E ON I.FdpImportQueueId = E.FdpImportQueueId
+		WHERE
+		E.FdpImportErrorId = @FdpImportErrorId
+		
+		-- Update the take rate file 
+		UPDATE Fdp_VolumeHeader SET UpdatedOn = GETDATE(), UpdatedBy = @CDSId
+		WHERE
+		FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	END
 
 	EXEC Fdp_ImportError_Get @FdpImportErrorId;

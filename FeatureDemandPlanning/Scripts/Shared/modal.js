@@ -114,6 +114,9 @@ model.Modal = function (params) {
         $("#Modal_OK").show();
         $("#Modal_Cancel").html("Cancel");
     };
+    me.showConfirmExtended = function(title, contentFn, confirmCallback) {
+        contentFn(title, confirmCallback);
+    };
     me.getConfirmContent = function(title, message, confirmCallback) {
         var dialog = $("#" + me.getModalDialogId());
         var content = dialog.find("#Modal_Content");
@@ -129,6 +132,9 @@ model.Modal = function (params) {
     }
     me.getConfirmHtml = function(message) {
         return "<div class=\"alert alert-info alert-less-margin\">" + message + "</div>";
+    }
+    me.getConfirmExtendedHtml = function(message, additionalContent) {
+        return "<div class=\"alert alert-info alert-less-margin\">" + message + "</div><div>" + additionalContent + "</div>";
     }
     function showModalCallback(response) {
         var dialog = $("#" + me.getModalDialogId());

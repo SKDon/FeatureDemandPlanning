@@ -132,6 +132,7 @@
     <Compile Include="Enumerations\DerivativeAction.cs" />
     <Compile Include="Enumerations\UserAction.cs" />
     <Compile Include="Extensions\FdpModelExtensions.cs" />
+    <Compile Include="FdpChangesetHistoryItem.cs" />
     <Compile Include="FdpImportErrorExclusion.cs" />
     <Compile Include="FdpDerivative.cs" />
     <Compile Include="FdpModel.cs" />
@@ -303,6 +304,7 @@
     <Compile Include="Validators\TakeRateDocumentValidator.cs" />
     <Compile Include="ViewModel\AdminViewModel.cs" />
     <Compile Include="ViewModel\ConfigurationModel.cs" />
+    <Compile Include="FdpChangesetHistory.cs" />
     <Compile Include="ViewModel\IgnoredExceptionViewModel.cs" />
     <Compile Include="ViewModel\MarketMappingViewModel.cs" />
     <Compile Include="ViewModel\SpecialFeatureMappingViewModel.cs" />

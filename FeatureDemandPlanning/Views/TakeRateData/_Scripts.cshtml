@@ -12,6 +12,8 @@
 <script src="@Url.Content("~/Scripts/TakeRateData/changeset.js")?v=@Model.CurrentVersion"></script>
 <script src="@Url.Content("~/Scripts/TakeRateData/details.js")?v=@Model.CurrentVersion"></script>
 <script src="@Url.Content("~/Scripts/TakeRateData/addnoteaction.js")?v=@Model.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/TakeRateData/save.js")?v=@Model.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/TakeRateData/saveaction.js")?v=@Model.CurrentVersion"></script>
 <script src="@Url.Content("~/Scripts/TakeRateData/page.js")?v=@Model.CurrentVersion"></script>
 
 <script type="text/javascript">
@@ -27,8 +29,9 @@
         RevertChangesetUri: "@Url.Action("RevertLatestChangeset")",
         SaveChangesetUri: "@Url.Action("SaveChangeset")",
         PersistChangesetUri: "@Url.Action("PersistChangeset")",
+        PersistChangesetConfirmUri: "@Url.Action("PersistChangesetConfirm")",
+        ChangesetHistoryUri: "@Url.Action("ChangesetHistory")",
         UndoChangesetUri: "@Url.Action("UndoChangeset")",
-        UpdateFilteredDataUri: "@Url.Action("UpdateFilteredData")",
         ValidateUri: "@Url.Action("Validate")",
         ValidationMessageUri: "@Url.Action("ValidationMessage")",
         AddNoteUri: "@Url.Action("AddNoteUri")",
@@ -38,7 +41,7 @@
         PageSize: @Model.PageSize,
         PageIndex: @Model.PageIndex,
         CookieKey: "@Model.CookieKey",
-        OxoDocId: null,
+            OxoDocId: null,
         TakeRateId: null,
         MarketGroupId: null,
         MarketId: null

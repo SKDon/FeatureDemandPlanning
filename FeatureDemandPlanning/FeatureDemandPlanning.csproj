@@ -1251,7 +1251,9 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\Shared\namespace.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\TakeRateData\saveaction.js" />
     <Content Include="Scripts\TakeRateData\addnoteaction.js" />
+    <Content Include="Scripts\TakeRateData\save.js" />
     <Content Include="Scripts\TakeRateData\details.js" />
     <Content Include="Scripts\TrimMapping\copy.js" />
     <Content Include="Scripts\TrimMapping\delete.js" />
@@ -1431,6 +1433,7 @@
     <Content Include="Views\TakeRateData\_ContextMenu.cshtml" />
     <Content Include="Views\TakeRateData\_TakeRateDataItemDetails.cshtml" />
     <Content Include="Views\TakeRateData\_TakeRateDataItemHeader.cshtml" />
+    <Content Include="Views\TakeRateData\_PersistChangesetConfirm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

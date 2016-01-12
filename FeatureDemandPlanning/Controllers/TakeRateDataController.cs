@@ -135,14 +135,49 @@ namespace FeatureDemandPlanning.Controllers
         }
         [HandleErrorWithJson]
         [HttpPost]
+        public async Task<ActionResult> ChangesetHistory(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.TakeRateDataItemDetails;
+            var takeRateView = await TakeRateViewModel.GetModel(
+                DataContext,
+                filter);
+
+            takeRateView.History = await DataContext.TakeRate.GetChangesetHistory(filter);
+
+            return PartialView("_ChangesetHistory", takeRateView);
+        }
+        [HandleErrorWithJson]
+        [HttpPost]
         public async Task<ActionResult> PersistChangeset(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangesetAndComment);
+
+            var persistedChangeset = await DataContext.TakeRate.PersistChangeset(
+                TakeRateFilter.FromTakeRateParameters(parameters));
+
+            return Json(persistedChangeset);
+        }
+        [HandleErrorWithJson]
+        [HttpPost]
+        public async Task<ActionResult> PersistChangesetConfirm(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
 
-            var persistedChangeset = await DataContext.TakeRate.PersistChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.TakeRateDataItemDetails;
+            var takeRateView = await TakeRateViewModel.GetModel(
+                DataContext,
+                filter);
 
-            return Json(persistedChangeset);
+            takeRateView.Changes = await DataContext.TakeRate.GetUnsavedChangesForUser(filter);
+
+            return PartialView("_PersistChangesetConfirm", takeRateView);
         }
         [HandleErrorWithJson]
         [HttpPost]

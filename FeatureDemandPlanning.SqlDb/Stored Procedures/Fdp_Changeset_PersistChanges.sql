@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_Changeset_PersistChanges]
 	  @FdpChangesetId	AS INT
+	, @Comment		AS NVARCHAR(MAX)
 AS
 	SET NOCOUNT ON;
 
@@ -36,6 +37,13 @@ AS
 	D.IsSaved = 0
 	AND
 	D.IsModelUpdate = 1
+
+	-- Add the comment to the changeset
+	
+	UPDATE C SET Comment = @Comment
+	FROM Fdp_Changeset AS C
+	WHERE
+	C.FdpChangesetId = @FdpChangesetId;
 	
 	-- Add any new ones
 

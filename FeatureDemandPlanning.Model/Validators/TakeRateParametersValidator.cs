@@ -9,6 +9,7 @@ namespace FeatureDemandPlanning.Model.Validators
     {
         public const string TakeRateIdentifier = "TAKE_RATE_ID";
         public const string TakeRateIdentifierWithChangeset = "TAKE_RATE_ID_WITH_CHANGESET";
+        public const string TakeRateIdentifierWithChangesetAndComment = "TAKE_RATE_ID_WITH_CHANGESET_AND_COMMENT";
         public const string NoValidation = "NO_VALIDATION";
 
         public TakeRateParametersValidator(IDataContext context)
@@ -19,11 +20,19 @@ namespace FeatureDemandPlanning.Model.Validators
             });
             RuleSet(TakeRateIdentifier, () =>
             {
-                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'DocumentId' not specified");
+                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'Take Rate Id' not specified");
             });
             RuleSet(TakeRateIdentifierWithChangeset, () =>
             {
-                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'DocumentId' not specified");
+                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'Take Rate Id' not specified");
+                RuleFor(p => p.Changeset.Changes).SetValidator(new AllFeatureVolumesMustBeLessThanModelVolume(context));
+                RuleFor(p => p.Changeset.Changes).SetValidator(new AllModelVolumesMustBeLessThanMarketVolume(context));
+                RuleFor(p => p.Changeset).SetValidator(new ChangesetValidator(context));
+            });
+            RuleSet(TakeRateIdentifierWithChangesetAndComment, () =>
+            {
+                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'Take Rate Id' not specified");
+                RuleFor(p => p.Comment).NotEmpty().WithMessage("'Comment' not specified");
                 RuleFor(p => p.Changeset.Changes).SetValidator(new AllFeatureVolumesMustBeLessThanModelVolume(context));
                 RuleFor(p => p.Changeset.Changes).SetValidator(new AllModelVolumesMustBeLessThanMarketVolume(context));
                 RuleFor(p => p.Changeset).SetValidator(new ChangesetValidator(context));

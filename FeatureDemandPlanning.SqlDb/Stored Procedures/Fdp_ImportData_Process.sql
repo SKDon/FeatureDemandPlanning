@@ -243,13 +243,14 @@ AS
 			, IsManuallyEntered
 		)
 		SELECT
-			  I.CreatedOn
-			, I.CreatedBy
+			  Q.CreatedOn
+			, Q.CreatedBy
 			, I.DocumentId
 			, 1					AS FdpTakeRateStatusId
 			, 0					AS IsManuallyCreated
 		FROM 
 		FDP_Import	AS I
+		JOIN Fdp_ImportQueue AS Q ON I.FdpImportQueueId = Q.FdpImportQueueId
 		WHERE 
 		I.DocumentId = @OxoDocId
 		
@@ -269,6 +270,8 @@ AS
 		AND
 		FdpTakeRateStatusId <> 3;
 	END
+	
+	SELECT @FdpVolumeHeaderId AS FdpVolumeHeaderId
 
 	-- If there are no active errors for the import...
 	-- For every entry in the import, create an entry in FDP_VolumeDataItem
@@ -547,7 +550,7 @@ AS
 	WHERE
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId;
 
-	--SELECT @TotalVolume AS TotalVolume;
+	SELECT @TotalVolume AS TotalVolume, @FdpVolumeHeaderId AS FdpVolumeHeaderId
 
 	UPDATE S SET PercentageTakeRate = Volume / CAST(@TotalVolume AS DECIMAL)
 	FROM
@@ -563,7 +566,7 @@ AS
 	
 	UPDATE Fdp_VolumeHeader SET TotalVolume = @TotalVolume
 	WHERE
-	DocumentId = @OxoDocId
+	FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	TotalVolume <> @TotalVolume;
 	

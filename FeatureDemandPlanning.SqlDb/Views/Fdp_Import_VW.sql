@@ -1,5 +1,6 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_Import_VW] AS
 
 	WITH TakeRateFiles AS
@@ -13,11 +14,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 		DocumentId
 	)
 	SELECT 
-		B.Id AS Bid
-		, E.Id AS Eid
-		, TM.Id AS Tid
-		, TMAP.TrimId AS Trid
-		, Q.FdpImportQueueId
+		  Q.FdpImportQueueId
 		, IH.FdpImportId
 		, Q.CreatedBy
 		, Q.CreatedOn
@@ -113,6 +110,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 					THEN 1
 					ELSE 0
 				END AS BIT)									AS IsSpecialFeatureCode
+		, CUR1.FdpVolumeHeaderId
 		
 	FROM Fdp_Import							AS IH
 	JOIN Fdp_ImportData						AS I		ON	IH.FdpImportId				= I.FdpImportId

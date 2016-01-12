@@ -1339,3 +1339,8 @@ div.edited-fdp {
 .alert-less-margin {
     margin-bottom: 0;
 }
+
+.changeset-comment {
+    max-width: none;
+    width:100%
+}

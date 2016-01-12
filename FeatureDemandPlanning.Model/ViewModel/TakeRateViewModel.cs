@@ -20,6 +20,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<TakeRateStatus> Statuses { get; set; }
         public PagedResults<TakeRateSummary> TakeRates { get; set; }
         public TakeRateDocument Document { get; set; }
+        public FdpChangeset Changes { get; set; }
+        public FdpChangesetHistory History { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ForecastComparisonViewModel"/> class.
@@ -68,6 +70,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 case TakeRateDataItemAction.NotSet:
                     break;
                 case TakeRateDataItemAction.SaveChanges:
+                    model = await GetFullAndPartialViewModelForTakeRateDataPageExcludingData(context, filter);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -98,7 +101,27 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return takeRateModel;
         }
+        private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForTakeRateDataPageExcludingData(IDataContext context, TakeRateFilter filter)
+        {
+            var modelBase = GetBaseModel(context);
+            var takeRateModel = new TakeRateViewModel(modelBase)
+            {
+                Document = (TakeRateDocument)TakeRateDocument.FromFilter(filter),
+                Configuration = context.ConfigurationSettings
+            };
 
+            await HydrateOxoDocument(context, takeRateModel);
+            await HydrateFdpVolumeHeaders(context, takeRateModel);
+            await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
+            await HydrateVehicle(context, takeRateModel);
+            await HydrateMarket(context, takeRateModel);
+            await HydrateMarketGroup(context, takeRateModel);
+            await HydrateModelsByMarket(context, takeRateModel);
+            await HydrateDerivativesByMarket(context, takeRateModel);
+            //await HydrateData(context, takeRateModel);
+
+            return takeRateModel;
+        }
         private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForTakeRateDataItem(IDataContext context, TakeRateFilter filter)
         {
             var takeRateModel = new TakeRateViewModel(GetBaseModel(context))

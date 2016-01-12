@@ -176,7 +176,10 @@
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="Views\Fdp_Import_VW.sql" />
+    <Build Include="Views\Fdp_Import_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Views\Fdp_ImportError_VW.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
@@ -227,8 +230,8 @@
     <Build Include="Stored Procedures\Fdp_ForecastComparisonTrim_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ForecastComparisonVehicle_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ImportData_Process.sql">
-      <AnsiNulls>Off</AnsiNulls>
-      <QuotedIdentifier>Off</QuotedIdentifier>
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_ImportError_Get.sql">
       <AnsiNulls>Off</AnsiNulls>
@@ -277,7 +280,10 @@
     <Build Include="Stored Procedures\Fdp_TrimLevels_Get.sql" />
     <Build Include="Stored Procedures\Fdp_TrimMapping_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_TrimMapping_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_TrimMapping_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_TrimMapping_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_TrimMapping_Save.sql" />
     <Build Include="Stored Procedures\Fdp_User_Get.sql" />
     <Build Include="Stored Procedures\Fdp_User_GetMany.sql" />
@@ -714,5 +720,6 @@
   <ItemGroup>
     <None Include="FeatureDemandPlanning.FdpSqlDb.publish.xml" />
     <None Include="L494.sql" />
+    <None Include="L462.sql" />
   </ItemGroup>
 </Project>

@@ -20,18 +20,18 @@
 <ul class="dropdown-menu">
     @if (!(Model.Document.Market is EmptyMarket))
     {
-        <li>@Html.ActionLink("Take Rate by %", "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, marketId = Model.Document.Market.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
-        <li>@Html.ActionLink("Take Rate by Vol.", "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, marketId = Model.Document.Market.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
+        <li>@Html.ActionLink("Take Rate by %", "Index", new { takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
+        <li>@Html.ActionLink("Take Rate by Vol.", "Index", new { takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
     }
     else if (!(Model.Document.MarketGroup is EmptyMarketGroup))
     {
-        <li>@Html.ActionLink("Take Rate by %", "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, marketGroupId = Model.Document.MarketGroup.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
-        <li>@Html.ActionLink("Take Rate by Vol.", "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, marketGroupId = Model.Document.MarketGroup.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
+        <li>@Html.ActionLink("Take Rate by %", "Index", new { takeRateId = Model.Document.TakeRateId, marketGroupId = Model.Document.MarketGroup.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
+        <li>@Html.ActionLink("Take Rate by Vol.", "Index", new { takeRateId = Model.Document.TakeRateId, marketGroupId = Model.Document.MarketGroup.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
     }
     else
     {
-        <li>@Html.ActionLink("Take Rate by %", "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
-        <li>@Html.ActionLink("Take Rate by Vol.", "Index", new { oxoDocId = Model.Document.UnderlyingOxoDocument.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
+        <li>@Html.ActionLink("Take Rate by %", "Index", new { takeRateId = Model.Document.TakeRateId, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
+        <li>@Html.ActionLink("Take Rate by Vol.", "Index", new { takeRateId = Model.Document.TakeRateId, resultsMode = enums.TakeRateResultMode.Raw })</li>
     }
 </ul>
     </div>

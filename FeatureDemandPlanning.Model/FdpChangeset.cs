@@ -10,6 +10,7 @@ namespace FeatureDemandPlanning.Model
         public string CreatedBy { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsSaved { get; set; }
+        public string Comment { get; set; }
 
         public IList<DataChange> Changes { get; set; }
         public IList<DataChange> Reverted { get; set; }

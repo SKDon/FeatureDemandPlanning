@@ -16,7 +16,7 @@
     CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Programme] FOREIGN KEY ([ProgrammeId]) REFERENCES [dbo].[OXO_Programme] ([Id]),
     CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Programme_Body] FOREIGN KEY ([BodyId]) REFERENCES [dbo].[OXO_Programme_Body] ([Id]),
     CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Programme_Engine] FOREIGN KEY ([EngineId]) REFERENCES [dbo].[OXO_Programme_Engine] ([Id]),
-    CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Programme_Transmission] FOREIGN KEY ([TransmissionId]) REFERENCES [dbo].[OXO_Programme_Transmission] ([Id])
+    CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Programme_Transmission] FOREIGN KEY ([TransmissionId]) REFERENCES [dbo].[OXO_Programme_Transmission] ([Id]) 
 );
 
 

@@ -53,21 +53,41 @@ model.Page = function (models) {
         me.configureRowHighlight();
     };
     me.persistData = function () {
-        var modal = getModal();
-        modal.setModalParameters({ Data: getChangeset().getDataChanges() });
-        modal.showConfirm("Commit Changes", me.getCommitMessage(), me.persistDataConfirm);
+        var model = getTakeRateDataModel();
+        var action = model.getPersistChangesetAction();
+        var actionModel = model.getActionModel(action);
+        var filter = getFilter("");
+        filter.Action = action;
+        filter.Changeset = getChangeset().getDataChanges();
+
+        getModal().showModal({
+            Title: "Commit Changes",
+            Uri: model.getPersistChangesetConfirmUri(),
+            Data: JSON.stringify(filter),
+            Model: model,
+            ActionModel: actionModel
+        });
     };
+    me.showHistory = function() {
+        var model = getTakeRateDataModel();
+        var action = model.getPersistChangesetAction();
+        var actionModel = model.getActionModel(action);
+        var filter = getFilter("");
+        filter.Action = action;
+
+        getModal().showModal({
+            Title: "Changeset History",
+            Uri: model.getChangesetHistoryUri(),
+            Data: JSON.stringify(filter),
+            Model: model,
+            ActionModel: actionModel
+        });
+    }
     me.undoData = function() {
         getTakeRateDataModel().undoData({ Data: getChangeset().getDataChanges() }, me.undoDataCallback);
     };
-    me.getCommitMessage = function() {
-        return "Are you sure you wish to commit your changes to the details for this market?<br/><br/>Please note that this cannot be undone.";
-    };
     me.getPersistSuccessMessage = function() {
         return "Changes committed successfully. Data will now reload";
-    };
-    me.persistDataConfirm = function(dataChanges) {
-        getTakeRateDataModel().persistData(dataChanges, me.persistDataCallback);
     };
     me.persistDataCallback = function() {
         var modal = getModal();
@@ -126,6 +146,7 @@ model.Page = function (models) {
 
         $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
         $("#" + prefix + "_Undo").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoDelegate", [eventArgs]); });
+        $("#" + prefix + "_History").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnHistoryDelegate", [eventArgs]); });
         $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
     };
     me.registerSubscribers = function () {
@@ -145,6 +166,7 @@ model.Page = function (models) {
             .on("OnEditCellDelegate", me.onEditCellEventHandler)
             .on("OnSaveDelegate", me.onSaveEventHandler)
             .on("OnPersistDelegate", me.onPersistEventHandler)
+            .on("OnHistoryDelegate", me.onHistoryEventHandler)
             .on("OnUndoDelegate", me.onUndoEventHandler);
 
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
@@ -493,6 +515,9 @@ model.Page = function (models) {
     me.onUndoEventHandler = function() {
         me.undoData();
     };
+    me.onHistoryEventHandler = function () {
+        me.showHistory();
+    };
     me.onUpdateFilterVolumeEventHandler = function (sender, eventArgs) {
         var marketIdentifier = getTakeRateDataModel().getMarketId();
         var changeSet = getChangeset();
@@ -815,7 +840,7 @@ model.Page = function (models) {
         $("notifier").html(html).fadeIn("slow");
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
-        var html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.responseJSON.Message + "</div>";
+        var html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.Message + "</div>";
         me.scrollToNotify();
         me.fadeInNotify(html);
     };
@@ -894,13 +919,13 @@ model.Page = function (models) {
         var marketId = volume.getMarketId();
         var marketGroupId = volume.getMarketGroupId();
 
-        if (identifiers.length > 0) {
+        if (identifiers.length > 0 && identifiers[0] !== "") {
             marketId = identifiers[0];
         }
-        if (identifiers.length > 1) {
+        if (identifiers.length > 1 && identifiers[1] !== "") {
             modelIdentifier = identifiers[1];
         }
-        if (identifiers.length > 2) {
+        if (identifiers.length > 2 && identifiers[2] !== "") {
             featureIdentifier = identifiers[2];
         }
         return {

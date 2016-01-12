@@ -24,6 +24,9 @@ namespace FeatureDemandPlanning.Model.Filters
         public int? NewTakeRate { get; set; }
         public int? NewVolume { get; set; }
         
+        // When updating comments for items
+        public string Comment { get; set; }
+
         public TakeRateFilter()
         {
             Mode = TakeRateResultMode.PercentageTakeRate;
@@ -72,7 +75,8 @@ namespace FeatureDemandPlanning.Model.Filters
                 Mode = parameters.Mode,
                 Action = parameters.Action,
                 MarketGroupId = parameters.MarketGroupId,
-                MarketId = parameters.MarketId
+                MarketId = parameters.MarketId,
+                Comment = parameters.Comment
             };
 
             if (!string.IsNullOrEmpty(parameters.ModelIdentifier))

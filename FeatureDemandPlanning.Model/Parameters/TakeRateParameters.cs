@@ -16,6 +16,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public TakeRateResultMode Mode { get; set; }
         public string ModelIdentifier { get; set; }
         public string FeatureIdentifier { get; set; }
+        public string Comment { get; set; }
 
         public FdpChangeset Changeset { get; set; }
 

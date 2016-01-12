@@ -157,6 +157,7 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<FdpChangeset> PersistChangeset(TakeRateFilter filter)
         {
             var changeset = await GetUnsavedChangesForUser(filter);
+            changeset.Comment = filter.Comment;
             return await Task.FromResult(_takeRateDataStore.FdpChangesetPersist(filter, changeset));
         }
         public async Task<FdpChangeset> UndoChangeset(TakeRateFilter takeRateFilter)

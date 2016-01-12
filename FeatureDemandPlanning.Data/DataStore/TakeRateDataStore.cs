@@ -786,6 +786,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             var para = new DynamicParameters();
             para.Add("@FdpChangesetId", changesetToPersist.FdpChangesetId, DbType.Int32);
+            para.Add("@Comment", changesetToPersist.Comment, DbType.String);
 
             tran.Connection.Execute("dbo.Fdp_Changeset_PersistChanges", para, tran, commandType: CommandType.StoredProcedure);
         }

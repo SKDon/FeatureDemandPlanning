@@ -5,7 +5,10 @@ AS
 
 	-- Update the changeset to indicate its saved status and prevent any changes from being returned to the user
 
-	UPDATE Fdp_Changeset SET IsSaved = 1
+	UPDATE Fdp_Changeset SET 
+		  IsSaved = 1
+		, UpdatedOn = GETDATE()
+		, UpdatedBy = CreatedBy
 	WHERE
 	FdpChangesetId = @FdpChangesetId;
 	

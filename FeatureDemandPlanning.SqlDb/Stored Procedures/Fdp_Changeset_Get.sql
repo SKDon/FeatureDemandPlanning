@@ -11,6 +11,7 @@ AS
 		  , C.CreatedBy
 		  , C.IsDeleted
 		  , C.IsSaved
+		  , C.Comment
 	FROM
 	Fdp_Changeset	AS C
 	WHERE

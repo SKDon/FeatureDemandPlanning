@@ -1,0 +1,35 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+<form>
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+</form>
+
+<div class="alert alert-info">
+    <div class="row">
+        <div class="col-lg-1 text-center">
+            <span class="glyphicon glyphicon-info-sign"></span>
+        </div>
+        <div class="col-lg-11">
+            <p>Are you sure you wish to commit your changes to the details for this market?</p>
+            <p>Please note that this cannot be undone.</p>
+            <p>Click <strong>'OK'</strong> to continue.</p>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="panel-title">Changeset Comment</div>
+    </div>
+    <div class="panel-body">
+        <form>
+            <div class="col-xs-12">
+                <textarea id="@(Model.IdentifierPrefix)_Comment" class="changeset-comment"></textarea>
+            </div>
+        </form>
+    </div>
+</div>
+
+

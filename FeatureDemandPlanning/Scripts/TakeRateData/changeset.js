@@ -243,7 +243,8 @@ model.Changeset = function (params) {
     me.getDataChanges = function () {
         // Build up a collection of the changed data and wrap in a lightweight changeset object
         var retVal = {
-            Changes: []
+            Changes: [],
+            Comment: ""
         };
         for (var i = 0; i < privateStore[me.id].Changes.length; i++) {
             retVal.Changes.push(privateStore[me.id].Changes[i].toDataChange());
