@@ -936,6 +936,8 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    para.Add("@MarketGroupId", filter.MarketGroupId, DbType.Int32);
 
                     retVal.History = conn.Query<FdpChangesetHistoryItem>("dbo.Fdp_Changeset_GetHistory", para, commandType: CommandType.StoredProcedure);
                 }

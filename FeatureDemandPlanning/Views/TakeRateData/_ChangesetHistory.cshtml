@@ -21,11 +21,12 @@
 }
 @if (Model.History.History.Any())
 {
-    <table class="table dataTable table-bordered table-condensed table-responsive">
+    <table class="table dataTable table-bordered table-condensed table-responsive" style="font-size:11px">
         <thead>
         <tr>
             <th>Updated On</th>
             <th>Updated By</th>
+            <th>Market</th>
             <th>Comment</th>
         </tr>
         </thead>
@@ -35,6 +36,7 @@
             <tr>
                 <td>@item.UpdatedOn.ToString("dd/MM/yyyy HH:mm")</td>
                 <td>@item.UpdatedBy</td>
+                <td>@item.Market</td>
                 <td>@item.Comment</td>
             </tr>
         }

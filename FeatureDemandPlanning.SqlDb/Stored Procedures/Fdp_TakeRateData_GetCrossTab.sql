@@ -90,7 +90,7 @@ AS
 		SELECT @DocumentId = DocumentId
 		FROM Fdp_VolumeHeader
 		WHERE
-		FdpVolumeHeaderId = @DocumentId;
+		FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	
 	SELECT TOP 1 
 		  @ProgrammeId	= Programme_Id
@@ -198,7 +198,8 @@ AS
 			, Model_Id
 			, OXO_Code
 			, 'O' + CAST(Model_Id AS NVARCHAR(10))
-		FROM dbo.FN_OXO_Data_Get_FBM_Market(@DocumentId, @MarketGroupId, @ObjectId, @OxoModelIds)
+		FROM 
+		dbo.FN_OXO_Data_Get_FBM_Market(@DocumentId, @MarketGroupId, @ObjectId, @OxoModelIds)
 	END
 	
 	CREATE NONCLUSTERED INDEX Ix_TmpRawTakeRateData_Code ON #RawTakeRateData
@@ -269,7 +270,7 @@ AS
 			, CAST(NULL AS NVARCHAR(10)) AS OxoCode
 			, M.StringIdentifier
 			, 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10)) AS FeatureIdentifier
-			, 1 AS S
+			, 2 AS S
 			  
 		FROM Fdp_FeatureMapping_VW		AS FEA
 		JOIN #RawTakeRateData			AS D	ON		FEA.FdpFeatureId	= D.FdpFeatureId
@@ -308,7 +309,7 @@ AS
 				ELSE 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10))
 			  END
 			  AS FeatureIdentifier
-			, 2 AS S
+			, 3 AS S
 			  
 		FROM Fdp_FeatureMapping_VW	AS FEA
 		JOIN #RawTakeRateData		AS D	ON		FEA.FeatureId	= D.FeatureId
@@ -347,7 +348,7 @@ AS
 				ELSE 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10))
 			  END
 			  AS FeatureIdentifier
-			, 3 AS S
+			, 4 AS S
 			  
 		FROM Fdp_FeatureMapping_VW	AS FEA
 		JOIN #RawTakeRateData		AS D	ON	FEA.FdpFeatureId	= D.FdpFeatureId

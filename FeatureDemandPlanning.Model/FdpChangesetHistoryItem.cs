@@ -7,6 +7,7 @@ namespace FeatureDemandPlanning.Model
         public DateTime UpdatedOn { get; set; }
         public string UpdatedBy { get; set; }
         public string Comment { get; set; }
+        public string Market { get; set; }
     
     }
 }

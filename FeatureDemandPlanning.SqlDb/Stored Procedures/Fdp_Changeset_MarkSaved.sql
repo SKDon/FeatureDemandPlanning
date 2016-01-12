@@ -11,6 +11,15 @@ AS
 		, UpdatedBy = CreatedBy
 	WHERE
 	FdpChangesetId = @FdpChangesetId;
+
+	-- Update the UpdatedOn and UpdatedBy for the take rate file
+
+	UPDATE H SET UpdatedOn = GETDATE(), UpdatedBy = C.CreatedBy
+	FROM
+	Fdp_Changeset AS C
+	JOIN Fdp_VolumeHeader AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
+	WHERE
+	C.FdpChangesetId = @FdpChangesetId;
 	
 	-- Update the underlying take rate document revision number
 	
