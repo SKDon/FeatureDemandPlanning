@@ -926,5 +926,25 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
+
+        public FdpChangesetHistory FdpChangesetHistoryGet(TakeRateFilter filter)
+        {
+            var retVal = new FdpChangesetHistory();
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+
+                    retVal.History = conn.Query<FdpChangesetHistoryItem>("dbo.Fdp_Changeset_GetHistory", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("TakeRateDataStore.FdpChangesetGetHistory", ex.Message, CurrentCDSID);
+                }
+            }
+            return retVal;
+        }
     }
 }

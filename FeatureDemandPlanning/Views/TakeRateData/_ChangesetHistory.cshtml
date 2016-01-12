@@ -1,0 +1,45 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+<form>
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+</form>
+
+@if (!Model.History.History.Any())
+{
+    <div class="alert alert-warning">
+        <div class="row">
+            <div class="col-lg-1 text-center">
+                <span class="glyphicon glyphicon-warning-sign"></span>
+            </div>
+            <div class="col-lg-11">
+                <p>No changes have been saved for this market</p>
+            </div>
+        </div>
+    </div>
+}
+@if (Model.History.History.Any())
+{
+    <table class="table dataTable table-bordered table-condensed table-responsive">
+        <thead>
+        <tr>
+            <th>Updated On</th>
+            <th>Updated By</th>
+            <th>Comment</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.History.History)
+        {
+            <tr>
+                <td>@item.UpdatedOn.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@item.UpdatedBy</td>
+                <td>@item.Comment</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+

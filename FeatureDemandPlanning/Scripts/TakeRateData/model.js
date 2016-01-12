@@ -52,6 +52,9 @@ model.OxoVolume = function (params) {
             case 6:
                 actionModel = new FeatureDemandPlanning.Volume.SaveAction(me.getParameters());
                 break;
+            case 7:
+                actionModel = new FeatureDemandPlanning.Volume.HistoryAction(me.getParameters());
+                break;
             default:
                 break;
         }
@@ -99,8 +102,14 @@ model.OxoVolume = function (params) {
     me.getPersistChangesetAction = function() {
         return 6; // Save changes
     }
+    me.getChangesetHistoryAction = function() {
+        return 7;
+    };
     me.getPersistChangesetConfirmUri = function () {
         return privateStore[me.id].PersistChangesetConfirmUri;
+    };
+    me.getChangesetHistoryUri = function() {
+        return privateStore[me.id].ChangesetHistoryUri;
     };
     me.getUndoChangesetUri = function() {
         return privateStore[me.id].UndoChangesetUri;

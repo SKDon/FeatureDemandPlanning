@@ -8,6 +8,7 @@
         //TakeRateData = 3,
         TakeRateDataItemDetails = 4,
         UndoChange = 5,
-        SaveChanges = 6
+        SaveChanges = 6,
+        History = 7
     }
 }

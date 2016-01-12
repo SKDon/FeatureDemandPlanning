@@ -3,9 +3,7 @@ using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
-using FeatureDemandPlanning.Model.Parameters;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -126,6 +124,10 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<FdpChangeset> GetUnsavedChangesForUser(TakeRateFilter filter)
         {
             return await Task.FromResult(_takeRateDataStore.FdpLatestUnsavedChangesetByUserGetMany(filter));
+        }
+        public async Task<FdpChangesetHistory> GetChangesetHistory(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpChangesetHistoryGet(filter));
         }
         public async Task<FdpChangeset> SaveChangeset(TakeRateFilter filter, FdpChangeset changesetToSave)
         {

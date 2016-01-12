@@ -4,6 +4,6 @@ namespace FeatureDemandPlanning.Model
 {
     public class FdpChangesetHistory
     {
-        private IEnumerable<FdpChangesetHistoryItem> History { get; set; }
+        public IEnumerable<FdpChangesetHistoryItem> History { get; set; }
     }
 }

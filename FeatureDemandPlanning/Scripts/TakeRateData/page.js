@@ -70,7 +70,7 @@ model.Page = function (models) {
     };
     me.showHistory = function() {
         var model = getTakeRateDataModel();
-        var action = model.getPersistChangesetAction();
+        var action = model.getChangesetHistoryAction();
         var actionModel = model.getActionModel(action);
         var filter = getFilter("");
         filter.Action = action;
@@ -82,7 +82,7 @@ model.Page = function (models) {
             Model: model,
             ActionModel: actionModel
         });
-    }
+    };
     me.undoData = function() {
         getTakeRateDataModel().undoData({ Data: getChangeset().getDataChanges() }, me.undoDataCallback);
     };

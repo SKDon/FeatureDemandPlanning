@@ -72,6 +72,9 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 case TakeRateDataItemAction.SaveChanges:
                     model = await GetFullAndPartialViewModelForTakeRateDataPageExcludingData(context, filter);
                     break;
+                case TakeRateDataItemAction.History:
+                    model = await GetFullAndPartialViewModelForTakeRateDataPageExcludingData(context, filter);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

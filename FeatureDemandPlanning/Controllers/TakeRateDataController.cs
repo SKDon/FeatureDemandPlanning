@@ -141,7 +141,7 @@ namespace FeatureDemandPlanning.Controllers
                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
             var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.TakeRateDataItemDetails;
+            filter.Action = TakeRateDataItemAction.SaveChanges;
             var takeRateView = await TakeRateViewModel.GetModel(
                 DataContext,
                 filter);
