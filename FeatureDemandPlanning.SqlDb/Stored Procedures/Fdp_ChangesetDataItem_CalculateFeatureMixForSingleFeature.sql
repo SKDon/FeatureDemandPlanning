@@ -27,6 +27,7 @@ AS
 		, TotalVolume					INT
 		, PercentageTakeRate			DECIMAL(5, 4)
 		, ParentFdpChangesetDataItemId	INT
+		, FdpTakeRateFeatureMixId		INT
 	)
 	
 	-- Determine the total volume for the car line by market
@@ -171,42 +172,55 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId
+		, FdpTakeRateFeatureMixId
 	)
 	SELECT 
-		  FdpChangesetId
-		, MarketId
-		, FeatureId
+		  D.FdpChangesetId
+		, D.MarketId
+		, D.FeatureId
 		, CAST(NULL AS INT) AS FdpFeatureId
-		, SUM(TotalVolume) AS TotalVolume
-		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
-		, MAX(ParentFdpChangesetDataItemId)
+		, SUM(D.TotalVolume) AS TotalVolume
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
+		, MAX(D.ParentFdpChangesetDataItemId)
+		, MAX(M.FdpTakeRateFeatureMixId)
 	FROM 
-	@DataForFeature
+	@DataForFeature						AS D
+	JOIN Fdp_Changeset					AS C	ON D.FdpChangesetId		= C.FdpChangesetId
+	JOIN Fdp_VolumeHeader				AS H	ON C.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
+	LEFT JOIN Fdp_TakeRateFeatureMix	AS M	ON H.FdpVolumeHeaderId	= M.FdpVolumeHeaderId
+												AND D.MarketId			= M.MarketId
+												AND D.FeatureId			= M.FeatureId
 	WHERE
-	FeatureId IS NOT NULL
+	D.FeatureId IS NOT NULL
 	GROUP BY
-	  FdpChangesetId
-	, MarketId
-	, FeatureId
+	  D.FdpChangesetId
+	, D.MarketId
+	, D.FeatureId
 
 	UNION
 
 	SELECT 
-		  FdpChangesetId
-		, MarketId
+		  D.FdpChangesetId
+		, D.MarketId
 		, CAST(NULL AS INT) AS FeatureId
-		, FdpFeatureId
-		, SUM(TotalVolume) AS TotalVolume
-		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
-		, MAX(ParentFdpChangesetDataItemId)
+		, D.FdpFeatureId
+		, SUM(D.TotalVolume) AS TotalVolume
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
+		, MAX(D.ParentFdpChangesetDataItemId)
+		, MAX(M.FdpTakeRateFeatureMixId)
 	FROM 
-	@DataForFeature
+	@DataForFeature						AS D
+	JOIN Fdp_Changeset					AS C	ON D.FdpChangesetId		= C.FdpChangesetId
+	JOIN Fdp_VolumeHeader				AS H	ON C.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
+	LEFT JOIN Fdp_TakeRateFeatureMix	AS M	ON H.FdpVolumeHeaderId	= M.FdpVolumeHeaderId
+												AND D.MarketId			= M.MarketId
+												AND D.FdpFeatureId		= M.FdpFeatureId
 	WHERE
-	FdpFeatureId IS NOT NULL
+	D.FdpFeatureId IS NOT NULL
 	GROUP BY
-	  FdpChangesetId
-	, MarketId
-	, FdpFeatureId
+	  D.FdpChangesetId
+	, D.MarketId
+	, D.FdpFeatureId
 
 	SELECT * FROM @FeatureMix;
 
@@ -219,6 +233,7 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId
+		, FdpTakeRateFeatureMixId
 	)
 	SELECT
 		  FdpChangesetId
@@ -228,5 +243,6 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId
+		, FdpTakeRateFeatureMixId
 	FROM
 	@FeatureMix;

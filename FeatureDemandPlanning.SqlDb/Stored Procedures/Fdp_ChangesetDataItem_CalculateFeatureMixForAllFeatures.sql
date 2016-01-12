@@ -27,6 +27,7 @@ AS
 		, TotalVolume					INT
 		, PercentageTakeRate			DECIMAL(5, 4)
 		, ParentFdpChangesetDataItemId	INT
+		, FdpTakeRateFeatureMixId		INT
 	)
 	
 	-- Determine the total volume for the car line by market
@@ -111,6 +112,7 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId
+		, FdpTakeRateFeatureMixId
 	)
 	SELECT 
 		  D.FdpChangesetId
@@ -120,8 +122,14 @@ AS
 		, SUM(D.TotalVolume) AS TotalVolume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
 		, MAX(D.ParentFdpChangesetDataItemId)
+		, MAX(M.FdpTakeRateFeatureMixId)
 	FROM 
-	@DataForFeature AS D
+	@DataForFeature						AS D
+	JOIN Fdp_Changeset					AS C	ON D.FdpChangesetId		= C.FdpChangesetId
+	JOIN Fdp_VolumeHeader				AS H	ON C.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
+	LEFT JOIN Fdp_TakeRateFeatureMix	AS M	ON H.FdpVolumeHeaderId	= M.FdpVolumeHeaderId
+												AND D.MarketId			= M.MarketId
+												AND D.FeatureId			= M.FeatureId
 	WHERE
 	D.FeatureId IS NOT NULL
 	GROUP BY
@@ -132,15 +140,21 @@ AS
 	UNION
 
 	SELECT 
-		  FdpChangesetId
-		, MarketId
+		  D.FdpChangesetId
+		, D.MarketId
 		, CAST(NULL AS INT) AS FeatureId
-		, FdpFeatureId
-		, SUM(TotalVolume) AS TotalVolume
+		, D.FdpFeatureId
+		, SUM(D.TotalVolume) AS TotalVolume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
 		, MAX(D.ParentFdpChangesetDataItemId)
+		, MAX(M.FdpTakeRateFeatureMixId)
 	FROM 
 	@DataForFeature AS D
+	JOIN Fdp_Changeset					AS C	ON D.FdpChangesetId		= C.FdpChangesetId
+	JOIN Fdp_VolumeHeader				AS H	ON C.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
+	LEFT JOIN Fdp_TakeRateFeatureMix	AS M	ON H.FdpVolumeHeaderId	= M.FdpVolumeHeaderId
+												AND D.MarketId			= M.MarketId
+												AND D.FdpFeatureId		= M.FdpFeatureId
 	WHERE
 	D.FdpFeatureId IS NOT NULL
 	GROUP BY
@@ -157,6 +171,7 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId
+		, FdpTakeRateFeatureMixId
 	)
 	SELECT
 		  FdpChangesetId
@@ -166,5 +181,6 @@ AS
 		, TotalVolume
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId
+		, FdpTakeRateFeatureMixId
 	FROM
 	@FeatureMix;
