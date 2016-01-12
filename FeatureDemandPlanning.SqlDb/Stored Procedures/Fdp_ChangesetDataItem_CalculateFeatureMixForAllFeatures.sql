@@ -148,8 +148,6 @@ AS
 	, D.MarketId
 	, D.FdpFeatureId;
 
-	SELECT * FROM @FeatureMix
-
 	INSERT INTO Fdp_ChangesetDataItem
 	(
 		  FdpChangesetId

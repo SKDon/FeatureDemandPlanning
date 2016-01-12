@@ -8,6 +8,7 @@ AS
 	DECLARE @Gateway			NVARCHAR(100);
 	DECLARE @OxoDocId			INT;
 	DECLARE @FdpVolumeHeaderId	INT;
+	DECLARE @CDSId				NVARCHAR(16);
 	DECLARE @FdpImportQueueId	INT;
 	DECLARE @Message			NVARCHAR(400);
 	DECLARE @MarketMix AS TABLE
@@ -255,6 +256,10 @@ AS
 		I.DocumentId = @OxoDocId
 		
 		SELECT @FdpVolumeHeaderId = SCOPE_IDENTITY();
+		SELECT @CDSId = CreatedBy
+		FROM Fdp_VolumeHeader
+		WHERE
+		FdpVolumeHeaderId = @FdpVolumeHeaderId;
 		
 		SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' take rate file added';
 		RAISERROR(@Message, 0, 1) WITH NOWAIT;
@@ -269,6 +274,12 @@ AS
 		DocumentId = @OxoDocId
 		AND
 		FdpTakeRateStatusId <> 3;
+
+		SELECT @CDSId = CreatedBy
+		FROM
+		Fdp_VolumeHeader
+		WHERE
+		FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	END
 	
 	SELECT @FdpVolumeHeaderId AS FdpVolumeHeaderId
@@ -569,6 +580,13 @@ AS
 	FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	TotalVolume <> @TotalVolume;
+
+	-- Calculate and persist the feature mix for each feature / for each market
+
+	SET @Message = 'Calculating feature mix...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
+
+	EXEC Fdp_TakeRateFeatureMix_CalculateFeatureMixForAllFeatures @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSID = @CDSId;
 	
 	-- Update the status of the import queue item
 	

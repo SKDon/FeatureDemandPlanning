@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateFeatureMix_CalculateFeatureMixForAllFeatures]
 	  @FdpVolumeHeaderId	AS INT
-	  , @CDSId				AS NVARCHAR(16)
+	, @MarketId				AS INT
+	, @CDSId				AS NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
 
@@ -50,9 +51,9 @@ AS
 	WHERE
 	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	D.IsFeatureData = 1
-
-	SELECT * FROM @DataForFeature
+	(@MarketId IS NULL OR D.MarketId = @MarketId)
+	AND
+	D.IsFeatureData = 1;
 
 	INSERT INTO @FeatureMix
 	(
@@ -98,8 +99,6 @@ AS
 	  D.FdpVolumeHeaderId
 	, D.MarketId
 	, D.FdpFeatureId;
-
-	SELECT * FROM @FeatureMix
 
 	-- Update existing feature mix entries
 
@@ -168,4 +167,4 @@ AS
 	WHERE
 	CUR.FdpTakeRateFeatureMixId IS NULL
 	AND
-	F.FdpFeatureId IS NOT NULL
+	F.FdpFeatureId IS NOT NULL;

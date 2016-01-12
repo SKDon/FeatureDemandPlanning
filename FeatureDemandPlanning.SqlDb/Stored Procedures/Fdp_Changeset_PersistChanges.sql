@@ -38,6 +38,23 @@ AS
 	AND
 	D.IsModelUpdate = 1
 
+	-- Feature mix changes
+
+	UPDATE M SET
+		  Volume				= D.TotalVolume
+		, PercentageTakeRate	= D.PercentageTakeRate
+		, UpdatedOn				= D.CreatedOn
+		, UpdatedBy				= D.CDSId
+	FROM
+	Fdp_ChangesetDataItem_VW	AS D
+	JOIN Fdp_TakeRateFeatureMix AS M	ON	D.FdpTakeRateFeatureMixId = M.FdpTakeRateFeatureMixId
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.IsSaved = 0
+	AND
+	D.IsFeatureMixUpdate = 1
+
 	-- Add the comment to the changeset
 	
 	UPDATE C SET Comment = @Comment
