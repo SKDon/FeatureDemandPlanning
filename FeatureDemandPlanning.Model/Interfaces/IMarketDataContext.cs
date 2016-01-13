@@ -17,8 +17,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Market AddTopMarket(int marketId);
         Market DeleteTopMarket(int marketId);
 
-        Task<IEnumerable<FdpModel>> ListAvailableModelsByMarket(ProgrammeFilter filter, Market byMarket);
-        Task<IEnumerable<FdpModel>> ListAvailableModelsByMarketGroup(ProgrammeFilter filter, MarketGroup byMarketGroup);
+        Task<IEnumerable<FdpModel>> ListAvailableModelsByMarket(TakeRateFilter filter);
+        Task<IEnumerable<FdpModel>> ListAvailableModelsByMarketGroup(TakeRateFilter filter);
 
         // Mappings
 

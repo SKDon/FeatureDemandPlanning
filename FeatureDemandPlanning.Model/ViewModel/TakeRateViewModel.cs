@@ -159,10 +159,13 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 ProgrammeId = forVehicle.ProgrammeId, Gateway = forVehicle.Gateway, DocumentId = forDocument.Id,
             });
         }
-        private static async Task<Market> GetMarket(IDataContext context, Market forMarket, OXODoc forDocument)
+        private static async Task<Market> GetMarket(IDataContext context, TakeRateDocument forTakeRateDocument)
         {
             Market market;
-            var cacheKey = string.Format("Market_{0}", forMarket.Id);
+            var cacheKey = string.Format("Market_{0}_{1}",
+                forTakeRateDocument.TakeRateId,
+                forTakeRateDocument.Market.Id);
+
             var cachedLookup = HttpContext.Current.Cache.Get(cacheKey);
             if (cachedLookup != null)
             {
@@ -170,17 +173,25 @@ namespace FeatureDemandPlanning.Model.ViewModel
             }
             else
             {
-                market = await Task.FromResult(context.Market.GetMarket(new TakeRateFilter() {MarketId = forMarket.Id, DocumentId = forDocument.Id, ProgrammeId = forDocument.ProgrammeId}));
+                market = await Task.FromResult(context.Market.GetMarket(new TakeRateFilter()
+                {
+                    TakeRateId = forTakeRateDocument.TakeRateId,
+                    MarketId = forTakeRateDocument.Market.Id
+                }));
+
                 if (!(market is EmptyMarket) && market.Id != 0)
                     HttpContext.Current.Cache.Add(cacheKey, market, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             }
             return market;
         }
 
-        private static async Task<MarketGroup> GetMarketGroup(IDataContext context, MarketGroup forMarketGroup, OXODoc forDocument)
+        private static async Task<MarketGroup> GetMarketGroup(IDataContext context, TakeRateDocument forTakeRateDocument)
         {
             MarketGroup marketGroup;
-            var cacheKey = string.Format("MarketGroup_{0}", forMarketGroup.Id);
+            var cacheKey = string.Format("MarketGroup_{0}_{1}", 
+                forTakeRateDocument.TakeRateId, 
+                forTakeRateDocument.MarketGroup.Id);
+
             var cachedLookup = HttpContext.Current.Cache.Get(cacheKey);
             if (cachedLookup != null)
             {
@@ -188,7 +199,12 @@ namespace FeatureDemandPlanning.Model.ViewModel
             }
             else
             {
-                marketGroup = await Task.FromResult(context.Market.GetMarketGroup(new TakeRateFilter() {MarketGroupId = forMarketGroup.Id, DocumentId = forDocument.Id, ProgrammeId = forDocument.ProgrammeId}));
+                marketGroup = await Task.FromResult(context.Market.GetMarketGroup(new TakeRateFilter() 
+                { 
+                    TakeRateId = forTakeRateDocument.TakeRateId, 
+                    MarketGroupId = forTakeRateDocument.MarketGroup.Id
+                }));
+
                 if (!(marketGroup is EmptyMarketGroup) && marketGroup.Id != 0)
                     HttpContext.Current.Cache.Add(cacheKey, marketGroup, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             }
@@ -251,7 +267,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             if (volumeModel.Document.Market is EmptyMarket)
                 return volumeModel.Document.Market;
 
-            volumeModel.Document.Market = await GetMarket(context, volumeModel.Document.Market, volumeModel.Document.UnderlyingOxoDocument);
+            volumeModel.Document.Market = await GetMarket(context, volumeModel.Document);
 
             return volumeModel.Document.Market;
         }
@@ -260,7 +276,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             if (volumeModel.Document.MarketGroup is EmptyMarketGroup)
                 return volumeModel.Document.MarketGroup;
 
-            volumeModel.Document.MarketGroup = await GetMarketGroup(context, volumeModel.Document.MarketGroup, volumeModel.Document.UnderlyingOxoDocument);
+            volumeModel.Document.MarketGroup = await GetMarketGroup(context, volumeModel.Document);
 
             return volumeModel.Document.MarketGroup;
         }
@@ -395,18 +411,23 @@ namespace FeatureDemandPlanning.Model.ViewModel
             if (forVolume.UnderlyingOxoDocument is EmptyOxoDocument || forVolume.Vehicle is EmptyVehicle)
                 return filteredModels;
 
-            var filter = new ProgrammeFilter()
+            var filter = new TakeRateFilter()
             {
-                ProgrammeId = forVolume.UnderlyingOxoDocument.ProgrammeId, Gateway = forVolume.UnderlyingOxoDocument.Gateway, DocumentId = forVolume.UnderlyingOxoDocument.Id
+                TakeRateId = forVolume.TakeRateId, 
+                ProgrammeId = forVolume.UnderlyingOxoDocument.ProgrammeId,
+                Gateway = forVolume.UnderlyingOxoDocument.Gateway, 
+                DocumentId = forVolume.UnderlyingOxoDocument.Id
             };
 
             if (!(forVolume.Market is EmptyMarket))
             {
-                filteredModels = (await context.Market.ListAvailableModelsByMarket(filter, forVolume.Market)).Where(m => m.Available);
+                filter.MarketId = forVolume.Market.Id;
+                filteredModels = (await context.Market.ListAvailableModelsByMarket(filter)).Where(m => m.Available);
             }
             else if (!(forVolume.MarketGroup is EmptyMarketGroup))
             {
-                filteredModels = (await context.Market.ListAvailableModelsByMarketGroup(filter, forVolume.MarketGroup)).Where(m => m.Available);
+                filter.MarketGroupId = forVolume.MarketGroup.Id;
+                filteredModels = (await context.Market.ListAvailableModelsByMarketGroup(filter)).Where(m => m.Available);
             }
             else
             {

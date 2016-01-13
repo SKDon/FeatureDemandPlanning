@@ -19,7 +19,7 @@ namespace FeatureDemandPlanning.DataStore
             this.CurrentCDSID = cdsid;
         }
 
-        public IEnumerable<FdpModel> FdpAvailableModelByMarketGetMany(ProgrammeFilter filter, Market market)
+        public IEnumerable<FdpModel> FdpAvailableModelByMarketGetMany(TakeRateFilter filter)
         {
             var retVal = Enumerable.Empty<FdpModel>();
 
@@ -27,12 +27,10 @@ namespace FeatureDemandPlanning.DataStore
             {
                 try
                 {
-                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    var para = new DynamicParameters();
 
-                    para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
-                    para.Add("@Gateway", filter.Gateway, DbType.String);
-                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
-                    para.Add("@MarketId", market.Id, DbType.Int32);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
 
                     retVal = conn.Query<FdpModel>("dbo.Fdp_AvailableModelByMarket_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
@@ -44,7 +42,7 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public IEnumerable<FdpModel> FdpAvailableModelByMarketGroupGetMany(ProgrammeFilter filter, MarketGroup marketGroup)
+        public IEnumerable<FdpModel> FdpAvailableModelByMarketGroupGetMany(TakeRateFilter filter)
         {
             IEnumerable<FdpModel> retVal = Enumerable.Empty<FdpModel>();
 
@@ -52,12 +50,10 @@ namespace FeatureDemandPlanning.DataStore
             {
                 try
                 {
-                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    var para = new DynamicParameters();
 
-                    para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
-                    para.Add("@Gateway", filter.Gateway, DbType.String);
-                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
-                    para.Add("@MarketGroupId", marketGroup.Id, DbType.Int32);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketGroupId", filter.MarketGroupId, DbType.Int32);
 
                     retVal = conn.Query<FdpModel>("dbo.Fdp_AvailableModelByMarketGroup_GetMany", para, commandType: CommandType.StoredProcedure);
                 }

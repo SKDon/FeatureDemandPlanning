@@ -4,6 +4,7 @@ using System.Linq;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Helpers;
 
@@ -121,6 +122,37 @@ namespace FeatureDemandPlanning.DataStore
                 catch (Exception ex)
                 {
                     AppHelper.LogError("MarketGroupDataStore.MarketGroupGetMany", ex.Message, CurrentCDSID);
+                }
+            }
+
+            return retVal;
+        }
+
+        public MarketGroup FdpMarketGroupGet(TakeRateFilter filter)
+        {
+            MarketGroup retVal = new EmptyMarketGroup();
+            
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@MarketGroupId", filter.MarketGroupId, DbType.Int32);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+
+                    using (var multi = conn.QueryMultiple("dbo.Fdp_MarketGroup_Get", para, commandType: CommandType.StoredProcedure))
+                    {
+                        retVal = multi.Read<MarketGroup>().FirstOrDefault();
+                        
+                        var markets = multi.Read<Market>().ToList();
+                        if (retVal != null)
+                            retVal.Markets = markets.ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("MarketGroupDataStore.FdpMarketGroupGet", ex.Message, CurrentCDSID);
+                    throw;
                 }
             }
 

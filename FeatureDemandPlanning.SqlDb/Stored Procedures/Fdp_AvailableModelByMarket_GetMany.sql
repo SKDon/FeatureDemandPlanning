@@ -1,10 +1,23 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_AvailableModelByMarket_GetMany]   
-   @ProgrammeId INT,
-   @Gateway		NVARCHAR(100),
-   @DocumentId	INT,
-   @MarketId	INT,
-   @CDSId		NVARCHAR(16)
+	  @FdpVolumeHeaderId	INT
+	, @MarketId				INT
 AS
+	SET NOCOUNT ON;
+	
+	DECLARE @DocumentId		INT;
+	DECLARE @ProgrammeId	INT;
+	DECLARE @Gateway		NVARCHAR(100);
+	
+	SELECT TOP 1
+		  @DocumentId	= D.Id
+		, @ProgrammeId	= D.Programme_Id
+		, @Gateway		= D.Gateway
+	FROM
+	Fdp_VolumeHeader	AS H
+	JOIN OXO_Doc		AS D ON H.DocumentId = D.Id
+	WHERE
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	
 	WITH OxoData AS
 	(
 		SELECT OD.Model_Id 

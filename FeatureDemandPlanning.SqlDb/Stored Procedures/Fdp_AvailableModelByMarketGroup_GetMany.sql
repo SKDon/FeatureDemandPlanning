@@ -1,29 +1,38 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_AvailableModelByMarketGroup_GetMany]   
-   @ProgrammeId		INT,
-   @Gateway			NVARCHAR(100),
-   @OxoDocId		INT,
-   @MarketGroupId	INT,
-   @CDSId			NVARCHAR(16)
+     @FdpVolumeHeaderId	INT
+   , @MarketGroupId		INT
 AS
+	SET NOCOUNT ON;
+	
+	DECLARE @DocumentId		INT;
+	DECLARE @ProgrammeId	INT;
+	DECLARE @Gateway		NVARCHAR(100);
+	
+	SELECT TOP 1
+		  @DocumentId	= D.Id
+		, @ProgrammeId	= D.Programme_Id
+		, @Gateway		= D.Gateway
+	FROM
+	Fdp_VolumeHeader	AS H
+	JOIN OXO_Doc		AS D ON H.DocumentId = D.Id
+	WHERE
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	
 	WITH Set_A AS
 	(
 		SELECT OD.Model_Id 
 		FROM OXO_ITEM_DATA_MBM OD WITH(NOLOCK)
-		WHERE OD.OXO_Doc_Id = @OxoDocId
+		WHERE OD.OXO_Doc_Id = @DocumentId
 		AND OD.Market_Group_Id = @MarketGroupId
 		AND OD.OXO_Code = 'Y'	
 		AND Active = 1
-	
 	)
 	, FdpData AS
 	(
 		SELECT DISTINCT FdpModelId
 		FROM Fdp_TakeRateSummaryByModelAndMarket_VW
 		WHERE 
-		ProgrammeId = @ProgrammeId
-		AND 
-		Gateway = @Gateway
+		FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND
 		(@MarketGroupId IS NULL OR MarketGroupId = @MarketGroupId)
 		AND
@@ -93,7 +102,7 @@ AS
 		ELSE 1
 		END AS Available
 	                 
-		FROM dbo.FN_Programme_Models_Get(@ProgrammeId, @OxoDocId)  M
+		FROM dbo.FN_Programme_Models_Get(@ProgrammeId, @DocumentId)  M
 		LEFT OUTER JOIN SET_A A
 		ON M.ID = A.Model_Id
 	    
