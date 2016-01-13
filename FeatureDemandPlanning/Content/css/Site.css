@@ -884,18 +884,18 @@ td.nonApplicableFeature {
 }
 
 td.packFeature {
-    background-color: #645495;
-    color: #b4abd0;
+    background-color: #FFB858;
+    color: #061639;
     width: 100%;
 }
 td.standardFeature {
-    background-color: #aac9aa;
+    background-color: #7AA67A;
     color: #1c271c;
     width:100%;
 }
 
 td.optionalFeature {
-    background-color: #f9d5d5;
+    background-color: #d46a6a;
     color: #312222;
     width:100%;
     border-color:#78a !important;
@@ -907,17 +907,17 @@ li.nonApplicableFeature {
 }
 
 li.packFeature {
-    background-color: #645495 !important;
-    color: #b4abd0;
+    background-color: #FFB858 !important;
+    color: #061639;
 }
 
 li.standardFeature {
-    background-color: #7788aa;
-    color: #fff;
+    background-color: #7AA67A;
+    color: #1c271c;
 }
 
 li.optionalFeature {
-    background-color: #4e638a;
+    background-color: #d46a6a;
     color: #12073b;
     border-color:#78a !important;
 }
