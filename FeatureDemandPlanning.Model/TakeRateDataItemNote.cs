@@ -4,6 +4,7 @@ namespace FeatureDemandPlanning.Model
 {
     public class TakeRateDataItemNote
     {
+        public int? TakeRateId { get; set; }
         public int? FdpTakeRateDataItemNoteId { get; set; }
         public int? FdpTakeRateDataItemId { get; set; }
         public DateTime EnteredOn { get; set; }

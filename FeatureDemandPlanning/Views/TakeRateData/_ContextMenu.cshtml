@@ -9,12 +9,22 @@
             <span class="glyphicon glyphicon-info-sign pull-left"></span> View details...
         </a>
     </li>
+    <li>
+        <a tabindex="-1" href="#" data-role="@((int) enums.TakeRateDataItemAction.AddNote)" data-target="@(Model.Document.Market.Id)|@(Model.CurrentTakeRateDataItem.ModelIdentifier)|@(Model.CurrentTakeRateDataItem.FeatureIdentifier)">
+            <span class="glyphicon glyphicon-pencil pull-left"></span> Add Note...
+        </a>
+    </li>
 }
 else
 {
     <li>
         <a tabindex="-1" href="#" data-role="@((int) enums.TakeRateDataItemAction.TakeRateDataItemDetails)" data-target="@(Model.Document.Market.Id)|@(Model.CurrentTakeRateDataItem.ModelIdentifier)">
             <span class="glyphicon glyphicon-info-sign pull-left"></span> View model details...
+        </a>
+    </li>
+    <li>
+        <a tabindex="-1" href="#" data-role="@((int) enums.TakeRateDataItemAction.AddNote)" data-target="@(Model.Document.Market.Id)|@(Model.CurrentTakeRateDataItem.ModelIdentifier)">
+            <span class="glyphicon glyphicon-pencil pull-left"></span> Add Note...
         </a>
     </li>
 }

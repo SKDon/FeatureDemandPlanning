@@ -208,12 +208,12 @@ namespace FeatureDemandPlanning.DataStore
                         takeRateDataItemId = para.Get<int?>("@FdpTakeRateDataItemId");
                     }
                     
-                    // Save any notes 
-                    foreach (var note in dataItemToSave.Notes.Where(n => !n.FdpTakeRateDataItemNoteId.HasValue))
-                    {
-                        note.FdpTakeRateDataItemId = takeRateDataItemId;
-                        TakeRateDataItemNoteSave(note);
-                    }
+                    //// Save any notes 
+                    //foreach (var note in dataItemToSave.Notes.Where(n => !n.FdpTakeRateDataItemNoteId.HasValue))
+                    //{
+                    //    note.FdpTakeRateDataItemId = takeRateDataItemId;
+                    //    TakeRateDataItemNoteSave(note);
+                    //}
 
                     retVal = TakeRateDataItemGet(new TakeRateFilter { TakeRateDataItemId = takeRateDataItemId });
                 }
@@ -225,17 +225,22 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
-        public TakeRateDataItemNote TakeRateDataItemNoteSave(TakeRateDataItemNote noteToSave)
+        public TakeRateDataItemNote TakeRateDataItemNoteSave(TakeRateFilter filter)
         {
             TakeRateDataItemNote retVal = new EmptyTakeRateDataItemNote();
             using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
-                    var para = new DynamicParameters();
-                    para.Add("@FdpTakeRateDataItemId", noteToSave.FdpTakeRateDataItemId, DbType.Int32);
-                    para.Add("@CDSID", CurrentCDSID, DbType.String);
-                    para.Add("@Note", noteToSave.Note, DbType.String);
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    para.Add("@MarketGroupId", filter.MarketGroupId, DbType.Int32);
+                    para.Add("@ModelId", filter.ModelId, DbType.Int32);
+                    para.Add("@FdpModelId", filter.FdpModelId, DbType.Int32);
+                    para.Add("@FeatureId", filter.FeatureId, DbType.Int32);
+                    para.Add("@FdpFeatureId", filter.FdpFeatureId, DbType.Int32);
+                    para.Add("@Note", filter.Comment, DbType.String);
                     
                     var results = conn.Query<TakeRateDataItemNote>(fdpTakeRateDataItemNoteSaveStoredProcedureName, para, commandType: CommandType.StoredProcedure);
                     var takeRateDataItemNotes = results as IList<TakeRateDataItemNote> ?? results.ToList();

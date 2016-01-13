@@ -146,8 +146,10 @@ model.Modal = function (params) {
         content.html(response);
 
         model.initialise();
-        actionModel.setParameters(me.getModalParameters());
-        actionModel.initialise();
+        if (actionModel != null) {
+            actionModel.setParameters(me.getModalParameters());
+            actionModel.initialise();
+        }
 
         me.registerEvents();
         me.raiseLoadedEvent();

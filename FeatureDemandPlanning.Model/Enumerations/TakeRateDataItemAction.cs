@@ -9,6 +9,7 @@
         TakeRateDataItemDetails = 4,
         UndoChange = 5,
         SaveChanges = 6,
-        History = 7
+        History = 7,
+        AddNote = 8
     }
 }

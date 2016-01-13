@@ -1,4 +1,5 @@
-﻿using FeatureDemandPlanning.Model.Empty;
+﻿using System;
+using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.Parameters
@@ -28,16 +29,41 @@ namespace FeatureDemandPlanning.Model.Parameters
 
         public object GetActionSpecificParameters()
         {
-            if (Action == TakeRateDataItemAction.TakeRateDataItemDetails)
+            switch (Action)
             {
-                return new
-                {
-                    TakeRateDataItemId,
-                    Action
-                };
+                case TakeRateDataItemAction.TakeRateDataItemDetails:
+                    return new
+                    {
+                        TakeRateDataItemId,
+                        Action
+                    };
+                case TakeRateDataItemAction.AddNote:
+                    return new
+                    {
+                        TakeRateId,
+                        MarketId,
+                        MarketGroupId,
+                        FeatureIdentifier,
+                        ModelIdentifier,
+                        Comment
+                    };
+                case TakeRateDataItemAction.NotSet:
+                    break;
+                case TakeRateDataItemAction.TakeRates:
+                    break;
+                case TakeRateDataItemAction.TakeRateDataPage:
+                    break;
+                case TakeRateDataItemAction.UndoChange:
+                    break;
+                case TakeRateDataItemAction.SaveChanges:
+                    break;
+                case TakeRateDataItemAction.History:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
-            return new { };
+            return new {};
         }
     }
 }

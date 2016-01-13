@@ -65,6 +65,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                     break;
                 case TakeRateDataItemAction.TakeRateDataItemDetails:
                 case TakeRateDataItemAction.UndoChange:
+                case TakeRateDataItemAction.AddNote:
                     model = await GetFullAndPartialViewModelForTakeRateDataItem(context, filter);
                     break;
                 case TakeRateDataItemAction.NotSet:

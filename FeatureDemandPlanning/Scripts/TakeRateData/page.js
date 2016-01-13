@@ -902,12 +902,25 @@ model.Page = function (models) {
     function getDetailsModel() {
         return getModel("Details");
     };
+    function getAddNoteModel() {
+        return getModel("AddNote");
+    };
     function getModal() {
         return getModel("Modal");
     };
     function getModelForAction(actionId) {
-        // TODO we may have other actions from the context menu. Change to a switch and implement here
-        return getDetailsModel();
+        var model;
+        switch (actionId) {
+            case 4:
+                model = getDetailsModel();
+                break;
+            case 8:
+                model = getAddNoteModel();
+                break;
+            default:
+                break;
+        }
+        return model;
     };
     function getFilter(dataItemString) {
         var identifiers = dataItemString.split("|");

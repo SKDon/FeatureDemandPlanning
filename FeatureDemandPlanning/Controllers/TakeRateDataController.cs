@@ -190,6 +190,16 @@ namespace FeatureDemandPlanning.Controllers
 
             return Json(undoneChangeset);
         }
+        [HandleErrorWithJson]
+        public async Task<ActionResult> AddNote(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.ModelPlusFeatureAndComment);
+
+            var note = await DataContext.TakeRate.AddDataItemNote(TakeRateFilter.FromTakeRateParameters(parameters));
+
+            return Json(note, JsonRequestBehavior.AllowGet);
+        }
         //[HttpPost]
         //public async Task<ActionResult> Validate(TakeRateParameters parameters,
         //                                         TakeRateDocumentValidationSection sectionToValidate = TakeRateDocumentValidationSection.All)

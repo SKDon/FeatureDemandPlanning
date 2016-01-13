@@ -16,19 +16,21 @@ model.AddNoteAction = function (params) {
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.getActionParameters = function () {
-        return $.extend({}, getData(), {
-            //"DerivativeCode": me.getImportDerivativeCode(),
-            //"ImportDerivativeCode": me.getImportDerivativeCode(),
-            //"BodyId": me.getSelectedBodyId(),
-            //"EngineId": me.getSelectedEngineId(),
-            //"TransmissionId": me.getSelectedTransmissionId()
-        });
+        var actionParameters = getData();
+        $.extend(actionParameters, { Comment: me.getComment() });
+        return actionParameters;
+    };
+    me.getChangeset = function () {
+        return getData().Changeset;
     };
     me.getIdentifierPrefix = function () {
         return $("#Action_IdentifierPrefix").val();
     };
     me.getActionUri = function () {
         return privateStore[me.id].ActionUri;
+    };
+    me.getComment = function () {
+        return $("#" + me.getIdentifierPrefix() + "_NoteText").val().trim();
     };
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
@@ -42,7 +44,7 @@ model.AddNoteAction = function (params) {
             .removeClass("alert-danger")
             .removeClass("alert-warning")
             .addClass("alert-success")
-            .html("New derivative '" + me.getImportDerivativeCode() + "' added successfully")
+            .html("Note added successfully")
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");
@@ -61,7 +63,6 @@ model.AddNoteAction = function (params) {
         }
     };
     me.registerEvents = function () {
-        var prefix = me.getIdentifierPrefix();
         $("#Modal_OK").unbind("click").on("click", me.action);
         $(document)
             .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
@@ -70,7 +71,7 @@ model.AddNoteAction = function (params) {
     me.registerSubscribers = function () {
         $("#Modal_Notify")
             .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
-            .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
+            .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler);
     };
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;
@@ -78,7 +79,7 @@ model.AddNoteAction = function (params) {
     function getData() {
         var params = me.getParameters();
         if (params.Data != undefined)
-            return JSON.parse(params.Data)
+            return JSON.parse(params.Data);
 
         return {};
     };
@@ -93,7 +94,7 @@ model.AddNoteAction = function (params) {
                 $(document).trigger("Success", json);
             },
             "error": function (jqXHR, textStatus, errorThrown) {
-                $(document).trigger("Error", JSON.parse(jqXHR.responseText));
+                $(document).trigger("Error", jqXHR.responseJSON);
             }
         });
     };

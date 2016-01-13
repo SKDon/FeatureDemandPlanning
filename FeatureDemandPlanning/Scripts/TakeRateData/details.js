@@ -2,7 +2,7 @@
 
 var model = namespace("FeatureDemandPlanning.Volume");
 
-model.Details = function (params) {
+model.Details = function(params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
@@ -16,26 +16,36 @@ model.Details = function (params) {
 
     me.ModelName = "Details";
 
-    me.initialise = function () {
+    me.initialise = function() {
+        me.registerEvents();
+        me.registerSubscribers();
     };
-    me.getActionContentUri = function (action) {
+    me.registerEvents = function() {
+        $("#Page_AddNoteButton").unbind("click").on("click", me.addNote);
+    };
+    me.registerSubscribers = function() {
+
+    };
+    me.addNote = function() {
+        var addNoteAction = me.getAddNoteAction();
+        addNoteAction.action();
+    };
+    me.getIdentifierPrefix = function() {
+        return $("#Action_IdentifierPrefix").val();
+    };
+    me.getActionContentUri = function () {
         return privateStore[me.id].ModalContentUri;
     };
-    me.getActionModel = function (action) {
-        var actionModel = null;
-        switch (action) {
-            case 4:
-                actionModel = new FeatureDemandPlanning.Volume.AddNoteAction(me.getParameters());
-                break;
-            default:
-                break;
-        }
-        return actionModel;
+    me.getActionModel = function () {
+        return null;
     };
-    me.getActionUri = function (action) {
+    me.getAddNoteAction = function() {
+        return new FeatureDemandPlanning.Volume.AddNoteAction(me.getParameters());
+    };
+    me.getActionUri = function () {
         return privateStore[me.id].ModalActionUri;
     };
-    me.getActionTitle = function (action) {
+    me.getActionTitle = function () {
         return "Take Rate Item Details";
     };
     me.getConfiguration = function () {
@@ -46,8 +56,6 @@ model.Details = function (params) {
     };
     me.getUpdateParameters = function () {
         return $.extend({}, getData(), {
-            //"FeatureCode": $("#featureCode").val(),
-            "ImportFeatureCode": $("#dvImportFeatureCode").attr("data-id")
         });
     }
     me.getVehicleId = function () {

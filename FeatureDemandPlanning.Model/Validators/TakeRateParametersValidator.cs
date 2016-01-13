@@ -10,6 +10,7 @@ namespace FeatureDemandPlanning.Model.Validators
         public const string TakeRateIdentifier = "TAKE_RATE_ID";
         public const string TakeRateIdentifierWithChangeset = "TAKE_RATE_ID_WITH_CHANGESET";
         public const string TakeRateIdentifierWithChangesetAndComment = "TAKE_RATE_ID_WITH_CHANGESET_AND_COMMENT";
+        public const string ModelPlusFeatureAndComment = "MODEL_PLUS_FEATURE_AND_COMMENT";
         public const string NoValidation = "NO_VALIDATION";
 
         public TakeRateParametersValidator(IDataContext context)
@@ -36,6 +37,13 @@ namespace FeatureDemandPlanning.Model.Validators
                 RuleFor(p => p.Changeset.Changes).SetValidator(new AllFeatureVolumesMustBeLessThanModelVolume(context));
                 RuleFor(p => p.Changeset.Changes).SetValidator(new AllModelVolumesMustBeLessThanMarketVolume(context));
                 RuleFor(p => p.Changeset).SetValidator(new ChangesetValidator(context));
+            });
+            RuleSet(ModelPlusFeatureAndComment, () =>
+            {
+                RuleFor(p => p.TakeRateId).NotNull().WithMessage("Take rate file not specified");
+                RuleFor(p => p.Comment).NotEmpty().WithMessage("Comment not specified");
+                //RuleFor(p => p.ModelIdentifier).NotEmpty().WithMessage("Model not specified");
+                //RuleFor(p => p.FeatureIdentifier).NotEmpty().WithMessage("Feature not specified");
             });
         }
         

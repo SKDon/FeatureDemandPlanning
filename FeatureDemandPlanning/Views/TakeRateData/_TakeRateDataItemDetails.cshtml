@@ -4,21 +4,23 @@
 
 @Html.Partial("_TakeRateDataItemHeader", Model)
 
-<div class="panel panel-primary panel-sm">
-    <div class="panel-heading small-panel-heading">
-        <div class="panel-title small-panel-title">Notes</div>
-    </div>
-    <div class="panel-body">
-        @if (Model.CurrentTakeRateDataItem.Notes.Any()) { 
-         <table id="@(Model.IdentifierPrefix)_Notes" class="table table-bordered table-condensed table-responsive dataTable" style="font-size:11px">
-            <thead>
+@if (Model.CurrentTakeRateDataItem.Notes.Any())
+{
+    <div class="panel panel-primary panel-sm">
+        <div class="panel-heading small-panel-heading">
+            <div class="panel-title small-panel-title">Notes</div>
+        </div>
+        <div class="panel-body">
+
+            <table id="@(Model.IdentifierPrefix)_Notes" class="table table-bordered table-condensed table-responsive dataTable" style="font-size: 11px">
+                <thead>
                 <tr>
                     <th class="text-center">Added On</th>
                     <th class="text-center">Added By</th>
                     <th>Note</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 @foreach (var note in Model.CurrentTakeRateDataItem.Notes)
                 {
                     <tr>
@@ -27,16 +29,11 @@
                         <td>@note.Note</td>
                     </tr>
                 }
-            </tbody>
-        </table>
-        }
-        <div class="form-group-sm">
-            <label class="small" for="@(Model.IdentifierPrefix)_NoteText">Add Note:</label>
-            <textarea class="form-control" id="@(Model.IdentifierPrefix)_NoteText" rows="1" style="min-width: 100%;margin-bottom:10px;"></textarea>
-            <button class="btn btn-sm btn-default pull-right" id="@(Model.IdentifierPrefix)_AddButton">Add</button>
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
+}
 
 <div class="panel panel-primary panel-sm">
     <div class="panel-heading small-panel-heading">

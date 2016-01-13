@@ -43,5 +43,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<int> GetVolumeForMarket(TakeRateFilter filter);
 
         Task<FdpChangesetHistory> GetChangesetHistory(TakeRateFilter filter);
+
+        Task<TakeRateDataItemNote> AddDataItemNote(TakeRateFilter filter);
     }
 }

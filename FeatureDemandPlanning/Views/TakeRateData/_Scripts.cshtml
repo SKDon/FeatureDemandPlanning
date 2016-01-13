@@ -11,6 +11,7 @@
 <script src="@Url.Content("~/Scripts/TakeRateData/model.js")?v=@Model.CurrentVersion"></script>
 <script src="@Url.Content("~/Scripts/TakeRateData/changeset.js")?v=@Model.CurrentVersion"></script>
 <script src="@Url.Content("~/Scripts/TakeRateData/details.js")?v=@Model.CurrentVersion"></script>
+<script src="@Url.Content("~/Scripts/TakeRateData/addnote.js")?v=@Model.CurrentVersion"></script>
 <script src="@Url.Content("~/Scripts/TakeRateData/addnoteaction.js")?v=@Model.CurrentVersion"></script>
 <script src="@Url.Content("~/Scripts/TakeRateData/save.js")?v=@Model.CurrentVersion"></script>
 <script src="@Url.Content("~/Scripts/TakeRateData/saveaction.js")?v=@Model.CurrentVersion"></script>
@@ -20,7 +21,7 @@
 
 <script type="text/javascript">
 
-    var volume, vehicle, pager, page, modal;
+    var volume, vehicle, pager, page, modal, details, addNote;
     var params = {
         ActionsUri: "@Url.Action("ContextMenu")",
         ModalContentUri: "@Url.Action("ModalContent")",

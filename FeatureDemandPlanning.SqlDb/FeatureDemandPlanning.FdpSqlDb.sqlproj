@@ -438,7 +438,10 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_TakeRateDataItem_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_TakeRateDataItemNote_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateDataItemNote_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Tables\Fdp_TakeRateDataItemAudit.sql" />
     <Build Include="Tables\Fdp_TakeRateDataItemNote.sql" />
     <Build Include="Tables\Fdp_ChangesetDataItem.sql">
