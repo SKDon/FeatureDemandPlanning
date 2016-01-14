@@ -112,10 +112,6 @@
     <Build Include="Tables\Fdp_DerivativeMapping.sql" />
     <Build Include="Tables\Fdp_Feature.sql" />
     <Build Include="Tables\Fdp_FeatureMapping.sql" />
-    <Build Include="Tables\Fdp_Forecast.sql" />
-    <Build Include="Tables\Fdp_ForecastComparison.sql" />
-    <Build Include="Tables\Fdp_ForecastComparisonTrim.sql" />
-    <Build Include="Tables\Fdp_ForecastVehicle.sql" />
     <Build Include="Tables\Fdp_Import.sql" />
     <Build Include="Tables\Fdp_ImportData.sql" />
     <Build Include="Tables\Fdp_ImportError.sql" />
@@ -170,8 +166,6 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="Views\Fdp_FeatureMapping_VW.sql" />
-    <Build Include="Views\Fdp_Forecast_VW.sql" />
-    <Build Include="Views\Fdp_ForecastComparison_VW.sql" />
     <Build Include="Views\Fdp_Gateways_VW.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
@@ -663,6 +657,30 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_MarketGroup_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_ForecastVehicle_1.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_ForecastComparisonTrim_1.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_ForecastComparison_1.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_Forecast_1.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_ForecastComparison_VW_1.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_Forecast_VW_1.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>

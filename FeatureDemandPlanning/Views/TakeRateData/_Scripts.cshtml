@@ -47,7 +47,8 @@
             OxoDocId: null,
         TakeRateId: null,
         MarketGroupId: null,
-        MarketId: null
+        MarketId: null,
+        IsComplete: @Model.TakeRate.IsCompleted.ToString().ToLower()
     };
 
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));

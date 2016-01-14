@@ -31,7 +31,6 @@ page.TakeRatesPage = function (models) {
     me.configureDataTables = function () {
 
         var takeRateUri = getTakeRatesModel().getTakeRateUri();
-        var oxoDocIndex = 8;
         var takeRateIndex = 0;
 
         $("#tblTakeRates").DataTable({
@@ -106,6 +105,15 @@ page.TakeRatesPage = function (models) {
                     "sClass": "text-center",
                     "render": function (data, type, full) {
                         return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
+                    }
+                },
+                {
+                    "sName": "IMPORT_COMPLETE",
+                    "bSearchable": false,
+                    "bSortable": false,
+                    "sClass": "text-center",
+                    "render": function (data, type, full) {
+                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + (data === "False" ? "No" : "Yes") + "</a>";
                     }
                 }
             ],

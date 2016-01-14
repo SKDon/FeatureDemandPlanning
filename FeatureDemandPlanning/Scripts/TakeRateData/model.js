@@ -33,6 +33,7 @@ model.OxoVolume = function (params) {
     privateStore[me.id].IsValid = true;
     privateStore[me.id].FdpVolumeHeaders = [];
     privateStore[me.id].CurrentEditValue = null;
+    privateStore[me.id].IsImportCompleted = params.IsCompleted;
     privateStore[me.id].Parameters = params;
 
     me.ModelName = "OxoVolume";
@@ -63,6 +64,9 @@ model.OxoVolume = function (params) {
     me.getActionContentUri = function (action) {
         return privateStore[me.id].ModalContentUri;
     };
+    me.isImportCompleted = function() {
+        return privateStore[me.id].IsImportCompleted;
+    }
     me.getTakeRateId = function() {
         return privateStore[me.id].TakeRateId;
     }

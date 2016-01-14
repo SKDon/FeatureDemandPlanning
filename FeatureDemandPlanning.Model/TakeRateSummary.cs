@@ -20,6 +20,7 @@ namespace FeatureDemandPlanning.Model
         public string StatusDescription { get; set; }
 
         public string Version { get; set; }
+        public bool IsCompleted { get; set; }
 
         public string[] ToJQueryDataTableResult()
         {
@@ -33,7 +34,8 @@ namespace FeatureDemandPlanning.Model
                 Status,
                 UpdatedOn.HasValue ? UpdatedOn.Value.ToString("dd/MM/yyyy HH:mm") : "-",
                 !string.IsNullOrEmpty(UpdatedBy) ? UpdatedBy : "-",
-                OxoDocId.ToString()
+                //OxoDocId.ToString(),
+                IsCompleted.ToString()
             };
         }
     }

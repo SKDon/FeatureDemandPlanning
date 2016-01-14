@@ -114,6 +114,17 @@ model.Modal = function (params) {
         $("#Modal_OK").show();
         $("#Modal_Cancel").html("Cancel");
     };
+    me.showAlert = function(title, message, type) {
+        var dialog = $("#" + me.getModalDialogId());
+        dialog
+            .unbind("shown.bs.modal").on("shown.bs.modal", function () {
+                me.getAlertContent(title, message, type);
+            })
+            .modal();
+
+        $("#Modal_OK").hide();
+        $("#Modal_Cancel").html("OK");
+    }
     me.showConfirmExtended = function(title, contentFn, confirmCallback) {
         contentFn(title, confirmCallback);
     };
@@ -129,13 +140,47 @@ model.Modal = function (params) {
         notifier.html("").hide();
 
         me.registerConfirmEvents(confirmCallback);
-    }
+    };
+    me.getAlertContent = function(title, message, type) {
+        var dialog = $("#" + me.getModalDialogId());
+        var content = dialog.find("#Modal_Content");
+        var titleSelector = dialog.find("#Modal_Title");
+        var notifier = dialog.find("#Modal_Notify");
+        titleSelector.html(title);
+
+        switch (type) {
+            case 1:
+                content.html(me.getAlertInfoHtml(message));
+                break;
+            case 2:
+                content.html(me.getAlertWarningHtml(message));
+                break;
+            case 3:
+                content.html(me.getAlertSuccessHtml(message));
+                break;
+            default:
+                content.html(me.getAlertInfoHtml(message));
+                break;
+        }
+        
+        titleSelector.html(title);
+        notifier.html("").hide();
+    };
     me.getConfirmHtml = function(message) {
         return "<div class=\"alert alert-info alert-less-margin\">" + message + "</div>";
-    }
+    };
     me.getConfirmExtendedHtml = function(message, additionalContent) {
         return "<div class=\"alert alert-info alert-less-margin\">" + message + "</div><div>" + additionalContent + "</div>";
-    }
+    };
+    me.getAlertInfoHtml = function(message) {
+        return "<div class=\"alert alert-info alert-less-margin\">" + message + "</div>";
+    };
+    me.getAlertSuccessHtml = function (message) {
+        return "<div class=\"alert alert-success alert-less-margin\">" + message + "</div>";
+    };
+    me.getAlertWarningHtml = function (message) {
+        return "<div class=\"alert alert-warning alert-less-margin\">" + message + "</div>";
+    };
     function showModalCallback(response) {
         var dialog = $("#" + me.getModalDialogId());
         var content = dialog.find("#Modal_Content");

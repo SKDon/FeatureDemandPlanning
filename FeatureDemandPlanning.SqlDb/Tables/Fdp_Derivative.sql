@@ -19,6 +19,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_Derivative_DerivativeCode]
     ON [dbo].[Fdp_Derivative]([DerivativeCode] ASC, [ProgrammeId] ASC);

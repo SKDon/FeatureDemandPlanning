@@ -21,6 +21,7 @@ model.Page = function (models) {
         me.registerEvents();
         me.registerSubscribers();
         me.loadChangeset();
+        me.checkCompletion();
     };
     me.calcPanelHeight = function () {
         return ($(window).height()) - 135 + "px";
@@ -372,6 +373,16 @@ model.Page = function (models) {
     };
     me.loadChangeset = function () {
         getTakeRateDataModel().loadChangeset(me.loadChangesetCallback);
+    };
+    me.checkCompletion = function() {
+        var model = getTakeRateDataModel();
+        var isImportCompleted = model.isImportCompleted();
+        if (!isImportCompleted)
+        {
+            getModal().showAlert("Incomplete Data",
+                "The import process for this take rate file has not been completed and still contains errors.<br/><br/>" +
+                "The dataset will be incomplete and should be edited with caution.", 2);
+        }
     };
     me.confirmLoadChangeset = function(changesetData) {
         $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", changesetData === null || changesetData.Changes.length === 0);

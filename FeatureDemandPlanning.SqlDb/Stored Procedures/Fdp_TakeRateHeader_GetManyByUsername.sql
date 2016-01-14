@@ -83,6 +83,24 @@ AS
 	
 	SELECT @TotalDisplayRecords = COUNT(1) FROM @PageRecords WHERE RowIndex BETWEEN @MinIndex AND @MaxIndex;
 
+	;WITH Errors AS
+	(
+		SELECT 
+			H.FdpVolumeHeaderId,
+			COUNT(E.FdpImportErrorId) AS NumberOfErrors
+		FROM
+		@PageRecords AS P
+		JOIN Fdp_VolumeHeader	AS H	ON P.TakeRateId			= H.FdpVolumeHeaderId
+		JOIN OXO_Doc			AS D	ON H.DocumentId			= D.Id
+		JOIN Fdp_Import			AS I	ON D.Id					= I.DocumentId
+										AND D.Programme_Id		= I.ProgrammeId
+										AND D.Gateway			= I.Gateway
+		JOIN Fdp_ImportQueue	AS Q	ON I.FdpImportQueueId	= Q.FdpImportQueueId
+		JOIN Fdp_ImportError	AS E	ON Q.FdpImportQueueId	= E.FdpImportQueueId
+										AND E.IsExcluded		= 0
+		GROUP BY
+		H.FdpVolumeHeaderId
+	)
 	SELECT DISTINCT
 		  T.FdpVolumeHeaderId	AS TakeRateId
 		, T.CreatedOn
@@ -101,6 +119,7 @@ AS
 		, S.[Status]
 		, S.[Description] AS StatusDescription
 		, V.VersionString AS [Version]
+		, CAST(CASE WHEN E.NumberOfErrors = 0 THEN 1 ELSE 0 END AS BIT) AS IsComplete
 		
 	FROM @PageRecords			AS PA
 	JOIN Fdp_VolumeHeader		AS T	ON	PA.TakeRateId			= T.FdpVolumeHeaderId
@@ -109,3 +128,4 @@ AS
 	JOIN OXO_Doc				AS D	ON	T.DocumentId			= D.Id
 	JOIN OXO_Programme_VW		AS P	ON	D.Programme_Id			= P.Id
 	JOIN Fdp_Version_VW			AS V	ON	T.FdpVolumeHeaderId		= V.FdpVolumeHeaderId
+	LEFT JOIN Errors			AS E	ON	T.FdpVolumeHeaderId		= E.FdpVolumeHeaderId
