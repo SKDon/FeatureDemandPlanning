@@ -563,6 +563,13 @@ model.Page = function (models) {
         $(".rule-item").on("click", function () {
             $(".rule-item").not(this).popover("hide");
         });
+
+        $(".feature-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover" });
+
+        $(".feature-validation-error").on("click", function () {
+            $(".feature-validation-error").not(this).popover("hide");
+        });
+
     };
     me.configureDataTables = function () {
 
