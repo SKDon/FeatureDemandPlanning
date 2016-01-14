@@ -25,7 +25,7 @@
     {
         <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
             @{
-        var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
+        var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.FirstOrDefault(s => s.StringIdentifier == availableModel.StringIdentifier);
         var percentage = "-";
         if (summary != null)
         {
@@ -33,19 +33,49 @@
         }
         @percentage
             }
+
+            @{
+                var model = availableModel;
+                var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => string.IsNullOrEmpty(n.FeatureIdentifier) && n.ModelIdentifier == model.StringIdentifier);
+                if (notes.Any())
+                {
+                    <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
+                        <div class="triangle"></div>
+                    </div>
+                }
+                else
+                {
+                    <div class="triangle" style="display: none"></div>
+                }
+            }
         </th>
     }
     else
     {
         <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
             @{
-        var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.Where(s => s.StringIdentifier == availableModel.StringIdentifier).FirstOrDefault();
+        var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.FirstOrDefault(s => s.StringIdentifier == availableModel.StringIdentifier);
         var volume = "-";
         if (summary != null)
         {
             volume = summary.Volume.ToString();
         }
         @volume
+            }
+
+            @{
+        var model = availableModel;
+        var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => string.IsNullOrEmpty(n.FeatureIdentifier) && n.ModelIdentifier == model.StringIdentifier);
+        if (notes.Any())
+        {
+            <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
+                <div class="triangle"></div>
+            </div>
+        }
+        else
+        {
+            <div class="triangle" style="display: none"></div>
+        }
             }
         </th>
     }

@@ -630,6 +630,7 @@ AS
 
 	SELECT 
 		  D.FdpVolumeDataItemId
+		, CAST(NULL AS INT) AS FdpTakeRateSummaryId
 		, D.MarketId
 		, D.MarketGroupId
 		, D.ModelId
@@ -663,6 +664,41 @@ AS
 		OR
 		(@Mode = 'MG' AND (@ObjectId IS NULL OR D.MarketGroupId = @ObjectId))
 	)
+	
+	UNION
+	
+	SELECT 
+		  CAST(NULL AS INT) AS FdpVolumeDataItemId
+		, S.FdpTakeRateSummaryId
+		, S.MarketId
+		, CAST(NULL AS INT) AS MarketGroupId
+		, S.ModelId
+		, S.FdpModelId
+		, CAST(NULL AS INT) AS FeatureId
+		, CAST(NULL AS INT) AS FdpFeatureId
+		
+	FROM Fdp_VolumeHeader	AS H
+	JOIN
+	(
+		SELECT
+			  H.DocumentId
+			, H.FdpVolumeHeaderId
+			, S.FdpTakeRateSummaryId
+		FROM 
+		Fdp_VolumeHeader				AS H
+		JOIN Fdp_TakeRateSummary		AS S ON	H.FdpVolumeHeaderId	= S.FdpVolumeHeaderId
+		JOIN Fdp_TakeRateDataItemNote	AS N ON S.FdpTakeRateSummaryId = N.FdpTakeRateSummaryId
+		GROUP BY
+		  H.DocumentId
+		, H.FdpVolumeHeaderId
+		, S.FdpTakeRateSummaryId
+	)
+							AS N	ON	H.FdpVolumeHeaderId		= N.FdpVolumeHeaderId
+	JOIN Fdp_TakeRateSummary	AS S	ON	N.FdpTakeRateSummaryId	= S.FdpTakeRateSummaryId
+	WHERE 
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
 	
 	-- Tidy up
 	
