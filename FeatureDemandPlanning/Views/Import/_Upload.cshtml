@@ -79,7 +79,7 @@
                             <ul id="@(Model.IdentifierPrefix)_DocumentList" class="dropdown-menu">
                                 @foreach (var document in Model.Documents)
                                 {
-                                    <li><a class="document-item" href="#" data-filter="@document.VehicleName|@document.ModelYear|@document.Gateway" data-target="@document.Id" data-content="@document.VersionId">@document.Name</a></li>
+                                    <li><a class="document-item" href="#" data-filter="@document.VehicleName|@document.ModelYear|@document.Gateway" data-target="@document.Id" data-content="@document.Name">@document.Name</a></li>
                                 }
                             </ul>
 
