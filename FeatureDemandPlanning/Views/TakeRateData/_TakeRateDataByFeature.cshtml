@@ -29,9 +29,9 @@
             <span class="glyphicon glyphicon-wrench" style="position:relative;top:50%;transform:translateY(50%)"></span>
         </div>
 
-        @if (featureRow.Field<bool>("HasRule"))
+        @if (!string.IsNullOrEmpty(featureRow.Field<string>("FeatureRuleText")))
         {
-            <div class="indicator rule-item pull-right"><span class="glyphicon glyphicon-alert" style="position:relative;top:50%;transform:translateY(50%)"></span>&nbsp;</div>
+            <div class="indicator rule-item pull-right" data-toggle="popover" title="Rules" data-content="@(featureRow.Field<string>("FeatureRuleText"))"><span class="glyphicon glyphicon-alert" style="position:relative;top:50%;transform:translateY(50%)"></span>&nbsp;</div>
         }
         @if (!string.IsNullOrEmpty(featureRow.Field<string>("FeatureComment")))
         {

@@ -48,7 +48,8 @@ AS
 		, BrandDescription		NVARCHAR(2000)	NULL
 		, FeatureId				INT
 		, FdpFeatureId			INT
-		, FeatureComment		NVARCHAR(4000)	NULL
+		, FeatureComment		NVARCHAR(MAX)	NULL
+		, FeatureRuleText		NVARCHAR(MAX)
 		, SystemDescription		NVARCHAR(200)	NULL
 		, HasRule				BIT
 		, LongDescription		NVARCHAR(MAX)	NULL
@@ -406,7 +407,8 @@ AS
 		, BrandDescription		
 		, FeatureId
 		, FdpFeatureId			
-		, FeatureComment		
+		, FeatureComment
+		, FeatureRuleText		
 		, SystemDescription		
 		, HasRule				
 		, LongDescription	
@@ -428,6 +430,7 @@ AS
 		, F.FeatureId
 		, F.FdpFeatureId	 
 		, F.FeatureComment
+		, F.FeatureRuleText
 		, F.[Description]
 		, CAST(CASE WHEN LEN(F.FeatureRuleText) > 0 THEN 1 ELSE 0 END AS BIT)
 		, F.LongDescription
@@ -499,7 +502,7 @@ AS
 	BEGIN
 		SET @Sql =		  'SELECT DATASET.*, ' + @ModelTotals + ' AS TotalVolume '				
 		SET @Sql = @Sql + 'FROM ( '
-		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, StringIdentifier, '
+		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, StringIdentifier, '
 		SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, ISNULL(Volume, 0) AS Volume '
 		SET @Sql = @Sql + 'FROM #TakeRateDataByFeature) AS S1 '
 		SET @Sql = @Sql + 'PIVOT ( '
@@ -511,7 +514,7 @@ AS
 	BEGIN
 		SET @Sql =		  'SELECT DATASET.*, dbo.fn_Fdp_PercentageTakeRate_Get(AggregatedVolume, ' + CAST(@FilteredVolume AS NVARCHAR(10)) + ') AS TotalPercentageTakeRate '
 		SET @Sql = @Sql + 'FROM ( '
-		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, StringIdentifier, '
+		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, StringIdentifier, '
 		SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, PercentageTakeRate '
 		SET @Sql = @Sql + 'FROM #TakeRateDataByFeature) AS S2 '
 		SET @Sql = @Sql + 'LEFT JOIN #AggregateVolumeByFeature AS F ON S2.FeatureIdentifier = F.AggregatedFeatureIdentifier '
@@ -529,7 +532,7 @@ AS
 	
 	SET @Sql =		  'SELECT DATASET.* '				
 	SET @Sql = @Sql + 'FROM ( '
-	SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, StringIdentifier, '
+	SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, StringIdentifier, '
 	SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, OXOCode '
 	SET @Sql = @Sql + 'FROM #TakeRateDataByFeature) AS S3 '
 	SET @Sql = @Sql + 'PIVOT ( '

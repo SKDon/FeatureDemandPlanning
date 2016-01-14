@@ -557,6 +557,12 @@ model.Page = function (models) {
         $(".comment-item").on("click", function () {
             $(".comment-item").not(this).popover("hide");
         });
+
+        $(".rule-item").popover({ html: true, title: "Rules", container: "body", trigger: "hover" });
+
+        $(".rule-item").on("click", function () {
+            $(".rule-item").not(this).popover("hide");
+        });
     };
     me.configureDataTables = function () {
 
