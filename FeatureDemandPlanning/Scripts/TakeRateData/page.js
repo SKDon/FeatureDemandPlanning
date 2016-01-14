@@ -11,6 +11,7 @@ model.Page = function (models) {
     privateStore[me.id].ResultsMode = "PercentageTakeRate";
     privateStore[me.id].Changeset = null;
     privateStore[me.id].Initial = true;
+    privateStore[me.id].Expanded = true;
     
     me.initialise = function () {
         $(privateStore[me.id].Models).each(function () {
@@ -22,6 +23,7 @@ model.Page = function (models) {
         me.registerSubscribers();
         me.loadChangeset();
         me.checkCompletion();
+        me.validate();
     };
     me.calcPanelHeight = function () {
         return ($(window).height()) - 135 + "px";
@@ -133,22 +135,23 @@ model.Page = function (models) {
     me.registerEvents = function () {
         var prefix = me.getIdentifierPrefix();
         $(document)
-            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
-            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
-            .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnResultsDelegate", [eventArgs]); })
-            .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdatedDelegate", [eventArgs]); })
-            .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
-            .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
-            .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
-            .unbind("Validation").on("Validation", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnValidationDelegate", [eventArgs]); })
-            .unbind("EditCell").on("EditCell", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnEditCellDelegate", [eventArgs]); })
-            .unbind("Save").on("Save", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSaveDelegate", [eventArgs]); })
-            .unbind("Saved").on("Saved", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSavedDelegate", [eventArgs]); })
+            .unbind("Success").on("Success", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
+            .unbind("Error").on("Error", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
+            .unbind("Results").on("Results", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnResultsDelegate", [eventArgs]); })
+            .unbind("Updated").on("Updated", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdatedDelegate", [eventArgs]); })
+            .unbind("Action").on("Action", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
+            .unbind("ModalLoaded").on("ModalLoaded", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
+            .unbind("ModalOk").on("ModalOk", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
+            .unbind("Validation").on("Validation", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnValidationDelegate", [eventArgs]); })
+            .unbind("EditCell").on("EditCell", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnEditCellDelegate", [eventArgs]); })
+            .unbind("Save").on("Save", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSaveDelegate", [eventArgs]); })
+            .unbind("Saved").on("Saved", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSavedDelegate", [eventArgs]); })
             .unbind("UpdateFilterVolume").on("UpdateFilterVolume", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdateFilterVolumeDelegate", [eventArgs]); });
 
         $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
         $("#" + prefix + "_Undo").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoDelegate", [eventArgs]); });
         $("#" + prefix + "_History").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnHistoryDelegate", [eventArgs]); });
+        $("#" + prefix + "_Toggle").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnToggleDelegate", [eventArgs]); });
         $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
     };
     me.registerSubscribers = function () {
@@ -170,7 +173,8 @@ model.Page = function (models) {
             .on("OnSavedDelegate", me.onSavedEventHandler)
             .on("OnPersistDelegate", me.onPersistEventHandler)
             .on("OnHistoryDelegate", me.onHistoryEventHandler)
-            .on("OnUndoDelegate", me.onUndoEventHandler);
+            .on("OnUndoDelegate", me.onUndoEventHandler)
+            .on("OnToggleDelegate", me.onToggleEventHandler);
 
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
         $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);
@@ -365,6 +369,9 @@ model.Page = function (models) {
     };
     me.onSavedEventHandler = function() {
         window.location.reload();
+    };
+    me.onToggleEventHandler = function() {
+        me.toggleGroups();
     };
     me.getInitial = function() {
         return privateStore[me.id].Initial;
@@ -883,9 +890,43 @@ model.Page = function (models) {
     me.redrawDataTable = function () {
         me.getDataTable().draw();
     };
-    
-    me.validate = function (pageIndex, async) {
-        getTakeRateDataModel().validate(pageIndex, async);
+    me.validate = function () {
+        getTakeRateDataModel().validate(me.validateCallback);
+    };
+    me.validateCallback = function(validationResults) {
+        $(".feature-validation-error").attr("data-content", "test").show();
+    };
+    me.getExpandedState = function() {
+        return privateStore[me.id].Expanded;
+    };
+    me.setExpandedState = function(state) {
+        privateStore[me.id].Expanded = state;
+        if (state) {
+            $("#" + me.getIdentifierPrefix() + "_Toggle").find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+        } else {
+            $("#" + me.getIdentifierPrefix() + "_Toggle").find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+        }
+    };
+    me.toggleGroups = function () {
+        var toggleState = me.getExpandedState();
+        $(".group").each(function() {
+            var groupName = $(this).closest("tr").attr("data-toggle");
+            if (toggleState) {
+                $("tbody tr[data-group='" + groupName + "']").hide();
+                $(this).find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+            } else {
+                $("tbody tr[data-group='" + groupName + "']").show();
+                $(this).find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+            }
+        });
+        $(".sub-group").each(function () {
+            if (toggleState) {
+                $(this).find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+            } else {
+                $(this).find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+            }
+        });
+        me.setExpandedState(!toggleState);
     };
     me.toggleFdpVolumeHeader = function (data) {
         var fdpVolumeHeaderId = parseInt($(this).attr("data-target"));

@@ -10,6 +10,7 @@
         UndoChange = 5,
         SaveChanges = 6,
         History = 7,
-        AddNote = 8
+        AddNote = 8,
+        Validate = 9
     }
 }

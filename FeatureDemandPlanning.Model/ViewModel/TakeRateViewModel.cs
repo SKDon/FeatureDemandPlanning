@@ -61,6 +61,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                     model = await GetFullAndPartialViewModelForTakeRates(context, filter);
                     break;
                 case TakeRateDataItemAction.TakeRateDataPage:
+                case TakeRateDataItemAction.Validate:
                     model = await GetFullAndPartialViewModelForTakeRateDataPage(context, filter);
                     break;
                 case TakeRateDataItemAction.TakeRateDataItemDetails:
@@ -130,7 +131,9 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             var takeRateModel = new TakeRateViewModel(GetBaseModel(context))
             {
-                Document = (TakeRateDocument) TakeRateDocument.FromFilter(filter), Configuration = context.ConfigurationSettings, CurrentTakeRateDataItem = await context.TakeRate.GetDataItem(filter)
+                Document = (TakeRateDocument) TakeRateDocument.FromFilter(filter), 
+                Configuration = context.ConfigurationSettings, 
+                CurrentTakeRateDataItem = await context.TakeRate.GetDataItem(filter)
             };
 
             await HydrateOxoDocument(context, takeRateModel);
@@ -141,6 +144,23 @@ namespace FeatureDemandPlanning.Model.ViewModel
             await HydrateFeatures(context, takeRateModel);
             await HydrateCurrentModel(context, takeRateModel);
             await HydrateCurrentFeature(context, takeRateModel);
+
+            return takeRateModel;
+        }
+
+        private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForValidation(IDataContext context,
+            TakeRateFilter filter)
+        {
+            var takeRateModel = new TakeRateViewModel(GetBaseModel(context))
+            {
+                Document = (TakeRateDocument)TakeRateDocument.FromFilter(filter),
+                Configuration = context.ConfigurationSettings
+            };
+
+            await HydrateOxoDocument(context, takeRateModel);
+            await HydrateFdpVolumeHeaders(context, takeRateModel);
+            await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
+            await HydrateData(context, takeRateModel);
 
             return takeRateModel;
         }

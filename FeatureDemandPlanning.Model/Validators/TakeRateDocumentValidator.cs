@@ -29,8 +29,8 @@ namespace FeatureDemandPlanning.Model.Validators
                 case TakeRateDocumentValidationSection.Import:
                     ruleSets = "Import";
                     break;
-                case TakeRateDocumentValidationSection.Document:
-                    ruleSets = "Document";
+                case TakeRateDocumentValidationSection.TakeRateFile:
+                    ruleSets = "TakeRateFile";
                     break;
                 default:
                     ruleSets = "*";
@@ -66,18 +66,14 @@ namespace FeatureDemandPlanning.Model.Validators
                     .Must(HaveMappedImportData)
                     .WithMessage(noMappedImportData);
             });
-            RuleSet("Document", () =>
+            RuleSet("TakeRateFile", () =>
             {
-                // We must have an OXO document for the selected vehicle
-                RuleFor(v => v)
-                    .Cascade(CascadeMode.StopOnFirstFailure)
-                    .NotNull()
-                    .Must(HaveAnOxoDocument)
-                    .WithMessage(noOxoDocuments)
-                    .Must(HasMappedOxoDocument)
-                    .WithMessage(noMappedOxoDocument);
+                RuleFor(v => v.TakeRateData).NotNull();
+                RuleFor(v => v.TakeRateData).AllFeatureVolumesMustBeLessThanModelVolume();
             });
         }
+
+
 
         private bool HaveImportData(TakeRateDocument takeRateDocument)
         {

@@ -5,6 +5,6 @@
         All = 0,
         Vehicle = 1,
         Import = 2,
-        Document = 3
+        TakeRateFile = 3
     }
 }

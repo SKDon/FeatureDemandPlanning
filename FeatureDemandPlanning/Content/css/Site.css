@@ -505,10 +505,10 @@ select
     width: 0;
     height: 0;
     border-style: solid;
-    border-width: 0 0 10px 10px;
-    border-color: transparent transparent #801505;
+    border-width: 0 10px 10px 0;
+    border-color: transparent #801505 transparent;
     position:absolute;
-    bottom:0;
+    top:0;
     right:0;
     cursor:pointer;
 }

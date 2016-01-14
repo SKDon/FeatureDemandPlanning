@@ -235,20 +235,23 @@ model.OxoVolume = function (params) {
             }
         });
     }
-    me.validate = function (sectionToValidate, isAsync) {
-        var volume = me.getVolume();
-        var encodedVolume = JSON.stringify({ volumeToValidate: volume, sectionToValidate: sectionToValidate });
-
+    me.validate = function (callback) {
+        var params = getFilter();
         $(document).trigger("BeforeValidation", volume);
 
         $.ajax({
-            url: me.getValidateUri(),
-            method: "POST",
-            async: isAsync != undefined ? isAsync : false, // Need to validate before we are allowed to do anything else
-            dataType: "json",
-            contentType: "application/json",
-            data: encodedVolume,
-            complete: validateVolumeCallback
+            "dataType": "json",
+            "method": "POST",
+            "async": true,
+            "url": me.getValidateUri(),
+            "data": params,
+            "success": function (json) {
+                $(document).trigger("Success", json);
+                callback(json);
+            },
+            "error": function (response) {
+                genericErrorCallback(response);
+            }
         });
     };
     me.getOxoDocuments = function () {
