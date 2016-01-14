@@ -91,7 +91,7 @@ model.SaveAction = function (params) {
             "url": uri,
             "data": params,
             "success": function (json) {
-                $(document).trigger("Success", json);
+                $(document).trigger("Saved", json);
             },
             "error": function (jqXHR, textStatus, errorThrown) {
                 $(document).trigger("Error", jqXHR.responseJSON);

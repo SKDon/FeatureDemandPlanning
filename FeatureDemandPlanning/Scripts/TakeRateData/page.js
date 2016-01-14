@@ -143,6 +143,7 @@ model.Page = function (models) {
             .unbind("Validation").on("Validation", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnValidationDelegate", [eventArgs]); })
             .unbind("EditCell").on("EditCell", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnEditCellDelegate", [eventArgs]); })
             .unbind("Save").on("Save", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSaveDelegate", [eventArgs]); })
+            .unbind("Saved").on("Saved", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSavedDelegate", [eventArgs]); })
             .unbind("UpdateFilterVolume").on("UpdateFilterVolume", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdateFilterVolumeDelegate", [eventArgs]); });
 
         $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
@@ -166,6 +167,7 @@ model.Page = function (models) {
         $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel")
             .on("OnEditCellDelegate", me.onEditCellEventHandler)
             .on("OnSaveDelegate", me.onSaveEventHandler)
+            .on("OnSavedDelegate", me.onSavedEventHandler)
             .on("OnPersistDelegate", me.onPersistEventHandler)
             .on("OnHistoryDelegate", me.onHistoryEventHandler)
             .on("OnUndoDelegate", me.onUndoEventHandler);
@@ -360,6 +362,9 @@ model.Page = function (models) {
     };
     me.onSaveEventHandler = function () {
         me.saveData(me.saveCallback);
+    };
+    me.onSavedEventHandler = function() {
+        window.location.reload();
     };
     me.getInitial = function() {
         return privateStore[me.id].Initial;
