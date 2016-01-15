@@ -64,9 +64,10 @@
         <td class="text-center cross-tab-data-item  @modelClassName @RenderDataClass(modelIdentifier, featureRow)">
             <div class="@RenderEditableClass()" data-target="@marketIdentifier|@modelIdentifier|@featureIdentifier">
                 @RenderDataItem(availableModel.StringIdentifier, featureRow)
-                <span class="glyphicon glyphicon-alert feature-validation-error" style="display:none" data-content=""></span>
             </div>
-                                    @{
+
+            <div class="glyphicon glyphicon-alert feature-validation-error" style="display:none" data-content=""></div>
+            @{
         var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => n.FeatureIdentifier == featureIdentifier && n.ModelIdentifier == modelIdentifier);
         if (notes.Any())
         {
