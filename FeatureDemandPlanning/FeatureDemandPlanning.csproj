@@ -173,6 +173,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="403.aspx.cs">
+      <DependentUpon>403.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="403.aspx.designer.cs">
+      <DependentUpon>403.aspx</DependentUpon>
+    </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -221,6 +228,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="403.aspx" />
     <Content Include="Content\bootstrap-slider.css" />
     <Content Include="Content\Bootstrap\css\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -228,7 +236,7 @@
     <Content Include="Content\Bootstrap\css\bootstrap-theme.min.css" />
     <Content Include="Content\Bootstrap\css\bootstrap.min - Copy.css" />
     <Content Include="Content\Bootstrap\css\bootstrap.min.css" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Bootstrap\js\bootstrap.js" />
     <Content Include="Content\Bootstrap\js\bootstrap.min.js" />
     <Content Include="Content\Bootstrap\js\npm.js" />
@@ -1230,14 +1238,14 @@
     <Content Include="Extensions\DataTables-1.10.7\Readme.md" />
     <Content Include="Content\Bootstrap\css\bootstrap-theme.css.map" />
     <Content Include="Content\Bootstrap\css\bootstrap.css.map" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf">
+    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\fonts\glyphicons-halflings-regular.woff">
+    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.woff">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2">
+    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.woff2">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Images\Carousel\multiple.xcf" />
