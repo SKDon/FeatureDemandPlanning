@@ -1,14 +1,5 @@
 ﻿@model FeatureDemandPlanning.Model.ViewModel.SpecialFeatureMappingViewModel 
 
-@{ var currentVersion = Model.CurrentVersion; }
-
-<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/SpecialFeatureMapping/model.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/SpecialFeatureMapping/copy.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/SpecialFeatureMapping/delete.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/SpecialFeatureMapping/page.js")?v=@currentVersion"></script>
 <script language="javascript">
 
     var specialFeatureMapping, page, modal;
@@ -29,4 +20,7 @@
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 
 </script>
-<script src="@Url.Content("~/Scripts/SpecialFeatureMapping/init.js")?v=@currentVersion"></script>
+
+@Scripts.Render("~/bundles/js/shared")
+@Scripts.Render("~/bundles/js/specialfeaturemapping")
+<script language="javascript" src="@Url.Content("~/Content/js/SpecialFeatureMapping/init.js")?v=@Model.CurrentVersion"></script>

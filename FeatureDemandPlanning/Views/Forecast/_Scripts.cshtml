@@ -1,16 +1,5 @@
 ﻿@model FeatureDemandPlanning.Model.ViewModel.ForecastComparisonViewModel
 
-@{
-    var currentVersion = Model.CurrentVersion;
-}
-
-<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Forecast/forecast.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Forecast/forecasts.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Forecast/forecastspage.js")?v=@currentVersion"></script>
-
 <script type="text/javascript">
 
     var forecast, forecasts, page, modal;
@@ -32,4 +21,7 @@
 
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 </script>
-<script src="@Url.Content("~/Scripts/Forecast/forecastsinit.js")?v=@currentVersion"></script>
+
+@Scripts.Render("~/bundles/js/shared")
+@Scripts.Render("~/bundles/js/forecast")
+<script language="javascript" src="@Url.Content("~/Content/js/Forecast/init.js")?v=@Model.CurrentVersion"></script>

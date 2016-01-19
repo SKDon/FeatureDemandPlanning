@@ -1,14 +1,5 @@
 ﻿@model FeatureDemandPlanning.Model.ViewModel.FeatureViewModel
 
-@{
-    var currentVersion = Model.CurrentVersion;
-}
-<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Feature/model.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Feature/delete.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Feature/page.js")?v=@currentVersion"></script>
 <script language="javascript">
 
     var feature, page, modal;
@@ -29,4 +20,7 @@
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 
 </script>
-<script src="@Url.Content("~/Scripts/Feature/init.js")?v=@currentVersion"></script>
+
+@Scripts.Render("~/bundles/js/shared") 
+@Scripts.Render("~/bundles/js/feature")
+<script language="javascript" src="@Url.Content("~/Content/js/Feature/init.js")?v=@Model.CurrentVersion"></script>

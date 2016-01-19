@@ -238,7 +238,7 @@ AS
 			  
 		FROM Fdp_FeatureMapping_VW		AS FEA
 		JOIN #RawTakeRateData			AS D	ON		FEA.FeatureId	= D.FeatureId
-		JOIN #FeatureApplicability		AS O	ON		D.FeatureId		= O.FeatureId
+		LEFT JOIN #FeatureApplicability		AS O	ON		D.FeatureId		= O.FeatureId
 												AND		D.ModelId		= O.ModelId
 		JOIN #Model						AS M	ON		D.ModelId		= M.ModelId
 												AND		M.IsFdpModel	= 0

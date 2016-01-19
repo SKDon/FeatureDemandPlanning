@@ -2,13 +2,6 @@
 
 @{ var currentVersion = Model.CurrentVersion; }
 
-<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/TrimMapping/model.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/TrimMapping/copy.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/TrimMapping/delete.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/TrimMapping/page.js")?v=@currentVersion"></script>
 <script language="javascript">
 
     var trimMapping, page, modal;
@@ -29,4 +22,6 @@
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 
 </script>
-<script src="@Url.Content("~/Scripts/TrimMapping/init.js")?v=@currentVersion"></script>
+@Scripts.Render("~/bundles/js/shared")
+@Scripts.Render("~/bundles/js/trimmapping")
+<script language="javascript" src="@Url.Content("~/Content/js/TrimMapping/init.js")?v=@Model.CurrentVersion"></script>

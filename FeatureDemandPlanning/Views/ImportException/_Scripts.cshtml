@@ -1,29 +1,5 @@
 ﻿@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
 
-@{
-    var currentVersion = Model.CurrentVersion;
-}
-
-<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/exceptions.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/exceptionspage.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/market.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/feature.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/derivative.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/trim.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/ignore.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/addderivativeaction.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/addfeatureaction.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/addtrimaction.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/mapfeatureaction.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/mapderivativeaction.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/mapmarketaction.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/maptrimaction.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/specialfeatureaction.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Import/ignoreaction.js")?v=@currentVersion"></script>
-
 <script type="text/javascript">
 
     var exceptions, page, modal, market, feature, derivative, trim, ignore;
@@ -48,4 +24,7 @@
 
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 </script>
-<script src="@Url.Content("~/Scripts/Import/exceptionsinit.js")?v=@currentVersion"></script>
+
+@Scripts.Render("~/bundles/js/shared") 
+@Scripts.Render("~/bundles/js/importexception")
+<script language="javascript" src="@Url.Content("~/Content/js/import/exceptionsinit.js")?v=@Model.CurrentVersion"></script>

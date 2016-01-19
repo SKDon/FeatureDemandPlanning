@@ -1,14 +1,5 @@
-﻿@model FeatureDemandPlanning.Model.ViewModel.FeatureMappingViewModel 
+﻿@model FeatureDemandPlanning.Model.ViewModel.FeatureMappingViewModel
 
-@{ var currentVersion = Model.CurrentVersion; }
-
-<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/FeatureMapping/model.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/FeatureMapping/copy.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/FeatureMapping/delete.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/FeatureMapping/page.js")?v=@currentVersion"></script>
 <script language="javascript">
 
     var featureMapping, page, modal;
@@ -29,4 +20,7 @@
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 
 </script>
-<script src="@Url.Content("~/Scripts/FeatureMapping/init.js")?v=@currentVersion"></script>
+
+@Scripts.Render("~/bundles/js/shared")
+@Scripts.Render("~/bundles/js/featuremapping")
+<script language="javascript" src="@Url.Content("~/Content/js/FeatureMapping/init.js")?v=@Model.CurrentVersion"></script>

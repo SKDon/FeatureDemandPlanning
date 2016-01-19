@@ -1,14 +1,5 @@
 ﻿@model FeatureDemandPlanning.Model.ViewModel.DerivativeViewModel
 
-@{
-    var currentVersion = Model.CurrentVersion;
-}
-<script src="@Url.Content("~/Scripts/Shared/namespace.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/contextmenu.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Shared/modal.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Derivative/model.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Derivative/delete.js")?v=@currentVersion"></script>
-<script src="@Url.Content("~/Scripts/Derivative/page.js")?v=@currentVersion"></script>
 <script language="javascript">
 
     var derivative, page, modal;
@@ -29,4 +20,7 @@
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 
 </script>
-<script src="@Url.Content("~/Scripts/Derivative/init.js")?v=@currentVersion"></script>
+
+@Scripts.Render("~/bundles/js/shared")
+@Scripts.Render("~/bundles/js/derivative")
+<script language="javascript" src="@Url.Content("~/Content/js/Derivative/init.js")?v=@Model.CurrentVersion"></script>

@@ -15,8 +15,7 @@
         <title>FDP</title>
     }
 
-    @Styles.Render("~/bundles/css/bootstrap")
-    @Styles.Render("~/bundles/site/css")
+    @Styles.Render("~/bundles/css")
 
     @RenderSection("PageStyles", false)
 </head>
@@ -144,15 +143,8 @@
         @RenderSection("PageFooter", false)
     </div>
     <div id="v-slider"></div>
-    @*@Scripts.Render("~/bundles/shared")
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/jqueryform")
-    @Scripts.Render("~/bundles/bootstrap")
-    <script src="@Url.Content("~/Scripts/Shared/oxo-master.js")?v=@currentVersion"></script>
-    @RenderSection("PageScripts", required: false)*@
-
-    @Scripts.Render("~/bundles/shared")
-    <script src="~/Content/jquery/js/jquery-2.1.4.min.js"></script>
+    
+    @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/dataTables")
     @Scripts.Render("~/bundles/js/bootstrap")
     @RenderSection("PageScripts", required: false)

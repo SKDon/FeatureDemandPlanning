@@ -118,6 +118,8 @@ AS
 		JOIN Fdp_TakeRateSummary	AS S ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
 										 AND S.MarketId			= @MarketId
 										 AND S.ModelId			= @ModelId
+										 AND @FeatureId			IS NULL
+										 AND @FdpFeatureId		IS NULL
 
 		UNION
 
@@ -132,6 +134,8 @@ AS
 		JOIN Fdp_TakeRateSummary	AS S ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
 										 AND S.MarketId			= @MarketId
 										 AND S.FdpModelId		= @FdpModelId
+										 AND @FeatureId			IS NULL
+										 AND @FdpFeatureId		IS NULL
 	)
 	AS OLD
 
