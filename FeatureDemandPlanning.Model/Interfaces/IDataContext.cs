@@ -15,6 +15,6 @@
         IReferenceDataContext References { get; }
         INewsDataContext News { get; }
 
-        dynamic ConfigurationSettings { get; }
+        ConfigurationSettings ConfigurationSettings { get; }
     }
 }

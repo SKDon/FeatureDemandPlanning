@@ -15,6 +15,7 @@ using MvcSiteMapProvider.Web.Mvc.Filters;
 using System;
 using FeatureDemandPlanning.Model.Results;
 using System.Collections.Generic;
+using System.Reflection;
 using FeatureDemandPlanning.Model.Empty;
 
 namespace FeatureDemandPlanning.Controllers
@@ -41,6 +42,8 @@ namespace FeatureDemandPlanning.Controllers
                                          int? marketId,
                                          TakeRateResultMode resultsMode = TakeRateResultMode.PercentageTakeRate)
         {
+            Log.Debug(MethodBase.GetCurrentMethod().Name);
+
             return RedirectToAction("TakeRateDataPage", new TakeRateParameters()
             {
                 DocumentId = documentId,
@@ -54,6 +57,8 @@ namespace FeatureDemandPlanning.Controllers
         [SiteMapTitle("DocumentName")]
         public async Task<ActionResult> TakeRateDataPage(TakeRateParameters parameters)
         {
+            Log.Debug(MethodBase.GetCurrentMethod().Name);
+
             var filter = TakeRateFilter.FromTakeRateParameters(parameters);
             filter.Action = TakeRateDataItemAction.TakeRateDataPage;
             var model = await TakeRateViewModel.GetModel(DataContext, filter);
@@ -200,67 +205,67 @@ namespace FeatureDemandPlanning.Controllers
 
             return Json(note, JsonRequestBehavior.AllowGet);
         }
-        [HandleErrorWithJson]
-        [HttpPost]
-        public async Task<ActionResult> Validate(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+        //[HandleErrorWithJson]
+        //[HttpPost]
+        //public async Task<ActionResult> Validate(TakeRateParameters parameters)
+        //{
+        //    TakeRateParametersValidator
+        //       .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.Validate;
-            var takeRateView = await TakeRateViewModel.GetModel(
-                DataContext,
-                filter);
+        //    var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+        //    filter.Action = TakeRateDataItemAction.Validate;
+        //    var takeRateView = await TakeRateViewModel.GetModel(
+        //        DataContext,
+        //        filter);
 
-            var validator = new TakeRateDocumentValidator(takeRateView.Document);
-            var results = validator.Validate();
+        //    var validator = new TakeRateDocumentValidator(takeRateView.Document);
+        //    //var results = validator.Validate();
 
-            //var volumeModel = TakeRateViewModel.GetModel(DataContext, volumeToValidate).Result;
-            //var validator = new VolumeValidator(volumeModel.Volume);
-            //var ruleSets = VolumeValidator.GetRulesetsToValidate(sectionToValidate);
-            //var jsonResult = new JsonResult()
-            //{
-            //    Data = new { IsValid = true }
-            //};
+        //    //var volumeModel = TakeRateViewModel.GetModel(DataContext, volumeToValidate).Result;
+        //    //var validator = new VolumeValidator(volumeModel.Volume);
+        //    //var ruleSets = VolumeValidator.GetRulesetsToValidate(sectionToValidate);
+        //    //var jsonResult = new JsonResult()
+        //    //{
+        //    //    Data = new { IsValid = true }
+        //    //};
 
-            //var results = validator.Validate(volumeModel.Volume, ruleSet: ruleSets);
-            //if (results.IsValid) return jsonResult;
-            //var errorModel = results.Errors
-            //    .Select(e => new ValidationError(new ValidationErrorItem
-            //    {
-            //        ErrorMessage = e.ErrorMessage,
-            //        CustomState = e.CustomState
-            //    })
-            //    {
-            //        key = e.PropertyName
-            //    });
+        //    //var results = validator.Validate(volumeModel.Volume, ruleSet: ruleSets);
+        //    //if (results.IsValid) return jsonResult;
+        //    //var errorModel = results.Errors
+        //    //    .Select(e => new ValidationError(new ValidationErrorItem
+        //    //    {
+        //    //        ErrorMessage = e.ErrorMessage,
+        //    //        CustomState = e.CustomState
+        //    //    })
+        //    //    {
+        //    //        key = e.PropertyName
+        //    //    });
 
-            //jsonResult = new JsonResult()
-            //{
-            //    Data = new ValidationMessage(false, errorModel)
-            //};
-            //return jsonResult;
+        //    //jsonResult = new JsonResult()
+        //    //{
+        //    //    Data = new ValidationMessage(false, errorModel)
+        //    //};
+        //    //return jsonResult;
 
-            //ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
+        //    //ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
 
-            //var filter = new TakeRateFilter()
-            //{
-            //    FilterMessage = parameters.FilterMessage,
-            //    TakeRateStatusId = parameters.TakeRateStatusId
-            //};
-            //filter.InitialiseFromJson(parameters);
+        //    //var filter = new TakeRateFilter()
+        //    //{
+        //    //    FilterMessage = parameters.FilterMessage,
+        //    //    TakeRateStatusId = parameters.TakeRateStatusId
+        //    //};
+        //    //filter.InitialiseFromJson(parameters);
 
-            //var results = await TakeRateViewModel.GetModel(DataContext, filter);
-            //var jQueryResult = new JQueryDataTableResultModel(results);
+        //    //var results = await TakeRateViewModel.GetModel(DataContext, filter);
+        //    //var jQueryResult = new JQueryDataTableResultModel(results);
 
-            //foreach (var result in results.TakeRates.CurrentPage)
-            //{
-            //    jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
-            //}
+        //    //foreach (var result in results.TakeRates.CurrentPage)
+        //    //{
+        //    //    jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
+        //    //}
 
-            //return Json(jQueryResult);
-        }
+        //    //return Json(jQueryResult);
+        //}
         public ActionResult ValidationMessage(ValidationMessage message)
         {
             // Something is making a GET request to this page and I can't figure out what

@@ -143,7 +143,7 @@ namespace FeatureDemandPlanning.Controllers
         private void SetUploadFilePath()
         {
             var extension = Path.GetExtension(Parameters.UploadFile.FileName);
-            Parameters.UploadFilePath = Path.Combine(DataContext.Configuration.Configuration.FdpUploadFilePath,
+            Parameters.UploadFilePath = Path.Combine(DataContext.Configuration.Configuration.GetString("FdpUploadFilePath"),
                                           string.Format("{0}{1}", Guid.NewGuid(), extension));
         }
         private void QueueItemForProcessing()
@@ -158,7 +158,7 @@ namespace FeatureDemandPlanning.Controllers
             {
                 var settings = new ImportFileSettings()
                 {
-                    SkipFirstXRows = ConfigurationSettings.SkipFirstXRowsInImportFile
+                    SkipFirstXRows = ConfigurationSettings.GetInteger("SkipFirstXRowsInImportFile")
                 };
                 if (!(CurrentQueuedItem is EmptyImportQueue))
                     DataContext.Import.ProcessImportQueue(CurrentQueuedItem, settings);

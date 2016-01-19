@@ -891,7 +891,7 @@ model.Page = function (models) {
         me.getDataTable().draw();
     };
     me.validate = function () {
-        getTakeRateDataModel().validate(me.validateCallback);
+        //getTakeRateDataModel().validate(me.validateCallback);
     };
     me.validateCallback = function(validationResults) {
         $(".feature-validation-error").attr("data-content", "test").show();

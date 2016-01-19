@@ -10,7 +10,7 @@ namespace FeatureDemandPlanning.Model.Validators
     public class AllModelVolumesMustBeLessThanMarketVolume : PropertyValidator
     {
         public AllModelVolumesMustBeLessThanMarketVolume(IDataContext context)
-            : base("Feature volume cannot be greater than the volume for the model")
+            : base("Model volumes cannot be greater than the volume for the market")
         {
             _context = context;
         }

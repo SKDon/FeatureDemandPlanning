@@ -35,7 +35,7 @@ namespace FeatureDemandPlanning.DataStore
         public IReferenceDataContext References { get { return _referenceDataContext; } }
         public INewsDataContext News { get { return _newsDataContext; } }
 
-        public dynamic ConfigurationSettings { get { return _configurationContext.Configuration; } }
+        public ConfigurationSettings ConfigurationSettings { get { return _configurationContext.Configuration; } }
 
         private readonly IEmailDataContext _emailContext;
         private readonly IUserDataContext _userContext;

@@ -15,7 +15,7 @@
         </a>
     </li>
 }
-else
+else if (Model.CurrentTakeRateDataItem.ModelId.HasValue || Model.CurrentTakeRateDataItem.FdpModelId.HasValue)
 {
     <li>
         <a tabindex="-1" href="#" data-role="@((int) enums.TakeRateDataItemAction.TakeRateDataItemDetails)" data-target="@(Model.Document.Market.Id)|@(Model.CurrentTakeRateDataItem.ModelIdentifier)">
@@ -25,6 +25,14 @@ else
     <li>
         <a tabindex="-1" href="#" data-role="@((int) enums.TakeRateDataItemAction.AddNote)" data-target="@(Model.Document.Market.Id)|@(Model.CurrentTakeRateDataItem.ModelIdentifier)">
             <span class="glyphicon glyphicon-pencil pull-left"></span> Add Note...
+        </a>
+    </li>
+}
+else
+{
+    <li>
+        <a tabindex="-1" href="#" data-role="" data-target="">
+            <span class="glyphicon glyphicon-warning pull-left"></span> No Data
         </a>
     </li>
 }

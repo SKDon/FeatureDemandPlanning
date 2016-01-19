@@ -69,7 +69,7 @@ namespace FeatureDemandPlanning.Model.Validators
             RuleSet("TakeRateFile", () =>
             {
                 RuleFor(v => v.TakeRateData).NotNull();
-                RuleFor(v => v.TakeRateData).AllFeatureVolumesMustBeLessThanModelVolume();
+                //RuleFor(v => v.TakeRateData).AllFeatureVolumesMustBeLessThanModelVolume();
             });
         }
 

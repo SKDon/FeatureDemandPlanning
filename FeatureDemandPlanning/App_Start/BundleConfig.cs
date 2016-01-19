@@ -23,35 +23,33 @@ namespace FeatureDemandPlanning
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
-                "~/Content/Bootstrap/js/bootstrap.min.js",
-                "~/Scripts/bootstrap-slider.js"));
+                "~/Content/Bootstrap/js/bootstrap.js"));
 
-            bundles.Add(new StyleBundle("~/bundles/css/bootstrap").Include(
-                "~/Content/Bootstrap/css/bootstrap.css",
-                "~/Content/Responsive/css/responsive.bootstrap.min.css",
-                "~/Content/bootstrap-slider.css"
-                ));                     
+            //bundles.Add(new StyleBundle("~/bundles/css/bootstrap").Include(
+                
+            //    ));                     
 
             bundles.Add(new ScriptBundle("~/bundles/Forecast")
                 .Include("~/Scripts/Forecast/vehicle.js",
                          "~/Scripts/Forecast/forecast.js"));
 
             bundles.Add(new StyleBundle("~/bundles/site/css").Include(
-                      "~/Content/css/site.css",
-                      "~/Content/css/BrushedMetal.css"
-                      ));
+                "~/Content/Bootstrap/css/bootstrap.css",
+                "~/Content/Responsive/css/responsive.bootstrap.css",
+                "~/Content/css/site.css",
+                "~/Content/css/BrushedMetal.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/js/dataTables").Include(
                     "~/Content/DataTables/js/jquery.dataTables.js",
-                    "~/Content/DataTables/js/dataTables.bootstrap.min.js",
+                    "~/Content/DataTables/js/dataTables.bootstrap.js",
                     "~/Content/DataTables/js/dataTables.fixedColumns.min.js",
                     "~/Content/DataTables/js/jquery.dataTables.rowGrouping.js",
-                    "~/Content/Responsive/js/dataTables.responsive.min.js"
+                    "~/Content/Responsive/js/dataTables.responsive.js"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/dataTables").Include(
-                    "~/Content/DataTables/css/dataTables.bootstrap.min.css",
-                    "~/Content/Responsive/css/responsive.dataTables.min.css"
+                    "~/Content/DataTables/css/dataTables.bootstrap.css",
+                    "~/Content/Responsive/css/responsive.dataTables.css"
                 ));
         }
     }

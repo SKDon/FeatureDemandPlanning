@@ -57,9 +57,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FluentValidation.MVC5.5.6.2.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="GotDotNet.Exslt">
-      <HintPath>..\..\EXSLT.NET-1.0.1\GotDotNet.Exslt.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -229,8 +226,9 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Bootstrap\css\bootstrap-theme.css" />
     <Content Include="Content\Bootstrap\css\bootstrap-theme.min.css" />
+    <Content Include="Content\Bootstrap\css\bootstrap.min - Copy.css" />
     <Content Include="Content\Bootstrap\css\bootstrap.min.css" />
-    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Bootstrap\js\bootstrap.js" />
     <Content Include="Content\Bootstrap\js\bootstrap.min.js" />
     <Content Include="Content\Bootstrap\js\npm.js" />
@@ -674,6 +672,8 @@
     <Content Include="Content\Images\Icons\flags\zambia.png" />
     <Content Include="Content\Images\Icons\flags\Zimbabwe-flag-48.png" />
     <Content Include="Content\Images\Icons\flags\zimbabwe.png" />
+    <Content Include="Content\Images\Icons\forecast32.png" />
+    <Content Include="Content\Images\Icons\forecast64.png" />
     <Content Include="Content\Images\Icons\frs-icon.png" />
     <Content Include="Content\Images\Icons\gateway-publish.png" />
     <Content Include="Content\Images\Icons\generate.png" />
@@ -1230,13 +1230,20 @@
     <Content Include="Extensions\DataTables-1.10.7\Readme.md" />
     <Content Include="Content\Bootstrap\css\bootstrap-theme.css.map" />
     <Content Include="Content\Bootstrap\css\bootstrap.css.map" />
-    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Images\Carousel\multiple.xcf" />
     <Content Include="Content\Images\Icons\Thumbs.db" />
     <Content Include="Mvc.sitemap" />
+    <Content Include="log4net.config" />
     <None Include="MvcSiteMapSchema.xsd">
       <SubType>Designer</SubType>
     </None>

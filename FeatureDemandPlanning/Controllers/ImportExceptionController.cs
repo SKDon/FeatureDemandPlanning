@@ -329,7 +329,7 @@ namespace FeatureDemandPlanning.Controllers
         }
         private async Task<ImportResult> ReProcessException(ImportError exception)
         {
-            if (!ConfigurationSettings.ReprocessImportAfterHandleError)
+            if (!ConfigurationSettings.GetBoolean("ReprocessImportAfterHandleError"))
                 return null;
 
             var queuedItem = new ImportQueue()

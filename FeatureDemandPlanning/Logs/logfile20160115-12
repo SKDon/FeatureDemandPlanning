@@ -1,0 +1,310 @@
+2016-01-15 12:36:30,980 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - LoadConfigurationData
+2016-01-15 12:36:31,229 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - BuildDynamicType
+2016-01-15 12:36:31,230 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - appDomain.ApplicationIdentity: 
+2016-01-15 12:36:31,230 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - appDomain.ApplicationTrust: <ApplicationTrust version="1">
+<DefaultGrant>
+<PolicyStatement version="1">
+<PermissionSet class="System.Security.PermissionSet"
+version="1"
+Unrestricted="true"/>
+</PolicyStatement>
+</DefaultGrant>
+</ApplicationTrust>
+
+2016-01-15 12:36:31,230 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration
+2016-01-15 12:36:31,234 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+2016-01-15 12:36:31,234 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration
+2016-01-15 12:36:31,256 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:36:31,299 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddConstructor
+2016-01-15 12:36:31,300 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DefaultPageSize:System.Int32:5
+2016-01-15 12:36:31,301 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _defaultpagesize
+2016-01-15 12:36:31,301 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:36:31,302 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DTSPath:System.String:C:\Program Files (x86)\Microsoft SQL Server\100\DTS\Binn\DTExec.exe
+2016-01-15 12:36:31,302 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _dtspath
+2016-01-15 12:36:31,302 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:36:31,302 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSIS:System.String:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsx
+2016-01-15 12:36:31,302 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpimportssis
+2016-01-15 12:36:31,303 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:36:31,303 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSISConfig:System.String:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsConfig
+2016-01-15 12:36:31,303 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpimportssisconfig
+2016-01-15 12:36:31,303 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:36:31,303 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpUploadFilePath:System.String:C:\Users\bweston2\Documents\FDPUpload
+2016-01-15 12:36:31,304 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpuploadfilepath
+2016-01-15 12:36:31,304 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:36:31,304 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfComparisonVehicles:System.Int32:5
+2016-01-15 12:36:31,304 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _numberofcomparisonvehicles
+2016-01-15 12:36:31,304 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:36:31,305 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfTopMarkets:System.Int32:28
+2016-01-15 12:36:31,305 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _numberoftopmarkets
+2016-01-15 12:36:31,305 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:36:31,305 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ReprocessImportAfterHandleError:System.Boolean:0
+2016-01-15 12:36:31,305 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _reprocessimportafterhandleerror
+2016-01-15 12:36:31,306 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Boolean
+2016-01-15 12:36:31,306 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ShowAllOXODocuments:System.Boolean:1
+2016-01-15 12:36:31,306 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _showalloxodocuments
+2016-01-15 12:36:31,306 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Boolean
+2016-01-15 12:36:31,306 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - SkipFirstXRowsInImportFile:System.Int32:3
+2016-01-15 12:36:31,307 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _skipfirstxrowsinimportfile
+2016-01-15 12:36:31,307 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:36:31,308 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperties
+2016-01-15 12:36:31,310 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:36:31,311 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:36:31,311 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:36:31,311 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:36:31,312 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:36:31,312 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:36:31,312 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:36:31,312 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:36:31,312 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:36:31,313 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:36:31,313 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:36:31,323 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:36:31,439 [14] DEBUG FeatureDemandPlanning.Controllers.HomeController [(null)] - Test
+2016-01-15 12:47:20,262 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - LoadConfigurationData
+2016-01-15 12:47:20,386 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - BuildDynamicType
+2016-01-15 12:47:20,387 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - appDomain.ApplicationIdentity: 
+2016-01-15 12:47:20,387 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - appDomain.ApplicationTrust: <ApplicationTrust version="1">
+<DefaultGrant>
+<PolicyStatement version="1">
+<PermissionSet class="System.Security.PermissionSet"
+version="1"
+Unrestricted="true"/>
+</PolicyStatement>
+</DefaultGrant>
+</ApplicationTrust>
+
+2016-01-15 12:47:20,388 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration
+2016-01-15 12:47:20,393 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+2016-01-15 12:47:20,394 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration
+2016-01-15 12:47:20,395 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:47:20,398 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddConstructor
+2016-01-15 12:47:20,400 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DefaultPageSize:System.Int32:5
+2016-01-15 12:47:20,401 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _defaultpagesize
+2016-01-15 12:47:20,401 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:47:20,401 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DTSPath:System.String:C:\Program Files (x86)\Microsoft SQL Server\100\DTS\Binn\DTExec.exe
+2016-01-15 12:47:20,401 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _dtspath
+2016-01-15 12:47:20,401 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:47:20,402 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSIS:System.String:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsx
+2016-01-15 12:47:20,402 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpimportssis
+2016-01-15 12:47:20,402 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:47:20,402 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSISConfig:System.String:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsConfig
+2016-01-15 12:47:20,402 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpimportssisconfig
+2016-01-15 12:47:20,402 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:47:20,403 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpUploadFilePath:System.String:C:\Users\bweston2\Documents\FDPUpload
+2016-01-15 12:47:20,403 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpuploadfilepath
+2016-01-15 12:47:20,403 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:47:20,403 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfComparisonVehicles:System.Int32:5
+2016-01-15 12:47:20,403 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _numberofcomparisonvehicles
+2016-01-15 12:47:20,403 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:47:20,404 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfTopMarkets:System.Int32:28
+2016-01-15 12:47:20,404 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _numberoftopmarkets
+2016-01-15 12:47:20,404 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:47:20,404 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ReprocessImportAfterHandleError:System.Boolean:0
+2016-01-15 12:47:20,404 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _reprocessimportafterhandleerror
+2016-01-15 12:47:20,404 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Boolean
+2016-01-15 12:47:20,405 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ShowAllOXODocuments:System.Boolean:1
+2016-01-15 12:47:20,405 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _showalloxodocuments
+2016-01-15 12:47:20,405 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Boolean
+2016-01-15 12:47:20,406 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - SkipFirstXRowsInImportFile:System.Int32:3
+2016-01-15 12:47:20,407 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _skipfirstxrowsinimportfile
+2016-01-15 12:47:20,407 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:47:20,409 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperties
+2016-01-15 12:47:20,411 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:47:20,412 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:47:20,412 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:47:20,412 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:47:20,412 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:47:20,413 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:47:20,413 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:47:20,413 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:47:20,413 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:47:20,414 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:47:20,414 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:47:20,424 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:47:20,485 [21] DEBUG FeatureDemandPlanning.Controllers.HomeController [(null)] - Test
+2016-01-15 12:52:47,674 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - LoadConfigurationData
+2016-01-15 12:52:47,675 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - BuildDynamicType
+2016-01-15 12:52:47,675 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - appDomain.ApplicationIdentity: 
+2016-01-15 12:52:47,676 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - appDomain.ApplicationTrust: <ApplicationTrust version="1">
+<DefaultGrant>
+<PolicyStatement version="1">
+<PermissionSet class="System.Security.PermissionSet"
+version="1"
+Unrestricted="true"/>
+</PolicyStatement>
+</DefaultGrant>
+</ApplicationTrust>
+
+2016-01-15 12:52:47,677 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration
+2016-01-15 12:52:47,678 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+2016-01-15 12:52:47,679 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration
+2016-01-15 12:52:47,679 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:52:47,679 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddConstructor
+2016-01-15 12:52:47,680 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DefaultPageSize:System.Int32:5
+2016-01-15 12:52:47,680 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _defaultpagesize
+2016-01-15 12:52:47,680 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:52:47,681 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DTSPath:System.String:C:\Program Files (x86)\Microsoft SQL Server\100\DTS\Binn\DTExec.exe
+2016-01-15 12:52:47,681 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _dtspath
+2016-01-15 12:52:47,681 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:52:47,681 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSIS:System.String:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsx
+2016-01-15 12:52:47,681 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpimportssis
+2016-01-15 12:52:47,682 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:52:47,682 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSISConfig:System.String:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsConfig
+2016-01-15 12:52:47,682 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpimportssisconfig
+2016-01-15 12:52:47,682 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:52:47,682 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpUploadFilePath:System.String:C:\Users\bweston2\Documents\FDPUpload
+2016-01-15 12:52:47,683 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpuploadfilepath
+2016-01-15 12:52:47,683 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:52:47,683 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfComparisonVehicles:System.Int32:5
+2016-01-15 12:52:47,683 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _numberofcomparisonvehicles
+2016-01-15 12:52:47,683 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:52:47,684 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfTopMarkets:System.Int32:28
+2016-01-15 12:52:47,684 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _numberoftopmarkets
+2016-01-15 12:52:47,684 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:52:47,684 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ReprocessImportAfterHandleError:System.Boolean:0
+2016-01-15 12:52:47,684 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _reprocessimportafterhandleerror
+2016-01-15 12:52:47,685 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Boolean
+2016-01-15 12:52:47,685 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ShowAllOXODocuments:System.Boolean:1
+2016-01-15 12:52:47,685 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _showalloxodocuments
+2016-01-15 12:52:47,685 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Boolean
+2016-01-15 12:52:47,685 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - SkipFirstXRowsInImportFile:System.Int32:3
+2016-01-15 12:52:47,686 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _skipfirstxrowsinimportfile
+2016-01-15 12:52:47,686 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:52:47,686 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperties
+2016-01-15 12:52:47,686 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:52:47,687 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:52:47,687 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:52:47,687 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:52:47,687 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:52:47,687 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:52:47,688 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:52:47,688 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:52:47,688 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:52:47,688 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:52:47,689 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:52:47,698 [21] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:52:47,703 [21] DEBUG FeatureDemandPlanning.Controllers.HomeController [(null)] - Test
+2016-01-15 12:54:30,908 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - LoadConfigurationData
+2016-01-15 12:54:30,909 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - BuildDynamicType
+2016-01-15 12:54:30,909 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - appDomain.ApplicationIdentity: 
+2016-01-15 12:54:30,909 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - appDomain.ApplicationTrust: <ApplicationTrust version="1">
+<DefaultGrant>
+<PolicyStatement version="1">
+<PermissionSet class="System.Security.PermissionSet"
+version="1"
+Unrestricted="true"/>
+</PolicyStatement>
+</DefaultGrant>
+</ApplicationTrust>
+
+2016-01-15 12:54:30,910 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration
+2016-01-15 12:54:30,910 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+2016-01-15 12:54:30,910 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration
+2016-01-15 12:54:30,910 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:54:30,911 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddConstructor
+2016-01-15 12:54:30,911 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DefaultPageSize:System.Int32:5
+2016-01-15 12:54:30,911 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _defaultpagesize
+2016-01-15 12:54:30,911 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:54:30,911 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DTSPath:System.String:C:\Program Files (x86)\Microsoft SQL Server\100\DTS\Binn\DTExec.exe
+2016-01-15 12:54:30,912 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _dtspath
+2016-01-15 12:54:30,912 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:54:30,912 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSIS:System.String:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsx
+2016-01-15 12:54:30,912 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpimportssis
+2016-01-15 12:54:30,912 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:54:30,912 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSISConfig:System.String:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsConfig
+2016-01-15 12:54:30,912 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpimportssisconfig
+2016-01-15 12:54:30,913 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:54:30,913 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpUploadFilePath:System.String:C:\Users\bweston2\Documents\FDPUpload
+2016-01-15 12:54:30,913 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpuploadfilepath
+2016-01-15 12:54:30,913 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:54:30,913 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfComparisonVehicles:System.Int32:5
+2016-01-15 12:54:30,913 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _numberofcomparisonvehicles
+2016-01-15 12:54:30,913 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:54:30,914 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfTopMarkets:System.Int32:28
+2016-01-15 12:54:30,914 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _numberoftopmarkets
+2016-01-15 12:54:30,914 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:54:30,914 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ReprocessImportAfterHandleError:System.Boolean:0
+2016-01-15 12:54:30,915 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _reprocessimportafterhandleerror
+2016-01-15 12:54:30,915 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Boolean
+2016-01-15 12:54:30,915 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ShowAllOXODocuments:System.Boolean:1
+2016-01-15 12:54:30,915 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _showalloxodocuments
+2016-01-15 12:54:30,915 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Boolean
+2016-01-15 12:54:30,915 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - SkipFirstXRowsInImportFile:System.Int32:3
+2016-01-15 12:54:30,915 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _skipfirstxrowsinimportfile
+2016-01-15 12:54:30,916 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:54:30,916 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperties
+2016-01-15 12:54:30,916 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:30,916 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:30,916 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:30,916 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:30,917 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:30,917 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:30,917 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:30,917 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:30,917 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:30,917 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:30,918 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:54:30,928 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:54:30,932 [14] DEBUG FeatureDemandPlanning.Controllers.HomeController [(null)] - Test
+2016-01-15 12:54:46,404 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - LoadConfigurationData
+2016-01-15 12:54:46,405 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - BuildDynamicType
+2016-01-15 12:54:46,406 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - appDomain.ApplicationIdentity: 
+2016-01-15 12:54:46,406 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - appDomain.ApplicationTrust: <ApplicationTrust version="1">
+<DefaultGrant>
+<PolicyStatement version="1">
+<PermissionSet class="System.Security.PermissionSet"
+version="1"
+Unrestricted="true"/>
+</PolicyStatement>
+</DefaultGrant>
+</ApplicationTrust>
+
+2016-01-15 12:54:46,406 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration
+2016-01-15 12:54:46,406 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+2016-01-15 12:54:46,407 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FeatureDemandPlanning.Configuration
+2016-01-15 12:54:46,407 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:54:46,408 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddConstructor
+2016-01-15 12:54:46,408 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DefaultPageSize:System.Int32:5
+2016-01-15 12:54:46,408 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _defaultpagesize
+2016-01-15 12:54:46,408 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:54:46,408 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DTSPath:System.String:C:\Program Files (x86)\Microsoft SQL Server\100\DTS\Binn\DTExec.exe
+2016-01-15 12:54:46,409 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _dtspath
+2016-01-15 12:54:46,409 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:54:46,409 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSIS:System.String:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsx
+2016-01-15 12:54:46,409 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpimportssis
+2016-01-15 12:54:46,409 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:54:46,409 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSISConfig:System.String:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsConfig
+2016-01-15 12:54:46,410 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpimportssisconfig
+2016-01-15 12:54:46,410 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:54:46,410 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpUploadFilePath:System.String:C:\Users\bweston2\Documents\FDPUpload
+2016-01-15 12:54:46,410 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _fdpuploadfilepath
+2016-01-15 12:54:46,410 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.String
+2016-01-15 12:54:46,410 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfComparisonVehicles:System.Int32:5
+2016-01-15 12:54:46,410 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _numberofcomparisonvehicles
+2016-01-15 12:54:46,411 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:54:46,411 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfTopMarkets:System.Int32:28
+2016-01-15 12:54:46,411 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _numberoftopmarkets
+2016-01-15 12:54:46,411 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:54:46,411 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ReprocessImportAfterHandleError:System.Boolean:0
+2016-01-15 12:54:46,411 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _reprocessimportafterhandleerror
+2016-01-15 12:54:46,412 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Boolean
+2016-01-15 12:54:46,412 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ShowAllOXODocuments:System.Boolean:1
+2016-01-15 12:54:46,412 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _showalloxodocuments
+2016-01-15 12:54:46,412 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Boolean
+2016-01-15 12:54:46,412 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - SkipFirstXRowsInImportFile:System.Int32:3
+2016-01-15 12:54:46,412 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - Backing field name: _skipfirstxrowsinimportfile
+2016-01-15 12:54:46,412 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - settingType.FullName: System.Int32
+2016-01-15 12:54:46,413 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperties
+2016-01-15 12:54:46,413 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:46,413 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:46,413 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:46,413 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:46,414 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:46,414 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:46,414 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:46,414 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:46,414 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:46,414 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - AddProperty
+2016-01-15 12:54:46,415 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:54:46,419 [14] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ConfigurationSettings
+2016-01-15 12:54:46,421 [14] DEBUG FeatureDemandPlanning.Controllers.HomeController [(null)] - Test

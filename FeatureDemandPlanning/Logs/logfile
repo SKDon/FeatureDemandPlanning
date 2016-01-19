@@ -1,0 +1,20 @@
+2016-01-18 09:00:03,022 [10] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSISConfig:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsConfig:System.String
+2016-01-18 09:00:03,297 [10] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpUploadFilePath:C:\Users\bweston2\Documents\FDPUpload:System.String
+2016-01-18 09:00:03,310 [10] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfComparisonVehicles:5:System.Int32
+2016-01-18 09:00:03,310 [10] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfTopMarkets:28:System.Int32
+2016-01-18 09:00:03,310 [10] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ReprocessImportAfterHandleError:0:System.Boolean
+2016-01-18 09:00:03,310 [10] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ShowAllOXODocuments:1:System.Boolean
+2016-01-18 09:00:03,311 [10] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - SkipFirstXRowsInImportFile:3:System.Int32
+2016-01-18 09:01:21,397 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - LoadConfigurationData
+2016-01-18 09:01:22,140 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - BuildConfiguration
+2016-01-18 09:01:22,141 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DefaultPageSize:5:System.Int32
+2016-01-18 09:01:22,142 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - DTSPath:C:\Program Files (x86)\Microsoft SQL Server\100\DTS\Binn\DTExec.exe:System.String
+2016-01-18 09:01:22,142 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSIS:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsx:System.String
+2016-01-18 09:01:22,143 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpImportSSISConfig:C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsConfig:System.String
+2016-01-18 09:01:22,143 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - FdpUploadFilePath:C:\Users\bweston2\Documents\FDPUpload:System.String
+2016-01-18 09:01:22,143 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfComparisonVehicles:5:System.Int32
+2016-01-18 09:01:22,143 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - NumberOfTopMarkets:28:System.Int32
+2016-01-18 09:01:22,144 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ReprocessImportAfterHandleError:0:System.Boolean
+2016-01-18 09:01:34,043 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - ShowAllOXODocuments:1:System.Boolean
+2016-01-18 09:01:35,957 [35] DEBUG FeatureDemandPlanning.DataStore.ConfigurationDataContext [(null)] - SkipFirstXRowsInImportFile:3:System.Int32
+2016-01-18 09:01:36,086 [35] DEBUG FeatureDemandPlanning.Controllers.HomeController [(null)] - Test

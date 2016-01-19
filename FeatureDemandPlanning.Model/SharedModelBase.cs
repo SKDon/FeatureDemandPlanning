@@ -10,7 +10,7 @@ namespace FeatureDemandPlanning.Model
     [DataContract]
     public class SharedModelBase
     {
-        public dynamic Configuration { get; set; }
+        public ConfigurationSettings Configuration { get; set; }
         public string CurrentPage { get; set; }
         public User CurrentUser { get; set; }
 
@@ -46,10 +46,7 @@ namespace FeatureDemandPlanning.Model
 
                 var messages = ProcessStates.First().Messages;
 
-                if (!messages.Any())
-                    return string.Empty;
-
-                return messages.First();
+                return !messages.Any() ? string.Empty : messages.First();
             }
         }
         public IEnumerable<ProcessState> ProcessStates { get { return _processStates; } }

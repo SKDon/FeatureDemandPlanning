@@ -2,6 +2,6 @@
 {
     public interface IConfigurationDataContext
     {
-        dynamic Configuration { get; }
+        ConfigurationSettings Configuration { get; }
     }
 }

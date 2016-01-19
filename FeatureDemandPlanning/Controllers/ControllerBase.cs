@@ -1,18 +1,21 @@
 ﻿using System;
+using System.Reflection;
 using System.Web.Mvc;
+using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Results;
+using log4net;
 
 namespace FeatureDemandPlanning.Controllers
 {
     public class ControllerBase : Controller
     {
-        public dynamic ConfigurationSettings { get { return _dataContext.ConfigurationSettings; } }
+        public ConfigurationSettings ConfigurationSettings { get { return DataContext.ConfigurationSettings; } }
         public ControllerType ControllerType { get { return _controllerType; } set { _controllerType = value; } }
-        public IDataContext DataContext { get { return _dataContext; } }
-        
+        public IDataContext DataContext { get; private set; }
+
         public string UserName 
         { 
             get 
@@ -26,10 +29,10 @@ namespace FeatureDemandPlanning.Controllers
 
         public ControllerBase()
         {
-            _dataContext = DataContextFactory.CreateDataContext(GetCdsId());
+            DataContext = DataContextFactory.CreateDataContext(GetCdsId());
             
             PageIndex = 0;
-            PageSize = ConfigurationSettings.DefaultPageSize;
+            PageSize = ConfigurationSettings.GetInteger("DefaultPageSize");
         }
         public ControllerBase(ControllerType controllerType) : this()
         {
@@ -62,7 +65,7 @@ namespace FeatureDemandPlanning.Controllers
             return Request.ServerVariables["REMOTE_USER"];
         }
 
-        private IDataContext _dataContext;
         private ControllerType _controllerType = ControllerType.Default;
+        protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

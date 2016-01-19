@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Dapper;
@@ -11,6 +12,7 @@ using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Extensions;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Helpers;
+using log4net;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -24,11 +26,6 @@ namespace FeatureDemandPlanning.DataStore
         }
 
         #endregion
-
-        public ImportResult ImportData(string filePath)
-        {
-            throw new NotImplementedException();
-        }
 
         public TakeRateDataItem TakeRateDataItemGet(TakeRateFilter filter)
         {
@@ -49,14 +46,20 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpFeatureId", filter.FdpFeatureId, DbType.Int32);
 
                     var results = conn.QueryMultiple(fdpTakeRateDataItemGetStoredProcedureName, para, commandType: CommandType.StoredProcedure);
-                    retVal = results.Read<TakeRateDataItem>().First();
-
-                    retVal.Notes = results.Read<TakeRateDataItemNote>();
-                    retVal.History = results.Read<TakeRateDataItemAudit>();
+                    retVal = results.Read<TakeRateDataItem>().FirstOrDefault();
+                    if (retVal == null)
+                    {
+                        retVal = new EmptyTakeRateDataItem();
+                    }
+                    else
+                    {
+                        retVal.Notes = results.Read<TakeRateDataItemNote>();
+                        retVal.History = results.Read<TakeRateDataItemAudit>();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemGet", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -85,7 +88,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemGet", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -171,7 +174,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemList", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -219,7 +222,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemSave", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
                 }
             }
 
@@ -251,7 +255,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemNoteSave", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -272,7 +276,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemNoteGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -293,7 +297,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemHistoryGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -332,7 +336,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpVolumeHeaderSave", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
                 }
             }
             return header;
@@ -409,7 +414,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpVolumeHeaderGetManyByUsername", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
 
@@ -431,7 +436,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpVolumeHeaderGetManyByOxoDocIdAndUsername", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
                 }
 
                 return retVal;
@@ -452,7 +458,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpVolumeHeaderSaveMappingToOxoDocument", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
                 }
             }
         }
@@ -469,7 +476,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpSpecialFeatureTypeGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
                 }
 
                 return retVal;
@@ -489,7 +497,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpSpecialFeatureTypeGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
                 }
             }
             return retVal;
@@ -533,7 +542,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemGet", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -558,7 +567,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.TakeRateDataItemGet", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -596,7 +605,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpChangesetGet", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -618,7 +627,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpLatestUnsavedChangesetByUserGet", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -660,7 +669,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpLatestUnsavedChangesetByUserGet", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -687,7 +696,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpChangesetSave", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -722,7 +731,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpChangesetRevert", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -747,7 +756,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     catch (Exception ex)
                     {
-                        AppHelper.LogError("TakeRateDataStore.FdpChangesetPersist", ex.Message, CurrentCDSID);
+                        Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                         throw;
                     }
                 }
@@ -780,7 +789,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     catch (Exception ex)
                     {
-                        AppHelper.LogError("TakeRateDataStore.FdpChangesetUndo", ex.Message, CurrentCDSID);
+                        Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                         throw;
                     }
                 }
@@ -838,7 +847,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     catch (Exception ex)
                     {
-                        AppHelper.LogError("FdpVolumeDataStore.FdpChangesetSave", ex.Message, CurrentCDSID);
+                        Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                         throw;
                     }
                 }
@@ -868,7 +877,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     catch (Exception ex)
                     {
-                        AppHelper.LogError("FdpVolumeDataStore.FdpChangesetDataItemRecalculate", ex.Message, CurrentCDSID);
+                        Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                         throw;
                     }
                 }
@@ -899,7 +908,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("TakeRateDataStore.FdpVolumeByMarketAndModelGet", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -926,7 +935,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("TakeRateDataStore.FdpVolumeByMarketGet", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
                 }
             }
             return retVal;
@@ -948,10 +958,13 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("TakeRateDataStore.FdpChangesetGetHistory", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
                 }
             }
             return retVal;
         }
+
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

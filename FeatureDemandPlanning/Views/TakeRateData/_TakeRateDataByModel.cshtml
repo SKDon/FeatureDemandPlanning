@@ -53,15 +53,15 @@
     else
     {
         <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
-            @{
-        var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.FirstOrDefault(s => s.StringIdentifier == availableModel.StringIdentifier);
-        var volume = "-";
-        if (summary != null)
-        {
-            volume = summary.Volume.ToString();
-        }
-        @volume
-            }
+                @{
+                    var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.FirstOrDefault(s => s.StringIdentifier == availableModel.StringIdentifier);
+                    var volume = "-";
+                    if (summary != null)
+                    {
+                        volume = summary.Volume.ToString();
+                    }
+                    @volume
+                }
 
             @{
         var model = availableModel;

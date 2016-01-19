@@ -46,6 +46,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FluentValidation.MVC5.5.6.2.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -93,6 +97,7 @@
     <Compile Include="Attributes\HandleJsonError.cs" />
     <Compile Include="Attributes\ValidateAjaxAttribute.cs" />
     <Compile Include="CarLine.cs" />
+    <Compile Include="ConfigurationSettings.cs" />
     <Compile Include="FdpChangeset.cs" />
     <Compile Include="DataChange.cs" />
     <Compile Include="Dapper\DynamicParameters.cs" />
@@ -242,7 +247,6 @@
     </Compile>
     <Compile Include="BusinessObject.cs" />
     <Compile Include="ConfigurationItem.cs" />
-    <Compile Include="Configuration.cs" />
     <Compile Include="Context\PagedResults.cs" />
     <Compile Include="EmailInfo.cs" />
     <Compile Include="Empty\EmptyForecast.cs" />
@@ -303,7 +307,6 @@
     <Compile Include="Validators\VehicleValidator.cs" />
     <Compile Include="Validators\TakeRateDocumentValidator.cs" />
     <Compile Include="ViewModel\AdminViewModel.cs" />
-    <Compile Include="ViewModel\ConfigurationModel.cs" />
     <Compile Include="FdpChangesetHistory.cs" />
     <Compile Include="ViewModel\IgnoredExceptionViewModel.cs" />
     <Compile Include="ViewModel\MarketMappingViewModel.cs" />
@@ -352,6 +355,7 @@
     <Compile Include="TakeRateSummary.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Service References\RADSMailService\SendMail.wsdl" />
   </ItemGroup>

@@ -13,7 +13,7 @@ namespace FeatureDemandPlanning.Controllers
         public MarketController()
         {
             PageIndex = 1;
-            PageSize = DataContext.ConfigurationSettings.DefaultPageSize;
+            PageSize = DataContext.ConfigurationSettings.GetInteger("DefaultPageSize");
             ControllerType = ControllerType.SectionChild;
         }
 

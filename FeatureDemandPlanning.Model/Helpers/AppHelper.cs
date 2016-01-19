@@ -12,7 +12,7 @@ namespace FeatureDemandPlanning.Model.Helpers
         {
             try
             {
-                var cs = "OXOApp";
+                var cs = "FeatureDemandPlanning";
                 var elog = new EventLog();
                 if (!EventLog.SourceExists(cs))
                 {

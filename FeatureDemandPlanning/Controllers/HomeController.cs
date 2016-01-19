@@ -8,6 +8,7 @@ namespace FeatureDemandPlanning.Controllers
     {
         public async Task<ActionResult> Index()
         {
+            Log.Debug("Test");
             var homeModel = await HomeViewModel.GetFullOrPartialViewModel(DataContext);
             return View(homeModel);
         }
