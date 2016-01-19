@@ -11,7 +11,7 @@ namespace FeatureDemandPlanning.Content.Errors
 {
 
 
-    public partial class Error500
+    public partial class Error403
     {
 
         /// <summary>

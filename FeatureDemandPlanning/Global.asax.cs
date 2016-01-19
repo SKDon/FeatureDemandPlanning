@@ -16,8 +16,7 @@ namespace FeatureDemandPlanning
             AreaRegistration.RegisterAllAreas();
             
             WebApiConfig.Register(GlobalConfiguration.Configuration);
-            GlobalFilters.Filters.Add(new PerformanceActionFilter());
-            GlobalFilters.Filters.Add(new PerformanceResultFilter());
+            GlobalFilters.Filters.Add(new LoggingFilterAttribute());
             GlobalFilters.Filters.Add(new HandleErrorAttribute());
             GlobalFilters.Filters.Add(new HandleErrorWithJson());
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

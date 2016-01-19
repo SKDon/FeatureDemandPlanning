@@ -67,51 +67,5 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             return retVal;
         }
-
-        //public static List<ModelFilter> GetModelFiltersFromJson(string json)
-        //{
-        //    string temp = Uri.UnescapeDataString(json);
-        //    JavaScriptSerializer json_serializer = new JavaScriptSerializer();
-        //    List<ModelFilter> result = (List<ModelFilter>)json_serializer.Deserialize(temp, typeof(List<ModelFilter>));
-        //    return result;
-        //}
-
-    }
-
-    public class PerformanceActionFilter : IActionFilter
-    {
-        private Stopwatch stopWatch = new Stopwatch();
-
-        public void OnActionExecuting(ActionExecutingContext filterContext)
-        {
-            stopWatch.Reset();
-            stopWatch.Start();
-        }
-
-        public void OnActionExecuted(ActionExecutedContext filterContext)
-        {
-            stopWatch.Stop();
-            var executionTime = stopWatch.ElapsedMilliseconds;
-            
-        }        
-    }
-
-    public class PerformanceResultFilter : IResultFilter
-    {
-        private Stopwatch stopWatch = new Stopwatch();
-
-       
-
-        public void OnResultExecuting(ResultExecutingContext filterContext)
-        {
-            stopWatch.Reset();
-            stopWatch.Start();
-        }
-
-        public void OnResultExecuted(ResultExecutedContext filterContext)
-        {
-            stopWatch.Stop();
-            var executionTime = stopWatch.ElapsedMilliseconds;
-        }
     }
 }

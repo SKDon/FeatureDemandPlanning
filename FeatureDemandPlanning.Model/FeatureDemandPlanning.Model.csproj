@@ -94,7 +94,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\HandleJsonError.cs" />
+    <Compile Include="Attributes\LoggingFilterAttribute.cs" />
+    <Compile Include="Attributes\HandleErrorWithJson.cs" />
     <Compile Include="Attributes\ValidateAjaxAttribute.cs" />
     <Compile Include="CarLine.cs" />
     <Compile Include="ConfigurationSettings.cs" />

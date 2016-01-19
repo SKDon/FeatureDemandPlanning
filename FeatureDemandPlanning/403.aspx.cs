@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 
 namespace FeatureDemandPlanning.Content.Errors
 {
-    public partial class Error500 : System.Web.UI.Page
+    public partial class Error403 : Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
