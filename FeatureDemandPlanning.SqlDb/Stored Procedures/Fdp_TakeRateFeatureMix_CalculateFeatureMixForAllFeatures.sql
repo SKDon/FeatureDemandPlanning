@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateFeatureMix_CalculateFeatureMixForAllFeatures]
 	  @FdpVolumeHeaderId	AS INT
-	, @MarketId				AS INT
+	, @MarketId				AS INT = NULL
 	, @CDSId				AS NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
@@ -25,6 +25,21 @@ AS
 		, TotalVolume					INT
 		, PercentageTakeRate			DECIMAL(5, 4)
 	)
+	DECLARE @Market AS TABLE
+	(
+		MarketId INT
+	)
+	
+	-- Filter by markets
+	INSERT INTO @Market (MarketId)
+	SELECT 
+		DISTINCT MarketId 
+	FROM
+	Fdp_VolumeDataItem_VW AS D
+	WHERE
+	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	(@MarketId IS NULL AND D.MarketId = @MarketId);
 	
 	-- Add all volume data existing rows to our data table
 	
@@ -48,10 +63,9 @@ AS
 		, D.FdpVolumeDataItemId
 	FROM
 	Fdp_VolumeDataItem_VW	AS D
+	JOIN @Market			AS M ON D.MarketId = M.MarketId
 	WHERE
 	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	AND
-	(@MarketId IS NULL OR D.MarketId = @MarketId)
 	AND
 	D.IsFeatureData = 1;
 
@@ -74,6 +88,7 @@ AS
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
 	FROM 
 	@DataForFeature AS D
+	JOIN @Market	AS M ON D.MarketId = M.MarketId
 	WHERE
 	D.FeatureId IS NOT NULL
 	GROUP BY
@@ -93,6 +108,7 @@ AS
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
 	FROM 
 	@DataForFeature AS D
+	JOIN @Market	AS M ON D.MarketId = M.MarketId
 	WHERE
 	D.FdpFeatureId IS NOT NULL
 	GROUP BY
@@ -108,10 +124,11 @@ AS
 		, UpdatedBy				= @CDSId
 		, UpdatedOn				= GETDATE()
 	FROM
-	@FeatureMix AS F
+	@FeatureMix					AS F
+	JOIN @Market				AS M	ON	F.MarketId			= M.MarketId
 	JOIN Fdp_TakeRateFeatureMix AS F1	ON  F.FdpVolumeHeaderId = F1.FdpVolumeHeaderId
-										AND F.MarketId		= F1.MarketId
-										AND F.FeatureId		= F1.FeatureId
+										AND F.MarketId			= F1.MarketId
+										AND F.FeatureId			= F1.FeatureId
 										AND 
 										(
 											F.PercentageTakeRate <> F1.PercentageTakeRate

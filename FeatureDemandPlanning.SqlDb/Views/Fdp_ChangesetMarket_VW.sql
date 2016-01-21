@@ -1,4 +1,5 @@
 ﻿
+
 CREATE VIEW [dbo].[Fdp_ChangesetMarket_VW]
 AS
 	SELECT
@@ -14,6 +15,7 @@ AS
 		, D.OriginalVolume
 		, D.OriginalPercentageTakeRate
 		, D.FdpVolumeDataItemId
+		, D.FdpChangesetDataItemId
 
 	FROM Fdp_Changeset			AS C
 	JOIN Fdp_ChangesetDataItem	AS D	ON	C.FdpChangesetId = D.FdpChangesetId
