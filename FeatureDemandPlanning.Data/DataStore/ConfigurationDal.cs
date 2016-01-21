@@ -12,9 +12,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
+using System.Reflection;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
+using log4net;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -39,7 +41,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("ConfigurationDataStore.ConfigurationGetMany", ex.Message, CurrentCDSID);
+					Log.Error(ex);
+				    throw;
 				}
 			}
 
@@ -59,9 +62,10 @@ namespace FeatureDemandPlanning.DataStore
 					retVal = conn.Query<ConfigurationItem>("dbo.Fdp_Configuration_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
 				}
 				catch (Exception ex)
-				{
-				   AppHelper.LogError("ConfigurationDataStore.ConfigurationGet", ex.Message, CurrentCDSID);
-				}
+                {
+				    Log.Error(ex);
+                    throw;
+                }
 			}
 
             return retVal;
@@ -87,8 +91,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("ConfigurationDataStore.ConfigurationSave", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -111,12 +115,14 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("ConfigurationDataStore.ConfigurationDelete", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
             return retVal;
         }
+
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

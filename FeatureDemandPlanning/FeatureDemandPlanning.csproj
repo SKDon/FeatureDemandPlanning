@@ -231,23 +231,20 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="403.aspx" />
     <Content Include="Content\css\bootstrap.css" />
-    <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\css\jquery.spin.css" />
     <Content Include="Content\js\bootstrap.js" />
-    <Content Include="Content\js\bootstrap.min.js" />
     <Content Include="Content\css\BrushedMetal.css" />
     <Content Include="Content\css\dataTables.bootstrap.css" />
-    <Content Include="Content\css\dataTables.bootstrap.min.css" />
     <Content Include="Content\css\jquery.dataTables.css" />
-    <Content Include="Content\css\jquery.dataTables.min.css" />
     <Content Include="Content\Images\sort_asc.png" />
     <Content Include="Content\Images\sort_asc_disabled.png" />
     <Content Include="Content\Images\sort_both.png" />
     <Content Include="Content\Images\sort_desc.png" />
     <Content Include="Content\Images\sort_desc_disabled.png" />
     <Content Include="Content\js\dataTables.bootstrap.js" />
-    <Content Include="Content\js\dataTables.bootstrap.min.js" />
+    <Content Include="Content\js\dataTables.fixedColumns.js" />
+    <Content Include="Content\js\jquery-1.12.0.js" />
     <Content Include="Content\js\jquery.dataTables.js" />
-    <Content Include="Content\js\jquery.dataTables.min.js" />
     <Content Include="Content\js\jquery.dataTables.rowGrouping.js" />
     <Content Include="500.aspx" />
     <Content Include="404.aspx" />
@@ -749,16 +746,12 @@
     <Content Include="Content\Images\Icons\users64.png" />
     <Content Include="Content\Images\Icons\validate.png" />
     <Content Include="Content\Images\Icons\viewer-small.png" />
-    <Content Include="Content\js\jquery-2.1.4.min.js" />
     <Content Include="Content\css\responsive.dataTables.css" />
-    <Content Include="Content\css\responsive.dataTables.min.css" />
     <Content Include="Content\js\dataTables.responsive.js" />
-    <Content Include="Content\js\dataTables.responsive.min.js" />
     <Content Include="Content\css\Site.css" />
     <Content Include="Content\css\responsive.bootstrap.css" />
-    <Content Include="Content\js\spin.min.js" />
+    <Content Include="Content\js\jquery.spin.js" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Content\js\dataTables.fixedColumns.min.js" />
     <Content Include="Content\js\DerivativeMapping\copy.js" />
     <Content Include="Content\js\DerivativeMapping\delete.js" />
     <Content Include="Content\js\Derivative\delete.js" />
@@ -791,7 +784,6 @@
     <Content Include="Content\js\Forecast\comparisonvehicles.js" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\js\jquery.jeditable.mini.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\js\Admin\admin.js" />
@@ -858,6 +850,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff2">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\js\jquery.jeditable.js" />
     <None Include="MvcSiteMapSchema.xsd">
       <SubType>Designer</SubType>
     </None>

@@ -11,9 +11,9 @@ namespace FeatureDemandPlanning
                 return;
 
             bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
-                        "~/Content/js/jquery-{version}.min.js",
-                        "~/Content/js/jquery.jeditable.mini.js",
-                        "~/Content/js/spin-min.js"));
+                        "~/Content/js/jquery-1.12.0.js",
+                        "~/Content/js/jquery.jeditable.js",
+                        "~/Content/js/jquery.spin.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
                 "~/Content/js/bootstrap.js"));
@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning
             bundles.Add(new ScriptBundle("~/bundles/js/dataTables").Include(
                     "~/Content/js/jquery.dataTables.js",
                     "~/Content/js/dataTables.bootstrap.js",
-                    "~/Content/js/dataTables.fixedColumns.min.js",
+                    "~/Content/js/dataTables.fixedColumns.js",
                     "~/Content/js/jquery.dataTables.rowGrouping.js",
                     "~/Content/js/dataTables.responsive.js"
                 ));
@@ -97,10 +97,10 @@ namespace FeatureDemandPlanning
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/shared").Include(
+                    "~/Content/js/Shared/namespace.js",
+                    "~/Content/js/Shared/modal.js",
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Shared/cookie.js",
-                    "~/Content/js/Shared/modal.js",
-                    "~/Content/js/Shared/namespace.js",
                     "~/Content/js/Shared/pager.js",
                     "~/Content/js/Shared/vehicle.js"
                 ));
@@ -158,7 +158,7 @@ namespace FeatureDemandPlanning
                     "~/Content/js/User/page.js"
                 ));
 
-            var cssFixer = new CssRewriteUrlTransform();
+            var cssFixer = new CssRewriteUrlTransformFixed();
 
             bundles.Add(new StyleBundle("~/bundles/css")
                 .Include("~/Content/css/bootstrap.css", cssFixer)

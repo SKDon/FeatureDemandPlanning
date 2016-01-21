@@ -89,7 +89,7 @@ page.ImportQueuePage = function (models) {
                 me.updatePaging();
                 me.updateTotals();
                 me.setTimer(setTimeout(function () {
-                    me.redrawDataTable();
+                   me.redrawDataTable();
                 }, 10000));
             }
         });
@@ -213,11 +213,11 @@ page.ImportQueuePage = function (models) {
         $("#notifier")
             .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
             .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
-            .unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
-            .unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
+            //.unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
+            //.unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
             .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
-            .unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
-            .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler);
+            //.unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
+            //.unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler);
 
         $("#" + prefix + "_FilterMessage").on("keyup", me.onFilterChangedEventHandler);
     };
@@ -237,6 +237,9 @@ page.ImportQueuePage = function (models) {
             Model: model,
             ActionModel: actionModel
         });
+    };
+    me.onErrorEventHandler = function(sender, eventArgs) {
+
     };
     me.onFilterChangedEventHandler = function (sender, eventArgs) {
         var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
