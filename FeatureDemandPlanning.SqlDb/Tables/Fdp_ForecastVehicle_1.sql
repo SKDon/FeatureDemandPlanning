@@ -9,3 +9,5 @@
     CONSTRAINT [FK_Fdp_ForecastVehicle_OXO_Vehicle] FOREIGN KEY ([VehicleId]) REFERENCES [dbo].[OXO_Vehicle] ([Id])
 );
 
+
+

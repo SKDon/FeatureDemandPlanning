@@ -1,21 +1,18 @@
-﻿CREATE VIEW dbo.Fdp_Validation_VW AS
+﻿
+CREATE VIEW [dbo].[Fdp_Validation_VW] AS
 
 	SELECT 
 		  H.FdpVolumeHeaderId
-		, V.ValidationOn
 		, V.MarketId
-		, R.FdpValidationRuleId
-		, R.[Rule]
-		, R.[Description]
-		, D.FdpVolumeDataItemId
-		, CAST(NULL AS INT) AS FdpTakeRateSummaryId
-		, CAST(NULL AS INT) AS FdpTakeRateFeatureMixId
-		, D.ModelId
-		, D.FdpModelId
-		, D.FeatureId
-		, D.FdpFeatureId
-		, D.Volume
-		, D.PercentageTakeRate
+		, CASE WHEN D.ModelId IS NOT NULL 
+			THEN 'O' + CAST(D.ModelId AS NVARCHAR(10))
+			ELSE 'F' + CAST(D.FdpModelId AS NVARCHAR(10))
+		  END AS ModelIdentifier
+		, CASE
+			WHEN D.FeatureId IS NOT NULL THEN 'O' + CAST(D.FeatureId AS NVARCHAR(10))
+			WHEN D.FeaturePackId IS NOT NULL THEN 'P' + CAST(D.FeaturePackId AS NVARCHAR(10))
+			ELSE 'F' + CAST(D.FdpFeatureId AS NVARCHAR(10))
+		  END AS FeatureIdentifier
 		, V.[Message]
 	FROM
 	Fdp_VolumeHeader			AS H
@@ -28,20 +25,12 @@
 	
 	SELECT 
 		  H.FdpVolumeHeaderId
-		, V.ValidationOn
 		, V.MarketId
-		, R.FdpValidationRuleId
-		, R.[Rule]
-		, R.[Description]
-		, CAST(NULL AS INT) AS FdpVolumeDataItemId
-		, S.FdpTakeRateSummaryId
-		, CAST(NULL AS INT) AS FdpTakeRateFeatureMixId
-		, S.ModelId
-		, S.FdpModelId
-		, CAST(NULL AS INT) AS FeatureId
-		, CAST(NULL AS INT) AS FdpFeatureId
-		, S.Volume
-		, S.PercentageTakeRate
+		, CASE WHEN S.ModelId IS NOT NULL 
+			THEN 'O' + CAST(S.ModelId AS NVARCHAR(10))
+			ELSE 'F' + CAST(S.FdpModelId AS NVARCHAR(10))
+		  END AS ModelIdentifier
+		, CAST(NULL AS NVARCHAR(10)) AS FeatureIdentifier
 		, V.[Message]
 	FROM
 	Fdp_VolumeHeader			AS H
@@ -54,20 +43,13 @@
 	
 	SELECT 
 		  H.FdpVolumeHeaderId
-		, V.ValidationOn
 		, V.MarketId
-		, R.FdpValidationRuleId
-		, R.[Rule]
-		, R.[Description]
-		, CAST(NULL AS INT) AS FdpVolumeDataItemId
-		, CAST(NULL AS INT) AS FdpTakeRateSummaryId
-		, F.FdpTakeRateFeatureMixId
-		, CAST(NULL AS INT) AS ModelId
-		, CAST(NULL AS INT) AS FdpModelId
-		, F.FeatureId
-		, F.FdpFeatureId
-		, F.Volume
-		, F.PercentageTakeRate
+		, CAST(NULL AS NVARCHAR(10)) AS ModelIdentifier
+		, CASE
+			WHEN F.FeatureId IS NOT NULL THEN 'O' + CAST(F.FeatureId AS NVARCHAR(10))
+			WHEN F.FeaturePackId IS NOT NULL THEN 'P' + CAST(F.FeaturePackId AS NVARCHAR(10))
+			ELSE 'F' + CAST(F.FdpFeatureId AS NVARCHAR(10))
+		  END AS FeatureIdentifier
 		, V.[Message]
 	FROM
 	Fdp_VolumeHeader			AS H

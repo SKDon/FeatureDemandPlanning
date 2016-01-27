@@ -38,6 +38,8 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_FdpVolumeHeaderId]
     ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC)
@@ -64,7 +66,7 @@ CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_FeatureId]
 
 
 GO
-CREATE TRIGGER [dbo].[tr_Fdp_TakeRateDataItem_Audit] ON dbo.Fdp_VolumeDataItem FOR UPDATE
+CREATE TRIGGER [dbo].[tr_Fdp_TakeRateDataItem_Audit] ON [dbo].[Fdp_VolumeDataItem] FOR UPDATE
 AS
 	DECLARE @Type AS CHAR(1);
 	
@@ -74,16 +76,27 @@ AS
 	(
 		  AuditOn
 		, AuditBy
-		, FdpVolumeDataItemId
+		, FdpVolumeHeaderId
+		, MarketId
+		, ModelId
+		, FdpModelId
+		, FeatureId
+		, FdpFeatureId
+		, FeaturePackId
 		, Volume
 		, PercentageTakeRate
 	)
 	SELECT 
 		  ISNULL(ISNULL(D.UpdatedOn, D.CreatedOn), GETDATE())
 		, ISNULL(ISNULL(D.UpdatedBy, D.CreatedBy), SUSER_SNAME())
-		, D.FdpVolumeDataItemId
+		, D.FdpVolumeHeaderId
+		, D.MarketId
+		, D.ModelId
+		, D.FdpModelId
+		, D.FeatureId
+		, D.FdpFeatureId
+		, D.FeaturePackId
 		, D.Volume
 		, D.PercentageTakeRate
 		
 	FROM deleted	AS D
-	JOIN inserted	AS I ON D.FdpVolumeDataItemId = I.FdpVolumeDataItemId

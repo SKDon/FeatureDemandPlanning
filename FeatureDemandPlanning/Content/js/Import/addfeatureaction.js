@@ -18,6 +18,8 @@ model.AddFeatureAction = function (params) {
     privateStore[me.id].Parameters = params;
 
     me.action = function () {
+        $("#Modal_Notify").html("").hide();
+        $("#Modal_OK").html("Adding...Wait").attr("disabled", true);
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.displaySelectedFeatureGroup = function () {
@@ -97,6 +99,7 @@ model.AddFeatureAction = function (params) {
         me.registerEvents();
         me.registerSubscribers();
         me.filterSubGroups();
+        $("#Modal_OK").removeAttr("disabled").html("OK");
     };
     me.listAvailableFeatures = function () {
 

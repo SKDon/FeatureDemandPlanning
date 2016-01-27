@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION dbo.fn_Fdp_PercentageTakeRate_Get
+﻿CREATE FUNCTION [dbo].[fn_Fdp_PercentageTakeRate_Get]
 (
 	  @Volume INT
 	, @TotalVolume INT
@@ -17,7 +17,7 @@ BEGIN
 	IF ISNULL(@TotalVolume, 0) = 0
 		SET @PercentageTakeRate = 0;
 	ELSE
-		SET @PercentageTakeRate = @Volume / CAST(@TotalVolume AS DECIMAL)
+		SET @PercentageTakeRate = @Volume / CAST(@TotalVolume AS DECIMAL(10, 4))
 
 	IF @PercentageTakeRate > 1
 		SET @PercentageTakeRate = 1;

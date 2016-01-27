@@ -1,6 +1,8 @@
 ﻿
 
 
+
+
 CREATE VIEW [dbo].[Fdp_ChangesetDataItem_VW]
 AS
 	SELECT
@@ -14,6 +16,7 @@ AS
 	, D.FdpModelId
 	, D.FeatureId
 	, D.FdpFeatureId
+	, D.FeaturePackId
 	, D.TotalVolume
 	, D.PercentageTakeRate
 	, D.IsDeleted
@@ -28,7 +31,7 @@ AS
 	, C.IsSaved
 	, CAST(CASE
 		WHEN 
-		(D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL) 
+		(D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL OR D.FeaturePackId IS NOT NULL) 
 		AND
 		(D.ModelId IS NOT NULL OR D.FdpModelId IS NOT NULL)
 		THEN

@@ -221,7 +221,9 @@ namespace FeatureDemandPlanning.DataStore
         }
         public IEnumerable<FeatureGroup> ListFeatureGroups(ProgrammeFilter filter)
         {
-            return _featureDataStore.FeatureGroupGetMany();
+            var groups = _featureDataStore.FeatureGroupGetMany().ToList();
+            groups.Add(new FeatureGroup() { FeatureGroupName = "OPTION PACKS" });
+            return groups;
         }
         public EngineCodeMapping UpdateEngineCodeMapping(EngineCodeMapping mapping)
         {
@@ -286,6 +288,10 @@ namespace FeatureDemandPlanning.DataStore
         public Task<FdpDerivativeMapping> CopyFdpDerivativeMappingsToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> gateways)
         {
             throw new NotImplementedException();
+        }
+        public async Task<BmcMapping> GetMappedBmc(DerivativeFilter filter)
+        {
+            return await Task.FromResult(_derivativeDataStore.GetMappedBmc(filter));
         }
 
         // Features and mappings

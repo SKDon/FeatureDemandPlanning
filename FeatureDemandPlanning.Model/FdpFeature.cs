@@ -6,6 +6,7 @@ namespace FeatureDemandPlanning.Model
     public class FdpFeature : Feature
     {
         public int? FeatureId { get; set; }
+        public int? FeaturePackId { get; set; }
         public int? ProgrammeId { get; set; }
         public Programme Programme { get; set; }
         public string Gateway { get; set; }

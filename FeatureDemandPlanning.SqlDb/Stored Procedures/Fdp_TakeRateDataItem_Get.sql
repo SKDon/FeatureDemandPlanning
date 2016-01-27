@@ -7,6 +7,7 @@
 	, @FdpModelId			INT = NULL
 	, @FeatureId			INT = NULL
 	, @FdpFeatureId			INT = NULL
+	, @FeaturePackId		INT = NULL
 AS
 	SET NOCOUNT ON;
 	
@@ -31,7 +32,9 @@ AS
 	AND
 	(@FeatureId IS NULL OR D.FeatureId = @FeatureId)
 	AND
-	(@FdpFeatureId IS NULL OR D.FdpFeatureId = @FdpFeatureId);
+	(@FdpFeatureId IS NULL OR D.FdpFeatureId = @FdpFeatureId)
+	AND
+	(@FeaturePackId IS NULL OR D.FeaturePackId = @FeaturePackId)
 	
 	SELECT
 		  D.CreatedOn
@@ -93,7 +96,19 @@ AS
 		FROM
 		Fdp_TakeRateDataItemAudit AS A
 		WHERE
-		A.FdpVolumeDataItemId = @FdpVolumeDataItemId
+		A.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		(@MarketId IS NULL OR A.MarketId = @MarketId)
+		AND
+		(@ModelId IS NULL OR A.ModelId = @ModelId)
+		AND
+		(@FdpModelId IS NULL OR A.FdpModelId = @FdpModelId)
+		AND
+		(@FeatureId IS NULL OR A.FeatureId = @FeatureId)
+		AND
+		(@FdpFeatureId IS NULL OR A.FdpFeatureId = @FdpFeatureId)
+		AND
+		(@FeaturePackId IS NULL OR A.FeaturePackId = @FeaturePackId)
 		
 		UNION
 		
@@ -107,7 +122,19 @@ AS
 		Fdp_ChangesetDataItem AS D
 		JOIN Fdp_Changeset AS C ON D.FdpChangesetId = C.FdpChangesetId
 		WHERE
-		D.FdpVolumeDataItemId = @FdpVolumeDataItemId
+		C.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		(@MarketId IS NULL OR D.MarketId = @MarketId)
+		AND
+		(@ModelId IS NULL OR D.ModelId = @ModelId)
+		AND
+		(@FdpModelId IS NULL OR D.FdpModelId = @FdpModelId)
+		AND
+		(@FeatureId IS NULL OR D.FeatureId = @FeatureId)
+		AND
+		(@FdpFeatureId IS NULL OR D.FdpFeatureId = @FdpFeatureId)
+		AND
+		(@FeaturePackId IS NULL OR D.FeaturePackId = @FeaturePackId)
 		AND 
 		D.IsDeleted = 0
 		AND
@@ -124,20 +151,19 @@ AS
 		FROM
 		Fdp_VolumeDataItem AS D
 		WHERE
-		D.FdpVolumeDataItemId = @FdpVolumeDataItemId
-
-		UNION
-		
-		SELECT
-			  D.UpdatedOn AS AuditOn
-			, D.UpdatedBy AS AuditBy
-			, D.Volume
-			, D.PercentageTakeRate
-			, CAST(0 AS BIT) AS IsUncommittedChange
-		FROM
-		Fdp_VolumeDataItem AS D
-		WHERE
-		D.FdpVolumeDataItemId = @FdpVolumeDataItemId
+		D.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		(@MarketId IS NULL OR D.MarketId = @MarketId)
+		AND
+		(@ModelId IS NULL OR D.ModelId = @ModelId)
+		AND
+		(@FdpModelId IS NULL OR D.FdpModelId = @FdpModelId)
+		AND
+		(@FeatureId IS NULL OR D.FeatureId = @FeatureId)
+		AND
+		(@FdpFeatureId IS NULL OR D.FdpFeatureId = @FdpFeatureId)
+		AND
+		(@FeaturePackId IS NULL OR D.FeaturePackId = @FeaturePackId)
 	)
 	AS HISTORY
 	ORDER BY

@@ -7,6 +7,7 @@
     [FdpModelId]                   INT            NULL,
     [FeatureId]                    INT            NULL,
     [FdpFeatureId]                 INT            NULL,
+    [FeaturePackId]                INT            NULL,
     [TotalVolume]                  INT            NULL,
     [PercentageTakeRate]           DECIMAL (5, 4) CONSTRAINT [DF_FdpChangesetDataItem_PercentageTakeRate] DEFAULT ((0)) NULL,
     [IsDeleted]                    BIT            CONSTRAINT [DF_Fdp_ChangesetDataItem_IsDeleted] DEFAULT ((0)) NOT NULL,
@@ -27,6 +28,7 @@
     CONSTRAINT [FK_Fdp_ChangesetDataItem_OXO_Feature_Ext] FOREIGN KEY ([FeatureId]) REFERENCES [dbo].[OXO_Feature_Ext] ([Id]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_OXO_Master_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[OXO_Master_Market] ([Id]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_OXO_Programme_Model] FOREIGN KEY ([ModelId]) REFERENCES [dbo].[OXO_Programme_Model] ([Id]),
+    CONSTRAINT [FK_Fdp_ChangesetDataItem_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id]),
     CONSTRAINT [FK_FdpChangesetDataItem_Fdp_Changeset] FOREIGN KEY ([FdpChangesetId]) REFERENCES [dbo].[Fdp_Changeset] ([FdpChangesetId])
 );
 
@@ -35,9 +37,13 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_ChangesetDataItem_Cover]
-    ON [dbo].[Fdp_ChangesetDataItem]([FdpChangesetId] ASC, [MarketId] ASC, [ModelId] ASC, [FeatureId] ASC, [FdpModelId] ASC, [FdpFeatureId] ASC, [FdpVolumeDataItemId] ASC, [FdpTakeRateSummaryId] ASC, [FdpTakeRateFeatureMixId] ASC);
+    ON [dbo].[Fdp_ChangesetDataItem]([FdpChangesetId] ASC, [MarketId] ASC, [ModelId] ASC, [FeatureId] ASC, [FdpModelId] ASC, [FdpFeatureId] ASC, [FdpVolumeDataItemId] ASC, [FdpTakeRateSummaryId] ASC, [FdpTakeRateFeatureMixId] ASC, [FeaturePackId] ASC);
+
+
 
 
 

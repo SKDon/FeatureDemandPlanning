@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using System.Reflection;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
@@ -10,6 +11,7 @@ using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Extensions;
+using log4net;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -23,9 +25,9 @@ namespace FeatureDemandPlanning.DataStore
 
         public IEnumerable<FdpFeature> FeatureGetManyByDocumentId(FeatureFilter filter)
         {
-            IEnumerable<FdpFeature> retVal = Enumerable.Empty<FdpFeature>();
+            var retVal = Enumerable.Empty<FdpFeature>();
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -376,6 +378,7 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
+      
         public FdpFeatureMapping FeatureMappingDelete(FdpFeatureMapping featureMapping)
         {
             FdpFeatureMapping retVal = new EmptyFdpFeatureMapping();
@@ -435,7 +438,8 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@ImportFeatureCode", featureMapping.ImportFeatureCode, dbType: DbType.String);
                     para.Add("@ProgrammeId", featureMapping.ProgrammeId, dbType: DbType.Int32);
                     para.Add("@Gateway", featureMapping.Gateway, dbType: DbType.String);
-                    para.Add("@FeatureId", featureMapping.FdpFeatureId, dbType: DbType.Int32);
+                    para.Add("@FeatureId", featureMapping.FeatureId, dbType: DbType.Int32);
+                    para.Add("@FeaturePackId", featureMapping.FeaturePackId, DbType.Int32);
 
                     var results = conn.Query<FdpFeatureMapping>("Fdp_FeatureMapping_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -983,5 +987,7 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
+
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

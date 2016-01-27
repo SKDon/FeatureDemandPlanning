@@ -99,6 +99,7 @@ model.UploadAction = function (params, model) {
     function sendData(uri, params) {
         $.ajax({
             "async": true,
+            "timeout": 1800000,
             "type": "POST",
             "url": uri,
             "data": params,

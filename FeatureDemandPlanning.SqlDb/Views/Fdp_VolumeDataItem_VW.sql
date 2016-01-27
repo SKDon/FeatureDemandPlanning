@@ -1,4 +1,5 @@
 ﻿
+
 CREATE VIEW [dbo].[Fdp_VolumeDataItem_VW]
 AS
 	SELECT
@@ -26,7 +27,7 @@ AS
 				WHEN
 				(D.ModelId IS NOT NULL OR D.FdpModelId IS NOT NULL)
 				AND
-				(D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL)
+				(D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL OR D.FeaturePackId IS NOT NULL)
 				THEN
 				1
 				ELSE

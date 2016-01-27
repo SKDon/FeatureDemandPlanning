@@ -19,12 +19,12 @@ USING (VALUES
 	, (N'DTSPath', 'C:\Program Files (x86)\Microsoft SQL Server\100\DTS\Binn\DTExec.exe', N'The file system path to the 32 bit version of DTExec.exe (required for Excel processing)', N'System.String')
 	, (N'FdpImportSSIS', N'C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsx', N'The file system path to the SSIS package used to import volume data into FDP', N'System.String')
 	, (N'FdpImportSSISConfig', N'C:\Source\SSIS\FeatureDemandPlanning.SSIS\FeatureDemandPlanning.SSIS\bin\FeatureDemandPlanning.ExcelImport.dtsConfig', N'The file system path to the SSIS config file used to import volume data into FDP','System.String')
-	, (N'FdpUploadFilePath', N'C:\Users\bweston2\Documents\FDPUpload', N'The location where uploaded files are placed', N'System.String')
+	, (N'FdpUploadFilePath', N'K:\Data\wwwroot\Upload\FDP', N'The location where uploaded files are placed', N'System.String')
 	, (N'NumberOfComparisonVehicles', N'5', N'The number of vehicles to use for comparison data', N'System.Int32')
 	, (N'NumberOfTopMarkets', N'28', N'The number of markets to use for comparison data', N'System.Int32')
 	, (N'ShowAllOXODocuments', N'0', N'Determines whether or not to show all OXO documents, regardless as to published state', N'System.Boolean')
 	, (N'SkipFirstXRowsInImportFile', N'3', N'Specifies the number of rows to skip for FDP import files. Eliminates header information', N'System.Int32')
-	, (N'ReprocessImportAfterHandleError', N'0', N'Whether to reprocess the entire dataset each time an error is handled in the worktray', N'System.Boolean')
+	, (N'ReprocessImportAfterHandleError', N'1', N'Whether to reprocess the entire dataset each time an error is handled in the worktray', N'System.Boolean')
 )
 AS SOURCE (ConfigurationKey, Value, [Description], DataType) ON TARGET.ConfigurationKey = SOURCE.ConfigurationKey
 WHEN MATCHED THEN
@@ -291,15 +291,16 @@ PRINT 'Fdp_ValidationRule'
 
 MERGE INTO Fdp_ValidationRule AS TARGET
 USING (VALUES
-	  (1, N'TakeRateOutOfRange', N'Take rate above 100% and below 0% is not allowed', 1)
-	, (2, N'VolumeForFeatureGreaterThanModel', N'Volume for a feature cannot exceed the volume for a model', 1)
-	, (3, N'VolumeForModelsGreaterThanMarket', N'Total volumes for models at a market level cannot exceed the total volume for the market',	1)
-	, (4, N'TotalTakeRateForModelsOutOfRange', N'% Take for each model at a market level cannot exceed 100%', 1)
-	, (5, N'StandardFeaturesShouldBy100Percent', N'Take rate for standard features should be 100%', 1)
-	, (6, N'TakeRateForPackFeaturesShouldBeEquivalent', N'Take rate for all features as part of packs should be equivalent', 1)
-	, (7, N'TakeRateForEFGShouldEqual100Percent', N'EFG (Exclusive feature group). All features in a group must add up to 100% (or less if information is incomplete)', 1)
+	  (1, N'TakeRateOutOfRange', N'Take rate above 100% and below 0% is not allowed', 1, 1, N'dbo.Fdp_Validation_TakeRateOutOfRange')
+	, (2, N'VolumeForFeatureGreaterThanModel', N'Volume for a feature cannot exceed the volume for a model', 1, 2, N'dbo.Fdp_Validation_VolumeForFeatureGreaterThanModel')
+	, (3, N'VolumeForModelsGreaterThanMarket', N'Total volumes for models at a market level cannot exceed the total volume for the market',	1, 3, N'dbo.Fdp_Validation_VolumeForModelGreaterThanMarket')
+	, (4, N'TotalTakeRateForModelsOutOfRange', N'% Take for each model at a market level cannot exceed 100%', 1, 4, N'Fdp_Validation_TotalTakeRateForModelsOutOfRange')
+	, (5, N'StandardFeaturesShouldBy100Percent', N'Take rate for standard features should be 100%', 1, 6, N'dbo.Fdp_Validation_StandardFeatures100Percent')
+	, (6, N'TakeRateForPackFeaturesShouldBeEquivalent', N'Take rate for all features as part of packs should be equivalent', 1, 8, N'dbo.Fdp_Validation_TakeRateForPackFeaturesShouldBeEquivalent')
+	, (7, N'TakeRateForEFGShouldEqual100Percent', N'EFG (Exclusive feature group). All features in a group must add up to 100% (or less if information is incomplete)', 1, 5, N'dbo.Fdp_Validation_TakeRateForEFGShouldEqual100Percent')
+	, (8, N'NonApplicableFeaturesShouldBe0Percent', N'Take rate for non-applicable features should be 0%', 1, 7, N'dbo.Fdp_Validation_NonApplicableFeatures0Percent')
 )
-AS SOURCE (FdpValidationRuleId, [Rule], [Description], IsActive) ON TARGET.FdpValidationRuleId = SOURCE.FdpValidationRuleId
+AS SOURCE (FdpValidationRuleId, [Rule], [Description], IsActive, ValidationOrder, StoredProcedureName) ON TARGET.FdpValidationRuleId = SOURCE.FdpValidationRuleId
 WHEN MATCHED THEN
 
 	-- Update existing rows
@@ -307,12 +308,14 @@ WHEN MATCHED THEN
 		  [Rule]			= SOURCE.[Rule]
 		, [Description]		= SOURCE.[Description]
 		, IsActive			= SOURCE.IsActive
+		, ValidationOrder	= SOURCE.ValidationOrder
+		, StoredProcedureName = SOURCE.StoredProcedureName
 
 WHEN NOT MATCHED BY TARGET THEN
 
 	-- Insert new type rows
-	INSERT (FdpValidationRuleId, [Rule], [Description], IsActive)
-	VALUES (FdpValidationRuleId, [Rule], [Description], IsActive)
+	INSERT (FdpValidationRuleId, [Rule], [Description], IsActive, ValidationOrder, StoredProcedureName)
+	VALUES (FdpValidationRuleId, [Rule], [Description], IsActive, ValidationOrder, StoredProcedureName)
 
 WHEN NOT MATCHED BY SOURCE THEN
 

@@ -19,6 +19,11 @@ namespace FeatureDemandPlanning.Model
         public IEnumerable<ModelTakeRateSummary> TakeRateSummaryByModel { get; set; }
         public IEnumerable<TakeRateDataItemNote> NoteAvailability { get; set; }
 
+        public bool HasData
+        {
+            get { return RawData != null && RawData.Any(); }
+        }
+
         public TakeRateData()
         {
             RawData = Enumerable.Empty<DataRow>();

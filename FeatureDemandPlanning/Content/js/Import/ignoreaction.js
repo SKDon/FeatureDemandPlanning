@@ -14,6 +14,8 @@ model.IgnoreAction = function (params) {
     privateStore[me.id].Parameters = params;
 
     me.action = function () {
+        $("#Modal_Notify").html("").hide();
+        $("#Modal_OK").html("Updating...Wait").attr("disabled", true);
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.getActionParameters = function () {
@@ -34,6 +36,7 @@ model.IgnoreAction = function (params) {
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
+        $("#Modal_OK").removeAttr("disabled").html("OK");
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
         $("#Modal_Notify")

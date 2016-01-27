@@ -14,7 +14,7 @@
     CONSTRAINT [PK_FdpModel] PRIMARY KEY CLUSTERED ([FdpModelId] ASC),
     CONSTRAINT [FK_FdpModel_Fdp_Derivative] FOREIGN KEY ([FdpDerivativeId]) REFERENCES [dbo].[Fdp_Derivative] ([FdpDerivativeId]),
     CONSTRAINT [FK_FdpModel_Fdp_Trim] FOREIGN KEY ([FdpTrimId]) REFERENCES [dbo].[Fdp_Trim] ([FdpTrimId]),
-    CONSTRAINT [FK_FdpModel_OXO_Programme_Trim] FOREIGN KEY ([TrimId]) REFERENCES [dbo].[OXO_Programme_Trim] ([Id])
+    --CONSTRAINT [FK_FdpModel_OXO_Programme_Trim] FOREIGN KEY ([TrimId]) REFERENCES [dbo].[OXO_Programme_Trim] ([Id])
 );
 
 

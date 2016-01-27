@@ -97,6 +97,7 @@
     <Compile Include="Attributes\LoggingFilterAttribute.cs" />
     <Compile Include="Attributes\HandleErrorWithJson.cs" />
     <Compile Include="Attributes\ValidateAjaxAttribute.cs" />
+    <Compile Include="BmcMapping.cs" />
     <Compile Include="CarLine.cs" />
     <Compile Include="ConfigurationSettings.cs" />
     <Compile Include="FdpChangeset.cs" />

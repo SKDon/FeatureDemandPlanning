@@ -10,6 +10,7 @@ namespace FeatureDemandPlanning.Model.Filters
         public string ModelYear { get; set; }
         public int? ProgrammeId { get; set; }
         public string Gateway { get; set; }
+        public string Bmc { get; set; }
 
         public int? EngineId { get; set; }
         public int? BodyId { get; set; }

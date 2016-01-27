@@ -375,5 +375,34 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
+
+        public BmcMapping GetMappedBmc(DerivativeFilter filter)
+        {
+            BmcMapping mapping = null;
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
+                    para.Add("@Gateway", filter.Gateway, DbType.String);
+                    para.Add("@ImportBMC", filter.Bmc, DbType.String);
+
+                    var results = conn.Query<BmcMapping>("Fdp_Derivative_GetMappedBMC", para, commandType: CommandType.StoredProcedure);
+                    var bmcMappings = results as IList<BmcMapping> ?? results.ToList();
+                    if (results != null && bmcMappings.Any())
+                    {
+                        mapping = bmcMappings.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("FeatureDataStore.FdpFeatureMappingCopy", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+            return mapping;
+        }
     }
 }

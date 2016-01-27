@@ -40,7 +40,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<FdpTrimMapping> AvailableTrim { get; set; }
         public IEnumerable<SpecialFeature> AvailableSpecialFeatures { get; set; }
         public IEnumerable<Market> AvailableMarkets { get; set; }
-        public IEnumerable<Feature> AvailableFeatures { get; set; }
+        public IEnumerable<FdpFeature> AvailableFeatures { get; set; }
         public IEnumerable<FeatureGroup> AvailableFeatureGroups { get; set; }
         public IEnumerable<Derivative> AvailableDerivatives { get; set; }
         public IEnumerable<ImportExceptionType> AvailableExceptionTypes { get; set; }
@@ -245,7 +245,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             var programmeFilter = new ProgrammeFilter(model.CurrentException.ProgrammeId) { DocumentId = model.CurrentException.DocumentId };
             var featureFilter = new FeatureFilter { ProgrammeId = model.CurrentException.ProgrammeId, DocumentId = model.CurrentException.DocumentId };
-
+            
             model.Programme = context.Vehicle.GetProgramme(programmeFilter);
             programmeFilter.VehicleId = model.Programme.VehicleId;
 
@@ -259,23 +259,29 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.AvailableFeatureGroups = context.Vehicle.ListFeatureGroups(programmeFilter);
             model.AvailableTrimLevels = context.Vehicle.ListTrimLevels(programmeFilter);
 
+            var derivativeFilter = new DerivativeFilter
+            {
+                CarLine = model.Programme.VehicleName,
+                ModelYear = model.Programme.ModelYear,
+                Gateway = model.Gateway,
+                ProgrammeId = model.CurrentException.ProgrammeId,
+            };
+
+            model.AvailableDerivatives = context.Vehicle.ListDerivatives(derivativeFilter);
+
+            derivativeFilter.Bmc = model.CurrentException.ImportDerivativeCode;
+            var mapping = await context.Vehicle.GetMappedBmc(derivativeFilter);
+            if (mapping == null) return model;
+
             var trimFilter = new TrimMappingFilter
             {
                 CarLine = model.Programme.VehicleName,
                 ModelYear = model.Programme.ModelYear,
                 Gateway = model.Gateway,
-                DerivativeCode = model.CurrentException.ImportDerivativeCode,
+                DerivativeCode = mapping.Bmc,
                 IncludeAllTrim = false
             };
             model.AvailableTrim = context.Vehicle.ListOxoTrim(trimFilter);
-
-            var derivativeFilter = new DerivativeFilter
-            {
-                CarLine = model.Programme.VehicleName,
-                ModelYear = model.Programme.ModelYear,
-                Gateway = model.Gateway
-            };
-            model.AvailableDerivatives = context.Vehicle.ListDerivatives(derivativeFilter);
 
             return model;
         }
@@ -330,7 +336,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             AvailableTrim = Enumerable.Empty<FdpTrimMapping>();
             AvailableSpecialFeatures  = Enumerable.Empty<SpecialFeature>();
             AvailableMarkets = Enumerable.Empty<Market>();
-            AvailableFeatures = Enumerable.Empty<Feature>();
+            AvailableFeatures = Enumerable.Empty<FdpFeature>();
             AvailableFeatureGroups = Enumerable.Empty<FeatureGroup>();
             AvailableDerivatives = Enumerable.Empty<Derivative>();
             AvailableExceptionTypes = Enumerable.Empty<ImportExceptionType>();

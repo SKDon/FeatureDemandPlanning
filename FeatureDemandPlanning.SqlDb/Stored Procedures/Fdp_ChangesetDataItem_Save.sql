@@ -5,6 +5,7 @@
 	, @FdpModelId			AS INT = NULL
 	, @FeatureId			AS INT = NULL
 	, @FdpFeatureId			AS INT = NULL
+	, @FeaturePackId		AS INT = NULL
 	, @TotalVolume			AS INT = NULL
 	, @PercentageTakeRate	AS DECIMAL(5, 4) = NULL
 AS
@@ -30,6 +31,8 @@ AS
 	(@FeatureId IS NULL OR D.FeatureId = @FeatureId)
 	AND
 	(@FdpFeatureId IS NULL OR D.FdpFeatureId = @FdpFeatureId)
+	AND
+	(@FeaturePackId IS NULL OR D.FeaturePackId = @FeaturePackId)
 	AND
 	D.IsDeleted = 0;
 	
@@ -104,6 +107,36 @@ AS
 									 AND D.MarketId			= @MarketId
 									 AND D.FdpModelId		= @FdpModelId
 									 AND D.FdpFeatureId		= @FdpFeatureId
+									 
+		UNION
+		
+		SELECT 
+			D.Volume
+		  , D.PercentageTakeRate
+		  , D.FdpVolumeDataItemId
+		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
+		FROM
+		Fdp_Changeset			AS C
+		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
+		JOIN Fdp_VolumeDataItem AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+									 AND D.MarketId			= @MarketId
+									 AND D.ModelId			= @ModelId
+									 AND D.FeaturePackId	= @FeaturePackId
+		
+		UNION
+		
+		SELECT 
+			D.Volume
+		  , D.PercentageTakeRate
+		  , D.FdpVolumeDataItemId
+		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
+		FROM
+		Fdp_Changeset			AS C
+		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
+		JOIN Fdp_VolumeDataItem AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+									 AND D.MarketId			= @MarketId
+									 AND D.FdpModelId		= @FdpModelId
+									 AND D.FeaturePackId	= @FeaturePackId
 
 		UNION
 
@@ -147,6 +180,7 @@ AS
 		, FdpModelId
 		, FeatureId
 		, FdpFeatureId
+		, FeaturePackId
 		, TotalVolume
 		, PercentageTakeRate
 		, IsVolumeUpdate
@@ -164,6 +198,7 @@ AS
 		, @FdpModelId
 		, @FeatureId
 		, @FdpFeatureId
+		, @FeaturePackId
 		, @TotalVolume
 		, @PercentageTakeRate
 		, CASE WHEN @TotalVolume IS NOT NULL THEN 1 ELSE 0 END

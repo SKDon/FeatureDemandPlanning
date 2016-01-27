@@ -4,21 +4,42 @@ AS
 	SET NOCOUNT ON;
 		
 	SELECT 
-		  FdpFeatureMappingId
-		, ImportFeatureCode
-		, ProgrammeId
-		, Gateway
-		, FeatureId
+		  MAP.FdpFeatureMappingId
+		, MAP.ImportFeatureCode
+		, MAP.ProgrammeId
+		, MAP.Gateway
+		, MAP.FeatureId
 		, F.Feat_Code AS FeatureCode
 		, ISNULL(B.Brand_Desc, F.[Description]) AS [Description]
-		, CreatedOn
-		, CreatedBy
-		, IsActive
-		, UpdatedOn
-		, UpdatedBy
+		, MAP.CreatedOn
+		, MAP.CreatedBy
+		, MAP.IsActive
+		, MAP.UpdatedOn
+		, MAP.UpdatedBy
 		
 	  FROM Fdp_FeatureMapping			AS MAP
 	  JOIN OXO_Feature_Ext				AS F	ON MAP.FeatureId	= F.Id
 	  LEFT JOIN OXO_Feature_Brand_Desc	AS B	ON F.Feat_Code		= B.Feat_Code
+	  WHERE 
+	  FdpFeatureMappingId = @FdpFeatureMappingId
+	  
+	UNION
+	  
+	SELECT 
+		  MAP.FdpFeatureMappingId
+		, MAP.ImportFeatureCode
+		, MAP.ProgrammeId
+		, MAP.Gateway
+		, MAP.FeatureId
+		, P.Feature_Code AS FeatureCode
+		, P.Pack_Name AS [Description]
+		, MAP.CreatedOn
+		, MAP.CreatedBy
+		, MAP.IsActive
+		, MAP.UpdatedOn
+		, MAP.UpdatedBy
+		
+	  FROM Fdp_FeatureMapping			AS MAP
+	  JOIN OXO_Programme_Pack			AS P	ON MAP.FeaturePackId	= P.Id
 	  WHERE 
 	  FdpFeatureMappingId = @FdpFeatureMappingId;

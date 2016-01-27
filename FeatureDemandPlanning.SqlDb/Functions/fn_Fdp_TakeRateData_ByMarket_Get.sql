@@ -9,7 +9,7 @@ RETURNS
 (
 	  FeatureId				INT NULL
 	, FdpFeatureId			INT NULL
-	, PackId				INT NULL
+	, FeaturePackId			INT NULL
 	, ModelId				INT NULL
 	, FdpModelId			INT NULL
 	, Volume				INT NULL
@@ -40,7 +40,7 @@ BEGIN
 	(
 		  FeatureId
 		, FdpFeatureId
-		, PackId
+		, FeaturePackId
 		, ModelId
 		, FdpModelId
 		, Volume
@@ -49,7 +49,7 @@ BEGIN
 	SELECT 
 		  D.FeatureId
 		, D.FdpFeatureId
-		, 0								AS PackId
+		, D.FeaturePackId
 		, D.ModelId
 		, CAST(NULL AS INT)				AS FdpModelId
 		, SUM(D.Volume)					AS Volume
@@ -64,16 +64,16 @@ BEGIN
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
 	GROUP BY
 	  D.ModelId
-	--, D.FdpModelId
 	, D.FeatureId
 	, D.FdpFeatureId
+	, D.FeaturePackId
 	
 	UNION
 	
 	SELECT 
 		  D.FeatureId
 		, D.FdpFeatureId
-		, 0						AS PackId
+		, D.FeaturePackId
 		, CAST(NULL AS INT) AS ModelId
 		, D.FdpModelId
 		, SUM(D.Volume)			AS Volume
@@ -87,10 +87,10 @@ BEGIN
 	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
 	GROUP BY
-	--  D.ModelId
 	  D.FdpModelId
 	, D.FeatureId
 	, D.FdpFeatureId
+	, D.FeaturePackId
 	
 	RETURN 
 END

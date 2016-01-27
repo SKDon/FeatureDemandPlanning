@@ -235,15 +235,15 @@ namespace FeatureDemandPlanning.Controllers
             var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value);
             var importView = await GetModelFromParameters(parameters);
             var feature = importView.AvailableFeatures
-                .Where(f => f.FeatureCode.Equals(parameters.FeatureCode, StringComparison.InvariantCultureIgnoreCase))
-                .First();
+                .First(f => f.FeatureCode.Equals(parameters.FeatureCode, StringComparison.InvariantCultureIgnoreCase));
 
             var featureMapping = new FdpFeatureMapping()
             {
                 ImportFeatureCode = parameters.ImportFeatureCode,
                 ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
                 Gateway = parameters.Gateway,
-                FeatureId = feature.Id
+                FeatureId = feature.FeatureId,
+                FeaturePackId = feature.FeaturePackId
             };
             importView.CurrentException = await DataContext.Import.MapFeature(filter, featureMapping);
             await DeactivateException(importView.CurrentException);

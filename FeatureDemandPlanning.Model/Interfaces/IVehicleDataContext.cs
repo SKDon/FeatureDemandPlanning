@@ -34,6 +34,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<FdpDerivative> DeleteFdpDerivative(FdpDerivative derivativeToDelete);
         Task<FdpDerivative> GetFdpDerivative(DerivativeFilter filter);
         Task<PagedResults<FdpDerivative>> ListFdpDerivatives(DerivativeFilter filter);
+        Task<BmcMapping> GetMappedBmc(DerivativeFilter filter);
 
         Task<FdpDerivativeMapping> DeleteFdpDerivativeMapping(FdpDerivativeMapping fdpDerivativeMapping);
         Task<FdpDerivativeMapping> GetFdpDerivativeMapping(DerivativeMappingFilter filter);

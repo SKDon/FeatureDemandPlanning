@@ -1,6 +1,11 @@
 ﻿
 
 
+
+
+
+
+
 CREATE VIEW [dbo].[Fdp_Import_VW] AS
 
 	WITH TakeRateFiles AS
@@ -101,7 +106,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 					ELSE 0
 				END AS BIT)									AS IsFeatureMissing
 		, CAST( CASE
-					WHEN CUR.FdpVolumeDataItemId IS NULL
+					WHEN CUR.FdpVolumeHeaderId IS NULL
 					THEN 0
 					ELSE 1
 				END AS BIT)									AS IsExistingData
@@ -114,6 +119,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 		
 	FROM Fdp_Import							AS IH
 	JOIN Fdp_ImportData						AS I		ON	IH.FdpImportId				= I.FdpImportId
+														AND I.[Count of Specific Order No] IS NOT NULL
 	JOIN Fdp_ImportQueue					AS Q		ON	IH.FdpImportQueueId			= Q.FdpImportQueueId
 	JOIN Fdp_ImportStatus					AS S		ON	Q.FdpImportStatusId			= S.FdpImportStatusId
 	JOIN OXO_Programme_VW					AS P		ON	IH.ProgrammeId				= P.Id
@@ -156,7 +162,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 														AND DMAP.EngineId				= M1.Engine_Id
 														AND DMAP.TransmissionId			= M1.Transmission_Id
 														AND TMAP.TrimId					= M1.Trim_Id
-														AND M1.Active					= 1
+														--AND M1.Active					= 1
 														
 	LEFT JOIN Fdp_Model_VW					AS M2		ON	IH.ProgrammeId				= M2.ProgrammeId
 														AND DMAP.BodyId					= M2.BodyId
@@ -181,7 +187,27 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 	-- Get extended details for the features
 	
 	LEFT JOIN TakeRateFiles					AS CUR1		ON	IH.DocumentId				= CUR1.DocumentId
-	LEFT JOIN Fdp_VolumeDataItem			AS CUR		ON	CUR1.FdpVolumeHeaderId		= CUR.FdpVolumeHeaderId
+	LEFT JOIN
+	(
+		SELECT 
+			  FdpVolumeHeaderId
+			, MarketId
+			, ModelId
+			, FdpModelId
+			, FeatureId
+			, FdpFeatureId
+			, FeaturePackId
+			, SUM(Volume) AS Volume
+		FROM Fdp_VolumeDataItem
+		GROUP BY
+		FdpVolumeHeaderId
+		, MarketId
+		, ModelId
+		, FdpModelId
+		, FeatureId
+		, FdpFeatureId
+		, FeaturePackId
+	)										AS CUR		ON	CUR1.FdpVolumeHeaderId		= CUR.FdpVolumeHeaderId
 														AND MMAP.Market_Id				= CUR.MarketId
 														AND 
 														(
@@ -194,6 +220,8 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 															FMAP.FeatureId				= CUR.FeatureId
 															OR
 															FMAP.FdpFeatureId			= CUR.FdpFeatureId
+															OR
+															(FMAP.FeatureId IS NULL AND CUR.FeatureId IS NULL AND FMAP.FeaturePackId = CUR.FeaturePackId)
 														)
 														AND CAST(I.[Count of Specific Order No] AS INT)
 																						= CUR.Volume

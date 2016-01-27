@@ -8,13 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found - Feature Demand Planning</title>
 
-    <link href="/FeatureDemandPlanning/Content/Bootstrap/css/bootstrap.css" rel="stylesheet"/>
-    <link href="/FeatureDemandPlanning/Content/bootstrap-slider.css" rel="stylesheet"/>
-    <link href="/FeatureDemandPlanning/Content/css/site.css" rel="stylesheet"/>
-    <link href="/FeatureDemandPlanning/Content/css/BrushedMetal.css" rel="stylesheet"/>
+    <link href="Content/css/bootstrap.css" rel="stylesheet"/>
+    <link href="Content/css/site.css" rel="stylesheet"/>
+    <link href="Content/css/BrushedMetal.css" rel="stylesheet"/>
 
-    <script src="/FeatureDemandPlanning/Content/Bootstrap/js/bootstrap.min.js"></script>
-    <script src="/FeatureDemandPlanning/Scripts/bootstrap-slider.js"></script>
+    <script src="Content/js/bootstrap.js"></script>
     
 </head>
 <body>

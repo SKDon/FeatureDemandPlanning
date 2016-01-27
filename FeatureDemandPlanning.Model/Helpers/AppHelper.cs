@@ -2,30 +2,24 @@
 using System.Linq;
 using System.Web.Script.Serialization;
 using System.Diagnostics;
+using System.Reflection;
 using System.Web.Mvc;
+using log4net;
 
 namespace FeatureDemandPlanning.Model.Helpers
 {
     public static class AppHelper
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
         public static void LogError(string methodName, string message, string userCDSID)
         {
-            try
-            {
-                var cs = "FeatureDemandPlanning";
-                var elog = new EventLog();
-                if (!EventLog.SourceExists(cs))
-                {
-                    EventLog.CreateEventSource(cs, cs);
-                }
-                elog.Source = cs;
-                elog.EnableRaisingEvents = true;
-                elog.WriteEntry(methodName + ':' + message);
-            }
-            catch
-            {
-                // ignored
-            }
+            Log.Error(string.Format("{0} - {1} - {2}", userCDSID, methodName, message));
+        }
+
+        public static void LogError(Exception ex)
+        {
+            Log.Error(ex);
         }
 
         public static string GetWindowsId(System.Security.Principal.IPrincipal user)

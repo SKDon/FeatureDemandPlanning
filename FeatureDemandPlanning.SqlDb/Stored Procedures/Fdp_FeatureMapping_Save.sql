@@ -2,7 +2,8 @@
 	  @ImportFeatureCode	NVARCHAR(20)
 	, @ProgrammeId			INT
 	, @Gateway				NVARCHAR(100)
-	, @FeatureId			INT
+	, @FeatureId			INT = NULL
+	, @FeaturePackId		INT = NULL
 	, @CDSId				NVARCHAR(16)
 AS
 BEGIN
@@ -21,7 +22,9 @@ BEGIN
 				  AND
 				  Gateway = @Gateway
 				  AND
-				  FeatureId = @FeatureId
+				  (@FeatureId IS NULL OR FeatureId = @FeatureId)
+				  AND
+				  (@FeaturePackId IS NULL OR FeaturePackId = @FeaturePackId)
 				  AND
 				  IsActive = 1)
 				  
@@ -31,6 +34,7 @@ BEGIN
 			, ProgrammeId
 			, Gateway
 			, FeatureId
+			, FeaturePackId
 			, CreatedBy
 		)
 		VALUES
@@ -39,6 +43,7 @@ BEGIN
 			, @ProgrammeId
 			, @Gateway
 			, @FeatureId
+			, @FeaturePackId
 			, @CDSId
 		);
 		

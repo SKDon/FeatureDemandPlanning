@@ -1,7 +1,8 @@
-﻿CREATE PROCEDURE dbo.Fdp_ProgrammeFeature_GetMany
+﻿CREATE PROCEDURE [dbo].[Fdp_ProgrammeFeature_GetMany]
 	  @DocumentId INT
 	, @FeatureId INT = NULL
 	, @FdpFeatureId INT = NULL
+	, @FeaturePackId INT = NULL
 AS
 
 	SELECT 
@@ -37,4 +38,6 @@ AS
 	AND
 	(@FeatureId IS NULL OR F.FeatureId = @FeatureId)
 	AND
-	(@FdpFeatureId IS NULL OR F.FdpFeatureId = @FdpFeatureId);
+	(@FdpFeatureId IS NULL OR F.FdpFeatureId = @FdpFeatureId)
+	AND
+	(@FeaturePackId IS NULL OR F.FeaturePackId = @FeaturePackId);

@@ -8,13 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Server Error - Feature Demand Planning</title>
 
-    <link href="/FeatureDemandPlanning/Content/Bootstrap/css/bootstrap.css" rel="stylesheet"/>
-    <link href="/FeatureDemandPlanning/Content/bootstrap-slider.css" rel="stylesheet"/>
-    <link href="/FeatureDemandPlanning/Content/css/site.css" rel="stylesheet"/>
-    <link href="/FeatureDemandPlanning/Content/css/BrushedMetal.css" rel="stylesheet"/>
+    <link href="Content/css/bootstrap.css" rel="stylesheet"/>
+    <link href="Content/css/site.css" rel="stylesheet"/>
+    <link href="Content/css/BrushedMetal.css" rel="stylesheet"/>
 
-    <script src="/FeatureDemandPlanning/Content/Bootstrap/js/bootstrap.min.js"></script>
-    <script src="/FeatureDemandPlanning/Scripts/bootstrap-slider.js"></script>
+    <script src="Content/js/bootstrap.js"></script>
     
 </head>
 <body>
@@ -28,7 +26,7 @@
                     <span class="icon-bar"></span>
                 </button>
 
-                <a href="/FeatureDemandPlanning/">
+                <a href="Home/">
                     <div class="navbar-brand metal linear">
                     <div style="margin-top:-3px">F.D.P</div>
                     <p>Powered by RADS</p>
@@ -41,14 +39,14 @@
                 
                 <ul class="nav navbar-nav pull-right">
                     <li>
-                        <a href="/FeatureDemandPlanning/Admin">
+                        <a href="Admin/">
                             <span class="glyphicon glyphicon-cog"></span> Settings
                         </a>
                     </li>
                 </ul>
                 <div class="nav navbar-nav navbar-right hidden-sm" style="position:relative;width:230px;height:60px;">
-                    <img class="navbar-right" src="/FeatureDemandPlanning/Content/Images/Brand/jag_logo_transparent.png" style="position:absolute;left:0;bottom:0;" />
-                    <img class="navbar-right" src="/FeatureDemandPlanning/Content/Images/Brand/lr_logo_v2_transparent.png" style="position:absolute;left:108px;bottom:0;" />
+                    <img class="navbar-right" src="Content/Images/Brand/jag_logo_transparent.png" style="position:absolute;left:0;bottom:0;" />
+                    <img class="navbar-right" src="Content/Images/Brand/lr_logo_v2_transparent.png" style="position:absolute;left:108px;bottom:0;" />
                 </div>
             </div>
         </div>
@@ -62,14 +60,14 @@
         <div id="backgroundCarousel" class="carousel slide">
             <div class="carousel-inner">
                 <div class="active item">
-                    <div class="fill" style="background-image:url(/FeatureDemandPlanning/Content/Images/Carousel/2.png);">
+                    <div class="fill" style="background-image:url(Content/Images/Carousel/2.png);">
                         <div class="container">
 
                         </div>
                     </div>
                 </div>
                 <div class="item">
-                    <div class="fill" style="background-image:url(/FeatureDemandPlanning/Content/Images/Carousel/3.png);">
+                    <div class="fill" style="background-image:url(Content/Images/Carousel/3.png);">
                         <div class="container">
 
                         </div>
@@ -86,7 +84,7 @@
         <div class="col-md-6 col-lg-4 col-md-offset-3 col-lg-offset-4 inverse home-button text-center">
             
             <p style="height:80px">You are not authorised to view this page. Go back with your browser or click the "Take me Home" button to continue.</p>
-            <p><a class="btn btn-default col-md-10 col-md-offset-1" href="/FeatureDemandPlanning" role="button">Take me Home</a></p>
+            <p><a class="btn btn-default col-md-10 col-md-offset-1" href="Home/" role="button">Take me Home</a></p>
         </div>
     </div>
     

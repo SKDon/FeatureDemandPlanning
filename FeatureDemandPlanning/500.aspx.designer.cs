@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FeatureDemandPlanning.Content.Errors
+namespace FeatureDemandPlanning
 {
 
 

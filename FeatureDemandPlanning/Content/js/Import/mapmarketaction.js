@@ -17,6 +17,8 @@ model.MapMarketAction = function (params) {
     privateStore[me.id].IsNoGroup = false;
 
     me.action = function () {
+        $("#Modal_Notify").html("").hide();
+        $("#Modal_OK").html("Mapping...Wait").attr("disabled", true);
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.displaySelectedMarket = function () {
@@ -105,6 +107,7 @@ model.MapMarketAction = function (params) {
         me.registerEvents();
         me.registerSubscribers();
         me.filterMarkets();
+        $("#Modal_OK").removeAttr("disabled").html("OK");
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
         $("#Modal_Notify")

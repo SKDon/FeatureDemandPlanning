@@ -39,7 +39,17 @@
                         <span class="caret"></span>
                     </button>
                     <ul id="@(Model.IdentifierPrefix)_FeatureList" class="dropdown-menu">
-                        @foreach (var featureGroup in Model.FeatureGroups.Where(g => !g.Equals("UNASSIGNED")))
+                        <li class="dropdown-submenu">
+                            <a href="#">OPTION PACKS</a>
+                            <ul class="dropdown-menu">
+                                @foreach (var feature in Model.Features.Where(f => f.FeatureGroup.Equals("OPTION PACKS")))
+                                {
+                                    <li><a class="feature-item" href="#" data-target="@feature.FeatureCode" data-content="@FeatureDescription(feature)">@FeatureDescription(feature)</a></li>
+                                }
+                            </ul>
+                        </li>
+                        <li class="divider"></li>
+                        @foreach (var featureGroup in Model.FeatureGroups.Where(g => !g.Equals("UNASSIGNED") && !g.Equals("OPTION PACKS")))
                         {
                             <li class="dropdown dropdown-submenu">
                                 <a href="#">@featureGroup</a>

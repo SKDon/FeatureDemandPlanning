@@ -28,54 +28,57 @@
         @{
             var allMarketsLink = string.Format("All Markets ({0})", totalDerivatives);
         }
-        <li class="dropdown-nosubmenu">@Html.ActionLink(allMarketsLink, "Index", new {takeRateId = Model.Document.TakeRateId, resultsMode = Model.Document.Mode})</li>
-        <li class="dropdown-header">Market Groups</li>
-        @foreach (var marketGroup in Model.Document.Vehicle.AvailableMarketGroups)
+        <li class="dropdown-nosubmenu">@Html.ActionLink(allMarketsLink, "Index", new { takeRateId = Model.Document.TakeRateId, resultsMode = Model.Document.Mode })</li>
+        @if (Model.Document.TakeRateData.HasData)
         {
-            var selectedGroup = string.Empty;
-            if (!(Model.Document.MarketGroup is EmptyMarketGroup) && marketGroup.Id == Model.Document.MarketGroup.Id)
+            <li class="dropdown-header">Market Groups</li>
+            foreach (var marketGroup in Model.Document.Vehicle.AvailableMarketGroups)
             {
-                selectedGroup = "selected";
-            }
-            if (marketGroup.VariantCount > 0)
-            {
-                <li class="dropdown-submenu @selectedGroup">
-                    @RenderUrlForMarketGroup(marketGroup)
-                    <ul class="dropdown-menu">
-                        @{
-                var markets = marketGroup.Markets.OrderBy(p => p.SubRegionOrder);
-                var prevSubRegion = string.Empty;
-                        }
-                        @foreach (var market in markets)
-                        {
-                            var selectedMarket = string.Empty;
-                            if (!(Model.Document.Market is EmptyMarket) && market.Id == Model.Document.Market.Id)
-                            {
-                                selectedMarket = "selected";
+                var selectedGroup = string.Empty;
+                if (!(Model.Document.MarketGroup is EmptyMarketGroup) && marketGroup.Id == Model.Document.MarketGroup.Id)
+                {
+                    selectedGroup = "selected";
+                }
+                if (marketGroup.VariantCount > 0)
+                {
+                    <li class="dropdown-submenu @selectedGroup">
+                        @RenderUrlForMarketGroup(marketGroup)
+                        <ul class="dropdown-menu">
+                            @{
+                    var markets = marketGroup.Markets.OrderBy(p => p.SubRegionOrder);
+                    var prevSubRegion = string.Empty;
                             }
-                            if (prevSubRegion != market.SubRegion)
+                            @foreach (var market in markets)
                             {
-                                prevSubRegion = market.SubRegion;
-                                <li class="dropdown-header">@market.SubRegion</li>
+                                var selectedMarket = string.Empty;
+                                if (!(Model.Document.Market is EmptyMarket) && market.Id == Model.Document.Market.Id)
+                                {
+                                    selectedMarket = "selected";
+                                }
+                                if (prevSubRegion != market.SubRegion)
+                                {
+                                    prevSubRegion = market.SubRegion;
+                                    <li class="dropdown-header">@market.SubRegion</li>
+                                }
+                                if (market.VariantCount > 0)
+                                {
+                                    <li class="@selectedMarket">@RenderUrlForMarket(market)</li>
+                                }
+                                else
+                                {
+                                    <li><span>@market.Name</span></li>
+                                }
                             }
-                            if (market.VariantCount > 0)
-                            {
-                                <li class="@selectedMarket">@RenderUrlForMarket(market)</li>
-                            }
-                            else
-                            {
-                                <li><span>@market.Name</span></li>
-                            }
-                        }
 
-                    </ul>
-                </li>
-            }
-            else
-            {
-                <li>
-                    <span>@marketGroup.GroupName</span>
-                </li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <span>@marketGroup.GroupName</span>
+                    </li>
+                }
             }
         }
     </ul>

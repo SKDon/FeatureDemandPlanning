@@ -17,6 +17,8 @@ model.MapFeatureAction = function (params) {
     privateStore[me.id].Parameters = params;
 
     me.action = function () {
+        $("#Modal_Notify").html("").hide();
+        $("#Modal_OK").html("Mapping...Wait").attr("disabled", true);
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.displaySelectedFeature = function () {
@@ -55,6 +57,7 @@ model.MapFeatureAction = function (params) {
         me.listAvailableFeatures();
         me.registerEvents();
         me.registerSubscribers();
+        $("#Modal_OK").removeAttr("disabled").html("OK");
     };
     me.listAvailableFeatures = function () {
 

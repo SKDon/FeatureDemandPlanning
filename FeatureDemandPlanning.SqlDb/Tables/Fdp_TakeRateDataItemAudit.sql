@@ -2,17 +2,23 @@
     [FdpVolumeDataItemAuditId] INT            IDENTITY (1, 1) NOT NULL,
     [AuditOn]                  DATETIME       NOT NULL,
     [AuditBy]                  NVARCHAR (50)  CONSTRAINT [DF_Fdp_TakeRateDataItemAudit_AuditBy] DEFAULT (suser_sname()) NOT NULL,
-    [FdpVolumeDataItemId]      INT            NOT NULL,
+    [FdpVolumeHeaderId]		   INT			  NOT NULL,
+	[MarketId]				   INT			  NOT NULL,
+	[ModelId]                  INT            NULL,
+    [FdpModelId]               INT            NULL,
+    [FeatureId]                INT            NULL,
+    [FdpFeatureId]             INT            NULL,
+    [FeaturePackId]            INT            NULL,
     [Volume]                   INT            NOT NULL,
     [PercentageTakeRate]       DECIMAL (5, 4) NOT NULL,
-    CONSTRAINT [PK_Fdp_VolumeDataItemAudit] PRIMARY KEY CLUSTERED ([FdpVolumeDataItemAuditId] ASC),
-    CONSTRAINT [FK_Fdp_VolumeDataItemAudit_Fdp_VolumeDataItem] FOREIGN KEY ([FdpVolumeDataItemId]) REFERENCES [dbo].[Fdp_VolumeDataItem] ([FdpVolumeDataItemId])
+    CONSTRAINT [PK_Fdp_VolumeDataItemAudit] PRIMARY KEY CLUSTERED ([FdpVolumeDataItemAuditId] ASC)
 );
 
 
 
 
+
+
 GO
-CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_VolumeDataItemAudit]
-    ON [dbo].[Fdp_TakeRateDataItemAudit]([FdpVolumeDataItemId] ASC);
+
 

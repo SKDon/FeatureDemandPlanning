@@ -9,7 +9,7 @@ RETURNS
 (
 	  FeatureId				INT NULL
 	, FdpFeatureId			INT NULL
-	, PackId				INT NULL
+	, FeaturePackId			INT NULL
 	, ModelId				INT NULL
 	, FdpModelId			INT NULL
 	, Volume				INT NULL
@@ -40,7 +40,7 @@ BEGIN
 	(
 		  FeatureId
 		, FdpFeatureId
-		, PackId
+		, FeaturePackId
 		, ModelId
 		, FdpModelId
 		, Volume
@@ -49,7 +49,7 @@ BEGIN
 	SELECT 
 		  D.FeatureId
 		, D.FdpFeatureId
-		, 0						AS PackId
+		, D.FeaturePackId
 		, D.ModelId
 		, NULL
 		, SUM(D.Volume)			AS Volume
@@ -70,13 +70,14 @@ BEGIN
 	  D.ModelId
 	, D.FeatureId
 	, D.FdpFeatureId
+	, D.FeaturePackId
 	
 	UNION
 	
 	SELECT 
 		  D.FeatureId
 		, D.FdpFeatureId
-		, 0						AS PackId
+		, D.FeaturePackId
 		, NULL
 		, D.FdpModelId
 		, SUM(D.Volume)			AS Volume
@@ -97,6 +98,7 @@ BEGIN
 	  D.FdpModelId
 	, D.FeatureId
 	, D.FdpFeatureId
+	, D.FeaturePackId
 	
 	RETURN; 
 END

@@ -169,7 +169,10 @@
         var parsedFeatureApplicability = featureApplicability
             .Replace("*", string.Empty)
             .Replace("(", string.Empty)
-            .Replace(")", string.Empty);
+            .Replace(")", string.Empty)
+            .Replace("1-", string.Empty)
+            .Replace("2-", string.Empty)
+            .Replace("3-", string.Empty);
 
         switch (parsedFeatureApplicability)
         {

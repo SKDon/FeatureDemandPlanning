@@ -13,6 +13,7 @@ AS
 		, FeatureId						INT NULL
 		, FdpModelId					INT NULL
 		, FdpFeatureId					INT NULL
+		, FeaturePackId					INT	NULL
 		, TotalVolume					INT
 		, PercentageTakeRate			DECIMAL(5, 4)
 		, FdpVolumeDataItemId			INT 
@@ -24,6 +25,7 @@ AS
 		, MarketId						INT
 		, FeatureId						INT NULL
 		, FdpFeatureId					INT	NULL
+		, FeaturePackId					INT NULL
 		, TotalVolume					INT
 		, PercentageTakeRate			DECIMAL(5, 4)
 		, ParentFdpChangesetDataItemId	INT
@@ -37,8 +39,6 @@ AS
 	Fdp_ChangesetDataItem_VW
 	WHERE
 	FdpChangesetDataItemId = @FdpChangesetDataItemId;
-
-	SELECT @TotalVolumeByMarket AS TotalVolumeByMarket
 												
 	-- Mark previous feature mix changeset entries as deleted
 	
@@ -66,6 +66,18 @@ AS
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	
+	UPDATE D2 SET IsDeleted = 1
+	FROM
+	Fdp_ChangesetDataItem			AS D
+	JOIN Fdp_ChangesetDataItem_VW	AS D1	ON	D.FdpChangesetId			= D1.FdpChangesetId
+											AND D.MarketId					= D1.MarketId
+											AND D1.FdpChangesetDataItemId	<> D.FdpChangesetDataItemId
+											AND D1.IsFeatureMixUpdate		= 1
+											AND D.FeaturePackId				= D1.FeaturePackId
+	JOIN Fdp_ChangesetDataItem		AS D2	ON	D1.FdpChangesetDataItemId	= D2.FdpChangesetDataItemId
+	WHERE
+	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
+	
 	-- Add all volume data existing rows to our data table
 	
 	INSERT INTO @DataForFeature
@@ -76,6 +88,7 @@ AS
 		, FdpModelId
 		, FeatureId
 		, FdpFeatureId
+		, FeaturePackId
 		, TotalVolume
 		, PercentageTakeRate
 		, FdpVolumeDataItemId
@@ -88,6 +101,7 @@ AS
 		, D.FdpModelId
 		, D.FeatureId
 		, D.FdpFeatureId
+		, D.FeaturePackId
 		, D.Volume
 		, D.PercentageTakeRate
 		, D.FdpVolumeDataItemId
@@ -109,6 +123,7 @@ AS
 		, D.FdpModelId
 		, D.FeatureId
 		, D.FdpFeatureId
+		, D.FeaturePackId
 		, D.Volume
 		, D.PercentageTakeRate
 		, D.FdpVolumeDataItemId
@@ -120,8 +135,29 @@ AS
 										AND C.FdpFeatureId		= D.FdpFeatureId
 	WHERE
 	C.FdpChangesetDataItemId = @FdpChangesetDataItemId
+	
+	UNION
+	
+	SELECT
+		  C.FdpChangesetId
+		, D.MarketId
+		, D.ModelId
+		, D.FdpModelId
+		, D.FeatureId
+		, D.FdpFeatureId
+		, D.FeaturePackId
+		, D.Volume
+		, D.PercentageTakeRate
+		, D.FdpVolumeDataItemId
+		, C.FdpChangesetDataItemId
+	FROM
+	Fdp_ChangesetDataItem_VW	AS C
+	JOIN Fdp_VolumeDataItem		AS D	ON	C.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
+										AND C.MarketId			= D.MarketId
+										AND C.FeaturePackId		= D.FeaturePackId
+	WHERE
+	C.FdpChangesetDataItemId = @FdpChangesetDataItemId;
 
-	SELECT * FROM @DataForFeature
 	
 	-- Replace all volume data rows with any changes from the changeset
 	
@@ -160,8 +196,24 @@ AS
 											AND D.MarketId			= D1.MarketId
 											AND D.FdpModelId		= D1.FdpModelId
 											AND D.FdpFeatureId		= D1.FdpFeatureId
-
-	SELECT * FROM @DataForFeature
+											
+	UPDATE D SET
+		  D.TotalVolume = D1.TotalVolume
+		, D.PercentageTakeRate = D1.PercentageTakeRate
+	FROM @DataForFeature			AS D
+	JOIN Fdp_ChangesetDataItem_VW	AS D1	ON	D.FdpChangesetId	= D1.FdpChangesetId
+											AND D.MarketId			= D1.MarketId
+											AND D.ModelId			= D1.ModelId
+											AND D.FeaturePackId		= D1.FeaturePackId
+	
+	UPDATE D SET
+		  D.TotalVolume = D1.TotalVolume
+		, D.PercentageTakeRate = D1.PercentageTakeRate
+	FROM @DataForFeature			AS D
+	JOIN Fdp_ChangesetDataItem_VW	AS D1	ON	D.FdpChangesetId	= D1.FdpChangesetId
+											AND D.MarketId			= D1.MarketId
+											AND D.FdpModelId		= D1.FdpModelId
+											AND D.FeaturePackId		= D1.FeaturePackId
 
 	INSERT INTO @FeatureMix
 	(
@@ -169,6 +221,7 @@ AS
 		, MarketId
 		, FeatureId
 		, FdpFeatureId
+		, FeaturePackId
 		, TotalVolume
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId
@@ -179,6 +232,7 @@ AS
 		, D.MarketId
 		, D.FeatureId
 		, CAST(NULL AS INT) AS FdpFeatureId
+		, CAST(NULL AS INT) AS FeaturePackId
 		, SUM(D.TotalVolume) AS TotalVolume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
 		, MAX(D.ParentFdpChangesetDataItemId)
@@ -204,6 +258,7 @@ AS
 		, D.MarketId
 		, CAST(NULL AS INT) AS FeatureId
 		, D.FdpFeatureId
+		, CAST(NULL AS INT) AS FeaturePackId
 		, SUM(D.TotalVolume) AS TotalVolume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
 		, MAX(D.ParentFdpChangesetDataItemId)
@@ -221,8 +276,32 @@ AS
 	  D.FdpChangesetId
 	, D.MarketId
 	, D.FdpFeatureId
+	
+	UNION
 
-	SELECT * FROM @FeatureMix;
+	SELECT 
+		  D.FdpChangesetId
+		, D.MarketId
+		, CAST(NULL AS INT) AS FeatureId
+		, CAST(NULL AS INT) AS FdpFeatureId
+		, D.FeaturePackId
+		, SUM(D.TotalVolume) AS TotalVolume
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
+		, MAX(D.ParentFdpChangesetDataItemId)
+		, MAX(M.FdpTakeRateFeatureMixId)
+	FROM 
+	@DataForFeature						AS D
+	JOIN Fdp_Changeset					AS C	ON D.FdpChangesetId		= C.FdpChangesetId
+	JOIN Fdp_VolumeHeader				AS H	ON C.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
+	LEFT JOIN Fdp_TakeRateFeatureMix	AS M	ON H.FdpVolumeHeaderId	= M.FdpVolumeHeaderId
+												AND D.MarketId			= M.MarketId
+												AND D.FeaturePackId		= M.FeaturePackId
+	WHERE
+	D.FdpFeatureId IS NOT NULL
+	GROUP BY
+	  D.FdpChangesetId
+	, D.MarketId
+	, D.FeaturePackId;
 
 	INSERT INTO Fdp_ChangesetDataItem
 	(
@@ -230,6 +309,7 @@ AS
 		, MarketId
 		, FeatureId
 		, FdpFeatureId
+		, FeaturePackId
 		, TotalVolume
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId
@@ -240,6 +320,7 @@ AS
 		, MarketId
 		, FeatureId
 		, FdpFeatureId
+		, FeaturePackId
 		, TotalVolume
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId

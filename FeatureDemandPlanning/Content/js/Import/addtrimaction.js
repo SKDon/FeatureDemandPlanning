@@ -17,6 +17,8 @@ model.AddTrimAction = function (params) {
     privateStore[me.id].Parameters = params;
 
     me.action = function () {
+        $("#Modal_Notify").html("").hide();
+        $("#Modal_OK").html("Adding...Wait").attr("disabled", true);
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.displaySelectedTrimLevel = function () {
@@ -84,6 +86,7 @@ model.AddTrimAction = function (params) {
         me.registerEvents();
         me.registerSubscribers();
         me.setSelectedDerivativeCode($("#" + me.getIdentifierPrefix() + "_InitialSelectedDerivative").val());
+        $("#Modal_OK").removeAttr("disabled").html("OK");
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
         $("#Modal_Notify")

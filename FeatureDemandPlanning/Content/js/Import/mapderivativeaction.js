@@ -15,6 +15,8 @@ model.MapDerivativeAction = function (params) {
     privateStore[me.id].Parameters = params;
 
     me.action = function () {
+        $("#Modal_Notify").html("").hide();
+        $("#Modal_OK").html("Mapping...Wait").attr("disabled", true);
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.displaySelectedDerivative = function () {
@@ -52,6 +54,7 @@ model.MapDerivativeAction = function (params) {
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
+        $("#Modal_OK").removeAttr("disabled").html("OK");
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
         $("#Modal_Notify")

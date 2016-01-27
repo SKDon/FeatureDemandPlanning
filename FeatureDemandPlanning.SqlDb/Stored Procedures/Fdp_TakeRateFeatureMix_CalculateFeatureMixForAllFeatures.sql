@@ -12,6 +12,7 @@ AS
 		, MarketId						INT
 		, FeatureId						INT NULL
 		, FdpFeatureId					INT NULL
+		, FeaturePackId					INT NULL
 		, TotalVolume					INT
 		, PercentageTakeRate			DECIMAL(5, 4)
 		, FdpVolumeDataItemId			INT
@@ -22,6 +23,7 @@ AS
 		, MarketId						INT
 		, FeatureId						INT NULL
 		, FdpFeatureId					INT	NULL
+		, FeaturePackId					INT NULL
 		, TotalVolume					INT
 		, PercentageTakeRate			DECIMAL(5, 4)
 	)
@@ -49,6 +51,7 @@ AS
 		, MarketId
 		, FeatureId
 		, FdpFeatureId
+		, FeaturePackId
 		, TotalVolume
 		, PercentageTakeRate
 		, FdpVolumeDataItemId
@@ -58,6 +61,7 @@ AS
 		, D.MarketId
 		, D.FeatureId
 		, D.FdpFeatureId
+		, D.FeaturePackId
 		, D.Volume
 		, D.PercentageTakeRate
 		, D.FdpVolumeDataItemId
@@ -75,6 +79,7 @@ AS
 		, MarketId
 		, FeatureId
 		, FdpFeatureId
+		, FeaturePackId
 		, TotalVolume
 		, PercentageTakeRate
 	)
@@ -83,6 +88,7 @@ AS
 		, D.MarketId
 		, D.FeatureId
 		, CAST(NULL AS INT) AS FdpFeatureId
+		, CAST(NULL AS INT) AS FeaturePackId
 		, SUM(D.TotalVolume) AS TotalVolume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), 
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
@@ -103,6 +109,7 @@ AS
 		, D.MarketId
 		, CAST(NULL AS INT) AS FeatureId
 		, D.FdpFeatureId
+		, CAST(NULL AS INT) AS FeaturePackId
 		, SUM(D.TotalVolume) AS TotalVolume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), 
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
@@ -114,7 +121,30 @@ AS
 	GROUP BY
 	  D.FdpVolumeHeaderId
 	, D.MarketId
-	, D.FdpFeatureId;
+	, D.FdpFeatureId
+	
+	UNION
+	
+	SELECT 
+		  D.FdpVolumeHeaderId
+		, D.MarketId
+		, CAST(NULL AS INT) AS FeatureId
+		, CAST(NULL AS INT) AS FdpFeatureId
+		, D.FeaturePackId
+		, SUM(D.TotalVolume) AS TotalVolume
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), 
+		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
+	FROM 
+	@DataForFeature AS D
+	JOIN @Market	AS M ON D.MarketId = M.MarketId
+	WHERE
+	D.FeaturePackId IS NOT NULL
+	AND
+	D.FeatureId IS NULL
+	GROUP BY
+	  D.FdpVolumeHeaderId
+	, D.MarketId
+	, D.FeaturePackId
 
 	-- Update existing feature mix entries
 
@@ -145,6 +175,7 @@ AS
 		, MarketId
 		, FeatureId
 		, FdpFeatureId
+		, FeaturePackId
 		, Volume
 		, PercentageTakeRate
 	)
@@ -154,6 +185,7 @@ AS
 		, F.MarketId  
 		, F.FeatureId
 		, F.FdpFeatureId
+		, F.FeaturePackId
 		, F.TotalVolume
 		, F.PercentageTakeRate
 	FROM
@@ -174,6 +206,7 @@ AS
 		, F.MarketId  
 		, F.FeatureId
 		, F.FdpFeatureId
+		, F.FeaturePackId
 		, F.TotalVolume
 		, F.PercentageTakeRate
 	FROM 
@@ -184,4 +217,25 @@ AS
 	WHERE
 	CUR.FdpTakeRateFeatureMixId IS NULL
 	AND
-	F.FdpFeatureId IS NOT NULL;
+	F.FdpFeatureId IS NOT NULL
+	
+	UNION
+
+	SELECT
+		  @CDSId
+		, F.FdpVolumeHeaderId
+		, F.MarketId  
+		, F.FeatureId
+		, F.FdpFeatureId
+		, F.FeaturePackId
+		, F.TotalVolume
+		, F.PercentageTakeRate
+	FROM 
+	@FeatureMix AS F
+	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON F.FdpVolumeHeaderId  = CUR.FdpVolumeHeaderId
+											AND F.MarketId			= CUR.MarketId
+											AND F.FeaturePackId		= CUR.FeaturePackId
+	WHERE
+	CUR.FdpTakeRateFeatureMixId IS NULL
+	AND
+	F.FeaturePackId IS NOT NULL;

@@ -6,12 +6,18 @@
     [MarketId]                INT            NULL,
     [FeatureId]               INT            NULL,
     [FdpFeatureId]            INT            NULL,
+    [FeaturePackId]           INT            NULL,
     [Volume]                  INT            CONSTRAINT [DF_Fdp_TakeRateFeatureMix_Volume] DEFAULT ((0)) NOT NULL,
     [PercentageTakeRate]      DECIMAL (5, 4) CONSTRAINT [DF_Fdp_TakeRateFeatureMix_PercentageTakeRate] DEFAULT ((0)) NOT NULL,
     [UpdatedOn]               DATETIME       NULL,
     [UpdatedBy]               NVARCHAR (16)  NULL,
-    CONSTRAINT [PK_Fdp_TakeRateFeatureMix] PRIMARY KEY CLUSTERED ([FdpTakeRateFeatureMixId] ASC)
+    CONSTRAINT [PK_Fdp_TakeRateFeatureMix] PRIMARY KEY CLUSTERED ([FdpTakeRateFeatureMixId] ASC),
+    CONSTRAINT [FK_Fdp_TakeRateFeatureMix_Fdp_Feature] FOREIGN KEY ([FdpFeatureId]) REFERENCES [dbo].[Fdp_Feature] ([FdpFeatureId]),
+    CONSTRAINT [FK_Fdp_TakeRateFeatureMix_OXO_Feature_Ext] FOREIGN KEY ([FeatureId]) REFERENCES [dbo].[OXO_Feature_Ext] ([Id]),
+    CONSTRAINT [FK_Fdp_TakeRateFeatureMix_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id])
 );
+
+
 
 
 GO
@@ -39,3 +45,7 @@ AS
 		
 	FROM deleted	AS D
 	JOIN inserted	AS I ON D.FdpTakeRateFeatureMixId = I.FdpTakeRateFeatureMixId
+GO
+CREATE NONCLUSTERED INDEX [IX_Fdp_TakeRateFeatureMix]
+    ON [dbo].[Fdp_TakeRateFeatureMix]([FdpVolumeHeaderId] ASC, [MarketId] ASC, [FeatureId] ASC, [FdpFeatureId] ASC, [FeaturePackId] ASC);
+

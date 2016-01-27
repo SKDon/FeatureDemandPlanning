@@ -24,7 +24,7 @@ AS
 	CREATE TABLE #FeatureApplicability
 	(
 		  FeatureId			INT				NULL
-		, PackId			INT				NULL
+		, FeaturePackId		INT				NULL
 		, ModelId			INT				NULL
 		, OxoCode			NVARCHAR(100)	NULL
 		, StringIdentifier	NVARCHAR(10)	NULL
@@ -33,7 +33,7 @@ AS
 	(
 		  FeatureId		INT NULL
 		, FdpFeatureId	INT	NULL
-		, PackId		INT NULL
+		, FeaturePackId	INT NULL
 		, ModelId		INT NULL
 		, FdpModelId	INT NULL
 		, Volume		INT NULL
@@ -46,8 +46,9 @@ AS
 		, FeatureSubGroup		NVARCHAR(200)	NULL
 		, FeatureCode			NVARCHAR(20)	NULL
 		, BrandDescription		NVARCHAR(2000)	NULL
-		, FeatureId				INT
-		, FdpFeatureId			INT
+		, FeatureId				INT				NULL
+		, FdpFeatureId			INT				NULL
+		, FeaturePackId			INT				NULL
 		, FeatureComment		NVARCHAR(MAX)	NULL
 		, FeatureRuleText		NVARCHAR(MAX)
 		, SystemDescription		NVARCHAR(200)	NULL
@@ -131,7 +132,7 @@ AS
 			, FdpModelId
 			, FeatureId		
 			, FdpFeatureId
-			, PackId
+			, FeaturePackId
 			, Volume
 			, PercentageTakeRate
 		)
@@ -140,7 +141,7 @@ AS
 			, TR.FdpModelId
 			, TR.FeatureId
 			, TR.FdpFeatureId
-			, TR.PackId
+			, TR.FeaturePackId
 			, TR.Volume
 			, TR.PercentageTakeRate 
 		FROM 
@@ -149,7 +150,7 @@ AS
 		INSERT INTO #FeatureApplicability
 		(
 			  FeatureId		
-			, PackId		
+			, FeaturePackId		
 			, ModelId		
 			, OxoCode		
 			, StringIdentifier
@@ -158,9 +159,11 @@ AS
 			  Feature_Id
 			, NULL
 			, Model_Id
-			, OXO_Code
+			, MAX(OXO_Code)
 			, 'O' + CAST(Model_Id AS NVARCHAR(10))
 		FROM dbo.FN_OXO_Data_Get_FBM_MarketGroup(@DocumentId, @MarketGroupId, @OxoModelIds)
+		GROUP BY
+		Model_Id, Feature_Id
 	END
 	ELSE
 	BEGIN
@@ -170,7 +173,7 @@ AS
 			, FdpModelId
 			, FeatureId		
 			, FdpFeatureId
-			, PackId
+			, FeaturePackId
 			, Volume
 			, PercentageTakeRate
 		)
@@ -179,7 +182,7 @@ AS
 			, TR.FdpModelId
 			, TR.FeatureId
 			, TR.FdpFeatureId
-			, TR.PackId
+			, TR.FeaturePackId
 			, TR.Volume
 			, TR.PercentageTakeRate 
 		FROM 
@@ -188,7 +191,7 @@ AS
 		INSERT INTO #FeatureApplicability
 		(
 			  FeatureId		
-			, PackId		
+			, FeaturePackId		
 			, ModelId		
 			, OxoCode		
 			, StringIdentifier
@@ -197,15 +200,17 @@ AS
 			  Feature_Id
 			, NULL
 			, Model_Id
-			, OXO_Code
+			, MAX(OXO_Code)
 			, 'O' + CAST(Model_Id AS NVARCHAR(10))
 		FROM 
 		dbo.FN_OXO_Data_Get_FBM_Market(@DocumentId, @MarketGroupId, @ObjectId, @OxoModelIds)
+		GROUP BY
+		Feature_Id, Model_Id
 	END
 	
 	CREATE NONCLUSTERED INDEX Ix_TmpRawTakeRateData_Code ON #RawTakeRateData
 	(
-		FeatureId, Volume, PercentageTakeRate
+		FeatureId, FdpFeatureId, FeaturePackId, Volume, PercentageTakeRate
 	);
 	CREATE CLUSTERED INDEX Ix_TmpFeatureApplicability ON #FeatureApplicability
 	(
@@ -218,6 +223,7 @@ AS
 			  FEA.DisplayOrder
 			, FEA.FeatureId
 			, FEA.FdpFeatureId
+			, FEA.FeaturePackId
 			, FEA.MappedFeatureCode AS FeatureCode
 			, FEA.FeatureGroupId 
 			, FEA.FeatureGroup	
@@ -236,12 +242,12 @@ AS
 			, 'O' + CAST(FEA.FeatureId AS NVARCHAR(10)) AS FeatureIdentifier
 			, 1 AS S
 			  
-		FROM Fdp_FeatureMapping_VW		AS FEA
-		JOIN #RawTakeRateData			AS D	ON		FEA.FeatureId	= D.FeatureId
+		FROM Fdp_FeatureMapping_VW			AS FEA
+		JOIN #RawTakeRateData				AS D	ON		FEA.FeatureId	= D.FeatureId
 		LEFT JOIN #FeatureApplicability		AS O	ON		D.FeatureId		= O.FeatureId
-												AND		D.ModelId		= O.ModelId
-		JOIN #Model						AS M	ON		D.ModelId		= M.ModelId
-												AND		M.IsFdpModel	= 0
+													AND		D.ModelId		= O.ModelId
+		JOIN #Model							AS M	ON		D.ModelId		= M.ModelId
+													AND		M.IsFdpModel	= 0
 		WHERE 
 		FEA.ProgrammeId = @ProgrammeId
 		AND
@@ -255,6 +261,7 @@ AS
 			  FEA.DisplayOrder
 			, FEA.FeatureId
 			, FEA.FdpFeatureId
+			, FEA.FeaturePackId
 			, FEA.MappedFeatureCode AS FeatureCode
 			, FEA.FeatureGroupId 
 			, FEA.FeatureGroup	
@@ -290,6 +297,7 @@ AS
 			  FEA.DisplayOrder
 			, FEA.FeatureId
 			, CAST(NULL AS INT) AS FdpFeatureId
+			, FEA.FeaturePackId
 			, FEA.MappedFeatureCode AS FeatureCode
 			, FEA.FeatureGroupId 
 			, FEA.FeatureGroup	
@@ -329,6 +337,7 @@ AS
 			  FEA.DisplayOrder
 			, CAST(NULL AS INT) AS FeatureId
 			, FEA.FdpFeatureId
+			, FEA.FeaturePackId
 			, FEA.MappedFeatureCode AS FeatureCode
 			, FEA.FeatureGroupId 
 			, FEA.FeatureGroup	
@@ -362,41 +371,46 @@ AS
 		AND
 		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
 		
-		--UNION
+		UNION
 		
-		--SELECT 
-		--	  FEA.DisplayOrder
-		--	, FEA.FeatureId
-		--	, FEA.FdpFeatureId
-		--	, FEA.MappedFeatureCode AS FeatureCode
-		--	, FEA.FeatureGroupId 
-		--	, FEA.FeatureGroup	
-		--	, FEA.FeatureSubGroup
-		--	, FEA.BrandDescription
-		--	, FEA.[Description]
-		--	, FEA.FeatureComment
-		--	, FEA.FeatureRuleText
-		--	, FEA.LongDescription
-		--	, CAST(NULL AS INT) AS ModelId
-		--	, CAST(NULL AS INT) FdpModelId 
-		--	, 0 AS Volume
-		--	, 0 AS PercentageTakeRate
-		--	, CAST(NULL AS NVARCHAR(10)) AS OxoCode
-		--	, CAST(NULL AS NVARCHAR(10)) AS StringIdentifier
-		--	, CASE
-		--		WHEN FEA.FeatureId IS NOT NULL THEN 'O' + CAST(FEA.FeatureId AS NVARCHAR(10))
-		--		ELSE 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10))
-		--	  END
-		--	  AS FeatureIdentifier
-		--	, 4 AS S
+		SELECT 
+			  FEA.DisplayOrder + 10000
+			, FEA.FeatureId
+			, FEA.FdpFeatureId
+			, FEA.FeaturePackId
+			, FEA.MappedFeatureCode AS FeatureCode
+			, FEA.FeatureGroupId 
+			, FEA.FeatureGroup	
+			, FEA.FeatureSubGroup
+			, FEA.BrandDescription
+			, FEA.[Description]
+			, FEA.FeatureComment
+			, FEA.FeatureRuleText
+			, FEA.LongDescription
+			, D.ModelId
+			, CAST(NULL AS INT) AS FdpModelId 
+			, ISNULL(D.Volume, 0) AS Volume
+			, D.PercentageTakeRate
+			, 'P' AS OxoCode
+			, M.StringIdentifier
+			, 'P' + CAST(FEA.FeaturePackId AS NVARCHAR(10)) AS FeatureIdentifier
+			, 2 AS S
 			  
-		--FROM Fdp_FeatureMapping_VW		AS FEA
-		--WHERE
-		--FEA.ProgrammeId = @ProgrammeId
-		--AND
-		--FEA.Gateway = @Gateway
-		--AND
-		--(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
+		FROM Fdp_FeatureMapping_VW		AS FEA
+		JOIN #RawTakeRateData			AS D	ON		FEA.FeaturePackId	= D.FeaturePackId
+												AND		FEA.FeatureId		IS NULL
+												AND		FEA.FdpFeatureId	IS NULL
+												AND		D.FeatureId			IS NULL
+												AND		D.FdpFeatureId		IS NULL
+		JOIN #Model						AS M	ON		D.ModelId			= M.ModelId
+												AND		M.IsFdpModel		= 0
+		WHERE 
+		FEA.ProgrammeId = @ProgrammeId
+		AND
+		FEA.Gateway = @Gateway
+		AND
+		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
+		
 	)	
 	INSERT INTO #TakeRateDataByFeature
 	(
@@ -406,7 +420,8 @@ AS
 		, FeatureCode			
 		, BrandDescription		
 		, FeatureId
-		, FdpFeatureId			
+		, FdpFeatureId
+		, FeaturePackId		
 		, FeatureComment
 		, FeatureRuleText		
 		, SystemDescription		
@@ -428,7 +443,8 @@ AS
 		, F.FeatureCode
 		, F.BrandDescription
 		, F.FeatureId
-		, F.FdpFeatureId	 
+		, F.FdpFeatureId
+		, F.FeaturePackId	 
 		, F.FeatureComment
 		, F.FeatureRuleText
 		, F.[Description]
@@ -479,7 +495,7 @@ AS
 		AND
 		(@MarketGroupId IS NULL OR MarketGroupId = @MarketGroupId);
 
-		SELECT @FilteredPercentage = @FilteredVolume / CAST(@TotalVolume AS DECIMAL);
+		SELECT @FilteredPercentage = @FilteredVolume / CAST(@TotalVolume AS DECIMAL(10,4));
 	END
 	ELSE
 	BEGIN
@@ -498,6 +514,13 @@ AS
 	SELECT @ModelTotals = COALESCE(@ModelTotals + ' + ', '') + 'ISNULL([' + StringIdentifier + '], 0)'
 	FROM #Model;
 	
+	SELECT AggregatedFeatureIdentifier, AggregatedVolume  FROM #AggregateVolumeByFeature
+	SELECT AggregatedVolume, dbo.fn_Fdp_PercentageTakeRate_Get(AggregatedVolume, @FilteredVolume) FROM #AggregateVolumeByFeature
+	
+	SELECT * FROM #TakeRateDataByFeature WHERE FeatureIdentifier = 'P225'
+	
+	SELECT * FROM #RawTakeRateData WHERE FeaturePackId = 225
+	
 	IF @ShowPercentage = 0
 	BEGIN
 		SET @Sql =		  'SELECT DATASET.*, ' + @ModelTotals + ' AS TotalVolume '				
@@ -512,7 +535,7 @@ AS
 	END
 	ELSE
 	BEGIN
-		SET @Sql =		  'SELECT DATASET.*, dbo.fn_Fdp_PercentageTakeRate_Get(AggregatedVolume, ' + CAST(@FilteredVolume AS NVARCHAR(10)) + ') AS TotalPercentageTakeRate '
+		SET @Sql =		  'SELECT DATASET.*, dbo.fn_Fdp_PercentageTakeRate_Get(AggregatedVolume, ' + CAST(ISNULL(@FilteredVolume, 0) AS NVARCHAR(10)) + ') AS TotalPercentageTakeRate '
 		SET @Sql = @Sql + 'FROM ( '
 		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, StringIdentifier, '
 		SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, PercentageTakeRate '

@@ -1,13 +1,14 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateDataItemNote_Save]
-	  @FdpVolumeHeaderId INT
-	, @MarketId INT = NULL
-	, @MarketGroupId INT = NULL
-	, @ModelId INT = NULL
-	, @FdpModelId INT = NULL
-	, @FeatureId INT = NULL
-	, @FdpFeatureId INT = NULL
-	, @CDSID NVARCHAR(16)
-	, @Note NVARCHAR(MAX)
+	  @FdpVolumeHeaderId	INT
+	, @MarketId				INT	= NULL
+	, @MarketGroupId		INT = NULL
+	, @ModelId				INT = NULL
+	, @FdpModelId			INT = NULL
+	, @FeatureId			INT = NULL
+	, @FdpFeatureId			INT = NULL
+	, @FeaturePackId		INT = NULL
+	, @CDSID				NVARCHAR(16)
+	, @Note					NVARCHAR(MAX)
 AS
 	
 	SET NOCOUNT ON;
@@ -15,7 +16,7 @@ AS
 	DECLARE @FdpVolumeDataItemId INT;
 	DECLARE @FdpTakeRateSummaryId INT;
 	
-	IF @FeatureId IS NOT NULL OR @FdpFeatureId IS NOT NULL
+	IF @FeatureId IS NOT NULL OR @FdpFeatureId IS NOT NULL OR @FeaturePackId IS NOT NULL
 	BEGIN
 		SELECT TOP 1 @FdpVolumeDataItemId = FdpVolumeDataItemId
 		FROM
@@ -35,6 +36,8 @@ AS
 		(@FeatureId IS NULL OR D.FeatureId = @FeatureId)
 		AND
 		(@FdpFeatureId IS NULL OR D.FdpFeatureId = @FdpFeatureId)
+		AND
+		(@FeaturePackId IS NULL OR D.FeaturePackId = @FeaturePackId)
 		AND
 		D.IsFeatureData = 1;
 	END
