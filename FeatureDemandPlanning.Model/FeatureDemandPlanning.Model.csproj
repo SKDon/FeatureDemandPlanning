@@ -100,6 +100,7 @@
     <Compile Include="BmcMapping.cs" />
     <Compile Include="CarLine.cs" />
     <Compile Include="ConfigurationSettings.cs" />
+    <Compile Include="ValidationResult.cs" />
     <Compile Include="FdpChangeset.cs" />
     <Compile Include="DataChange.cs" />
     <Compile Include="Dapper\DynamicParameters.cs" />

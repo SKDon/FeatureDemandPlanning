@@ -205,6 +205,18 @@ namespace FeatureDemandPlanning.Controllers
 
             return Json(note, JsonRequestBehavior.AllowGet);
         }
+        [HandleErrorWithJson]
+        [HttpPost]
+        public async Task<ActionResult> ListValidation(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+
+            var validation =
+                await DataContext.TakeRate.ListValidation(TakeRateFilter.FromTakeRateParameters(parameters));
+
+            return Json(validation);
+        }
         //[HandleErrorWithJson]
         //[HttpPost]
         //public async Task<ActionResult> Validate(TakeRateParameters parameters)

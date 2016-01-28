@@ -179,10 +179,13 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_takeRateDataStore.FdpVolumeByMarketGet(filter));
         }
-
         public async Task<TakeRateDataItemNote> AddDataItemNote(TakeRateFilter filter)
         {
             return await Task.FromResult(_takeRateDataStore.TakeRateDataItemNoteSave(filter));
+        }
+        public async Task<IEnumerable<ValidationResult>> ListValidation(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpValidationGetMany(filter));
         }
 
         #endregion

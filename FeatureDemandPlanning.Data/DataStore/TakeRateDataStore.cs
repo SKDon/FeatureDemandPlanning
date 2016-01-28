@@ -965,6 +965,34 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
+        public IEnumerable<ValidationResult> FdpValidationGetMany(TakeRateFilter filter)
+        {
+            IEnumerable<ValidationResult> retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    para.Add("@ModelId", filter.ModelId, DbType.Int32);
+                    para.Add("@FdpModelId", filter.FdpModelId, DbType.Int32);
+                    para.Add("@FeatureId", filter.FeatureId, DbType.Int32);
+                    para.Add("@FdpFeatureId", filter.FdpFeatureId, DbType.Int32);
+
+                    retVal = conn.Query<ValidationResult>("dbo.Fdp_Validation_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
+
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }
