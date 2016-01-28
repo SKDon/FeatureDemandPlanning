@@ -84,4 +84,4 @@ AS
 	AND
 	ISNULL(C.TotalVolume, S.Volume) > M.Volume
 	
-	PRINT 'Volume for feature exceeding volume for model validation failures added: ' + CAST(@@ROWCOUNT AS NVARCHAR(10))
+	PRINT 'Volume for model exceeding volume for market validation failures added: ' + CAST(@@ROWCOUNT AS NVARCHAR(10))

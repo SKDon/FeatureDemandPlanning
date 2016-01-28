@@ -87,7 +87,7 @@ AS
 		  @FdpVolumeHeaderId AS FdpVolumeHeaderId
 		, E.MarketId
 		, 7 AS FdpValidationRuleId -- TakeRateForEFGShouldEqual100Percent
-		, 'Take rate for features in exclusive feature group ''' + E.EFGName + ''' must equal 100%' AS [Message]
+		, 'Take rate of ''' + CAST(E.PercentageTakeRate * 100 AS NVARCHAR(10)) + '%'' for features in exclusive feature group ''' + E.EFGName + ''' must equal 100%' AS [Message]
 		, E.FdpTakeRateSummaryId
 	FROM
 	EfgTakeRates				AS E

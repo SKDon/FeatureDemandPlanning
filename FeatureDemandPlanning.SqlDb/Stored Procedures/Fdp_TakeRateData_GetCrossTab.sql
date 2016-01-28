@@ -514,13 +514,6 @@ AS
 	SELECT @ModelTotals = COALESCE(@ModelTotals + ' + ', '') + 'ISNULL([' + StringIdentifier + '], 0)'
 	FROM #Model;
 	
-	SELECT AggregatedFeatureIdentifier, AggregatedVolume  FROM #AggregateVolumeByFeature
-	SELECT AggregatedVolume, dbo.fn_Fdp_PercentageTakeRate_Get(AggregatedVolume, @FilteredVolume) FROM #AggregateVolumeByFeature
-	
-	SELECT * FROM #TakeRateDataByFeature WHERE FeatureIdentifier = 'P225'
-	
-	SELECT * FROM #RawTakeRateData WHERE FeaturePackId = 225
-	
 	IF @ShowPercentage = 0
 	BEGIN
 		SET @Sql =		  'SELECT DATASET.*, ' + @ModelTotals + ' AS TotalVolume '				

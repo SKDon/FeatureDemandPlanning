@@ -47,9 +47,15 @@ AS
 	WHERE
 	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
+	D.ModelId IS NOT NULL
+	AND
+	D.FeatureId IS NOT NULL
+	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
 	AND
 	ISNULL(C.TotalVolume, D.Volume) > ISNULL(C1.TotalVolume, S.Volume)
+	AND
+	V.FdpValidationId IS NULL
 	
 	UNION
 	
@@ -86,9 +92,15 @@ AS
 	WHERE
 	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
+	D.FdpModelId IS NOT NULL
+	AND
+	D.FeatureId IS NOT NULL
+	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
 	AND
 	ISNULL(C.TotalVolume, D.Volume) > ISNULL(C1.TotalVolume, S.Volume)
+	AND
+	V.FdpValidationId IS NULL
 	
 	UNION
 	
@@ -125,7 +137,13 @@ AS
 	WHERE
 	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
+	D.ModelId IS NOT NULL
+	AND
+	D.FdpFeatureId IS NOT NULL
+	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
+	AND
+	V.FdpValidationId IS NULL
 	
 	UNION
 	
@@ -164,6 +182,12 @@ AS
 	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId)
 	AND
+	D.FdpModelId IS NOT NULL
+	AND
+	D.FdpFeatureId IS NOT NULL
+	AND
 	ISNULL(C.TotalVolume, D.Volume) > ISNULL(C1.TotalVolume, S.Volume)
+	AND
+	V.FdpValidationId IS NULL
 	
 	PRINT 'Volume for feature exceeding volume for model validation failures added: ' + CAST(@@ROWCOUNT AS NVARCHAR(10))
