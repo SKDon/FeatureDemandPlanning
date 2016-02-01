@@ -24,21 +24,26 @@
 
     <td class="cross-tab-data-item @featureFixedClassName @featureClassName">
         @(featureRow.Field<string>("BrandDescription"))
-
-        <div class="changed-indicator pull-right" style="display:none" title="Changes have been made to the take rate / volume data for this feature">
-            <span class="glyphicon glyphicon-wrench" style="position:relative;top:50%;transform:translateY(50%)"></span>
+    </td>
+    <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName feature-notes">
+        <div class="changed-indicator pull-right" style="display: none" title="Changes have been made to the take rate / volume data for this feature">
+            <span class="glyphicon glyphicon-wrench"></span>
         </div>
 
         @if (!string.IsNullOrEmpty(featureRow.Field<string>("FeatureRuleText")))
         {
-            <div class="indicator rule-item pull-right" data-toggle="popover" title="Rules" data-content="@(featureRow.Field<string>("FeatureRuleText"))"><span class="glyphicon glyphicon-alert" style="position:relative;top:50%;transform:translateY(50%)"></span>&nbsp;</div>
+            <div class="indicator rule-item pull-right" data-toggle="popover" title="Rules" data-content="@(featureRow.Field<string>("FeatureRuleText"))">
+                <span class="glyphicon glyphicon-list-alt"></span>&nbsp;
+            </div>
         }
         @if (!string.IsNullOrEmpty(featureRow.Field<string>("FeatureComment")))
         {
-            <div class="indicator comment-item pull-right" data-toggle="popover" title="Comments" data-content="@(featureRow.Field<string>("FeatureComment"))"><span class="glyphicon glyphicon-pencil" style="position:relative;top:50%;transform:translateY(50%)"></span>&nbsp;</div>
+            <div class="indicator comment-item pull-right" data-toggle="popover" title="Comments" data-content="@(featureRow.Field<string>("FeatureComment"))">
+                <span class="glyphicon glyphicon-comment"></span>&nbsp;
+            </div>
         }
     </td>
-    <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName">@(featureRow.Field<string>("FeatureCode"))</td>
+    <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName feature-code">@(featureRow.Field<string>("FeatureCode"))</td>
     <td class="cross-tab-data-item @featureFixedClassName @featureFixedLastClassName @featureClassName text-center">
         @if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
         {
@@ -66,7 +71,7 @@
                 @RenderDataItem(availableModel.StringIdentifier, featureRow)
             </div>
 
-            <div class="glyphicon glyphicon-alert feature-validation-error" style="display:none" data-content=""></div>
+            <div class="glyphicon glyphicon-alert validation-error feature-validation-error" style="display:none" data-content=""></div>
             @{
         var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => n.FeatureIdentifier == featureIdentifier && n.ModelIdentifier == modelIdentifier);
         if (notes.Any())

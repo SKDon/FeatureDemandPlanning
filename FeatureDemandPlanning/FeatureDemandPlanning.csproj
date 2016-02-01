@@ -208,7 +208,6 @@
     <Compile Include="Controllers\MarketMappingController.cs" />
     <Compile Include="Controllers\FeatureMappingController.cs" />
     <Compile Include="Controllers\DerivativeMappingController.cs" />
-    <Compile Include="Controllers\ForecastController.cs" />
     <Compile Include="Controllers\ImportController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\ImportExceptionController.cs" />
@@ -751,6 +750,7 @@
     <Content Include="Content\css\Site.css" />
     <Content Include="Content\css\responsive.bootstrap.css" />
     <Content Include="Content\js\jquery.spin.js" />
+    <Content Include="Content\js\TakeRateData\validation.js" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\js\DerivativeMapping\copy.js" />
     <Content Include="Content\js\DerivativeMapping\delete.js" />

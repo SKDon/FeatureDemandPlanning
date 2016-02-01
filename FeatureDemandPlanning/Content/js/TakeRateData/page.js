@@ -216,21 +216,47 @@ model.Page = function (models) {
     };
     me.configureRowHighlight = function() {
         $(document).on({
-            mouseenter: function () {
-                var columnIndex = $(this).index();
-                var trIndex = $(this).closest("tr").index() + 4;
+            mouseenter: function() {
+                if (me.isGroup(this)) {
+                    return;
+                }
                 var selector = $("table.dataTable");
-                selector.find("tr:eq(" + trIndex + ")").children(".cross-tab-data-item").addClass("highlight");
-                selector.find("tr td:nth-child(" + (columnIndex + 1) + ")").filter(function () {
-                    return !$(this).hasClass("group") && !$(this).hasClass("sub-group") &&
-                        !$(this).hasClass("cross-tab-fixed") && !$(this).hasClass("fdp-data-item-fixed");
+                var columnIndex = $(this).index();
+                var rowIndex = $(this).closest("tr").index() + 4; // Add +4 as we need to exclude the additional header rows
+                
+                // Highlight the cell itself and any previous siblings
+                $(this).addClass("highlight").prevAll().addClass("highlight");
+
+                // Highlight the cells in the fixed part of the table
+                selector.find("tr:eq(" + rowIndex + ")").children(".cross-tab-fixed").addClass("highlight");
+                selector.find("tr:eq(" + rowIndex + ")").children(".fdp-data-item-fixed").addClass("highlight");
+
+                selector.find("tr td:nth-child(" + (columnIndex + 1) + ")").filter(function() {
+                    return !me.isGroup(this) && !me.isFixed(this);
                 }).addClass("highlight");
+
+                if (columnIndex >= 4) {
+                    selector.find("tr:nth-child(1) th:nth-child(" + (columnIndex - 2) + ")").addClass("highlight");
+                    selector.find("tr:nth-child(2) th:nth-child(" + (columnIndex - 2) + ")").addClass("highlight");
+                    selector.find("tr:nth-child(3) th:nth-child(" + (columnIndex - 2) + ")").addClass("highlight");
+                    selector.find("tr:nth-child(4) th:nth-child(" + (columnIndex + 1) + ")").addClass("highlight");
+                }
             },
             mouseleave: function () {
-                $("table.dataTable").find("tbody tr td").removeClass("highlight");
+                var selector = $("table.dataTable");
+                selector.find("tbody tr td").removeClass("highlight");
+                selector.find("thead tr th").removeClass("highlight");
             }
         }, ".dataTables_wrapper tbody tr td");
-    }
+    };
+    me.isGroup = function (selector) {
+        var g = $(selector).hasClass("group") || $(selector).hasClass("sub-group");
+        return g;
+    };
+    me.isFixed = function(selector) {
+        var f = $(selector).hasClass("cross-tab-fixed") || $(selector).hasClass("fdp-data-item-fixed");
+        return f;
+    };
     me.cellEditCallback = function (value, settings) {
         
         var target = $(this).attr("data-target");
@@ -386,6 +412,66 @@ model.Page = function (models) {
     me.loadChangeset = function () {
         getTakeRateDataModel().loadChangeset(me.loadChangesetCallback);
     };
+    me.loadValidation = function() {
+        getTakeRateDataModel().loadValidation(me.loadValidationCallback);
+    };
+    me.loadValidationCallback = function(validationData) {
+        
+        var model = getTakeRateDataModel();
+        var markets = [];
+        var mainIndicator = $(".primary-validation-error");
+        //var marketIndicators = $(".market-validation-error");
+        var modelIndicators = $(".model-validation-error");
+        var featureIndicators = $(".feature-validation-error");
+
+        model.setHasValidationErrors(validationData !== null && validationData.length > 0);
+
+        mainIndicator.hide();
+        //marketIndicators.hide();
+        featureIndicators.hide();
+        modelIndicators.hide();
+
+        for (var i = 0; i < validationData.ValidationResults.length; i++) {
+            var currentResult = validationData.ValidationResults[i];
+
+            // Show an indicator at the market level if there is an error for that market
+            var marketExists = false;
+            for (var j = 0; j < markets.length; j++) {
+                if (markets[j] === currentResult.MarketId) {
+                    marketExists = true;
+                }
+            }
+            if (!marketExists) {
+                $("a[data-target='ALL']").addClass("validation-error");
+                $("a[data-target='MG|" + currentResult.MarketGroupId + "']").addClass("validation-error");
+                $("a[data-target='M|" + currentResult.MarketId + "']").addClass("validation-error");
+            }
+
+            var selector;
+            if (currentResult.IsFeatureMixValidation) {
+                selector = $("tbody span[data-target='FS|" + currentResult.DataTarget + "']");
+            } else if (currentResult.IsModelValidation) {
+                $("thead th[data-target='MS|" + currentResult.DataTarget + "']")
+                    .children(0)
+                    .show()
+                    .attr("data-content", currentResult.Message);
+
+            } else if (currentResult.IsWholeMarketValidation) {
+                selector = $(".input-filtered-volume");
+            } else {
+                $("tbody div[data-target='" + currentResult.DataTarget + "']")
+                    .next()
+                    .show()
+                    .attr("data-content", currentResult.Message);
+            }
+            //selector.addClass(me.getValidationDataClass(currentResult));
+        }
+
+        if (validationData.ValidationResults.length !== 0) {
+            
+            mainIndicator.show();
+        }
+    };
     me.checkCompletion = function() {
         var model = getTakeRateDataModel();
         var isImportCompleted = model.isImportCompleted();
@@ -397,7 +483,8 @@ model.Page = function (models) {
         }
     };
     me.confirmLoadChangeset = function(changesetData) {
-        $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", changesetData === null || changesetData.Changes.length === 0);
+        var model = getTakeRateDataModel();
+        $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", changesetData === null || changesetData.Changes.length === 0 || model.HasValidationErrors());
         $("#" + me.getIdentifierPrefix() + "_Undo").prop("disabled", changesetData === null || changesetData.Changes.length === 0);
 
         for (var i = 0; i < changesetData.Changes.length; i++) {
@@ -409,17 +496,17 @@ model.Page = function (models) {
                 displayValue = me.formatVolume(currentChange.Volume);
             }
             var selector;
-            if (currentChange.IsFeatureSummary) {
+            if (currentChange.IsFeatureValidation) {
                 selector = $("tbody span[data-target='FS|" + currentChange.DataTarget + "']");
-            } else if (currentChange.IsModelSummary) {
-                selector = $("thead th[data-target='MS|" + currentChange.DataTarget + "']").first();
-            } else if (currentChange.IsWholeMarketChange) {
+            } else if (currentChange.IsModelValidation) {
+                selector = $("thead th[data-target='MS|" + currentChange.DataTarget + "']").last();
+            } else if (currentChange.IsWholeMarketValidation) {
                 selector = $(".input-filtered-volume");
             } else {
                 selector = $("tbody div[data-target='" + currentChange.DataTarget + "']");
             }
 
-            if (currentChange.IsWholeMarketChange) {
+            if (currentChange.IsWholeMarketValidation) {
                 selector.addClass(me.getEditedDataClass(currentChange)).val(displayValue);
             } else {
                 selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
@@ -460,17 +547,12 @@ model.Page = function (models) {
         $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", true);
         $("#" + me.getIdentifierPrefix() + "_Undo").prop("disabled", true);
 
+        me.loadValidation();
+
         if (changesetData.Changes.length === 0)
             return;
 
-        //if (me.getInitial()) {
-        //    var modal = getModal();
-        //    modal.setModalParameters({ Data: changesetData });
-        //    getModal().showConfirm("Load Uncommitted Data?",
-        //        "You have uncommitted changes to the data for this market.<br/><br/>Do you wish to load these changes?", me.confirmLoadChangeset);
-        //} else {
-            me.confirmLoadChangeset(changesetData);
-        //}
+        me.confirmLoadChangeset(changesetData);
     };
     me.revertChangeset = function () {
         getTakeRateDataModel().revertChangeset(me.revertChangesetCallback);
@@ -511,6 +593,19 @@ model.Page = function (models) {
         }
         return className;
     };
+    me.getValidationDataClass = function(validationResult) {
+        var className;
+        if (validationResult.IsFeatureValidation) {
+            className = me.getValidationDataClassForFeatureSummary(validationResult);
+        }
+        else if (validationResult.IsModelValidation) {
+            className = me.getValidationDataClassForModelSummary(validationResult);
+        }
+        else {
+            className = me.getValidationDataClassForDataItem(validationResult);
+        }
+        return className;
+    }
     me.getEditedDataClassForFeatureSummary = function (changesetChange) {
         var className = "edited";
         if (changesetChange.FeatureIdentifier !== null && changesetChange.FeatureIdentifier.charAt(0) === "F") {
@@ -529,6 +624,27 @@ model.Page = function (models) {
         var className = "edited";
         if (changesetChange.FeatureIdentifier !== null && changesetChange.FeatureIdentifier.charAt(0) === "F") {
             className = "edited-fdp-data";
+        }
+        return className;
+    };
+    me.getValidationDataClassForFeatureSummary = function (validationResult) {
+        var className = "validation";
+        if (validationResult.FeatureIdentifier !== null && validationResult.FeatureIdentifier.charAt(0) === "F") {
+            className = "validation-fdp-data";
+        }
+        return className;
+    };
+    me.getValidationDataClassForModelSummary = function (validationResult) {
+        var className = "validation";
+        if (validationResult.ModelIdentifier !== null && validationResult.ModelIdentifier.charAt(0) === "F") {
+            className = "validation";
+        }
+        return className;
+    };
+    me.getValidationDataClassForDataItem = function (validationResult) {
+        var className = "validation";
+        if (validationResult.FeatureIdentifier !== null && validationResult.FeatureIdentifier.charAt(0) === "F") {
+            className = "validation-fdp-data";
         }
         return className;
     };
@@ -572,11 +688,19 @@ model.Page = function (models) {
         });
 
         $(".feature-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover" });
-
         $(".feature-validation-error").on("click", function () {
             $(".feature-validation-error").not(this).popover("hide");
         });
-
+        $(".model-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover" });
+        $(".model-validation-error").on("click", function () {
+            $(".model-validation-error").not(this).popover("hide");
+        });
+        $(".primary-validation-error")
+            //.attr("data-content", "One or more validation errors exist for the dataset. Examine each indicated market in turn to rectify any errors.")
+            .popover({ html: true, title: "Validation Error", container: "body", trigger: "hover" });
+        $(".primary-validation-error").on("click", function () {
+            $(".primary-validation-error").not(this).popover("hide");
+        });
     };
     me.configureDataTables = function () {
 
@@ -592,7 +716,7 @@ model.Page = function (models) {
         });
 
         new $.fn.dataTable.FixedColumns(table, {
-            leftColumns: 3,
+            leftColumns: 4,
             drawCallback: function (left) {
                 var settings = table.settings();
                 if (settings.data().length === 0) {
@@ -629,7 +753,7 @@ model.Page = function (models) {
                         nCell = document.createElement("td");
                         nCell.className = "group";
                         nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + groupName;
-                        nCell.colSpan = 3;
+                        nCell.colSpan = 4;
                         $(nGroup).attr("data-toggle", groupName);
                         nGroup.appendChild(nCell);
                         $(nGroup).insertBefore($("tbody tr:eq(" + (i + corrector) + ")", left.body)[0]);
@@ -670,7 +794,7 @@ model.Page = function (models) {
                             nCell = document.createElement("td");
                             nCell.className = "sub-group";
                             nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + subGroupName;
-                            nCell.colSpan = 3;
+                            nCell.colSpan = 4;
                             $(nSubGroup).attr("data-group", groupName);
                             $(nSubGroup).attr("data-toggle", subGroupName);
                             nSubGroup.appendChild(nCell);

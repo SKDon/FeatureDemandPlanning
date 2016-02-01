@@ -207,13 +207,13 @@ namespace FeatureDemandPlanning.Controllers
         }
         [HandleErrorWithJson]
         [HttpPost]
-        public async Task<ActionResult> ListValidation(TakeRateParameters parameters)
+        public async Task<ActionResult> GetValidation(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
             var validation =
-                await DataContext.TakeRate.ListValidation(TakeRateFilter.FromTakeRateParameters(parameters));
+                await DataContext.TakeRate.GetValidation(TakeRateFilter.FromTakeRateParameters(parameters));
 
             return Json(validation);
         }

@@ -3,6 +3,7 @@
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
 <th class="cross-tab-data-item feature-description">Description</th>
+<th class="cross-tab-data-item feature-notes">Notes</th>
 <th class="cross-tab-data-item feature-code">Code</th>
 <th class="text-right model-mix">
     @if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
@@ -53,29 +54,30 @@
     else
     {
         <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
-                @{
-                    var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.FirstOrDefault(s => s.StringIdentifier == availableModel.StringIdentifier);
-                    var volume = "-";
-                    if (summary != null)
-                    {
-                        volume = summary.Volume.ToString();
-                    }
-                    @volume
+            <div class="glyphicon glyphicon-alert validation-error model-validation-error" style="display:none" data-content=""></div>
+            @{
+                var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.FirstOrDefault(s => s.StringIdentifier == availableModel.StringIdentifier);
+                var volume = "-";
+                if (summary != null)
+                {
+                    volume = summary.Volume.ToString();
                 }
+                @volume
+            }
 
             @{
-        var model = availableModel;
-        var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => string.IsNullOrEmpty(n.FeatureIdentifier) && n.ModelIdentifier == model.StringIdentifier);
-        if (notes.Any())
-        {
-            <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
-                <div class="triangle"></div>
-            </div>
-        }
-        else
-        {
-            <div class="triangle" style="display: none"></div>
-        }
+                var model = availableModel;
+                var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => string.IsNullOrEmpty(n.FeatureIdentifier) && n.ModelIdentifier == model.StringIdentifier);
+                if (notes.Any())
+                {
+                    <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
+                        <div class="triangle"></div>
+                    </div>
+                }
+                else
+                {
+                    <div class="triangle" style="display: none"></div>
+                }
             }
         </th>
     }

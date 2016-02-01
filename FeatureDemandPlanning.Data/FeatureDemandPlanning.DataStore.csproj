@@ -83,7 +83,6 @@
     <Compile Include="Context\DataContext.cs" />
     <Compile Include="Context\NewsDataContext.cs" />
     <Compile Include="DataStore\DerivativeDataStore.cs" />
-    <Compile Include="Context\ForecastDataContext.cs" />
     <Compile Include="Context\ImportDataContext.cs" />
     <Compile Include="Context\MarketDataContext.cs" />
     <Compile Include="Context\ReferenceDataContext.cs" />
@@ -96,7 +95,6 @@
     <Compile Include="DataStore\EmailTemplateDS.cs" />
     <Compile Include="DataStore\ForecastComparisonDal.cs" />
     <Compile Include="DataStore\ForecastComparisonViewDal.cs" />
-    <Compile Include="DataStore\ForecastDataStore.cs" />
     <Compile Include="DataStore\ForecastViewDal.cs" />
     <Compile Include="DataStore\NewsDataStore.cs" />
     <Compile Include="DataStore\OXOVehicleDS.cs">

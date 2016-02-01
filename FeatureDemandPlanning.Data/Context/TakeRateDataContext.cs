@@ -183,9 +183,18 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_takeRateDataStore.TakeRateDataItemNoteSave(filter));
         }
-        public async Task<IEnumerable<ValidationResult>> ListValidation(TakeRateFilter filter)
+        public async Task<FdpValidation> GetValidation(TakeRateFilter filter)
         {
-            return await Task.FromResult(_takeRateDataStore.FdpValidationGetMany(filter));
+            var validationResults = await Task.FromResult(_takeRateDataStore.FdpValidationGetMany(filter));
+            var enumerable = validationResults as IList<ValidationResult> ?? validationResults.ToList();
+            if (validationResults == null || !enumerable.Any())
+            {
+                return new EmptyFdpValidation();
+            }
+            return new FdpValidation()
+            {
+                ValidationResults = enumerable
+            };
         }
 
         #endregion

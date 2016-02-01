@@ -10,6 +10,7 @@
 <div class="btn-group" role="group" aria-label="Market Selector">
     <!-- Single button -->
     <button id="btnMarket" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="validation-error primary-validation-error glyphicon glyphicon-alert" data-target="" style="display:none"></span>&nbsp;
         @if (!(Model.Document.MarketGroup is EmptyMarketGroup))
         {
             @:Market Group: @Model.Document.MarketGroup.GroupName (@totalDerivativesForSelection)
@@ -28,7 +29,7 @@
         @{
             var allMarketsLink = string.Format("All Markets ({0})", totalDerivatives);
         }
-        <li class="dropdown-nosubmenu">@Html.ActionLink(allMarketsLink, "Index", new { takeRateId = Model.Document.TakeRateId, resultsMode = Model.Document.Mode })</li>
+        <li class="dropdown-nosubmenu">@Html.ActionLink(allMarketsLink, "Index", new { takeRateId = Model.Document.TakeRateId, resultsMode = Model.Document.Mode }, new { data_target = "ALL" })</li>
         @if (Model.Document.TakeRateData.HasData)
         {
             <li class="dropdown-header">Market Groups</li>
@@ -66,7 +67,7 @@
                                 }
                                 else
                                 {
-                                    <li><span>@market.Name</span></li>
+                                    <li><span class="validation-error market-validation-error glyphicon glyphicon-alert" data-target="@market.Id" style="display:none"></span><span>@market.Name</span></li>
                                 }
                             }
 
@@ -87,11 +88,14 @@
 @helper RenderUrlForMarketGroup(MarketGroup marketGroup)
 {
     var groupName = string.Format("{0} ({1})", marketGroup.GroupName, marketGroup.VariantCount);
-    @Html.ActionLink(groupName, "Index", new { takeRateId = Model.Document.TakeRateId, marketGroupId = marketGroup.Id, resultsMode = Model.Document.Mode });
+    @Html.ActionLink(groupName, "Index", new { takeRateId = Model.Document.TakeRateId, marketGroupId = marketGroup.Id, resultsMode = Model.Document.Mode },
+                    new { data_target = string.Format("MG|{0}", marketGroup.Id) });
 }
 
 @helper RenderUrlForMarket(Market market)
 {
     var marketName = string.Format("{0} ({1})", market.Name, market.VariantCount);
-    @Html.ActionLink(marketName, "Index", new { takeRateId = Model.Document.TakeRateId, marketId = market.Id, resultsMode = Model.Document.Mode });
+    @Html.ActionLink(marketName, "Index", 
+        new { takeRateId = Model.Document.TakeRateId, marketId = market.Id, resultsMode = Model.Document.Mode }, 
+        new {data_target = string.Format("M|{0}", market.Id)});
 }

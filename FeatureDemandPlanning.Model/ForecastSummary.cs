@@ -15,7 +15,7 @@ namespace FeatureDemandPlanning.Model
 
         public string[] ToJQueryDataTableResult()
         {
-            return new string[] 
+            return new[] 
             { 
                 ForecastId.ToString(),
                 CreatedOn.ToString("dd/MM/yyyy HH:mm"),

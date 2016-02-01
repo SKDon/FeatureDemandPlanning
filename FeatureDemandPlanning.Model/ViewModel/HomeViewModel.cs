@@ -33,11 +33,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 Configuration = context.ConfigurationSettings
             };
 
-            var latestForecasts = await context.Forecast.ListLatestForecasts();
+            //var latestForecasts = await context.Forecast.ListLatestForecasts();
             var latestTakeRateDocuments = await context.TakeRate.ListLatestTakeRateDocuments();
             
             model.LatestNews = await context.News.ListLatestNews();
-            model.LatestForecasts = latestForecasts.CurrentPage;
+            //model.LatestForecasts = latestForecasts.CurrentPage;
             model.LatestTakeRateData = latestTakeRateDocuments.CurrentPage;
 
             return model;

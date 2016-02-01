@@ -46,6 +46,6 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<TakeRateDataItemNote> AddDataItemNote(TakeRateFilter filter);
 
-        Task<IEnumerable<ValidationResult>> ListValidation(TakeRateFilter filter);
+        Task<FdpValidation> GetValidation(TakeRateFilter filter);
     }
 }

@@ -13,7 +13,7 @@ namespace FeatureDemandPlanning.DataStore
             _documentContext = new DocumentDataContext(cdsId);
             _configurationContext = new ConfigurationDataContext(cdsId);
             _vehicleContext = new VehicleDataContext(cdsId);
-            _forecastContext = new ForecastDataContext(cdsId);
+            //_forecastContext = new ForecastDataContext(cdsId);
             _importContext = new ImportDataContext(cdsId);
             _marketContext = new MarketDataContext(cdsId);
             _volumeContext = new TakeRateDataContext(cdsId);
@@ -28,7 +28,7 @@ namespace FeatureDemandPlanning.DataStore
         public IUserDataContext User { get { return _userContext;  } }
         public IDocumentDataContext Document { get { return _documentContext; } }
         public IVehicleDataContext Vehicle { get { return _vehicleContext; } }
-        public IForecastDataContext Forecast { get { return _forecastContext; } }
+        //public IForecastDataContext Forecast { get { return _forecastContext; } }
         public IImportDataContext Import { get { return _importContext; } }
         public IMarketDataContext Market { get { return _marketContext; } }
         public ITakeRateDataContext TakeRate { get { return _volumeContext; } }
@@ -42,7 +42,7 @@ namespace FeatureDemandPlanning.DataStore
         private readonly IDocumentDataContext _documentContext;
         private readonly IConfigurationDataContext _configurationContext;
         private readonly IVehicleDataContext _vehicleContext;
-        private readonly IForecastDataContext _forecastContext;
+        //private readonly IForecastDataContext _forecastContext;
         private readonly IImportDataContext _importContext;
         private readonly IMarketDataContext _marketContext;
         private readonly ITakeRateDataContext _volumeContext;

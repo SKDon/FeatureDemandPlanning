@@ -16,12 +16,12 @@ AS
 		, PercentageTakeRate			DECIMAL(5, 4)
 		, FdpVolumeDataItemId			INT 
 		, ParentFdpChangesetDataItemId	INT
-	)
+	);
 												
 	-- Create new changeset entries based on older changeset entries
 	-- We need to update the volume based on the % take for the changeset item
 	
-	PRINT 'Calculating new changeset data from existing changes...'
+	PRINT 'Calculating new changeset data from existing changes...';
 	
 	INSERT INTO @DataForFeature
 	(
@@ -58,7 +58,7 @@ AS
 	
 	-- Add all volume data existing rows to our data table where there is not an active changeset item currently
 	
-	PRINT 'Calculating new changeset data...'
+	PRINT 'Calculating new changeset data...';
 	
 	INSERT INTO @DataForFeature
 	(
@@ -96,11 +96,11 @@ AS
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId
 	AND
-	CUR.FdpChangesetDataItemId IS NULL
+	CUR.FdpChangesetDataItemId IS NULL;
 	
 	-- Delete any existing changeset rows
 	
-	PRINT 'Deleting existing changes for model...'
+	PRINT 'Deleting existing changes for model...';
 	
 	UPDATE D2 SET IsDeleted = 1
 	FROM
@@ -113,7 +113,7 @@ AS
 	
 	-- Add new new changeset rows
 	
-	PRINT 'Adding new changeset data...'
+	PRINT 'Adding new changeset data...';
 	
 	INSERT INTO Fdp_ChangesetDataItem
 	(
@@ -144,4 +144,4 @@ AS
 		, FdpVolumeDataItemId
 		, ParentFdpChangesetDataItemId
 	FROM 
-	@DataForFeature
+	@DataForFeature;

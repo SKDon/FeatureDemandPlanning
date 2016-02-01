@@ -26,6 +26,7 @@ model.OxoVolume = function (params) {
     privateStore[me.id].ChangesetHistoryUri = params.ChangesetHistoryUri;
     privateStore[me.id].UndoChangesetUri = params.UndoChangesetUri;
     privateStore[me.id].UpdateFilteredDataUri = params.UpdateFilteredDataUri;
+    privateStore[me.id].GetValidationUri = params.GetValidationUri;
     privateStore[me.id].ValidateUri = params.ValidateUri;
     privateStore[me.id].ValidationMessageUri = params.ValidationMessageUri;
     privateStore[me.id].AddNoteUri = params.AddNoteUri;
@@ -34,6 +35,7 @@ model.OxoVolume = function (params) {
     privateStore[me.id].FdpVolumeHeaders = [];
     privateStore[me.id].CurrentEditValue = null;
     privateStore[me.id].IsImportCompleted = params.IsCompleted;
+    privateStore[me.id].HasValidationErrors = false;
     privateStore[me.id].Parameters = params;
 
     me.ModelName = "OxoVolume";
@@ -121,6 +123,9 @@ model.OxoVolume = function (params) {
     me.getUpdateFilteredDataUri = function () {
         return privateStore[me.id].UpdateFilteredDataUri;
     };
+    me.getValidationUri = function() {
+        return privateStore[me.id].GetValidationUri;
+    };
     me.getValidateUri = function () {
         return privateStore[me.id].ValidateUri;
     };
@@ -156,6 +161,22 @@ model.OxoVolume = function (params) {
             "async": true,
             "type": "POST",
             "url": me.getChangesetUri(),
+            "data": params,
+            "success": function (response) {
+                callback(response);
+            },
+            "error": function (response) {
+                genericErrorCallback(response);
+            }
+        });
+    };
+    me.loadValidation = function(callback) {
+        var params = getFilter();
+        $.ajax({
+            "dataType": "json",
+            "async": true,
+            "type": "POST",
+            "url": me.getValidationUri(),
             "data": params,
             "success": function (response) {
                 callback(response);
@@ -296,6 +317,12 @@ model.OxoVolume = function (params) {
             }
         });
         return exists;
+    };
+    me.HasValidationErrors = function() {
+        return privateStore[me.id].HasValidationErrors;
+    };
+    me.setHasValidationErrors = function(hasValidationErrors) {
+        privateStore[me.id].HasValidationErrors = hasValidationErrors;
     };
     function validateVolumeCallback(response) {
         var json = JSON.parse(response.responseText);

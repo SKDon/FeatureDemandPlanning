@@ -100,6 +100,8 @@
     <Compile Include="BmcMapping.cs" />
     <Compile Include="CarLine.cs" />
     <Compile Include="ConfigurationSettings.cs" />
+    <Compile Include="Empty\EmptyFdpValidation.cs" />
+    <Compile Include="FdpValidation.cs" />
     <Compile Include="ValidationResult.cs" />
     <Compile Include="FdpChangeset.cs" />
     <Compile Include="DataChange.cs" />
@@ -227,11 +229,8 @@
     <Compile Include="Validators\AllFeatureVolumesMustBeLessThanModelVolume.cs" />
     <Compile Include="Validators\AllModelVolumesMustBeLessThanMarketVolume.cs" />
     <Compile Include="Validators\ComparisonVehicleExtensions.cs" />
-    <Compile Include="Validators\ExtendedValidationResult.cs" />
     <Compile Include="Interfaces\IConfigurationDataContext.cs" />
-    <Compile Include="Interfaces\IExtendedValidatableObject.cs" />
     <Compile Include="Interfaces\IForecast.cs" />
-    <Compile Include="Interfaces\IForecastDataContext.cs" />
     <Compile Include="Interfaces\IImportDataContext.cs" />
     <Compile Include="Interfaces\IMarketDataContext.cs" />
     <Compile Include="Interfaces\IVehicleDataContext.cs" />
@@ -252,15 +251,12 @@
     <Compile Include="ConfigurationItem.cs" />
     <Compile Include="Context\PagedResults.cs" />
     <Compile Include="EmailInfo.cs" />
-    <Compile Include="Empty\EmptyForecast.cs" />
     <Compile Include="Empty\EmptyVehicle.cs" />
     <Compile Include="Filters\EngineCodeFilter.cs" />
     <Compile Include="EngineCodeMapping.cs" />
-    <Compile Include="Filters\ForecastFilter.cs" />
     <Compile Include="Filters\ImportQueueFilter.cs" />
     <Compile Include="Filters\FilterBase.cs" />
     <Compile Include="Filters\VehicleFilter.cs" />
-    <Compile Include="Forecast.cs" />
     <Compile Include="ForecastComparison.cs" />
     <Compile Include="ForecastComparisonView.cs" />
     <Compile Include="ForecastVehicle.cs" />
@@ -303,7 +299,6 @@
     <Compile Include="Filters\ProgrammeFilter.cs" />
     <Compile Include="ForecastTrimMapping.cs" />
     <Compile Include="Validators\ComparisonVehicleValidator.cs" />
-    <Compile Include="Validators\ForecastValidator.cs" />
     <Compile Include="Validators\ForecastVehicleValidator.cs" />
     <Compile Include="Validators\ImportExceptionParametersValidator.cs" />
     <Compile Include="Validators\TakeRateParametersValidator.cs" />
@@ -321,7 +316,6 @@
     <Compile Include="ViewModel\FeatureViewModel.cs" />
     <Compile Include="ViewModel\DerivativeViewModel.cs" />
     <Compile Include="ViewModel\EngineCodeMappingViewModel.cs" />
-    <Compile Include="ViewModel\ForecastComparisonViewModel.cs" />
     <Compile Include="ViewModel\ForecastTrim.cs" />
     <Compile Include="ViewModel\HomeViewModel.cs" />
     <Compile Include="ViewModel\ImportViewModel.cs" />

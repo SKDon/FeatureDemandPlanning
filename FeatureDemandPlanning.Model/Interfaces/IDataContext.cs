@@ -8,7 +8,7 @@
         IUserDataContext User { get; }
         IDocumentDataContext Document { get; }
         IVehicleDataContext Vehicle { get; }
-        IForecastDataContext Forecast { get; }
+        //IForecastDataContext Forecast { get; }
         IImportDataContext Import { get; }
         IMarketDataContext Market { get; }
         ITakeRateDataContext TakeRate { get; }
