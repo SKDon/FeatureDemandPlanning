@@ -4,7 +4,6 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using FeatureDemandPlanning.Controllers;
-using FeatureDemandPlanning.Model;
 using FluentSecurity;
 
 namespace FeatureDemandPlanning
@@ -45,6 +44,16 @@ namespace FeatureDemandPlanning
                 configuration.For<UserController>()
                     .RemovePolicy<DefaultSecurityPolicy>()
                     .RequireAnyRole("Administrator");
+
+                //configuration.For<TakeRateController>()
+                //    .RemovePolicy<DefaultSecurityPolicy>()
+                //    .AddPolicy<HasAccessToMarketPolicy>()
+                //    .AddPolicy<HasAccessToProgrammePolicy>();
+
+                //configuration.For<TakeRateDataController>()
+                //    .RemovePolicy<DefaultSecurityPolicy>()
+                //    .AddPolicy<HasAccessToMarketPolicy>()
+                //    .AddPolicy<HasAccessToProgrammePolicy>();
             });
             GlobalFilters.Filters.Add(new HandleSecurityAttribute(), 0);
         }

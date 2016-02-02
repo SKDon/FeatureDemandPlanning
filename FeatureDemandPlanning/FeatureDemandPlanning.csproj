@@ -242,6 +242,8 @@
     <Compile Include="CssRewriteUrlTransformFixed.cs" />
     <Compile Include="CustomRoleProvider.cs" />
     <Compile Include="DataContextFactory.cs" />
+    <Compile Include="HasAccessToMarketPolicy.cs" />
+    <Compile Include="HasAccessToProgrammePolicy.cs" />
     <Compile Include="Helpers\HtmlHelperExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
