@@ -1,21 +1,16 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_UserProgramme_GetMany]
-	@CDSId NVARCHAR(16) = NULL
+	  @CDSId NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
-	
-	SELECT
-		  P.CDSId
-		, P.FullName
-		, P.IsActive
-		, P.IsAdmin
-		, P.ProgrammeId
-		, P.VehicleName
-		, P.VehicleAKA
-		, P.FdpPermissionTypeId AS PermissionTypeId
-		, P.Permission			AS PermissionType
+
+	SELECT 
+		  P.ProgrammeId
+		, O.VehicleName
+		, O.VehicleAKA
 	FROM
-	Fdp_UserProgramme_VW AS P
+	Fdp_User						AS U
+	JOIN Fdp_UserProgrammeMapping	AS P	ON	U.FdpUserId		= P.FdpUserId
+											AND P.IsActive		= 1
+	JOIN OXO_Programme_VW			AS O	ON	P.ProgrammeId	= O.Id
 	WHERE
-	(@CDSId IS NULL OR P.CDSId = @CDSId)
-	ORDER BY
-	P.FullName, P.VehicleName, P.Permission
+	U.CDSId = @CDSId

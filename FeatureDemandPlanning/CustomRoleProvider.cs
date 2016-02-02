@@ -2,17 +2,15 @@
 using System.Linq;
 using System.Web.Security;
 using FeatureDemandPlanning.DataStore;
-using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning
 {
     public class CustomRoleProvider : RoleProvider
     {
-        public override string[] GetRolesForUser(string username)
+        public override string[] GetRolesForUser(string userName)
         {
-            IDataContext context = new DataContext(username);
+            IDataContext context = new DataContext(ParseUserName(userName));
             var authenticatedUser = context.User.GetUser();
 
             return authenticatedUser.Roles.Select(r => Enum.GetName(r.GetType(), r)).ToArray();
@@ -44,9 +42,9 @@ namespace FeatureDemandPlanning
                 throw new NotImplementedException();
             }
         }
-        public override bool IsUserInRole(string username, string roleName)
+        public override bool IsUserInRole(string userName, string roleName)
         {
-            IDataContext context = new DataContext(username);
+            IDataContext context = new DataContext(ParseUserName(userName));
             var authenticatedUser = context.User.GetUser();
 
             return authenticatedUser.Roles.Any(r =>
@@ -79,6 +77,16 @@ namespace FeatureDemandPlanning
         public override bool RoleExists(string roleName)
         {
             return true;
+        }
+
+        private static string ParseUserName(string userName)
+        {
+            var retVal = userName;
+            if (userName.Contains(@"\"))
+            {
+                retVal = userName.Substring(userName.LastIndexOf(@"\", StringComparison.OrdinalIgnoreCase) + 1);
+            }
+            return retVal;
         }
     }
 }

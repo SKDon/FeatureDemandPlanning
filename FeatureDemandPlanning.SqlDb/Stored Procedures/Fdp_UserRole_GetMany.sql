@@ -3,4 +3,14 @@
 AS
 	SET NOCOUNT ON;
 
-	SELECT 1 AS FdpUserRoleId, N'Administrator' AS [Role], N'The user is an administrator and can perform all functions within the system' AS [Description]
+	SELECT 
+		  R.FdpUserRoleId
+		, R.[Role]
+		, R.[Description]
+	FROM
+	Fdp_User					AS U
+	JOIN Fdp_UserRoleMapping	AS M	ON	U.FdpUserId		= M.FdpUserId
+										AND M.IsActive		= 1
+	JOIN Fdp_UserRole			AS R	ON	M.FdpUserRoleId = R.FdpUserRoleId
+	WHERE
+	U.CDSId = @CDSId
