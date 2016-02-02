@@ -13,7 +13,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<User> SetAdministrator(User userToSet);
         Task<User> UnsetAdministrator(User userToUnset);
 
-        Task<User> GetUser();
+        User GetUser();
         Task<User> GetUser(UserFilter filter);
         IEnumerable<Permission> ListPermissions();
         IEnumerable<NameValuePair> ListPreferences();

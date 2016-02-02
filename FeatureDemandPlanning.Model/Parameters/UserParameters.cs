@@ -12,66 +12,51 @@ namespace FeatureDemandPlanning.Model.Parameters
         public int? ProgrammeId { get; set; }
         public bool? CanEditProgramme { get; set; }
         public bool? IsAdmin { get; set; }
+        public string Roles { get; set; }
 
         public UserParameters()
         {
             Action = UserAction.NotSet;
+            Roles = string.Empty;
         }
 
         public object GetActionSpecificParameters()
         {
-            if (Action == UserAction.EnableUser || Action == UserAction.DisableUser)
+            switch (Action)
             {
-                return new
-                {
-                    CDSId = CDSId
-                };
-            }
-
-            if (Action == UserAction.AddProgramme)
-            {
-                return new
-                {
-                    CDSId = CDSId,
-                    ProgrammeId = ProgrammeId,
-                    CanEditProgramme = CanEditProgramme
-                };
-            }
-
-            if (Action == UserAction.RemoveProgramme)
-            {
-                return new
-                {
-                    CDSId = CDSId,
-                    ProgrammeId = ProgrammeId
-                };
-            }
-
-            if (Action == UserAction.ManageProgrammes)
-            {
-                return new
-                {
-                    CDSId = CDSId,
-                    ProgrammeId = ProgrammeId
-                };
-            }
-
-            if (Action == UserAction.AddUser)
-            {
-                return new
-                {
-                    CDSId = CDSId,
-                    FullName = FullName,
-                    IsAdmin = IsAdmin.GetValueOrDefault()
-                };
-            }
-
-            if (Action == UserAction.SetAsAdministrator || Action == UserAction.UnsetAsAdministrator)
-            {
-                return new
-                {
-                    CDSId = CDSId
-                };
+                case UserAction.EnableUser:
+                case UserAction.DisableUser:
+                    return new
+                    {
+                        CDSId
+                    };
+                case UserAction.AddProgramme:
+                    return new
+                    {
+                        CDSId, ProgrammeId, CanEditProgramme
+                    };
+                case UserAction.RemoveProgramme:
+                    return new
+                    {
+                        CDSId, ProgrammeId
+                    };
+                case UserAction.ManageProgrammes:
+                    return new
+                    {
+                        CDSId, ProgrammeId
+                    };
+                case UserAction.AddUser:
+                    return new
+                    {
+                        CDSId, FullName,
+                        IsAdmin = IsAdmin.GetValueOrDefault()
+                    };
+                case UserAction.SetAsAdministrator:
+                case UserAction.UnsetAsAdministrator:
+                    return new
+                    {
+                        CDSId
+                    };
             }
 
             return new { };

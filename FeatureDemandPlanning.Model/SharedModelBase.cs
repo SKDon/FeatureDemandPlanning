@@ -103,7 +103,7 @@ namespace FeatureDemandPlanning.Model
         {
             return new SharedModelBase()
             {
-                CurrentUser = context.User.GetUser().Result,
+                CurrentUser = context.User.GetUser(),
                 CurrentVersion =  Assembly.GetExecutingAssembly().GetName().Version.ToString()
             };
         }

@@ -7,11 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FeatureDemandPlanning.Content.Errors
+namespace FeatureDemandPlanning
 {
 
 
-    public partial class Error403
+    public partial class Error401
     {
 
         /// <summary>

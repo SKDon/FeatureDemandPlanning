@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -64,6 +65,33 @@ namespace FeatureDemandPlanning.DataStore
             }
             return user;
         }
+
+        public IEnumerable<UserRole> FdpUserGetRoles(User forUser)
+        {
+            IList<UserRole> retVal = new List<UserRole>{UserRole.None};
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@CDSId", forUser.CDSId, DbType.String);
+                   
+                    var results = conn.Query<FdpUserRoleDataItem>("dbo.Fdp_UserRole_GetMany", para, commandType: CommandType.StoredProcedure);
+                    var fdpUserRoleDataItems = results as IList<FdpUserRoleDataItem> ?? results.ToList();
+                    if (fdpUserRoleDataItems.Any())
+                    {
+                        retVal = fdpUserRoleDataItems.Select(role => (UserRole) role.FdpUserRoleId).ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppHelper.LogError("SystemUserDS.FdpUserSave", ex.Message, CurrentCDSID);
+                    throw;
+                }
+            }
+
+            return retVal;
+        } 
 
         public PagedResults<User> FdpUserGetMany(UserFilter filter)
         {
@@ -251,6 +279,12 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-    }
 
+        private class FdpUserRoleDataItem
+        {
+            public int FdpUserRoleId  { get; set; }
+            public string Role { get; set; }
+            public string Description { get; set; }
+        }
+    }
 }

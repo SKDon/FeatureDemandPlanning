@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Web.UI;
 
-namespace FeatureDemandPlanning.Content.Errors
+namespace FeatureDemandPlanning
 {
-    public partial class Error403 : Page
+    public partial class NoSecurity : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {

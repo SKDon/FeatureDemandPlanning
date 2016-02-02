@@ -42,9 +42,12 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_userDataStore.FdpUserUnSetAdministrator(userToUnset));
         }
-        public async Task<User> GetUser()
+        public User GetUser()
         {
-            return await GetUser(new UserFilter { CDSId = CDSID });
+            var user = _userDataStore.FdpUserGet(new UserFilter { CDSId = CDSID});
+            user.Roles = _userDataStore.FdpUserGetRoles(user);
+
+            return user;
         }
         public async Task<User> GetUser(UserFilter filter)
         {

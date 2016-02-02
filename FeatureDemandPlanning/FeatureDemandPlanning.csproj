@@ -30,7 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -47,6 +47,10 @@
     </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentSecurity, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentSecurity.2.1.0\lib\net40\FluentSecurity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -173,29 +177,44 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="403.aspx.cs">
+    <Compile Include="DefaultSecurityPolicy.cs" />
+    <Compile Include="Error\403.aspx.cs">
       <DependentUpon>403.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="403.aspx.designer.cs">
+    <Compile Include="Error\403.aspx.designer.cs">
       <DependentUpon>403.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Error\401.aspx.cs">
+      <DependentUpon>401.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Error\401.aspx.designer.cs">
+      <DependentUpon>401.aspx</DependentUpon>
     </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="500.aspx.cs">
+    <Compile Include="Error\NoSecurity.aspx.cs">
+      <DependentUpon>NoSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Error\NoSecurity.aspx.designer.cs">
+      <DependentUpon>NoSecurity.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Error\500.aspx.cs">
       <DependentUpon>500.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="500.aspx.designer.cs">
+    <Compile Include="Error\500.aspx.designer.cs">
       <DependentUpon>500.aspx</DependentUpon>
     </Compile>
-    <Compile Include="404.aspx.cs">
+    <Compile Include="Error\404.aspx.cs">
       <DependentUpon>404.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="404.aspx.designer.cs">
+    <Compile Include="Error\404.aspx.designer.cs">
       <DependentUpon>404.aspx</DependentUpon>
     </Compile>
     <Compile Include="Controllers\AdminController.cs" />
@@ -221,14 +240,19 @@
     <Compile Include="Controllers\TakeRateDataController.cs" />
     <Compile Include="Controllers\TakeRateController.cs" />
     <Compile Include="CssRewriteUrlTransformFixed.cs" />
+    <Compile Include="CustomRoleProvider.cs" />
     <Compile Include="DataContextFactory.cs" />
     <Compile Include="Helpers\HtmlHelperExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="DefaultSecurityPolicyViolationHandler.cs" />
+    <Compile Include="RequireAnyRoleViolationHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="403.aspx" />
+    <Compile Include="SecurityHelper.cs" />
+    <Content Include="Error\403.aspx" />
+    <Content Include="Error\401.aspx" />
     <Content Include="Content\css\bootstrap.css" />
     <Content Include="Content\css\jquery.spin.css" />
     <Content Include="Content\js\bootstrap.js" />
@@ -245,8 +269,9 @@
     <Content Include="Content\js\jquery-1.12.0.js" />
     <Content Include="Content\js\jquery.dataTables.js" />
     <Content Include="Content\js\jquery.dataTables.rowGrouping.js" />
-    <Content Include="500.aspx" />
-    <Content Include="404.aspx" />
+    <Content Include="Error\NoSecurity.aspx" />
+    <Content Include="Error\500.aspx" />
+    <Content Include="Error\404.aspx" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Images\Brand\jag_logo.jpg" />
     <Content Include="Content\Images\Brand\jag_logo_transparent.png" />

@@ -1,5 +1,7 @@
-﻿using FeatureDemandPlanning.Model.Parameters;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using FeatureDemandPlanning.Model.Parameters;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -14,17 +16,23 @@ namespace FeatureDemandPlanning.Model
         public DateTime? CreatedOn { get; set; }
         public string CreatedBy { get; set; }
 
+        public IEnumerable<UserRole> Roles { get; set; }
+
+        public User()
+        {
+            Roles = Enumerable.Empty<UserRole>();
+        }
 
         public string[] ToJQueryDataTableResult()
         {
-            return new string[] 
+            return new[] 
             { 
                 FdpUserId.GetValueOrDefault().ToString(),
                 CDSId, 
                 FullName,
                 !string.IsNullOrEmpty(Programmes) ? Programmes : "-",
-                IsActive == true ? "YES" : "NO",
-                IsAdmin == true ? "YES" : "NO",
+                IsActive ? "YES" : "NO",
+                IsAdmin ? "YES" : "NO",
                 CreatedOn.HasValue ? CreatedOn.Value.ToString("dd/MM/yyyy HH:mm") : string.Empty,
                 CreatedBy
             };
@@ -36,7 +44,7 @@ namespace FeatureDemandPlanning.Model
             {
                 CDSId = parameters.CDSId,
                 FullName = parameters.FullName,
-                IsAdmin = parameters.IsAdmin.GetValueOrDefault()
+                IsAdmin = parameters.IsAdmin.GetValueOrDefault(),
             };
         }
     }
