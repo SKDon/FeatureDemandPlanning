@@ -1,5 +1,6 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_Feature_VW]
 AS
 
@@ -42,6 +43,7 @@ SELECT
 	, CAST(0 AS BIT)		AS IsFdpFeature
 	, E.Last_Updated		AS UpdatedOn
 	, E.Updated_By			AS UpdatedBy
+	, F.EFGName				AS ExclusiveFeatureGroup
 	
 FROM OXO_Programme_Feature_VW	AS F 
 JOIN OXO_Feature_Ext			AS E	ON F.FeatureCode	= E.Feat_Code
@@ -89,6 +91,7 @@ SELECT
 	, CAST(1 AS BIT)		AS IsFdpFeature
 	, F.UpdatedOn
 	, F.UpdatedBy
+	, CAST(NULL AS NVARCHAR(100)) AS ExclusiveFeatureGroup
 						
 FROM Fdp_Feature			AS F 
 JOIN OXO_Programme_VW		AS P ON F.ProgrammeId		= P.Id
@@ -128,6 +131,8 @@ SELECT
 	, CAST(0 AS BIT)		AS IsFdpFeature
 	, P.Last_Updated		AS UpdatedOn			
 	, P.Updated_By			AS UpdatedBy
+	, CAST(NULL AS NVARCHAR(100)) AS ExclusiveFeatureGroup
+	
 FROM OXO_Programme_Pack AS P
 JOIN Fdp_Gateways_VW	AS G	ON P.Programme_Id	= G.ProgrammeId
 JOIN OXO_Programme_VW	AS P1	ON P.Programme_Id	= P1.Id

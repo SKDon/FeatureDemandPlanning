@@ -3,16 +3,22 @@
 AS
 	SET NOCOUNT ON;
 	
-	DECLARE @IsVolumeUpdate BIT;
-	DECLARE @IsMarketUpdate BIT; -- Update performed at whole market level
-	DECLARE @IsModelUpdate BIT; -- Update performed at the model level as opposed to feature
-	DECLARE @IsFeatureUpdate BIT;
+	DECLARE @IsVolumeUpdate		BIT;
+	DECLARE @IsMarketUpdate		BIT; -- Update performed at whole market level
+	DECLARE @IsModelUpdate		BIT; -- Update performed at the model level as opposed to feature
+	DECLARE @IsFeatureUpdate	BIT;
+	DECLARE @FdpVolumeHeaderId	INT;
+	DECLARE @MarketId			INT;
+	DECLARE @CDSId				NVARCHAR(16);
 	
 	SELECT 
-		  @IsVolumeUpdate	= D.IsVolumeUpdate
-		, @IsMarketUpdate	= D.IsMarketUpdate
-		, @IsFeatureUpdate	= D.IsFeatureUpdate
-		, @IsModelUpdate	= D.IsModelUpdate
+		  @IsVolumeUpdate		= D.IsVolumeUpdate
+		, @IsMarketUpdate		= D.IsMarketUpdate
+		, @IsFeatureUpdate		= D.IsFeatureUpdate
+		, @IsModelUpdate		= D.IsModelUpdate
+		, @FdpVolumeHeaderId	= D.FdpVolumeHeaderId
+		, @MarketId				= D.MarketId
+		, @CDSId				= D.CDSId
 	FROM Fdp_ChangesetDataItem_VW AS D
 	WHERE
 	D.FdpChangesetDataItemId = @FdpChangesetDataItemId;
@@ -56,5 +62,9 @@ AS
 		PRINT 'Calculating feature mix for feature'
 		EXEC Fdp_ChangesetDataItem_CalculateFeatureMixForSingleFeature @FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	END
+	
+	-- Perform the validation on the current market
+	
+	EXEC Fdp_Validation_Validate @FdpVolumeHeaderId = @FdpVolumeHeaderId, @MarketId = @MarketId, @CDSId = @CDSId
 	
 	EXEC Fdp_ChangesetDataItem_Get @FdpChangesetDataItemId = @FdpChangesetDataItemId;

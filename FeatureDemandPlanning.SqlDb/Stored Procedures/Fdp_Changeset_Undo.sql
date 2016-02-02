@@ -8,6 +8,9 @@ AS
 	DECLARE @FdpVolumeDataItemId INT;
 	DECLARE @FdpTakeRateSummaryId INT;
 	DECLARE @FdpTakeRateFeatureMixId INT;
+	DECLARE @FdpVolumeHeaderId INT;
+	DECLARE @MarketId INT;
+	DECLARE @CDSId NVARCHAR(16);
 
 	DECLARE @UndoneChanges AS TABLE
 	(
@@ -36,6 +39,9 @@ AS
 		, @FdpVolumeDataItemId		= FdpVolumeDataItemId
 		, @FdpTakeRateSummaryId		= FdpTakeRateSummaryId
 		, @FdpTakeRateFeatureMixId  = FdpTakeRateFeatureMixId
+		, @FdpVolumeHeaderId		= FdpVolumeHeaderId
+		, @MarketId					= MarketId
+		, @CDSId					= CDSId
 	FROM
 	Fdp_ChangesetDataItem_VW
 	WHERE
@@ -162,6 +168,10 @@ AS
 	)
 	AND
 	@PriorFdpChangesetDataItemId IS NOT NULL
+	
+	-- Redo any validation
+	
+	EXEC Fdp_Validation_Validate @FdpVolumeHeaderId = @FdpVolumeHeaderId, @MarketId = @MarketId, @CDSId = @CDSId;
 
 	-- This dataset contains any  that have been undone so far as they have reverted to their original committed values
 	-- We need to use this to revert values in the UI without having to resort to reloading the page

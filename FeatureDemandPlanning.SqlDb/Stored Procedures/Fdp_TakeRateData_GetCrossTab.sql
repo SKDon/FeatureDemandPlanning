@@ -62,6 +62,7 @@ AS
 		, StringIdentifier		NVARCHAR(10)
 		, FeatureIdentifier		NVARCHAR(10)
 		, S INT
+		, ExclusiveFeatureGroup NVARCHAR(100)	NULL
 	);
 	CREATE TABLE #AggregateVolumeByFeature
 	(
@@ -241,6 +242,7 @@ AS
 			, M.StringIdentifier
 			, 'O' + CAST(FEA.FeatureId AS NVARCHAR(10)) AS FeatureIdentifier
 			, 1 AS S
+			, FEA.ExclusiveFeatureGroup
 			  
 		FROM Fdp_FeatureMapping_VW			AS FEA
 		JOIN #RawTakeRateData				AS D	ON		FEA.FeatureId	= D.FeatureId
@@ -279,6 +281,7 @@ AS
 			, M.StringIdentifier
 			, 'F' + CAST(FEA.FdpFeatureId AS NVARCHAR(10)) AS FeatureIdentifier
 			, 2 AS S
+			, FEA.ExclusiveFeatureGroup
 			  
 		FROM Fdp_FeatureMapping_VW		AS FEA
 		JOIN #RawTakeRateData			AS D	ON		FEA.FdpFeatureId	= D.FdpFeatureId
@@ -319,6 +322,7 @@ AS
 			  END
 			  AS FeatureIdentifier
 			, 3 AS S
+			, FEA.ExclusiveFeatureGroup
 			  
 		FROM Fdp_FeatureMapping_VW	AS FEA
 		JOIN #RawTakeRateData		AS D	ON		FEA.FeatureId	= D.FeatureId
@@ -359,6 +363,7 @@ AS
 			  END
 			  AS FeatureIdentifier
 			, 4 AS S
+			, FEA.ExclusiveFeatureGroup
 			  
 		FROM Fdp_FeatureMapping_VW	AS FEA
 		JOIN #RawTakeRateData		AS D	ON	FEA.FdpFeatureId	= D.FdpFeatureId
@@ -394,7 +399,8 @@ AS
 			, 'P' AS OxoCode
 			, M.StringIdentifier
 			, 'P' + CAST(FEA.FeaturePackId AS NVARCHAR(10)) AS FeatureIdentifier
-			, 2 AS S
+			, 5 AS S
+			, FEA.ExclusiveFeatureGroup
 			  
 		FROM Fdp_FeatureMapping_VW		AS FEA
 		JOIN #RawTakeRateData			AS D	ON		FEA.FeaturePackId	= D.FeaturePackId
@@ -434,7 +440,8 @@ AS
 		, OxoCode
 		, StringIdentifier	
 		, FeatureIdentifier
-		, S			
+		, S
+		, ExclusiveFeatureGroup			
 	)
 	SELECT 
 		  F.DisplayOrder
@@ -458,6 +465,7 @@ AS
 		, F.StringIdentifier
 		, F.FeatureIdentifier
 		, F.S
+		, F.ExclusiveFeatureGroup
 	FROM
 	TakeRateDataByFeature				AS F 
 	
@@ -518,7 +526,7 @@ AS
 	BEGIN
 		SET @Sql =		  'SELECT DATASET.*, ' + @ModelTotals + ' AS TotalVolume '				
 		SET @Sql = @Sql + 'FROM ( '
-		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, StringIdentifier, '
+		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, ExclusiveFeatureGroup, StringIdentifier, '
 		SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, ISNULL(Volume, 0) AS Volume '
 		SET @Sql = @Sql + 'FROM #TakeRateDataByFeature) AS S1 '
 		SET @Sql = @Sql + 'PIVOT ( '
@@ -530,7 +538,7 @@ AS
 	BEGIN
 		SET @Sql =		  'SELECT DATASET.*, dbo.fn_Fdp_PercentageTakeRate_Get(AggregatedVolume, ' + CAST(ISNULL(@FilteredVolume, 0) AS NVARCHAR(10)) + ') AS TotalPercentageTakeRate '
 		SET @Sql = @Sql + 'FROM ( '
-		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, StringIdentifier, '
+		SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, ExclusiveFeatureGroup, StringIdentifier, '
 		SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, PercentageTakeRate '
 		SET @Sql = @Sql + 'FROM #TakeRateDataByFeature) AS S2 '
 		SET @Sql = @Sql + 'LEFT JOIN #AggregateVolumeByFeature AS F ON S2.FeatureIdentifier = F.AggregatedFeatureIdentifier '
@@ -548,7 +556,7 @@ AS
 	
 	SET @Sql =		  'SELECT DATASET.* '				
 	SET @Sql = @Sql + 'FROM ( '
-	SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, StringIdentifier, '
+	SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, ExclusiveFeatureGroup, StringIdentifier, '
 	SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, OXOCode '
 	SET @Sql = @Sql + 'FROM #TakeRateDataByFeature) AS S3 '
 	SET @Sql = @Sql + 'PIVOT ( '
@@ -718,6 +726,24 @@ AS
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
+	
+	-- Exclusive feature groups
+	
+	SELECT RANK() OVER (ORDER BY F.EFGName) AS EfgId
+		, F.EFGName AS ExclusiveFeatureGroup
+		, F.FeatureCode
+		, F.ID AS FeatureId
+		, ISNULL(F.BrandDescription, F.SystemDescription) AS Feature
+		, F.FeatureGroup
+		, F.FeatureSubGroup
+	FROM
+	Fdp_VolumeHeader AS H
+	JOIN OXO_Doc	AS D ON H.DocumentId = D.Id
+	JOIN OXO_Programme_Feature_VW AS F ON D.Programme_Id = F.ProgrammeId
+	WHERE
+	H.FdpVolumeHeaderId = 2 --@FdpVolumeHeaderId
+	AND
+	F.EFGName IS NOT NULL
 	
 	-- Tidy up
 	

@@ -94,22 +94,25 @@ AS
 		  D.FdpVolumeHeaderId
 		, D.MarketId
 		, 8 -- Non-applicable feature 0%
-		, 'Take rate for non-applicable feature should be 0%'
+		, 'Take rate for non-applicable feature ''' + ISNULL(F.BrandDescription, F.[SystemDescription]) + ''' should be 0%'
 		, D.FdpVolumeDataItemId
 		, NULL
 		, NULL
 		, C.FdpChangesetDataItemId
 	FROM 
 	Fdp_VolumeDataItem_VW				AS D
+	JOIN OXO_Doc						AS O	ON	D.DocumentId			= O.Id
 	JOIN @Markets						AS M	ON	D.MarketId				= M.MarketId
 	JOIN @FeatureApplicability			AS FA	ON	D.MarketId				= FA.MarketId
 												AND D.ModelId				= FA.ModelId
 												AND	D.FeatureId				= FA.FeatureId
 												AND FA.OxoCode				LIKE '%NA%'
+	JOIN OXO_Programme_Feature_VW		AS F	ON	O.Programme_Id			= F.ProgrammeId
+												AND D.FeatureId				= F.ID
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	M.FdpChangesetId		= C.FdpChangesetId
 												AND D.FdpVolumeDataItemId	= C.FdpVolumeDataItemId
 	LEFT JOIN Fdp_Validation			AS V	ON	D.MarketId				= V.MarketId
-												AND D.FdpVolumeDataItemId	= D.FdpVolumeDataItemId
+												AND D.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
 												AND 
 												(
 													C.FdpChangesetDataItemId IS NULL

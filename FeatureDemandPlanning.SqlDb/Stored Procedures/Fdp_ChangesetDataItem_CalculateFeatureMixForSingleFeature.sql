@@ -156,7 +156,30 @@ AS
 										AND C.MarketId			= D.MarketId
 										AND C.FeaturePackId		= D.FeaturePackId
 	WHERE
-	C.FdpChangesetDataItemId = @FdpChangesetDataItemId;
+	C.FdpChangesetDataItemId = @FdpChangesetDataItemId
+	
+	UNION
+	
+	SELECT
+		  C1.FdpChangesetId
+		, C1.MarketId
+		, C1.ModelId
+		, C1.FdpModelId
+		, C1.FeatureId
+		, C1.FdpFeatureId
+		, C1.FeaturePackId
+		, C1.TotalVolume
+		, C1.PercentageTakeRate
+		, CAST(NULL AS INT)
+		, C1.FdpChangesetDataItemId
+	FROM
+	Fdp_ChangesetDataItem_VW AS C
+	JOIN Fdp_ChangesetDataItem_VW AS C1 ON C.FdpChangesetId = C1.FdpChangesetId
+										AND C.FeatureId		= C1.FeatureId
+										AND C1.FdpVolumeDataItemId IS NULL
+										AND C1.ModelId IS NOT NULL
+	WHERE
+	C.FdpChangesetDataItemId = @FdpChangesetDataItemId
 
 	
 	-- Replace all volume data rows with any changes from the changeset

@@ -26,9 +26,10 @@ AS
 	JOIN Fdp_TakeRateSummary			AS S	ON	D.ModelId				= S.ModelId
 												AND D.MarketId				= S.MarketId
 												AND D.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
-	-- Examine any uncommitted changes at feature level
+	-- Examine any uncommitted changes at feature level for the model
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	D.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
 												AND D.FeatureId				= C.FeatureId
+												AND D.ModelId				= C.ModelId
 												AND D.MarketId				= C.MarketId
 												AND C.IsFeatureUpdate		= 1
 												AND C.IsDeleted				= 0
@@ -74,6 +75,7 @@ AS
 	-- Examine any uncommitted changes at feature level
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	D.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
 												AND D.FeatureId				= C.FeatureId
+												AND D.FdpModelId			= C.FdpModelId
 												AND D.MarketId				= C.MarketId
 												AND C.IsFeatureUpdate		= 1
 												AND C.IsDeleted				= 0
@@ -118,6 +120,7 @@ AS
 												AND D.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
 	-- Examine any uncommitted changes at feature level
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	D.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
+												AND D.ModelId				= C.ModelId
 												AND D.FdpFeatureId			= C.FdpFeatureId
 												AND D.MarketId				= C.MarketId
 												AND C.IsFeatureUpdate		= 1
@@ -161,6 +164,7 @@ AS
 												AND D.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
 	-- Examine any uncommitted changes at feature level
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	D.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
+												AND D.FdpModelId			= C.FdpModelId
 												AND D.FdpFeatureId			= C.FdpFeatureId
 												AND D.MarketId				= C.MarketId
 												AND C.IsFeatureUpdate		= 1

@@ -95,7 +95,7 @@ AS
 		  D.FdpVolumeHeaderId
 		, D.MarketId
 		, 5 -- Standard feature 100%
-		, 'Take rate for standard feature ''' + F.[SystemDescription] + ''' should be 100%'
+		, 'Take rate for standard feature ''' + ISNULL(F.BrandDescription, F.[SystemDescription]) + ''' should be 100%'
 		, D.FdpVolumeDataItemId
 		, NULL
 		, NULL

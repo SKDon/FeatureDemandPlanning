@@ -9,11 +9,30 @@ BEGIN
 	-- Lower any validation errors for that document / market
 	-- This stops any validation errors that are no longer relevant from surfacing
 	
-	UPDATE Fdp_Validation SET IsActive = 0
+	-- Lower any changeset validation specifically for the user
+	
+	UPDATE V SET IsActive = 0
+	FROM
+	Fdp_ChangesetDataItem_VW	AS C
+	JOIN Fdp_Validation			AS V ON C.FdpChangesetDataItemId = V.FdpChangesetDataItemId
 	WHERE
-	FdpVolumeHeaderId = @FdpVolumeHeaderId
+	C.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	(@MarketId IS NULL OR MarketId = @MarketId);
+	(@MarketId IS NULL OR V.MarketId = @MarketId)
+	AND
+	C.CDSId = @CDSId
+	
+	-- Lower any global validation not associated with a changeset
+	
+	UPDATE V SET IsActive = 0
+	FROM
+	Fdp_Validation AS V
+	WHERE
+	V.FdpChangesetDataItemId IS NULL
+	AND
+	V.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	(@MarketId IS NULL OR V.MarketId = @MarketId)
 	
 	-- We have number of validation rules - Validate against each in turn, adding validation entries as necessary
 

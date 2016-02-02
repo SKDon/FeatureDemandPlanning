@@ -2,6 +2,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 	
 	SELECT
@@ -30,6 +31,7 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, CAST(NULL AS INT)		AS FdpFeatureMappingId
 		, F.UpdatedOn
 		, F.UpdatedBy 
+		, F.ExclusiveFeatureGroup
 	FROM
 	OXO_Programme			AS P
 	JOIN Fdp_Feature_VW		AS F	ON	P.Id = F.ProgrammeId
@@ -62,6 +64,7 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, M.FdpFeatureMappingId
 		, M.UpdatedOn
 		, M.UpdatedBy
+		, F.ExclusiveFeatureGroup
 	FROM
 	OXO_Programme					AS P 
 	JOIN Fdp_Feature_VW				AS F	ON	P.Id			= F.ProgrammeId
@@ -99,6 +102,7 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, M.FdpFeatureMappingId
 		, M.UpdatedOn
 		, M.UpdatedBy
+		, F.ExclusiveFeatureGroup
 	FROM
 	OXO_Programme					AS P 
 	JOIN Fdp_Feature_VW				AS F	ON	P.Id			= F.ProgrammeId

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Fdp_Validation_TakeRateOutOfRange
+﻿CREATE PROCEDURE [dbo].[Fdp_Validation_TakeRateOutOfRange]
 	  @FdpVolumeHeaderId	INT
 	, @MarketId				INT			 = NULL
 	, @CDSId				NVARCHAR(16) = NULL
@@ -21,13 +21,18 @@ AS
 		  D.FdpVolumeHeaderId
 		, D.MarketId
 		, 1 -- Take rates should be in the range 0-100%
-		, CASE WHEN D.PercentageTakeRate < 0 THEN 'Take rate below 0% is not allowed' ELSE 'Take rate above 100% is not allowed' END
+		, CASE WHEN D.PercentageTakeRate < 0 
+			THEN 'Take rate below 0% for feature ''' + ISNULL(F.BrandDescription, F.SystemDescription) + ''' is not allowed' 
+			ELSE 'Take rate above 100% for feature ''' + ISNULL(F.BrandDescription, F.SystemDescription) + ''' is not allowed' END
 		, D.FdpVolumeDataItemId
 		, NULL
 		, NULL
 		, C.FdpChangesetDataItemId
 	FROM 
 	Fdp_VolumeDataItem_VW				AS D
+	JOIN OXO_Doc						AS O	ON	D.DocumentId			= O.Id
+	JOIN OXO_Programme_Feature_VW		AS F	ON	O.Programme_Id			= F.ProgrammeId
+												AND D.FeatureId				= F.ID
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	D.FdpVolumeDataItemId	= C.FdpVolumeDataItemId
 	LEFT JOIN Fdp_Validation			AS V	ON	D.MarketId				= V.MarketId
 												AND D.FdpVolumeDataItemId	= D.FdpVolumeDataItemId
