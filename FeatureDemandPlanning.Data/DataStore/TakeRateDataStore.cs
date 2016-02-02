@@ -171,6 +171,19 @@ namespace FeatureDemandPlanning.DataStore
                         FeatureId = n.Field<int?>("FeatureId"),
                         FdpFeatureId = n.Field<int?>("FdpFeatureId")
                     });
+
+                    // 6. EFG
+
+                    retVal.ExclusiveFeatureGroups = ds.Tables[5].AsEnumerable().Select(efg => new ExclusiveFeatureGroup
+                    {
+                        //EfgId =  efg.Field<int>("EfgId"),
+                        Name = efg.Field<string>("ExclusiveFeatureGroup"),
+                        FeatureCode = efg.Field<string>("FeatureCode"),
+                        //FeatureId = efg.Field<int>("FeatureId"),
+                        Feature = efg.Field<string>("Feature"),
+                        //FeatureGroup = efg.Field<string>("FeatureGroup"),
+                        //FeatureSubGroup = efg.Field<string>("FeatureSubGroup")
+                    });
                 }
                 catch (Exception ex)
                 {

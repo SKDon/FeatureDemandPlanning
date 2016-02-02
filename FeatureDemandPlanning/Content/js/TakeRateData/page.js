@@ -30,7 +30,7 @@ model.Page = function (models) {
     };
     me.calcDataTableHeight = function () {
         var panelHeight = $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel").height();
-        return (panelHeight - 190) + "px";
+        return (panelHeight - 160) + "px";
     };
     me.configureChangeset = function () {
         privateStore[me.id].Changeset = new FeatureDemandPlanning.Volume.Changeset();
@@ -408,6 +408,7 @@ model.Page = function (models) {
     me.saveCallback = function () {
         me.setInitial(false);
         me.loadChangeset();
+        me.loadValidation();
     };
     me.loadChangeset = function () {
         getTakeRateDataModel().loadChangeset(me.loadChangesetCallback);
@@ -425,6 +426,9 @@ model.Page = function (models) {
         var featureIndicators = $(".feature-validation-error");
 
         model.setHasValidationErrors(validationData !== null && validationData.length > 0);
+        if (model.HasValidationErrors) {
+            $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", true);
+        }
 
         mainIndicator.hide();
         //marketIndicators.hide();
@@ -452,7 +456,7 @@ model.Page = function (models) {
                 selector = $("tbody span[data-target='FS|" + currentResult.DataTarget + "']");
             } else if (currentResult.IsModelValidation) {
                 $("thead th[data-target='MS|" + currentResult.DataTarget + "']")
-                    .children(0)
+                    .children(".model-validation-error")
                     .show()
                     .attr("data-content", currentResult.Message);
 
@@ -496,17 +500,17 @@ model.Page = function (models) {
                 displayValue = me.formatVolume(currentChange.Volume);
             }
             var selector;
-            if (currentChange.IsFeatureValidation) {
+            if (currentChange.IsFeatureSummary) {
                 selector = $("tbody span[data-target='FS|" + currentChange.DataTarget + "']");
-            } else if (currentChange.IsModelValidation) {
+            } else if (currentChange.IsModelSummary) {
                 selector = $("thead th[data-target='MS|" + currentChange.DataTarget + "']").last();
-            } else if (currentChange.IsWholeMarketValidation) {
+            } else if (currentChange.IsWholeMarketChange) {
                 selector = $(".input-filtered-volume");
             } else {
                 selector = $("tbody div[data-target='" + currentChange.DataTarget + "']");
             }
 
-            if (currentChange.IsWholeMarketValidation) {
+            if (currentChange.IsWholeMarketChange) {
                 selector.addClass(me.getEditedDataClass(currentChange)).val(displayValue);
             } else {
                 selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
@@ -687,6 +691,12 @@ model.Page = function (models) {
             $(".rule-item").not(this).popover("hide");
         });
 
+        $(".efg-item").popover({ html: true, title: "Exclusive Feature Group", container: "body", trigger: "hover" });
+
+        $(".efg-item").on("click", function () {
+            $(".efg-item").not(this).popover("hide");
+        });
+
         $(".feature-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover" });
         $(".feature-validation-error").on("click", function () {
             $(".feature-validation-error").not(this).popover("hide");
@@ -704,7 +714,9 @@ model.Page = function (models) {
     };
     me.configureDataTables = function () {
 
-        var table = $("#" + me.getIdentifierPrefix() + "_TakeRateData").DataTable({
+        var prefix = me.getIdentifierPrefix();
+        //$("#" + prefix + "_TakeRateDataPanel").hide();
+        var table = $("#" + prefix + "_TakeRateData").DataTable({
             serverSide: false,
             paging: false,
             ordering: false,

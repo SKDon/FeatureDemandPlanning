@@ -88,14 +88,15 @@
 @helper RenderUrlForMarketGroup(MarketGroup marketGroup)
 {
     var groupName = string.Format("{0} ({1})", marketGroup.GroupName, marketGroup.VariantCount);
-    @Html.ActionLink(groupName, "Index", new { takeRateId = Model.Document.TakeRateId, marketGroupId = marketGroup.Id, resultsMode = Model.Document.Mode },
-                    new { data_target = string.Format("MG|{0}", marketGroup.Id) });
+    <span>@groupName</span>
+    @*@Html.ActionLink(groupName, "Index", new { takeRateId = Model.Document.TakeRateId, marketGroupId = marketGroup.Id, resultsMode = Model.Document.Mode },
+                    new { data_target = string.Format("MG|{0}", marketGroup.Id) });*@
 }
 
 @helper RenderUrlForMarket(Market market)
 {
     var marketName = string.Format("{0} ({1})", market.Name, market.VariantCount);
     @Html.ActionLink(marketName, "Index", 
-        new { takeRateId = Model.Document.TakeRateId, marketId = market.Id, resultsMode = Model.Document.Mode }, 
-        new {data_target = string.Format("M|{0}", market.Id)});
+            new { takeRateId = Model.Document.TakeRateId, marketId = market.Id, resultsMode = Model.Document.Mode }, 
+            new {data_target = string.Format("M|{0}", market.Id)});
 }

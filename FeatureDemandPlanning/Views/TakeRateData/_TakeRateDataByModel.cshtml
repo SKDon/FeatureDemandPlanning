@@ -54,7 +54,6 @@
     else
     {
         <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
-            <div class="glyphicon glyphicon-alert validation-error model-validation-error" style="display:none" data-content=""></div>
             @{
                 var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.FirstOrDefault(s => s.StringIdentifier == availableModel.StringIdentifier);
                 var volume = "-";

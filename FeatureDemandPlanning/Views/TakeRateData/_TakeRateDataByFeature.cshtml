@@ -1,4 +1,5 @@
 ﻿@using System.Data
+@using System.Text
 @using enums = FeatureDemandPlanning.Model.Enumerations
 
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
@@ -40,6 +41,12 @@
         {
             <div class="indicator comment-item pull-right" data-toggle="popover" title="Comments" data-content="@(featureRow.Field<string>("FeatureComment"))">
                 <span class="glyphicon glyphicon-comment"></span>&nbsp;
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(featureRow.Field<string>("ExclusiveFeatureGroup")))
+        {
+            <div class="indicator efg-item pull-right" data-toggle="popover" title="Exclusive Feature Group: @(featureRow.Field<string>("ExclusiveFeatureGroup"))" data-content="@RenderExclusiveFeatureGroup(featureRow.Field<string>("ExclusiveFeatureGroup"))">
+                <span class="glyphicon glyphicon-link"></span>&nbsp;
             </div>
         }
     </td>
@@ -99,10 +106,13 @@
 
 
     var parsedFeatureApplicability = featureApplicability
-            .Replace("*", string.Empty)
-            .Replace("(", string.Empty)
-            .Replace(")", string.Empty);
-
+        .Replace("*", string.Empty)
+        .Replace("(", string.Empty)
+        .Replace(")", string.Empty)
+        .Replace("1-", string.Empty)
+        .Replace("2-", string.Empty)
+        .Replace("3-", string.Empty);
+        
     // If volume
     // 1. If no value and optional or standard (-)
     // 2. If no value and not applicable (N/A)
@@ -120,11 +130,11 @@
     if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
     {
         var value = dataItem.Field<decimal?>(modelIdentifier);
-        if (value.GetValueOrDefault() == 0 && parsedFeatureApplicability == "NA" && featureIdentifier.StartsWith("O"))
+        if (value.GetValueOrDefault() == 0 && (parsedFeatureApplicability == "NA" || string.IsNullOrEmpty(parsedFeatureApplicability)) && featureIdentifier.StartsWith("O"))
         {
-            dataText = "N/A";
+            dataText = "-";
         }
-        else if (value.HasValue)
+        else if (value.HasValue && !string.IsNullOrEmpty(parsedFeatureApplicability) && parsedFeatureApplicability != "NA")
         {
             dataText = value.Value.ToString("P2");
         }
@@ -136,7 +146,7 @@
         {
             dataText = "N/A";
         }
-        else if (value.HasValue)
+        else if (value.HasValue && !string.IsNullOrEmpty(parsedFeatureApplicability) && parsedFeatureApplicability != "NA")
         {
             dataText = value.Value.ToString("G");
         }
@@ -155,6 +165,19 @@
     {
         @(string.Empty)
     }
+}
+
+@helper RenderExclusiveFeatureGroup(string efg)
+{
+    var featuresInGroup = Model.Document.TakeRateData.ExclusiveFeatureGroups.Where(g => g.Name.Equals(efg));
+        //.OrderBy(g => g.Feature);
+    var sb = new StringBuilder();
+    foreach (var featureInGroup in featuresInGroup)
+    {
+        sb.Append(string.Format("{0} ({1})", featureInGroup.Feature, featureInGroup.FeatureCode));
+        sb.Append("<br/>");
+    }
+    @sb.ToString();
 }
 
 @helper RenderDataClass(string modelIdentifier, DataRow dataItem)

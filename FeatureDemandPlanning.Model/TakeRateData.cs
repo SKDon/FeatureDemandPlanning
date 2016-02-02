@@ -18,6 +18,7 @@ namespace FeatureDemandPlanning.Model
         public IEnumerable<DataRow> FeatureApplicabilityData { get; set; }
         public IEnumerable<ModelTakeRateSummary> TakeRateSummaryByModel { get; set; }
         public IEnumerable<TakeRateDataItemNote> NoteAvailability { get; set; }
+        public IEnumerable<ExclusiveFeatureGroup> ExclusiveFeatureGroups { get; set; } 
 
         public bool HasData
         {
@@ -30,6 +31,7 @@ namespace FeatureDemandPlanning.Model
             FeatureApplicabilityData = Enumerable.Empty<DataRow>();
             TakeRateSummaryByModel = Enumerable.Empty<ModelTakeRateSummary>();
             NoteAvailability = Enumerable.Empty<TakeRateDataItemNote>();
+            ExclusiveFeatureGroups = Enumerable.Empty<ExclusiveFeatureGroup>();
         }
     }
 }
