@@ -738,58 +738,59 @@ model.Page = function (models) {
                 var nGroup, nSubGroup, nCell, index, groupName, subGroupName;
                 var lastGroupName = "", lastSubGroupName = "", corrector = 0;
                 var nTrs = $("#" + me.getIdentifierPrefix() + "_TakeRateData tbody tr");
-                var iColspan = 0;
+                var rightColumns = nTrs.first().children().length;
 
                 for (var i = 0 ; i < nTrs.length ; i++) {
                     index = settings.page.info().start + i;
-                    groupName = $(nTrs[i]).attr("data-group"); //settings.data()[index][0];
+                    groupName = $(nTrs[i]).attr("data-group");
                     subGroupName = $(nTrs[i]).attr("data-subgroup");
 
-                    if (groupName !== lastGroupName) {
-                        /* Cell to insert into main table */
-                        nGroup = document.createElement("tr");
-                        nCell = document.createElement("td");
-                        nCell.colSpan = iColspan;
-                        nCell.className = "group";
-                        nCell.innerHTML = "&nbsp;";
-                        nGroup.appendChild(nCell);
-                        $(nGroup).attr("data-toggle", groupName);
-                        nTrs[i].parentNode.insertBefore(nGroup, nTrs[i]);
-                        $(nGroup).on("click", function () {
-                            var clickedGroup = $(this).attr("data-toggle");
-                            $("tbody tr[data-group='" + clickedGroup + "']").toggle();
-                        });
+                        if (groupName !== lastGroupName) {
+                            /* Cell to insert into main table */
+                            nGroup = document.createElement("tr");
+                            nCell = document.createElement("td");
+                            nCell.colSpan = rightColumns;
+                            nCell.className = "group";
+                            nCell.innerHTML = "&nbsp;";
+                            nGroup.appendChild(nCell);
+                            $(nGroup).attr("data-toggle", groupName);
+                            nTrs[i].parentNode.insertBefore(nGroup, nTrs[i]);
+                            $(nGroup).on("click", function() {
+                                var clickedGroup = $(this).attr("data-toggle");
+                                $("tbody tr[data-group='" + clickedGroup + "']").toggle();
+                            });
 
-                        /* Cell to insert into the frozen columns */
-                        nGroup = document.createElement("tr");
-                        nCell = document.createElement("td");
-                        nCell.className = "group";
-                        nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + groupName;
-                        nCell.colSpan = 4;
-                        $(nGroup).attr("data-toggle", groupName);
-                        nGroup.appendChild(nCell);
-                        $(nGroup).insertBefore($("tbody tr:eq(" + (i + corrector) + ")", left.body)[0]);
-                        $(nGroup).on("click", function (sender, eventArgs) {
-                            var clickedGroup = $(this).attr("data-toggle");
-                            var rows = $("tbody tr[data-group='" + clickedGroup + "']").toggle();
-                            if ($(rows[0]).is(":visible")) {
-                                $(this).find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
-                            }
-                            else {
-                                $(this).find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
-                            }
-                        });
+                            /* Cell to insert into the frozen columns */
+                            nGroup = document.createElement("tr");
+                            nCell = document.createElement("td");
+                            nCell.className = "group";
+                            nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + groupName;
+                            nCell.colSpan = 4;
+                            $(nGroup).attr("data-toggle", groupName);
+                            nGroup.appendChild(nCell);
+                            $(nGroup).insertBefore($("tbody tr:eq(" + (i + corrector) + ")", left.body)[0]);
+                            $(nGroup).on("click", function () {
+                                var clickedGroup = $(this).attr("data-toggle");
+                                var rows = $("tbody tr[data-group='" + clickedGroup + "']").toggle();
+                                if ($(rows[0]).is(":visible")) {
+                                    $(this).find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                                }
+                                else {
+                                    $(this).find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                                }
+                            });
 
-                        corrector++;
-                        lastGroupName = groupName;
-                    }
+                            corrector++;
+                            lastGroupName = groupName;
+                        }
+                    
 
                     if (subGroupName !== lastSubGroupName) {
                         if (subGroupName !== "") {
                             /* Cell to insert into main table */
                             nSubGroup = document.createElement("tr");
                             nCell = document.createElement("td");
-                            nCell.colSpan = iColspan;
+                            nCell.colSpan = rightColumns;
                             nCell.className = "sub-group";
                             nCell.innerHTML = "&nbsp;";
                             $(nSubGroup).attr("data-group", groupName)
@@ -811,7 +812,7 @@ model.Page = function (models) {
                             $(nSubGroup).attr("data-toggle", subGroupName);
                             nSubGroup.appendChild(nCell);
                             $(nSubGroup).insertBefore($("tbody tr:eq(" + (i + corrector) + ")", left.body)[0]);
-                            $(nSubGroup).on("click", function (sender, eventArgs) {
+                            $(nSubGroup).on("click", function () {
                                 var clickedGroup = $(this).attr("data-toggle");
                                 var rows = $("tbody tr[data-subgroup='" + clickedGroup + "']").toggle();
                                 if ($(rows[0]).is(":visible")) {
