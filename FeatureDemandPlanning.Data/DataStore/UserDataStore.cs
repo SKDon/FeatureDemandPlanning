@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Dapper;
@@ -23,7 +24,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             User retVal = new EmptyUser();
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -41,7 +42,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("SystemUserDS.FdpUserSave", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -65,7 +66,6 @@ namespace FeatureDemandPlanning.DataStore
             }
             return user;
         }
-
         public IEnumerable<UserRole> FdpUserGetRoles(User forUser)
         {
             IList<UserRole> retVal = new List<UserRole>{UserRole.None};
@@ -85,19 +85,62 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("SystemUserDS.FdpUserSave", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
+        public IEnumerable<UserMarketMapping> FdpUserMarketMappingsGetMany(User forUser)
+        {
+            IEnumerable<UserMarketMapping> retVal;
+            
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@CDSId", forUser.CDSId, DbType.String);
+
+                    retVal = conn.Query<UserMarketMapping>("dbo.Fdp_UserMarket_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
+        public IEnumerable<UserProgrammeMapping> FdpUserProgrammeMappingsGetMany(User forUser)
+        {
+            IEnumerable<UserProgrammeMapping> retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@CDSId", forUser.CDSId, DbType.String);
+
+                    retVal = conn.Query<UserProgrammeMapping>("dbo.Fdp_UserProgramme_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
 
             return retVal;
         } 
-
         public PagedResults<User> FdpUserGetMany(UserFilter filter)
         {
-            PagedResults<User> retVal = null;
+            PagedResults<User> retVal;
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -123,7 +166,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.Value, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
@@ -140,31 +183,27 @@ namespace FeatureDemandPlanning.DataStore
 
                     var results = conn.Query<User>("dbo.Fdp_User_GetMany", para, commandType: CommandType.StoredProcedure);
 
-                    if (results.Any())
+                    var enumerable = results as IList<User> ?? results.ToList();
+                    if (enumerable.Any())
                     {
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
                     retVal = new PagedResults<User>
                     {
-                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        PageIndex = filter.PageIndex ?? 1,
                         TotalRecords = totalRecords,
                         TotalDisplayRecords = totalDisplayRecords,
-                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                        PageSize = filter.PageSize ?? totalRecords
                     };
 
-                    var currentPage = new List<User>();
-
-                    foreach (var result in results)
-                    {
-                        currentPage.Add(result);
-                    }
+                    var currentPage = enumerable.ToList();
 
                     retVal.CurrentPage = currentPage;
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("SysteUserDS.FdpUserGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -175,7 +214,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             User retVal = new EmptyUser();
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -185,14 +224,15 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<User>("dbo.Fdp_User_SetIsActive", para, commandType: CommandType.StoredProcedure);
-                    if (results.Any())
+                    var enumerable = results as IList<User> ?? results.ToList();
+                    if (enumerable.Any())
                     {
-                        retVal = results.First();
+                        retVal = enumerable.First();
                     }
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("SystemUserDS.FdpUserEnable", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -202,7 +242,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             User retVal = new EmptyUser();
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -212,14 +252,15 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<User>("dbo.Fdp_User_SetIsActive", para, commandType: CommandType.StoredProcedure);
-                    if (results.Any())
+                    var enumerable = results as IList<User> ?? results.ToList();
+                    if (enumerable.Any())
                     {
-                        retVal = results.First();
+                        retVal = enumerable.First();
                     }
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("SystemUserDS.FdpUserDisable", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -229,7 +270,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             User retVal = new EmptyUser();
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -239,14 +280,15 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<User>("dbo.Fdp_User_SetIsAdmin", para, commandType: CommandType.StoredProcedure);
-                    if (results.Any())
+                    var enumerable = results as IList<User> ?? results.ToList();
+                    if (enumerable.Any())
                     {
-                        retVal = results.First();
+                        retVal = enumerable.First();
                     }
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("SystemUserDS.FdpUserSetAdministrator", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }
@@ -256,7 +298,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             User retVal = new EmptyUser();
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -266,14 +308,15 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<User>("dbo.Fdp_User_SetIsAdmin", para, commandType: CommandType.StoredProcedure);
-                    if (results.Any())
+                    var enumerable = results as IList<User> ?? results.ToList();
+                    if (enumerable.Any())
                     {
-                        retVal = results.First();
+                        retVal = enumerable.First();
                     }
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("SystemUserDS.FdpUserUnSetAdministrator", ex.Message, CurrentCDSID);
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
                     throw;
                 }
             }

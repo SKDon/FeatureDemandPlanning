@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FeatureDemandPlanning.Model.Extensions;
+using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Parameters;
 
 namespace FeatureDemandPlanning.Model
@@ -12,15 +14,18 @@ namespace FeatureDemandPlanning.Model
         public string FullName { get; set; }
         public bool IsActive { get; set; }
         public bool IsAdmin { get; set; }
-        public string Programmes { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string CreatedBy { get; set; }
 
         public IEnumerable<UserRole> Roles { get; set; }
+        public IEnumerable<UserMarketMapping> Markets { get; set; }
+        public IEnumerable<UserProgrammeMapping> Programmes { get; set; } 
 
         public User()
         {
             Roles = Enumerable.Empty<UserRole>();
+            Programmes = Enumerable.Empty<UserProgrammeMapping>();
+            Markets = Enumerable.Empty<UserMarketMapping>();
         }
 
         public string[] ToJQueryDataTableResult()
@@ -30,11 +35,12 @@ namespace FeatureDemandPlanning.Model
                 FdpUserId.GetValueOrDefault().ToString(),
                 CDSId, 
                 FullName,
-                !string.IsNullOrEmpty(Programmes) ? Programmes : "-",
+                Programmes.ToCommaSeperatedString(),
                 IsActive ? "YES" : "NO",
                 IsAdmin ? "YES" : "NO",
                 CreatedOn.HasValue ? CreatedOn.Value.ToString("dd/MM/yyyy HH:mm") : string.Empty,
-                CreatedBy
+                CreatedBy,
+                Markets.ToCommaSeperatedString()
             };
         }
 

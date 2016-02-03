@@ -10,6 +10,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<IEnumerable<Market>> ListAvailableMarkets();
         Task<IEnumerable<Market>> ListTopMarkets();
 
+        Market GetMarket(int marketId);
         Market GetMarket(TakeRateFilter filter);
         MarketGroup GetMarketGroup(TakeRateFilter filter);
         

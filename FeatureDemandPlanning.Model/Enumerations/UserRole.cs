@@ -1,4 +1,4 @@
-﻿namespace FeatureDemandPlanning.Model
+﻿namespace FeatureDemandPlanning.Model.Enumerations
 {
     public enum UserRole
     {

@@ -1,156 +1,92 @@
-﻿CREATE PROCEDURE dbo.Fdp_MarketGroup_GetMany
-	@DocumentId INT
+﻿CREATE PROCEDURE [dbo].[Fdp_MarketGroup_GetMany]
+  @DocumentId int,	
+  @CDSId NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
-
-	WITH Models AS
-	(
-		SELECT
-			  MG.MarketGroupId
-			, SUM(OxoVariantCount) AS OxoVariantCount
-			, SUM(FdpVariantCount) AS FdpVariantCount
-			, SUM(OxoVariantCount) + SUM(FdpVariantCount) AS VariantCount
-		FROM
+	
+	DECLARE @ProgrammeId AS INT;
+	
+	SELECT TOP 1 @ProgrammeId = Programme_Id
+	FROM OXO_Doc 
+	WHERE Id = @DocumentId;
+	
+		WITH models AS
 		(
-			SELECT 
-				  D1.Market_Group_Id			AS MarketGroupId
-				, COUNT(DISTINCT D1.Model_Id) AS OxoVariantCount
-				, 0 AS FdpVariantCount
-			FROM 
-			Fdp_VolumeHeader			AS H
-			JOIN OXO_Doc				AS D	ON	H.DocumentId	= D.Id
-			JOIN OXO_Programme_Model	AS M	ON	D.Programme_Id	= M.Programme_Id
-												AND M.Active		= 1
-			JOIN OXO_Item_Data_MBM		AS D1	ON	M.Id			= D1.Model_Id
-			WHERE
-			D.Id = @DocumentId
-			GROUP BY
-			D1.Market_Group_Id
-
-			UNION
-
-			SELECT
-					D1.MarketGroupId
-					, 0 AS OxoVariantCount
-					, COUNT(DISTINCT D1.FdpModelId) AS FdpVariantCount
-			FROM
-			Fdp_VolumeHeader			AS H
-			JOIN OXO_Doc				AS D	ON	H.DocumentId	= D.Id
-			JOIN Fdp_Model_VW			AS M	ON	D.Programme_Id	= M.ProgrammeId
-												AND D.Gateway		= M.Gateway
-			JOIN Fdp_VolumeDataItem		AS D1	ON	M.FdpModelId	= D1.FdpModelId
-			WHERE
-			D.Id = @DocumentId
-			GROUP BY
-			D1.MarketGroupId
-		)
-		AS MG
-		GROUP BY
-		MG.MarketGroupId
-	)
-	, MarketGroups AS
-	(
-		SELECT 
-			  DISTINCT 'Programme'	AS [Type]
-			, M.Market_Group_Id		AS Id
-			, D.Programme_Id		AS ProgrammeId
-			, M.Market_Group_Name	AS GroupName
-			, M.Display_Order
-		FROM
-		Fdp_VolumeHeader						AS H
-		JOIN OXO_Doc							AS D ON H.DocumentId	= H.DocumentId
-		JOIN OXO_Programme_MarketGroupMarket_VW AS M ON D.Programme_Id	= M.Programme_Id
-		WHERE
-		D.Id = @DocumentId	
-	)	
-		
-	SELECT 
-		  G.[Type]
-		, G.Id
-		, G.ProgrammeId
-		, G.GroupName
-		, G.Display_Order
-		, ISNULL(M.VariantCount, 0) AS VariantCount
-	FROM 
-	MarketGroups		AS G
-	LEFT JOIN Models	AS M	ON G.Id = M.MarketGroupId
-	ORDER BY 
-	Display_Order;
+			SELECT COUNT(Distinct OD.Model_Id) VariantCount,  
+				   OD.Market_Group_Id
+			FROM OXO_Item_Data_MBM OD WITH(NOLOCK)
+			INNER JOIN OXO_Programme_Model V WITH(NOLOCK)
+			ON V.Id = OD.Model_Id
+			AND V.Active = 1 
+			AND V.Programme_Id = @ProgrammeId
+			WHERE 
+			OD.OXO_Doc_Id = @DocumentId
+			AND OD.OXO_Code = 'Y'
+			AND OD.Active = 1
+			GROUP BY OD.Market_Group_Id
+		), marketGroups AS
+		(
+			SELECT Distinct 'Programme' AS Type,
+			Market_Group_Id  AS Id,
+			Programme_Id AS ProgrammeId,
+			Market_Group_Name AS GroupName,
+			Display_Order
+			FROM OXO_Programme_MarketGroupMarket_VW
+			WHERE Programme_Id = @ProgrammeId
+		)		
+		SELECT G.Type, G.Id, G.ProgrammeId, G.GroupName, G.Display_Order, ISNULL(M.VariantCount,0) AS VariantCount
+		FROM marketGroups G
+		LEFT OUTER JOIN models M
+		ON G.Id = M.Market_Group_Id
+		ORDER BY Display_Order;
 	    		    
-	WITH Models AS
-	(
-		SELECT
-			  M.MarketId
-			, SUM(M.OxoVariantCount) AS OxoVariantCount
-			, SUM(M.FdpVariantCount) AS FdpVariantCount
-			, SUM(M.OxoVariantCount) + SUM(FdpVariantCount) AS VariantCount
-		FROM
-		(
-			SELECT 
-				  D1.Market_Id					AS MarketId
-				, COUNT(DISTINCT D1.Model_Id)	AS OxoVariantCount
-				, 0 AS FdpVariantCount
-			FROM 
-			Fdp_VolumeHeader			AS H
-			JOIN OXO_Doc				AS D	ON	H.DocumentId	= D.Id
-			JOIN OXO_Programme_Model	AS M	ON	D.Programme_Id	= M.Programme_Id
-												AND M.Active		= 1
-			JOIN OXO_Item_Data_MBM		AS D1	ON	M.Id			= D1.Model_Id
-			WHERE
-			D.Id = @DocumentId
-			GROUP BY
-			D1.Market_Id
-
-			UNION
-
-			SELECT
-				  D1.MarketId
-				, 0 AS OxoVariantCount
-				, COUNT(DISTINCT D1.FdpModelId) AS FdpVariantCount
-			FROM
-			Fdp_VolumeHeader			AS H
-			JOIN OXO_Doc				AS D	ON	H.DocumentId	= D.Id
-			JOIN Fdp_Model_VW			AS M	ON	D.Programme_Id	= M.ProgrammeId
-												AND D.Gateway		= M.Gateway
-			JOIN Fdp_VolumeDataItem		AS D1	ON	M.FdpModelId	= D1.FdpModelId
-			WHERE
-			D.Id = @DocumentId
-			GROUP BY
-			D1.MarketId
-		)
-		AS M
-		GROUP BY
-		M.MarketId
-	)
-	, Markets AS
-	(
-		SELECT Distinct 
-			M.Market_Id,
-			M.Market_Name,
-			M.WHD AS WHD,
-			M.PAR AS PAR_X,
-			M.PAR AS PAR_L,
-			M.Market_Group_Id,
-			M.SubRegion,
-			M.SubRegionOrder
-		FROM 
-		Fdp_VolumeHeader						AS H
-		JOIN OXO_Doc							AS D	ON	H.DocumentId	= D.Id
-		JOIN OXO_Programme_MarketGroupMarket_VW AS M	ON	D.Programme_Id	= M.Programme_Id
-		WHERE 
-		D.Id = @DocumentId	
-	)
-	SELECT 
-		  MK.Market_Id			AS Id
-		, MK.Market_Name		AS Name
-		, MK.WHD
-		, MK.PAR_X
-		, MK.PAR_L
-		, MK.Market_Group_Id	AS ParentId
-		, MK.SubRegion
-		, MK.SubRegionOrder
-		, ISNULL(M.VariantCount, 0) AS VariantCount  
-	FROM Markets MK
-	LEFT JOIN Models M ON MK.Market_Id = M.MarketId
-	ORDER BY 
-	ParentId, SubRegionOrder, SubRegion, Name;
+		
+			WITH models AS
+			(
+				SELECT COUNT(Distinct OD.Model_Id) VariantCount,  
+					   OD.Market_Id
+				FROM OXO_Item_Data_MBM OD WITH(NOLOCK)
+				INNER JOIN OXO_Programme_Model V WITH(NOLOCK)
+				ON V.Id = OD.Model_Id
+				AND V.Active = 1 
+				AND V.Programme_Id = @ProgrammeId
+				WHERE OD.OXO_Doc_Id = @DocumentId
+				AND OD.OXO_Code = 'Y'
+				AND OD.Active = 1
+				GROUP BY OD.Market_Id
+			)
+			, AvailableMarkets AS
+			(
+				SELECT U.FdpUserId, M.MarketId
+				FROM
+				Fdp_User AS U
+				JOIN Fdp_UserMarketMapping AS M ON U.FdpUserId = M.FdpUserId
+												AND M.IsActive = 1
+				WHERE
+				U.CDSId = @CDSId
+				GROUP BY
+				U.FdpUserId, M.MarketId
+			)
+			, markets AS
+			(
+				SELECT Distinct 
+					M.Market_Id AS Id,
+					M.Market_Name AS Name,
+					M.WHD AS WHD,
+					M.PAR AS PAR_X,
+					M.PAR AS PAR_L,
+					M.Market_Group_Id AS ParentId,
+					M.SubRegion AS SubRegion,
+					M.SubRegionOrder
+				FROM OXO_Programme_MarketGroupMarket_VW AS M WITH(NOLOCK)
+				JOIN AvailableMarkets AS SEC ON M.Market_Id = SEC.MarketId
+				WHERE Programme_Id = @ProgrammeId
+			)
+			SELECT MK.Id, MK.Name, MK.WHD AS WHD,
+				   MK.PAR_X, MK.PAR_L, MK.ParentId,
+				   MK.SubRegion, MK.SubRegionOrder,
+				   ISNULL(M.VariantCount,0) AS VariantCount  
+			FROM markets MK
+			LEFT OUTER JOIN models M
+			ON MK.Id = M.Market_Id
+			ORDER BY ParentId, SubRegionOrder, SubRegion, Name;

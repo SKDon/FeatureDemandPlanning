@@ -46,6 +46,8 @@ namespace FeatureDemandPlanning.DataStore
         {
             var user = _userDataStore.FdpUserGet(new UserFilter { CDSId = CDSID});
             user.Roles = _userDataStore.FdpUserGetRoles(user);
+            user.Markets = _userDataStore.FdpUserMarketMappingsGetMany(user);
+            user.Programmes = _userDataStore.FdpUserProgrammeMappingsGetMany(user);
 
             return user;
         }

@@ -1,11 +1,9 @@
-﻿using System.Reflection;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using FluentSecurity;
-using log4net;
 
-namespace FeatureDemandPlanning
+namespace FeatureDemandPlanning.Security
 {
-    public class DefaultSecurityPolicyViolationHandler : IPolicyViolationHandler
+    public class DefaultSecurityPolicyViolationHandler : PolicyViolationHandlerBase, IPolicyViolationHandler
     {
         public ActionResult Handle(PolicyViolationException exception)
         {
@@ -13,7 +11,5 @@ namespace FeatureDemandPlanning
             // A friendly page saying that this page hasn't been configured correctly
             return new RedirectResult("~/Error/NoSecurity.aspx");
         }
-
-        protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

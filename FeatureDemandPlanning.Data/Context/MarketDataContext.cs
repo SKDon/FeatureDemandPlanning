@@ -33,6 +33,10 @@ namespace FeatureDemandPlanning.DataStore
             return await Task.FromResult(_marketDataStore.TopMarketGetMany()
                 .OrderBy(m => m.Name));
         }
+        public Market GetMarket(int marketId)
+        {
+            return _marketDataStore.MarketGet(marketId);
+        }
         public Market GetMarket(TakeRateFilter filter)
         {
             if (!filter.MarketId.HasValue || !filter.TakeRateId.HasValue)

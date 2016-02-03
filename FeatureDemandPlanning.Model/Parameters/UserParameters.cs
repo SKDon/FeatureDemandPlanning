@@ -16,50 +16,50 @@ namespace FeatureDemandPlanning.Model.Parameters
 
         public UserParameters()
         {
-            Action = UserAction.NotSet;
+            Action = UserAction.NoAction;
             Roles = string.Empty;
         }
 
         public object GetActionSpecificParameters()
         {
-            switch (Action)
-            {
-                case UserAction.EnableUser:
-                case UserAction.DisableUser:
-                    return new
-                    {
-                        CDSId
-                    };
-                case UserAction.AddProgramme:
-                    return new
-                    {
-                        CDSId, ProgrammeId, CanEditProgramme
-                    };
-                case UserAction.RemoveProgramme:
-                    return new
-                    {
-                        CDSId, ProgrammeId
-                    };
-                case UserAction.ManageProgrammes:
-                    return new
-                    {
-                        CDSId, ProgrammeId
-                    };
-                case UserAction.AddUser:
-                    return new
-                    {
-                        CDSId, FullName,
-                        IsAdmin = IsAdmin.GetValueOrDefault()
-                    };
-                case UserAction.SetAsAdministrator:
-                case UserAction.UnsetAsAdministrator:
-                    return new
-                    {
-                        CDSId
-                    };
-            }
+            //switch (Action)
+            //{
+            //    case UserAction.EnableUser:
+            //    case UserAction.DisableUser:
+            //        return new
+            //        {
+            //            CDSId
+            //        };
+            //    case UserAction.AddProgramme:
+            //        return new
+            //        {
+            //            CDSId, ProgrammeId, CanEditProgramme
+            //        };
+            //    case UserAction.RemoveProgramme:
+            //        return new
+            //        {
+            //            CDSId, ProgrammeId
+            //        };
+            //    case UserAction.ManageProgrammes:
+            //        return new
+            //        {
+            //            CDSId, ProgrammeId
+            //        };
+            //    case UserAction.AddUser:
+            //        return new
+            //        {
+            //            CDSId, FullName,
+            //            IsAdmin = IsAdmin.GetValueOrDefault()
+            //        };
+            //    case UserAction.SetAsAdministrator:
+            //    case UserAction.UnsetAsAdministrator:
+            //        return new
+            //        {
+            //            CDSId
+            //        };
+            //}
 
-            return new { };
+            return new { CDSId, FullName, ProgrammeId, IsAdmin = IsAdmin.GetValueOrDefault()};
         }
     }
 }

@@ -321,3 +321,63 @@ WHEN NOT MATCHED BY SOURCE THEN
 
 	-- Delete type rows that are no longer required
 	DELETE;
+
+/* Fdp_UserRole */
+PRINT 'Fdp_UserRole'
+
+MERGE INTO Fdp_UserRole AS TARGET
+USING (VALUES
+	  (0, N'None', N'No role defined')
+	, (1, N'User', N'Standard user with no additional permissions')
+	, (2, N'Viewer', N'User can view take rate files')
+	, (3, N'Editor', N'User can edit take rate files')
+	, (4, N'MarketReviewer', N'User can edit data for a take rate file when at the market review stage')
+	, (5, N'Administrator', N'User can perform all system operations, although still needs to be granted appropriate access to markets / programmes')
+	, (6, N'Importer', N'User can import take rate data from PPO files')
+)
+AS SOURCE (FdpUserRoleId, [Role], [Description]) ON TARGET.FdpUserRoleId = SOURCE.FdpUserRoleId
+WHEN MATCHED THEN
+
+	-- Update existing rows
+	UPDATE SET 
+		  [Role]			= SOURCE.[Role]
+		, [Description]		= SOURCE.[Description]
+
+WHEN NOT MATCHED BY TARGET THEN
+
+	-- Insert new type rows
+	INSERT (FdpUserRoleId, [Role], [Description])
+	VALUES (FdpUserRoleId, [Role], [Description])
+
+WHEN NOT MATCHED BY SOURCE THEN
+
+	-- Delete type rows that are no longer required
+	DELETE;
+
+/* Fdp_UserAction */
+PRINT 'Fdp_UserAction'
+
+MERGE INTO Fdp_UserAction AS TARGET
+USING (VALUES
+	  (0, N'None', N'No action defined')
+	, (1, N'View', N'User can view the specified programme / market')
+	, (2, N'Edit', N'User can edit the specified programme / market')
+)
+AS SOURCE (FdpUserActionId, [Action], [Description]) ON TARGET.FdpUserActionId = SOURCE.FdpUserActionId
+WHEN MATCHED THEN
+
+	-- Update existing rows
+	UPDATE SET 
+		  [Action]			= SOURCE.[Action]
+		, [Description]		= SOURCE.[Description]
+
+WHEN NOT MATCHED BY TARGET THEN
+
+	-- Insert new type rows
+	INSERT (FdpUserActionId, [Action], [Description])
+	VALUES (FdpUserActionId, [Action], [Description])
+
+WHEN NOT MATCHED BY SOURCE THEN
+
+	-- Delete type rows that are no longer required
+	DELETE;

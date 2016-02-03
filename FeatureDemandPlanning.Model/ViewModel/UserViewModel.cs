@@ -38,7 +38,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             var model = await GetModel(context, filter);
             model.CurrentAction = action;
-            if (action != UserAction.NotSet)
+            if (action != UserAction.NoAction)
             {
                 model.IdentifierPrefix = Enum.GetName(action.GetType(), action);
             }

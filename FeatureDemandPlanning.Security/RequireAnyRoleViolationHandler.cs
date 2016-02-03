@@ -1,12 +1,9 @@
-﻿using System.Reflection;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using FluentSecurity;
-using log4net;
 
-namespace FeatureDemandPlanning
+namespace FeatureDemandPlanning.Security
 {
-    public class RequireAnyRolePolicyViolationHandler : IPolicyViolationHandler
+    public class RequireAnyRolePolicyViolationHandler : PolicyViolationHandlerBase, IPolicyViolationHandler
     {
         public ActionResult Handle(PolicyViolationException exception)
         {
@@ -15,7 +12,5 @@ namespace FeatureDemandPlanning
             // We can't have this as the user is already authenticated
             return new RedirectResult("~/Error/403.aspx");
         }
-
-        protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

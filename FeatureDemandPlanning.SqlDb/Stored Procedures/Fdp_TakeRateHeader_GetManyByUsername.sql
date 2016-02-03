@@ -26,6 +26,19 @@ AS
 		  RowIndex	INT IDENTITY(1,1)
 		, TakeRateId INT
 	);
+	WITH AllowedProgrammes AS
+	(
+		SELECT U.FdpUserId, M.ProgrammeId
+		FROM
+		Fdp_User AS U
+		JOIN Fdp_UserProgrammeMapping AS M ON U.FdpUserId = M.FdpUserId
+		WHERE
+		U.CDSId = @CDSId
+		AND
+		M.IsActive = 1
+		GROUP BY
+		U.FdpUserId, M.ProgrammeId
+	)
 	INSERT INTO @PageRecords 
 	(
 		TakeRateId
@@ -34,6 +47,7 @@ AS
 	FROM Fdp_VolumeHeader		AS V
 	JOIN OXO_Doc				AS D	ON V.DocumentId		= D.Id
 	JOIN OXO_Programme_VW		AS P	ON D.Programme_Id	= P.Id
+	JOIN AllowedProgrammes		AS SEC	ON D.Programme_Id	= SEC.ProgrammeId
 	WHERE
 	(ISNULL(@FilterMessage, '') = '' 
 		OR P.VehicleName LIKE '%' + @FilterMessage + '%'

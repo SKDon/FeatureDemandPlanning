@@ -290,7 +290,10 @@
     <Build Include="Stored Procedures\Fdp_User_Save.sql" />
     <Build Include="Stored Procedures\Fdp_User_SetIsActive.sql" />
     <Build Include="Stored Procedures\Fdp_User_SetIsAdmin.sql" />
-    <Build Include="Stored Procedures\Fdp_UserProgramme_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_UserProgramme_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_VolumeHeader_GetManyByOxoDocId.sql" />
     <Build Include="Views\Fdp_SpecialFeatureMapping_VW.sql">
       <AnsiNulls>On</AnsiNulls>
@@ -747,6 +750,15 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Tables\Fdp_UserMarketMapping.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_UserAction.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_UserMarket_GetMany.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">

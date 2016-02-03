@@ -18,6 +18,7 @@ namespace FeatureDemandPlanning.DataStore
             _documentDataStore = new OXODocDataStore(cdsId);
             _takeRateDataStore = new TakeRateDataStore(cdsId);
             _marketGroupDataStore = new MarketGroupDataStore(cdsId);
+            _programmeDataStore = new ProgrammeDataStore(cdsId);
         }
 
         #endregion
@@ -196,6 +197,10 @@ namespace FeatureDemandPlanning.DataStore
                 ValidationResults = enumerable
             };
         }
+        public async Task<Programme> GetProgramme(TakeRateFilter takeRateFilter)
+        {
+            return await Task.FromResult(_programmeDataStore.ProgrammeGet(takeRateFilter.ProgrammeId.GetValueOrDefault()));
+        }
 
         #endregion
 
@@ -219,6 +224,7 @@ namespace FeatureDemandPlanning.DataStore
         private readonly OXODocDataStore _documentDataStore;
         private readonly TakeRateDataStore _takeRateDataStore;
         private readonly MarketGroupDataStore _marketGroupDataStore;
+        private readonly ProgrammeDataStore _programmeDataStore;
 
         #endregion
     }

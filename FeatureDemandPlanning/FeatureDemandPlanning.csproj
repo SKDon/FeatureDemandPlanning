@@ -177,7 +177,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefaultSecurityPolicy.cs" />
+    <Compile Include="Error\NoProgrammeAccess.aspx.cs">
+      <DependentUpon>NoProgrammeAccess.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Error\NoProgrammeAccess.aspx.designer.cs">
+      <DependentUpon>NoProgrammeAccess.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Error\NoMarketAccess.aspx.cs">
+      <DependentUpon>NoMarketAccess.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Error\NoMarketAccess.aspx.designer.cs">
+      <DependentUpon>NoMarketAccess.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Error\403.aspx.cs">
       <DependentUpon>403.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -240,19 +253,16 @@
     <Compile Include="Controllers\TakeRateDataController.cs" />
     <Compile Include="Controllers\TakeRateController.cs" />
     <Compile Include="CssRewriteUrlTransformFixed.cs" />
-    <Compile Include="CustomRoleProvider.cs" />
     <Compile Include="DataContextFactory.cs" />
-    <Compile Include="HasAccessToMarketPolicy.cs" />
-    <Compile Include="HasAccessToProgrammePolicy.cs" />
     <Compile Include="Helpers\HtmlHelperExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="DefaultSecurityPolicyViolationHandler.cs" />
-    <Compile Include="RequireAnyRoleViolationHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SecurityHelper.cs" />
+    <Compile Include="Security\FluentSecurityHelper.cs" />
+    <Content Include="Error\NoProgrammeAccess.aspx" />
+    <Content Include="Error\NoMarketAccess.aspx" />
     <Content Include="Error\403.aspx" />
     <Content Include="Error\401.aspx" />
     <Content Include="Content\css\bootstrap.css" />
@@ -1086,6 +1096,10 @@
     <ProjectReference Include="..\FeatureDemandPlanning.Model\FeatureDemandPlanning.Model.csproj">
       <Project>{dcb42053-f686-4cd9-be40-9bf11bfe19e1}</Project>
       <Name>FeatureDemandPlanning.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FeatureDemandPlanning.Security\FeatureDemandPlanning.Security.csproj">
+      <Project>{42FD090D-46F7-4B45-99A2-1FB8AD5EF9C2}</Project>
+      <Name>FeatureDemandPlanning.Security</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

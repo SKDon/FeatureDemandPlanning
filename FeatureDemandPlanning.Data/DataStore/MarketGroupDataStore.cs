@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data;
-using FeatureDemandPlanning.Model.Dapper;
+using System.Linq;
 using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Helpers;
@@ -26,7 +26,7 @@ namespace FeatureDemandPlanning.DataStore
             {
                 try
                 {
-                    var para = new DynamicParameters();
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
 
                     using (var results = conn.QueryMultiple("dbo.Fdp_MarketGroup_GetMany", para, commandType: CommandType.StoredProcedure))
@@ -38,6 +38,8 @@ namespace FeatureDemandPlanning.DataStore
                         {
                             marketGroup.Markets = markets.Where(c => c.ParentId == marketGroup.Id).ToList();
                         }
+
+                        marketGroups = marketGroups.Where(mg => mg.Markets.Any()).ToList();
 
                         retVal = marketGroups;
                     }
@@ -98,22 +100,20 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     List<MarketGroup> marketGroups;
 
-                    var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progId, dbType: DbType.Int32);
-                    para.Add("@p_doc_id", docId, dbType: DbType.Int32);
-                    para.Add("@p_deep_get", deepGet, dbType: DbType.Boolean);
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@DocumentId", docId, DbType.Int32);
 
-                    using (var multi = conn.QueryMultiple("OXO_Programme_MarketGroup_GetMany", para, commandType: CommandType.StoredProcedure))
+                    using (var multi = conn.QueryMultiple("Fdp_MarketGroup_GetMany", para, commandType: CommandType.StoredProcedure))
                     {
                         marketGroups = multi.Read<MarketGroup>().ToList();
-                        if (deepGet)
-                        {
+                        
                             var markets = multi.Read<Market>().ToList();
                             foreach (var marketGroup in marketGroups)
                             {
                                 marketGroup.Markets = markets.Where(c => c.ParentId == marketGroup.Id).ToList();
                             }
-                        }
+                            marketGroups = marketGroups.Where(mg => mg.Markets.Any()).ToList();
+                        
                     }
 
                     retVal = marketGroups;
@@ -169,13 +169,13 @@ namespace FeatureDemandPlanning.DataStore
 				try
 				{
 					var para = new DynamicParameters();
-					para.Add("@p_Id", id, dbType: DbType.Int32);
+					para.Add("@p_Id", id, DbType.Int32);
                     if (type != "Master")
                     {
-                        para.Add("@p_prog_id", progid, dbType: DbType.Int32);
-                        para.Add("@p_doc_id", docid, dbType: DbType.Int32);
+                        para.Add("@p_prog_id", progid, DbType.Int32);
+                        para.Add("@p_doc_id", docid, DbType.Int32);
                     }
-                    para.Add("@p_deep_get", deepGet, dbType: DbType.Boolean);
+                    para.Add("@p_deep_get", deepGet, DbType.Boolean);
 
                     using (var multi = conn.QueryMultiple(procName, para, commandType: CommandType.StoredProcedure))
                     {
@@ -215,21 +215,21 @@ namespace FeatureDemandPlanning.DataStore
             {
 				try
 				{
-                    obj.Save(this.CurrentCDSID);
+                    obj.Save(CurrentCDSID);
 
 					var para = new DynamicParameters();
-                    para.Add("@p_Group_Name", obj.GroupName, dbType: DbType.String, size: 500);
+                    para.Add("@p_Group_Name", obj.GroupName, DbType.String, size: 500);
                     if (obj.Type != "Master")
                     {
-                        para.Add("@p_prog_id", obj.ProgrammeId, dbType: DbType.Int32);
+                        para.Add("@p_prog_id", obj.ProgrammeId, DbType.Int32);
                     }
-                    para.Add("@p_Active", obj.Active, dbType: DbType.Boolean);
-                    para.Add("@p_Display_Order", obj.DisplayOrder, dbType: DbType.Int32);
-                    para.Add("@p_Created_By", obj.CreatedBy, dbType: DbType.String, size: 8);
-                    para.Add("@p_Created_On", obj.CreatedOn, dbType: DbType.DateTime);
-                    para.Add("@p_Updated_By", obj.UpdatedBy, dbType: DbType.String, size: 8);
-                    para.Add("@p_Last_Updated", obj.LastUpdated, dbType: DbType.DateTime);
-                    para.Add("@p_Id", obj.Id, dbType: DbType.Int32, direction: ParameterDirection.InputOutput);    					
+                    para.Add("@p_Active", obj.Active, DbType.Boolean);
+                    para.Add("@p_Display_Order", obj.DisplayOrder, DbType.Int32);
+                    para.Add("@p_Created_By", obj.CreatedBy, DbType.String, size: 8);
+                    para.Add("@p_Created_On", obj.CreatedOn, DbType.DateTime);
+                    para.Add("@p_Updated_By", obj.UpdatedBy, DbType.String, size: 8);
+                    para.Add("@p_Last_Updated", obj.LastUpdated, DbType.DateTime);
+                    para.Add("@p_Id", obj.Id, DbType.Int32, ParameterDirection.InputOutput);    					
 					conn.Execute(procName, para, commandType: CommandType.StoredProcedure);
 
 					if (obj.Id == 0)
@@ -259,7 +259,7 @@ namespace FeatureDemandPlanning.DataStore
 				try
 				{
 					var para = new DynamicParameters();
-					para.Add("@p_Id", id, dbType: DbType.Int32);
+					para.Add("@p_Id", id, DbType.Int32);
                     conn.Execute("dbo.OXO_Master_MarketGroup_Delete", para, commandType: CommandType.StoredProcedure);                   
 				}
 				catch (Exception ex)

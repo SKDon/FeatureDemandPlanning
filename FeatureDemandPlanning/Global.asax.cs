@@ -1,9 +1,12 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Reflection;
+using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using FeatureDemandPlanning.Model.Attributes;
 using FluentValidation.Mvc;
+using log4net;
 
 namespace FeatureDemandPlanning
 {
@@ -19,7 +22,7 @@ namespace FeatureDemandPlanning
             GlobalFilters.Filters.Add(new HandleErrorAttribute());
             GlobalFilters.Filters.Add(new HandleErrorWithJson());
 
-            SecurityHelper.SetupRoles();
+            Security.FluentSecurityHelper.SetupRoles();
 
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -27,5 +30,13 @@ namespace FeatureDemandPlanning
 
             FluentValidationModelValidatorProvider.Configure();
         }
+
+        protected void Application_Error(object sender, EventArgs eventArgs)
+        {
+            var error = Server.GetLastError();
+            Log.Error(error);
+        }
+
+        protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

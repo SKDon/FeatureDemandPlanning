@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reflection;
 using System.Web.Script.Serialization;
+using log4net;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -59,6 +61,8 @@ namespace FeatureDemandPlanning.Model
         {
             CurrentCDSID = cdsId;
         }
+
+        protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 
     [Serializable]

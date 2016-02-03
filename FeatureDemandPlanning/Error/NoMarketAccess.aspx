@@ -1,11 +1,11 @@
-﻿<% Response.StatusCode = 500 %>
+﻿<% Response.StatusCode = 403%>
 
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Error - Feature Demand Planning</title>
+    <title>Access Denied - Feature Demand Planning</title>
 
     <link href="../Content/css/bootstrap.css" rel="stylesheet"/>
     <link href="../Content/css/site.css" rel="stylesheet"/>
@@ -78,11 +78,11 @@
 
     <div class="col-xs-12">
         <div class="col-xs-12 hidden-xs inverse text-center" style="margin-bottom:15px">
-            <h1 class="text-capitalize">Server Error</h1>
+            <h1 class="text-capitalize">No Access To Market</h1>
         </div>
         <div class="col-md-6 col-lg-4 col-md-offset-3 col-lg-offset-4 inverse home-button text-center">
-            
-            <p style="height:80px">Something went wrong with the last operation. Go back with your browser or click the "Take me Home" button to continue.</p>
+
+            <p style="height: 100px"><%= Request.QueryString.Get("Message")%><br/><br/>Go back with your browser or click the "Take me Home" button to continue.</p>
             <p><a class="btn btn-default col-md-10 col-md-offset-1" href="../" role="button">Take me Home</a></p>
         </div>
     </div>

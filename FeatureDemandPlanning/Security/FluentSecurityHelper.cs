@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -6,16 +7,16 @@ using System.Web.Security;
 using FeatureDemandPlanning.Controllers;
 using FluentSecurity;
 
-namespace FeatureDemandPlanning
+namespace FeatureDemandPlanning.Security
 {
-    public static class SecurityHelper
+    public static class FluentSecurityHelper
     {
         public static void SetupRoles()
         {
             SecurityConfigurator.Configure(configuration =>
             {
-                configuration.GetAuthenticationStatusFrom(IsUserAuthenticated);
-                configuration.GetRolesFrom(GetUserRoles);
+                configuration.GetAuthenticationStatusFrom(SecurityHelper.IsUserAuthenticated);
+                configuration.GetRolesFrom(SecurityHelper.GetUserRoles);
 
                 configuration.ResolveServicesUsing(type =>
                 {
@@ -24,7 +25,9 @@ namespace FeatureDemandPlanning
                         return new List<IPolicyViolationHandler>()
                         {
                             new RequireAnyRolePolicyViolationHandler(),
-                            new DefaultSecurityPolicyViolationHandler()
+                            new DefaultSecurityPolicyViolationHandler(),
+                            new HasAccessToMarketPolicyViolationHandler(),
+                            new HasAccessToProgrammePolicyViolationHandler()
                         };
                     }
                     return Enumerable.Empty<object>();
@@ -36,6 +39,14 @@ namespace FeatureDemandPlanning
 
                 configuration.For<HomeController>()
                     .DenyAnonymousAccess();
+
+                configuration.For<ImportController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
+
+                configuration.For<ImportExceptionController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
 
                 configuration.For<AdminController>()
                     .RemovePolicy<DefaultSecurityPolicy>()
@@ -50,22 +61,14 @@ namespace FeatureDemandPlanning
                     .AddPolicy<HasAccessToMarketPolicy>()
                     .AddPolicy<HasAccessToProgrammePolicy>();
 
-                //configuration.For<TakeRateDataController>()
-                //    .RemovePolicy<DefaultSecurityPolicy>()
-                //    .AddPolicy<HasAccessToMarketPolicy>()
-                //    .AddPolicy<HasAccessToProgrammePolicy>();
+                configuration.For<TakeRateDataController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .AddPolicy<HasAccessToMarketPolicy>()
+                    .AddPolicy<HasAccessToProgrammePolicy>();
+
+                //configuration.ForAllControllers().Ignore();
             });
             GlobalFilters.Filters.Add(new HandleSecurityAttribute(), 0);
-        }
-
-        public static bool IsUserAuthenticated()
-        {
-            return HttpContext.Current.User.Identity.IsAuthenticated;
-        }
-
-        public static string[] GetUserRoles()
-        {
-            return Roles.GetRolesForUser(HttpContext.Current.User.Identity.Name);
         }
     }
 }
