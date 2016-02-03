@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using FluentSecurity;
 using FluentSecurity.Policy;
 
 namespace FeatureDemandPlanning
@@ -10,7 +11,7 @@ namespace FeatureDemandPlanning
     {
         public FluentSecurity.PolicyResult Enforce(FluentSecurity.ISecurityContext context)
         {
-            throw new NotImplementedException();
+            return PolicyResult.CreateSuccessResult(this);
         }
     }
 }

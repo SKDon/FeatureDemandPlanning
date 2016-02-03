@@ -45,10 +45,10 @@ namespace FeatureDemandPlanning
                     .RemovePolicy<DefaultSecurityPolicy>()
                     .RequireAnyRole("Administrator");
 
-                //configuration.For<TakeRateController>()
-                //    .RemovePolicy<DefaultSecurityPolicy>()
-                //    .AddPolicy<HasAccessToMarketPolicy>()
-                //    .AddPolicy<HasAccessToProgrammePolicy>();
+                configuration.For<TakeRateController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .AddPolicy<HasAccessToMarketPolicy>()
+                    .AddPolicy<HasAccessToProgrammePolicy>();
 
                 //configuration.For<TakeRateDataController>()
                 //    .RemovePolicy<DefaultSecurityPolicy>()
