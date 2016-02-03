@@ -142,9 +142,9 @@
     else
     {
         var value = dataItem.Field<int?>(modelIdentifier);
-        if (value.GetValueOrDefault() == 0 && parsedFeatureApplicability == "NA" && featureIdentifier.StartsWith("O"))
+        if (value.GetValueOrDefault() == 0 && (parsedFeatureApplicability == "NA" || string.IsNullOrEmpty(parsedFeatureApplicability)) && featureIdentifier.StartsWith("O"))
         {
-            dataText = "N/A";
+            dataText = "-";
         }
         else if (value.HasValue && !string.IsNullOrEmpty(parsedFeatureApplicability) && parsedFeatureApplicability != "NA")
         {
@@ -157,7 +157,7 @@
 
 @helper RenderEditableClass()
 {
-    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket))
+    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket) && Model.AllowEdit)
     {
         @("editable")
     }

@@ -84,7 +84,7 @@
 
 @helper RenderEditableClass()
 {
-    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket))
+    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket) && Model.AllowEdit)
     {
         @("editable-header")
     }

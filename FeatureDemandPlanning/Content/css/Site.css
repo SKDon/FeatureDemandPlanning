@@ -782,7 +782,7 @@ ul.dropdown-menu > li span.glyphicon {
 
 .dropdown-menu > li > a {
     color: #061639;
-    text-decoration: underline;
+    /*text-decoration: underline;*/
 }
 
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > span:hover {

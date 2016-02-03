@@ -23,6 +23,18 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public FdpChangeset Changes { get; set; }
         public FdpChangesetHistory History { get; set; }
 
+        // Can the user edit the take rate file
+        public bool AllowEdit
+        {
+            get
+            {
+                // User must be allowed to edit the programme itself and be in a role that allows for editing
+                return
+                    CurrentUser.Roles.Any(r => r == UserRole.Administrator || r == UserRole.Editor || r == UserRole.MarketReviewer) &&
+                    CurrentUser.Programmes.Any(p => p.Action == UserAction.Edit && p.ProgrammeId == Document.UnderlyingOxoDocument.ProgrammeId);
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ForecastComparisonViewModel"/> class.
         /// </summary>
@@ -103,7 +115,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             await HydrateModelsByMarket(context, takeRateModel);
             await HydrateDerivativesByMarket(context, takeRateModel);
             await HydrateData(context, takeRateModel);
-
+          
             return takeRateModel;
         }
         private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForTakeRateDataPageExcludingData(IDataContext context, TakeRateFilter filter)

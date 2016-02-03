@@ -12,8 +12,8 @@
                 @Html.Partial("_MarketSelector", Model)
             </div>
             @*<div class="input-group input-group-sm">
-                <input id="@(Model.IdentifierPrefix)_FilterMessage" class="form-control" style="top:1px" type="text" maxlength="10" placeholder="Filter" aria-describedby="filter-addon" />
-            </div>*@
+                    <input id="@(Model.IdentifierPrefix)_FilterMessage" class="form-control" style="top:1px" type="text" maxlength="10" placeholder="Filter" aria-describedby="filter-addon" />
+                </div>*@
             <div class="col-xs-6 pull-left">
 
                 @if (!(Model.Document.Market is EmptyMarket))
@@ -27,12 +27,16 @@
                                 </div>
                                 <div class="input-group col-xs-8">
                                     <input type="text" id="@(Model.IdentifierPrefix)_PercentageOfTotalVolume" class="form-control input-filtered-volume" value="@((Model.Document.TakeRateData.PercentageOfTotalVolume * 100).ToString("N2"))" />
-                                    <span class="input-group-btn">
-                                        <button type="button" id="@(Model.IdentifierPrefix)_UpdatePercentageOfTotalVolume" class="btn btn-sm btn-default update-filtered-volume">
-                                            <span class="glyphicon glyphicon-refresh"></span> Update
-                                        </button>
+                                    @if (Model.AllowEdit)
+                                    {
+                                        <span class="input-group-btn">
 
-                                    </span>
+                                            <button type="button" id="@(Model.IdentifierPrefix)_UpdatePercentageOfTotalVolume" class="btn btn-sm btn-default update-filtered-volume">
+                                                <span class="glyphicon glyphicon-refresh"></span> Update
+                                            </button>
+
+                                        </span>
+                                    }
                                 </div>
                             </div>
                         </form>
@@ -45,12 +49,15 @@
                                     <label for="@(Model.IdentifierPrefix)_FilteredVolume" class="control-label text-right" style="font-size:11px">Filtered Volume:</label>
                                 </div>
                                 <div class="input-group col-xs-8">
-                                    <input type="text" id="@(Model.IdentifierPrefix)_FilteredTotalVolume" class="form-control input-filtered-volume col-xs-3" value="@Model.Document.TakeRateData.FilteredVolume" data-target="@Model.Document.Market.Id"/>
-                                    <span class="input-group-btn">
-                                        <button type="button" id="@(Model.IdentifierPrefix)_UpdateFilteredVolume" class="btn btn-sm btn-default update-filtered-volume">
-                                            <span class="glyphicon glyphicon-refresh"></span> Update
-                                        </button>
-                                    </span>
+                                    <input type="text" id="@(Model.IdentifierPrefix)_FilteredTotalVolume" class="form-control input-filtered-volume col-xs-3" value="@Model.Document.TakeRateData.FilteredVolume" data-target="@Model.Document.Market.Id" />
+                                    @if (Model.AllowEdit)
+                                    {
+                                        <span class="input-group-btn">
+                                            <button type="button" id="@(Model.IdentifierPrefix)_UpdateFilteredVolume" class="btn btn-sm btn-default update-filtered-volume">
+                                                <span class="glyphicon glyphicon-refresh"></span> Update
+                                            </button>
+                                        </span>
+                                    }
                                 </div>
 
                             </div>
@@ -61,16 +68,26 @@
         </div>
         <div class="viewport-toolbar pull-right col-xs-12 col-lg-6">
             <div class="btn-group pull-right">
-
-                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Save" disabled="disabled"><i class="glyphicon glyphicon-save"></i> Commit Changes</button>
-                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Undo" disabled="disabled"><span class="glyphicon glyphicon-repeat"></span> Undo</button>
-                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History"><span class="glyphicon glyphicon glyphicon-list-alt"></span> History</button>
-                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" disabled="disabled"><span class="glyphicon glyphicon-flag"></span> Market Review</button>
-                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Publish" disabled="disabled"><span class="glyphicon glyphicon-pushpin"></span> Publish</button>
-                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Toggle"><span class="glyphicon glyphicon-minus"></span></button>
-                <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
-                    <span class="glyphicon glyphicon-collapse-down"></span>
-                </a>
+                @if (Model.AllowEdit)
+                {
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Save" disabled="disabled"><i class="glyphicon glyphicon-save"></i> Commit Changes</button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Undo" disabled="disabled"><span class="glyphicon glyphicon-repeat"></span> Undo</button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History"><span class="glyphicon glyphicon glyphicon-list-alt"></span> History</button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" disabled="disabled"><span class="glyphicon glyphicon-flag"></span> Market Review</button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Publish" disabled="disabled"><span class="glyphicon glyphicon-pushpin"></span> Publish</button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Toggle"><span class="glyphicon glyphicon-minus"></span></button>
+                    <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
+                        <span class="glyphicon glyphicon-collapse-down"></span>
+                    </a>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History"><span class="glyphicon glyphicon glyphicon-list-alt"></span> History</button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Toggle"><span class="glyphicon glyphicon-minus"></span></button>
+                    <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
+                        <span class="glyphicon glyphicon-collapse-down"></span>
+                    </a>
+                }
             </div>
         </div>
     </div>
@@ -138,9 +155,9 @@
                                         @availableModel.TrimLevel
                                     </span>
                                     if (!string.IsNullOrEmpty(availableModel.DPCK))
-                                        {
-                                            <span>&nbsp;/ @availableModel.DPCK</span>
-                                        }
+                                    {
+                                        <span>&nbsp;/ @availableModel.DPCK</span>
+                                    }
                                 }
                                 else
                                 {

@@ -759,6 +759,8 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_UserMarket_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_UserProgrammes_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_UserMarkets_Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">
