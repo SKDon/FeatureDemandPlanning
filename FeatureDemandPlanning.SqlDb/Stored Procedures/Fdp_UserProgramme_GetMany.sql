@@ -3,10 +3,12 @@
 AS
 	SET NOCOUNT ON;
 
-	SELECT 
-		  P.ProgrammeId
+	SELECT
+		  U.FdpUserId 
+		, P.ProgrammeId
 		, O.VehicleName
 		, O.VehicleAKA
+		, O.ModelYear
 		, A.FdpUserActionId
 		, A.[Action]
 	FROM

@@ -2,6 +2,7 @@
 using FeatureDemandPlanning.Model.Filters;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.Interfaces
 {
@@ -20,6 +21,15 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IEnumerable<Programme> ListAllowedProgrammes();
         IEnumerable<Programme> ListAvailableProgrammes();
 
-        Task<PagedResults<User>> ListUsers(UserFilter filter);
+        Task<PagedResults<UserDataItem>> ListUsers(UserFilter filter);
+
+        Task<IEnumerable<UserProgrammeMapping>>  AddProgramme(UserFilter filter);
+        Task<IEnumerable<UserProgrammeMapping>> RemoveProgramme(UserFilter filter);
+
+        Task<IEnumerable<UserMarketMapping>> AddMarket(UserFilter filter);
+        Task<IEnumerable<UserMarketMapping>> RemoveMarket(UserFilter filter);
+
+        Task<IEnumerable<UserRole>> AddRole(UserFilter filter);
+        Task<IEnumerable<UserRole>> RemoveRole(UserFilter filter);
     }
 }

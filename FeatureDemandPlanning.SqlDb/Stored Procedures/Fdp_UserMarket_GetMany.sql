@@ -4,7 +4,8 @@ AS
 	SET NOCOUNT ON;
 
 	SELECT 
-		  M.MarketId
+		  U.FdpUserId
+		, M.MarketId
 		, O.Market_Name AS Market
 		, A.FdpUserActionId
 		, A.[Action]

@@ -30,22 +30,22 @@ model.User = function (params) {
         var actionModel = null;
 
         switch (action) {
-            case 1:
+            case 2:
                 actionModel = new FeatureDemandPlanning.User.EnableUserAction(me.getParameters());
                 break;
-            case 2:
+            case 3:
                 actionModel = new FeatureDemandPlanning.User.DisableUserAction(me.getParameters());
                 break;
-            case 3:
+            case 6:
                 actionModel = new FeatureDemandPlanning.User.ManageProgrammesAction(me.getParameters());
                 break;
-            case 4:
+            case 1:
                 actionModel = new FeatureDemandPlanning.User.AddNewUserAction(me.getParameters());
                 break;
-            case 7:
+            case 8:
                 actionModel = new FeatureDemandPlanning.User.UnsetAdministratorAction(me.getParameters());
                 break;
-            case 8:
+            case 7:
                 actionModel = new FeatureDemandPlanning.User.SetAdministratorAction(me.getParameters());
                 break;
             default:
@@ -56,23 +56,23 @@ model.User = function (params) {
     me.getActionTitle = function (action, cdsId) {
         var title = "";
         switch (action) {
-            case 1:
+            case 2:
                 title = "Enable User '" + cdsId + "'";
                 break;
-            case 2:
+            case 3:
                 title = "Disable User '" + cdsId + "'";
                 break;
-            case 3:
+            case 6:
                 title = "Manage Programmes for '" + cdsId + "'";
                 break;
-            case 4:
+            case 1:
                 title = "Add New User";
                 break;
             case 7:
-                title: "Set '" + cdsId + "' as Administrator";
+                title = "Set '" + cdsId + "' as Administrator";
                 break;
             case 8:
-                title: "Unset '" + cdsId + "' as Administrator";
+                title = "Unset '" + cdsId + "' as Administrator";
                 break;
             default:
                 break;

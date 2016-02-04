@@ -10,6 +10,7 @@ using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using System.Web.Services.Protocols;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -35,6 +36,91 @@ namespace FeatureDemandPlanning.Controllers
                 PageSize = PageSize
             };
             return View(await UserViewModel.GetModel(DataContext, filter));
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> MyAccount()
+        {
+            return View(await UserViewModel.GetModel(DataContext));
+        }
+        [HttpGet]
+        public async Task<ActionResult> Markets(UserParameters parameters)
+        {
+            return View(await UserViewModel.GetModel(DataContext, UserFilter.FromCDSId(parameters.CDSId)));
+        }
+        [HttpGet]
+        public async Task<ActionResult> Programmes(UserParameters parameters)
+        {
+            return View(await UserViewModel.GetModel(DataContext, UserFilter.FromCDSId(parameters.CDSId)));
+        }
+        [HttpGet]
+        public async Task<ActionResult> Roles(UserParameters parameters)
+        {
+            return View(await UserViewModel.GetModel(DataContext, UserFilter.FromCDSId(parameters.CDSId)));
+        }
+        [HttpGet]
+        public async Task<ActionResult> AddProgramme(UserParameters parameters)
+        {
+            var filter = UserFilter.FromCDSId(parameters.CDSId);
+            filter.ProgrammeId = parameters.ProgrammeId;
+            filter.RoleAction = parameters.RoleAction;
+
+            await DataContext.User.AddProgramme(filter);
+
+            return View("Programmes", await UserViewModel.GetModel(DataContext, filter));
+        }
+        [HttpGet]
+        public async Task<ActionResult> RemoveProgramme(UserParameters parameters)
+        {
+            var filter = UserFilter.FromCDSId(parameters.CDSId);
+            filter.ProgrammeId = parameters.ProgrammeId;
+            filter.RoleAction = parameters.RoleAction;
+
+            await DataContext.User.RemoveProgramme(filter);
+
+            return View("Programmes", await UserViewModel.GetModel(DataContext, filter));
+        }
+        [HttpGet]
+        public async Task<ActionResult> AddMarket(UserParameters parameters)
+        {
+            var filter = UserFilter.FromCDSId(parameters.CDSId);
+            filter.MarketId = parameters.MarketId;
+            filter.RoleAction = parameters.RoleAction;
+
+            await DataContext.User.AddMarket(filter);
+
+            return View("Markets", await UserViewModel.GetModel(DataContext, filter));
+        }
+        [HttpGet]
+        public async Task<ActionResult> RemoveMarket(UserParameters parameters)
+        {
+            var filter = UserFilter.FromCDSId(parameters.CDSId);
+            filter.MarketId = parameters.MarketId;
+            filter.RoleAction = parameters.RoleAction;
+
+            await DataContext.User.RemoveMarket(filter);
+
+            return View("Markets", await UserViewModel.GetModel(DataContext, filter));
+        }
+        [HttpGet]
+        public async Task<ActionResult> AddRole(UserParameters parameters)
+        {
+            var filter = UserFilter.FromCDSId(parameters.CDSId);
+            filter.Role = parameters.Role;
+
+            await DataContext.User.AddRole(filter);
+
+            return View("Roles", await UserViewModel.GetModel(DataContext, filter));
+        }
+        [HttpGet]
+        public async Task<ActionResult> RemoveRole(UserParameters parameters)
+        {
+            var filter = UserFilter.FromCDSId(parameters.CDSId);
+            filter.Role = parameters.Role;
+            
+            await DataContext.User.RemoveRole(filter);
+
+            return View("Roles", await UserViewModel.GetModel(DataContext, filter));
         }
         [HttpPost]
         [HandleErrorWithJson]
@@ -217,19 +303,19 @@ namespace FeatureDemandPlanning.Controllers
             });
             RuleSet(Action, () =>
             {
-                RuleFor(p => p.Action).NotEqual(a => UserAction.NoAction).WithMessage("'Action' not specified");
+                RuleFor(p => p.Action).NotEqual(a => UserAdminAction.NoAction).WithMessage("'Action' not specified");
             });
             RuleSet(UserIdentifierWithAction, () =>
             {
                 RuleFor(p => p.CDSId).NotEmpty().WithMessage("'CDSId' not specified");
-                RuleFor(p => p.Action).NotEqual(a => UserAction.NoAction).WithMessage("'Action' not specified");
+                RuleFor(p => p.Action).NotEqual(a => UserAdminAction.NoAction).WithMessage("'Action' not specified");
             });
-            //RuleSet(Enum.GetName(typeof(UserAction), UserAction.AddUser), () =>
-            //{
-            //    RuleFor(p => p.CDSId).NotEmpty().WithMessage("'CDSId' not specified");
-            //    RuleFor(p => p.FullName).NotEmpty().WithMessage("'Full Name' not specified");
-            //    RuleFor(p => p.IsAdmin).NotNull().WithMessage("'Administrator' not specified");
-            //});
+            RuleSet(Enum.GetName(typeof(UserAction), UserAdminAction.AddUser), () =>
+            {
+                RuleFor(p => p.CDSId).NotEmpty().WithMessage("'CDSId' not specified");
+                RuleFor(p => p.FullName).NotEmpty().WithMessage("'Full Name' not specified");
+                RuleFor(p => p.IsAdmin).NotNull().WithMessage("'Administrator' not specified");
+            });
         }
     }
 }

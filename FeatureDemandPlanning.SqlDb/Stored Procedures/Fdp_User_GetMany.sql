@@ -22,18 +22,19 @@ AS
 		  RowIndex INT IDENTITY(1, 1)
 		, FdpUserId INT
 	);
+	
+	
 	INSERT INTO @PageRecords (FdpUserId)
 	SELECT U.FdpUserId
 	FROM
-	Fdp_User AS U
-	CROSS APPLY dbo.Fdp_UserProgrammes(U.CDSId) AS P
+	Fdp_User_VW AS U
 	WHERE
 	(@CDSId IS NULL OR U.CDSId = @CDSId)
 	AND
 	(ISNULL(@FilterMessage, '') = '' OR 
 		U.CDSId LIKE '%' + @FilterMessage + '%' OR
 		U.FullName LIKE '%' + @FilterMessage + '%' OR
-		P.Programmes LIKE '%' + @FilterMessage + '%')
+		U.Programmes LIKE '%' + @FilterMessage + '%')
 	AND
 	(
 		@HideInactiveUsers = 0
@@ -78,12 +79,14 @@ AS
 		, U.FullName
 		, U.IsActive
 		, U.IsAdmin
-		, dbo.Fdp_UserProgrammes_GetMany(U.CDSId) AS Programmes
+		, U.Programmes
+		, U.Markets
+		, U.Roles
 		, U.CreatedOn
 		, U.CreatedBy
 		, U.UpdatedOn
 		, U.UpdatedBy
 		
 	FROM @PageRecords		AS P
-	JOIN Fdp_User			AS U	ON	P.FdpUserId = U.FdpUserId
+	JOIN Fdp_User_VW			AS U	ON	P.FdpUserId = U.FdpUserId
 									AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex

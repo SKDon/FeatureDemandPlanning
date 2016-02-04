@@ -14,14 +14,23 @@ namespace FeatureDemandPlanning.Model.ViewModel
     public class UserViewModel : SharedModelBase
     {
         public User User { get; set; }
-        public PagedResults<User> Users { get; set; }
-        public UserAction CurrentAction { get; set; }
+        public PagedResults<UserDataItem> Users { get; set; }
+        public UserAdminAction CurrentAction { get; set; }
         public IEnumerable<CarLine> CarLines { get; set; }
         public IEnumerable<Programme> Programmes { get; set; }
+        public IEnumerable<Market> Markets { get; set; } 
 
-        public UserViewModel() : base()
+        public UserViewModel()
         {
             InitialiseMembers();
+        }
+        public UserViewModel(SharedModelBase baseModel) : base(baseModel)
+        {
+            InitialiseMembers();
+        }
+        public static async Task<UserViewModel> GetModel(IDataContext context)
+        {
+            return await Task.FromResult(GetFullAndPartialViewModel(context));
         }
         public static async Task<UserViewModel> GetModel(IDataContext context,
                                                            UserFilter filter)
@@ -34,28 +43,36 @@ namespace FeatureDemandPlanning.Model.ViewModel
         }
         public static async Task<UserViewModel> GetModel(IDataContext context,
                                                            UserFilter filter,
-                                                           UserAction action)
+                                                           UserAdminAction action)
         {
             var model = await GetModel(context, filter);
             model.CurrentAction = action;
-            if (action != UserAction.NoAction)
+            if (action != UserAdminAction.NoAction)
             {
                 model.IdentifierPrefix = Enum.GetName(action.GetType(), action);
             }
 
             return model;
         }
+        private static UserViewModel GetFullAndPartialViewModel(IDataContext context)
+        {
+            var modelBase = GetBaseModel(context);
+
+            return new UserViewModel(modelBase);
+        }
         private static async Task<UserViewModel> GetFullAndPartialViewModelForUser(IDataContext context,
                                                                                    UserFilter filter)
         {
-            var model = new UserViewModel()
+            var modelBase = GetBaseModel(context);
+            var model = new UserViewModel(modelBase)
             {
-                PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
-                Configuration = context.ConfigurationSettings
+                PageIndex = filter.PageIndex ?? 1,
+                PageSize = filter.PageSize ?? int.MaxValue,
+                Configuration = context.ConfigurationSettings,
+                User = await context.User.GetUser(filter),
+                Programmes = context.Vehicle.ListProgrammes(new ProgrammeFilter()),
+                Markets = await context.Market.ListAvailableMarkets()
             };
-            model.User = await context.User.GetUser(filter);
-            model.Programmes = context.Vehicle.ListProgrammes(new ProgrammeFilter());
             model.CarLines = model.Programmes.ListCarLines();
 
             return model;
@@ -63,16 +80,14 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static async Task<UserViewModel> GetFullAndPartialViewModelForUsers(IDataContext context,
                                                                                     UserFilter filter)
         {
-            var baseModel = SharedModelBase.GetBaseModel(context);
-            var model = new UserViewModel()
+            var baseModel = GetBaseModel(context);
+            var model = new UserViewModel(baseModel)
             {
-                PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
+                PageIndex = filter.PageIndex ?? 1,
+                PageSize = filter.PageSize ?? int.MaxValue,
                 Configuration = context.ConfigurationSettings,
-                CurrentUser = baseModel.CurrentUser,
-                CurrentVersion = baseModel.CurrentVersion
+                Users = await context.User.ListUsers(filter)
             };
-            model.Users = await context.User.ListUsers(filter);
             model.TotalPages = model.Users.TotalPages;
             model.TotalRecords = model.Users.TotalRecords;
             model.TotalDisplayRecords = model.Users.TotalDisplayRecords;

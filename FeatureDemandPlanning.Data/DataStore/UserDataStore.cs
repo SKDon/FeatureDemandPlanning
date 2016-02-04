@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using DapperExtensions.Mapper;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Dapper;
@@ -34,10 +35,10 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@IsAdmin", userToAdd.IsAdmin, DbType.Boolean);
                     para.Add("@CreatorCDSId", CurrentCDSID, DbType.String);
                     
-                    var results = conn.Query<User>("dbo.Fdp_User_Save", para, commandType: CommandType.StoredProcedure);
-                    var enumerable = results as IList<User> ?? results.ToList();
+                    var results = conn.Query<UserDataItem>("dbo.Fdp_User_Save", para, commandType: CommandType.StoredProcedure);
+                    var enumerable = results as IList<UserDataItem> ?? results.ToList();
                     if (enumerable.Any()) {
-                        retVal = enumerable.First();
+                        retVal = enumerable.First().ToUser();
                     }
                 }
                 catch (Exception ex)
@@ -55,7 +56,7 @@ namespace FeatureDemandPlanning.DataStore
             var results = FdpUserGetMany(filter);
             if (results.CurrentPage.Any())
             {
-                user = results.CurrentPage.First();
+                user = results.CurrentPage.First().ToUser();
             }
             else
             {
@@ -136,9 +137,9 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         } 
-        public PagedResults<User> FdpUserGetMany(UserFilter filter)
+        public PagedResults<UserDataItem> FdpUserGetMany(UserFilter filter)
         {
-            PagedResults<User> retVal;
+            PagedResults<UserDataItem> retVal;
 
             using (var conn = DbHelper.GetDBConnection())
             {
@@ -181,15 +182,15 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                    var results = conn.Query<User>("dbo.Fdp_User_GetMany", para, commandType: CommandType.StoredProcedure);
+                    var results = conn.Query<UserDataItem>("dbo.Fdp_User_GetMany", para, commandType: CommandType.StoredProcedure);
 
-                    var enumerable = results as IList<User> ?? results.ToList();
+                    var enumerable = results as IList<UserDataItem> ?? results.ToList();
                     if (enumerable.Any())
                     {
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<User>
+                    retVal = new PagedResults<UserDataItem>
                     {
                         PageIndex = filter.PageIndex ?? 1,
                         TotalRecords = totalRecords,
@@ -223,11 +224,11 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@IsActive", true, DbType.Boolean);
                     para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
-                    var results = conn.Query<User>("dbo.Fdp_User_SetIsActive", para, commandType: CommandType.StoredProcedure);
-                    var enumerable = results as IList<User> ?? results.ToList();
+                    var results = conn.Query<UserDataItem>("dbo.Fdp_User_SetIsActive", para, commandType: CommandType.StoredProcedure);
+                    var enumerable = results as IList<UserDataItem> ?? results.ToList();
                     if (enumerable.Any())
                     {
-                        retVal = enumerable.First();
+                        retVal = enumerable.First().ToUser();
                     }
                 }
                 catch (Exception ex)
@@ -251,11 +252,11 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@IsActive", false, DbType.Boolean);
                     para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
-                    var results = conn.Query<User>("dbo.Fdp_User_SetIsActive", para, commandType: CommandType.StoredProcedure);
-                    var enumerable = results as IList<User> ?? results.ToList();
+                    var results = conn.Query<UserDataItem>("dbo.Fdp_User_SetIsActive", para, commandType: CommandType.StoredProcedure);
+                    var enumerable = results as IList<UserDataItem> ?? results.ToList();
                     if (enumerable.Any())
                     {
-                        retVal = enumerable.First();
+                        retVal = enumerable.First().ToUser();
                     }
                 }
                 catch (Exception ex)
@@ -279,11 +280,11 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@IsAdmin", true, DbType.Boolean);
                     para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
-                    var results = conn.Query<User>("dbo.Fdp_User_SetIsAdmin", para, commandType: CommandType.StoredProcedure);
-                    var enumerable = results as IList<User> ?? results.ToList();
+                    var results = conn.Query<UserDataItem>("dbo.Fdp_User_SetIsAdmin", para, commandType: CommandType.StoredProcedure);
+                    var enumerable = results as IList<UserDataItem> ?? results.ToList();
                     if (enumerable.Any())
                     {
-                        retVal = enumerable.First();
+                        retVal = enumerable.First().ToUser();
                     }
                 }
                 catch (Exception ex)
@@ -307,11 +308,11 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@IsAdmin", false, DbType.Boolean);
                     para.Add("@UpdatedByCDSId", CurrentCDSID, DbType.String);
 
-                    var results = conn.Query<User>("dbo.Fdp_User_SetIsAdmin", para, commandType: CommandType.StoredProcedure);
-                    var enumerable = results as IList<User> ?? results.ToList();
+                    var results = conn.Query<UserDataItem>("dbo.Fdp_User_SetIsAdmin", para, commandType: CommandType.StoredProcedure);
+                    var enumerable = results as IList<UserDataItem> ?? results.ToList();
                     if (enumerable.Any())
                     {
-                        retVal = enumerable.First();
+                        retVal = enumerable.First().ToUser();
                     }
                 }
                 catch (Exception ex)
@@ -328,6 +329,81 @@ namespace FeatureDemandPlanning.DataStore
             public int FdpUserRoleId  { get; set; }
             public string Role { get; set; }
             public string Description { get; set; }
+        }
+
+        public IEnumerable<UserProgrammeMapping> FdpUserProgrammeMappingsSave(UserFilter filter)
+        {
+            IEnumerable<UserProgrammeMapping> retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@CDSId", filter.CDSId, DbType.String);
+                    para.Add("@ProgrammeIds", filter.Permissions, DbType.String);
+                    para.Add("@CreatorCDSId", CurrentCDSID, DbType.String);
+
+                    retVal = conn.Query<UserProgrammeMapping>("dbo.Fdp_UserProgrammes_Save", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public IEnumerable<UserMarketMapping> FdpUserMarketMappingsSave(UserFilter filter)
+        {
+            IEnumerable<UserMarketMapping> retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@CDSId", filter.CDSId, DbType.String);
+                    para.Add("@MarketIds", filter.Permissions, DbType.String);
+                    para.Add("@CreatorCDSId", CurrentCDSID, DbType.String);
+
+                    retVal = conn.Query<UserMarketMapping>("dbo.Fdp_UserMarkets_Save", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public IEnumerable<UserRole> FdpUserRolesSave(UserFilter filter)
+        {
+            var retVal = Enumerable.Empty<UserRole>();
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@CDSId", filter.CDSId, DbType.String);
+                    para.Add("@RoleIds", filter.Permissions, DbType.String);
+                    para.Add("@CreatorCDSId", CurrentCDSID, DbType.String);
+
+                    var results = conn.Query<FdpUserRoleDataItem>("dbo.Fdp_UserRoles_Save", para, commandType: CommandType.StoredProcedure);
+                    var enumerable = results as IList<FdpUserRoleDataItem> ?? results.ToList();
+                    if (enumerable.Any())
+                    {
+                        retVal = enumerable.Select(r => (UserRole) r.FdpUserRoleId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
+                }
+            }
+            return retVal;
         }
     }
 }

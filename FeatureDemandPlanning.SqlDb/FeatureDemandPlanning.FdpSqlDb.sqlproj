@@ -157,7 +157,10 @@
     <Build Include="Tables\Fdp_TrimMapping.sql" />
     <Build Include="Tables\Fdp_TrimMapping_Old.sql" />
     <Build Include="Tables\Fdp_User.sql" />
-    <Build Include="Tables\Fdp_UserProgramme.sql" />
+    <Build Include="Tables\Fdp_UserProgramme.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Tables\Fdp_VolumeDataItem.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
@@ -197,9 +200,7 @@
     <Build Include="Views\Fdp_TopMarket_VW.sql" />
     <Build Include="Views\Fdp_TrimLevels.sql" />
     <Build Include="Views\Fdp_TrimMapping_VW.sql" />
-    <Build Include="Views\Fdp_UserProgramme_VW.sql" />
     <Build Include="Functions\Fdp_UserProgrammes.sql" />
-    <Build Include="Functions\Fdp_UserProgrammes_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_Edit.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_GetMany.sql" />
@@ -286,10 +287,16 @@
     </Build>
     <Build Include="Stored Procedures\Fdp_TrimMapping_Save.sql" />
     <Build Include="Stored Procedures\Fdp_User_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_User_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_User_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_User_Save.sql" />
     <Build Include="Stored Procedures\Fdp_User_SetIsActive.sql" />
-    <Build Include="Stored Procedures\Fdp_User_SetIsAdmin.sql" />
+    <Build Include="Stored Procedures\Fdp_User_SetIsAdmin.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_UserProgramme_GetMany.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
@@ -758,9 +765,17 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_UserMarket_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_UserMarket_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_UserProgrammes_Save.sql" />
     <Build Include="Stored Procedures\Fdp_UserMarkets_Save.sql" />
+    <Build Include="Views\Fdp_User_VW.sql" />
+    <Build Include="Functions\fn_Fdp_UserRoles_GetMany.sql" />
+    <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany.sql" />
+    <Build Include="Functions\fn_Fdp_UserMarkets_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_UserRoles_Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">

@@ -5,7 +5,7 @@
 @if (Model.User.IsActive)
 {
     <li>
-        <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAction.DisableUser)">
+        <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAdminAction.DisableUser)">
             <span class="glyphicon glyphicon-remove pull-left"></span> Disable User '@Model.User.CDSId'
         </a>
     </li>
@@ -13,21 +13,33 @@
 else
 {
     <li>
-        <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAction.EnableUser)">
+        <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAdminAction.EnableUser)">
             <span class="glyphicon glyphicon-ok pull-left"></span> Enable User '@Model.User.CDSId'
         </a>
     </li>
 }
 <li class="divider"></li>
 <li>
-    <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAction.ManageProgrammes)">
+    <a tabindex="-1" href="@Url.Action("Roles", "User", new { CDSId = Model.User.CDSId })" data-target=" @Model.User.CDSId " data-role=" @((int)enums.UserAdminAction.ManageRoles) ">
+        <span class=" glyphicon glyphicon-user pull-left">
+        </span> Manage Roles...
+    </a>
+
+</li>
+<li>
+    <a tabindex="-1" href="@Url.Action("Markets", "User", new { CDSId = Model.User.CDSId })" data-target="@Model.User.CDSId" data-role="@((int) enums.UserAdminAction.ManageMarkets)">
+        <span class="glyphicon glyphicon-flag pull-left"></span> Manage Markets...
+    </a>
+</li>
+<li>
+    <a tabindex="-1" href="@Url.Action("Programmes", "User", new { CDSId = Model.User.CDSId })" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAdminAction.ManageProgrammes)">
         <span class="glyphicon glyphicon-filter pull-left"></span> Manage Programmes...
     </a>
 </li>
 @if (Model.User.IsAdmin)
 {
     <li>
-        <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAction.UnsetAsAdministrator)">
+        <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAdminAction.UnsetAsAdministrator)">
             <span class="glyphicon glyphicon-cog pull-left"></span> Unset as Administrator
         </a>
     </li>
@@ -35,7 +47,7 @@ else
 else
 {
 <li>
-    <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAction.SetAsAdministrator)">
+    <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAdminAction.SetAsAdministrator)">
         <span class="glyphicon glyphicon-cog pull-left"></span> Set as Administrator
     </a>
 </li>

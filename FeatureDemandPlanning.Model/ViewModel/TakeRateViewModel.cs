@@ -28,10 +28,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             get
             {
-                // User must be allowed to edit the programme itself and be in a role that allows for editing
-                return
-                    CurrentUser.Roles.Any(r => r == UserRole.Administrator || r == UserRole.Editor || r == UserRole.MarketReviewer) &&
-                    CurrentUser.Programmes.Any(p => p.Action == UserAction.Edit && p.ProgrammeId == Document.UnderlyingOxoDocument.ProgrammeId);
+                // User must be allowed to edit the programme / market itself and be in a role that allows for editing
+                return HasUserEditRole() && IsProgrammeEditable() && IsMarketEditable();
             }
         }
 
@@ -489,6 +487,21 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 return new PagedResults<TakeRateSummary>();
 
             return await context.TakeRate.ListTakeRateDocuments(TakeRateFilter.FromTakeRateDocument(forVolume));
+        }
+
+        private bool HasUserEditRole()
+        {
+            return CurrentUser.Roles.Any(
+                r => r == UserRole.Administrator || r == UserRole.Editor || r == UserRole.MarketReviewer);
+        }
+        private bool IsMarketEditable()
+        {
+            return CurrentUser.Markets.Any(m => m.Action == UserAction.Edit && m.MarketId == Document.Market.Id);
+        }
+        private bool IsProgrammeEditable()
+        {
+            return CurrentUser.Programmes.Any(
+                p => p.Action == UserAction.Edit && p.ProgrammeId == Document.UnderlyingOxoDocument.ProgrammeId);
         }
 
         #endregion

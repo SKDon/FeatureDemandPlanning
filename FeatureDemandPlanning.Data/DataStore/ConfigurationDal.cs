@@ -103,9 +103,9 @@ namespace FeatureDemandPlanning.DataStore
 
         public bool ConfigurationDelete(string key)
         {
-            bool retVal = true;
+            var retVal = true;
             
-			using (IDbConnection conn = DbHelper.GetDBConnection())
+			using (var conn = DbHelper.GetDBConnection())
             {
 				try
 				{
@@ -122,7 +122,5 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
-
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

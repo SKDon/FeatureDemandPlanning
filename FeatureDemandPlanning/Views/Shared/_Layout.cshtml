@@ -1,4 +1,5 @@
-﻿@{
+﻿@model FeatureDemandPlanning.Model.SharedModelBase
+@{
     var currentVersion = Model.CurrentVersion;
 }
 <!DOCTYPE html>
@@ -55,6 +56,11 @@
                     <li>
                         <a href="@Url.Action("Index", "Admin")">
                             <span class="glyphicon glyphicon-cog"></span> Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("MyAccount", "User")">
+                            <span class="glyphicon glyphicon-user"></span> @Model.CurrentUser.FullName
                         </a>
                     </li>
                 </ul>

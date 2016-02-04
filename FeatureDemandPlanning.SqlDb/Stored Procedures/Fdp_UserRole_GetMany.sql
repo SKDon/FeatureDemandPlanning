@@ -3,8 +3,9 @@
 AS
 	SET NOCOUNT ON;
 
-	SELECT 
-		  R.FdpUserRoleId
+	SELECT
+		  U.FdpUserId 
+		, R.FdpUserRoleId
 		, R.[Role]
 		, R.[Description]
 	FROM

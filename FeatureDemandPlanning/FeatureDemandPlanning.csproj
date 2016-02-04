@@ -45,6 +45,14 @@
       <HintPath>..\packages\ClosedXML.0.76.0\lib\net40-client\ClosedXML.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Dapper, Version=1.12.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.12\lib\net40\Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DapperExtensions, Version=1.4.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DapperExtensions.1.4.4\lib\net40\DapperExtensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
       <Private>True</Private>
@@ -1080,6 +1088,10 @@
     <Content Include="Views\TakeRateData\_PersistChangesetConfirm.cshtml" />
     <Content Include="Views\TakeRateData\_ChangesetHistory.cshtml" />
     <Content Include="Views\TakeRateData\_AddNote.cshtml" />
+    <Content Include="Views\User\MyAccount.cshtml" />
+    <Content Include="Views\User\Roles.cshtml" />
+    <Content Include="Views\User\Programmes.cshtml" />
+    <Content Include="Views\User\Markets.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

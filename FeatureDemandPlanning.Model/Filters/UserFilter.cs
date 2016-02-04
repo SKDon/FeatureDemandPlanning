@@ -1,4 +1,5 @@
-﻿namespace FeatureDemandPlanning.Model.Filters
+﻿using FeatureDemandPlanning.Model.Enumerations;
+namespace FeatureDemandPlanning.Model.Filters
 {
     public class UserFilter : FilterBase
     {
@@ -13,5 +14,13 @@
                 HideInactiveUsers = false
             };
         }
+
+        public int? ProgrammeId { get; set; }
+        public int? MarketId { get; set; }
+        public UserRole Role { get; set; }
+
+        public UserAction RoleAction { get; set; }
+
+        public string Permissions { get; set; }
     }
 }

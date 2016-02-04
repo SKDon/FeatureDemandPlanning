@@ -56,6 +56,11 @@ namespace FeatureDemandPlanning.Security
                     .RemovePolicy<DefaultSecurityPolicy>()
                     .RequireAnyRole("Administrator");
 
+                // My user account needs to allow all users access
+                configuration.ForActionsMatching(
+                    a => a.ControllerType == typeof (UserController) && a.ActionName.Equals("MyAccount"))
+                    .Ignore();
+
                 configuration.For<TakeRateController>()
                     .RemovePolicy<DefaultSecurityPolicy>()
                     .AddPolicy<HasAccessToMarketPolicy>()

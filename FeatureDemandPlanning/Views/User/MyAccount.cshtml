@@ -1,0 +1,77 @@
+﻿@using FeatureDemandPlanning.Model.Extensions
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.UserViewModel
+
+@section PageContentHeader
+{
+    <form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
+    <div class="row">
+        <div class="col-lg-12 inverse" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-body" style="background:none !important">
+                    <div class="row">
+                        <div class="col-lg-1">
+                            <img src="~/Content/Images/Icons/users64.png" style="margin-top:15px" />
+                        </div>
+                        <div class="col-lg-11">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h3 style="margin-top:5px">My Account - @string.Format("{0} ({1})", Model.CurrentUser.FullName, Model.CurrentUser.CDSId)</h3>
+                                    <h4 id="lblVehicleDescription">&nbsp;</h4>
+                                </div>
+                            </div>
+                            <div class="row vertical-spacer">
+                                <div class="col-lg-12 vertical-align">
+                                    <p class="page-description">Your account details and permissions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section PageBody
+{
+    <div id="notifier" class="subscribers-notify col-lg-8 col-lg-offset-2"></div>
+    <ul id="contextMenu" class="dropdown-menu context-menu" role="menu" style="display:none"></ul>
+
+    <div class="row">
+        <div id="dvUsers" class="col-xs-12 col-lg-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="panel-title">Roles</div>
+                </div>
+                <div class="panel-body inverse">
+                    @Model.CurrentUser.Roles.ToCommaSeperatedString()
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="panel-title">Programmes</div>
+                </div>
+                <div class="panel-body inverse">
+                    @Model.CurrentUser.Programmes.ToCommaSeperatedString()
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="panel-title">Markets</div>
+                </div>
+                <div class="panel-body inverse">
+                    @Model.CurrentUser.Markets.ToCommaSeperatedString()
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+}
+
+

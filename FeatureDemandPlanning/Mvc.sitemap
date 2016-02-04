@@ -5,6 +5,8 @@
 
   <mvcSiteMapNode title="Home" controller="Home" action="Index">
     
+    <mvcSiteMapNode title="My Account" controller="User" action="MyAccount"/>
+    
     <mvcSiteMapNode title="News" controller="News" action="Index"/>
 
     <mvcSiteMapNode title="Import" controller="Import" action="Index">
@@ -28,7 +30,11 @@
     </mvcSiteMapNode>
     
   <mvcSiteMapNode title="Settings" controller="Admin" action="Index">
-    <mvcSiteMapNode title="Users" controller="User" action="Index"/>
+    <mvcSiteMapNode title="Users" controller="User" action="Index">
+      <mvcSiteMapNode title="Roles" controller="User" action="Roles"></mvcSiteMapNode>
+      <mvcSiteMapNode title="Programmes" controller="User" action="Programmes"></mvcSiteMapNode>  
+      <mvcSiteMapNode title="Markets" controller="User" action="Markets"></mvcSiteMapNode>  
+    </mvcSiteMapNode>
     <mvcSiteMapNode title="Users" controller="User" action="UserPage"/>
     <mvcSiteMapNode title="Market Mapping" controller="MarketMapping" action="Index"/>
     <mvcSiteMapNode title="Market Mapping" controller="MarketMapping" action="MarketMappingPage"/>

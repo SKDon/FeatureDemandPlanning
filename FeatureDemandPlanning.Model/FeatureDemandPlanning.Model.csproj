@@ -34,6 +34,14 @@
     <Reference Include="ClosedXML">
       <HintPath>..\..\SharedLibraries\ClosedXML.dll</HintPath>
     </Reference>
+    <Reference Include="Dapper, Version=1.12.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.12\lib\net40\Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DapperExtensions, Version=1.4.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DapperExtensions.1.4.4\lib\net40\DapperExtensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
@@ -105,10 +113,12 @@
     <Compile Include="CarLine.cs" />
     <Compile Include="ConfigurationSettings.cs" />
     <Compile Include="Empty\EmptyFdpValidation.cs" />
+    <Compile Include="Enumerations\UserAdminAction.cs" />
     <Compile Include="ExclusiveFeatureGroup.cs" />
     <Compile Include="Extensions\UserExtensions.cs" />
     <Compile Include="FdpValidation.cs" />
     <Compile Include="Enumerations\UserRole.cs" />
+    <Compile Include="UserDataItem.cs" />
     <Compile Include="UserMarketMapping.cs" />
     <Compile Include="UserProgrammeMapping.cs" />
     <Compile Include="ValidationResult.cs" />

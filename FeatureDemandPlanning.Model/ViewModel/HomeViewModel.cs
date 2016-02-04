@@ -17,7 +17,12 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         #region "Constructors"
 
-        public HomeViewModel() : base()
+        public HomeViewModel()
+        {
+            InitialiseMembers();
+        }
+
+        public HomeViewModel(SharedModelBase baseModel) : base(baseModel)
         {
             InitialiseMembers();
         }
@@ -26,9 +31,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
   
         #region "Public Members"
 
-        public async static Task<HomeViewModel> GetFullOrPartialViewModel(IDataContext context)
+        public static async Task<HomeViewModel> GetFullOrPartialViewModel(IDataContext context)
         {
-            var model = new HomeViewModel()
+            var modelBase = GetBaseModel(context);
+            var model = new HomeViewModel(modelBase)
             {
                 Configuration = context.ConfigurationSettings
             };

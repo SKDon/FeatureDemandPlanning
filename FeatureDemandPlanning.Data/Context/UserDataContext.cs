@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Extensions;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
 
@@ -53,10 +56,15 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<User> GetUser(UserFilter filter)
         {
-            return await Task.FromResult(_userDataStore.FdpUserGet(filter));
+            var user = await Task.FromResult(_userDataStore.FdpUserGet(filter));
+            user.Roles = _userDataStore.FdpUserGetRoles(user);
+            user.Markets = _userDataStore.FdpUserMarketMappingsGetMany(user);
+            user.Programmes = _userDataStore.FdpUserProgrammeMappingsGetMany(user);
+
+            return user;
         }
 
-        public async Task<PagedResults<User>> ListUsers(UserFilter filter)
+        public async Task<PagedResults<UserDataItem>> ListUsers(UserFilter filter)
         {
             return await Task.FromResult(_userDataStore.FdpUserGetMany(filter));
         }
@@ -79,6 +87,110 @@ namespace FeatureDemandPlanning.DataStore
         public IEnumerable<Programme> ListAvailableProgrammes()
         {
             throw new NotImplementedException();
+        }
+
+
+        public async Task<IEnumerable<UserProgrammeMapping>> AddProgramme(UserFilter filter)
+        {
+            var user = await GetUser(filter);
+
+            var programmes = user.Programmes.ToList();
+            var exists = programmes.Any(p => p.ProgrammeId == filter.ProgrammeId && p.Action == filter.RoleAction);
+            if (!exists)
+            {
+                programmes.Add(new UserProgrammeMapping()
+                {
+                    FdpUserId = user.FdpUserId.GetValueOrDefault(), 
+                    ProgrammeId = filter.ProgrammeId.GetValueOrDefault(), 
+                    Action = filter.RoleAction
+                });
+            }
+            // Build up a comma seperated list of programme ids and permissions
+            filter.Permissions = programmes.ToPermissionString();
+
+            return await Task.FromResult(_userDataStore.FdpUserProgrammeMappingsSave(filter));
+        }
+
+        public async Task<IEnumerable<UserProgrammeMapping>> RemoveProgramme(UserFilter filter)
+        {
+            var user = await GetUser(filter);
+
+            var programmes = user.Programmes.ToList();
+            var index = programmes.FindIndex(p => p.ProgrammeId == filter.ProgrammeId && p.Action == filter.RoleAction);
+            if (index != -1)
+                programmes.RemoveAt(index);
+            
+            // Build up a comma seperated list of programme ids and permissions
+            filter.Permissions = programmes.ToPermissionString();
+
+            return await Task.FromResult(_userDataStore.FdpUserProgrammeMappingsSave(filter));
+        }
+
+        public async Task<IEnumerable<UserMarketMapping>> AddMarket(UserFilter filter)
+        {
+            var user = await GetUser(filter);
+
+            var markets = user.Markets.ToList();
+            var exists = markets.Any(p => p.MarketId == filter.MarketId && p.Action == filter.RoleAction);
+            if (!exists)
+            {
+                markets.Add(new UserMarketMapping()
+                {
+                    FdpUserId = user.FdpUserId.GetValueOrDefault(),
+                    MarketId = filter.MarketId.GetValueOrDefault(),
+                    Action = filter.RoleAction
+                });
+            }
+            // Build up a comma seperated list of programme ids and permissions
+            filter.Permissions = markets.ToPermissionString();
+
+            return await Task.FromResult(_userDataStore.FdpUserMarketMappingsSave(filter));
+        }
+
+        public async Task<IEnumerable<UserMarketMapping>> RemoveMarket(UserFilter filter)
+        {
+            var user = await GetUser(filter);
+
+            var markets = user.Markets.ToList();
+            var index = markets.FindIndex(m => m.MarketId == filter.MarketId && m.Action == filter.RoleAction);
+            if (index != -1)
+                markets.RemoveAt(index);
+
+            // Build up a comma seperated list of programme ids and permissions
+            filter.Permissions = markets.ToPermissionString();
+
+            return await Task.FromResult(_userDataStore.FdpUserMarketMappingsSave(filter));
+        }
+
+        public async Task<IEnumerable<UserRole>> AddRole(UserFilter filter)
+        {
+            var user = await GetUser(filter);
+
+            var roles = user.Roles.ToList();
+            var exists = roles.Any(r => r == filter.Role);
+            if (!exists)
+            {
+                roles.Add(filter.Role);
+            }
+            // Build up a comma seperated list of programme ids and permissions
+            filter.Permissions = roles.ToPermissionString();
+
+            return await Task.FromResult(_userDataStore.FdpUserRolesSave(filter));
+        }
+
+        public async Task<IEnumerable<UserRole>> RemoveRole(UserFilter filter)
+        {
+            var user = await GetUser(filter);
+
+            var roles = user.Roles.ToList();
+            var index = roles.FindIndex(r => r == filter.Role);
+            if (index != -1)
+                roles.RemoveAt(index);
+
+            // Build up a comma seperated list of programme ids and permissions
+            filter.Permissions = roles.ToPermissionString();
+
+            return await Task.FromResult(_userDataStore.FdpUserRolesSave(filter));
         }
     }
 }
