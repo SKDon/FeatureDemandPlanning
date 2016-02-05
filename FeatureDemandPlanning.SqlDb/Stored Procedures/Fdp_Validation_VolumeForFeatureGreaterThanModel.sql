@@ -12,139 +12,167 @@ AS
 		, MarketId
 		, FdpValidationRuleId
 		, [Message]
+		, ModelId
+		, FdpModelId
+		, FeatureId
+		, FdpFeatureId
 		, FdpVolumeDataItemId
+		, FdpChangesetDataItemId
 	)
 	-- Regular OXO models and features
 	SELECT
-		  D.FdpVolumeHeaderId
-		, D.MarketId
+		  H.FdpVolumeHeaderId
+		, S.MarketId
 		, 2 -- VolumeForFeatureGreaterThanModel
-		, 'Volume for feature cannot exceed the volume for the model'
+		, 'Volume for feature ''' + ISNULL(F.BrandDescription, F.[Description]) + ''' cannot exceed the volume for the model'
+		, S.ModelId
+		, S.FdpModelId
+		, F.FeatureId
+		, F.FdpFeatureId
 		, D.FdpVolumeDataItemId
+		, C.FdpChangesetDataItemId
 	FROM
-	Fdp_VolumeDataItem_VW				AS D
-	JOIN Fdp_TakeRateSummary			AS S	ON	D.ModelId				= S.ModelId
-												AND D.MarketId				= S.MarketId
-												AND D.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
+	Fdp_VolumeHeader_VW					AS H
+	JOIN Fdp_FeatureMapping_VW			AS F	ON	H.ProgrammeId			= F.ProgrammeId
+												AND H.Gateway				= F.Gateway
+	JOIN Fdp_TakeRateSummary			AS S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
+	LEFT JOIN Fdp_VolumeDataItem_VW		AS D	ON	H.FdpVolumeHeaderId		= D.FdpVolumeHeaderId
+												AND S.MarketId				= D.MarketId
+												AND	S.ModelId				= D.ModelId
 	-- Examine any uncommitted changes at feature level for the model
-	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	D.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
-												AND D.FeatureId				= C.FeatureId
-												AND D.ModelId				= C.ModelId
-												AND D.MarketId				= C.MarketId
+	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	H.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
+												AND S.MarketId				= C.MarketId
+												AND S.ModelId				= C.ModelId
+												AND F.FeatureId				= C.FeatureId
 												AND C.IsFeatureUpdate		= 1
-												AND C.IsDeleted				= 0
-												AND C.IsSaved				= 0
 												AND C.CDSId					= @CDSId
 	-- Examine any uncommitted changes at model level
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C1	ON	S.FdpTakeRateSummaryId	= C1.FdpTakeRateSummaryId
 												AND S.ModelId				= C1.ModelId
-												AND D.MarketId				= C1.MarketId
+												AND S.MarketId				= C1.MarketId
 												AND C1.IsModelUpdate		= 1
-												AND C1.IsDeleted			= 0
-												AND C1.IsSaved				= 0
 												AND C1.CDSId				= @CDSId
-	LEFT JOIN Fdp_Validation			AS V	ON	D.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
+	LEFT JOIN Fdp_Validation			AS V	ON	H.FdpVolumeHeaderId		= V.FdpVolumeHeaderId
+												AND S.MarketId				= V.MarketId
+												AND S.ModelId				= V.ModelId
+												AND F.FeatureId				= V.FeatureId
 												AND V.IsActive				= 1
 	WHERE
-	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	D.ModelId IS NOT NULL
+	(@MarketId IS NULL OR S.MarketId = @MarketId)
 	AND
-	D.FeatureId IS NOT NULL
+	S.ModelId IS NOT NULL
 	AND
-	(@MarketId IS NULL OR D.MarketId = @MarketId)
+	F.FeatureId IS NOT NULL
 	AND
-	ISNULL(C.TotalVolume, D.Volume) > ISNULL(C1.TotalVolume, S.Volume)
+	ISNULL(C.TotalVolume, ISNULL(D.Volume, 0)) > ISNULL(C1.TotalVolume, S.Volume)
 	AND
 	V.FdpValidationId IS NULL
 	
 	UNION
 	
-	-- Fdp models with OXO features
+	-- OXO Models with FDP features
 	SELECT
-		  D.FdpVolumeHeaderId
-		, D.MarketId
+		  H.FdpVolumeHeaderId
+		, S.MarketId
 		, 2 -- VolumeForFeatureGreaterThanModel
-		, 'Volume for feature cannot exceed the volume for the model'
+		, 'Volume for feature ''' + ISNULL(F.BrandDescription, F.[Description]) + ''' cannot exceed the volume for the model'
+		, S.ModelId
+		, S.FdpModelId
+		, F.FeatureId
+		, F.FdpFeatureId
 		, D.FdpVolumeDataItemId
+		, C.FdpChangesetDataItemId
 	FROM
-	Fdp_VolumeDataItem_VW				AS D
-	JOIN Fdp_TakeRateSummary			AS S	ON	D.FdpModelId			= S.FdpModelId
-												AND D.MarketId				= S.MarketId
-												AND D.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
-	-- Examine any uncommitted changes at feature level
-	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	D.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
-												AND D.FeatureId				= C.FeatureId
-												AND D.FdpModelId			= C.FdpModelId
-												AND D.MarketId				= C.MarketId
+	Fdp_VolumeHeader_VW					AS H
+	JOIN Fdp_FeatureMapping_VW			AS F	ON	H.ProgrammeId			= F.ProgrammeId
+												AND H.Gateway				= F.Gateway
+	JOIN Fdp_TakeRateSummary			AS S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
+	LEFT JOIN Fdp_VolumeDataItem_VW		AS D	ON	H.FdpVolumeHeaderId		= D.FdpVolumeHeaderId
+												AND S.MarketId				= D.MarketId
+												AND	S.ModelId				= D.ModelId
+	-- Examine any uncommitted changes at feature level for the model
+	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	H.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
+												AND S.MarketId				= C.MarketId
+												AND S.ModelId				= C.ModelId
+												AND F.FdpFeatureId			= C.FdpFeatureId
 												AND C.IsFeatureUpdate		= 1
-												AND C.IsDeleted				= 0
-												AND C.IsSaved				= 0
+												AND C.CDSId					= @CDSId
+	-- Examine any uncommitted changes at model level
+	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C1	ON	S.FdpTakeRateSummaryId	= C1.FdpTakeRateSummaryId
+												AND S.ModelId				= C1.ModelId
+												AND S.MarketId				= C1.MarketId
+												AND C1.IsModelUpdate		= 1
+												AND C1.CDSId				= @CDSId
+	LEFT JOIN Fdp_Validation			AS V	ON	H.FdpVolumeHeaderId		= V.FdpVolumeHeaderId
+												AND S.MarketId				= V.MarketId
+												AND S.ModelId				= V.ModelId
+												AND F.FdpFeatureId			= V.FdpFeatureId
+												AND V.IsActive				= 1
+	WHERE
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	(@MarketId IS NULL OR S.MarketId = @MarketId)
+	AND
+	S.ModelId IS NOT NULL
+	AND
+	F.FdpFeatureId IS NOT NULL
+	AND
+	ISNULL(C.TotalVolume, ISNULL(D.Volume, 0)) > ISNULL(C1.TotalVolume, S.Volume)
+	AND
+	V.FdpValidationId IS NULL
+	
+	UNION
+	
+	-- Fdp Models with OXO features
+	SELECT
+		  H.FdpVolumeHeaderId
+		, S.MarketId
+		, 2 -- VolumeForFeatureGreaterThanModel
+		, 'Volume for feature ''' + ISNULL(F.BrandDescription, F.[Description]) + ''' cannot exceed the volume for the model'
+		, S.ModelId
+		, S.FdpModelId
+		, F.FeatureId
+		, F.FdpFeatureId
+		, D.FdpVolumeDataItemId
+		, C.FdpChangesetDataItemId
+	FROM
+	Fdp_VolumeHeader_VW					AS H
+	JOIN Fdp_FeatureMapping_VW			AS F	ON	H.ProgrammeId			= F.ProgrammeId
+												AND H.Gateway				= F.Gateway
+	JOIN Fdp_TakeRateSummary			AS S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
+	LEFT JOIN Fdp_VolumeDataItem_VW		AS D	ON	H.FdpVolumeHeaderId		= D.FdpVolumeHeaderId
+												AND S.MarketId				= D.MarketId
+												AND	S.FdpModelId			= D.FdpModelId
+	-- Examine any uncommitted changes at feature level for the model
+	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	H.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
+												AND S.MarketId				= C.MarketId
+												AND S.FdpModelId			= C.FdpModelId
+												AND F.FeatureId				= C.FeatureId
+												AND C.IsFeatureUpdate		= 1
 												AND C.CDSId					= @CDSId
 	-- Examine any uncommitted changes at model level
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C1	ON	S.FdpTakeRateSummaryId	= C1.FdpTakeRateSummaryId
 												AND S.FdpModelId			= C1.FdpModelId
-												AND D.MarketId				= C1.MarketId
+												AND S.MarketId				= C1.MarketId
 												AND C1.IsModelUpdate		= 1
-												AND C1.IsDeleted			= 0
-												AND C1.IsSaved				= 0
 												AND C1.CDSId				= @CDSId
-	LEFT JOIN Fdp_Validation			AS V	ON	D.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
+	LEFT JOIN Fdp_Validation			AS V	ON	H.FdpVolumeHeaderId		= V.FdpVolumeHeaderId
+												AND S.MarketId				= V.MarketId
+												AND S.FdpModelId			= V.FdpModelId
+												AND F.FeatureId				= V.FeatureId
 												AND V.IsActive				= 1
 	WHERE
-	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	D.FdpModelId IS NOT NULL
+	(@MarketId IS NULL OR S.MarketId = @MarketId)
 	AND
-	D.FeatureId IS NOT NULL
+	S.FdpModelId IS NOT NULL
 	AND
-	(@MarketId IS NULL OR D.MarketId = @MarketId)
+	F.FeatureId IS NOT NULL
 	AND
-	ISNULL(C.TotalVolume, D.Volume) > ISNULL(C1.TotalVolume, S.Volume)
-	AND
-	V.FdpValidationId IS NULL
-	
-	UNION
-	
-	-- OXO models with FDP features
-	SELECT
-		  D.FdpVolumeHeaderId
-		, D.MarketId
-		, 2 -- VolumeForFeatureGreaterThanModel
-		, 'Volume for feature cannot exceed the volume for the model'
-		, D.FdpVolumeDataItemId
-	FROM
-	Fdp_VolumeDataItem_VW				AS D
-	JOIN Fdp_TakeRateSummary			AS S	ON	D.ModelId				= S.ModelId
-												AND D.MarketId				= S.MarketId
-												AND D.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
-	-- Examine any uncommitted changes at feature level
-	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	D.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
-												AND D.ModelId				= C.ModelId
-												AND D.FdpFeatureId			= C.FdpFeatureId
-												AND D.MarketId				= C.MarketId
-												AND C.IsFeatureUpdate		= 1
-												AND C.IsDeleted				= 0
-												AND C.IsSaved				= 0
-												AND C.CDSId					= @CDSId
-	-- Examine any uncommitted changes at model level
-	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C1	ON	S.FdpTakeRateSummaryId	= C1.FdpTakeRateSummaryId
-												AND S.ModelId				= C1.ModelId
-												AND D.MarketId				= C1.MarketId
-												AND C1.IsModelUpdate		= 1
-												AND C1.IsDeleted			= 0
-												AND C1.IsSaved				= 0
-												AND C1.CDSId				= @CDSId
-	LEFT JOIN Fdp_Validation			AS V	ON	D.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
-												AND V.IsActive				= 1
-	WHERE
-	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	AND
-	D.ModelId IS NOT NULL
-	AND
-	D.FdpFeatureId IS NOT NULL
-	AND
-	(@MarketId IS NULL OR D.MarketId = @MarketId)
+	ISNULL(C.TotalVolume, ISNULL(D.Volume, 0)) > ISNULL(C1.TotalVolume, S.Volume)
 	AND
 	V.FdpValidationId IS NULL
 	
@@ -152,45 +180,52 @@ AS
 	
 	-- FDP models with FDP features
 	SELECT
-		  D.FdpVolumeHeaderId
-		, D.MarketId
+		  H.FdpVolumeHeaderId
+		, S.MarketId
 		, 2 -- VolumeForFeatureGreaterThanModel
-		, 'Volume for feature cannot exceed the volume for the model'
+		, 'Volume for feature ''' + ISNULL(F.BrandDescription, F.[Description]) + ''' cannot exceed the volume for the model'
+		, S.ModelId
+		, S.FdpModelId
+		, F.FeatureId
+		, F.FdpFeatureId
 		, D.FdpVolumeDataItemId
+		, C.FdpChangesetDataItemId
 	FROM
-	Fdp_VolumeDataItem_VW				AS D
-	JOIN Fdp_TakeRateSummary			AS S	ON	D.FdpModelId			= S.FdpModelId
-												AND D.MarketId				= S.MarketId
-												AND D.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
-	-- Examine any uncommitted changes at feature level
-	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	D.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
-												AND D.FdpModelId			= C.FdpModelId
-												AND D.FdpFeatureId			= C.FdpFeatureId
-												AND D.MarketId				= C.MarketId
+	Fdp_VolumeHeader_VW					AS H
+	JOIN Fdp_FeatureMapping_VW			AS F	ON	H.ProgrammeId			= F.ProgrammeId
+												AND H.Gateway				= F.Gateway
+	JOIN Fdp_TakeRateSummary			AS S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
+	LEFT JOIN Fdp_VolumeDataItem_VW		AS D	ON	H.FdpVolumeHeaderId		= D.FdpVolumeHeaderId
+												AND S.MarketId				= D.MarketId
+												AND	S.FdpModelId			= D.FdpModelId
+	-- Examine any uncommitted changes at feature level for the model
+	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C	ON	H.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
+												AND S.MarketId				= C.MarketId
+												AND S.FdpModelId			= C.FdpModelId
+												AND F.FdpFeatureId			= C.FdpFeatureId
 												AND C.IsFeatureUpdate		= 1
-												AND C.IsDeleted				= 0
-												AND C.IsSaved				= 0
 												AND C.CDSId					= @CDSId
 	-- Examine any uncommitted changes at model level
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS C1	ON	S.FdpTakeRateSummaryId	= C1.FdpTakeRateSummaryId
 												AND S.FdpModelId			= C1.FdpModelId
-												AND D.MarketId				= C1.MarketId
+												AND S.MarketId				= C1.MarketId
 												AND C1.IsModelUpdate		= 1
-												AND C1.IsDeleted			= 0
-												AND C1.IsSaved				= 0
 												AND C1.CDSId				= @CDSId
-	LEFT JOIN Fdp_Validation			AS V	ON	D.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
+	LEFT JOIN Fdp_Validation			AS V	ON	H.FdpVolumeHeaderId		= V.FdpVolumeHeaderId
+												AND S.MarketId				= V.MarketId
+												AND S.FdpModelId			= V.FdpModelId
+												AND F.FdpFeatureId			= V.FdpFeatureId
 												AND V.IsActive				= 1
 	WHERE
-	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	(@MarketId IS NULL OR D.MarketId = @MarketId)
+	(@MarketId IS NULL OR S.MarketId = @MarketId)
 	AND
-	D.FdpModelId IS NOT NULL
+	S.FdpModelId IS NOT NULL
 	AND
-	D.FdpFeatureId IS NOT NULL
+	F.FdpFeatureId IS NOT NULL
 	AND
-	ISNULL(C.TotalVolume, D.Volume) > ISNULL(C1.TotalVolume, S.Volume)
+	ISNULL(C.TotalVolume, ISNULL(D.Volume, 0)) > ISNULL(C1.TotalVolume, S.Volume)
 	AND
 	V.FdpValidationId IS NULL
 	

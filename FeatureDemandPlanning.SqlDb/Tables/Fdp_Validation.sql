@@ -3,6 +3,11 @@
     [ValidationOn]            DATETIME       CONSTRAINT [DF_Fdp_Validation_ValidationOn] DEFAULT (getdate()) NOT NULL,
     [FdpVolumeHeaderId]       INT            NOT NULL,
     [MarketId]                INT            NOT NULL,
+    [ModelId]                 INT            NULL,
+    [FdpModelId]              INT            NULL,
+    [FeatureId]               INT            NULL,
+    [FdpFeatureId]            INT            NULL,
+    [FeaturePackId]           INT            NULL,
     [FdpValidationRuleId]     INT            NOT NULL,
     [Message]                 NVARCHAR (MAX) NOT NULL,
     [FdpVolumeDataItemId]     INT            NULL,
@@ -23,6 +28,8 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_Validation_FdpValidationRuleId]
     ON [dbo].[Fdp_Validation]([FdpValidationRuleId] ASC);
@@ -34,8 +41,7 @@ CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_Validation_FdpChangesetDataItemId]
 
 
 GO
-CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_Validation_FdpVolumeHeader]
-    ON [dbo].[Fdp_Validation]([FdpVolumeHeaderId] ASC, [MarketId] ASC);
+
 
 
 GO
@@ -51,4 +57,9 @@ CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_Validation_FdpTakeRateSummaryId]
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_Validation_FdpTakeRateFeatureMixId]
     ON [dbo].[Fdp_Validation]([FdpTakeRateFeatureMixId] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_Validation_Cover]
+    ON [dbo].[Fdp_Validation]([FdpVolumeHeaderId] ASC, [MarketId] ASC, [IsActive] ASC, [ModelId] ASC, [FdpModelId] ASC, [FeatureId] ASC, [FdpFeatureId] ASC, [FdpVolumeDataItemId] ASC, [FdpTakeRateSummaryId] ASC, [FdpTakeRateFeatureMixId] ASC, [FdpChangesetDataItemId] ASC);
 

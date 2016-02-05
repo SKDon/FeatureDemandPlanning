@@ -3,6 +3,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_ChangesetDataItem_VW]
 AS
 	SELECT
@@ -88,3 +89,5 @@ AS
 	D.IsDeleted = 0
 	AND
 	C.IsDeleted = 0
+	AND
+	C.IsSaved = 0

@@ -6,114 +6,110 @@ AS
 
 	SET NOCOUNT ON;
 
-	-- Get the models that we have data for for each market
-	-- Coalesce as a big string so we can get the feature applicability for the market we are interested in
-
-	DECLARE @Models AS TABLE
+	WITH AllFeatures AS
 	(
-		ModelId INT
-	);
-	DECLARE @ModelIdentifiers AS NVARCHAR(MAX);
-
-	-- Don't worry about FDP models, as feature applicability isn't coded
-	
-	INSERT INTO @Models (ModelId)
-	SELECT DISTINCT ModelId 
-	FROM Fdp_TakeRateSummaryByModelAndMarket_VW AS M
-	WHERE
-	FdpVolumeHeaderId = @FdpVolumeHeaderId;
-
-	SELECT @ModelIdentifiers = COALESCE(@ModelIdentifiers + ',' ,'') + QUOTENAME(CAST(ModelId AS NVARCHAR(10)))
-	FROM @Models
-	ORDER BY ModelId;
-
-	DECLARE @Markets AS TABLE
-	(
-		  MarketId		INT
-		, MarketGroupId INT
-		, Processed		BIT
-	);
-	DECLARE @CurrentMarketId		AS INT;
-	DECLARE @CurrentMarketGroupId	AS INT;
-	DECLARE @FeaturePackTakeRate	AS DECIMAL(5, 4);
-	DECLARE @TotalErrors			AS INT = 0;
-
-	INSERT INTO @Markets 
-	(
-		MarketId, 
-		MarketGroupId,
-		Processed
-	)
-	SELECT DISTINCT 
-		  MarketId
-		, MarketGroupId
-		, CAST(0 AS BIT) 
-	FROM
-	Fdp_TakeRateSummaryByMarket_VW AS M
-	WHERE
-	M.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	AND
-	(@MarketId IS NULL OR M.MarketId = @MarketId)
-
-	SELECT TOP 1 @CurrentMarketId = MarketId, @CurrentMarketGroupId = MarketGroupId FROM @Markets WHERE Processed = 0;
-
-	WHILE @CurrentMarketId IS NOT NULL
-	BEGIN
-		INSERT INTO Fdp_Validation
-		(
-			  FdpVolumeHeaderId
-			, MarketId
-			, FdpValidationRuleId
-			, [Message]
-			, FdpTakeRateSummaryId
-			, FdpChangesetDataItemId
-		)
-		SELECT
-			  H.FdpVolumeHeaderId 
-			, @CurrentMarketId		AS MarketId
-			, 6 -- TakeRateForPackFeaturesShouldBeEquivalent
-			, MAX('Take rate for all features in pack ''' + P.Pack_Name + ''' should be equivalent') AS [Message]
-			, MAX(S.FdpTakeRateSummaryId)	AS FdpTakeRateSummaryId
-			, C.FdpChangesetDataItemId
+		SELECT 
+			  H.FdpVolumeHeaderId
+			, H.ProgrammeId
+			, S.MarketId
+			, S.ModelId
+			, S.FdpTakeRateSummaryId
+			, FA.FeatureId
+			, FA.FeaturePackId
+			, FA.OxoCode
+			, ISNULL(C.PercentageTakeRate, ISNULL(D.PercentageTakeRate, 0)) AS PercentageTakeRate
 		FROM 
-		Fdp_VolumeHeader					AS H
-		JOIN OXO_Doc						AS O	ON	H.DocumentId			= O.Id
-		JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId		= D.FdpVolumeHeaderId
-													AND D.IsFeatureData			= 1
-													AND D.MarketId				= @CurrentMarketId
-		LEFT JOIN Fdp_ChangesetDataItem_VW AS C		ON H.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
-													AND D.FdpVolumeDataItemId	= C.FdpVolumeDataItemId
-													AND C.IsFeatureUpdate		= 1
-													AND C.CDSId					= @CDSId
-		JOIN Fdp_TakeRateSummary			AS S	ON	D.MarketId				= S.MarketId
-													AND D.ModelId				= S.ModelId
-													AND H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
-		JOIN OXO_Programme_Pack				AS P	ON	D.FeaturePackId			= P.Id
-													AND O.Programme_Id			= P.Programme_Id
-		CROSS APPLY dbo.FN_OXO_Data_Get_FBM_Market(H.DocumentId, @CurrentMarketGroupId, @CurrentMarketId, @ModelIdentifiers) AS F
-		LEFT JOIN Fdp_Validation			AS V	ON	S.FdpTakeRateSummaryId	= V.FdpTakeRateSummaryId
-													AND	V.IsActive = 1
+		Fdp_VolumeHeader_VW								AS H
+		JOIN Fdp_TakeRateSummary						AS S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
+																AND S.ModelId					IS NOT NULL
+		CROSS APPLY dbo.fn_Fdp_FeatureApplicability_GetMany(H.FdpVolumeHeaderId, S.MarketId) AS FA
+		JOIN OXO_Programme_Feature_VW					AS F	ON	H.ProgrammeId			= F.ProgrammeId
+																AND FA.FeatureId			= F.ID
+		LEFT JOIN Fdp_VolumeDataItem_VW					AS D	ON	H.FdpVolumeHeaderId		= D.FdpVolumeHeaderId
+																AND S.MarketId				= D.MarketId
+																AND S.ModelId				= D.ModelId
+																AND F.ID					= D.FeatureId
+		LEFT JOIN Fdp_ChangesetDataItem_VW				AS C	ON	S.MarketId				= C.MarketId
+																AND F.Id					= C.FeatureId
+																AND S.ModelId				= C.ModelId
+																AND C.CDSId					= @CDSId
 		WHERE
 		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND
-		F.OXO_Code LIKE '%P%'
+		(@MarketId IS NULL OR S.MarketId = @MarketId)
 		AND
-		D.ModelId = F.Model_Id
+		S.MarketId = FA.MarketId
 		AND
-		D.FeatureId = F.Feature_Id
-		AND
-		V.FdpValidationId IS NULL
+		S.ModelId = FA.ModelId
+	)
+	, PackOnlyFeatures AS
+	(
+		SELECT
+			MarketId, ModelId, FeaturePackId
+		FROM
+		(
+			SELECT DISTINCT F.MarketId, F.ModelId, F.FeaturePackId, MAX(F.OxoCode) AS OxoCode
+			FROM
+			AllFeatures AS F
+			GROUP BY
+			F.MarketId, F.ModelId, F.FeaturePackId
+			HAVING COUNT(DISTINCT F.OxoCode) = 1
+		)
+		AS P
+		WHERE
+		P.OxoCode LIKE '%P%'
+
+	)
+	, NonEquivalentPackFeatures AS
+	(
+		SELECT
+			  F.FdpVolumeHeaderId
+			, F.ProgrammeId
+			, F.MarketId
+			, F.ModelId
+			, F.FeaturePackId
+			, F.FdpTakeRateSummaryId
+		FROM
+		AllFeatures AS F
+		JOIN PackOnlyFeatures AS P ON F.MarketId = P.MarketId
+									AND F.ModelId = P.ModelId
+									AND F.FeaturePackId = P.FeaturePackId
 		GROUP BY
-		H.FdpVolumeHeaderId, D.ModelId, D.FeaturePackId, D.FeatureId, ISNULL(C.PercentageTakeRate, D.PercentageTakeRate), C.FdpChangesetDataItemId
-		-- If we have more than one percentage take rate, we now that the feature and pack take is different
-		HAVING
-		COUNT(ISNULL(C.PercentageTakeRate, D.PercentageTakeRate)) > 1
+		  F.FdpVolumeHeaderId
+		, F.ProgrammeId
+		, F.MarketId
+		, F.ModelId
+		, F.FeaturePackId
+		, F.FdpTakeRateSummaryId
+		HAVING COUNT(DISTINCT F.PercentageTakeRate) > 1
+	)
+	INSERT INTO Fdp_Validation
+	(
+		  FdpVolumeHeaderId
+		, MarketId
+		, ModelId
+		, FeaturePackId
+		, FdpValidationRuleId
+		, [Message]
+		, FdpTakeRateSummaryId
+	)
+	SELECT 
+		  N.FdpVolumeHeaderId
+		, N.MarketId
+		, N.ModelId
+		, N.FeaturePackId
+		, 6 -- Pack features 100%
+		, 'Take rates for features in pack ''' + P.Pack_Name + ''' should be equivalent'
+		, N.FdpTakeRateSummaryId
+	FROM 
+	NonEquivalentPackFeatures		AS N
+	JOIN OXO_Programme_Pack			AS P	ON	N.FeaturePackId		= P.Id
+											AND N.ProgrammeId		= P.Programme_Id
+	LEFT JOIN Fdp_Validation		AS V	ON	N.FdpVolumeHeaderId = V.FdpVolumeHeaderId
+											AND N.ModelId			= V.ModelId
+											AND N.FeaturePackId		= V.FeaturePackId
+											AND V.IsActive			= 1
+	WHERE
+	V.FeaturePackId IS NULL
 
-		SET @TotalErrors = @TotalErrors + @@ROWCOUNT;
-
-		UPDATE @Markets SET Processed = 1 WHERE MarketId = @CurrentMarketId;
-		SET @CurrentMarketId = NULL;
-		SELECT TOP 1 @CurrentMarketId = MarketId, @CurrentMarketGroupId = MarketGroupId FROM @Markets WHERE Processed = 0; 
-	END
-	
-	PRINT 'Take rate for pack feature errors added: ' + CAST(@TotalErrors AS NVARCHAR(10))
+	PRINT 'Pack feature validation failures added: ' + CAST(@@ROWCOUNT AS NVARCHAR(10))

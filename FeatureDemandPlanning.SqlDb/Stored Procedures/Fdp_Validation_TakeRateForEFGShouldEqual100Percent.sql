@@ -6,100 +6,100 @@ AS
 
 	SET NOCOUNT ON;
 
-	-- Get our market volumes taking into account any uncommitted changes to that market
-	;WITH EfgTakeRates AS
+	WITH EfgTakeRates AS
 	(
-		SELECT
-			  S.MarketId
-			, S.FdpTakeRateSummaryId
+		-- Exclusive feature groups containing a standard feature plus options
+		SELECT 
+			  H.FdpVolumeHeaderId
+			, S.MarketId
 			, S.ModelId
-			, CAST(NULL AS INT) AS FdpModelId
+			, S.FdpTakeRateSummaryId
 			, F.EFGName
-			, CAST(SUM(ISNULL(C.PercentageTakeRate, D.PercentageTakeRate)) AS DECIMAL(5,2)) AS PercentageTakeRate
-		FROM
-		Fdp_VolumeHeader				AS H 
-		JOIN OXO_Doc					AS O	ON	H.DocumentId		= O.Id
-		JOIN OXO_Programme_Feature_VW	AS F	ON	O.Programme_Id		= F.ProgrammeId
-		LEFT JOIN Fdp_VolumeDataItem_VW		AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-												AND D.IsFeatureData		= 1
-												AND F.ID				= D.FeatureId
-		JOIN Fdp_TakeRateSummary		AS S	ON	H.FdpVolumeHeaderId	= S.FdpVolumeHeaderId
-												AND S.ModelId			IS NOT NULL
-		LEFT JOIN Fdp_ChangesetDataItem_VW AS C	ON	F.Id				= C.FeatureId
-												AND S.ModelId			= C.ModelId
-												AND C.IsFeatureUpdate		= 1
-												AND C.CDSId					= @CDSId
+			, MAX(FA.FeaturesInExclusiveFeatureGroup) AS NumberOfFeaturesInGroup
+			, CAST(CASE WHEN SUM(CAST(FA.IsStandardFeatureInGroup AS INT)) > 0 THEN 1 ELSE 0 END AS BIT) AS GroupHasStandardFeature
+			, SUM(ISNULL(C.PercentageTakeRate, ISNULL(D.PercentageTakeRate, 0))) AS PercentageTakeRate
+		FROM 
+		Fdp_VolumeHeader_VW								AS H
+		JOIN Fdp_TakeRateSummaryByModelAndMarket_VW		AS S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
+		CROSS APPLY dbo.fn_Fdp_FeatureApplicability_GetMany(H.FdpVolumeHeaderId, S.MarketId) AS FA
+		JOIN OXO_Programme_Feature_VW					AS F	ON	FA.FeatureId			= F.ID
+																AND H.ProgrammeId			= F.ProgrammeId
+		LEFT JOIN Fdp_VolumeDataItem_VW					AS D	ON	H.FdpVolumeHeaderId		= D.FdpVolumeHeaderId
+																AND S.MarketId				= D.MarketId
+																AND S.ModelId				= D.ModelId
+																AND F.ID					= D.FeatureId
+		LEFT JOIN Fdp_ChangesetDataItem_VW				AS C	ON	S.MarketId				= C.MarketId
+																AND F.Id					= C.FeatureId
+																AND S.ModelId				= C.ModelId
+																AND C.CDSId					= @CDSId
 		WHERE
-		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
-		AND
-		S.ModelId IS NOT NULL
-		AND
 		(@MarketId IS NULL OR S.MarketId = @MarketId)
+		AND
+		S.MarketId = FA.MarketId
+		AND
+		S.ModelId = FA.ModelId
+		AND
+		-- We are only interested in groups with more than one feature
+		-- as the aggregate needs to be 100% if containing a standard feature
+		FA.FeaturesInExclusiveFeatureGroup > 1
+		AND
+		FA.OxoCode NOT LIKE '%NA%'
 		GROUP BY
-		  S.MarketId
+		  H.FdpVolumeHeaderId
+		, S.MarketId
 		, S.ModelId
 		, S.FdpTakeRateSummaryId
 		, F.EFGName
-
-		UNION
-
-		SELECT
-			  S.MarketId
-			, S.FdpTakeRateSummaryId
-			--, F.ID AS FeatureId
-			, CAST(NULL AS INT) AS ModelId
-			, S.FdpModelId
-			, F.EFGName
-			, CAST(SUM(ISNULL(C.PercentageTakeRate, D.PercentageTakeRate)) AS DECIMAL(5,2)) AS PercentageTakeRate
-		FROM
-		Fdp_VolumeHeader				AS H 
-		JOIN OXO_Doc					AS O	ON	H.DocumentId			= O.Id
-		JOIN OXO_Programme_Feature_VW	AS F	ON	O.Programme_Id			= F.ProgrammeId
-		LEFT JOIN Fdp_VolumeDataItem_VW		AS D	ON	H.FdpVolumeHeaderId		= D.FdpVolumeHeaderId
-												AND D.IsFeatureData			= 1
-												AND F.ID					= D.FeatureId
-		JOIN Fdp_TakeRateSummary		AS S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
-												AND S.FdpModelId			IS NOT NULL
-		LEFT JOIN Fdp_ChangesetDataItem_VW AS C	ON	F.Id					= C.FeatureId
-												AND	S.FdpModelId			= C.FdpModelId
-												AND C.IsFeatureUpdate		= 1
-												AND C.CDSId					= @CDSId
-		WHERE
-		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
-		AND
-		S.FdpModelId IS NOT NULL
-		AND
-		(@MarketId IS NULL OR S.MarketId = @MarketId)
-		GROUP BY
-		  S.MarketId
-		, S.FdpModelId
-		, S.FdpTakeRateSummaryId
-		, F.EFGName
 	)
-	--INSERT INTO Fdp_Validation
-	--(
-	--	  FdpVolumeHeaderId
-	--	, MarketId
-	--	, FdpValidationRuleId
-	--	, [Message]
-	--	, FdpTakeRateSummaryId
-	--)
+	INSERT INTO Fdp_Validation
+	(
+		  FdpVolumeHeaderId
+		, MarketId
+		, ModelId
+		, FdpValidationRuleId
+		, [Message]
+		, FdpTakeRateSummaryId
+	)
 	SELECT
-		  @FdpVolumeHeaderId AS FdpVolumeHeaderId
-		, E.MarketId
-		, 7 AS FdpValidationRuleId -- TakeRateForEFGShouldEqual100Percent
-		, 'Take rate of ''' + CAST(E.PercentageTakeRate AS NVARCHAR(10)) + '%'' for features in exclusive feature group ''' + E.EFGName + ''' must equal 100%' AS [Message]
-		, E.FdpTakeRateSummaryId
-		, E.ModelId
-		, E.PercentageTakeRate
+		  T.FdpVolumeHeaderId
+		, T.MarketId
+		, T.ModelId
+		, 7 -- All features in a group must add up to 100% (or less if group is entirely optional)
+		, 'Take rate of ''' + CAST(CAST(T.PercentageTakeRate AS DECIMAL(5,2)) * 100 AS NVARCHAR(10)) + '%'' for all features in exclusive feature group ''' + T.EFGName + ''' must equal 100% as group contains a standard feature'
+		, T.FdpTakeRateSummaryId
 	FROM
-	EfgTakeRates				AS E
-	--LEFT JOIN Fdp_Validation	AS V	ON	E.MarketId				= V.MarketId
-	--									AND E.FdpTakeRateSummaryId	= V.FdpTakeRateSummaryId
-	--									AND V.IsActive				= 1
+	EfgTakeRates				AS T
+	LEFT JOIN Fdp_Validation	AS V	ON	T.FdpVolumeHeaderId		= V.FdpVolumeHeaderId
+										AND T.MarketId				= V.MarketId
+										AND T.FdpTakeRateSummaryId	= V.FdpTakeRateSummaryId
+										AND V.IsActive				= 1
 	WHERE
-	E.PercentageTakeRate <> 1
-	--AND
-	--V.FdpValidationId IS NULL
-	
-	PRINT 'Total take rate for features as part of EFG must equal 100% validation errors added: ' + CAST(@@ROWCOUNT AS NVARCHAR(10))
+	T.GroupHasStandardFeature = 1
+	AND
+	T.PercentageTakeRate <> 1
+	AND
+	V.FdpTakeRateSummaryId IS NULL
+
+	UNION
+
+	SELECT
+		  T.FdpVolumeHeaderId
+		, T.MarketId
+		, T.ModelId
+		, 7 -- All features in a group must add up to 100% (or less if group is entirely optional)
+		, 'Take rate of ''' + CAST(CAST(T.PercentageTakeRate AS DECIMAL(5,2)) * 100 AS NVARCHAR(10)) + '%'' for all features in exclusive feature group ''' + T.EFGName + ''' cannot be greater than 100%'
+		, T.FdpTakeRateSummaryId
+	FROM
+	EfgTakeRates				AS T
+	LEFT JOIN Fdp_Validation	AS V	ON	T.FdpVolumeHeaderId		= V.FdpVolumeHeaderId
+										AND T.MarketId				= V.MarketId
+										AND T.FdpTakeRateSummaryId	= V.FdpTakeRateSummaryId
+										AND V.IsActive				= 1
+	WHERE
+	T.GroupHasStandardFeature = 0
+	AND
+	T.PercentageTakeRate > 1
+	AND
+	V.FdpTakeRateSummaryId IS NULL
+
+	PRINT 'Exclusive feature group validation failures added: ' + CAST(@@ROWCOUNT AS NVARCHAR(10))

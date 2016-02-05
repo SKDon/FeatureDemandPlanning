@@ -5,6 +5,7 @@
 AS
 BEGIN
 	SET NOCOUNT ON;
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 
 	-- Lower any validation errors for that document / market
 	-- This stops any validation errors that are no longer relevant from surfacing
@@ -18,9 +19,13 @@ BEGIN
 	WHERE
 	C.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
+	V.IsActive = 1
+	AND
 	(@MarketId IS NULL OR V.MarketId = @MarketId)
 	AND
 	C.CDSId = @CDSId
+
+	PRINT 'Number of validation entries lowered: ' + CAST(@@ROWCOUNT AS NVARCHAR(10))
 	
 	-- Lower any global validation not associated with a changeset
 	
@@ -32,7 +37,11 @@ BEGIN
 	AND
 	V.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
+	V.IsActive = 1
+	AND
 	(@MarketId IS NULL OR V.MarketId = @MarketId)
+
+	PRINT 'Number of validation entries lowered: ' + CAST(@@ROWCOUNT AS NVARCHAR(10))
 	
 	-- We have number of validation rules - Validate against each in turn, adding validation entries as necessary
 
@@ -63,20 +72,29 @@ BEGIN
 
 	SELECT TOP 1 @CurrentStoredProcedureName = StoredProcedureName FROM @ValidationRoutines WHERE Processed = 0
 
+	
+
 	WHILE @CurrentStoredProcedureName IS NOT NULL
 	BEGIN
 		SET @ParmDefinition = N'@p1 INT, @p2 INT = NULL, @p3 NVARCHAR(16)'
 		SET @Sql = @CurrentStoredProcedureName + N' @p1, @p2, @p3'
+
+		PRINT 'Executing stored procedure: ' + @Sql
+		PRINT ''
+
+		--SET STATISTICS TIME ON;
 		EXEC sp_executesql 
 		  @Sql
 		, @ParmDefinition
 		, @p1 = @FdpVolumeHeaderId
 		, @p2 = @MarketId
-		, @p3 = @CDSId 
+		, @p3 = @CDSId;
+		--SET STATISTICS TIME OFF;
 		
 		UPDATE @ValidationRoutines SET Processed = 1 WHERE StoredProcedureName = @CurrentStoredProcedureName;
 		SET @CurrentStoredProcedureName = NULL
-		SELECT TOP 1 @CurrentStoredProcedureName = StoredProcedureName FROM @ValidationRoutines WHERE Processed = 0
+		SELECT TOP 1 @CurrentStoredProcedureName = StoredProcedureName FROM @ValidationRoutines WHERE Processed = 0;
+
 	END
 
 END

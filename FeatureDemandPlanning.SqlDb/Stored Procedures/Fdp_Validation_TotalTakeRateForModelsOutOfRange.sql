@@ -10,8 +10,10 @@ AS
 	;WITH MarketTakeRates AS
 	(
 		SELECT
-			  M.MarketId
-			, CAST(SUM(ISNULL(C.PercentageTakeRate, M.PercentageTakeRate)) AS DECIMAL(5,2)) AS PercentageTakeRate
+			  M.FdpVolumeHeaderId
+			, M.ProgrammeId
+			, M.MarketId
+			, CAST(SUM(ISNULL(C.PercentageTakeRate, ISNULL(M.PercentageTakeRate, 0))) AS DECIMAL(5,2)) AS PercentageTakeRate
 		FROM
 		Fdp_TakeRateSummaryByModelAndMarket_VW		AS M
 		LEFT JOIN Fdp_ChangesetModel_VW				AS C	ON	M.FdpVolumeHeaderId	= C.FdpVolumeHeaderId
@@ -25,13 +27,15 @@ AS
 		AND
 		(@MarketId IS NULL OR M.MarketId = @MarketId)
 		GROUP BY
-		M.MarketId
+		M.FdpVolumeHeaderId, M.ProgrammeId, M.MarketId
 
 		UNION
 
 		SELECT
-			  M.MarketId
-			, CAST(SUM(ISNULL(C.PercentageTakeRate, M.PercentageTakeRate)) AS DECIMAL(5,2)) AS PercentageTakeRate
+			  M.FdpVolumeHeaderId
+			, M.ProgrammeId
+			, M.MarketId
+			, CAST(SUM(ISNULL(C.PercentageTakeRate, ISNULL(M.PercentageTakeRate, 0))) AS DECIMAL(5,2)) AS PercentageTakeRate
 		FROM
 		Fdp_TakeRateSummaryByModelAndMarket_VW		AS M
 		LEFT JOIN Fdp_ChangesetModel_VW				AS C	ON	M.FdpVolumeHeaderId	= C.FdpVolumeHeaderId
@@ -45,7 +49,7 @@ AS
 		AND
 		(@MarketId IS NULL OR M.MarketId = @MarketId)
 		GROUP BY
-		M.MarketId
+		M.FdpVolumeHeaderId, M.ProgrammeId, M.MarketId
 	)
 	INSERT INTO Fdp_Validation
 	(
@@ -58,11 +62,14 @@ AS
 		  @FdpVolumeHeaderId
 		, M.MarketId
 		, 4 -- TotalTakeRateForModelsOutOfRange
-		, 'Total take rate for models of ''' + CAST(M.PercentageTakeRate * 100 AS NVARCHAR(10)) + '%'' must equal 100%'
+		, 'Total take rate for models of ''' + CAST(M.PercentageTakeRate * 100 AS NVARCHAR(10)) + '%'' for market ''' + MK.Market_Name + ''' must equal 100%'
 	FROM
-	MarketTakeRates				AS M
-	LEFT JOIN Fdp_Validation	AS V	ON	M.MarketId	= V.MarketId
-										AND V.IsActive	= 1
+	MarketTakeRates							AS M
+	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	M.MarketId			= MK.Market_Id
+													AND M.ProgrammeId		= MK.Programme_Id
+	LEFT JOIN Fdp_Validation				AS V	ON	M.FdpVolumeHeaderId = V.FdpVolumeHeaderId
+													AND M.MarketId			= V.MarketId
+													AND V.IsActive			= 1
 	WHERE
 	M.PercentageTakeRate <> 1
 	AND
