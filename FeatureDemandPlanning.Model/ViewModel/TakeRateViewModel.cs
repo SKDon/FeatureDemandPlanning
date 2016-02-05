@@ -82,10 +82,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 case TakeRateDataItemAction.NotSet:
                     break;
                 case TakeRateDataItemAction.SaveChanges:
-                    model = await GetFullAndPartialViewModelForTakeRateDataPageExcludingData(context, filter);
-                    break;
                 case TakeRateDataItemAction.History:
                     model = await GetFullAndPartialViewModelForTakeRateDataPageExcludingData(context, filter);
+                    break;
+                case TakeRateDataItemAction.Changeset:
+                    model = await GetFullAndPartialViewModelForChangeset(context, filter);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -137,6 +138,20 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return takeRateModel;
         }
+        private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForChangeset(IDataContext context, TakeRateFilter filter)
+        {
+            var modelBase = GetBaseModel(context);
+            var takeRateModel = new TakeRateViewModel(modelBase)
+            {
+                Document = (TakeRateDocument)TakeRateDocument.FromFilter(filter),
+                Configuration = context.ConfigurationSettings
+            };
+            await HydrateOxoDocument(context, takeRateModel);
+            await HydrateFdpVolumeHeaders(context, takeRateModel);
+            await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
+            
+            return takeRateModel;
+        }
         private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForTakeRateDataItem(IDataContext context, TakeRateFilter filter)
         {
             var takeRateModel = new TakeRateViewModel(GetBaseModel(context))
@@ -154,23 +169,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
             await HydrateFeatures(context, takeRateModel);
             await HydrateCurrentModel(context, takeRateModel);
             await HydrateCurrentFeature(context, takeRateModel);
-
-            return takeRateModel;
-        }
-
-        private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForValidation(IDataContext context,
-            TakeRateFilter filter)
-        {
-            var takeRateModel = new TakeRateViewModel(GetBaseModel(context))
-            {
-                Document = (TakeRateDocument)TakeRateDocument.FromFilter(filter),
-                Configuration = context.ConfigurationSettings
-            };
-
-            await HydrateOxoDocument(context, takeRateModel);
-            await HydrateFdpVolumeHeaders(context, takeRateModel);
-            await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
-            await HydrateData(context, takeRateModel);
 
             return takeRateModel;
         }

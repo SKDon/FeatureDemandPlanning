@@ -1,22 +1,16 @@
-﻿using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Filters;
+﻿using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Validators;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.ViewModel;
-using FluentValidation;
 using System.Linq;
 using System.Web.Mvc;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.Attributes;
-using System.Web.Script.Serialization;
 using MvcSiteMapProvider.Web.Mvc.Filters;
 using System;
-using FeatureDemandPlanning.Model.Results;
-using System.Collections.Generic;
 using System.Reflection;
-using FeatureDemandPlanning.Model.Empty;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -112,6 +106,8 @@ namespace FeatureDemandPlanning.Controllers
             TakeRateParametersValidator
                 .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
 
+            await CheckModelAllowsEdit(parameters);
+
             var savedChangeset = await DataContext.TakeRate.SaveChangeset(TakeRateFilter.FromTakeRateParameters(parameters), parameters.Changeset);
 
             return Json(savedChangeset);
@@ -134,6 +130,8 @@ namespace FeatureDemandPlanning.Controllers
             TakeRateParametersValidator
                 .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
+            await CheckModelAllowsEdit(parameters);
+
             var changeset = await DataContext.TakeRate.RevertUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
 
             return Json(changeset);
@@ -146,7 +144,7 @@ namespace FeatureDemandPlanning.Controllers
                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
             var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.SaveChanges;
+            filter.Action = TakeRateDataItemAction.Changeset;
             var takeRateView = await TakeRateViewModel.GetModel(
                 DataContext,
                 filter);
@@ -161,6 +159,8 @@ namespace FeatureDemandPlanning.Controllers
         {
             TakeRateParametersValidator
                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangesetAndComment);
+
+            await CheckModelAllowsEdit(parameters);
 
             var persistedChangeset = await DataContext.TakeRate.PersistChangeset(
                 TakeRateFilter.FromTakeRateParameters(parameters));
@@ -191,6 +191,15 @@ namespace FeatureDemandPlanning.Controllers
             TakeRateParametersValidator
                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
 
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.Changeset;
+            var takeRateView = await TakeRateViewModel.GetModel(
+                DataContext,
+                filter);
+            if (!takeRateView.AllowEdit)
+            {
+                throw new InvalidOperationException(NO_EDITS);
+            }
             var undoneChangeset = await DataContext.TakeRate.UndoChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
 
             return Json(undoneChangeset);
@@ -201,6 +210,15 @@ namespace FeatureDemandPlanning.Controllers
             TakeRateParametersValidator
                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.ModelPlusFeatureAndComment);
 
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.AddNote;
+            var takeRateView = await TakeRateViewModel.GetModel(
+                DataContext,
+                filter);
+            if (!takeRateView.AllowEdit)
+            {
+                throw new InvalidOperationException(NO_EDITS);
+            }
             var note = await DataContext.TakeRate.AddDataItemNote(TakeRateFilter.FromTakeRateParameters(parameters));
 
             return Json(note, JsonRequestBehavior.AllowGet);
@@ -217,67 +235,7 @@ namespace FeatureDemandPlanning.Controllers
 
             return Json(validation);
         }
-        //[HandleErrorWithJson]
-        //[HttpPost]
-        //public async Task<ActionResult> Validate(TakeRateParameters parameters)
-        //{
-        //    TakeRateParametersValidator
-        //       .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
-
-        //    var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-        //    filter.Action = TakeRateDataItemAction.Validate;
-        //    var takeRateView = await TakeRateViewModel.GetModel(
-        //        DataContext,
-        //        filter);
-
-        //    var validator = new TakeRateDocumentValidator(takeRateView.Document);
-        //    //var results = validator.Validate();
-
-        //    //var volumeModel = TakeRateViewModel.GetModel(DataContext, volumeToValidate).Result;
-        //    //var validator = new VolumeValidator(volumeModel.Volume);
-        //    //var ruleSets = VolumeValidator.GetRulesetsToValidate(sectionToValidate);
-        //    //var jsonResult = new JsonResult()
-        //    //{
-        //    //    Data = new { IsValid = true }
-        //    //};
-
-        //    //var results = validator.Validate(volumeModel.Volume, ruleSet: ruleSets);
-        //    //if (results.IsValid) return jsonResult;
-        //    //var errorModel = results.Errors
-        //    //    .Select(e => new ValidationError(new ValidationErrorItem
-        //    //    {
-        //    //        ErrorMessage = e.ErrorMessage,
-        //    //        CustomState = e.CustomState
-        //    //    })
-        //    //    {
-        //    //        key = e.PropertyName
-        //    //    });
-
-        //    //jsonResult = new JsonResult()
-        //    //{
-        //    //    Data = new ValidationMessage(false, errorModel)
-        //    //};
-        //    //return jsonResult;
-
-        //    //ValidateTakeRateParameters(parameters, TakeRateParametersValidator.NoValidation);
-
-        //    //var filter = new TakeRateFilter()
-        //    //{
-        //    //    FilterMessage = parameters.FilterMessage,
-        //    //    TakeRateStatusId = parameters.TakeRateStatusId
-        //    //};
-        //    //filter.InitialiseFromJson(parameters);
-
-        //    //var results = await TakeRateViewModel.GetModel(DataContext, filter);
-        //    //var jQueryResult = new JQueryDataTableResultModel(results);
-
-        //    //foreach (var result in results.TakeRates.CurrentPage)
-        //    //{
-        //    //    jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
-        //    //}
-
-        //    //return Json(jQueryResult);
-        //}
+        
         public ActionResult ValidationMessage(ValidationMessage message)
         {
             // Something is making a GET request to this page and I can't figure out what
@@ -286,26 +244,31 @@ namespace FeatureDemandPlanning.Controllers
 
         #region "Private Methods"
 
+        private async Task CheckModelAllowsEdit(TakeRateParameters parameters)
+        {
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.Changeset;
+            var takeRateView = await TakeRateViewModel.GetModel(
+                DataContext,
+                filter);
+            if (!takeRateView.AllowEdit)
+            {
+                throw new InvalidOperationException(NO_EDITS);
+            }
+        }
         private async Task<TakeRateViewModel> GetModelFromParameters(TakeRateParameters parameters)
         {
             return await TakeRateViewModel.GetModel(
                 DataContext,
                 TakeRateFilter.FromTakeRateParameters(parameters));
         }
-        private void ProcessTakeRateData(ITakeRateDocument document)
-        {
-            DataContext.TakeRate.SaveTakeRateDocument(document);
-            DataContext.TakeRate.ProcessMappedData(document);
-        }
-        //private static void ValidateTakeRateParameters(TakeRateParameters parameters, string ruleSetName)
-        //{
-        //    var validator = new TakeRateParametersValidator(DataContext);
-        //    var result = validator.Validate(parameters, ruleSet: ruleSetName);
-        //    if (!result.IsValid)
-        //    {
-        //        throw new ValidationException(result.Errors);
-        //    }
-        //}
+
+        #endregion
+
+        #region "Private Constants"
+
+        private const string NO_EDITS =
+            "Either you do not have permission, or the take rate file does not allow edits in the current state";
 
         #endregion
     }
