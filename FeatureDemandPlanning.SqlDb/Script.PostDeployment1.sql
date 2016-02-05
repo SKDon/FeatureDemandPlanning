@@ -294,7 +294,7 @@ USING (VALUES
 	  (1, N'TakeRateOutOfRange', N'Take rate above 100% and below 0% is not allowed', 1, 1, N'dbo.Fdp_Validation_TakeRateOutOfRange')
 	, (2, N'VolumeForFeatureGreaterThanModel', N'Volume for a feature cannot exceed the volume for a model', 1, 2, N'dbo.Fdp_Validation_VolumeForFeatureGreaterThanModel')
 	, (3, N'VolumeForModelsGreaterThanMarket', N'Total volumes for models at a market level cannot exceed the total volume for the market',	1, 3, N'dbo.Fdp_Validation_VolumeForModelGreaterThanMarket')
-	, (4, N'TotalTakeRateForModelsOutOfRange', N'% Take for each model at a market level cannot exceed 100%', 1, 4, N'Fdp_Validation_TotalTakeRateForModelsOutOfRange')
+	, (4, N'TotalTakeRateForModelsOutOfRange', N'% Take for each model at a market level cannot exceed 100%', 1, 4, N'dbo.Fdp_Validation_TotalTakeRateForModelsOutOfRange')
 	, (5, N'StandardFeaturesShouldBy100Percent', N'Take rate for standard features should be 100%', 1, 6, N'dbo.Fdp_Validation_StandardFeatures100Percent')
 	, (6, N'TakeRateForPackFeaturesShouldBeEquivalent', N'Take rate for all features as part of packs should be equivalent', 1, 8, N'dbo.Fdp_Validation_TakeRateForPackFeaturesShouldBeEquivalent')
 	, (7, N'TakeRateForEFGShouldEqual100Percent', N'EFG (Exclusive feature group). All features in a group must add up to 100% (or less if information is incomplete)', 1, 5, N'dbo.Fdp_Validation_TakeRateForEFGShouldEqual100Percent')
