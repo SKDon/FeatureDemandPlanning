@@ -49,6 +49,12 @@
                 <span class="glyphicon glyphicon-link"></span>&nbsp;
             </div>
         }
+        @if (featureRow.Field<int?>("FeaturePackId").HasValue)
+        {
+            <div class="indicator pack-item pull-right" data-toggle="popover" title="Feature Pack: @Model.Document.TakeRateData.PackFeatures.FirstOrDefault(p => p.PackId == featureRow.Field<int?>("FeaturePackId").GetValueOrDefault()).PackName" data-content="@RenderPack(featureRow.Field<int?>("FeaturePackId").GetValueOrDefault())">
+                <span class="glyphicon glyphicon-duplicate"></span>&nbsp;
+            </div>
+        }
     </td>
     <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName feature-code">@(featureRow.Field<string>("FeatureCode"))</td>
     <td class="cross-tab-data-item @featureFixedClassName @featureFixedLastClassName @featureClassName text-center">
@@ -134,7 +140,7 @@
         {
             dataText = "-";
         }
-        else if (value.HasValue && !string.IsNullOrEmpty(parsedFeatureApplicability) && parsedFeatureApplicability != "NA")
+        else if (value.HasValue)
         {
             dataText = value.Value.ToString("P2");
         }
@@ -146,7 +152,7 @@
         {
             dataText = "-";
         }
-        else if (value.HasValue && !string.IsNullOrEmpty(parsedFeatureApplicability) && parsedFeatureApplicability != "NA")
+        else if (value.HasValue)
         {
             dataText = value.Value.ToString("G");
         }
@@ -175,6 +181,19 @@
     foreach (var featureInGroup in featuresInGroup)
     {
         sb.Append(string.Format("{0} ({1})", featureInGroup.Feature, featureInGroup.FeatureCode));
+        sb.Append("<br/>");
+    }
+    @sb.ToString();
+}
+
+@helper RenderPack(int packId)
+{
+    var packFeatures = Model.Document.TakeRateData.PackFeatures.Where(p => p.PackId == packId).OrderBy(p => p.BrandDescription);
+    //.OrderBy(g => g.Feature);
+    var sb = new StringBuilder();
+    foreach (var packFeature in packFeatures)
+    {
+        sb.Append(packFeature.BrandDescription);
         sb.Append("<br/>");
     }
     @sb.ToString();

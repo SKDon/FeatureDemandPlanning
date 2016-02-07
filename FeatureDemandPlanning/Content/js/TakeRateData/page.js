@@ -457,7 +457,7 @@ model.Page = function (models) {
             } else if (currentResult.IsModelValidation) {
                 $("thead th[data-target='MS|" + currentResult.DataTarget + "']")
                     .children(".model-validation-error")
-                    .show()
+                    .fadeIn(1000)
                     .attr("data-content", currentResult.Message);
 
             } else if (currentResult.IsWholeMarketValidation) {
@@ -465,7 +465,7 @@ model.Page = function (models) {
             } else {
                 $("tbody div[data-target='" + currentResult.DataTarget + "']")
                     .next()
-                    .show()
+                    .fadeIn(1000)
                     .attr("data-content", currentResult.Message);
             }
             //selector.addClass(me.getValidationDataClass(currentResult));
@@ -473,7 +473,7 @@ model.Page = function (models) {
 
         if (validationData.ValidationResults.length !== 0) {
             
-            mainIndicator.show();
+            mainIndicator.fadeIn();
         }
     };
     me.checkCompletion = function() {
@@ -695,6 +695,12 @@ model.Page = function (models) {
 
         $(".efg-item").on("click", function () {
             $(".efg-item").not(this).popover("hide");
+        });
+
+        $(".pack-item").popover({ html: true, title: "Feature Pack", container: "body", trigger: "hover" });
+
+        $(".pack-item").on("click", function () {
+            $(".pack-item").not(this).popover("hide");
         });
 
         $(".feature-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover" });

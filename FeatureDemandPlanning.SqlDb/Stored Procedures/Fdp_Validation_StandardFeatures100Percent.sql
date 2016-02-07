@@ -24,7 +24,7 @@ AS
 		, S.ModelId
 		, F.ID
 		, 5 -- Standard feature 100%
-		, 'Take rate of ''' + CAST(CAST(ISNULL(C.PercentageTakeRate, ISNULL(D.PercentageTakeRate, 0)) AS DECIMAL(5,2)) * 100 AS NVARCHAR(10)) + ''' rate for standard feature ''' + ISNULL(F.BrandDescription, F.[SystemDescription]) + ''' should be 100%'
+		, 'Take rate of ''' + CAST(CAST(ISNULL(C.PercentageTakeRate, ISNULL(D.PercentageTakeRate, 0)) AS DECIMAL(5,2)) * 100 AS NVARCHAR(10)) + '%'' for standard feature ''' + ISNULL(F.BrandDescription, F.[SystemDescription]) + ''' should be 100%'
 		, D.FdpVolumeDataItemId
 		, NULL -- This is feature level validation as this is an isolated feature. Don't add the model summary identifier as this will make it a model level validation
 		, C.FdpChangesetDataItemId
@@ -56,7 +56,7 @@ AS
 	AND 
 	FA.IsStandardFeatureInGroup = 1 -- Must be a standard feature
 	AND 
-	FA.FeaturesInExclusiveFeatureGroup = 1 -- To be 100% take, the standard feature must be the only feature in group
+	FA.ApplicableFeaturesInExclusiveFeatureGroup = 1 -- To be 100% take, the standard feature must be the only (applicable) feature in group
 	AND
 	ISNULL(C.PercentageTakeRate, ISNULL(D.PercentageTakeRate, 0)) <> 1 -- 100 %
 	AND

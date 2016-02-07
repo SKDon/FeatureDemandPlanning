@@ -184,6 +184,15 @@ namespace FeatureDemandPlanning.DataStore
                         //FeatureGroup = efg.Field<string>("FeatureGroup"),
                         //FeatureSubGroup = efg.Field<string>("FeatureSubGroup")
                     });
+
+                    // 7. Packs
+
+                    retVal.PackFeatures = ds.Tables[6].AsEnumerable().Select(p => new PackFeature
+                    {
+                        PackId = p.Field<int>("PackId"),
+                        PackName = p.Field<string>("PackName"),
+                        BrandDescription = p.Field<string>("Feature")
+                    });
                 }
                 catch (Exception ex)
                 {

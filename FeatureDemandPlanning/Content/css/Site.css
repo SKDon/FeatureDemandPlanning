@@ -1249,8 +1249,8 @@ td.fdp-data-item-fixed {
     border-top: none;
     border-right: solid 1px #2E4372;
     border-bottom: solid 1px #2E4372;
-    min-width: 55px;
-    max-width: 55px;
+    min-width: 75px;
+    max-width: 75px;
 }
 
 .table-condensed > tbody > tr > td.feature-notes {

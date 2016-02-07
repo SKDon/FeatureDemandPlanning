@@ -13,6 +13,8 @@ RETURNS
 	, FeaturesInExclusiveFeatureGroup INT
 	, IsStandardFeatureInGroup BIT
 	, IsOptionalFeatureInGroup BIT
+	, IsNonApplicableFeatureInGroup BIT
+	, ApplicableFeaturesInExclusiveFeatureGroup INT
 	, ModelId	INT
 	, OxoCode	NVARCHAR(10)
 )
@@ -35,6 +37,30 @@ BEGIN
 
 	SELECT @ModelIdentifiers = COALESCE(@ModelIdentifiers+',' ,'') + '[' + CAST(ModelId AS NVARCHAR(10)) + ']' FROM @Models;
 
+	WITH ApplicabilityForMarket AS
+	(
+		SELECT
+			  M.Market_Id	AS MarketId
+			, FA.Model_Id	AS ModelId
+			, FA.Feature_Id AS FeatureId
+			, F.EFGName
+			, MAX(P.Pack_Id)		AS FeaturePackId
+			, MAX(FA.OXO_Code)	AS OxoCode
+		FROM
+		Fdp_VolumeHeader_VW						AS H 
+		JOIN OXO_Programme_MarketGroupMarket_VW AS M	ON	H.ProgrammeId	= M.Programme_Id
+		CROSS APPLY dbo.FN_OXO_Data_Get_FBM_Market(H.DocumentId, M.Market_Group_Id, M.Market_Id, @ModelIdentifiers) AS FA
+		JOIN OXO_Programme_Feature_VW			AS F	ON	H.ProgrammeId	= F.ProgrammeId
+													AND FA.Feature_Id	= F.ID
+		LEFT JOIN OXO_Pack_Feature_Link			AS P	ON	H.ProgrammeId	= P.Programme_Id
+													AND F.ID			= P.Feature_Id
+		WHERE
+		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		(@MarketId IS NULL OR M.Market_Id = @MarketId)
+		GROUP BY
+		M.Market_Id, FA.Model_Id, FA.Feature_Id, F.EFGName
+	)
 	INSERT INTO @FeatureApplicability
 	(
 		  MarketId
@@ -45,34 +71,25 @@ BEGIN
 		, FeaturesInExclusiveFeatureGroup
 		, IsStandardFeatureInGroup
 		, IsOptionalFeatureInGroup
+		, IsNonApplicableFeatureInGroup
+		, ApplicableFeaturesInExclusiveFeatureGroup
 		, OxoCode
 	)
 	SELECT 
-		  M.Market_Id
-		, FA.Model_Id	AS ModelId
-		, FA.Feature_Id AS FeatureId
-		, F.EFGName
-		, P.Pack_Id		AS FeaturePackId
-		, COUNT(FA.Feature_Id) OVER (PARTITION BY FA.Model_Id, F.EfgName) AS FeaturesInExclusiveFeatureGroup
-		, CAST(CASE WHEN MAX(FA.OXO_Code) LIKE '%S%' THEN 1 ELSE 0 END AS BIT) AS IsStandardFeatureInGroup 
-		, CAST(CASE WHEN MAX(FA.OXO_Code) LIKE '%O%' THEN 1 ELSE 0 END AS BIT) AS IsOptionalFeatureInGroup
-		, MAX(FA.OXO_Code)	AS OxoCode -- We are only interested in the applicability at this market level, not any
+		  A.MarketId
+		, A.ModelId
+		, A.FeatureId
+		, A.EFGName
+		, A.FeaturePackId
+		, COUNT(A.FeatureId) OVER (PARTITION BY A.ModelId, A.EfgName) AS FeaturesInExclusiveFeatureGroup
+		, CAST(CASE WHEN A.OxoCode LIKE '%S%' THEN 1 ELSE 0 END AS BIT) AS IsStandardFeatureInGroup 
+		, CAST(CASE WHEN A.OxoCode LIKE '%O%' THEN 1 ELSE 0 END AS BIT) AS IsOptionalFeatureInGroup
+		, CAST(CASE WHEN A.OxoCode LIKE '%NA%' THEN 1 ELSE 0 END AS BIT) AS IsNonApplicableFeatureInGroup
+		, COUNT(CASE WHEN A.OxoCode NOT LIKE '%NA%' THEN A.FeatureId ELSE NULL END) OVER (PARTITION BY A.ModelId, A.EfgName) AS ApplicableFeaturesInExclusiveFeatureGroup
+		, A.OxoCode -- We are only interested in the applicability at this market level, not any
 										-- parent group or globaly
 	FROM 
-	Fdp_VolumeHeader_VW						AS H 
-	JOIN OXO_Programme_MarketGroupMarket_VW AS M	ON	H.ProgrammeId	= M.Programme_Id
-	CROSS APPLY dbo.FN_OXO_Data_Get_FBM_Market(H.DocumentId, M.Market_Group_Id, M.Market_Id, @ModelIdentifiers) AS FA
-	JOIN OXO_Programme_Feature_VW			AS F	ON	H.ProgrammeId	= F.ProgrammeId
-													AND FA.Feature_Id	= F.ID
-	LEFT JOIN OXO_Pack_Feature_Link			AS P	ON	H.ProgrammeId	= P.Programme_Id
-													AND F.ID			= P.Feature_Id
-	
-	WHERE
-	(@MarketId IS NULL OR M.Market_Id = @MarketId)
-	--AND
-	--FA.OXO_Code NOT LIKE '%NA%' -- Ignore features that are not available for that market / model as they will skew the count of available features in an EFG
-	GROUP BY
-	M.Market_Id, FA.Model_Id, FA.Feature_Id, F.EFGName, P.Pack_Id
+	ApplicabilityForMarket AS A
 
 	RETURN
 END

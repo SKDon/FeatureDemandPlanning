@@ -18,7 +18,8 @@ namespace FeatureDemandPlanning.Model
         public IEnumerable<DataRow> FeatureApplicabilityData { get; set; }
         public IEnumerable<ModelTakeRateSummary> TakeRateSummaryByModel { get; set; }
         public IEnumerable<TakeRateDataItemNote> NoteAvailability { get; set; }
-        public IEnumerable<ExclusiveFeatureGroup> ExclusiveFeatureGroups { get; set; } 
+        public IEnumerable<ExclusiveFeatureGroup> ExclusiveFeatureGroups { get; set; }
+        public IEnumerable<PackFeature> PackFeatures { get; set; } 
 
         public bool HasData
         {

@@ -776,6 +776,14 @@
     <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany.sql" />
     <Build Include="Functions\fn_Fdp_UserMarkets_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_UserRoles_Save.sql" />
+    <Build Include="Views\Fdp_VolumeHeader_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Functions\fn_Fdp_FeatureApplicability_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">
