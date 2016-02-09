@@ -221,26 +221,16 @@ model.Page = function (models) {
                     return;
                 }
                 var selector = $("table.dataTable");
-                var columnIndex = $(this).index();
                 var rowIndex = $(this).closest("tr").index() + 4; // Add +4 as we need to exclude the additional header rows
+                var columnIndex = $(this).index();
+               
+                var modelIdentifier = $(this).attr("data-model");
                 
                 // Highlight the cell itself and any previous siblings
-                $(this).addClass("highlight").prevAll().addClass("highlight");
+                selector.find("tr:eq(" + rowIndex + ") td:lt(" + (columnIndex + 1) + ")").addClass("highlight");
 
-                // Highlight the cells in the fixed part of the table
-                selector.find("tr:eq(" + rowIndex + ")").children(".cross-tab-fixed").addClass("highlight");
-                selector.find("tr:eq(" + rowIndex + ")").children(".fdp-data-item-fixed").addClass("highlight");
-
-                selector.find("tr td:nth-child(" + (columnIndex + 1) + ")").filter(function() {
-                    return !me.isGroup(this) && !me.isFixed(this);
-                }).addClass("highlight");
-
-                if (columnIndex >= 4) {
-                    selector.find("tr:nth-child(1) th:nth-child(" + (columnIndex - 2) + ")").addClass("highlight");
-                    selector.find("tr:nth-child(2) th:nth-child(" + (columnIndex - 2) + ")").addClass("highlight");
-                    selector.find("tr:nth-child(3) th:nth-child(" + (columnIndex - 2) + ")").addClass("highlight");
-                    selector.find("tr:nth-child(4) th:nth-child(" + (columnIndex + 1) + ")").addClass("highlight");
-                }
+                // Highlight the cells in the same column with a row index <= the current index
+                selector.find("tr:lt(" + (rowIndex + 1) + ") td[data-model='" + modelIdentifier + "'], th[data-model='" + modelIdentifier + "']").addClass("highlight");
             },
             mouseleave: function () {
                 var selector = $("table.dataTable");

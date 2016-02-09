@@ -12,7 +12,6 @@ using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Extensions;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Helpers;
-using log4net;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -546,7 +545,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public IEnumerable<TakeRateDataItem> FdpTakeRateByMarketGetMany(TakeRateFilter filter, decimal? newTakeRate)
         {
-            var retVal = Enumerable.Empty<TakeRateDataItem>();
+            IEnumerable<TakeRateDataItem> retVal;
 
             using (var conn = DbHelper.GetDBConnection())
             {
@@ -986,7 +985,6 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-
         public IEnumerable<ValidationResult> FdpValidationGetMany(TakeRateFilter filter)
         {
             IEnumerable<ValidationResult> retVal;
@@ -1013,6 +1011,75 @@ namespace FeatureDemandPlanning.DataStore
             }
 
             return retVal;
+        }
+        public PagedResults<MarketReview> FdpMarketReviewGetMany(TakeRateFilter filter)
+        {
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                PagedResults<MarketReview> retVal;
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    var totalRecords = 0;
+                    var totalDisplayRecords = 0;
+
+                    if (filter.TakeRateId.HasValue)
+                    {
+                        para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    }
+                    if (filter.MarketId.HasValue)
+                    {
+                        para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    }
+                    if (!string.IsNullOrEmpty(filter.FilterMessage))
+                    {
+                        para.Add("@FilterMessage", filter.FilterMessage, DbType.String, size: 50);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.Value, DbType.Int32);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
+                    }
+                    if (filter.SortDirection != SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
+                    }
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    var results = conn.Query<MarketReview>("dbo.Fdp_MarketReview_GetManyByUsername", para, commandType: CommandType.StoredProcedure);
+                    var marketReviews = results as IList<MarketReview> ?? results.ToList();
+                    if (marketReviews.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                    }
+                    retVal = new PagedResults<MarketReview>
+                    {
+                        PageIndex = filter.PageIndex ?? 1,
+                        TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        PageSize = filter.PageSize ?? totalRecords,
+                        CurrentPage = marketReviews.ToList()
+                    };
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    throw;
+                }
+
+                return retVal;
+            }
         }
     }
 }

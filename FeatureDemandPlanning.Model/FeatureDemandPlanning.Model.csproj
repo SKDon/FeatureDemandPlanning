@@ -118,6 +118,7 @@
     <Compile Include="Extensions\UserExtensions.cs" />
     <Compile Include="FdpValidation.cs" />
     <Compile Include="Enumerations\UserRole.cs" />
+    <Compile Include="MarketReview.cs" />
     <Compile Include="UserDataItem.cs" />
     <Compile Include="UserMarketMapping.cs" />
     <Compile Include="UserProgrammeMapping.cs" />
@@ -327,6 +328,7 @@
     <Compile Include="FdpChangesetHistory.cs" />
     <Compile Include="ViewModel\IgnoredExceptionViewModel.cs" />
     <Compile Include="ViewModel\MarketMappingViewModel.cs" />
+    <Compile Include="ViewModel\MarketReviewViewModel.cs" />
     <Compile Include="ViewModel\SpecialFeatureMappingViewModel.cs" />
     <Compile Include="ViewModel\TrimMappingViewModel.cs" />
     <Compile Include="ViewModel\TrimViewModel.cs" />

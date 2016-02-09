@@ -1,16 +1,15 @@
 ﻿"use strict";
 
-var model = namespace("FeatureDemandPlanning.TakeRate");
+var model = namespace("FeatureDemandPlanning.MarketReview");
 
-model.TakeRates = function (params) {
+model.MarketReview = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
 
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Config = params.Configuration;
-    privateStore[me.id].ActionsUri = params.ActionsUri;
-    privateStore[me.id].TakeRatesUri = params.TakeRatesUri;
+    privateStore[me.id].MarketReviewsUri = params.MarketReviewsUri;
     privateStore[me.id].TakeRateUri = params.TakeRateUri;
     privateStore[me.id].TakeRateId = params.TakeRateId;
     privateStore[me.id].PageSize = params.PageSize;
@@ -19,7 +18,7 @@ model.TakeRates = function (params) {
     privateStore[me.id].TotalRecords = 0;
     privateStore[me.id].TotalDisplayRecords = 0;
 
-    me.ModelName = "TakeRates";
+    me.ModelName = "MarketReview";
 
     me.initialise = function () {
         var me = this;
@@ -35,7 +34,7 @@ model.TakeRates = function (params) {
         return privateStore[me.id].PageSize;
     };
     me.getPageIndex = function () {
-        return privateStore[me.id].PageIndex
+        return privateStore[me.id].PageIndex;
     };
     me.getActionsUri = function () {
         return privateStore[me.id].ActionsUri;
@@ -47,13 +46,13 @@ model.TakeRates = function (params) {
         return "";
     };
     me.getActionTitle = function (action) {
-        return "Take Rate Action";
+        return "Market Review Action";
     };
     me.getTakeRateUri = function () {
         return privateStore[me.id].TakeRateUri;
     };
-    me.getTakeRatesUri = function () {
-        return privateStore[me.id].TakeRatesUri;
+    me.getMarketReviewsUri = function () {
+        return privateStore[me.id].MarketReviewsUri;
     };
     me.getTakeRateId = function () {
         return privateStore[me.id].TakeRateId;
@@ -81,15 +80,6 @@ model.TakeRates = function (params) {
     };
     me.setTotalDisplayRecords = function (totalDisplayRecords) {
         privateStore[me.id].TotalDisplayRecords = totalDisplayRecords;
-    };
-    function genericErrorCallback(response) {
-        if (response.status == 400) {
-            var json = JSON.parse(response.responseText);
-            privateStore[me.id].IsValid = false;
-            $(document).trigger("Validation", [json]);
-        } else {
-            $(document).trigger("Error", response);
-        }
     };
 }
 

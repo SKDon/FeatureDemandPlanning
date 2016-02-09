@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using FeatureDemandPlanning.Model;
 using System.Data;
-using FeatureDemandPlanning.Model.Helpers;
+using System.Linq;
+using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Dapper;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -14,43 +13,41 @@ namespace FeatureDemandPlanning.DataStore
 
         public ProgrammeDataStore(string cdsid)
         {
-            this.CurrentCDSID = cdsid;
+            CurrentCDSID = cdsid;
         }
 
         public static void PopulateConfiguration(Programme programme)
         {
-            ProgrammeDataStore ds = new ProgrammeDataStore("system");
-            Programme obj = ds.ProgrammeGetConfiguration(programme.Id);
-            if (obj != null)
-            {
-                programme.Id = obj.Id;
-                programme.VehicleName = obj.VehicleName;
-                programme.VehicleAKA = obj.VehicleAKA;
-                programme.VehicleMake = obj.VehicleMake;
-                programme.VehicleDisplayFormat = obj.VehicleDisplayFormat;
-                programme.ModelYear = obj.ModelYear;
-                programme.PS = obj.PS;
-                programme.J1 = obj.J1;
-                programme.Notes = obj.Notes;
-                programme.ProductManager = obj.ProductManager;
-                programme.RSGUID = obj.RSGUID;
-                programme.Active = obj.Active;
-                programme.AllBodies = obj.AllBodies;
-                programme.AllEngines = obj.AllEngines;
-                programme.AllTransmissions = obj.AllTransmissions;
-                programme.AllTrims = obj.AllTrims;
-            }
+            var ds = new ProgrammeDataStore("system");
+            var obj = ds.ProgrammeGetConfiguration(programme.Id);
+            if (obj == null) return;
+            programme.Id = obj.Id;
+            programme.VehicleName = obj.VehicleName;
+            programme.VehicleAKA = obj.VehicleAKA;
+            programme.VehicleMake = obj.VehicleMake;
+            programme.VehicleDisplayFormat = obj.VehicleDisplayFormat;
+            programme.ModelYear = obj.ModelYear;
+            programme.PS = obj.PS;
+            programme.J1 = obj.J1;
+            programme.Notes = obj.Notes;
+            programme.ProductManager = obj.ProductManager;
+            programme.RSGUID = obj.RSGUID;
+            programme.Active = obj.Active;
+            programme.AllBodies = obj.AllBodies;
+            programme.AllEngines = obj.AllEngines;
+            programme.AllTransmissions = obj.AllTransmissions;
+            programme.AllTrims = obj.AllTrims;
         }
 
         public IEnumerable<EngineCodeMapping> EngineCodeMappingGetMany()
         {
-            IList<EngineCodeMapping> retVal = null;
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            IList<EngineCodeMapping> retVal;
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@TotalRecords", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", null, DbType.Int32, ParameterDirection.Output);
 
                     var results = conn.Query<EngineCodeMapping>("dbo.Fdp_EngineCode_GetMany", para, commandType: CommandType.StoredProcedure);
                     var totalRecords = para.Get<int?>("@TotalRecords");
@@ -65,8 +62,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.EngineCodeMappingGetMany", ex.Message, CurrentCDSID);
-                    throw new ApplicationException(ex.Message);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -77,17 +74,17 @@ namespace FeatureDemandPlanning.DataStore
         {
             var retVal = mapping;
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
 
-                    para.Add("@ProgrammeId", mapping.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@EngineId", mapping.EngineId, dbType: DbType.Int32);
+                    para.Add("@ProgrammeId", mapping.ProgrammeId, DbType.Int32);
+                    para.Add("@EngineId", mapping.EngineId, DbType.Int32);
                     para.Add("@ExternalEngineCode", 
-                        string.IsNullOrEmpty(mapping.ExternalEngineCode) ? null : mapping.ExternalEngineCode, dbType: DbType.String);
-                    para.Add("@MappingId", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
+                        string.IsNullOrEmpty(mapping.ExternalEngineCode) ? null : mapping.ExternalEngineCode, DbType.String);
+                    para.Add("@MappingId", null, DbType.Int32, ParameterDirection.Output);
 
                     conn.Execute("dbo.Fdp_EngineCode_Save", para, commandType: CommandType.StoredProcedure);
 
@@ -98,8 +95,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.EngineCodeMappingSave", ex.Message, CurrentCDSID);
-                    throw new ApplicationException(ex.Message);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -109,7 +106,7 @@ namespace FeatureDemandPlanning.DataStore
         public IEnumerable<Programme> ProgrammeGetMany()
         {
             IEnumerable<Programme> retVal = null;
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -119,7 +116,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.ProgrammeGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -129,18 +127,19 @@ namespace FeatureDemandPlanning.DataStore
         public IEnumerable<Programme> ProgrammeByGatewayGetMany()
         {
             IEnumerable<Programme> retVal = null;
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
-                    var para = new DynamicParameters();
-                    para.Add("@TotalRecords", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@TotalRecords", null, DbType.Int32, ParameterDirection.Output);
 
                     retVal = conn.Query<Programme>("dbo.Fdp_ProgrammeByGateway_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.ProgrammeByGatewayGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -150,17 +149,18 @@ namespace FeatureDemandPlanning.DataStore
         public Programme ProgrammeGet(int id)
         {
             Programme retVal = null;
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_Id", id, dbType: DbType.Int32);
+                    para.Add("@p_Id", id, DbType.Int32);
                     retVal = conn.Query<Programme>("dbo.OXO_Programme_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.ProgrammeGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -169,26 +169,26 @@ namespace FeatureDemandPlanning.DataStore
 
         public bool ProgrammeSave(Programme obj)
         {
-            bool retVal = true;
-            string procName = (obj.IsNew ? "dbo.OXO_Programme_New" : "dbo.OXO_Programme_Edit");
+            var retVal = true;
+            var procName = (obj.IsNew ? "dbo.OXO_Programme_New" : "dbo.OXO_Programme_Edit");
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
-                    obj.Save(this.CurrentCDSID);
+                    obj.Save(CurrentCDSID);
  
                     var para = new DynamicParameters();
 
                    // para.Add("@p_AKA", obj.AKA, dbType: DbType.String, size: 500);
-                    para.Add("@p_Notes", obj.Notes, dbType: DbType.String, size: 2000);
-                    para.Add("@p_Product_Manager", obj.ProductManager, dbType: DbType.String, size: 8);
-                    para.Add("@p_RSG_UID", obj.RSGUID, dbType: DbType.String, size: 500);
-                    para.Add("@p_Active", obj.Active, dbType: DbType.Boolean);
-                    para.Add("@p_Created_By", obj.CreatedBy, dbType: DbType.String, size: 8);
-                    para.Add("@p_Created_On", obj.CreatedOn, dbType: DbType.DateTime);
-                    para.Add("@p_Updated_By", obj.UpdatedBy, dbType: DbType.String, size: 8);
-                    para.Add("@p_Last_Updated", obj.LastUpdated, dbType: DbType.DateTime);
+                    para.Add("@p_Notes", obj.Notes, DbType.String, size: 2000);
+                    para.Add("@p_Product_Manager", obj.ProductManager, DbType.String, size: 8);
+                    para.Add("@p_RSG_UID", obj.RSGUID, DbType.String, size: 500);
+                    para.Add("@p_Active", obj.Active, DbType.Boolean);
+                    para.Add("@p_Created_By", obj.CreatedBy, DbType.String, size: 8);
+                    para.Add("@p_Created_On", obj.CreatedOn, DbType.DateTime);
+                    para.Add("@p_Updated_By", obj.UpdatedBy, DbType.String, size: 8);
+                    para.Add("@p_Last_Updated", obj.LastUpdated, DbType.DateTime);
                     para.Add("@p_Id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
                     conn.Execute(procName, para, commandType: CommandType.StoredProcedure);
@@ -201,8 +201,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.ProgrammeSave", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -212,35 +212,33 @@ namespace FeatureDemandPlanning.DataStore
 
         public bool ProgrammeDelete(int id)
         {
-            bool retVal = true;
-
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_Id", id, dbType: DbType.Int32);
+                    para.Add("@p_Id", id, DbType.Int32);
                     conn.Execute("dbo.OXO_Programme_Delete", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.ProgrammeDelete", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
-            return retVal;
+            return true;
         }
 
         public Programme ProgrammeGetConfiguration(int id)
         {
-            Programme retVal = new Programme();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            var retVal = new Programme();
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_Id", id, dbType: DbType.Int32);
+                    para.Add("@p_Id", id, DbType.Int32);
                     using (var multi = conn.QueryMultiple("dbo.OXO_Programme_GetConfiguration", para, commandType: CommandType.StoredProcedure))
                     {
                         retVal = multi.Read<Programme>().FirstOrDefault();
@@ -252,8 +250,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.ProgrammeGetConfiguration", ex.Message, CurrentCDSID);
-                    retVal = null;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -262,129 +260,118 @@ namespace FeatureDemandPlanning.DataStore
 
         public bool ProgrammeRemoveMarket(int progid, int marketid)
         {
-            bool retVal = true;
-
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progid, dbType: DbType.Int32);
-                    para.Add("@p_market_id", marketid, dbType: DbType.Int32);
+                    para.Add("@p_prog_id", progid, DbType.Int32);
+                    para.Add("@p_market_id", marketid, DbType.Int32);
                     conn.Execute("dbo.OXO_Programme_Remove_Market", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.ProgrammeRemoveMarket", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
-            return retVal;
+            return true;
         }
 
         public bool ProgrammeAddFeature(int progid, int docid, int featid, int changesetid)
         {
-            bool retVal = true;
-
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progid, dbType: DbType.Int32);
-                    para.Add("@p_doc_id", docid, dbType: DbType.Int32);
-                    para.Add("@p_feat_id", featid, dbType: DbType.Int32);
-                    para.Add("@p_cdsid", this.CurrentCDSID, dbType: DbType.String, size:10);
-                    para.Add("@p_changeset_id", changesetid, dbType: DbType.Int32);
+                    para.Add("@p_prog_id", progid, DbType.Int32);
+                    para.Add("@p_doc_id", docid, DbType.Int32);
+                    para.Add("@p_feat_id", featid, DbType.Int32);
+                    para.Add("@p_cdsid", CurrentCDSID, DbType.String, size:10);
+                    para.Add("@p_changeset_id", changesetid, DbType.Int32);
                     conn.Execute("dbo.OXO_Programme_Add_Feature", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.ProgrammeAddFeature", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
-            return retVal;
+            return true;
         }
 
         public bool ProgrammeAddGSF(int progid, int docid, int featid, int changesetid)
         {
-            bool retVal = true;
-
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progid, dbType: DbType.Int32);
-                    para.Add("@p_doc_id", docid, dbType: DbType.Int32);
-                    para.Add("@p_feat_id", featid, dbType: DbType.Int32);
-                    para.Add("@p_cdsid", this.CurrentCDSID, dbType: DbType.String, size: 10);
-                    para.Add("@p_changeset_id", changesetid, dbType: DbType.Int32);
+                    para.Add("@p_prog_id", progid, DbType.Int32);
+                    para.Add("@p_doc_id", docid, DbType.Int32);
+                    para.Add("@p_feat_id", featid, DbType.Int32);
+                    para.Add("@p_cdsid", CurrentCDSID, DbType.String, size: 10);
+                    para.Add("@p_changeset_id", changesetid, DbType.Int32);
                     conn.Execute("dbo.OXO_Programme_Add_GSF", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.ProgrammeAddGSF", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
-            return retVal;
+            return true;
         }
 
         public bool ProgrammeRemoveFeature(int progid, int docid, int featid, int changesetid)
         {
-            bool retVal = true;
-
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progid, dbType: DbType.Int32);
-                    para.Add("@p_doc_id", docid, dbType: DbType.Int32);
-                    para.Add("@p_feat_id", featid, dbType: DbType.Int32);
-                    para.Add("@p_cdsid", this.CurrentCDSID, dbType: DbType.String, size: 10);
-                    para.Add("@p_changeset_id", changesetid, dbType: DbType.Int32);
+                    para.Add("@p_prog_id", progid, DbType.Int32);
+                    para.Add("@p_doc_id", docid, DbType.Int32);
+                    para.Add("@p_feat_id", featid, DbType.Int32);
+                    para.Add("@p_cdsid", CurrentCDSID, DbType.String, size: 10);
+                    para.Add("@p_changeset_id", changesetid, DbType.Int32);
                     conn.Execute("dbo.OXO_Programme_Remove_Feature", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.ProgrammeRemoveFeature", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
-            return retVal;
+            return true;
         }
 
         public bool ProgrammeRemoveGSF(int progid, int docid, int featid, int changesetid)
         {
-            bool retVal = true;
-
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progid, dbType: DbType.Int32);
-                    para.Add("@p_doc_id", docid, dbType: DbType.Int32);
-                    para.Add("@p_feat_id", featid, dbType: DbType.Int32);
-                    para.Add("@p_cdsid", this.CurrentCDSID, dbType: DbType.String, size: 10);
-                    para.Add("@p_changeset_id", changesetid, dbType: DbType.Int32);
+                    para.Add("@p_prog_id", progid, DbType.Int32);
+                    para.Add("@p_doc_id", docid, DbType.Int32);
+                    para.Add("@p_feat_id", featid, DbType.Int32);
+                    para.Add("@p_cdsid", CurrentCDSID, DbType.String, size: 10);
+                    para.Add("@p_changeset_id", changesetid, DbType.Int32);
                     conn.Execute("dbo.OXO_Programme_Remove_GSF", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ProgrammeDS.ProgrammeRemoveGSF", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
                 }
             }
 
-            return retVal;
+            return true;
         }
 
     }

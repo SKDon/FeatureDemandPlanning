@@ -106,7 +106,7 @@
                             {
                                 modelClassName = "fdp-model";
                             }
-                            <th class="text-center model @modelClassName" data="@availableModel.StringIdentifier" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
+                            <th class="text-center model @modelClassName" data="@availableModel.StringIdentifier" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier" data-model="@availableModel.StringIdentifier">
                                 <div class="glyphicon glyphicon-alert validation-error model-validation-error"
                                      style="display: none"
                                      data-content=""></div>
@@ -127,7 +127,7 @@
                             {
                                 modelClassName = "fdp-model";
                             }
-                            <th class="text-center bmc @modelClassName">
+                            <th class="text-center bmc @modelClassName" data-model="@availableModel.StringIdentifier">
                                 @if (!string.IsNullOrEmpty(availableModel.BMC))
                                 {
                                     <span>@availableModel.BMC</span>
@@ -148,7 +148,7 @@
                             {
                                 modelClassName = "fdp-model";
                             }
-                            <th class="text-center trim-level @modelClassName">
+                            <th class="text-center trim-level @modelClassName" data-model="@availableModel.StringIdentifier">
                                 @if (!string.IsNullOrEmpty(availableModel.TrimLevel))
                                 {
                                     <span>

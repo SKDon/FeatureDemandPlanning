@@ -71,6 +71,12 @@ namespace FeatureDemandPlanning.Security
                     .AddPolicy<HasAccessToMarketPolicy>()
                     .AddPolicy<HasAccessToProgrammePolicy>();
 
+                configuration.For<MarketReviewController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .AddPolicy<HasAccessToMarketPolicy>()
+                    .AddPolicy<HasAccessToProgrammePolicy>()
+                    .RequireAnyRole("Administrator", "Editor", "MarketReviewer");
+
                 //configuration.ForAllControllers().Ignore();
             });
             GlobalFilters.Filters.Add(new HandleSecurityAttribute(), 0);

@@ -49,5 +49,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<FdpValidation> GetValidation(TakeRateFilter filter);
 
         Task<Programme> GetProgramme(TakeRateFilter takeRateFilter);
+
+        Task<PagedResults<MarketReview>> ListMarketReview(TakeRateFilter filter);
     }
 }

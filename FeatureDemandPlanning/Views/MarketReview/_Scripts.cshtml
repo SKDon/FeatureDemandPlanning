@@ -1,0 +1,22 @@
+﻿@using System.Configuration
+@using FeatureDemandPlanning.Model
+@model FeatureDemandPlanning.Model.ViewModel.MarketReviewViewModel 
+
+<script language="javascript">
+
+    var marketReviews, page;
+    var params = {
+        MarketReviewsUri: "@Url.Action("ListMarketReview")",
+        TakeRateUri: "@Url.Action("Index", "TakeRateData")",
+        Configuration: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        _lastParam: null
+    };
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+
+</script>
+
+@Scripts.Render("~/bundles/js/shared")
+@Scripts.Render("~/bundles/js/marketreview")
+<script language="javascript" src="@Url.Content("~/Content/js/MarketReview/init.js")?v=@Model.CurrentVersion"></script>

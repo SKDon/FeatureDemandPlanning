@@ -201,6 +201,17 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_programmeDataStore.ProgrammeGet(takeRateFilter.ProgrammeId.GetValueOrDefault()));
         }
+        public async Task<PagedResults<MarketReview>> ListMarketReview(TakeRateFilter filter)
+        {
+            var marketReview = await Task.FromResult(_takeRateDataStore.FdpMarketReviewGetMany(filter));
+            foreach (var currentMarketReview in marketReview.CurrentPage)
+            {
+                currentMarketReview.Programme = _programmeDataStore.ProgrammeGet(currentMarketReview.ProgrammeId);
+                currentMarketReview.Document = _documentDataStore.OXODocGet(currentMarketReview.DocumentId,
+                    currentMarketReview.ProgrammeId);
+            }
+            return marketReview;
+        }
 
         #endregion
 

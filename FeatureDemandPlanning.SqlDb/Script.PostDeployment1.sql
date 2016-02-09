@@ -334,6 +334,8 @@ USING (VALUES
 	, (4, N'MarketReviewer', N'User can edit data for a take rate file when at the market review stage')
 	, (5, N'Administrator', N'User can perform all system operations, although still needs to be granted appropriate access to markets / programmes')
 	, (6, N'Importer', N'User can import take rate data from PPO files')
+	, (7, N'AllMarkets', N'User has access to all markets without having to explicitly grant access on a per market basis')
+	, (8, N'AllProgrammes', N'User has access to all programmes without having to explicitly grant access on a per programme basis')
 )
 AS SOURCE (FdpUserRoleId, [Role], [Description]) ON TARGET.FdpUserRoleId = SOURCE.FdpUserRoleId
 WHEN MATCHED THEN

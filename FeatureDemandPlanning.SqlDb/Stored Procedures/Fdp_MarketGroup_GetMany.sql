@@ -31,7 +31,9 @@ AS
 			Programme_Id AS ProgrammeId,
 			Market_Group_Name AS GroupName,
 			Display_Order
-			FROM OXO_Programme_MarketGroupMarket_VW
+			FROM OXO_Programme_MarketGroupMarket_VW AS M
+			JOIN dbo.fn_Fdp_UserMarkets_GetMany2(@CDSId)
+			AS M1 ON M.Market_Id = M1.MarketId
 			WHERE Programme_Id = @ProgrammeId
 		)		
 		SELECT G.Type, G.Id, G.ProgrammeId, G.GroupName, G.Display_Order, ISNULL(M.VariantCount,0) AS VariantCount
@@ -55,18 +57,6 @@ AS
 				AND OD.Active = 1
 				GROUP BY OD.Market_Id
 			)
-			, AvailableMarkets AS
-			(
-				SELECT U.FdpUserId, M.MarketId
-				FROM
-				Fdp_User AS U
-				JOIN Fdp_UserMarketMapping AS M ON U.FdpUserId = M.FdpUserId
-												AND M.IsActive = 1
-				WHERE
-				U.CDSId = @CDSId
-				GROUP BY
-				U.FdpUserId, M.MarketId
-			)
 			, markets AS
 			(
 				SELECT Distinct 
@@ -79,7 +69,7 @@ AS
 					M.SubRegion AS SubRegion,
 					M.SubRegionOrder
 				FROM OXO_Programme_MarketGroupMarket_VW AS M WITH(NOLOCK)
-				JOIN AvailableMarkets AS SEC ON M.Market_Id = SEC.MarketId
+				JOIN dbo.fn_Fdp_UserMarkets_GetMany2(@CDSId) AS SEC ON M.Market_Id = SEC.MarketId
 				WHERE Programme_Id = @ProgrammeId
 			)
 			SELECT MK.Id, MK.Name, MK.WHD AS WHD,

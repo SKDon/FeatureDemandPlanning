@@ -1,0 +1,77 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.MarketReviewViewModel
+
+@section PageScripts
+{
+    @Html.Partial("_Scripts", Model)
+}
+
+@section PageContentHeader
+{
+    <form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
+    <div class="row">
+        <div class="col-lg-5 inverse" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:130px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-body" style="background:none !important">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <img src="~/Content/Images/Icons/market64.png" style="margin-top:15px" />
+                        </div>
+                        <div class="col-lg-10">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h3 style="margin-top:5px">Market Review</h3>
+                                    <h4 id="lblVehicleDescription">&nbsp;</h4>
+                                </div>
+                            </div>
+                            <div class="row vertical-spacer">
+                                <div class="col-lg-12 vertical-align">
+                                    <p class="page-description">List of take rate files that require market input</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-5 inverse pull-right" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:130px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-heading">
+                    <div class="panel-title">Filter Market Review</div>
+                </div>
+                <div class="panel-body" style="background:none !important">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="@(Model.IdentifierPrefix)_FilterMessage" class="form-label col-lg-3 text-right" style="margin-top:10px">Filter:</label>
+                            <input type="text" id="@(Model.IdentifierPrefix)_FilterMessage" placeholder="Enter search filter" class="form-control col-lg-9" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section PageBody
+{
+    <div id="notifier" class="subscribers-notify col-lg-8 col-lg-offset-2"></div>
+    <ul id="contextMenu" class="dropdown-menu context-menu" role="menu" style="display:none"></ul>
+
+    @Html.Partial("_Modal", Model)
+
+    <div class="row">
+        <div id="dvUsers" class="col-lg-12">
+            @Html.Partial("_MarketReviews", Model)
+        </div>
+
+    </div>
+
+}
+
+

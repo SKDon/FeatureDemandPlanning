@@ -96,11 +96,11 @@ namespace FeatureDemandPlanning.DataStore
         public IEnumerable<Market> FdpMarketAvailableGetMany()
         {
             IEnumerable<Market> retVal = null;
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
-                    var para = new DynamicParameters();
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     retVal = conn.Query<Market>("dbo.Fdp_Market_AvailableGetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)

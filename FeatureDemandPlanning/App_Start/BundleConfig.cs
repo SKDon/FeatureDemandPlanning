@@ -96,13 +96,19 @@ namespace FeatureDemandPlanning
                     "~/Content/js/MarketMapping/page.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/marketreview").Include(
+                    "~/Content/js/MarketReview/model.js",
+                    "~/Content/js/MarketReview/page.js"
+                ));
+
             bundles.Add(new ScriptBundle("~/bundles/js/shared").Include(
                     "~/Content/js/Shared/namespace.js",
                     "~/Content/js/Shared/modal.js",
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Shared/cookie.js",
                     "~/Content/js/Shared/pager.js",
-                    "~/Content/js/Shared/vehicle.js"
+                    "~/Content/js/Shared/vehicle.js",
+                    "~/Content/js/Shared/takeratefilter.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/specialfeaturemapping").Include(

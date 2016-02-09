@@ -23,10 +23,10 @@
         }
     }
 
-    <td class="cross-tab-data-item @featureFixedClassName @featureClassName">
+    <td class="cross-tab-data-item @featureFixedClassName @featureClassName" data-feature="@featureIdentifier">
         @(featureRow.Field<string>("BrandDescription"))
     </td>
-    <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName feature-notes">
+    <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName feature-notes" data-feature="@featureIdentifier">
         <div class="changed-indicator pull-right" style="display: none" title="Changes have been made to the take rate / volume data for this feature">
             <span class="glyphicon glyphicon-wrench"></span>
         </div>
@@ -56,8 +56,8 @@
             </div>
         }
     </td>
-    <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName feature-code">@(featureRow.Field<string>("FeatureCode"))</td>
-    <td class="cross-tab-data-item @featureFixedClassName @featureFixedLastClassName @featureClassName text-center">
+    <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName feature-code" data-feature="@featureIdentifier">@(featureRow.Field<string>("FeatureCode"))</td>
+    <td class="cross-tab-data-item @featureFixedClassName @featureFixedLastClassName @featureClassName text-center feature-mix" data-feature="@featureIdentifier">
         @if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
         {
             <span data-target="FS|@marketIdentifier|@featureIdentifier">@(string.Format("{0:P2}", featureRow.Field<decimal>("TotalPercentageTakeRate")))</span>
@@ -79,7 +79,7 @@
         {
             modelClassName = "";
         }
-        <td class="text-center cross-tab-data-item  @modelClassName @RenderDataClass(modelIdentifier, featureRow)">
+        <td class="text-center cross-tab-data-item  @modelClassName @RenderDataClass(modelIdentifier, featureRow)" data-feature="@featureIdentifier" data-model="@modelIdentifier">
             <div class="@RenderEditableClass()" data-target="@marketIdentifier|@modelIdentifier|@featureIdentifier">
                 @RenderDataItem(availableModel.StringIdentifier, featureRow)
             </div>

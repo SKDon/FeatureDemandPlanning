@@ -8,6 +8,8 @@
         MarketReviewer = 4,
         Administrator = 5,
         Importer = 6,
-        None = 0
+        None = 0,
+        AllMarkets = 7,
+        AllProgrammes = 8
     }
 }
