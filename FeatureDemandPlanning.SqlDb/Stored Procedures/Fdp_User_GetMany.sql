@@ -77,6 +77,7 @@ AS
 		  U.FdpUserId
 		, U.CDSId
 		, U.FullName
+		, U.Mail
 		, U.IsActive
 		, U.IsAdmin
 		, U.Programmes

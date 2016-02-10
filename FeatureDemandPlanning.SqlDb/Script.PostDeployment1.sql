@@ -414,3 +414,35 @@ WHEN NOT MATCHED BY SOURCE THEN
 
 	-- Delete type rows that are no longer required
 	DELETE;
+
+/* Fdp_MarketReviewStatus */
+PRINT 'Fdp_EmailTemplate'
+
+MERGE INTO Fdp_EmailTemplate AS TARGET
+USING (VALUES
+	  (0, N'None', N'', N'', 1)
+	, (1, N'Sent For Market Review', N'', N'', 1)
+	, (2, N'Market Review Received', N'', N'', 1)
+	, (3, N'Market Review Rejected', N'', N'', 1)
+	, (4, N'Market Review Approved', N'', N'', 1)
+)
+AS SOURCE (FdpEmailTemplateId, [Event], [Subject], [Body], IsActive) ON TARGET.FdpEmailTemplateId = SOURCE.FdpEmailTemplateId
+WHEN MATCHED THEN
+
+	-- Update existing rows
+	UPDATE SET 
+		  [Event]	= SOURCE.[Event]
+		, [Subject]	= SOURCE.[Subject]
+		, Body		= SOURCE.Body
+		, IsActive	= SOURCE.IsActive
+
+WHEN NOT MATCHED BY TARGET THEN
+
+	-- Insert new type rows
+	INSERT (FdpEmailTemplateId, [Event], [Subject], Body)
+	VALUES (FdpEmailTemplateId, [Event], [Subject], Body)
+
+WHEN NOT MATCHED BY SOURCE THEN
+
+	-- Delete type rows that are no longer required
+	DELETE;

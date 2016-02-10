@@ -85,6 +85,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="RADsHelpers">
+      <HintPath>..\..\SharedLibraries\RADsHelpers.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -263,6 +266,7 @@
     <Compile Include="Controllers\TakeRateController.cs" />
     <Compile Include="CssRewriteUrlTransformFixed.cs" />
     <Compile Include="DataContextFactory.cs" />
+    <Compile Include="Helpers\EmailHelper.cs" />
     <Compile Include="Helpers\HtmlHelperExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">

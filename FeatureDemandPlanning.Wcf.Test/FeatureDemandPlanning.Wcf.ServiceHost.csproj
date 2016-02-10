@@ -48,12 +48,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FeatureDemandPlanning.Wcf.Service\FeatureDemandPlanning.Wcf.Service.csproj">
-      <Project>{786ac5aa-76d4-465e-81c2-af0e77ebfa5a}</Project>
-      <Name>FeatureDemandPlanning.Wcf.Service</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

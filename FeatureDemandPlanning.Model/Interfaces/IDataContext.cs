@@ -2,6 +2,7 @@
 {
     public interface IDataContext
     {
+        string CurrentCDSId { get; }
         IDbHelper GetHelper();
         IConfigurationDataContext Configuration { get;}
         IEmailDataContext Email { get; }

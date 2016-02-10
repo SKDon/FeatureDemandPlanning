@@ -2,6 +2,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_User_VW] AS
 	
 	SELECT
@@ -10,6 +11,7 @@ CREATE VIEW [dbo].[Fdp_User_VW] AS
 		, U.CreatedBy
 		, U.CDSId
 		, U.FullName
+		, U.Mail
 		, U.IsActive
 		, CAST(CASE WHEN M.FdpUserRoleMappingId IS NOT NULL THEN 1 ELSE 0 END AS BIT) AS IsAdmin
 		, CASE

@@ -505,16 +505,16 @@ namespace FeatureDemandPlanning.DataStore
             }
         }
 
-        public IEnumerable<TakeRateStatus> FdpTakeRateStatusGetMany()
+        public IEnumerable<Model.TakeRateStatus> FdpTakeRateStatusGetMany()
         {
-            var retVal = Enumerable.Empty<TakeRateStatus>();
+            var retVal = Enumerable.Empty<Model.TakeRateStatus>();
             using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
 
-                    retVal = conn.Query<TakeRateStatus>("dbo.Fdp_TakeRateStatus_GetMany", para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<Model.TakeRateStatus>("dbo.Fdp_TakeRateStatus_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {

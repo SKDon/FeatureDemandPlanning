@@ -61,6 +61,7 @@ AS
 				WHEN 6 THEN CAST(D.Version_Id AS NVARCHAR(10))
 				WHEN 7 THEN D.[Status]
 				WHEN 8 THEN MK.Market_Name
+				WHEN 9 THEN CAST(M.FdpMarketReviewStatusId AS NVARCHAR(10))
 			END
 		END ASC,
 		CASE @SortDirection
@@ -72,6 +73,7 @@ AS
 				WHEN 6 THEN CAST(D.Version_Id AS NVARCHAR(10))
 				WHEN 7 THEN D.[Status]
 				WHEN 8 THEN MK.Market_Name
+				WHEN 9 THEN CAST(M.FdpMarketReviewStatusId AS NVARCHAR(10))
 			END	
 		END DESC
 	
@@ -87,21 +89,20 @@ AS
 	SELECT @TotalDisplayRecords = COUNT(1) FROM @PageRecords WHERE RowIndex BETWEEN @MinIndex AND @MaxIndex;
 
 	SELECT
-	  H.FdpVolumeHeaderId
+	  M.FdpVolumeHeaderId
 	, M.FdpMarketReviewId
 	, M.CreatedBy
 	, M.CreatedOn
-	, H.DocumentId
-	, H.ProgrammeId
-	, P.VehicleName
-	, P.VehicleAKA
-	, P.ModelYear
+	, M.DocumentId
+	, M.ProgrammeId
+	, M.VehicleName
+	, M.VehicleAKA
+	, M.ModelYear
 	, M.MarketId
-	, MK.Market_Name AS MarketName
+	, M.MarketName
+	, M.FdpMarketReviewStatusId
+	, M.[Status]
 	FROM
 	@PageRecords						AS PA
-	JOIN Fdp_MarketReview				AS M	ON PA.FdpMarketReviewId = M.FdpMarketReviewId
+	JOIN Fdp_MarketReview_VW			AS M	ON PA.FdpMarketReviewId = M.FdpMarketReviewId
 												AND PA.RowIndex BETWEEN @MinIndex AND @MaxIndex
-	JOIN Fdp_VolumeHeader_VW			AS H	ON M.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
-	JOIN OXO_Market_Group_Market_VW		AS MK	ON M.MarketId			= MK.Market_Id
-	JOIN OXO_Programme_VW				AS P	ON H.ProgrammeId		= P.Id;

@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_User_Save]
 	  @CDSId		NVARCHAR(16)
 	, @FullName		NVARCHAR(50)
+	, @Mail			NVARCHAR(100)
 	, @IsAdmin		BIT = 0
 	, @CreatorCDSID NVARCHAR(16)
 AS
@@ -11,6 +12,7 @@ AS
 		(
 			  CDSId
 			, FullName
+			, Mail
 			, IsAdmin
 			, CreatedBy
 		)
@@ -18,6 +20,7 @@ AS
 		(
 			  @CDSId
 			, @FullName
+			, @Mail
 			, @IsAdmin
 			, @CreatorCDSID
 		)

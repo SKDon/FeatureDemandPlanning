@@ -21,6 +21,7 @@ namespace FeatureDemandPlanning.DataStore
             _newsDataContext = new NewsDataContext(cdsId);
         }
 
+        public string CurrentCDSId { get { return CDSID; } }
         public IDbHelper GetHelper() { return new DbHelperNonSingleton(); }
 
         public IConfigurationDataContext Configuration { get { return _configurationContext; } }

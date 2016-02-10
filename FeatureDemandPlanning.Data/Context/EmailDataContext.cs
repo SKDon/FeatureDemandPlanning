@@ -1,35 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.DataStore
 {
     public class EmailDataContext : BaseDataContext, IEmailDataContext
     {
-        private EmailTemplateDS _templateData = null;
+        private readonly EmailTemplateDataStore _templateData;
 
         public EmailDataContext(string cdsid) : base(cdsid)
         {
-            _templateData = new EmailTemplateDS(cdsid);
+            _templateData = new EmailTemplateDataStore(cdsid);
         }
-
-        public IEnumerable<EmailTemplate> ListEmailTemplates()
+        public EmailTemplate GetEmailTemplate(EmailEvent forEmailEvent)
         {
-            return _templateData.EmailTemplateGetMany();
-        }
-
-        public EmailTemplate GetEmailTemplate(string emailEvent)
-        {
-            return _templateData.EmailTemplateGet(emailEvent);
-        }
-
-        public bool SaveTemplate(EmailTemplate templateToSave)
-        {
-            return _templateData.EmailTemplateSave(templateToSave);
+            return _templateData.EmailTemplateGet(forEmailEvent);
         }
     }
 }

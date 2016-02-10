@@ -291,7 +291,10 @@
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_User_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_User_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_User_SetIsActive.sql" />
     <Build Include="Stored Procedures\Fdp_User_SetIsAdmin.sql">
       <AnsiNulls>Off</AnsiNulls>
@@ -771,7 +774,10 @@
     </Build>
     <Build Include="Stored Procedures\Fdp_UserProgrammes_Save.sql" />
     <Build Include="Stored Procedures\Fdp_UserMarkets_Save.sql" />
-    <Build Include="Views\Fdp_User_VW.sql" />
+    <Build Include="Views\Fdp_User_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Functions\fn_Fdp_UserRoles_GetMany.sql" />
     <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany.sql" />
     <Build Include="Functions\fn_Fdp_UserMarkets_GetMany.sql" />
@@ -784,7 +790,10 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_MarketReview_GetManyByUsername.sql" />
+    <Build Include="Stored Procedures\Fdp_MarketReview_GetManyByUsername.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Tables\Fdp_MarketReview.sql" />
     <Build Include="Functions\fn_Fdp_UserMarkets_GetMany2.sql" />
     <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany2.sql" />
@@ -792,6 +801,17 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Views\Fdp_MarketReview_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_MarketReview_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_MarketReview_Get.sql" />
+    <Build Include="Tables\Fdp_EmailTemplate.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_EmailTemplate_Get.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">
