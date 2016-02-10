@@ -784,6 +784,14 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Stored Procedures\Fdp_MarketReview_GetManyByUsername.sql" />
+    <Build Include="Tables\Fdp_MarketReview.sql" />
+    <Build Include="Functions\fn_Fdp_UserMarkets_GetMany2.sql" />
+    <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany2.sql" />
+    <Build Include="Tables\Fdp_MarketReviewStatus.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">

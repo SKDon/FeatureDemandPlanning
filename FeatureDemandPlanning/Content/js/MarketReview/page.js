@@ -93,7 +93,7 @@ page.MarketReviewPage = function (models) {
                     }
                 },
                 {
-                    "sName": "STATUS",
+                    "sName": "DOCUMENT_STATUS",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center",
@@ -103,6 +103,15 @@ page.MarketReviewPage = function (models) {
                 },
                 {
                     "sName": "MARKET",
+                    "bSearchable": true,
+                    "bSortable": true,
+                    "sClass": "text-center",
+                    "render": function (data, type, full) {
+                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
+                    }
+                },
+                 {
+                    "sName": "STATUS",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center",

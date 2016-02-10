@@ -259,9 +259,9 @@ PRINT 'Fdp_TakeRateStatus'
 MERGE INTO Fdp_TakeRateStatus AS TARGET
 USING (VALUES
 	  (1, N'Work in Progress',			N'Work in Progress',																	1,	1)
-	, (2, N'Market Review',             N'Take rate file has been sent to markets for further review and feedback',				1,	2)
+	, (2, N'Market Review',             N'Take rate file has been sent to markets for further review and feedback',				0,	2)
 	, (3, N'Published',                 N'Take rate file has been published and is locked for further modification',			1,	6)
-	, (4, N'Challenge Market Inputs',   N'Based on feedback from markets, the supplied take rate data is being challenged',		1,	3)
+	, (4, N'Challenge Market Inputs',   N'Based on feedback from markets, the supplied take rate data is being challenged',		0,	3)
 	, (5, N'Pending PMC Approval',      N'The take rate file is pending PMC approval prior to being published',					1,	4)
 	, (6, N'Approved',                  N'The take rate file has been approved for publishing',									1,	5)
 )
@@ -378,6 +378,37 @@ WHEN NOT MATCHED BY TARGET THEN
 	-- Insert new type rows
 	INSERT (FdpUserActionId, [Action], [Description])
 	VALUES (FdpUserActionId, [Action], [Description])
+
+WHEN NOT MATCHED BY SOURCE THEN
+
+	-- Delete type rows that are no longer required
+	DELETE;
+
+/* Fdp_MarketReviewStatus */
+PRINT 'Fdp_MarketReviewStatus'
+
+MERGE INTO Fdp_MarketReviewStatus AS TARGET
+USING (VALUES
+	  (0, N'None', N'No status defined', 1)
+	, (1, N'Awaiting Review', N'The take rate data for the market is awaiting review', 1)
+	, (2, N'Awaiting Approval', N'The take rate data for the market has been examined by the markets, any changes made and submitted for approval', 1)
+	, (3, N'Rejected', N'The modifications from the market have been rejected', 1)
+	, (4, N'Approved', N'The modifications from the market have been approved', 1)
+)
+AS SOURCE (FdpMarketReviewStatusId, [Status], [Description], IsActive) ON TARGET.FdpMarketReviewStatusId = SOURCE.FdpMarketReviewStatusId
+WHEN MATCHED THEN
+
+	-- Update existing rows
+	UPDATE SET 
+		  [Status]			= SOURCE.[Status]
+		, [Description]		= SOURCE.[Description]
+		, IsActive			= SOURCE.IsActive
+
+WHEN NOT MATCHED BY TARGET THEN
+
+	-- Insert new type rows
+	INSERT (FdpMarketReviewStatusId, [Status], [Description])
+	VALUES (FdpMarketReviewStatusId, [Status], [Description])
 
 WHEN NOT MATCHED BY SOURCE THEN
 

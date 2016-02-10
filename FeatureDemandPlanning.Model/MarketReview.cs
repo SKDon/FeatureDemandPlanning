@@ -1,4 +1,5 @@
 ﻿using System;
+using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Extensions;
 
 namespace FeatureDemandPlanning.Model
@@ -17,6 +18,11 @@ namespace FeatureDemandPlanning.Model
         public int MarketId { get; set; }
         public string MarketGroup { get; set; }
         public string MarketName { get; set; }
+        public int FdpMarketReviewStatusId { get; set; }
+        public string Status { get; set; }
+        public MarketReviewStatus StatusCode {
+            get { return (MarketReviewStatus) FdpMarketReviewStatusId; }
+        }
 
         public string[] ToJQueryDataTableResult()
         {
@@ -30,7 +36,8 @@ namespace FeatureDemandPlanning.Model
                 Document.Gateway,
                 Document.VersionLabel,
                 Document.Status,
-                MarketName
+                MarketName,
+                Status
             };
         }
     }

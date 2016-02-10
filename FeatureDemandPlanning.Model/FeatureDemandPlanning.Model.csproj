@@ -113,6 +113,8 @@
     <Compile Include="CarLine.cs" />
     <Compile Include="ConfigurationSettings.cs" />
     <Compile Include="Empty\EmptyFdpValidation.cs" />
+    <Compile Include="Enumerations\MarketReviewStatus.cs" />
+    <Compile Include="Enumerations\TakeRateStatus.cs" />
     <Compile Include="Enumerations\UserAdminAction.cs" />
     <Compile Include="ExclusiveFeatureGroup.cs" />
     <Compile Include="Extensions\UserExtensions.cs" />

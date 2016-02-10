@@ -103,7 +103,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var cmd = conn.CreateCommand();
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = "Fdp_TakeRateData_GetCrossTab";
+                    cmd.CommandText = fdpTakeRateDataGetCrossTabStoredProcedureName;
                     cmd.CommandTimeout = 0;
 
                     if (filter.DocumentId != null)

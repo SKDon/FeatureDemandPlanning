@@ -28,6 +28,20 @@ namespace FeatureDemandPlanning.Model
             Markets = Enumerable.Empty<UserMarketMapping>();
         }
 
+        public bool HasEditRole()
+        {
+            return Roles.Any(
+                r => r == UserRole.Administrator || r == UserRole.Editor || r == UserRole.MarketReviewer);
+        }
+        public bool IsMarketEditable(int marketId)
+        {
+            return Markets.Any(m => m.Action == UserAction.Edit && m.MarketId == marketId);
+        }
+        public bool IsProgrammeEditable(int programmeId)
+        {
+            return Programmes.Any(
+                p => p.Action == UserAction.Edit && p.ProgrammeId == programmeId);
+        }
         public string[] ToJQueryDataTableResult()
         {
             return new[] 
