@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
@@ -29,7 +28,7 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-                    AppHelper.LogError("OXOPreferenceDataStore.PreferenceGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
 				}
 			}
 
@@ -50,7 +49,7 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-				   AppHelper.LogError("OXOPreferenceDataStore.PreferenceGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
 				}
 			}
 

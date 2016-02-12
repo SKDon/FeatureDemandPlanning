@@ -42,18 +42,22 @@ namespace FeatureDemandPlanning.DataStore
             if (programme == null)
                 return vehicle;
 
-            var availableDocuments = await ListAvailableOxoDocuments(filter);
-            var availableImports = await ListAvailableImports(filter, programme);
-            var availableModels = await ListAvailableModels(filter);
-            var availableMarketGroups = await ListAvailableMarketGroups(filter, programme);
-            //var availableMarkets = ListAvailableMarkets(filter, programme);
-
             vehicle = HydrateVehicleFromProgramme(programme);
-            vehicle.AvailableDocuments = availableDocuments;
-            vehicle.AvailableImports = availableImports;
+
+            if (filter.Deep)
+            {
+                var availableDocuments = await ListAvailableOxoDocuments(filter);
+                var availableImports = await ListAvailableImports(filter, programme);
+                
+                var availableMarketGroups = await ListAvailableMarketGroups(filter, programme);
+                
+                vehicle.AvailableDocuments = availableDocuments;
+                vehicle.AvailableImports = availableImports;
+                
+                vehicle.AvailableMarketGroups = availableMarketGroups;
+            }
+            var availableModels = await ListAvailableModels(filter);
             vehicle.AvailableModels = availableModels;
-            vehicle.AvailableMarketGroups = availableMarketGroups;
-            //vehicle.AvailableMarkets = availableMarkets;
             vehicle.Gateway = !string.IsNullOrEmpty(filter.Gateway) ? filter.Gateway : vehicle.Gateway;
             vehicle.ModelYear = !string.IsNullOrEmpty(filter.ModelYear) ? filter.ModelYear : vehicle.ModelYear;
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Reflection;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Dapper;
@@ -58,7 +57,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -87,7 +86,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -195,7 +194,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -243,7 +242,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -276,7 +275,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -297,7 +296,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -318,22 +317,20 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
             return retVal;
         }
-        public TakeRateSummary TakeRateDocumentHeaderGet(TakeRateFilter filter)
-        {
-            var volumeHeaders = FdpTakeRateHeaderGetManyByUsername(filter);
-            if (volumeHeaders == null || !volumeHeaders.CurrentPage.Any())
-                return null;
+        //public TakeRateSummary TakeRateDocumentHeaderGet(TakeRateFilter filter)
+        //{
+        //    var volumeHeaders = FdpTakeRateHeaderGetManyByUsername(filter);
+        //    if (volumeHeaders == null || !volumeHeaders.CurrentPage.Any())
+        //        return null;
 
-            var summary = filter.TakeRateId.HasValue ? volumeHeaders.CurrentPage.FirstOrDefault(v => v.TakeRateId == filter.TakeRateId) : volumeHeaders.CurrentPage.FirstOrDefault(v => v.OxoDocId == filter.DocumentId);
-
-            return summary;
-        }
+        //    return volumeHeaders.CurrentPage.FirstOrDefault();
+        //}
         public TakeRateDocumentHeader FdpVolumeHeaderSave(TakeRateDocumentHeader header)
         {
             using (var conn = DbHelper.GetDBConnection())
@@ -357,11 +354,37 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
             return header;
+        }
+        public TakeRateSummary FdpTakeRateHeaderGet(TakeRateFilter filter)
+        {
+            TakeRateSummary retVal = new EmptyTakeRateSummary();
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                   
+                    var results = conn.Query<TakeRateSummary>("dbo.Fdp_TakeRateHeader_Get", para, commandType: CommandType.StoredProcedure);
+                    var takeRateDocumentHeaders = results as IList<TakeRateSummary> ?? results.ToList();
+                    if (takeRateDocumentHeaders.Any())
+                    {
+                        retVal = takeRateDocumentHeaders.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
         }
         public PagedResults<TakeRateSummary> FdpTakeRateHeaderGetManyByUsername(TakeRateFilter filter)
         {
@@ -435,7 +458,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
 
@@ -457,7 +480,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
 
@@ -479,7 +502,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -488,7 +511,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             using (var conn = DbHelper.GetDBConnection())
             {
-                IEnumerable<SpecialFeature> retVal = null;
+                IEnumerable<SpecialFeature> retVal;
                 try
                 {
                     var para = new DynamicParameters();
@@ -497,7 +520,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
 
@@ -518,7 +541,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -563,7 +586,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -588,7 +611,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -626,35 +649,14 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
             return retVal;
         }
 
-        public IEnumerable<FdpChangeset> FdpMarketReviewChangesetsGetManu(TakeRateFilter filter)
-        {
-            IEnumerable<FdpChangeset> retVal;
-
-            using (var conn = DbHelper.GetDBConnection())
-            {
-                try
-                {
-                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
-
-                    retVal = conn.Query<FdpChangeset>("dbo.FdpMarketReviewChangesetGetMany", para, commandType: CommandType.StoredProcedure);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
-                    throw;
-                }
-            }
-           
-            return retVal;
-        }
+        
         public FdpChangeset FdpLatestUnsavedChangesetByUserGetMany(TakeRateFilter filter)
         {
  	        FdpChangeset retVal = new EmptyFdpChangeset();
@@ -690,7 +692,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -717,7 +719,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -752,7 +754,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -777,7 +779,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                        Log.Error(ex);
                         throw;
                     }
                 }
@@ -810,7 +812,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                        Log.Error(ex);
                         throw;
                     }
                 }
@@ -868,7 +870,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                        Log.Error(ex);
                         throw;
                     }
                 }
@@ -898,7 +900,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                        Log.Error(ex);
                         throw;
                     }
                 }
@@ -929,7 +931,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -956,14 +958,14 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
             return retVal;
         }
 
-        public FdpChangesetHistory FdpChangesetHistoryGet(TakeRateFilter filter)
+        public FdpChangesetHistory FdpTakeRateHistoryGet(TakeRateFilter filter)
         {
             var retVal = new FdpChangesetHistory();
             using (var conn = DbHelper.GetDBConnection())
@@ -975,11 +977,11 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
                     para.Add("@MarketGroupId", filter.MarketGroupId, DbType.Int32);
 
-                    retVal.History = conn.Query<FdpChangesetHistoryItem>("dbo.Fdp_Changeset_GetHistory", para, commandType: CommandType.StoredProcedure);
+                    retVal.History = conn.Query<FdpChangesetHistoryItem>("dbo.Fdp_TakeRateHeader_GetHistory", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -1005,11 +1007,37 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
 
+            return retVal;
+        }
+        public MarketReview FdpMarketReviewGet(TakeRateFilter filter)
+        {
+            MarketReview retVal = new EmptyMarketReview();
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                  
+                    var results = conn.Query<MarketReview>("dbo.Fdp_MarketReview_Get", para, commandType: CommandType.StoredProcedure);
+                    var marketReviews = results as IList<MarketReview> ?? results.ToList();
+                    if (marketReviews.Any())
+                    {
+                        retVal = marketReviews.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
             return retVal;
         }
         public PagedResults<MarketReview> FdpMarketReviewGetMany(TakeRateFilter filter)
@@ -1074,12 +1102,40 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
 
                 return retVal;
             }
+        }
+        public MarketReview FdpMarketReviewSave(TakeRateFilter filter)
+        {
+            MarketReview retVal = new EmptyMarketReview();
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    para.Add("@FdpMarketReviewStatusId", (int)filter.MarketReviewStatus, DbType.Int32);
+                    para.Add("@Comment", filter.Comment, DbType.String);
+
+                    var results = conn.Query<MarketReview>("dbo.Fdp_MarketReview_Save", para, commandType: CommandType.StoredProcedure);
+                    var marketReviews = results as IList<MarketReview> ?? results.ToList();
+                    if (marketReviews.Any())
+                    {
+                        retVal = marketReviews.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
         }
     }
 }

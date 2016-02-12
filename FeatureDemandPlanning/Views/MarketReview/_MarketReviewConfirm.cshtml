@@ -1,0 +1,85 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+<form>
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+</form>
+
+<div class="alert alert-info">
+    <div class="row">
+        <div class="col-lg-1 text-center">
+            <span class="glyphicon glyphicon-info-sign"></span>
+        </div>
+        @switch (Model.MarketReviewStatus)
+        {
+            case enums.MarketReviewStatus.NotSet:
+                <div class="col-lg-11">
+                    <p>Are you sure you wish to send take rate data for market review?</p>
+                    <p>Click <strong>'OK'</strong> to continue.</p>
+                </div>
+                break;
+            case enums.MarketReviewStatus.AwaitingReview:
+                <div class="col-lg-11">
+                    <p>Are you sure you wish to send take rate data for market review?</p>
+                    <p>Click <strong>'OK'</strong> to continue.</p>
+                </div>
+                break;
+            case enums.MarketReviewStatus.AwaitingApproval:
+                <div class="col-lg-11">
+                    <p>Are you sure you wish to submit take rate data for approval?</p>
+                    <p>Click <strong>'OK'</strong> to continue.</p>
+                </div>
+                break;
+            case enums.MarketReviewStatus.Rejected:
+                <div class="col-lg-11">
+                    <p>Are you sure you wish to reject the submitted take rate data?</p>
+                    <p>Click <strong>'OK'</strong> to continue.</p>
+                </div>
+                break;
+            case enums.MarketReviewStatus.Approved:
+                <div class="col-lg-11">
+                    <p>Are you sure you wish to approve the submitted take rate data?</p>
+                    <p>Changes will be combined with the current take rate file</p>
+                    <p>Click <strong>'OK'</strong> to continue.</p>
+                </div>
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    </div>
+</div>
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        @switch (Model.MarketReviewStatus)
+        {
+            case enums.MarketReviewStatus.NotSet:
+                <div class="panel-title">Comment for Reviewers</div>
+                break;
+            case enums.MarketReviewStatus.AwaitingReview:
+                <div class="panel-title">Comment for Reviewers</div>
+                break;
+            case enums.MarketReviewStatus.AwaitingApproval:
+                <div class="panel-title">Comment for Approvers</div>
+                break;
+            case enums.MarketReviewStatus.Rejected:
+                <div class="panel-title">Rejection Reason</div>
+                break;
+            case enums.MarketReviewStatus.Approved:
+                <div class="panel-title">Approval Comment</div>
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    </div>
+    <div class="panel-body">
+        <form>
+            <div class="col-xs-12">
+                <textarea id="@(Model.IdentifierPrefix)_Comment" class="changeset-comment"></textarea>
+            </div>
+        </form>
+    </div>
+</div>
+
+

@@ -113,14 +113,17 @@
     <Compile Include="CarLine.cs" />
     <Compile Include="ConfigurationSettings.cs" />
     <Compile Include="Empty\EmptyFdpValidation.cs" />
+    <Compile Include="Empty\EmptyMarketReview.cs" />
     <Compile Include="Enumerations\EmailEvent.cs" />
     <Compile Include="Enumerations\MarketReviewStatus.cs" />
     <Compile Include="Enumerations\TakeRateStatus.cs" />
     <Compile Include="Enumerations\UserAdminAction.cs" />
     <Compile Include="ExclusiveFeatureGroup.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\UserExtensions.cs" />
     <Compile Include="FdpValidation.cs" />
     <Compile Include="Enumerations\UserRole.cs" />
+    <Compile Include="Helpers\Logger.cs" />
     <Compile Include="MarketReview.cs" />
     <Compile Include="UserDataItem.cs" />
     <Compile Include="UserMarketMapping.cs" />
@@ -367,7 +370,6 @@
     <Compile Include="Extensions\ModelTrimExtensions.cs" />
     <Compile Include="Extensions\ProgrammeExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Helpers\AppHelper.cs" />
     <Compile Include="Helpers\HtmlHelper.cs" />
     <Compile Include="Attributes\LogonAuthorize.cs" />
     <Compile Include="Dapper\sqlMapper.cs" />

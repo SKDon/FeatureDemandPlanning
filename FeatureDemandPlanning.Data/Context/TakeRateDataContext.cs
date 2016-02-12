@@ -45,7 +45,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<TakeRateSummary> GetTakeRateDocumentHeader(TakeRateFilter filter)
         {
-            return await Task.FromResult(_takeRateDataStore.TakeRateDocumentHeaderGet(filter));
+            return await Task.FromResult(_takeRateDataStore.FdpTakeRateHeaderGet(filter));
         }
         public async Task<ITakeRateDocument> GetTakeRateDocument(TakeRateFilter filter)
         {
@@ -95,7 +95,7 @@ namespace FeatureDemandPlanning.DataStore
             OXODoc document = new EmptyOxoDocument();
             if (!filter.DocumentId.HasValue)
             {
-                var summary = _takeRateDataStore.TakeRateDocumentHeaderGet(filter);
+                var summary = _takeRateDataStore.FdpTakeRateHeaderGet(filter);
                 document = _documentDataStore.OXODocGet(summary.OxoDocId, filter.ProgrammeId.GetValueOrDefault());
             }
             else
@@ -128,7 +128,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<FdpChangesetHistory> GetChangesetHistory(TakeRateFilter filter)
         {
-            return await Task.FromResult(_takeRateDataStore.FdpChangesetHistoryGet(filter));
+            return await Task.FromResult(_takeRateDataStore.FdpTakeRateHistoryGet(filter));
         }
         public async Task<FdpChangeset> SaveChangeset(TakeRateFilter filter, FdpChangeset changesetToSave)
         {
@@ -200,6 +200,14 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<Programme> GetProgramme(TakeRateFilter takeRateFilter)
         {
             return await Task.FromResult(_programmeDataStore.ProgrammeGet(takeRateFilter.ProgrammeId.GetValueOrDefault()));
+        }
+        public async Task<MarketReview> GetMarketReview(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpMarketReviewGet(filter));
+        }
+        public async Task<MarketReview> SetMarketReview(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpMarketReviewSave(filter));
         }
         public async Task<PagedResults<MarketReview>> ListMarketReview(TakeRateFilter filter)
         {

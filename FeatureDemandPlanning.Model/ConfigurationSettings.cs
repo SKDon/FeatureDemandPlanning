@@ -16,7 +16,7 @@ namespace FeatureDemandPlanning.Model
 
         public void AddIntegerSetting(string key, string value)
         {
-            Log.Debug(string.Format("Adding integer configuration {0}:{1}", key, value));
+            //Log.Debug(string.Format("Adding integer configuration {0}:{1}", key, value));
 
             int parsedValue;
             if (!_intDictionary.ContainsKey(key) && int.TryParse(value, out parsedValue))
@@ -27,7 +27,7 @@ namespace FeatureDemandPlanning.Model
         }
         public void AddStringSetting(string key, string value)
         {
-            Log.Debug(string.Format("Adding string configuration {0}:{1}", key, value));
+            //Log.Debug(string.Format("Adding string configuration {0}:{1}", key, value));
 
             if (!_stringDictionary.ContainsKey(key))
             {
@@ -36,7 +36,7 @@ namespace FeatureDemandPlanning.Model
         }
         public void AddBooleanSetting(string key, string value)
         {
-            Log.Debug(string.Format("Adding boolean configuration {0}:{1}", key, value));
+            //Log.Debug(string.Format("Adding boolean configuration {0}:{1}", key, value));
 
             bool parsedValue;
 

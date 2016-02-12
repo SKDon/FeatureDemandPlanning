@@ -2,14 +2,18 @@
 using FeatureDemandPlanning.Model.Parameters;
 using FluentValidation;
 using System.Linq;
+using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.Validators
 {
     public class TakeRateParametersValidator : AbstractValidator<TakeRateParameters>
     {
         public const string TakeRateIdentifier = "TAKE_RATE_ID";
+        public const string TakeRateIdentifierWithComment = "TAKE_RATE_ID_WITH_COMMENT";
         public const string TakeRateIdentifierWithChangeset = "TAKE_RATE_ID_WITH_CHANGESET";
         public const string TakeRateIdentifierWithChangesetAndComment = "TAKE_RATE_ID_WITH_CHANGESET_AND_COMMENT";
+        public const string TakeRateIdentifierWithCommentAndMarket = "TAKE_RATE_ID_WITH_COMMENT_AND_MARKET";
+        public const string TakeRateIdentifierWithCommentAndMarketAndReviewStatus = "TAKE_RATE_ID_WITH_COMMENT_AND_MARKET_AND_REVIEWSTATUS";
         public const string ModelPlusFeatureAndComment = "MODEL_PLUS_FEATURE_AND_COMMENT";
         public const string NoValidation = "NO_VALIDATION";
 
@@ -22,6 +26,11 @@ namespace FeatureDemandPlanning.Model.Validators
             RuleSet(TakeRateIdentifier, () =>
             {
                 RuleFor(p => p.TakeRateId).NotNull().WithMessage("'Take Rate Id' not specified");
+            });
+            RuleSet(TakeRateIdentifierWithComment, () =>
+            {
+                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'Take Rate Id' not specified");
+                RuleFor(p => p.Comment).NotEmpty().WithMessage("'Comment' not specified");
             });
             RuleSet(TakeRateIdentifierWithChangeset, () =>
             {
@@ -44,6 +53,19 @@ namespace FeatureDemandPlanning.Model.Validators
                 RuleFor(p => p.Comment).NotEmpty().WithMessage("Comment not specified");
                 //RuleFor(p => p.ModelIdentifier).NotEmpty().WithMessage("Model not specified");
                 //RuleFor(p => p.FeatureIdentifier).NotEmpty().WithMessage("Feature not specified");
+            });
+            RuleSet(TakeRateIdentifierWithCommentAndMarket, () =>
+            {
+                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'Take Rate Id' not specified");
+                RuleFor(p => p.Comment).NotEmpty().WithMessage("'Comment' not specified");
+                RuleFor(p => p.MarketId).NotNull().WithMessage("'Market Id' not specified");
+            });
+            RuleSet(TakeRateIdentifierWithCommentAndMarketAndReviewStatus, () =>
+            {
+                RuleFor(p => p.TakeRateId).NotNull().WithMessage("'Take Rate Id' not specified");
+                RuleFor(p => p.Comment).NotEmpty().WithMessage("'Comment' not specified");
+                RuleFor(p => p.MarketId).NotNull().WithMessage("'Market Id' not specified");
+                RuleFor(p => p.MarketReviewStatus).NotEqual(MarketReviewStatus.NotSet).WithMessage("'Market Review Status' not specified");
             });
         }
         

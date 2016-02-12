@@ -272,12 +272,15 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="OutputCacheComplexAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\FluentSecurityHelper.cs" />
     <Content Include="Content\js\MarketReview\init.js" />
     <Content Include="Content\js\MarketReview\model.js" />
     <Content Include="Content\js\MarketReview\page.js" />
     <Content Include="Content\js\Shared\takeratefilter.js" />
+    <Content Include="Content\js\TakeRateData\marketreview.js" />
+    <Content Include="Content\js\TakeRateData\marketreviewaction.js" />
     <Content Include="Error\NoProgrammeAccess.aspx" />
     <Content Include="Error\NoMarketAccess.aspx" />
     <Content Include="Error\403.aspx" />
@@ -1104,6 +1107,9 @@
     <Content Include="Views\MarketReview\MarketReviewPage.cshtml" />
     <Content Include="Views\MarketReview\_Scripts.cshtml" />
     <Content Include="Views\MarketReview\_MarketReviews.cshtml" />
+    <Content Include="Views\TakeRateData\_Buttons.cshtml" />
+    <Content Include="Views\TakeRateData\_MarketReviewButtons.cshtml" />
+    <Content Include="Views\MarketReview\_MarketReviewConfirm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

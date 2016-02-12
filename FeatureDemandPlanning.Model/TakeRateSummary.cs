@@ -22,6 +22,8 @@ namespace FeatureDemandPlanning.Model
         public string Version { get; set; }
         public bool IsCompleted { get; set; }
 
+        public MarketReview MarketReview { get; set; }
+
         public string[] ToJQueryDataTableResult()
         {
             return new[] 
@@ -37,6 +39,10 @@ namespace FeatureDemandPlanning.Model
                 //OxoDocId.ToString(),
                 IsCompleted.ToString()
             };
+        }
+        public bool IsPublished()
+        {
+            return ((Enumerations.TakeRateStatus) FdpTakeRateStatusId) == Enumerations.TakeRateStatus.Published;
         }
     }
 }

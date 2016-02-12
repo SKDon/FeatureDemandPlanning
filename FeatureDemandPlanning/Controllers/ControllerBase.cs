@@ -56,16 +56,10 @@ namespace FeatureDemandPlanning.Controllers
         }
         private string GetCdsId()
         {
-            var context = System.Web.HttpContext.Current;
-
-            if (context != null && context.User != null && context.User.Identity != null)
-            {
-                return AppHelper.GetWindowsId(context.User);
-            }
-            return Request.ServerVariables["REMOTE_USER"];
+            return Security.SecurityHelper.GetAuthenticatedUser();
         }
 
         private ControllerType _controllerType = ControllerType.Default;
-        protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        protected static readonly Logger Log = Logger.Instance;
     }
 }

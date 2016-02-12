@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -109,5 +110,6 @@ namespace FeatureDemandPlanning.Model
         }
 
         private IList<ProcessState> _processStates = new List<ProcessState>();
+        protected static readonly Logger Log = Logger.Instance;
     }
 }

@@ -5,6 +5,7 @@ namespace FeatureDemandPlanning.Model.Filters
     public class VehicleFilter : ProgrammeFilter
     {
         public int? VehicleIndex { get; set; }
+        public bool Deep { get; set; }
 
         public static VehicleFilter FromVehicle(IVehicle vehicle)
         {
@@ -15,7 +16,8 @@ namespace FeatureDemandPlanning.Model.Filters
                 Code = vehicle.Code,
                 Make = vehicle.Make,
                 ModelYear = vehicle.ModelYear,
-                Gateway = vehicle.Gateway
+                Gateway = vehicle.Gateway,
+                Deep = true
             };
         }
 

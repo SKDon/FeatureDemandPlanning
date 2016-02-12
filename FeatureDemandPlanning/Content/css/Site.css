@@ -794,6 +794,10 @@ ul.dropdown-menu > li span.glyphicon {
     /*text-decoration: underline;*/
 }
 
+.dropdown-menu > li > a:visited {
+    color: #061639;
+}
+
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > span:hover {
     text-decoration: none;
     color: #fff0aa !important;
@@ -1000,7 +1004,7 @@ li.optionalFeature {
 .editable-cell input {
     width:75px !important;
     padding: 0 !important;
-    height: 20px !important;
+    height: 16px !important;
     color: #061639;
     font-weight:normal;
 }
@@ -1012,9 +1016,9 @@ li.optionalFeature {
 }
 
 .editable-header input {
-    width:75px !important;
+    width: 75px !important;
     padding: 0 !important;
-    height: 20px !important;
+    height: 16px !important;
     color: #061639;
     font-weight: normal;
 }

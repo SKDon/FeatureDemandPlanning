@@ -4,7 +4,7 @@
 
 <script type="text/javascript">
 
-    var volume, vehicle, pager, page, modal, details, addNote;
+    var volume, vehicle, pager, page, modal, details, addNote, marketReview;
     var params = {
         ActionsUri: "@Url.Action("ContextMenu")",
         ModalContentUri: "@Url.Action("ModalContent")",
@@ -14,21 +14,20 @@
         GetChangesetUri: "@Url.Action("GetLatestChangeset")",
         RevertChangesetUri: "@Url.Action("RevertLatestChangeset")",
         SaveChangesetUri: "@Url.Action("SaveChangeset")",
+        MarketReviewUri: "@Url.Action("MarketReview", "MarketReview")",
+        MarketReviewConfirmUri: "@Url.Action("MarketReviewConfirm", "MarketReview")",
         PersistChangesetUri: "@Url.Action("PersistChangeset")",
         PersistChangesetConfirmUri: "@Url.Action("PersistChangesetConfirm")",
         ChangesetHistoryUri: "@Url.Action("ChangesetHistory")",
         UndoChangesetUri: "@Url.Action("UndoChangeset")",
         GetValidationUri: "@Url.Action("GetValidation")",
-        ValidateUri: "@Url.Action("Validate")",
         ValidationMessageUri: "@Url.Action("ValidationMessage")",
-        AddNoteUri: "@Url.Action("AddNoteUri")",
-        RefreshNotesUri: "@Url.Action("RefreshNotesUri")",
         Configuration: {},
         OXOVehicle: {},
         PageSize: @Model.PageSize,
         PageIndex: @Model.PageIndex,
         CookieKey: "@Model.CookieKey",
-            OxoDocId: null,
+        OxoDocId: null,
         TakeRateId: null,
         MarketGroupId: null,
         MarketId: null,

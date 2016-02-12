@@ -20,6 +20,7 @@ namespace FeatureDemandPlanning.Model
         public string MarketName { get; set; }
         public int FdpMarketReviewStatusId { get; set; }
         public string Status { get; set; }
+        public string Comment { get; set; }
         public MarketReviewStatus StatusCode {
             get { return (MarketReviewStatus) FdpMarketReviewStatusId; }
         }
@@ -37,7 +38,8 @@ namespace FeatureDemandPlanning.Model
                 Document.VersionLabel,
                 Document.Status,
                 MarketName,
-                Status
+                Status,
+                Comment
             };
         }
     }

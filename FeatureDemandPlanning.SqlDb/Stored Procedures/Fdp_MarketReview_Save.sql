@@ -3,6 +3,7 @@
 	, @MarketId					INT
 	, @FdpMarketReviewStatusId	INT
 	, @CDSId					NVARCHAR(16)
+	, @Comment					NVARCHAR(MAX)
 AS
 	SET NOCOUNT ON;
 	
@@ -16,6 +17,8 @@ AS
 	R.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	R.MarketId = @MarketId
+	--AND
+	--R.FdpMarketReviewStatusId = @FdpMarketReviewStatusId
 	ORDER BY
 	R.FdpMarketReviewId DESC -- Ensure the most recent review is used
 	
@@ -27,6 +30,7 @@ AS
 			, FdpVolumeHeaderId
 			, MarketId
 			, FdpMarketReviewStatusId
+			, Comment
 		)
 		VALUES
 		(
@@ -34,15 +38,20 @@ AS
 			, @FdpVolumeHeaderId
 			, @MarketId
 			, @FdpMarketReviewStatusId
+			, @Comment
 		)
 		
 		SET @FdpMarketReviewId = SCOPE_IDENTITY();
 	END
 	ELSE
 	BEGIN
-		UPDATE Fdp_MarketReview SET FdpMarketReviewStatusId = @FdpMarketReviewStatusId
+		UPDATE Fdp_MarketReview SET 
+			  FdpMarketReviewStatusId = @FdpMarketReviewStatusId
+			, UpdatedOn = GETDATE()
+			, UpdatedBy = @CDSId
+			, Comment = @Comment
 		WHERE
 		FdpMarketReviewId = @FdpMarketReviewId;
 	END
 	
-	EXEC Fdp_MarketReview_Get @FdpMarketReviewId = @FdpMarketReviewId;
+	EXEC Fdp_MarketReview_Get @FdpMarketReviewId = @FdpMarketReviewId, @CDSId = @CDSId

@@ -17,13 +17,11 @@ model.Page = function (models) {
         $(privateStore[me.id].Models).each(function () {
             this.initialise();
         });
+        me.checkCompletion();
         me.setResultsMode($("#" + me.getIdentifierPrefix() + "_Mode").val());
         me.loadData();
         me.registerEvents();
-        me.registerSubscribers();
-        me.loadChangeset();
-        me.checkCompletion();
-        me.validate();
+        me.registerSubscribers(); 
     };
     me.calcPanelHeight = function () {
         return ($(window).height()) - 135 + "px";
@@ -49,10 +47,11 @@ model.Page = function (models) {
     };
     me.loadData = function () {
         me.initialiseControls();
+        me.configureChangeset();
+        me.loadChangeset();
         me.configureDataTables();
         me.configureCellEditing();
         me.configureComments();
-        me.configureChangeset();
         me.configureRowHighlight();
     };
     me.persistData = function () {
@@ -79,7 +78,7 @@ model.Page = function (models) {
         filter.Action = action;
 
         getModal().showModal({
-            Title: "Changeset History",
+            Title: "History",
             Uri: model.getChangesetHistoryUri(),
             Data: JSON.stringify(filter),
             Model: model,
@@ -151,6 +150,12 @@ model.Page = function (models) {
         $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
         $("#" + prefix + "_Undo").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoDelegate", [eventArgs]); });
         $("#" + prefix + "_History").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnHistoryDelegate", [eventArgs]); });
+
+        $("#" + prefix + "_MarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate", [{ MarketReviewStatus: 1 }]); });
+        $("#" + prefix + "_SubmitMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate",[{ MarketReviewStatus: 2 }]); });
+        $("#" + prefix + "_ApproveMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate", [{ MarketReviewStatus: 4 }]); });
+        $("#" + prefix + "_RejectMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate", [{ MarketReviewStatus: 3 }]); });
+
         $("#" + prefix + "_Toggle").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnToggleDelegate", [eventArgs]); });
         $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
     };
@@ -173,6 +178,7 @@ model.Page = function (models) {
             .on("OnSavedDelegate", me.onSavedEventHandler)
             .on("OnPersistDelegate", me.onPersistEventHandler)
             .on("OnHistoryDelegate", me.onHistoryEventHandler)
+            .on("OnMarketReviewDelegate", me.onMarketReviewEventHandler)
             .on("OnUndoDelegate", me.onUndoEventHandler)
             .on("OnToggleDelegate", me.onToggleEventHandler);
 
@@ -227,7 +233,7 @@ model.Page = function (models) {
                 var modelIdentifier = $(this).attr("data-model");
                 
                 // Highlight the cell itself and any previous siblings
-                selector.find("tr:eq(" + rowIndex + ") td:lt(" + (columnIndex + 1) + ")").addClass("highlight");
+                selector.find("tr:eq(" + rowIndex + ") td:lt(" + (columnIndex + 1) + "),td[class='cross-tab-fixed']").addClass("highlight");
 
                 // Highlight the cells in the same column with a row index <= the current index
                 selector.find("tr:lt(" + (rowIndex + 1) + ") td[data-model='" + modelIdentifier + "'], th[data-model='" + modelIdentifier + "']").addClass("highlight");
@@ -418,6 +424,10 @@ model.Page = function (models) {
         model.setHasValidationErrors(validationData !== null && validationData.length > 0);
         if (model.HasValidationErrors) {
             $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", true);
+            //$("#" + me.getIdentifierPrefix() + "_MarketReview").prop("disabled", true);
+            //$("#" + me.getIdentifierPrefix() + "_SubmitMarketReview").prop("disabled", true);
+            //$("#" + me.getIdentifierPrefix() + "_ApproveMarketReview").prop("disabled", true);
+            //$("#" + me.getIdentifierPrefix() + "_RejectMarketReview").prop("disabled", true);
         }
 
         mainIndicator.hide();
@@ -480,6 +490,10 @@ model.Page = function (models) {
         var model = getTakeRateDataModel();
         $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", changesetData === null || changesetData.Changes.length === 0 || model.HasValidationErrors());
         $("#" + me.getIdentifierPrefix() + "_Undo").prop("disabled", changesetData === null || changesetData.Changes.length === 0);
+        //$("#" + me.getIdentifierPrefix() + "_MarketReview").prop("disabled", changesetData !== null || changesetData.Changes.length !== 0 || model.HasValidationErrors());
+        //$("#" + me.getIdentifierPrefix() + "_SubmitMarketReview").prop("disabled", changesetData === null || changesetData.Changes.length === 0 || model.HasValidationErrors());
+        //$("#" + me.getIdentifierPrefix() + "_ApproveMarketReview").prop("disabled", changesetData === null || changesetData.Changes.length === 0 || model.HasValidationErrors());
+        //$("#" + me.getIdentifierPrefix() + "_RejectMarketReview").prop("disabled", changesetData === null || changesetData.Changes.length === 0 || model.HasValidationErrors());
 
         for (var i = 0; i < changesetData.Changes.length; i++) {
             var currentChange = changesetData.Changes[i];
@@ -540,6 +554,10 @@ model.Page = function (models) {
 
         $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", true);
         $("#" + me.getIdentifierPrefix() + "_Undo").prop("disabled", true);
+        //$("#" + me.getIdentifierPrefix() + "_MarketReview").prop("disabled", true);
+        //$("#" + me.getIdentifierPrefix() + "_SubmitMarketReview").prop("disabled", true);
+        //$("#" + me.getIdentifierPrefix() + "_ApproveMarketReview").prop("disabled", true);
+        //$("#" + me.getIdentifierPrefix() + "_RejectMarketReview").prop("disabled", true);
 
         me.loadValidation();
 
@@ -651,6 +669,94 @@ model.Page = function (models) {
     me.onHistoryEventHandler = function () {
         me.showHistory();
     };
+    me.onMarketReviewEventHandler = function(sender, eventArgs) {
+        switch (eventArgs.MarketReviewStatus)
+        {
+            case 1:
+                me.marketReview(eventArgs.MarketReviewStatus);
+                break;
+            case 2:
+                me.submitMarketReview(eventArgs.MarketReviewStatus);
+                break;
+            case 3:
+                me.rejectMarketReview(eventArgs.MarketReviewStatus);
+                break;
+            case 4:
+                me.approveMarketReview(eventArgs.MarketReviewStatus);
+                break;
+            default:
+                me.marketReview(eventArgs.MarketReviewStatus);
+                break;
+        }
+    };
+    me.marketReview = function(marketReviewStatus) {
+        var model = getMarketReviewModel();
+        model.setMarketReviewStatus(marketReviewStatus)
+        var action = model.getMarketReviewAction();
+        var actionModel = model.getActionModel(action);
+        var filter = getFilter("");
+        filter.Action = action;
+        filter.MarketReviewStatus = marketReviewStatus;
+
+        getModal().showModal({
+            Title: "Market Review",
+            Uri: model.getActionContentUri(),
+            Data: JSON.stringify(filter),
+            Model: model,
+            ActionModel: actionModel
+        });
+    };
+    me.submitMarketReview = function(marketReviewStatus) {
+        var model = getMarketReviewModel();
+        model.setMarketReviewStatus(marketReviewStatus)
+        var action = model.getMarketReviewAction();
+        var actionModel = model.getActionModel(action);
+        var filter = getFilter("");
+        filter.Action = action;
+        filter.MarketReviewStatus = marketReviewStatus;
+
+        getModal().showModal({
+            Title: "Submit Market Review",
+            Uri: model.getActionContentUri(),
+            Data: JSON.stringify(filter),
+            Model: model,
+            ActionModel: actionModel
+        });
+    };
+    me.rejectMarketReview = function (marketReviewStatus) {
+        var model = getMarketReviewModel();
+        model.setMarketReviewStatus(marketReviewStatus);
+        var action = model.getMarketReviewAction();
+        var actionModel = model.getActionModel(action);
+        var filter = getFilter("");
+        filter.Action = action;
+        filter.MarketReviewStatus = marketReviewStatus;
+
+        getModal().showModal({
+            Title: "Reject Market Review",
+            Uri: model.getActionContentUri(),
+            Data: JSON.stringify(filter),
+            Model: model,
+            ActionModel: actionModel
+        });
+    };
+    me.approveMarketReview = function (marketReviewStatus) {
+        var model = getMarketReviewModel();
+        model.setMarketReviewStatus(marketReviewStatus);
+        var action = model.getMarketReviewAction();
+        var actionModel = model.getActionModel(action);
+        var filter = getFilter("");
+        filter.Action = action;
+        filter.MarketReviewStatus = marketReviewStatus;
+
+        getModal().showModal({
+            Title: "Approve Market Review",
+            Uri: model.getActionContentUri(),
+            Data: JSON.stringify(filter),
+            Model: model,
+            ActionModel: actionModel
+        });
+    };
     me.onUpdateFilterVolumeEventHandler = function (sender, eventArgs) {
         var marketIdentifier = getTakeRateDataModel().getMarketId();
         var changeSet = getChangeset();
@@ -726,109 +832,113 @@ model.Page = function (models) {
         new $.fn.dataTable.FixedColumns(table, {
             leftColumns: 4,
             drawCallback: function (left) {
-                var settings = table.settings();
-                if (settings.data().length === 0) {
-                    return;
-                }
-
-                var nGroup, nSubGroup, nCell, index, groupName, subGroupName;
-                var lastGroupName = "", lastSubGroupName = "", corrector = 0;
-                var nTrs = $("#" + me.getIdentifierPrefix() + "_TakeRateData tbody tr");
-                var rightColumns = nTrs.first().children().length;
-
-                for (var i = 0 ; i < nTrs.length ; i++) {
-                    index = settings.page.info().start + i;
-                    groupName = $(nTrs[i]).attr("data-group");
-                    subGroupName = $(nTrs[i]).attr("data-subgroup");
-
-                        if (groupName !== lastGroupName) {
-                            /* Cell to insert into main table */
-                            nGroup = document.createElement("tr");
-                            nCell = document.createElement("td");
-                            nCell.colSpan = rightColumns;
-                            nCell.className = "group";
-                            nCell.innerHTML = "&nbsp;";
-                            nGroup.appendChild(nCell);
-                            $(nGroup).attr("data-toggle", groupName);
-                            nTrs[i].parentNode.insertBefore(nGroup, nTrs[i]);
-                            $(nGroup).on("click", function() {
-                                var clickedGroup = $(this).attr("data-toggle");
-                                $("tbody tr[data-group='" + clickedGroup + "']").toggle();
-                            });
-
-                            /* Cell to insert into the frozen columns */
-                            nGroup = document.createElement("tr");
-                            nCell = document.createElement("td");
-                            nCell.className = "group";
-                            nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + groupName;
-                            nCell.colSpan = 4;
-                            $(nGroup).attr("data-toggle", groupName);
-                            nGroup.appendChild(nCell);
-                            $(nGroup).insertBefore($("tbody tr:eq(" + (i + corrector) + ")", left.body)[0]);
-                            $(nGroup).on("click", function () {
-                                var clickedGroup = $(this).attr("data-toggle");
-                                var rows = $("tbody tr[data-group='" + clickedGroup + "']").toggle();
-                                if ($(rows[0]).is(":visible")) {
-                                    $(this).find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
-                                }
-                                else {
-                                    $(this).find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
-                                }
-                            });
-
-                            corrector++;
-                            lastGroupName = groupName;
-                        }
-                    
-
-                    if (subGroupName !== lastSubGroupName) {
-                        if (subGroupName !== "") {
-                            /* Cell to insert into main table */
-                            nSubGroup = document.createElement("tr");
-                            nCell = document.createElement("td");
-                            nCell.colSpan = rightColumns;
-                            nCell.className = "sub-group";
-                            nCell.innerHTML = "&nbsp;";
-                            $(nSubGroup).attr("data-group", groupName)
-                            $(nSubGroup).attr("data-toggle", subGroupName);
-                            nSubGroup.appendChild(nCell);
-                            nTrs[i].parentNode.insertBefore(nSubGroup, nTrs[i]);
-                            $(nSubGroup).on("click", function (sender, eventArgs) {
-                                var clickedGroup = $(this).attr("data-toggle");
-                                $("tbody tr[data-subgroup='" + clickedGroup + "']").toggle();
-                            });
-
-                            /* Cell to insert into the frozen columns */
-                            nSubGroup = document.createElement("tr");
-                            nCell = document.createElement("td");
-                            nCell.className = "sub-group";
-                            nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + subGroupName;
-                            nCell.colSpan = 4;
-                            $(nSubGroup).attr("data-group", groupName);
-                            $(nSubGroup).attr("data-toggle", subGroupName);
-                            nSubGroup.appendChild(nCell);
-                            $(nSubGroup).insertBefore($("tbody tr:eq(" + (i + corrector) + ")", left.body)[0]);
-                            $(nSubGroup).on("click", function () {
-                                var clickedGroup = $(this).attr("data-toggle");
-                                var rows = $("tbody tr[data-subgroup='" + clickedGroup + "']").toggle();
-                                if ($(rows[0]).is(":visible")) {
-                                    $(this).find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
-                                }
-                                else {
-                                    $(this).find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
-                                }
-                            });
-
-                            corrector++;
-                        }
-                        lastSubGroupName = subGroupName;
-                    }
-                }
+                me.configureRowGroupings(table, left);
                 me.bindContextMenu();
             }
         });
 
         me.setDataTable(table);
+    };
+    me.configureRowGroupings = function(table, left) {
+        var settings = table.settings();
+        if (settings.data().length === 0) {
+            return;
+        }
+
+        var nGroup, nSubGroup, nCell, index, groupName, subGroupName;
+        var lastGroupName = "", lastSubGroupName = "", corrector = 0;
+        var nTrs = $("#" + me.getIdentifierPrefix() + "_TakeRateData tbody tr");
+        var rightColumns = nTrs.first().children().length;
+
+        for (var i = 0; i < nTrs.length; i++) {
+            index = settings.page.info().start + i;
+            groupName = $(nTrs[i]).attr("data-group");
+            subGroupName = $(nTrs[i]).attr("data-subgroup");
+
+            if (groupName !== lastGroupName) {
+                /* Cell to insert into main table */
+                nGroup = document.createElement("tr");
+                nCell = document.createElement("td");
+                nCell.colSpan = rightColumns;
+                nCell.className = "group";
+                nCell.innerHTML = "&nbsp;";
+                nGroup.appendChild(nCell);
+                $(nGroup).attr("data-toggle", groupName);
+                nTrs[i].parentNode.insertBefore(nGroup, nTrs[i]);
+                $(nGroup).on("click", function() {
+                    var clickedGroup = $(this).attr("data-toggle");
+                    $("tbody tr[data-group='" + clickedGroup + "']").toggle();
+                });
+
+                /* Cell to insert into the frozen columns */
+                nGroup = document.createElement("tr");
+                nCell = document.createElement("td");
+                nCell.className = "group";
+                nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + groupName;
+                nCell.colSpan = 4;
+                $(nGroup).attr("data-toggle", groupName);
+                nGroup.appendChild(nCell);
+                $(nGroup).insertBefore($("tbody tr:eq(" + (i + corrector) + ")", left.body)[0]);
+                $(nGroup).on("click", function() {
+                    var clickedGroup = $(this).attr("data-toggle");
+                    var rows = $("tbody tr[data-group='" + clickedGroup + "']").toggle();
+                    if ($(rows[0]).is(":visible")) {
+                        $(this).find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                    } else {
+                        $(this).find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                    }
+                });
+
+                corrector++;
+                lastGroupName = groupName;
+            }
+
+
+            if (subGroupName !== lastSubGroupName) {
+                if (subGroupName !== "") {
+                    /* Cell to insert into main table */
+                    nSubGroup = document.createElement("tr");
+                    nCell = document.createElement("td");
+                    nCell.colSpan = rightColumns;
+                    nCell.className = "sub-group";
+                    nCell.innerHTML = "&nbsp;";
+                    $(nSubGroup).attr("data-group", groupName)
+                    $(nSubGroup).attr("data-toggle", subGroupName);
+                    nSubGroup.appendChild(nCell);
+                    nTrs[i].parentNode.insertBefore(nSubGroup, nTrs[i]);
+                    $(nSubGroup).on("click", function(sender, eventArgs) {
+                        var clickedGroup = $(this).attr("data-toggle");
+                        $("tbody tr[data-subgroup='" + clickedGroup + "']").toggle();
+                    });
+
+                    /* Cell to insert into the frozen columns */
+                    nSubGroup = document.createElement("tr");
+                    nCell = document.createElement("td");
+                    nCell.className = "sub-group";
+                    nCell.innerHTML = "<span class=\"glyphicon glyphicon-minus\"></span> " + subGroupName;
+                    nCell.colSpan = 4;
+                    $(nSubGroup).attr("data-group", groupName);
+                    $(nSubGroup).attr("data-toggle", subGroupName);
+                    nSubGroup.appendChild(nCell);
+                    $(nSubGroup).insertBefore($("tbody tr:eq(" + (i + corrector) + ")", left.body)[0]);
+                    $(nSubGroup).on("click", function() {
+                        var clickedGroup = $(this).attr("data-toggle");
+                        var rows = $("tbody tr[data-subgroup='" + clickedGroup + "']").toggle();
+                        if ($(rows[0]).is(":visible")) {
+                            $(this).find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                        } else {
+                            $(this).find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                        }
+                    });
+
+                    corrector++;
+                }
+                lastSubGroupName = subGroupName;
+            }
+        }
+
+        // Clear spurious child elements from the hidden sizing columns
+        $(".dataTables_sizing").empty();
     };
     me.bindContextMenu = function () {
         var prefix = me.getIdentifierPrefix();
@@ -1023,12 +1133,6 @@ model.Page = function (models) {
     me.redrawDataTable = function () {
         me.getDataTable().draw();
     };
-    me.validate = function () {
-        //getTakeRateDataModel().validate(me.validateCallback);
-    };
-    me.validateCallback = function(validationResults) {
-        $(".feature-validation-error").attr("data-content", "test").show();
-    };
     me.getExpandedState = function() {
         return privateStore[me.id].Expanded;
     };
@@ -1108,6 +1212,9 @@ model.Page = function (models) {
     function getAddNoteModel() {
         return getModel("AddNote");
     };
+    function getMarketReviewModel() {
+        return getModel("MarketReview");
+    };
     function getModal() {
         return getModel("Modal");
     };
@@ -1120,6 +1227,8 @@ model.Page = function (models) {
             case 8:
                 model = getAddNoteModel();
                 break;
+            case 11:
+                model = getMarketReviewModel();
             default:
                 break;
         }

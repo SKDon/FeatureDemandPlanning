@@ -130,6 +130,8 @@ namespace FeatureDemandPlanning
                     "~/Content/js/TakeRateData/details.js",
                     "~/Content/js/TakeRateData/history.js",
                     "~/Content/js/TakeRateData/historyaction.js",
+                    "~/Content/js/TakeRateData/marketreview.js",
+                    "~/Content/js/TakeRateData/marketreviewaction.js",
                     "~/Content/js/TakeRateData/model.js",
                     "~/Content/js/TakeRateData/page.js",
                     "~/Content/js/TakeRateData/save.js",

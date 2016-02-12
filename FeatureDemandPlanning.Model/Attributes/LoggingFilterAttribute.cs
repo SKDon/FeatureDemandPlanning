@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 using System.Text;
 using System.Web.Mvc;
-using log4net;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.Model.Attributes
 {
@@ -10,40 +9,37 @@ namespace FeatureDemandPlanning.Model.Attributes
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (!Log.IsDebugEnabled)
-                return;
-
             var loggingWatch = Stopwatch.StartNew();
             filterContext.HttpContext.Items.Add(StopWatchKey, loggingWatch);
 
             var message = new StringBuilder();
-            message.Append(string.Format("Executing controller {0}, action {1}",
+            message.Append(string.Format("Controller {0} :: {1}",
                 filterContext.ActionDescriptor.ControllerDescriptor.ControllerName,
                 filterContext.ActionDescriptor.ActionName));
 
-            Log.Debug(message);
+            Log.Debug(message.ToString());
         }
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            if (!Log.IsDebugEnabled || filterContext.HttpContext.Items[StopWatchKey] == null)
+            if (filterContext.HttpContext.Items[StopWatchKey] == null)
                 return;
 
-            var loggingWatch = (Stopwatch) filterContext.HttpContext.Items[StopWatchKey];
+            var loggingWatch = (Stopwatch)filterContext.HttpContext.Items[StopWatchKey];
             loggingWatch.Stop();
 
             var timeSpent = loggingWatch.ElapsedMilliseconds;
 
             var message = new StringBuilder();
-            message.Append(string.Format("Finished executing controller {0}, action {1} - time spent {2}",
+            message.Append(string.Format("Controller {0} :: {1} :: {2} ms",
                 filterContext.ActionDescriptor.ControllerDescriptor.ControllerName,
                 filterContext.ActionDescriptor.ActionName,
                 timeSpent));
 
-            Log.Debug(message);
+            Log.Debug(loggingWatch.ElapsedMilliseconds);
             filterContext.HttpContext.Items.Remove(StopWatchKey);
         }
 
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly Logger Log = Logger.Instance;
         private const string StopWatchKey = "DebugLoggingStopwatch";
     }
 }

@@ -2,6 +2,7 @@
 using FeatureDemandPlanning.Model.Filters;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.Interfaces
 {
@@ -50,6 +51,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<Programme> GetProgramme(TakeRateFilter takeRateFilter);
 
+        Task<MarketReview> GetMarketReview(TakeRateFilter filter);
         Task<PagedResults<MarketReview>> ListMarketReview(TakeRateFilter filter);
+        Task<MarketReview> SetMarketReview(TakeRateFilter filter);
     }
 }

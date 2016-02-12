@@ -18,6 +18,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public string ModelIdentifier { get; set; }
         public string FeatureIdentifier { get; set; }
         public string Comment { get; set; }
+        public MarketReviewStatus MarketReviewStatus { get; set; }
 
         public FdpChangeset Changeset { get; set; }
 
@@ -25,6 +26,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         {
             Action = TakeRateDataItemAction.NotSet;
             Changeset = new EmptyFdpChangeset();
+            MarketReviewStatus = MarketReviewStatus.NotSet;
         }
 
         public object GetActionSpecificParameters()
@@ -58,6 +60,12 @@ namespace FeatureDemandPlanning.Model.Parameters
                 case TakeRateDataItemAction.SaveChanges:
                     break;
                 case TakeRateDataItemAction.History:
+                    break;
+                case TakeRateDataItemAction.Validate:
+                    break;
+                case TakeRateDataItemAction.Changeset:
+                    break;
+                case TakeRateDataItemAction.MarketReview:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

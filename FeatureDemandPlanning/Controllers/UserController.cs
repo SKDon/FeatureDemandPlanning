@@ -27,6 +27,7 @@ namespace FeatureDemandPlanning.Controllers
             return RedirectToAction("UserPage");
         }
         [HttpGet]
+        [OutputCacheComplex(typeof(UserParameters))]
         public async Task<ActionResult> UserPage(UserParameters parameters)
         {
             var filter = new UserFilter()
@@ -37,7 +38,6 @@ namespace FeatureDemandPlanning.Controllers
             };
             return View(await UserViewModel.GetModel(DataContext, filter));
         }
-
         [HttpGet]
         public async Task<ActionResult> MyAccount()
         {

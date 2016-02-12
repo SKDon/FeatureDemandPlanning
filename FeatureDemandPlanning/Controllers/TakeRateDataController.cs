@@ -64,6 +64,21 @@ namespace FeatureDemandPlanning.Controllers
             return View("TakeRateDataPage", model);
         }
         [HttpPost]
+        public async Task<ActionResult> TakeRateDataPartialPage(TakeRateParameters parameters)
+        {
+            Log.Debug(MethodBase.GetCurrentMethod().Name);
+
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.TakeRateDataPage;
+            var model = await TakeRateViewModel.GetModel(DataContext, filter);
+
+            ViewData["DocumentName"] = model.Document.UnderlyingOxoDocument.Name;
+            ViewBag.Title = string.Format("{0} - {1} ({2}) - {3}", model.Document.Vehicle.Code,
+                model.Document.Vehicle.ModelYear, model.Document.UnderlyingOxoDocument.Gateway, model.Document.TakeRateSummary.First().Version);
+
+            return PartialView("_TakeRateData", model);       
+        }
+        [HttpPost]
         public async Task<ActionResult> ContextMenu(TakeRateParameters parameters)
         {
             TakeRateParametersValidator

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
-using DapperExtensions.Mapper;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Dapper;
@@ -43,7 +40,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -86,7 +83,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -108,7 +105,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -130,7 +127,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -204,7 +201,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -233,7 +230,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -261,7 +258,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -289,7 +286,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -317,7 +314,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -348,7 +345,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -371,7 +368,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -399,7 +396,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(MethodBase.GetCurrentMethod().Name, ex);
+                    Log.Error(ex);
                     throw;
                 }
             }

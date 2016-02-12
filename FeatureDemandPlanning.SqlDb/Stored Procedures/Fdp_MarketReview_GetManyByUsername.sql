@@ -51,6 +51,9 @@ AS
 		OR MK.Market_Name LIKE '%' + @FilterMessage + '%')
 	AND
 	M.IsActive = 1
+	AND
+	M.FdpMarketReviewStatusId <> 4 -- Get rid of the approved ones as the take rate data is thrown back into the mix
+
 	ORDER BY	
 		CASE @SortDirection
 		WHEN 'ASC' THEN
@@ -102,6 +105,7 @@ AS
 	, M.MarketName
 	, M.FdpMarketReviewStatusId
 	, M.[Status]
+	, M.Comment
 	FROM
 	@PageRecords						AS PA
 	JOIN Fdp_MarketReview_VW			AS M	ON PA.FdpMarketReviewId = M.FdpMarketReviewId

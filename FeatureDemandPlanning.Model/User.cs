@@ -32,7 +32,15 @@ namespace FeatureDemandPlanning.Model
         public bool HasEditRole()
         {
             return Roles.Any(
-                r => r == UserRole.Administrator || r == UserRole.Editor || r == UserRole.MarketReviewer);
+                r => r == UserRole.Editor || r == UserRole.MarketReviewer);
+        }
+        public bool HasApproverRole()
+        {
+            return Roles.Any(r => r == UserRole.Approver);
+        }
+        public bool HasReviewerRole()
+        {
+            return Roles.Any(r => r == UserRole.MarketReviewer || r == UserRole.Approver);
         }
         public bool IsMarketEditable(int marketId)
         {

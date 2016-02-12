@@ -118,7 +118,17 @@ page.MarketReviewPage = function (models) {
                     "render": function (data, type, full) {
                         return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
                     }
-                }
+                 }
+                 ,
+                 {
+                     "sName": "COMMENT",
+                     "bSearchable": true,
+                     "bSortable": true,
+                     "sClass": "text-center",
+                     "render": function (data, type, full) {
+                         return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
+                     }
+                 }
             ]
         });
     };

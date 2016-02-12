@@ -67,28 +67,7 @@
             </div>
         </div>
         <div class="viewport-toolbar pull-right col-xs-12 col-lg-6">
-            <div class="btn-group pull-right">
-                @if (Model.AllowEdit)
-                {
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Save" disabled="disabled"><i class="glyphicon glyphicon-save"></i> Commit Changes</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Undo" disabled="disabled"><span class="glyphicon glyphicon-repeat"></span> Undo</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History"><span class="glyphicon glyphicon glyphicon-list-alt"></span> History</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" disabled="disabled"><span class="glyphicon glyphicon-flag"></span> Market Review</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Publish" disabled="disabled"><span class="glyphicon glyphicon-pushpin"></span> Publish</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Toggle"><span class="glyphicon glyphicon-minus"></span></button>
-                    <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
-                        <span class="glyphicon glyphicon-collapse-down"></span>
-                    </a>
-                }
-                else
-                {
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History"><span class="glyphicon glyphicon glyphicon-list-alt"></span> History</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Toggle"><span class="glyphicon glyphicon-minus"></span></button>
-                    <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
-                        <span class="glyphicon glyphicon-collapse-down"></span>
-                    </a>
-                }
-            </div>
+            @Html.Partial("_Buttons")
         </div>
     </div>
 
