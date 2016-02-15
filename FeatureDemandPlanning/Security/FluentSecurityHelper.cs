@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
 using FeatureDemandPlanning.Controllers;
+using FeatureDemandPlanning.Helpers;
 using FluentSecurity;
 
 namespace FeatureDemandPlanning.Security
@@ -18,20 +16,23 @@ namespace FeatureDemandPlanning.Security
                 configuration.GetAuthenticationStatusFrom(SecurityHelper.IsUserAuthenticated);
                 configuration.GetRolesFrom(SecurityHelper.GetUserRoles);
 
-                configuration.ResolveServicesUsing(type =>
-                {
-                    if (type == typeof (IPolicyViolationHandler))
-                    {
-                        return new List<IPolicyViolationHandler>()
-                        {
-                            new RequireAnyRolePolicyViolationHandler(),
-                            new DefaultSecurityPolicyViolationHandler(),
-                            new HasAccessToMarketPolicyViolationHandler(),
-                            new HasAccessToProgrammePolicyViolationHandler()
-                        };
-                    }
-                    return Enumerable.Empty<object>();
-                });
+                //configuration.ResolveServicesUsing(type =>
+                //{
+                //    if (type == typeof (IPolicyViolationHandler))
+                //    {
+                //        return new List<IPolicyViolationHandler>()
+                //        {
+                //            new RequireAnyRolePolicyViolationHandler(),
+                //            new DefaultSecurityPolicyViolationHandler(),
+                //            new HasAccessToMarketPolicyViolationHandler(),
+                //            new HasAccessToProgrammePolicyViolationHandler()
+                //        };
+                //    }
+                //    return Enumerable.Empty<object>();
+                //});
+
+                configuration.ResolveServicesUsing(DependencyResolver.Current.GetServices, DependencyResolver.Current.GetService);
+
 
                 // Default policy with a friendly handler for all controllers, just in case we forget to implement something
                 configuration.ForAllControllers()

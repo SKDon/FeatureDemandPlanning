@@ -3,13 +3,18 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using FeatureDemandPlanning.Model.Interfaces;
 using FluentSecurity;
 using FluentSecurity.Policy;
 
 namespace FeatureDemandPlanning.Security
 {
-    public abstract class PolicyBase : ISecurityPolicy
+    public abstract class SecurityPolicyBase : ISecurityPolicy
     {
+        protected SecurityPolicyBase(IDataContext context)
+        {
+            Context = context;
+        }
         public virtual PolicyResult Enforce(ISecurityContext context)
         {
             throw new NotImplementedException();
@@ -50,5 +55,6 @@ namespace FeatureDemandPlanning.Security
 
             return retVal;
         }
+        protected readonly IDataContext Context;
     }
 }

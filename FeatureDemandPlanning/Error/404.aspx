@@ -13,7 +13,7 @@
     <link href="../Content/css/BrushedMetal.css" rel="stylesheet"/>
 
     <script src="../Content/js/bootstrap.js"></script>
-    
+    <link rel="icon" type="image/x-icon" href="../favicon.ico?v=3" />
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -28,7 +28,7 @@
 
                 <a href="../">
                     <div class="navbar-brand metal linear">
-                    <div style="margin-top:-3px">F.D.P</div>
+                    <div style="margin-top:-3px">F.D.D</div>
                     <p>Powered by RADS</p>
                     </div>
                 </a>

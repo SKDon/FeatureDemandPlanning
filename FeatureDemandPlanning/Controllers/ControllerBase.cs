@@ -29,7 +29,7 @@ namespace FeatureDemandPlanning.Controllers
 
         public ControllerBase()
         {
-            DataContext = DataContextFactory.CreateDataContext(GetCdsId());
+            DataContext = DependencyResolver.Current.GetService<IDataContext>();
             
             PageIndex = 0;
             PageSize = ConfigurationSettings.GetInteger("DefaultPageSize");
@@ -56,7 +56,7 @@ namespace FeatureDemandPlanning.Controllers
         }
         private string GetCdsId()
         {
-            return Security.SecurityHelper.GetAuthenticatedUser();
+            return Helpers.SecurityHelper.GetAuthenticatedUser();
         }
 
         private ControllerType _controllerType = ControllerType.Default;

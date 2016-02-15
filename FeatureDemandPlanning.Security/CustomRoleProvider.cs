@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Linq;
+using System.Web.Mvc;
 using System.Web.Security;
-using FeatureDemandPlanning.DataStore;
 using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.Security
 {
     public class CustomRoleProvider : RoleProvider
     {
+        public CustomRoleProvider()
+        {
+            context = DependencyResolver.Current.GetService<IDataContext>();
+        }
         public override string[] GetRolesForUser(string userName)
         {
-            IDataContext context = new DataContext(SecurityHelper.ParseUserName(userName));
             var authenticatedUser = context.User.GetUser();
 
             return authenticatedUser.Roles.Select(r => Enum.GetName(r.GetType(), r)).ToArray();
@@ -44,7 +47,7 @@ namespace FeatureDemandPlanning.Security
         }
         public override bool IsUserInRole(string userName, string roleName)
         {
-            IDataContext context = new DataContext(SecurityHelper.ParseUserName(userName));
+            //IDataContext context = new DataContext(SecurityHelper.ParseUserName(userName));
             var authenticatedUser = context.User.GetUser();
 
             return authenticatedUser.Roles.Any(r =>
@@ -78,5 +81,7 @@ namespace FeatureDemandPlanning.Security
         {
             return true;
         }
+
+        private readonly IDataContext context;
     }
 }

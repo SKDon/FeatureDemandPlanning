@@ -2,7 +2,7 @@
 using System.Web;
 using System.Web.Security;
 
-namespace FeatureDemandPlanning.Security
+namespace FeatureDemandPlanning.Helpers
 {
     public static class SecurityHelper
     {

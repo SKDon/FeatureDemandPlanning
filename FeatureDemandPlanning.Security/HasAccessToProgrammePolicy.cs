@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using FeatureDemandPlanning.DataStore;
+using FeatureDemandPlanning.Helpers;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
@@ -7,8 +7,12 @@ using FluentSecurity;
 
 namespace FeatureDemandPlanning.Security
 {
-    public class HasAccessToProgrammePolicy : PolicyBase
+    public class HasAccessToProgrammePolicy : SecurityPolicyBase
     {
+        public HasAccessToProgrammePolicy(IDataContext context) : base(context)
+        {
+        }
+
         public override PolicyResult Enforce(ISecurityContext context)
         {
             var programmeId = GetProgrammeParameter(context);
@@ -47,27 +51,24 @@ namespace FeatureDemandPlanning.Security
             }
             return null;
         }
-        private static int? GetProgrammeIdFromTakeRate(int takeRateId)
+        private int? GetProgrammeIdFromTakeRate(int takeRateId)
         {
-            IDataContext context = new DataContext(SecurityHelper.GetAuthenticatedUser());
-            var document = context.TakeRate.GetUnderlyingOxoDocument(new TakeRateFilter() { TakeRateId = takeRateId }).Result;
+            var document = Context.TakeRate.GetUnderlyingOxoDocument(new TakeRateFilter() { TakeRateId = takeRateId }).Result;
             if (document == null || document is EmptyOxoDocument)
             {
                 return null;
             }
             return document.ProgrammeId;
         }
-        private static bool HasAccessToProgramme(int programmeId)
+        private bool HasAccessToProgramme(int programmeId)
         {
-            IDataContext context = new DataContext(SecurityHelper.GetAuthenticatedUser());
-            var user = context.User.GetUser();
+            var user = Context.User.GetUser();
 
             return user.Programmes.Any(m => m.ProgrammeId == programmeId);
         }
-        private static string GetProgrammeName(int programmeId)
+        private string GetProgrammeName(int programmeId)
         {
-            IDataContext context = new DataContext(SecurityHelper.GetAuthenticatedUser());
-            var programme = context.TakeRate.GetProgramme(new TakeRateFilter()
+            var programme = Context.TakeRate.GetProgramme(new TakeRateFilter()
             {
                 ProgrammeId = programmeId 
             }).Result;

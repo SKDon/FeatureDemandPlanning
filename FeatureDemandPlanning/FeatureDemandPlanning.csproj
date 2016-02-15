@@ -85,6 +85,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.2.0.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Web.Common, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Web.Common.3.2.0.0\lib\net45-full\Ninject.Web.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Web.Mvc, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.MVC5.3.2.1.0\lib\net45-full\Ninject.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="RADsHelpers">
       <HintPath>..\..\SharedLibraries\RADsHelpers.dll</HintPath>
     </Reference>
@@ -188,6 +200,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\NinjectWebCommon.cs" />
     <Compile Include="Controllers\MarketReviewController.cs" />
     <Compile Include="Error\NoProgrammeAccess.aspx.cs">
       <DependentUpon>NoProgrammeAccess.aspx</DependentUpon>
@@ -265,8 +278,6 @@
     <Compile Include="Controllers\TakeRateDataController.cs" />
     <Compile Include="Controllers\TakeRateController.cs" />
     <Compile Include="CssRewriteUrlTransformFixed.cs" />
-    <Compile Include="DataContextFactory.cs" />
-    <Compile Include="Helpers\EmailHelper.cs" />
     <Compile Include="Helpers\HtmlHelperExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
@@ -1110,6 +1121,7 @@
     <Content Include="Views\TakeRateData\_Buttons.cshtml" />
     <Content Include="Views\TakeRateData\_MarketReviewButtons.cshtml" />
     <Content Include="Views\MarketReview\_MarketReviewConfirm.cshtml" />
+    <Content Include="Views\Admin\News.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1119,6 +1131,10 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FeatureDemandPlanning.Bindings\FeatureDemandPlanning.Bindings.csproj">
+      <Project>{697C8C79-4955-4B06-BE22-481723D267F8}</Project>
+      <Name>FeatureDemandPlanning.Bindings</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FeatureDemandPlanning.Data\FeatureDemandPlanning.DataStore.csproj">
       <Project>{d2174586-6bc6-48ce-b8e3-1cd81e0886e4}</Project>
       <Name>FeatureDemandPlanning.DataStore</Name>
@@ -1130,6 +1146,10 @@
     <ProjectReference Include="..\FeatureDemandPlanning.Security\FeatureDemandPlanning.Security.csproj">
       <Project>{42FD090D-46F7-4B45-99A2-1FB8AD5EF9C2}</Project>
       <Name>FeatureDemandPlanning.Security</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Helpers\FeatureDemandPlanning.Helpers.csproj">
+      <Project>{F8BC5FC7-435B-49F5-B7C5-84BDA34D97EB}</Project>
+      <Name>FeatureDemandPlanning.Helpers</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

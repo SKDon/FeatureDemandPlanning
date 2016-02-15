@@ -1,12 +1,15 @@
 ﻿using System.Linq;
-using FeatureDemandPlanning.DataStore;
+using FeatureDemandPlanning.Helpers;
 using FeatureDemandPlanning.Model.Interfaces;
 using FluentSecurity;
 
 namespace FeatureDemandPlanning.Security
 {
-    public class HasAccessToMarketPolicy : PolicyBase
+    public class HasAccessToMarketPolicy : SecurityPolicyBase
     {
+        public HasAccessToMarketPolicy(IDataContext context) : base(context)
+        {
+        }
         public override PolicyResult Enforce(ISecurityContext context)
         {
             var marketId = GetMarketParameter(context);
@@ -29,17 +32,15 @@ namespace FeatureDemandPlanning.Security
             }
             return null;
         }
-        private static bool HasAccessToMarket(int marketId)
+        private bool HasAccessToMarket(int marketId)
         {
-            IDataContext context = new DataContext(SecurityHelper.GetAuthenticatedUser());
-            var user = context.User.GetUser();
+            var user = Context.User.GetUser();
 
             return user.Markets.Any(m => m.MarketId == marketId);
         }
-        private static string GetMarketName(int marketId)
+        private string GetMarketName(int marketId)
         {
-            IDataContext context = new DataContext(SecurityHelper.GetAuthenticatedUser());
-            var market = context.Market.GetMarket(marketId);
+            var market = Context.Market.GetMarket(marketId);
 
             return market != null ? market.Name : string.Empty;
         }

@@ -15,9 +15,9 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         #region "Constructors"
 
-        public NewsViewModel() : base()
+        public NewsViewModel(SharedModelBase baseModel) : base(baseModel)
         {
-            InitialiseMembers();
+            
         }
 
         #endregion      
@@ -26,11 +26,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         public async static Task<NewsViewModel> GetFullOrPartialViewModel(IDataContext context)
         {
-            var model = new NewsViewModel()
+            var model = new NewsViewModel(GetBaseModel(context))
             {
-                Configuration = context.ConfigurationSettings
+                Configuration = context.ConfigurationSettings,
+                News = await context.News.ListNews()
             };
-            model.News = await context.News.ListNews();
 
             return model;
         }
@@ -46,5 +46,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         }
 
         #endregion
+
+        public string NewArticle { get; set; }
     }
 }

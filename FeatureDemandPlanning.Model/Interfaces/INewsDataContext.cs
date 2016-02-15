@@ -7,5 +7,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
     {
         Task<IEnumerable<News>> ListLatestNews();
         Task<IEnumerable<News>> ListNews();
+
+        void AddNews(string newArticle);
     }
 }
