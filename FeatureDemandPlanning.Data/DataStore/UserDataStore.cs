@@ -29,7 +29,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
                     para.Add("@CDSId", userToAdd.CDSId, DbType.String);
                     para.Add("@FullName", userToAdd.FullName, DbType.String);
-                    para.Add("@Mail", "", DbType.String);
+                    para.Add("@Mail", userToAdd.Mail, DbType.String);
                     para.Add("@IsAdmin", userToAdd.IsAdmin, DbType.Boolean);
                     para.Add("@CreatorCDSId", CurrentCDSID, DbType.String);
                     

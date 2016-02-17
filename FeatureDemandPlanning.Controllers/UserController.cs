@@ -312,10 +312,11 @@ namespace FeatureDemandPlanning.Controllers
                 RuleFor(p => p.CDSId).NotEmpty().WithMessage("'CDSId' not specified");
                 RuleFor(p => p.Action).NotEqual(a => UserAdminAction.NoAction).WithMessage("'Action' not specified");
             });
-            RuleSet(Enum.GetName(typeof(UserAction), UserAdminAction.AddUser), () =>
+            RuleSet(Enum.GetName(typeof(UserAdminAction), UserAdminAction.AddUser), () =>
             {
                 RuleFor(p => p.CDSId).NotEmpty().WithMessage("'CDSId' not specified");
                 RuleFor(p => p.FullName).NotEmpty().WithMessage("'Full Name' not specified");
+                RuleFor(p => p.Mail).NotEmpty().WithMessage("'Mail' not specified");
                 RuleFor(p => p.IsAdmin).NotNull().WithMessage("'Administrator' not specified");
             });
         }

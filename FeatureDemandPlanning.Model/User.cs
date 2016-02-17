@@ -58,6 +58,7 @@ namespace FeatureDemandPlanning.Model
                 FdpUserId.GetValueOrDefault().ToString(),
                 CDSId, 
                 FullName,
+                Mail,
                 Programmes.ToCommaSeperatedString(),
                 IsActive ? "YES" : "NO",
                 IsAdmin ? "YES" : "NO",
@@ -74,6 +75,7 @@ namespace FeatureDemandPlanning.Model
                 CDSId = parameters.CDSId,
                 FullName = parameters.FullName,
                 IsAdmin = parameters.IsAdmin.GetValueOrDefault(),
+                Mail = parameters.Mail
             };
         }
     }

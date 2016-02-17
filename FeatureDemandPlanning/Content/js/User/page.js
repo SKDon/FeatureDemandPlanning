@@ -59,6 +59,11 @@ page.UsersPage = function (models) {
                     "bSortable": true
                 }
                 , {
+                    "sTitle": "Mail",
+                    "sName": "MAIL",
+                    "bSearchable": true,
+                    "bSortable": true
+                }, {
                     "sTitle": "Roles",
                     "sName": "ROLES",
                     "bSearchable": true,
@@ -83,7 +88,7 @@ page.UsersPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full, meta) {
-                        var index = 6;
+                        var index = 7;
                         var iconClassName = full[index] == "YES" ? "glyphicon glyphicon-ok" : "glyphicon glyphicon-remove";
                         return "<span class=\"" + iconClassName + "\"></span>";
                     }
@@ -95,7 +100,7 @@ page.UsersPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full, meta) {
-                        var index = 7;
+                        var index = 8;
                         var iconClassName = full[index] == "YES" ? "glyphicon glyphicon-ok" : "glyphicon glyphicon-remove";
                         return "<span class=\"" + iconClassName + "\"></span>";
                     }

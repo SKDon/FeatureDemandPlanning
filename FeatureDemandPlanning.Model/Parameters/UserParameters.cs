@@ -15,6 +15,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public string Roles { get; set; }
         public UserAction RoleAction { get; set; }
         public UserRole Role { get; set; }
+        public string Mail { get; set; }
 
         public UserParameters()
         {

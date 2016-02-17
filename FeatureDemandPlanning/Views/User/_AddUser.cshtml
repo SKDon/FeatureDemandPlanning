@@ -10,12 +10,16 @@
         <input type="text" id="@(Model.IdentifierPrefix)_CDSId" placeholder="Enter CDSID" class="form-control col-lg-9" />
     </div>
     <div class="form-group">
-        <label for="@(Model.IdentifierPrefix)_FullName" class="form-label col-lg-3 text-right" style="margin-top:8px">Full Name:</label>
-        <input type="text" id="@(Model.IdentifierPrefix)_FullName" placeholder="Enter Full Name" class="form-control col-lg-9" />
+        <label for="@(Model.IdentifierPrefix)_FullName" class="form-label col-lg-3 text-right" style="margin-top: 8px">Full Name:</label>
+        <input type="text" id="@(Model.IdentifierPrefix)_FullName" placeholder="Enter Full Name" class="form-control col-lg-9"/>
+    </div>
+    <div class="form-group">
+        <label for="@(Model.IdentifierPrefix)_Mail" class="form-label col-lg-3 text-right" style="margin-top:8px">Mail:</label>
+        <input type="text" id="@(Model.IdentifierPrefix)_Mail" placeholder="Enter E-Mail" class="form-control col-lg-9" />
     </div>
     <div class="form-group">
         <div class="col-lg-offset-3 col-lg-9">
-            <label><input type="checkbox" id="@(Model.IdentifierPrefix)_IsAdmin" checked="checked" /> Administrator</label>
+            <label><input type="checkbox" id="@(Model.IdentifierPrefix)_IsAdmin" /> Administrator</label>
         </div>
     </div>
 </form>
