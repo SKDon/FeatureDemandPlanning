@@ -9,7 +9,8 @@ AS
 		, U.FullName
 		, U.IsActive
 		, U.IsAdmin
-		, dbo.Fdp_UserProgrammes_GetMany(U.CDSId) AS Programmes
+		, dbo.fn_Fdp_UserProgrammes_GetMany(U.CDSId) AS Programmes
+		, dbo.fn_Fdp_UserMarkets_GetMany(U.CDSId) AS Markets
 		, U.CreatedOn
 		, U.CreatedBy
 		, U.UpdatedOn
