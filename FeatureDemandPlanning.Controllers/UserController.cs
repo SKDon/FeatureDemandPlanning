@@ -67,7 +67,7 @@ namespace FeatureDemandPlanning.Controllers
 
             await DataContext.User.AddProgramme(filter);
 
-            return View("Programmes", await UserViewModel.GetModel(DataContext, filter));
+            return RedirectToAction("Programmes", new { CDSID = parameters.CDSId });
         }
         [HttpGet]
         public async Task<ActionResult> RemoveProgramme(UserParameters parameters)
@@ -78,7 +78,7 @@ namespace FeatureDemandPlanning.Controllers
 
             await DataContext.User.RemoveProgramme(filter);
 
-            return View("Programmes", await UserViewModel.GetModel(DataContext, filter));
+            return RedirectToAction("Programmes", new { CDSID = parameters.CDSId });
         }
         [HttpGet]
         public async Task<ActionResult> AddMarket(UserParameters parameters)
@@ -89,7 +89,7 @@ namespace FeatureDemandPlanning.Controllers
 
             await DataContext.User.AddMarket(filter);
 
-            return View("Markets", await UserViewModel.GetModel(DataContext, filter));
+            return RedirectToAction("Markets", new { CDSID = parameters.CDSId });
         }
         [HttpGet]
         public async Task<ActionResult> RemoveMarket(UserParameters parameters)
@@ -100,8 +100,9 @@ namespace FeatureDemandPlanning.Controllers
 
             await DataContext.User.RemoveMarket(filter);
 
-            return View("Markets", await UserViewModel.GetModel(DataContext, filter));
+            return RedirectToAction("Markets", new { CDSID = parameters.CDSId });
         }
+
         [HttpGet]
         public async Task<ActionResult> AddRole(UserParameters parameters)
         {
@@ -110,8 +111,9 @@ namespace FeatureDemandPlanning.Controllers
 
             await DataContext.User.AddRole(filter);
 
-            return View("Roles", await UserViewModel.GetModel(DataContext, filter));
+            return RedirectToAction("Roles", new {CDSID = parameters.CDSId});
         }
+
         [HttpGet]
         public async Task<ActionResult> RemoveRole(UserParameters parameters)
         {
@@ -120,7 +122,7 @@ namespace FeatureDemandPlanning.Controllers
             
             await DataContext.User.RemoveRole(filter);
 
-            return View("Roles", await UserViewModel.GetModel(DataContext, filter));
+            return RedirectToAction("Roles", new { CDSID = parameters.CDSId });
         }
         [HttpPost]
         [HandleErrorWithJson]

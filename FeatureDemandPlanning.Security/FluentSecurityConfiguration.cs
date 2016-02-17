@@ -55,6 +55,10 @@ namespace FeatureDemandPlanning.Security
                     .RemovePolicy<DefaultSecurityPolicy>()
                     .RequireAnyRole("Administrator");
 
+                configuration.For<UserController>(x => x.MyAccount())
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("User");
+
                 // My user account needs to allow all users access
                 configuration.ForActionsMatching(
                     a => a.ControllerType == typeof(UserController) && a.ActionName.Equals("MyAccount"))

@@ -8,6 +8,7 @@ AS
 	SET NOCOUNT ON;
 	
 	IF NOT EXISTS(SELECT TOP 1 1 FROM Fdp_User WHERE CDSId = @CDSId)
+	BEGIN
 		INSERT INTO Fdp_User
 		(
 			  CDSId
@@ -24,5 +25,11 @@ AS
 			, @IsAdmin
 			, @CreatorCDSID
 		)
+		
+		-- Add a role of user, otherwise they can't do anything
+		
+		EXEC Fdp_UserRoles_Save @CDSId = @CDSId, @RoleIds = N'1', @CreatorCDSID = @CreatorCDSID
+		
+	END
 	
-	EXEC Fdp_User_Get @CDSId = @CDSId;
+	EXEC Fdp_User_Get @CDSId = @CDSId
