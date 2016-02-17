@@ -286,7 +286,10 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_TrimMapping_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_User_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_User_Get.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_User_GetMany.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>

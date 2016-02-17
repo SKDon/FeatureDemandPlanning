@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Web;
+using System.Web.Mvc;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -26,6 +28,8 @@ namespace FeatureDemandPlanning.Model
 
         public string[] ToJQueryDataTableResult()
         {
+            var url = new UrlHelper(HttpContext.Current.Request.RequestContext);
+
             return new[] 
             { 
                 TakeRateId.ToString(),
@@ -37,7 +41,8 @@ namespace FeatureDemandPlanning.Model
                 UpdatedOn.HasValue ? UpdatedOn.Value.ToString("dd/MM/yyyy HH:mm") : "-",
                 !string.IsNullOrEmpty(UpdatedBy) ? UpdatedBy : "-",
                 //OxoDocId.ToString(),
-                IsCompleted.ToString()
+                IsCompleted.ToString(),
+                url.RouteUrl("TakeRateData", new { takeRateId = TakeRateId })
             };
         }
         public bool IsPublished()
