@@ -28,6 +28,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public FdpChangeset Changes { get; set; }
         public FdpChangesetHistory History { get; set; }
         public MarketReviewStatus MarketReviewStatus { get; set; }
+        public string Filter { get; set; }
 
         // Can the take rate file be edited
         public bool AllowEdit
@@ -112,13 +113,12 @@ namespace FeatureDemandPlanning.Model.ViewModel
                     break;
                 case TakeRateDataItemAction.SaveChanges:
                 case TakeRateDataItemAction.History:
+                case TakeRateDataItemAction.Filter:
+                case TakeRateDataItemAction.MarketReview:
                     model = await GetFullAndPartialViewModelForTakeRateDataPageExcludingData(context, filter);
                     break;
                 case TakeRateDataItemAction.Changeset:
                     model = await GetFullAndPartialViewModelForChangeset(context, filter);
-                    break;
-                case TakeRateDataItemAction.MarketReview:
-                    model = await GetFullAndPartialViewModelForTakeRateDataPageExcludingData(context, filter);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -164,7 +164,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
             {
                 Document = (TakeRateDocument)TakeRateDocument.FromFilter(filter),
                 Configuration = context.ConfigurationSettings,
-                MarketReviewStatus = filter.MarketReviewStatus
+                MarketReviewStatus = filter.MarketReviewStatus,
+                Filter = filter.Filter
             };
 
             await HydrateOxoDocument(context, takeRateModel);

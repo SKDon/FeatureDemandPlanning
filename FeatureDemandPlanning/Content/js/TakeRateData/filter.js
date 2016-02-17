@@ -2,18 +2,19 @@
 
 var model = namespace("FeatureDemandPlanning.Volume");
 
-model.History = function (params) {
+model.Filter = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
 
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Config = params.Configuration;
-    privateStore[me.id].ModalContentUri = params.PersistChangesetConfirmUri;
-    privateStore[me.id].ModalActionUri = params.PersistChangesetUri;
+    privateStore[me.id].ModalContentUri = params.FilterUri;
+    privateStore[me.id].ModalActionUri = null;
     privateStore[me.id].Parameters = params;
+    privateStore[me.id].CurrentFilter = "";
 
-    me.ModelName = "History";
+    me.ModelName = "Filter";
 
     me.initialise = function () {
     };
@@ -26,8 +27,8 @@ model.History = function (params) {
     me.getActionModel = function (action) {
         var actionModel = null;
         switch (action) {
-            case 7:
-                actionModel = new FeatureDemandPlanning.Volume.HistoryAction(me.getParameters());
+            case 12:
+                actionModel = new FeatureDemandPlanning.Volume.FilterAction(me.getParameters());
                 break;
             default:
                 break;
@@ -37,19 +38,23 @@ model.History = function (params) {
     me.getActionUri = function () {
         return privateStore[me.id].ModalActionUri;
     };
-    me.getActionTitle = function () {
-        return "Change History";
-    };
     me.getConfiguration = function () {
         return privateStore[me.id].Configuration;
     };
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
     };
-    me.getUpdateParameters = function () {
+    me.getUpdateParameters = function() {
         return $.extend({}, getData(), {
+        
         });
-    }
+    };
+    me.getCurrentFilter = function() {
+        return privateStore[me.id].CurrentFilter;
+    };
+    me.setCurrentFilter = function(filter) {
+        privateStore[me.id].CurrentFilter = filter;
+    };
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;
     };

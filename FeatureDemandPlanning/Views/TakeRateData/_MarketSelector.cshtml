@@ -96,7 +96,16 @@
 @helper RenderUrlForMarket(Market market)
 {
     var marketName = string.Format("{0} ({1})", market.Name, market.VariantCount);
-    @Html.ActionLink(marketName, "Index", 
-            new { takeRateId = Model.Document.TakeRateId, marketId = market.Id, resultsMode = Model.Document.Mode }, 
-            new {data_target = string.Format("M|{0}", market.Id)});
+    if (Model.Document.Mode == enums.TakeRateResultMode.Raw)
+    {
+        @Html.RouteLink(marketName, "TakeRateDataByMarketRaw",
+            new {takeRateId = Model.Document.TakeRateId, marketId = market.Id },
+            new {data_target = string.Format("M|{0}", market.Id)})
+    }
+    else
+    {
+        @Html.RouteLink(marketName, "TakeRateDataByMarket",
+            new { takeRateId = Model.Document.TakeRateId, marketId = market.Id },
+            new { data_target = string.Format("M|{0}", market.Id) })
+    }
 }

@@ -29,7 +29,7 @@ page.MarketReviewPage = function (models) {
     me.configureDataTables = function () {
 
         var takeRateUri = getMarketReviewModel().getTakeRateUri();
-        var takeRateIndex = 0;
+        var takeRateIndex = 11;
         var marketIndex = 1;
 
         $("#" + me.getIdentifierPrefix() + "_MarketReviewTable").DataTable({
@@ -53,7 +53,7 @@ page.MarketReviewPage = function (models) {
                     "bSortable": false,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 }
                 ,
@@ -63,7 +63,7 @@ page.MarketReviewPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -71,7 +71,7 @@ page.MarketReviewPage = function (models) {
                     "bSearchable": true,
                     "bSortable": true,
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -80,7 +80,7 @@ page.MarketReviewPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -89,7 +89,7 @@ page.MarketReviewPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -98,7 +98,7 @@ page.MarketReviewPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -107,7 +107,7 @@ page.MarketReviewPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                  {
@@ -116,7 +116,7 @@ page.MarketReviewPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                  }
                  ,
@@ -126,7 +126,7 @@ page.MarketReviewPage = function (models) {
                      "bSortable": true,
                      "sClass": "text-center",
                      "render": function (data, type, full) {
-                         return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "&MarketId=" + full[marketIndex] + "'>" + data + "</a>";
+                         return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                      }
                  }
             ]

@@ -7,8 +7,9 @@ using System.Web.Mvc;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.Attributes;
-using System.Web.Script.Serialization;
 using System;
+using System.Web.Script.Serialization;
+using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -19,19 +20,13 @@ namespace FeatureDemandPlanning.Controllers
     {
         #region "Constructors"
 
-        public TakeRateController() : base()
+        public TakeRateController(IDataContext context) : base(context, ControllerType.SectionChild)
         {
-            ControllerType = ControllerType.SectionChild;
         }
 
         #endregion
 
-        [HttpGet]
         [ActionName("Index")]
-        public ActionResult TakeRatePage()
-        {
-            return RedirectToAction("TakeRatePage", new TakeRateParameters());
-        }
         [HttpGet]
         public async Task<ActionResult> TakeRatePage(TakeRateParameters parameters)
         {
@@ -42,7 +37,7 @@ namespace FeatureDemandPlanning.Controllers
             filter.Action = TakeRateDataItemAction.TakeRates;
             var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
 
-            return View(takeRateView);
+            return View("TakeRatePage", takeRateView);
         }
         [HttpPost]
         [HandleErrorWithJson]

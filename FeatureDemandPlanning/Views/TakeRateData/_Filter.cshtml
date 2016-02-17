@@ -1,0 +1,24 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+<form>
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix"/>
+    <div style="padding-top:10px">
+        <div class="well">
+        <div class="form-group">
+            <label for="@(Model.IdentifierPrefix)_FilterMessage">Feature Filter:</label>
+            @if (string.IsNullOrEmpty(Model.Filter))
+            {
+                <input type="text" id="@(Model.IdentifierPrefix)_FilterMessage" class="form-control" placeholder="-- Filter Criteria --"/>
+            }
+            else
+            {
+                <input type="text" id="@(Model.IdentifierPrefix)_FilterMessage" class="form-control" placeholder="-- Filter Criteria --" value="@Model.Filter" />
+            }
+            
+        </div>
+            <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_ClearFilter">Clear Search Filters</button>
+    </div>
+    </div>
+</form>

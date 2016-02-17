@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Extensions;
 
@@ -27,6 +30,8 @@ namespace FeatureDemandPlanning.Model
 
         public string[] ToJQueryDataTableResult()
         {
+            var url = new UrlHelper(HttpContext.Current.Request.RequestContext);
+           
             return new[] 
             { 
                 FdpMarketReviewId.GetValueOrDefault().ToString(),
@@ -39,7 +44,8 @@ namespace FeatureDemandPlanning.Model
                 Document.Status,
                 MarketName,
                 Status,
-                Comment
+                Comment,
+                url.RouteUrl("TakeRateDataByMarket", new { takeRateId = FdpVolumeHeaderId, marketId = MarketId })
             };
         }
     }

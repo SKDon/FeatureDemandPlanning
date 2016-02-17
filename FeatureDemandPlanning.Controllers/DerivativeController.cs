@@ -7,20 +7,19 @@ using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.ViewModel;
 using FluentValidation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
+using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.Controllers
 {
     public class DerivativeController : ControllerBase
     {
-        public DerivativeController() : base()
+        public DerivativeController(IDataContext context)
+            : base(context, ControllerType.SectionChild)
         {
-            ControllerType = ControllerType.SectionChild;
         }
+
         [HttpGet]
         [ActionName("Index")]
         public ActionResult UserPage()

@@ -13,6 +13,7 @@
         AddNote = 8,
         Validate = 9,
         Changeset = 10,
-        MarketReview = 11
+        MarketReview = 11,
+        Filter = 12
     }
 }

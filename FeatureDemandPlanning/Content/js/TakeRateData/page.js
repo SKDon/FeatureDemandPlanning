@@ -85,6 +85,22 @@ model.Page = function (models) {
             ActionModel: actionModel
         });
     };
+    me.showFilter = function() {
+        var model = getFilterModel();
+        var action = model.getFilterAction();
+        var actionModel = model.getActionModel(action);
+        var filter = getFilter("");
+        filter.Action = action;
+        filter.Filter = model.getCurrentFilter();
+
+        getModal().showModal({
+            Title: actionModel.getActionTitle(),
+            Uri: model.getActionContentUri(),
+            Data: JSON.stringify(filter),
+            Model: model,
+            ActionModel: actionModel
+        });
+    }
     me.undoData = function() {
         getTakeRateDataModel().undoData({ Data: getChangeset().getDataChanges() }, me.undoDataCallback);
     };
@@ -145,7 +161,8 @@ model.Page = function (models) {
             .unbind("EditCell").on("EditCell", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnEditCellDelegate", [eventArgs]); })
             .unbind("Save").on("Save", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSaveDelegate", [eventArgs]); })
             .unbind("Saved").on("Saved", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSavedDelegate", [eventArgs]); })
-            .unbind("UpdateFilterVolume").on("UpdateFilterVolume", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdateFilterVolumeDelegate", [eventArgs]); });
+            .unbind("UpdateFilterVolume").on("UpdateFilterVolume", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdateFilterVolumeDelegate", [eventArgs]); })
+            .unbind("Filtered").on("Filtered", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnFilteredDelegate", [eventArgs]); })
 
         $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
         $("#" + prefix + "_Undo").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoDelegate", [eventArgs]); });
@@ -157,6 +174,7 @@ model.Page = function (models) {
         $("#" + prefix + "_RejectMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate", [{ MarketReviewStatus: 3 }]); });
 
         $("#" + prefix + "_Toggle").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnToggleDelegate", [eventArgs]); });
+        $("#" + prefix + "_Filter").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnFilterDelegate", [eventArgs]); });
         $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
     };
     me.registerSubscribers = function () {
@@ -170,7 +188,8 @@ model.Page = function (models) {
             .unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
             .unbind("OnValidationDelegate").on("OnValidationDelegate", me.onValidationEventHandler)
             .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
-            .unbind("OnUpdateFilterVolumeDelegate").on("OnUpdateFilterVolumeDelegate", me.onUpdateFilterVolumeEventHandler);
+            .unbind("OnUpdateFilterVolumeDelegate").on("OnUpdateFilterVolumeDelegate", me.onUpdateFilterVolumeEventHandler)
+            .unbind("OnFilteredDelegate").on("OnFilteredDelegate", me.onFilterChangedEventHandler)
 
         $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel")
             .on("OnEditCellDelegate", me.onEditCellEventHandler)
@@ -180,17 +199,11 @@ model.Page = function (models) {
             .on("OnHistoryDelegate", me.onHistoryEventHandler)
             .on("OnMarketReviewDelegate", me.onMarketReviewEventHandler)
             .on("OnUndoDelegate", me.onUndoEventHandler)
-            .on("OnToggleDelegate", me.onToggleEventHandler);
+            .on("OnToggleDelegate", me.onToggleEventHandler)
+            .on("OnFilterDelegate", me.onFilterEventHandler);
 
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
         $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);
-
-        $("#" + prefix + "_FilterMessage").on("keyup", function (sender, eventArgs) {
-            var length = $("#" + prefix + "_FilterMessage").val().length;
-            if (length === 0 || length > 2) {
-                me.onFilterChangedEventHandler(sender, eventArgs);
-            }
-        });
 
         $(window).resize(function () {
             var panel = $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel");
@@ -669,6 +682,9 @@ model.Page = function (models) {
     me.onHistoryEventHandler = function () {
         me.showHistory();
     };
+    me.onFilterEventHandler = function() {
+        me.showFilter();
+    };
     me.onMarketReviewEventHandler = function(sender, eventArgs) {
         switch (eventArgs.MarketReviewStatus)
         {
@@ -817,7 +833,7 @@ model.Page = function (models) {
     me.configureDataTables = function () {
 
         var prefix = me.getIdentifierPrefix();
-        //$("#" + prefix + "_TakeRateDataPanel").hide();
+        
         var table = $("#" + prefix + "_TakeRateData").DataTable({
             serverSide: false,
             paging: false,
@@ -828,20 +844,29 @@ model.Page = function (models) {
             scrollY: me.calcDataTableHeight(),
             scrollCollapse: true
         });
-
-        new $.fn.dataTable.FixedColumns(table, {
+        var oFixedColumns = new $.fn.dataTable.FixedColumns(table, {
             leftColumns: 4,
             drawCallback: function (left) {
                 me.configureRowGroupings(table, left);
                 me.bindContextMenu();
+
+                //$(table.table().container()).on("keyup", "#" + prefix + "_FilterResults", function () {
+                //    var filter = $("#" + prefix + "_FilterResults").val();
+                //    var length = filter.length;
+                //    if (length === 0 || length > 2) {
+                //        me.onFilterChangedEventHandler(filter);
+                //    }
+                //});
             }
         });
-
         me.setDataTable(table);
     };
     me.configureRowGroupings = function(table, left) {
         var settings = table.settings();
-        if (settings.data().length === 0) {
+
+        var displayedRecords = settings.page.info().recordsDisplay;
+        if (displayedRecords === 0) {
+            $(".dataTables_empty").html("No data");
             return;
         }
 
@@ -1123,8 +1148,9 @@ model.Page = function (models) {
         me.scrollToNotify();
         me.fadeInNotify(html);
     };
-    me.onFilterChangedEventHandler = function () {
-        var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
+    me.onFilterChangedEventHandler = function (sender, eventArgs) {
+        var filter = eventArgs.Filter;
+        getFilterModel().setCurrentFilter(filter);
         me.getDataTable().search(filter).draw();
     };
     me.onUpdatedEventHandler = function (sender, eventArgs) {
@@ -1215,6 +1241,9 @@ model.Page = function (models) {
     function getMarketReviewModel() {
         return getModel("MarketReview");
     };
+    function getFilterModel() {
+        return getModel("Filter");
+    }
     function getModal() {
         return getModel("Modal");
     };

@@ -10,16 +10,16 @@ using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
-using System.Web.Services.Protocols;
+using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.Controllers
 {
     public class UserController : ControllerBase
     {
-        public UserController() : base()
+        public UserController(IDataContext context) : base(context, ControllerType.SectionChild)
         {
-            ControllerType = ControllerType.SectionChild;
         }
+
         [HttpGet]
         [ActionName("Index")]
         public ActionResult UserPage()
@@ -181,7 +181,7 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> AddUser(UserParameters parameters)
         {
             var userView = await GetModelFromParameters(parameters);
-            if (!(userView.User is EmptyUser))
+            if (userView.User.FdpUserId.HasValue)
             {
                 return JsonGetFailure(string.Format("User '{0}' already exists", parameters.CDSId));
             }

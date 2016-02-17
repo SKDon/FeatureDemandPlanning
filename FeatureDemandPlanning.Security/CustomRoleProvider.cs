@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using FeatureDemandPlanning.Model.Extensions;
+using FeatureDemandPlanning.Model.Helpers;
 using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.Security
@@ -14,7 +17,12 @@ namespace FeatureDemandPlanning.Security
         }
         public override string[] GetRolesForUser(string userName)
         {
+            Log.Debug(string.Format("HttpContext.User.Identity.Name:{0}", HttpContext.Current.User.Identity.Name));
+            Log.Debug(string.Format("userName:{0}", userName));
+
             var authenticatedUser = context.User.GetUser();
+
+            Log.Debug(string.Format("Roles:{0}", authenticatedUser.Roles.Select(r => Enum.GetName(r.GetType(), r)).ToCommaSeperatedList()));
 
             return authenticatedUser.Roles.Select(r => Enum.GetName(r.GetType(), r)).ToArray();
         }
@@ -83,5 +91,6 @@ namespace FeatureDemandPlanning.Security
         }
 
         private readonly IDataContext context;
+        private static readonly Logger Log = Logger.Instance;
     }
 }

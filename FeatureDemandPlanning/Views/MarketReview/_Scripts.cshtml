@@ -7,7 +7,7 @@
     var marketReviews, page;
     var params = {
         MarketReviewsUri: "@Url.Action("ListMarketReview")",
-        TakeRateUri: "@Url.Action("Index", "TakeRateData")",
+        TakeRateUri: "@Url.RouteUrl("TakeRateDataByMarket", new { takeRateId = 0, marketId = 0 })",
         Configuration: {},
         PageSize: @Model.PageSize,
         PageIndex: @Model.PageIndex,

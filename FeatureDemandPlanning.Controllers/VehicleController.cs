@@ -10,6 +10,9 @@ namespace FeatureDemandPlanning.Controllers
 {
     public class VehicleController : ControllerBase
     {
+        public VehicleController(IDataContext context) : base(context)
+        {  
+        }
         [HttpPost]
         public ActionResult FilterVehicles(VehicleFilter filter)
         {

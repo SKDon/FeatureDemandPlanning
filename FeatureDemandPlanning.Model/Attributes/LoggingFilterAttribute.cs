@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using FeatureDemandPlanning.Model.Helpers;
 
@@ -16,6 +17,8 @@ namespace FeatureDemandPlanning.Model.Attributes
             message.Append(string.Format("Controller {0} :: {1}",
                 filterContext.ActionDescriptor.ControllerDescriptor.ControllerName,
                 filterContext.ActionDescriptor.ActionName));
+
+            Log.Debug(HttpContext.Current.User.Identity.Name);
 
             Log.Debug(message.ToString());
         }

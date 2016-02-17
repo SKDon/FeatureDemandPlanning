@@ -4,7 +4,7 @@ using FeatureDemandPlanning.Helpers;
 using FeatureDemandPlanning.Model.Interfaces;
 using Ninject.Modules;
 
-namespace FeatureDemandPlanning.Bindings
+namespace FeatureDemandPlanning.Bindings.Modules
 {
     public class DataContextModule : NinjectModule
     {

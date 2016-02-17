@@ -20,6 +20,7 @@ namespace FeatureDemandPlanning.Model.Filters
         public int? FeatureId { get; set; }
         public int? FdpFeatureId { get; set; }
         public MarketReviewStatus MarketReviewStatus { get; set; }
+        public string Filter { get; set; }
 
         // For updating take rate and volume for summary items
         public int? NewTakeRate { get; set; }
@@ -78,7 +79,8 @@ namespace FeatureDemandPlanning.Model.Filters
                 MarketGroupId = parameters.MarketGroupId,
                 MarketId = parameters.MarketId,
                 Comment = parameters.Comment,
-                MarketReviewStatus = parameters.MarketReviewStatus
+                MarketReviewStatus = parameters.MarketReviewStatus,
+                Filter = parameters.Filter
             };
 
             if (!string.IsNullOrEmpty(parameters.ModelIdentifier))

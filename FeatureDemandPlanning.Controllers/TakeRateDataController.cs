@@ -1,7 +1,6 @@
 ﻿using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Validators;
 using FeatureDemandPlanning.Model.Enumerations;
-using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.ViewModel;
 using System.Linq;
 using System.Web.Mvc;
@@ -11,6 +10,7 @@ using FeatureDemandPlanning.Model.Attributes;
 using MvcSiteMapProvider.Web.Mvc.Filters;
 using System;
 using System.Reflection;
+using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -21,33 +21,14 @@ namespace FeatureDemandPlanning.Controllers
     {
         #region "Constructors"
 
-        public TakeRateDataController() : base()
+        public TakeRateDataController(IDataContext context) : base(context, ControllerType.SectionChild)
         {
-            ControllerType = ControllerType.SectionChild;
         }
 
         #endregion
 
         [HttpGet]
         [ActionName("Index")]
-        public ActionResult TakeRatePage(int? documentId,
-                                         int? takeRateId,
-                                         int? marketGroupId,
-                                         int? marketId,
-                                         TakeRateResultMode resultsMode = TakeRateResultMode.PercentageTakeRate)
-        {
-            Log.Debug(MethodBase.GetCurrentMethod().Name);
-
-            return RedirectToAction("TakeRateDataPage", new TakeRateParameters()
-            {
-                DocumentId = documentId,
-                TakeRateId = takeRateId,
-                MarketGroupId = marketGroupId,
-                MarketId = marketId,
-                Mode = resultsMode
-            });
-        }
-        [HttpGet]
         [SiteMapTitle("DocumentName")]
         public async Task<ActionResult> TakeRateDataPage(TakeRateParameters parameters)
         {
@@ -167,6 +148,21 @@ namespace FeatureDemandPlanning.Controllers
             takeRateView.History = await DataContext.TakeRate.GetChangesetHistory(filter);
 
             return PartialView("_ChangesetHistory", takeRateView);
+        }
+        [HandleErrorWithJson]
+        [HttpPost]
+        public async Task<ActionResult> Filter(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator
+               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.Filter;
+            var takeRateView = await TakeRateViewModel.GetModel(
+                DataContext,
+                filter);
+
+            return PartialView("_Filter", takeRateView);
         }
         [HandleErrorWithJson]
         [HttpPost]

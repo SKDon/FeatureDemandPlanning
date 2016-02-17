@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Validators;
 using MvcSiteMapProvider.Web.Mvc.Filters;
 
@@ -16,7 +17,7 @@ namespace FeatureDemandPlanning.Controllers
 {
     public class ImportExceptionController : ControllerBase
     {
-        public ImportExceptionController() : base(ControllerType.SectionChild)
+        public ImportExceptionController(IDataContext context) : base(context, ControllerType.SectionChild)
         {
         }
         [HttpGet]

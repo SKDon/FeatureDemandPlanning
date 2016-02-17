@@ -22,7 +22,7 @@ namespace FeatureDemandPlanning.Controllers
         public ImportParameters Parameters { get; set; }
         public ImportQueue CurrentQueuedItem { get; set; }
 
-        public ImportController() : base(ControllerType.SectionChild)
+        public ImportController(IDataContext context) : base(context, ControllerType.SectionChild)
         {
             CurrentQueuedItem = new EmptyImportQueue();
         }

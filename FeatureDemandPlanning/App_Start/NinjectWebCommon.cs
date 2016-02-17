@@ -61,7 +61,10 @@ namespace FeatureDemandPlanning.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Load(new Bindings.DataContextModule(), new Security.SecurityModule());
+            kernel.Load(
+                new Bindings.Modules.DataContextModule(), 
+                new Bindings.Modules.SecurityModule(),
+                new Bindings.Modules.ControllerModule());
         }        
     }
 }

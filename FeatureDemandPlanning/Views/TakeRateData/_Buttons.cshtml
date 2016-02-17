@@ -9,6 +9,7 @@
         <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Undo" disabled="disabled"><span class="glyphicon glyphicon-repeat"></span> Undo</button>
         <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History"><span class="glyphicon glyphicon glyphicon-list-alt"></span> History</button>
         @Html.Partial("_MarketReviewButtons")
+        <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Filter"><span class="glyphicon glyphicon-search"></span></button>
         <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Toggle"><span class="glyphicon glyphicon-minus"></span></button>
         <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
             <span class="glyphicon glyphicon-collapse-down"></span>
@@ -17,6 +18,7 @@
     else
     {
         <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History"><span class="glyphicon glyphicon glyphicon-list-alt"></span> History</button>
+    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Filter"><span class="glyphicon glyphicon-search"></span></button>
         <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Toggle"><span class="glyphicon glyphicon-minus"></span></button>
         <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
             <span class="glyphicon glyphicon-collapse-down"></span>

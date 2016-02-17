@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Reflection;
 using System.Web.Mvc;
+using FeatureDemandPlanning.Helpers;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Results;
-using log4net;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -27,14 +26,14 @@ namespace FeatureDemandPlanning.Controllers
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
 
-        public ControllerBase()
+        public ControllerBase(IDataContext context)
         {
-            DataContext = DependencyResolver.Current.GetService<IDataContext>();
+            DataContext = context;
             
             PageIndex = 0;
             PageSize = ConfigurationSettings.GetInteger("DefaultPageSize");
         }
-        public ControllerBase(ControllerType controllerType) : this()
+        public ControllerBase(IDataContext context, ControllerType controllerType) : this(context)
         {
             ControllerType = controllerType;
         }
@@ -56,7 +55,7 @@ namespace FeatureDemandPlanning.Controllers
         }
         private string GetCdsId()
         {
-            return Helpers.SecurityHelper.GetAuthenticatedUser();
+            return SecurityHelper.GetAuthenticatedUser();
         }
 
         private ControllerType _controllerType = ControllerType.Default;

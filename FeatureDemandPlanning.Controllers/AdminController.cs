@@ -2,14 +2,14 @@
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.ViewModel;
 using System.Web.Mvc;
+using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.Controllers
 {
     public class AdminController : ControllerBase
     {  
-        public AdminController()
+        public AdminController(IDataContext context) : base(context, ControllerType.Default)
         {
-           ControllerType = ControllerType.Default;
         }
 
         [HttpGet]

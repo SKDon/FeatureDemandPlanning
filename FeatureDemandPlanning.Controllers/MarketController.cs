@@ -5,12 +5,13 @@ using System;
 using System.Linq;
 using System.Web.Mvc;
 using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.Controllers
 {
     public class MarketController : ControllerBase
     {
-        public MarketController()
+        public MarketController(IDataContext context) : base(context, ControllerType.SectionChild)
         {
             PageIndex = 1;
             PageSize = DataContext.ConfigurationSettings.GetInteger("DefaultPageSize");

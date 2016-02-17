@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
+using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning
 {
@@ -44,6 +45,54 @@ namespace FeatureDemandPlanning
             //    url: "Volume/{action}/{oxoDocId}",
             //    defaults: new { controller = "Volume", action = "Volume", oxoDocId = UrlParameter.Optional }
             //    );
+
+            routes.MapRoute(
+                "TakeRate",
+                "TakeRate",
+                new {controller = "TakeRate", action = "Index"}
+                );
+
+            routes.MapRoute(
+                "ListTakeRates",
+                "TakeRate/List",
+                new { controller = "TakeRate", action = "ListTakeRates" }
+                );
+
+            routes.MapRoute(
+                "TakeRateData",
+                "TakeRate/{takeRateId}",
+                new {controller = "TakeRateData", action = "Index"}
+                );
+
+            routes.MapRoute(
+                "TakeRateDataRaw",
+                "TakeRate/{takeRateId}/Raw",
+                new { controller = "TakeRateData", action = "Index", mode = TakeRateResultMode.Raw }
+                );
+
+            routes.MapRoute(
+                "TakeRateDataByMarket",
+                "TakeRate/{takeRateId}/M/{marketId}",
+                new { controller = "TakeRateData", action="Index", takeRateId = UrlParameter.Optional, marketId = UrlParameter.Optional }
+                );
+
+            routes.MapRoute(
+                "TakeRateDataByMarketRaw",
+                "TakeRate/{takeRateId}/M/{marketId}/Raw",
+                new { controller = "TakeRateData", action = "Index", mode = TakeRateResultMode.Raw }
+                );
+
+            routes.MapRoute(
+                "TakeRateDataByMarketGroup",
+                "TakeRate/{takeRateId}/MG/{marketGroupId}",
+                new { controller = "TakeRateData", action = "Index" }
+                );
+
+            routes.MapRoute(
+                "TakeRateDataByMarketGroupRaw",
+                "TakeRate/{takeRateId}/MG/{marketGroupId}/Raw",
+                new { controller = "TakeRateData", action = "Index", mode = TakeRateResultMode.Raw }
+                );
 
             routes.MapRoute(
                 name: "Default",

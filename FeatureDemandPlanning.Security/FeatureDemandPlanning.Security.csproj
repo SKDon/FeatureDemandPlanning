@@ -33,8 +33,8 @@
     <Reference Include="FluentSecurity">
       <HintPath>..\packages\FluentSecurity.2.1.0\lib\net40\FluentSecurity.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -81,7 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SecurityModule.cs" />
+    <Compile Include="FluentSecurityConfiguration.cs" />
     <Compile Include="CustomRoleProvider.cs" />
     <Compile Include="DefaultSecurityPolicy.cs" />
     <Compile Include="DefaultSecurityPolicyViolationHandler.cs" />
@@ -95,9 +95,9 @@
     <Compile Include="SecurityPolicyBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FeatureDemandPlanning.Bindings\FeatureDemandPlanning.Bindings.csproj">
-      <Project>{697C8C79-4955-4B06-BE22-481723D267F8}</Project>
-      <Name>FeatureDemandPlanning.Bindings</Name>
+    <ProjectReference Include="..\FeatureDemandPlanning.Controllers\FeatureDemandPlanning.Controllers.csproj">
+      <Project>{5e0371bd-48e7-4836-8407-f08e5c84adee}</Project>
+      <Name>FeatureDemandPlanning.Controllers</Name>
     </ProjectReference>
     <ProjectReference Include="..\FeatureDemandPlanning.Data\FeatureDemandPlanning.DataStore.csproj">
       <Project>{D2174586-6BC6-48CE-B8E3-1CD81E0886E4}</Project>

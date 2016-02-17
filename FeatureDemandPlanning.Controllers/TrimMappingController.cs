@@ -8,19 +8,17 @@ using FeatureDemandPlanning.Model.ViewModel;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
+using FeatureDemandPlanning.Model.Interfaces;
 
 namespace FeatureDemandPlanning.Controllers
 {
     public class TrimMappingController : ControllerBase
     {
-        public TrimMappingController()
-            : base()
+        public TrimMappingController(IDataContext context)
+            : base(context, ControllerType.SectionChild)
         {
-            ControllerType = ControllerType.SectionChild;
         }
         [HttpGet]
         [ActionName("Index")]

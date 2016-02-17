@@ -5,18 +5,17 @@ using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.ViewModel;
 using System.Web.Mvc;
-using System.Web.Script.Serialization;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Attributes;
+using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Validators;
 
 namespace FeatureDemandPlanning.Controllers
 {
     public class MarketReviewController : ControllerBase
     {
-        public MarketReviewController() : base()
+        public MarketReviewController(IDataContext context) : base(context, ControllerType.SectionChild)
         {
-            ControllerType = ControllerType.SectionChild;
         }
         [HttpGet]
         [ActionName("Index")]

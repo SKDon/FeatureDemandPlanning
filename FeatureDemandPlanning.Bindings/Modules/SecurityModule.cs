@@ -1,8 +1,9 @@
 ﻿using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Security;
 using Ninject;
 using Ninject.Modules;
 
-namespace FeatureDemandPlanning.Security
+namespace FeatureDemandPlanning.Bindings.Modules
 {
     public class SecurityModule : NinjectModule
     {

@@ -26,6 +26,7 @@ model.OxoVolume = function (params) {
     privateStore[me.id].PersistChangesetUri = params.PersistChangesetUri;
     privateStore[me.id].PersistChangesetConfirmUri = params.PersistChangesetConfirmUri;
     privateStore[me.id].ChangesetHistoryUri = params.ChangesetHistoryUri;
+    privateStore[me.id].FilterUri = params.FilterUri;
     privateStore[me.id].UndoChangesetUri = params.UndoChangesetUri;
     privateStore[me.id].UpdateFilteredDataUri = params.UpdateFilteredDataUri;
     privateStore[me.id].GetValidationUri = params.GetValidationUri;
@@ -60,8 +61,8 @@ model.OxoVolume = function (params) {
             case 7:
                 actionModel = new FeatureDemandPlanning.Volume.HistoryAction(me.getParameters());
                 break;
-            case 8:
-
+            case 12:
+                actionModel = new FeatureDemandPlanning.Volume.FilterAction(me.getParameters());
             default:
                 break;
         }
@@ -123,6 +124,9 @@ model.OxoVolume = function (params) {
     };
     me.getChangesetHistoryUri = function() {
         return privateStore[me.id].ChangesetHistoryUri;
+    };
+    me.getFilterUri = function() {
+        return privateStore[me.id].FilterUri;
     };
     me.getUndoChangesetUri = function() {
         return privateStore[me.id].UndoChangesetUri;

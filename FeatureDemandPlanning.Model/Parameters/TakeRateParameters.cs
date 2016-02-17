@@ -19,6 +19,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public string FeatureIdentifier { get; set; }
         public string Comment { get; set; }
         public MarketReviewStatus MarketReviewStatus { get; set; }
+        public string Filter { get; set; }
 
         public FdpChangeset Changeset { get; set; }
 
@@ -27,6 +28,7 @@ namespace FeatureDemandPlanning.Model.Parameters
             Action = TakeRateDataItemAction.NotSet;
             Changeset = new EmptyFdpChangeset();
             MarketReviewStatus = MarketReviewStatus.NotSet;
+            Mode = TakeRateResultMode.PercentageTakeRate;
         }
 
         public object GetActionSpecificParameters()
