@@ -27,8 +27,14 @@ AS
 		)
 		
 		-- Add a role of user, otherwise they can't do anything
-		
-		EXEC Fdp_UserRoles_Save @CDSId = @CDSId, @RoleIds = N'1', @CreatorCDSID = @CreatorCDSID
+		IF @IsAdmin = 1
+		BEGIN
+			EXEC Fdp_UserRoles_Save @CDSId = @CDSId, @RoleIds = N'5', @CreatorCDSID = @CreatorCDSID
+		END
+		ELSE
+		BEGIN
+			EXEC Fdp_UserRoles_Save @CDSId = @CDSId, @RoleIds = N'1', @CreatorCDSID = @CreatorCDSID
+		END
 		
 	END
 	

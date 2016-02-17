@@ -7,6 +7,7 @@ AS
 		  U.FdpUserId
 		, U.CDSId
 		, U.FullName
+		, U.Mail
 		, U.IsActive
 		, CAST(CASE WHEN M.FdpUserRoleMappingId IS NOT NULL THEN 1 ELSE 0 END AS BIT) AS IsAdmin
 		, dbo.fn_Fdp_UserProgrammes_GetMany(U.CDSId) AS Programmes

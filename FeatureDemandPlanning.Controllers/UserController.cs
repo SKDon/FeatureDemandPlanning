@@ -316,7 +316,10 @@ namespace FeatureDemandPlanning.Controllers
             {
                 RuleFor(p => p.CDSId).NotEmpty().WithMessage("'CDSId' not specified");
                 RuleFor(p => p.FullName).NotEmpty().WithMessage("'Full Name' not specified");
-                RuleFor(p => p.Mail).NotEmpty().WithMessage("'Mail' not specified");
+                RuleFor(p => p.Mail)
+                    .NotEmpty()
+                    .WithMessage("'Mail' not specified")
+                    .EmailAddress();
                 RuleFor(p => p.IsAdmin).NotNull().WithMessage("'Administrator' not specified");
             });
         }

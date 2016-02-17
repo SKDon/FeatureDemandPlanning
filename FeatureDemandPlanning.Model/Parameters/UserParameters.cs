@@ -57,7 +57,8 @@ namespace FeatureDemandPlanning.Model.Parameters
                     {
                         CDSId,
                         FullName,
-                        IsAdmin = IsAdmin.GetValueOrDefault()
+                        IsAdmin = IsAdmin.GetValueOrDefault(),
+                        Mail
                     };
                 case UserAdminAction.SetAsAdministrator:
                 case UserAdminAction.UnsetAsAdministrator:

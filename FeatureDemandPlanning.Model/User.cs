@@ -59,12 +59,12 @@ namespace FeatureDemandPlanning.Model
                 CDSId, 
                 FullName,
                 Mail,
+                Roles.ToCommaSeperatedString(),
                 Programmes.ToCommaSeperatedString(),
+                Markets.ToCommaSeperatedString(),
                 IsActive ? "YES" : "NO",
-                IsAdmin ? "YES" : "NO",
                 CreatedOn.HasValue ? CreatedOn.Value.ToString("dd/MM/yyyy HH:mm") : string.Empty,
-                CreatedBy,
-                Markets.ToCommaSeperatedString()
+                CreatedBy
             };
         }
 

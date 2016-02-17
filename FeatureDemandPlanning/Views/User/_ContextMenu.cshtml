@@ -36,7 +36,7 @@ else
         <span class="glyphicon glyphicon-filter pull-left"></span> Manage Programmes...
     </a>
 </li>
-@if (Model.User.IsAdmin)
+@*@if (Model.User.IsAdmin)
 {
     <li>
         <a tabindex="-1" href="#" data-target="@Model.User.CDSId" data-role="@((int)enums.UserAdminAction.UnsetAsAdministrator)">
@@ -51,4 +51,4 @@ else
         <span class="glyphicon glyphicon-cog pull-left"></span> Set as Administrator
     </a>
 </li>
-}
+}*@
