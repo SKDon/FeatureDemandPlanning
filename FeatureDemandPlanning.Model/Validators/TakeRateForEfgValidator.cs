@@ -23,7 +23,7 @@ namespace FeatureDemandPlanning.Model.Validators
     {
         private const string Message = "Total take rate of {0:P} in model '{1}' for all features in exclusive feature group '{2}' is invalid. All features should add up to 100 % as group contains a standard feature.";
 
-        public EfgStandardFeatureValidator(IDataContext context)
+        public EfgStandardFeatureValidator()
         {
             RuleFor(d => d)
                 .Must(Have100PercentTakeForExclusiveFeatureGroup)
@@ -43,7 +43,7 @@ namespace FeatureDemandPlanning.Model.Validators
     {
         private const string Message = "Total take rate of {0:P} in model '{1}' for all features in exclusive feature group '{2}' is invalid. All features must be less than or equal to 100 %.";
 
-        public EfgNonStandardFeatureValidator(IDataContext context)
+        public EfgNonStandardFeatureValidator()
         {
             RuleFor(d => d)
                 .Must(HaveLessThanOrEqualTo100PercentTakeForExclusiveFeatureGroup)
@@ -64,7 +64,7 @@ namespace FeatureDemandPlanning.Model.Validators
     {
         private const string Message = "Exclusive feature group '{0}' in model '{1}' is invalid. Only one feature can have a take rate";
 
-        public EfgOnlyOneValidator(IDataContext context)
+        public EfgOnlyOneValidator()
         {
             RuleFor(g => g)
                 .Must(OneFeatureOnlyWithTakeRate)
@@ -81,16 +81,16 @@ namespace FeatureDemandPlanning.Model.Validators
     }
     public class TakeRateForEfgValidator : AbstractValidator<RawTakeRateData>
     {
-        public TakeRateForEfgValidator(IDataContext context)
+        public TakeRateForEfgValidator()
         {
             RuleForEach(d => d.EfgGroupings)
-                .SetValidator(new EfgStandardFeatureValidator(context));
+                .SetValidator(new EfgStandardFeatureValidator());
 
             RuleForEach(d => d.EfgGroupings)
-                .SetValidator(new EfgNonStandardFeatureValidator(context));
+                .SetValidator(new EfgNonStandardFeatureValidator());
 
             RuleForEach(d => d.EfgGroupings)
-                .SetValidator(new EfgOnlyOneValidator(context));
+                .SetValidator(new EfgOnlyOneValidator());
         }
     }
 }

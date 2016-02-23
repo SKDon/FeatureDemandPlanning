@@ -71,9 +71,6 @@ BEGIN
 	ValidationOrder;
 
 	SELECT TOP 1 @CurrentStoredProcedureName = StoredProcedureName FROM @ValidationRoutines WHERE Processed = 0
-
-	
-
 	WHILE @CurrentStoredProcedureName IS NOT NULL
 	BEGIN
 		SET @ParmDefinition = N'@p1 INT, @p2 INT = NULL, @p3 NVARCHAR(16)'
@@ -82,14 +79,14 @@ BEGIN
 		PRINT 'Executing stored procedure: ' + @Sql
 		PRINT ''
 
-		--SET STATISTICS TIME ON;
+		SET STATISTICS TIME ON;
 		EXEC sp_executesql 
 		  @Sql
 		, @ParmDefinition
 		, @p1 = @FdpVolumeHeaderId
 		, @p2 = @MarketId
 		, @p3 = @CDSId;
-		--SET STATISTICS TIME OFF;
+		SET STATISTICS TIME OFF;
 		
 		UPDATE @ValidationRoutines SET Processed = 1 WHERE StoredProcedureName = @CurrentStoredProcedureName;
 		SET @CurrentStoredProcedureName = NULL

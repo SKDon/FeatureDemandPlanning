@@ -1,40 +1,31 @@
 ﻿using System.Threading.Tasks;
-using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
 
 namespace FeatureDemandPlanning.Model.Validators
 {
     public class TakeRateDataValidator : AbstractValidator<RawTakeRateData>
     {
-        public TakeRateDataValidator(IDataContext context)
+        public TakeRateDataValidator()
         {
             RuleFor(d => d.DataItems)
-                .SetCollectionValidator(new TakeRateDataOutOfRangeValidator(context));
+                .SetCollectionValidator(new TakeRateDataOutOfRangeValidator());
             RuleFor(d => d.DataItems)
-                .SetCollectionValidator(new StandardFeature100PercentValidator(context))
+                .SetCollectionValidator(new StandardFeature100PercentValidator())
                 .Where(d => d.IsStandardFeatureInGroup);
             RuleFor(d => d.DataItems)
-                .SetCollectionValidator(new NonApplicableFeature0PercentValidator(context))
+                .SetCollectionValidator(new NonApplicableFeature0PercentValidator())
                 .Where(d => d.IsNonApplicableFeatureInGroup);
             RuleFor(d => d)
-                .SetValidator(new VolumeForFeatureGreaterThanModelValidator(context));
+                .SetValidator(new VolumeForFeatureGreaterThanModelValidator());
             RuleFor(d => d)
-                .SetValidator(new TakeRateForEfgValidator(context));
+                .SetValidator(new TakeRateForEfgValidator());
             RuleFor(d => d)
-                .SetValidator(new TakeRateForFeaturePackValidator(context));
+                .SetValidator(new TakeRateForFeaturePackValidator());
         }
         
-        public static async Task<FluentValidation.Results.ValidationResult> ValidateData(IDataContext context, 
-                                                         RawTakeRateData data)
+        public static FluentValidation.Results.ValidationResult ValidateData(RawTakeRateData data)
         {
-            var validator = new TakeRateDataValidator(context);
-
-            var results = await Task.FromResult(validator.Validate(data));
-
-            // We need to process the state objects for validation errors of a certain type to ensure the payload
-            // if sufficiently small.
-
-            return results;
+            return new TakeRateDataValidator().Validate(data);
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using FeatureDemandPlanning.Model.Validators;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -60,7 +58,7 @@ namespace FeatureDemandPlanning.Model
                        && dataItem.ModelId.HasValue
                        && dataItem.FeaturesInExclusiveFeatureGroup > 1;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -71,7 +69,7 @@ namespace FeatureDemandPlanning.Model
             {
                 return !dataItem.OxoCode.Contains("P") && dataItem.FeaturePackId.HasValue;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -115,7 +113,6 @@ namespace FeatureDemandPlanning.Model
 
         private IEnumerable<FeaturePack> CalculateFeaturePacks()
         {
-            var watch = Stopwatch.StartNew();
             if (!DataItems.Any())
                 return Enumerable.Empty<FeaturePack>();
 
@@ -136,6 +133,7 @@ namespace FeatureDemandPlanning.Model
                 into g
                 select new FeaturePack
                 {
+                    TakeRateId = g.Key.TakeRateId,
                     MarketId = g.Key.MarketId,
                     Market = g.First().Market,
                     ModelId = g.Key.ModelId,
@@ -146,9 +144,6 @@ namespace FeatureDemandPlanning.Model
                 };
 
             _packs = packs;
-
-            watch.Stop();
-            Console.WriteLine("Calculate feature packs: {0} ms", watch.ElapsedMilliseconds);
 
             return _packs;
         }

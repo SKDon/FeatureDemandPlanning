@@ -9,6 +9,7 @@ using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.Attributes;
 using MvcSiteMapProvider.Web.Mvc.Filters;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Interfaces;
@@ -253,7 +254,7 @@ namespace FeatureDemandPlanning.Controllers
 		[HttpPost]
 		public async Task<ActionResult> Validate(TakeRateParameters parameters)
 		{
-			FluentValidation.Results.ValidationResult validationResults = null;
+			var validationResults = Enumerable.Empty<ValidationResult>();
 			
 			TakeRateParametersValidator
 			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
@@ -264,15 +265,20 @@ namespace FeatureDemandPlanning.Controllers
 				DataContext,
 				filter);
 
-			try
-			{
-			    validationResults = await Validator.Validate(DataContext, takeRateView.RawData);
-			}
-			catch (ValidationException ex)
-			{
-				Log.Warning(ex);
-				// Just in case someone has thrown an exception from the validation, which we don't actually want
-			}
+		    try
+		    {
+		        var interimResults = Validator.Validate(takeRateView.RawData);
+		        validationResults = await Validator.Persist(DataContext, interimResults);
+		    }
+		    catch (ValidationException vex)
+		    {
+                // Just in case someone has thrown an exception from the validation, which we don't actually want
+                Log.Warning(vex);
+		    }
+		    catch (Exception ex)
+		    {
+		        Log.Error(ex);
+		    }
 
 			return JsonGetSuccess(validationResults);
 		}

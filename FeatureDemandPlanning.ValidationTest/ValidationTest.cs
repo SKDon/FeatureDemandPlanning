@@ -21,7 +21,7 @@ namespace FeatureDemandPlanning.ValidationTest
                 Task.Run(() =>
                 {
                     var test = new ValidationTest();
-                    test.RunAsync();
+                    RunAsync();
                 }).Wait();
                 
             }
@@ -40,7 +40,7 @@ namespace FeatureDemandPlanning.ValidationTest
             return kernel;
         }
 
-        private async void RunAsync()
+        private static async void RunAsync()
         {
             const int takeRateId = 2;
             const int marketId = 17;
@@ -53,30 +53,15 @@ namespace FeatureDemandPlanning.ValidationTest
                 MarketId = marketId
             };
             var filter = TakeRateFilter.FromTakeRateParameters(p);
-
-            var watch = Stopwatch.StartNew();
-
             var rawData = await context.TakeRate.GetRawData(filter);
-
-            watch.Stop();
-            Console.WriteLine("Total Execution Time: {0} ms", watch.ElapsedMilliseconds);
-            watch.Start();
-
-            var results = await Validator.Validate(context, rawData);
-            watch.Stop();
-            Console.WriteLine("Total Execution Time: {0} ms", watch.ElapsedMilliseconds);
-
+            var results = Validator.Validate(rawData);
+            
             foreach (var error in results.Errors)
             {
                 Console.WriteLine(error.ErrorMessage);
-                if (error.CustomState == null)
-                {
-                    Console.WriteLine("I am stateless :-(");
-                }
             }
 
-            watch.Stop();
-            Console.WriteLine("Total Execution Time: {0} ms", watch.ElapsedMilliseconds);
+            var persistedResults = await Validator.Persist(context, results);
         }
     }
 }

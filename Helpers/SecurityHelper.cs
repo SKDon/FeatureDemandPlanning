@@ -23,7 +23,7 @@ namespace FeatureDemandPlanning.Helpers
             {
                 return ParseUserName(HttpContext.Current.User.Identity.Name);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Logger.Instance.Error(ex);
                 return string.Empty;

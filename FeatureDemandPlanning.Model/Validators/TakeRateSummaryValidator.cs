@@ -1,27 +1,24 @@
-﻿using System.Threading.Tasks;
-using FeatureDemandPlanning.Model.Interfaces;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace FeatureDemandPlanning.Model.Validators
 {
     public class TakeRateSummaryValidator : AbstractValidator<RawTakeRateData>
     {
-        public TakeRateSummaryValidator(IDataContext context)
+        public TakeRateSummaryValidator()
         {
             RuleFor(d => d.SummaryItems)
-                .SetCollectionValidator(new TakeRateSummaryOutOfRangeValidator(context));
+                .SetCollectionValidator(new TakeRateSummaryOutOfRangeValidator());
             RuleFor(d => d)
-                .SetValidator(new TakeRateForModels100PercentValidator(context));
+                .SetValidator(new TakeRateForModels100PercentValidator());
             RuleFor(d => d)
-                .SetValidator(new VolumeForModelsNotEqualToMarketValidator(context));
+                .SetValidator(new VolumeForModelsNotEqualToMarketValidator());
         }
         
-        public static async Task<FluentValidation.Results.ValidationResult> ValidateData(IDataContext context, 
-                                                         RawTakeRateData data)
+        public static FluentValidation.Results.ValidationResult ValidateData(RawTakeRateData data)
         {
-            var validator = new TakeRateSummaryValidator(context);
+            var validator = new TakeRateSummaryValidator();
             
-            return await Task.FromResult(validator.Validate(data));
+            return validator.Validate(data);
         }
     }
 }

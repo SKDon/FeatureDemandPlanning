@@ -1,15 +1,10 @@
-﻿
-
-
-
-
-
-
-
-CREATE VIEW [dbo].[Fdp_Validation_VW] AS
+﻿CREATE VIEW [dbo].[Fdp_Validation_VW] AS
 
 	SELECT 
 		  H.FdpVolumeHeaderId
+		, V.FdpValidationId
+		, V.ValidationOn
+		, V.ValidationBy
 		, V.MarketId
 		, M.Market_Group_Id AS MarketGroupId
 		, V.ModelId
@@ -21,6 +16,7 @@ CREATE VIEW [dbo].[Fdp_Validation_VW] AS
 		, V.FeatureId
 		, V.FdpFeatureId
 		, V.FeaturePackId
+		, V.ExclusiveFeatureGroup
 		, CASE
 			WHEN V.FeatureId IS NOT NULL THEN 'O' + CAST(V.FeatureId AS NVARCHAR(10))
 			WHEN V.FeaturePackId IS NOT NULL THEN 'P' + CAST(V.FeaturePackId AS NVARCHAR(10))

@@ -22,11 +22,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<IEnumerable<TakeRateDataItemNote>> ListDataItemNotes(TakeRateFilter filter);
 
         Task<TakeRateDocumentHeader> SaveTakeRateDocumentHeader(TakeRateDocumentHeader headerToSave);
-        Task<ITakeRateDocument> SaveTakeRateDocument(ITakeRateDocument documentToSave);
         Task<TakeRateDataItem> SaveDataItem(TakeRateDataItem dataItemToSave);
 
-        Task<ITakeRateDocument> ProcessMappedData(ITakeRateDocument documentToProcess);
-        
         Task<OXODoc> GetUnderlyingOxoDocument(TakeRateFilter filter);
         Task<IEnumerable<SpecialFeature>> ListSpecialFeatures(ProgrammeFilter programmeFilter);
 

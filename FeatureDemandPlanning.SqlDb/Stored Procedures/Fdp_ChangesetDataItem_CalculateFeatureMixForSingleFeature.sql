@@ -30,6 +30,8 @@ AS
 		, PercentageTakeRate			DECIMAL(5, 4)
 		, ParentFdpChangesetDataItemId	INT
 		, FdpTakeRateFeatureMixId		INT
+		, OriginalVolume				INT NULL
+		, OriginalPercentageTakeRate	DECIMAL(5, 4) NULL
 	)
 	
 	-- Determine the total volume for the car line by market
@@ -249,6 +251,8 @@ AS
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId
 		, FdpTakeRateFeatureMixId
+		, OriginalVolume
+		, OriginalPercentageTakeRate
 	)
 	SELECT 
 		  D.FdpChangesetId
@@ -260,6 +264,8 @@ AS
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
 		, MAX(D.ParentFdpChangesetDataItemId)
 		, MAX(M.FdpTakeRateFeatureMixId)
+		, MAX(M.Volume)
+		, MAX(M.PercentageTakeRate)
 	FROM 
 	@DataForFeature						AS D
 	JOIN Fdp_Changeset					AS C	ON D.FdpChangesetId		= C.FdpChangesetId
@@ -286,6 +292,8 @@ AS
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
 		, MAX(D.ParentFdpChangesetDataItemId)
 		, MAX(M.FdpTakeRateFeatureMixId)
+		, MAX(M.Volume)
+		, MAX(M.PercentageTakeRate)
 	FROM 
 	@DataForFeature						AS D
 	JOIN Fdp_Changeset					AS C	ON D.FdpChangesetId		= C.FdpChangesetId
@@ -312,6 +320,8 @@ AS
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @TotalVolumeByMarket) AS PercentageTakeRate
 		, MAX(D.ParentFdpChangesetDataItemId)
 		, MAX(M.FdpTakeRateFeatureMixId)
+		, MAX(M.Volume)
+		, MAX(M.PercentageTakeRate)
 	FROM 
 	@DataForFeature						AS D
 	JOIN Fdp_Changeset					AS C	ON D.FdpChangesetId		= C.FdpChangesetId
@@ -337,6 +347,8 @@ AS
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId
 		, FdpTakeRateFeatureMixId
+		, OriginalVolume
+		, OriginalPercentageTakeRate
 	)
 	SELECT
 		  FdpChangesetId
@@ -348,5 +360,7 @@ AS
 		, PercentageTakeRate
 		, ParentFdpChangesetDataItemId
 		, FdpTakeRateFeatureMixId
+		, OriginalVolume
+		, OriginalPercentageTakeRate
 	FROM
 	@FeatureMix;

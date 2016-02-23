@@ -12,6 +12,7 @@ namespace FeatureDemandPlanning.Model
         public int? FeatureId { get; set; }
         public int? FdpFeatureId { get; set; }
         public int? FeaturePackId { get; set; }
+        public string ExclusiveFeatureGroup { get; set; }
 
         public string ModelIdentifier { get; set; }
         public string FeatureIdentifier { get; set; }

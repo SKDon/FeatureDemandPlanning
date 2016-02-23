@@ -35,62 +35,32 @@ AS
 	-- Get the most recent change for that changeset
 
 	SELECT TOP 1 
-		  @FdpChangesetDataItemId	= FdpChangesetDataItemId
-		, @FdpVolumeDataItemId		= FdpVolumeDataItemId
-		, @FdpTakeRateSummaryId		= FdpTakeRateSummaryId
-		, @FdpTakeRateFeatureMixId  = FdpTakeRateFeatureMixId
-		, @FdpVolumeHeaderId		= FdpVolumeHeaderId
-		, @MarketId					= MarketId
-		, @CDSId					= CDSId
+		  @FdpChangesetDataItemId	= D.FdpChangesetDataItemId
 	FROM
-	Fdp_ChangesetDataItem_VW
+	Fdp_Changeset AS C
+	JOIN Fdp_ChangesetDataItem AS D ON C.FdpChangesetId = D.FdpChangesetId
 	WHERE
-	FdpChangesetId = @FdpChangesetId
+	C.FdpChangesetId = @FdpChangesetId
 	AND
-	ParentFdpChangesetDataItemId IS NULL
+	D.ParentFdpChangesetDataItemId IS NULL
 	ORDER BY
-	FdpChangesetDataItemId DESC;
+	D.FdpChangesetDataItemId DESC;
 
 	-- Get the identifier of any changeset data prior to the most recent change
 	-- It will be marked as deleted
-
-	IF @FdpVolumeDataItemId IS NOT NULL
-	BEGIN
-		SELECT TOP 1 @PriorFdpChangesetDataItemId = FdpChangesetDataItemId
-		FROM
-		Fdp_ChangesetDataItem
-		WHERE
-		FdpChangesetId = @FdpChangesetId
-		AND
-		FdpVolumeDataItemId = @FdpVolumeDataItemId
-		AND
-		ParentFdpChangesetDataItemId IS NULL
-		AND
-		IsDeleted = 1
-		AND
-		FdpChangesetDataItemId < @FdpChangesetDataItemId
-		ORDER BY
-		FdpChangesetDataItemId DESC;
-	END
-
-	IF @FdpTakeRateSummaryId IS NOT NULL
-	BEGIN
-		SELECT TOP 1 @PriorFdpChangesetDataItemId = FdpChangesetDataItemId
-		FROM
-		Fdp_ChangesetDataItem
-		WHERE
-		FdpChangesetId = @FdpChangesetId
-		AND
-		FdpTakeRateSummaryId = @FdpTakeRateSummaryId
-		AND
-		ParentFdpChangesetDataItemId IS NULL
-		AND
-		IsDeleted = 1
-		AND
-		FdpChangesetDataItemId < @FdpChangesetDataItemId
-		ORDER BY
-		FdpChangesetDataItemId DESC;
-	END
+	
+	SELECT TOP 1 @PriorFdpChangesetDataItemId = D.FdpChangesetDataItemId
+	FROM 
+	Fdp_Changeset AS C
+	JOIN Fdp_ChangesetDataItem AS D ON C.FdpChangesetId = D.FdpChangesetId
+	WHERE
+	D.ParentFdpChangesetDataItemId IS NULL
+	AND
+	D.FdpChangesetDataItemId < @FdpChangesetDataItemId
+	AND
+	C.FdpChangesetId = @FdpChangesetId
+	ORDER BY
+	D.FdpChangesetDataItemId DESC;
 
 	-- Add the rows that are going to be removed to the undone changes dataset, as we need to process further after deletion
 
@@ -144,16 +114,22 @@ AS
 	ParentFdpChangesetDataItemId = @FdpChangesetDataItemId
 	OR
 	FdpChangesetDataItemId = @FdpChangesetDataItemId;
-
+	
+	-- Mark all validation entries for that changeset item as deleted
+	
+	DELETE FROM Fdp_Validation WHERE FdpChangesetDataItemId IN
+	(
+		SELECT FdpChangeSetDataItemId FROM @UndoneChanges
+	)
 	-- Mark all rows with the changeset data item as a parent as deleted (irrevocably)
 
 	DELETE
-	FROM
-	Fdp_ChangesetDataItem
+	FROM Fdp_ChangesetDataItem
 	WHERE
-	ParentFdpChangesetDataItemId = @FdpChangesetDataItemId
-	OR
-	FdpChangesetDataItemId = @FdpChangesetDataItemId;
+	FdpChangesetDataItemId IN 
+	(
+		SELECT FdpChangeSetDataItemId FROM @UndoneChanges
+	)
 
 	-- If necessary, mark the change prior to this one as undeleted
 
@@ -170,8 +146,9 @@ AS
 	@PriorFdpChangesetDataItemId IS NOT NULL
 	
 	-- Redo any validation
+	-- This has been moved to a seperate routine, as there were performance issues waiting for the validation to complete
 	
-	EXEC Fdp_Validation_Validate @FdpVolumeHeaderId = @FdpVolumeHeaderId, @MarketId = @MarketId, @CDSId = @CDSId;
+	--EXEC Fdp_Validation_Validate @FdpVolumeHeaderId = @FdpVolumeHeaderId, @MarketId = @MarketId, @CDSId = @CDSId;
 
 	-- This dataset contains any  that have been undone so far as they have reverted to their original committed values
 	-- We need to use this to revert values in the UI without having to resort to reloading the page
@@ -195,7 +172,7 @@ AS
 		, U.ParentFdpChangesetDataItemId 
 	FROM
 	@UndoneChanges						AS U
-	JOIN Fdp_VolumeDataItem_VW			AS V	ON	U.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
+	JOIN Fdp_VolumeDataItem_VW		AS V	ON	U.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId		= D.FdpChangesetId
 												AND U.FdpVolumeDataItemId	= D.FdpVolumeDataItemId
 	WHERE

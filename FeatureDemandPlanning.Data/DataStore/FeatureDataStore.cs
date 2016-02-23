@@ -995,7 +995,5 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

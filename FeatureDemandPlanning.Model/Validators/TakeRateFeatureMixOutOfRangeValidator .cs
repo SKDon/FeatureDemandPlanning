@@ -1,5 +1,4 @@
 ﻿using FeatureDemandPlanning.Model.Enumerations;
-using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
 
 namespace FeatureDemandPlanning.Model.Validators
@@ -11,7 +10,7 @@ namespace FeatureDemandPlanning.Model.Validators
         private const string UpperLimitMessage =
             "Take rate of {0:P} for feature '{1}' is invalid. Take rates should not be more than 100 %.";
 
-        public TakeRateFeatureMixOutOfRangeValidator(IDataContext context)
+        public TakeRateFeatureMixOutOfRangeValidator()
         {
             RuleFor(d => d.PercentageTakeRate)
                 .Cascade(CascadeMode.StopOnFirstFailure)

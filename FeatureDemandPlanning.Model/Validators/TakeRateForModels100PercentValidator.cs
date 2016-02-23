@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using FeatureDemandPlanning.Model.Enumerations;
-using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
 
 namespace FeatureDemandPlanning.Model.Validators
@@ -10,7 +9,7 @@ namespace FeatureDemandPlanning.Model.Validators
         private const string Message =
             "Take Rate for models of {0:P} for market should equal 100 %.";
 
-        public TakeRateForModels100PercentValidator(IDataContext context)
+        public TakeRateForModels100PercentValidator()
         {
             RuleFor(d => d)
                 .Must(BeEqualTo100Percent)

@@ -1243,6 +1243,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FeatureId", validationData.FeatureId, DbType.Int32);
                     para.Add("@FdpFeatureId", validationData.FdpFeatureId, DbType.Int32);
                     para.Add("@FeaturePackId", validationData.FeaturePackId, DbType.Int32);
+                    para.Add("@ExclusiveFeatureGroup", validationData.ExclusiveFeatureGroup, DbType.String);
 
                     para.Add("@FdpVolumeDataItemId", validationData.FdpVolumeDataItemId, DbType.Int32);
                     para.Add("@FdpTakeRateSummaryId", validationData.FdpTakeRateSummaryId, DbType.Int32);
@@ -1252,9 +1253,10 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@Message", validationData.Message, DbType.String);
 
                     var results = conn.Query<ValidationResult>("dbo.Fdp_Validation_Persist", para, commandType: CommandType.StoredProcedure);
-                    if (results != null && results.Any())
+                    var validationResults = results as IList<ValidationResult> ?? results.ToList();
+                    if (results != null && validationResults.Any())
                     {
-                        retVal = results.First();
+                        retVal = validationResults.First();
                     }
                 }
                 catch (Exception ex)

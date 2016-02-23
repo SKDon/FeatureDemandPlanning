@@ -1,22 +1,20 @@
 ﻿using System.Threading.Tasks;
-using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
 
 namespace FeatureDemandPlanning.Model.Validators
 {
     public class TakeRateFeatureMixValidator : AbstractValidator<RawTakeRateData>
     {
-        public TakeRateFeatureMixValidator(IDataContext context)
+        public TakeRateFeatureMixValidator()
         {
-            RuleFor(d => d.FeatureMixItems).SetCollectionValidator(new TakeRateFeatureMixOutOfRangeValidator(context));
+            RuleFor(d => d.FeatureMixItems).SetCollectionValidator(new TakeRateFeatureMixOutOfRangeValidator());
         }
 
-        public static async Task<FluentValidation.Results.ValidationResult> ValidateData(IDataContext context,
-                                                         RawTakeRateData data)
+        public static FluentValidation.Results.ValidationResult ValidateData(RawTakeRateData data)
         {
-            var validator = new TakeRateFeatureMixValidator(context);
+            var validator = new TakeRateFeatureMixValidator();
 
-            return await Task.FromResult(validator.Validate(data));
+            return validator.Validate(data);
         }
     }
 }

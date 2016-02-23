@@ -79,17 +79,9 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_takeRateDataStore.FdpVolumeHeaderSave(headerToSave));
         }
-        public async Task<ITakeRateDocument> SaveTakeRateDocument(ITakeRateDocument documentToSave)
-        {
-            throw new System.NotImplementedException();
-        }
         public async Task<TakeRateDataItem> SaveDataItem(TakeRateDataItem dataItemToSave)
         {
             return await Task.FromResult(_takeRateDataStore.TakeRateDataItemSave(dataItemToSave));
-        }
-        public async Task<ITakeRateDocument> ProcessMappedData(ITakeRateDocument documentToProcess)
-        {
-            throw new System.NotImplementedException();
         }
         public async Task<OXODoc> GetUnderlyingOxoDocument(TakeRateFilter filter)
         {
@@ -185,9 +177,10 @@ namespace FeatureDemandPlanning.DataStore
                     MarketId = state.MarketId,
                     ModelId = state.ModelId,
                     FdpModelId = state.FdpModelId,
-                    FeatureId = state.FdpFeatureId,
+                    FeatureId = state.FeatureId,
                     FdpFeatureId = state.FdpFeatureId,
                     FeaturePackId = state.FeaturePackId,
+                    ExclusiveFeatureGroup = state.ExclusiveFeatureGroup,
 
                     Message = validationError.ErrorMessage
                 };

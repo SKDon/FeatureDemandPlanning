@@ -15,6 +15,8 @@
     [FdpTakeRateFeatureMixId] INT            NULL,
     [FdpChangesetDataItemId]  INT            NULL,
     [IsActive]                BIT            CONSTRAINT [DF_Fdp_Validation_IsActive] DEFAULT ((1)) NOT NULL,
+    [ValidationBy]            NVARCHAR (16)  NULL,
+    [ExclusiveFeatureGroup]   NVARCHAR (200) NULL,
     CONSTRAINT [PK_Fdp_Validation] PRIMARY KEY CLUSTERED ([FdpValidationId] ASC),
     CONSTRAINT [FK_Fdp_Validation_Fdp_ChangesetDataItem] FOREIGN KEY ([FdpChangesetDataItemId]) REFERENCES [dbo].[Fdp_ChangesetDataItem] ([FdpChangesetDataItemId]),
     CONSTRAINT [FK_Fdp_Validation_Fdp_TakeRateFeatureMix] FOREIGN KEY ([FdpTakeRateFeatureMixId]) REFERENCES [dbo].[Fdp_TakeRateFeatureMix] ([FdpTakeRateFeatureMixId]),
@@ -24,6 +26,8 @@
     CONSTRAINT [FK_Fdp_Validation_Fdp_VolumeHeader] FOREIGN KEY ([FdpVolumeHeaderId]) REFERENCES [dbo].[Fdp_VolumeHeader] ([FdpVolumeHeaderId]),
     CONSTRAINT [FK_Fdp_Validation_OXO_Master_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[OXO_Master_Market] ([Id])
 );
+
+
 
 
 
@@ -62,4 +66,16 @@ CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_Validation_FdpTakeRateFeatureMixId]
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_Validation_Cover]
     ON [dbo].[Fdp_Validation]([FdpVolumeHeaderId] ASC, [MarketId] ASC, [IsActive] ASC, [ModelId] ASC, [FdpModelId] ASC, [FeatureId] ASC, [FdpFeatureId] ASC, [FdpVolumeDataItemId] ASC, [FdpTakeRateSummaryId] ASC, [FdpTakeRateFeatureMixId] ASC, [FdpChangesetDataItemId] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_Validation_Cover3]
+    ON [dbo].[Fdp_Validation]([FdpVolumeHeaderId] ASC, [IsActive] ASC)
+    INCLUDE([ModelId], [FeaturePackId]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_Validation_Cover2]
+    ON [dbo].[Fdp_Validation]([FdpVolumeHeaderId] ASC, [FdpChangesetDataItemId] ASC, [IsActive] ASC)
+    INCLUDE([FdpValidationId], [MarketId]);
 

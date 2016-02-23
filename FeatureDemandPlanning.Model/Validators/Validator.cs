@@ -4,32 +4,42 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Enumerations;
-using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
+using FluentValidation.Results;
 
 namespace FeatureDemandPlanning.Model.Validators
 {
     public static class Validator
     {
-        public static async Task<FluentValidation.Results.ValidationResult> Validate(IDataContext context, RawTakeRateData data)
+        public static FluentValidation.Results.ValidationResult Validate(RawTakeRateData data)
         {
             var watch = Stopwatch.StartNew();
+            FluentValidation.Results.ValidationResult featureLevelResults = null;
+            FluentValidation.Results.ValidationResult modelLevelResults = null;
+            FluentValidation.Results.ValidationResult featureMixResults = null;
 
-            var featureLevelResults = await TakeRateDataValidator.ValidateData(context, data);
-            var modelLevelResults = await TakeRateSummaryValidator.ValidateData(context, data);
-            var featureMixResults = await TakeRateFeatureMixValidator.ValidateData(context, data);
+            Parallel.Invoke(
+                () => featureLevelResults = TakeRateDataValidator.ValidateData(data),  
+                () => modelLevelResults = TakeRateSummaryValidator.ValidateData(data),
+                () => featureMixResults = TakeRateFeatureMixValidator.ValidateData(data)
+            );
 
             var allErrors = featureLevelResults.Errors
                 .Concat(modelLevelResults.Errors)
                 .Concat(featureMixResults.Errors);
 
-            var results = new FluentValidation.Results.ValidationResult(allErrors);
-            await context.TakeRate.PersistValidationErrors(results);
+            var validationFailures = allErrors as IList<ValidationFailure> ?? allErrors.ToList();
 
             watch.Stop();
-            Console.WriteLine("Total Execution Time: {0} ms", watch.ElapsedMilliseconds);
+            Console.WriteLine("Total Validation Time : {0} ms", watch.ElapsedMilliseconds);
+            
+            return new FluentValidation.Results.ValidationResult(validationFailures);
+        }
 
-            return new FluentValidation.Results.ValidationResult(allErrors);
+        public static async Task<IEnumerable<ValidationResult>> Persist(IDataContext context,
+            FluentValidation.Results.ValidationResult results)
+        {
+            return await context.TakeRate.PersistValidationErrors(results);
         }
     }
     // Stores state information for validation such that it can be stored in the database and the appropriate objects
@@ -73,6 +83,7 @@ namespace FeatureDemandPlanning.Model.Validators
             FeaturePackId = dataItem.FeaturePackId;
             Volume = dataItem.Volume;
             PercentageTakeRate = dataItem.PercentageTakeRate;
+            ExclusiveFeatureGroup = dataItem.ExclusiveFeatureGroup;
 
             FdpVolumeDataItemId = dataItem.FdpVolumeDataItemId;
             FdpChangesetDataItemId = dataItem.FdpChangesetDataItemId;

@@ -41,7 +41,7 @@ AS
 	WHERE
 	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	(@MarketId IS NULL AND D.MarketId = @MarketId);
+	(@MarketId IS NULL OR D.MarketId = @MarketId);
 	
 	-- Add all volume data existing rows to our data table
 	
@@ -165,7 +165,6 @@ AS
 											OR
 											F.TotalVolume <> F1.Volume
 										)
-
 	-- Add new ones
 
 	INSERT INTO Fdp_TakeRateFeatureMix

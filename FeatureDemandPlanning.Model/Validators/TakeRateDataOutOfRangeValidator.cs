@@ -11,7 +11,7 @@ namespace FeatureDemandPlanning.Model.Validators
         private const string UpperLimitMessage =
             "Take rate of {0:P} for feature '{1}' is invalid for model '{2}'. Take rates should not be more than 100 %.";
 
-        public TakeRateDataOutOfRangeValidator(IDataContext context)
+        public TakeRateDataOutOfRangeValidator()
         {
             RuleFor(d => d.PercentageTakeRate)
                 .Cascade(CascadeMode.StopOnFirstFailure)

@@ -1,28 +1,13 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_Changeset_GetLatestByUser]
-	  @DocumentId	AS INT
-	, @MarketId		AS INT
-	, @CDSID		AS NVARCHAR(16)
-	, @IsSaved		AS BIT = 0
+	  @FdpVolumeHeaderId	AS INT
+	, @MarketId				AS INT
+	, @CDSID				AS NVARCHAR(16)
+	, @IsSaved				AS BIT = 0
 AS
 	SET NOCOUNT ON;
 	
 	DECLARE @FdpChangesetId AS INT;
 	
-	SELECT TOP 1 @FdpChangesetId = C.FdpChangesetId
-	FROM
-	Fdp_VolumeHeader	AS H
-	JOIN Fdp_Changeset	AS C	ON H.FdpVolumeHeaderId = C.FdpVolumeHeaderId
-	WHERE
-	H.DocumentId = @DocumentId
-	AND
-	C.CreatedBy = @CDSID
-	AND
-	C.IsDeleted = 0
-	AND
-	C.IsSaved = @IsSaved
-	AND
-	C.MarketId = @MarketId
-	ORDER BY
-	C.CreatedOn DESC;
+	SELECT @FdpChangesetId = dbo.fn_Fdp_Changeset_GetLatestByUser(@FdpVolumeHeaderId, @MarketId, @CDSID)
 	
 	EXEC Fdp_Changeset_Get @FdpChangesetId = @FdpChangesetId;

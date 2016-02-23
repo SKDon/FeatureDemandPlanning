@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
 
 namespace FeatureDemandPlanning.Model.Validators
@@ -9,7 +8,7 @@ namespace FeatureDemandPlanning.Model.Validators
         private const string Message =
             "Total volume for models of {0} is greater than the volume for market '{1}' of {2}.";
 
-        public VolumeForModelsNotEqualToMarketValidator(IDataContext context)
+        public VolumeForModelsNotEqualToMarketValidator()
         {
             RuleFor(d => d)
                 .Must(BeEqualToMarketVolume)

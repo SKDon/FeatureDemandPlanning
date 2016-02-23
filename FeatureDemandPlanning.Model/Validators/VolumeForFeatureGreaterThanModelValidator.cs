@@ -12,7 +12,7 @@ namespace FeatureDemandPlanning.Model.Validators
         private const string Message =
            "Volume for feature '{0}' of {1} is greater than the volume for model '{2}' of {3}.";
 
-        public AllFeatureVolumesMustBeLessThanOrEqualToModel(IDataContext context)
+        public AllFeatureVolumesMustBeLessThanOrEqualToModel()
             : base(Message)
         {
         }
@@ -48,9 +48,9 @@ namespace FeatureDemandPlanning.Model.Validators
         private const string Message =
             "Volume for feature '{0}' of {1} is greater than the volume for model '{2}' of {3}.";
 
-        public VolumeForFeatureGreaterThanModelValidator(IDataContext context)
+        public VolumeForFeatureGreaterThanModelValidator()
         {
-            var validator = new AllFeatureVolumesMustBeLessThanOrEqualToModel(context);
+            var validator = new AllFeatureVolumesMustBeLessThanOrEqualToModel();
 
             RuleForEach(d => d.DataItems)
                 .SetValidator(validator)

@@ -28,6 +28,7 @@ AS
 			, V.ModelIdentifier
 			, V.FeatureIdentifier
 			, V.[Message]
+			, V.ExclusiveFeatureGroup
 		FROM
 		Fdp_Validation_VW AS V
 		WHERE
@@ -56,6 +57,7 @@ AS
 			, V.ModelIdentifier
 			, V.FeatureIdentifier
 			, V.[Message]
+			, V.ExclusiveFeatureGroup
 		FROM
 		Fdp_Validation_VW				AS V
 		JOIN Fdp_ChangesetDataItem_VW	AS C ON V.FdpChangesetDataItemId = C.FdpChangesetDataItemId

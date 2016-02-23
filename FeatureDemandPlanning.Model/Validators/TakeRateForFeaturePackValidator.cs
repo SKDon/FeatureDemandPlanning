@@ -1,5 +1,4 @@
 ﻿using FeatureDemandPlanning.Model.Enumerations;
-using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
 
 namespace FeatureDemandPlanning.Model.Validators
@@ -8,7 +7,7 @@ namespace FeatureDemandPlanning.Model.Validators
     {
         private const string Message = "Feature pack '{0}' for model '{1}' is invalid. Take rates for all features in the pack must be equivalent.";
 
-        public FeaturePackEquivalentTakeRateValidator(IDataContext context)
+        public FeaturePackEquivalentTakeRateValidator()
         {
             RuleFor(p => p)
                 .Must(HaveEquivalentTakeRate)
@@ -24,10 +23,10 @@ namespace FeatureDemandPlanning.Model.Validators
     }
     public class TakeRateForFeaturePackValidator : AbstractValidator<RawTakeRateData>
     {
-        public TakeRateForFeaturePackValidator(IDataContext context)
+        public TakeRateForFeaturePackValidator()
         {
             RuleForEach(d => d.FeaturePacks)
-                .SetValidator(new FeaturePackEquivalentTakeRateValidator(context));
+                .SetValidator(new FeaturePackEquivalentTakeRateValidator());
         }
         
     }
