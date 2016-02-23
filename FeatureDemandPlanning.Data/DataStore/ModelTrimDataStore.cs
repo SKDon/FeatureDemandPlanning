@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
-using System.Web.Script.Serialization;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Context;
@@ -71,7 +69,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-				   AppHelper.LogError("ModelTrimDataStore.ModelTrimGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -116,8 +115,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("ModelTrimDataStore.ModelTrimSave", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -140,8 +139,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("ModelTrimDataStore.ModelTrimDelete", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -166,7 +165,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ModelTrimDataStore.TrimMappingDelete", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -190,7 +189,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ModelTrimDataStore.TrimMappingGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -225,7 +224,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ModelTrimDataStore.TrimMappingSave", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -245,7 +244,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ModelTrimDataStore.FdpTrimDelete", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -264,7 +263,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ModelTrimDataStore.FdpTrimGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -285,7 +284,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ModelTrimDataStore.FdpTrimGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -311,7 +310,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ModelTrimDataStore.FdpTrimSave", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -332,7 +331,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpTrimDelete", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -352,7 +351,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpTrimGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -437,7 +436,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpTrimGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -463,7 +462,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("TrimDataStore.TrimMappingDelete", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -488,7 +487,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.TrimMappingGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -562,17 +561,13 @@ namespace FeatureDemandPlanning.DataStore
                         PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
                     };
 
-                    var currentPage = new List<FdpTrimMapping>();
+                    var currentPage = results.ToList();
 
-                    foreach (var result in results)
-                    {
-                        currentPage.Add(result);
-                    }
                     retVal.CurrentPage = currentPage;
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpTrimMappingGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -597,7 +592,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpFeatureMappingCopy", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }

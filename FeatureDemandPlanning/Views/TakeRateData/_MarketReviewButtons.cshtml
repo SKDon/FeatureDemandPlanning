@@ -1,0 +1,52 @@
+﻿@using FeatureDemandPlanning.Model.Empty
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+@if (Model.TakeRate.MarketReview is EmptyMarketReview)
+{
+    if (Model.CurrentUser.HasApproverRole())
+    {
+        <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview"><span class="glyphicon glyphicon-flag"></span> Submit for Market Review</button>
+    }
+}
+else
+{
+    var marketReviewStatus = Model.TakeRate.MarketReview.StatusCode;
+    switch (marketReviewStatus)
+    {
+        case enums.MarketReviewStatus.NotSet:
+            if (Model.CurrentUser.HasApproverRole())
+            {
+                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview"><span class="glyphicon glyphicon-flag"></span> Submit for Market Review</button>
+            }
+            break;
+        case enums.MarketReviewStatus.AwaitingReview:
+            if (Model.CurrentUser.HasReviewerRole())
+            {
+                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_SubmitMarketReview"><span class="glyphicon glyphicon-send"></span> Submit Changes for Approval</button>
+            }
+            break;
+        case enums.MarketReviewStatus.AwaitingApproval:
+            if (Model.CurrentUser.HasApproverRole())
+            {
+                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_ApproveMarketReview"><span class="glyphicon glyphicon-ok"></span> Approve</button>
+                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_RejectMarketReview"><span class="glyphicon glyphicon-remove"></span> Reject</button>
+            }
+            break;
+        case enums.MarketReviewStatus.Rejected:
+            if (Model.CurrentUser.HasReviewerRole())
+            {
+                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_SubmitMarketReview"><span class="glyphicon glyphicon-send"></span> Submit Changes for Approval</button>
+            }
+            break;
+        case enums.MarketReviewStatus.Approved:
+            if (Model.CurrentUser.HasApproverRole())
+            {
+                <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview"><span class="glyphicon glyphicon-flag"></span> Submit for Market Review</button>
+            }
+            break;
+        default:
+            throw new ArgumentOutOfRangeException();
+    }
+}

@@ -7,8 +7,7 @@ namespace FeatureDemandPlanning.Model
         public string AddressFrom { get; set; }
         public string AddressTo { get; set; }
         public string AddressCC { get; set; }
-        public Object Payload { get; set; }
-
+        public object[] Payload { get; set; }
     }
 
     public class SystemErrorInfo

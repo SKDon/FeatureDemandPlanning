@@ -2,6 +2,8 @@
 using System.Reflection;
 using System.Web.Script.Serialization;
 using log4net;
+using log4net.Core;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -48,6 +50,7 @@ namespace FeatureDemandPlanning.Model
 
         }
 
+        protected static readonly Logger Log = Logger.Instance;
     }
 
     public class DataStoreBase
@@ -62,7 +65,7 @@ namespace FeatureDemandPlanning.Model
             CurrentCDSID = cdsId;
         }
 
-        protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        protected static readonly Logger Log = Logger.Instance;
     }
 
     [Serializable]

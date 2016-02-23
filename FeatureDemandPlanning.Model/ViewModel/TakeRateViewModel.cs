@@ -5,15 +5,22 @@ using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
+using FluentSecurity.Caching;
+using log4net.Config;
+using Cache = System.Web.Caching.Cache;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {
     public class TakeRateViewModel : SharedModelBase
     {
+        #region "Public Properties"
+
         public TakeRateSummary TakeRate { get; set; }
         public TakeRateDataItem CurrentTakeRateDataItem { get; set; }
         public TakeRateDataItemAction CurrentAction { get; set; }
@@ -22,16 +29,37 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public TakeRateDocument Document { get; set; }
         public FdpChangeset Changes { get; set; }
         public FdpChangesetHistory History { get; set; }
+        public MarketReviewStatus MarketReviewStatus { get; set; }
+        public string Filter { get; set; }
+        public RawTakeRateData RawData { get; set; }
 
-        // Can the user edit the take rate file
+        // Can the take rate file be edited
         public bool AllowEdit
         {
             get
             {
+                if (_allowEdit.HasValue)
+                {
+                    return _allowEdit.Value;
+                }
+
+                var programmeId = Document.UnderlyingOxoDocument.ProgrammeId;
+                var marketId = Document.Market.Id;
+
                 // User must be allowed to edit the programme / market itself and be in a role that allows for editing
-                return HasUserEditRole() && IsProgrammeEditable() && IsMarketEditable();
+                // In addition, the document cannot have been published
+                _allowEdit = CurrentUser.HasEditRole() &&
+                       CurrentUser.IsProgrammeEditable(programmeId) &&
+                       CurrentUser.IsMarketEditable(marketId) &&
+                       !TakeRate.IsPublished();
+
+                return _allowEdit.Value;
             }
         }
+
+        #endregion
+
+        #region "Constructors"
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ForecastComparisonViewModel"/> class.
@@ -44,6 +72,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             InitialiseMembers();
         }
+
+        #endregion
+
+        #region "Public Methods"
+
         public static async Task<TakeRateViewModel> GetModel(IDataContext context)
         {
             return await GetModel(context, new TakeRateFilter());
@@ -71,8 +104,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
                     model = await GetFullAndPartialViewModelForTakeRates(context, filter);
                     break;
                 case TakeRateDataItemAction.TakeRateDataPage:
-                case TakeRateDataItemAction.Validate:
                     model = await GetFullAndPartialViewModelForTakeRateDataPage(context, filter);
+                    break;
+                case TakeRateDataItemAction.Validate:
+                    model = await GetFullAndPartialViewModelForValidation(context, filter);
                     break;
                 case TakeRateDataItemAction.TakeRateDataItemDetails:
                 case TakeRateDataItemAction.UndoChange:
@@ -83,6 +118,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
                     break;
                 case TakeRateDataItemAction.SaveChanges:
                 case TakeRateDataItemAction.History:
+                case TakeRateDataItemAction.Filter:
+                case TakeRateDataItemAction.MarketReview:
                     model = await GetFullAndPartialViewModelForTakeRateDataPageExcludingData(context, filter);
                     break;
                 case TakeRateDataItemAction.Changeset:
@@ -95,10 +132,14 @@ namespace FeatureDemandPlanning.Model.ViewModel
             return model;
         }
 
+        #endregion
+
         #region "Private Methods"
 
         private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForTakeRateDataPage(IDataContext context, TakeRateFilter filter)
         {
+            var watch = Stopwatch.StartNew();
+
             var modelBase = GetBaseModel(context);
             var takeRateModel = new TakeRateViewModel(modelBase)
             {
@@ -106,15 +147,38 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
 
             await HydrateOxoDocument(context, takeRateModel);
-            await HydrateFdpVolumeHeaders(context, takeRateModel);
-            await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
+            await HydrateFdpVolumeHeader(context, takeRateModel);
+            //await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
             await HydrateVehicle(context, takeRateModel);
             await HydrateMarket(context, takeRateModel);
             await HydrateMarketGroup(context, takeRateModel);
             await HydrateModelsByMarket(context, takeRateModel);
             await HydrateDerivativesByMarket(context, takeRateModel);
             await HydrateData(context, takeRateModel);
+            await HydrateMarketReview(context, takeRateModel);
+
+            watch.Stop();
+            Log.Debug("GetFullAndPartialViewModelForTakeRateDataPage : " + watch.ElapsedMilliseconds);
           
+            return takeRateModel;
+        }
+        private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForValidation(IDataContext context, TakeRateFilter filter)
+        {
+            var watch = Stopwatch.StartNew();
+
+            var modelBase = GetBaseModel(context);
+            var takeRateModel = new TakeRateViewModel(modelBase)
+            {
+                Document = (TakeRateDocument)TakeRateDocument.FromFilter(filter),
+                Configuration = context.ConfigurationSettings
+            };
+
+            await HydrateFdpVolumeHeader(context, takeRateModel);
+            await HydrateRawData(context, takeRateModel);
+
+            watch.Stop();
+            Log.Debug("GetFullAndPartialViewModelForTakeRateDataPage : " + watch.ElapsedMilliseconds);
+
             return takeRateModel;
         }
         private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForTakeRateDataPageExcludingData(IDataContext context, TakeRateFilter filter)
@@ -123,18 +187,20 @@ namespace FeatureDemandPlanning.Model.ViewModel
             var takeRateModel = new TakeRateViewModel(modelBase)
             {
                 Document = (TakeRateDocument)TakeRateDocument.FromFilter(filter),
-                Configuration = context.ConfigurationSettings
+                Configuration = context.ConfigurationSettings,
+                MarketReviewStatus = filter.MarketReviewStatus,
+                Filter = filter.Filter
             };
 
             await HydrateOxoDocument(context, takeRateModel);
-            await HydrateFdpVolumeHeaders(context, takeRateModel);
-            await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
+            await HydrateFdpVolumeHeader(context, takeRateModel);
+            //await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
             await HydrateVehicle(context, takeRateModel);
             await HydrateMarket(context, takeRateModel);
             await HydrateMarketGroup(context, takeRateModel);
             await HydrateModelsByMarket(context, takeRateModel);
             await HydrateDerivativesByMarket(context, takeRateModel);
-            //await HydrateData(context, takeRateModel);
+            await HydrateMarketReview(context, takeRateModel);
 
             return takeRateModel;
         }
@@ -148,7 +214,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
             await HydrateOxoDocument(context, takeRateModel);
             await HydrateFdpVolumeHeaders(context, takeRateModel);
-            await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
+            //await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
             
             return takeRateModel;
         }
@@ -183,9 +249,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
         }
         private static async Task<IVehicle> GetVehicle(IDataContext context, Vehicle forVehicle, OXODoc forDocument)
         {
+            // Do not deep get all vehicle details such as markets, derivatives, etc, as these are populated elsewhere
             return await context.Vehicle.GetVehicle(new VehicleFilter()
             {
-                ProgrammeId = forVehicle.ProgrammeId, Gateway = forVehicle.Gateway, DocumentId = forDocument.Id,
+                ProgrammeId = forVehicle.ProgrammeId, Gateway = forVehicle.Gateway, DocumentId = forDocument.Id, Deep = false
             });
         }
         private static async Task<Market> GetMarket(IDataContext context, TakeRateDocument forTakeRateDocument)
@@ -195,7 +262,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 forTakeRateDocument.TakeRateId,
                 forTakeRateDocument.Market.Id);
 
-            var cachedLookup = HttpContext.Current.Cache.Get(cacheKey);
+            var cachedLookup = GetCache(cacheKey);
             if (cachedLookup != null)
             {
                 market = (Market) cachedLookup;
@@ -209,11 +276,19 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 }));
 
                 if (!(market is EmptyMarket) && market.Id != 0)
-                    HttpContext.Current.Cache.Add(cacheKey, market, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                    AddCache(cacheKey, market);
             }
             return market;
         }
 
+        private static async Task<MarketReview> GetMarketReview(IDataContext context,TakeRateDocument forTakeRateDocument)
+        {
+            return await context.TakeRate.GetMarketReview(new TakeRateFilter
+            {
+                TakeRateId = forTakeRateDocument.TakeRateId,
+                MarketId = forTakeRateDocument.Market.Id
+            });
+        }
         private static async Task<MarketGroup> GetMarketGroup(IDataContext context, TakeRateDocument forTakeRateDocument)
         {
             MarketGroup marketGroup;
@@ -221,7 +296,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 forTakeRateDocument.TakeRateId, 
                 forTakeRateDocument.MarketGroup.Id);
 
-            var cachedLookup = HttpContext.Current.Cache.Get(cacheKey);
+            var cachedLookup = GetCache(cacheKey);
             if (cachedLookup != null)
             {
                 marketGroup = (MarketGroup) cachedLookup;
@@ -235,7 +310,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 }));
 
                 if (!(marketGroup is EmptyMarketGroup) && marketGroup.Id != 0)
-                    HttpContext.Current.Cache.Add(cacheKey, marketGroup, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                    AddCache(cacheKey, marketGroup);
             }
             return marketGroup;
         }
@@ -244,7 +319,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             OXODoc oxoDocument;
             var cacheKey = string.Format("OxoDocument_{0}", forOxoDocument.Id);
-            var cachedLookup = HttpContext.Current.Cache.Get(cacheKey);
+            var cachedLookup = GetCache(cacheKey);
             if (cachedLookup != null)
             {
                 oxoDocument = (OXODoc) cachedLookup;
@@ -252,7 +327,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             else
             {
                 oxoDocument = await context.TakeRate.GetUnderlyingOxoDocument(new TakeRateFilter() {DocumentId = forOxoDocument.Id, ProgrammeId = forOxoDocument.ProgrammeId});
-                HttpContext.Current.Cache.Add(cacheKey, oxoDocument, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                AddCache(cacheKey, oxoDocument);
             }
             return oxoDocument;
         }
@@ -261,7 +336,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             OXODoc oxoDocument;
             var cacheKey = string.Format("TakeRateFile_{0}", takeRateFile.TakeRateId.GetValueOrDefault());
-            var cachedLookup = HttpContext.Current.Cache.Get(cacheKey);
+            var cachedLookup = GetCache(cacheKey);
             if (cachedLookup != null)
             {
                 oxoDocument = (OXODoc)cachedLookup;
@@ -269,57 +344,83 @@ namespace FeatureDemandPlanning.Model.ViewModel
             else
             {
                 oxoDocument = await context.TakeRate.GetUnderlyingOxoDocument(new TakeRateFilter() { TakeRateId = takeRateFile.TakeRateId });
-                HttpContext.Current.Cache.Add(cacheKey, oxoDocument, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                AddCache(cacheKey, oxoDocument);
             }
             return oxoDocument;
         }
 
         private static async Task<TakeRateSummary> GetTakeRateDocumentHeader(IDataContext context, TakeRateSummary forHeader)
         {
-            TakeRateSummary header;
             var cacheKey = string.Format("FdpVolumeHeader_{0}", forHeader.TakeRateId);
-            var cachedLookup = HttpContext.Current.Cache.Get(cacheKey);
+            var cachedLookup = GetCache(cacheKey);
             if (cachedLookup != null)
             {
-                header = (TakeRateSummary) cachedLookup;
+                forHeader = (TakeRateSummary) cachedLookup;
             }
             else
             {
-                header = await context.TakeRate.GetTakeRateDocumentHeader(new TakeRateFilter() {DocumentId = forHeader.OxoDocId});
-                HttpContext.Current.Cache.Add(cacheKey, header, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                forHeader = await context.TakeRate.GetTakeRateDocumentHeader(new TakeRateFilter() {TakeRateId = forHeader.TakeRateId});
+                AddCache(cacheKey, forHeader);
             }
-            return header;
+            return forHeader;
         }
-
+        private static async Task<RawTakeRateData> GetRawData(IDataContext context, TakeRateViewModel takeRateViewModel)
+        {
+            return
+                await
+                    context.TakeRate.GetRawData(new TakeRateFilter()
+                    {
+                        TakeRateId = takeRateViewModel.Document.TakeRateId,
+                        MarketId = takeRateViewModel.Document.Market.Id
+                    });
+        }
         private static async Task<Market> HydrateMarket(IDataContext context, TakeRateViewModel volumeModel)
         {
+            var watch = Stopwatch.StartNew();
             if (volumeModel.Document.Market is EmptyMarket)
                 return volumeModel.Document.Market;
 
             volumeModel.Document.Market = await GetMarket(context, volumeModel.Document);
-
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
             return volumeModel.Document.Market;
         }
         private static async Task<MarketGroup> HydrateMarketGroup(IDataContext context, TakeRateViewModel volumeModel)
         {
+            var watch = Stopwatch.StartNew();
             if (volumeModel.Document.MarketGroup is EmptyMarketGroup)
                 return volumeModel.Document.MarketGroup;
 
             volumeModel.Document.MarketGroup = await GetMarketGroup(context, volumeModel.Document);
-
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
             return volumeModel.Document.MarketGroup;
         }
         private static async Task<IEnumerable<Model>> HydrateDerivativesByMarket(IDataContext context, TakeRateViewModel volumeModel)
         {
+            var watch = Stopwatch.StartNew();
             volumeModel.Document.Vehicle.AvailableModels = await ListAvailableModelsFilteredByMarket(context, volumeModel.Document);
-
+            watch.Stop();
+           
+            Log.Debug(watch.ElapsedMilliseconds);
             return volumeModel.Document.Vehicle.AvailableModels;
         }
         private static async Task<IEnumerable<MarketGroup>> HydrateModelsByMarket(IDataContext context, TakeRateViewModel takeRateModel)
         {
+            var watch = Stopwatch.StartNew();
             takeRateModel.Document.Vehicle.AvailableMarketGroups = await ListAvailableMarketGroups(context, takeRateModel.Document);
-
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
             return takeRateModel.Document.Vehicle.AvailableMarketGroups;
+        }
+        private static async Task<RawTakeRateData> HydrateRawData(IDataContext context,
+            TakeRateViewModel takeRateViewModel)
+        {
+            var watch = Stopwatch.StartNew();
+            takeRateViewModel.RawData = await GetRawData(context, takeRateViewModel);
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
+            return takeRateViewModel.RawData;
         }
         private static async Task<IEnumerable<MarketGroup>> ListAvailableMarketGroups(IDataContext context, ITakeRateDocument document)
         {
@@ -328,6 +429,19 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 DocumentId = document.UnderlyingOxoDocument.Id
             });
         }
+
+        private static void AddCache(string cacheKey, object data)
+        {
+            if (HttpContext.Current == null)
+                return;
+            
+            HttpContext.Current.Cache.Add(cacheKey, data, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+        }
+        private static object GetCache(string cacheKey)
+        {
+            return HttpContext.Current == null ? null : HttpContext.Current.Cache.Get(cacheKey);
+        }
+
         private static async Task<FdpModel> HydrateCurrentModel(IDataContext context, TakeRateViewModel takeRateModel)
         {
             FdpModel model = new EmptyFdpModel();
@@ -360,8 +474,24 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return await Task.FromResult(feature);
         }
+
+        private static async Task<TakeRateSummary> HydrateFdpVolumeHeader(IDataContext context,
+            TakeRateViewModel volumeModel)
+        {
+            var watch = Stopwatch.StartNew();
+            var volumeSummary = new TakeRateSummary {TakeRateId = volumeModel.Document.TakeRateId.GetValueOrDefault()};
+            volumeSummary = await GetTakeRateDocumentHeader(context, volumeSummary);
+
+            volumeModel.Document.TakeRateSummary = new List<TakeRateSummary> { volumeSummary };
+
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
+
+            return volumeSummary;
+        }
         private static async Task<IEnumerable<TakeRateSummary>> HydrateFdpVolumeHeaders(IDataContext context, TakeRateViewModel volumeModel)
         {
+            var watch = Stopwatch.StartNew();
             var volumeSummary = new List<TakeRateSummary>();
             foreach (var header in volumeModel.Document.TakeRateSummary)
             {
@@ -370,18 +500,34 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             volumeModel.Document.TakeRateSummary = volumeSummary;
 
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
+
             return volumeSummary;
         }
         private static async Task HydrateFdpVolumeHeadersFromOxoDocument(IDataContext context, TakeRateViewModel volumeModel)
         {
+            var watch = Stopwatch.StartNew();
             if (volumeModel.Document.TakeRateSummary.Any())
                 return;
 
             var volumeHeaders = await ListVolumeSummary(context, volumeModel.Document);
             volumeModel.Document.TakeRateSummary = volumeHeaders.CurrentPage;
+
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
+        }
+        private static async Task HydrateMarketReview(IDataContext context, TakeRateViewModel volumeModel)
+        {
+            var watch = Stopwatch.StartNew();
+            volumeModel.TakeRate.MarketReview = await GetMarketReview(context, volumeModel.Document);
+
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
         }
         private static async Task<OXODoc> HydrateOxoDocument(IDataContext context, TakeRateViewModel volumeModel)
         {
+            var watch = Stopwatch.StartNew();
             OXODoc retVal = new EmptyOxoDocument();
 
             if (!(volumeModel.Document.UnderlyingOxoDocument is EmptyOxoDocument))
@@ -400,15 +546,23 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             retVal = volumeModel.Document.UnderlyingOxoDocument;
 
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
+
             return retVal;
         }
         private static async Task<TakeRateData> HydrateData(IDataContext context, TakeRateViewModel takeRateModel)
         {
+            var watch = Stopwatch.StartNew();
             takeRateModel.Document.TakeRateData = await ListTakeRateData(context, takeRateModel.Document);
+
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
             return takeRateModel.Document.TakeRateData;
         }
         private static async Task<IVehicle> HydrateVehicle(IDataContext context, TakeRateViewModel volumeModel)
         {
+            var watch = Stopwatch.StartNew();
             if (!(volumeModel.Document.Vehicle is EmptyVehicle))
                 return volumeModel.Document.Vehicle;
 
@@ -416,11 +570,18 @@ namespace FeatureDemandPlanning.Model.ViewModel
             // Set this prior to filtering by market
             volumeModel.Document.TotalDerivatives = volumeModel.Document.Vehicle.AvailableModels.Count();
 
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
+
             return volumeModel.Document.Vehicle;
         }
         private static async Task<IEnumerable<FdpFeature>> HydrateFeatures(IDataContext context, TakeRateViewModel takeRateModel)
         {
+            var watch = Stopwatch.StartNew();
             takeRateModel.Document.Vehicle.AvailableFeatures = await ListFeatures(context, takeRateModel.Document);
+
+            watch.Stop();
+            Log.Debug(watch.ElapsedMilliseconds);
             return takeRateModel.Document.Vehicle.AvailableFeatures;
         }
         private void InitialiseMembers()
@@ -432,6 +593,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             CurrentAction = TakeRateDataItemAction.NotSet;
             IdentifierPrefix = "Page";
             Document = new EmptyTakeRateDocument();
+            MarketReviewStatus = MarketReviewStatus.NotSet;
         }
         private static async Task<IEnumerable<FdpModel>> ListAvailableModelsFilteredByMarket(IDataContext context, TakeRateDocument forVolume)
         {
@@ -479,6 +641,14 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return await context.TakeRate.GetTakeRateDocumentData(TakeRateFilter.FromTakeRateDocument(forDocument));
         }
+
+        //private static async Task<TakeRateSummary> GetVolumeSummary(IDataContext context, TakeRateDocument forVolume)
+        //{
+        //    if (forVolume.UnderlyingOxoDocument is EmptyOxoDocument)
+        //        return new TakeRateSummary();
+
+        //    return await context.TakeRate.GetTakeRateDocument(TakeRateFilter.FromTakeRateDocument(forVolume));
+        //}
         private static async Task<PagedResults<TakeRateSummary>> ListVolumeSummary(IDataContext context, TakeRateDocument forVolume)
         {
             if (forVolume.UnderlyingOxoDocument is EmptyOxoDocument)
@@ -486,21 +656,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return await context.TakeRate.ListTakeRateDocuments(TakeRateFilter.FromTakeRateDocument(forVolume));
         }
+        #endregion
 
-        private bool HasUserEditRole()
-        {
-            return CurrentUser.Roles.Any(
-                r => r == UserRole.Administrator || r == UserRole.Editor || r == UserRole.MarketReviewer);
-        }
-        private bool IsMarketEditable()
-        {
-            return CurrentUser.Markets.Any(m => m.Action == UserAction.Edit && m.MarketId == Document.Market.Id);
-        }
-        private bool IsProgrammeEditable()
-        {
-            return CurrentUser.Programmes.Any(
-                p => p.Action == UserAction.Edit && p.ProgrammeId == Document.UnderlyingOxoDocument.ProgrammeId);
-        }
+        #region "Private Members"
+
+        private bool? _allowEdit;
 
         #endregion
     }

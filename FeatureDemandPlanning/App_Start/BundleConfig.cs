@@ -96,13 +96,19 @@ namespace FeatureDemandPlanning
                     "~/Content/js/MarketMapping/page.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/marketreview").Include(
+                    "~/Content/js/MarketReview/model.js",
+                    "~/Content/js/MarketReview/page.js"
+                ));
+
             bundles.Add(new ScriptBundle("~/bundles/js/shared").Include(
                     "~/Content/js/Shared/namespace.js",
                     "~/Content/js/Shared/modal.js",
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Shared/cookie.js",
                     "~/Content/js/Shared/pager.js",
-                    "~/Content/js/Shared/vehicle.js"
+                    "~/Content/js/Shared/vehicle.js",
+                    "~/Content/js/Shared/takeratefilter.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/specialfeaturemapping").Include(
@@ -122,8 +128,12 @@ namespace FeatureDemandPlanning
                     "~/Content/js/TakeRateData/addnoteaction.js",
                     "~/Content/js/TakeRateData/changeset.js",
                     "~/Content/js/TakeRateData/details.js",
+                    "~/Content/js/TakeRateData/filter.js",
+                    "~/Content/js/TakeRateData/filteraction.js",
                     "~/Content/js/TakeRateData/history.js",
                     "~/Content/js/TakeRateData/historyaction.js",
+                    "~/Content/js/TakeRateData/marketreview.js",
+                    "~/Content/js/TakeRateData/marketreviewaction.js",
                     "~/Content/js/TakeRateData/model.js",
                     "~/Content/js/TakeRateData/page.js",
                     "~/Content/js/TakeRateData/save.js",

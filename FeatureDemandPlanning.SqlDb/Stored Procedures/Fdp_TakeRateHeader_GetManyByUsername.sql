@@ -4,7 +4,6 @@
 	, @FdpTakeRateStatusId	INT				= NULL
 	, @VehicleName			NVARCHAR(1000)	= NULL
 	, @FilterMessage		NVARCHAR(50)	= NULL
-	-- TODO - Implement permissions over which take rate files can be viewed
 	, @CDSId				NVARCHAR(16)	= NULL
 	, @PageIndex			INT				= NULL
 	, @PageSize				INT				= 10
@@ -26,39 +25,26 @@ AS
 		  RowIndex	INT IDENTITY(1,1)
 		, TakeRateId INT
 	);
-	WITH AllowedProgrammes AS
-	(
-		SELECT U.FdpUserId, M.ProgrammeId
-		FROM
-		Fdp_User AS U
-		JOIN Fdp_UserProgrammeMapping AS M ON U.FdpUserId = M.FdpUserId
-		WHERE
-		U.CDSId = @CDSId
-		AND
-		M.IsActive = 1
-		GROUP BY
-		U.FdpUserId, M.ProgrammeId
-	)
 	INSERT INTO @PageRecords 
 	(
 		TakeRateId
 	)
-	SELECT V.FdpVolumeHeaderId
-	FROM Fdp_VolumeHeader		AS V
-	JOIN OXO_Doc				AS D	ON V.DocumentId		= D.Id
-	JOIN OXO_Programme_VW		AS P	ON D.Programme_Id	= P.Id
-	JOIN AllowedProgrammes		AS SEC	ON D.Programme_Id	= SEC.ProgrammeId
+	SELECT H.FdpVolumeHeaderId
+	FROM Fdp_VolumeHeader_VW	AS H
+	JOIN OXO_Programme_VW		AS P	ON H.ProgrammeId	= P.Id
+	JOIN dbo.fn_Fdp_UserProgrammes_GetMany2(@CDSId) AS P1 ON P.Id = P1.ProgrammeId 
 	WHERE
 	(ISNULL(@FilterMessage, '') = '' 
 		OR P.VehicleName LIKE '%' + @FilterMessage + '%'
 		OR P.VehicleAKA LIKE '%' + @FilterMessage + '%'
-		OR P.ModelYear LIKE '%' + @FilterMessage + '%')
+		OR P.ModelYear LIKE '%' + @FilterMessage + '%'
+		OR H.Gateway LIKE '%' + @FilterMessage + '%')
 	AND
-	(@FdpVolumeHeaderId IS NULL OR V.FdpVolumeHeaderId = @FdpVolumeHeaderId)
+	(@FdpVolumeHeaderId IS NULL OR H.FdpVolumeHeaderId = @FdpVolumeHeaderId)
 	AND
-	(@DocumentId IS NULL OR V.DocumentId = @DocumentId)
+	(@DocumentId IS NULL OR H.DocumentId = @DocumentId)
 	AND
-	(@FdpTakeRateStatusId IS NULL OR V.FdpTakeRateStatusId = @FdpTakeRateStatusId)
+	(@FdpTakeRateStatusId IS NULL OR H.FdpTakeRateStatusId = @FdpTakeRateStatusId)
 	ORDER BY	
 		CASE @SortDirection
 		WHEN 'ASC' THEN
@@ -66,23 +52,23 @@ AS
 				-- First sort looks a little odd, as it's a different type to the rest of the dynamic sort
 				-- columns, we get a conversion error. The padding is so sorting a number as a string will
 				-- work correctly
-				WHEN 0 THEN RIGHT('000000' + CAST(V.FdpVolumeHeaderId AS NVARCHAR(10)), 6)
-				WHEN 1 THEN V.CreatedBy
+				WHEN 0 THEN RIGHT('000000' + CAST(H.FdpVolumeHeaderId AS NVARCHAR(10)), 6)
+				WHEN 1 THEN H.CreatedBy
 				WHEN 2 THEN P.VehicleName
 				WHEN 3 THEN P.VehicleAKA
 				WHEN 4 THEN P.ModelYear
-				WHEN 5 THEN D.Gateway
+				WHEN 5 THEN H.Gateway
 			END
 		END ASC,
 		CASE @SortDirection
 		WHEN 'DESC' THEN
 			CASE ISNULL(@SortIndex, 0)
-				WHEN 0 THEN RIGHT('000000' + CAST(V.FdpVolumeHeaderId AS NVARCHAR(10)), 6)
-				WHEN 1 THEN V.CreatedBy
+				WHEN 0 THEN RIGHT('000000' + CAST(H.FdpVolumeHeaderId AS NVARCHAR(10)), 6)
+				WHEN 1 THEN H.CreatedBy
 				WHEN 2 THEN P.VehicleName
 				WHEN 3 THEN P.VehicleAKA
 				WHEN 4 THEN P.ModelYear
-				WHEN 5 THEN D.Gateway
+				WHEN 5 THEN H.Gateway
 			END	
 		END DESC
 	

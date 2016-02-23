@@ -42,13 +42,21 @@
       <HintPath>..\packages\DapperExtensions.1.4.4\lib\net40\DapperExtensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="FluentValidation, Version=6.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.6.1.0.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.2.0.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -101,8 +109,8 @@
     <Compile Include="Context\DocumentDataContext.cs" />
     <Compile Include="Context\EmailDataContext.cs" />
     <Compile Include="DataStore\EmailTemplateDS.cs" />
-    <Compile Include="DataStore\ForecastComparisonDal.cs" />
-    <Compile Include="DataStore\ForecastComparisonViewDal.cs" />
+    <Compile Include="DataStore\ForecastComparisonDataStore.cs" />
+    <Compile Include="DataStore\ForecastComparisonViewDataStore.cs" />
     <Compile Include="DataStore\ForecastViewDal.cs" />
     <Compile Include="DataStore\NewsDataStore.cs" />
     <Compile Include="DataStore\OXOVehicleDS.cs">
@@ -144,6 +152,10 @@
     <ProjectReference Include="..\FeatureDemandPlanning.Model\FeatureDemandPlanning.Model.csproj">
       <Project>{dcb42053-f686-4cd9-be40-9bf11bfe19e1}</Project>
       <Name>FeatureDemandPlanning.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Helpers\FeatureDemandPlanning.Helpers.csproj">
+      <Project>{F8BC5FC7-435B-49F5-B7C5-84BDA34D97EB}</Project>
+      <Name>FeatureDemandPlanning.Helpers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

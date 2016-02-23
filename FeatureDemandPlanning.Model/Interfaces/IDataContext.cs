@@ -1,19 +1,22 @@
-﻿namespace FeatureDemandPlanning.Model.Interfaces
+﻿using Ninject;
+
+namespace FeatureDemandPlanning.Model.Interfaces
 {
     public interface IDataContext
     {
+        string CurrentCDSId { get; }
         IDbHelper GetHelper();
-        IConfigurationDataContext Configuration { get;}
-        IEmailDataContext Email { get; }
-        IUserDataContext User { get; }
-        IDocumentDataContext Document { get; }
-        IVehicleDataContext Vehicle { get; }
-        //IForecastDataContext Forecast { get; }
-        IImportDataContext Import { get; }
-        IMarketDataContext Market { get; }
-        ITakeRateDataContext TakeRate { get; }
-        IReferenceDataContext References { get; }
-        INewsDataContext News { get; }
+        IConfigurationDataContext Configuration { get; set;  }
+        IEmailDataContext Email { get; set; }
+        IUserDataContext User { get; set; }
+        [Inject]
+        IDocumentDataContext Document { get; set; }
+        IVehicleDataContext Vehicle { get; set; }
+        IImportDataContext Import { get; set; }
+        IMarketDataContext Market { get; set; }
+        ITakeRateDataContext TakeRate { get; set; }
+        IReferenceDataContext References { get; set; }
+        INewsDataContext News { get; set; }
 
         ConfigurationSettings ConfigurationSettings { get; }
     }

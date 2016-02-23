@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
@@ -36,7 +35,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("RuleResultDataStore.RuleResultGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -57,7 +57,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-				   AppHelper.LogError("RuleResultDataStore.RuleResultGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -107,8 +108,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("RuleResultDataStore.RuleResultSave", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -131,8 +132,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("RuleResultDataStore.RuleResultDelete", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -157,8 +158,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("RuleResultDataStore.RuleResultDeleteProg", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 

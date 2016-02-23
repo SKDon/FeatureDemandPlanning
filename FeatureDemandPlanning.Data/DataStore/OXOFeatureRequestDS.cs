@@ -11,7 +11,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
@@ -43,7 +42,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("FeatureRequestDataStore.FeatureRequestGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -64,7 +64,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-				   AppHelper.LogError("FeatureRequestDataStore.FeatureRequestGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -113,8 +114,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("FeatureRequestDataStore.FeatureRequestSave", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -137,8 +138,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("FeatureRequestDataStore.FeatureRequestDelete", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 

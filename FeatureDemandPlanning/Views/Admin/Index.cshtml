@@ -40,7 +40,7 @@
     <p style="height:40px">Manage Features</p>
     <p><a class="btn btn-default col-xs-10 col-xs-offset-1" href="@Url.Action("Feature", "Admin")" role="button">Manage Features</a></p>
 </div>
-<div class="col-xs-12 col-md-3 col-sm-6 col-md-offset-2 text-center inverse home-button">
+<div class="col-xs-12 col-md-3 col-sm-6 text-center inverse home-button">
     <a href="@Url.Action("Index", "IgnoredException")">
         <img src="~/Content/Images/Icons/mapping64.png" style="opacity:0.9;border:0" />
     </a>
@@ -57,12 +57,21 @@
     <p><a class="btn btn-default col-xs-10 col-xs-offset-1" href="@Url.Action("TopMarkets", "Markets")" role="button">Top Markets</a></p>
 </div>
     <div class="col-xs-12 col-md-3 col-sm-6 text-center inverse home-button">
-    <a href="@Url.Action("Index", "User")">
-        <img src="~/Content/Images/Icons/users64.png" style="opacity:0.9;border:0" />
+        <a href="@Url.Action("Index", "User")">
+            <img src="~/Content/Images/Icons/users64.png" style="opacity: 0.9; border: 0"/>
+        </a>
+        <h2 style="height: 66px">Users</h2>
+        <p style="height: 40px">User and permission management</p>
+        <p><a class="btn btn-default col-xs-10 col-xs-offset-1" href="@Url.Action("Index", "User")" role="button">Users</a>
+        </p>
+    </div>
+<div class="col-xs-12 col-md-3 col-sm-6 text-center inverse home-button">
+    <a href="@Url.Action("News", "Admin")">
+        <img src="~/Content/Images/Icons/news64.png" style="opacity:0.9;border:0" />
     </a>
-    <h2 style="height:66px">Users</h2>
-    <p style="height:40px">User and permission management</p>
-    <p><a class="btn btn-default col-xs-10 col-xs-offset-1" href="@Url.Action("Index", "User")" role="button">Users</a></p>
+    <h2 style="height:66px">News</h2>
+    <p style="height:40px">News article management</p>
+    <p><a class="btn btn-default col-xs-10 col-xs-offset-1" href="@Url.Action("News", "Admin")" role="button">News</a></p>
 </div>
 }
 

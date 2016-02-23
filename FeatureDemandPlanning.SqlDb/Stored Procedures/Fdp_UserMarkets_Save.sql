@@ -57,7 +57,7 @@ AS
 		INSERT (FdpUserId, MarketId, FdpUserActionId, IsActive) 
 		VALUES (FdpUserId, MarketId, FdpUserActionId, 1)
 		
-	WHEN NOT MATCHED BY SOURCE THEN
+	WHEN NOT MATCHED BY SOURCE AND TARGET.FdpUserId = @FdpUserId THEN
 	
 		DELETE;
 	

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using System.Reflection;
 using FeatureDemandPlanning.Model.Dapper;
@@ -38,7 +37,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FeatureGetManyByDocumentId", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -94,7 +93,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FeatureGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -113,7 +113,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FeatureGetManyBlank", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -134,7 +135,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FeatureGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -156,7 +158,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.ProgrammeFeatureGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -178,7 +181,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.ProgrammeGSFGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -199,7 +203,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.RuleToolTipGetByFeature", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -227,8 +232,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.ProgrammeFeatureCommentSave", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
             return retVal;            
@@ -255,8 +260,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.ProgrammeFeatureCommentSave", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
             return retVal;
@@ -283,8 +288,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.ProgrammeGSFCommentSave", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
             return retVal;
@@ -311,8 +316,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.ProgrammeGSFCommentSave", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
             return retVal;
@@ -331,7 +336,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.MFDFeatureGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -352,7 +358,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.JMFDFeatureGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -372,7 +379,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FeatureGroupGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -397,7 +405,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FeatureMappingDelete", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -421,7 +429,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FeatureMappingGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -449,7 +457,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FeatureMappingSave", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -469,7 +477,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpFeatureDelete", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -488,7 +496,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpFeatureGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -572,7 +580,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpDerivativeGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -596,7 +604,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpFeatureSave", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -616,7 +624,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpSpecialFeatureDelete", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -635,7 +643,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpSpecialFeatureGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -656,7 +664,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpSpecialFeatureGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -679,7 +687,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpSpecialFeatureSave", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -705,7 +713,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpFeatureMappingDelete", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -729,7 +737,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FeatureMappingGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -805,7 +813,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpFeatureMappingGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -830,7 +838,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpFeatureMappingCopy", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -854,7 +862,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpSpecialFeatureMappingGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -879,7 +887,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpSpecialFeatureMappingDelete", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -955,7 +963,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpSpecialFeatureMappingGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -981,7 +989,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpSpecialFeatureMappingCopy", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }

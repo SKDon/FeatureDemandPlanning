@@ -23,9 +23,6 @@ AS
 		, CAST(strval AS INT) AS FdpUserRoleId
 	FROM dbo.FN_SPLIT(@RoleIds, N',')
 	
-	SELECT FdpUserId, FdpUserRoleId
-	FROM @Role
-	
 	MERGE INTO Fdp_UserRoleMapping AS TARGET
 	USING (
 		SELECT FdpUserId, FdpUserRoleId
@@ -46,8 +43,8 @@ AS
 		INSERT (FdpUserId, FdpUserRoleId, IsActive) 
 		VALUES (FdpUserId, FdpUserRoleId, 1)
 		
-	WHEN NOT MATCHED BY SOURCE THEN
+	WHEN NOT MATCHED BY SOURCE AND TARGET.FdpUserId = @FdpUserId THEN
 	
 		DELETE;
-	
+		
 	EXEC Fdp_UserRole_GetMany @CDSId = @CDSId;

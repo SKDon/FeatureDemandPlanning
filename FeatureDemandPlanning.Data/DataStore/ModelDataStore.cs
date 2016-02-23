@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
@@ -36,7 +35,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpAvailableModelByMarketGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -59,7 +58,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpAvailableModelByMarketGroupGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -87,7 +86,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("ModelDataStore.ModelGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -107,7 +107,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ModelDataStore.ModelGetManyBlank", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -128,7 +129,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-				   AppHelper.LogError("ModelDataStore.ModelGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -174,8 +176,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("ModelDataStore.ModelSave", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -199,8 +201,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("ModelDataStore.ModelDelete", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -221,8 +223,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ModelDataStore.OXO_Programme_GenerateAllModels", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -243,7 +245,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("ModelDataStore.GSFModelGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 

@@ -67,28 +67,7 @@
             </div>
         </div>
         <div class="viewport-toolbar pull-right col-xs-12 col-lg-6">
-            <div class="btn-group pull-right">
-                @if (Model.AllowEdit)
-                {
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Save" disabled="disabled"><i class="glyphicon glyphicon-save"></i> Commit Changes</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Undo" disabled="disabled"><span class="glyphicon glyphicon-repeat"></span> Undo</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History"><span class="glyphicon glyphicon glyphicon-list-alt"></span> History</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" disabled="disabled"><span class="glyphicon glyphicon-flag"></span> Market Review</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Publish" disabled="disabled"><span class="glyphicon glyphicon-pushpin"></span> Publish</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Toggle"><span class="glyphicon glyphicon-minus"></span></button>
-                    <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
-                        <span class="glyphicon glyphicon-collapse-down"></span>
-                    </a>
-                }
-                else
-                {
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History"><span class="glyphicon glyphicon glyphicon-list-alt"></span> History</button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Toggle"><span class="glyphicon glyphicon-minus"></span></button>
-                    <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
-                        <span class="glyphicon glyphicon-collapse-down"></span>
-                    </a>
-                }
-            </div>
+            @Html.Partial("_Buttons")
         </div>
     </div>
 
@@ -97,7 +76,8 @@
             <table id="@(Model.IdentifierPrefix)_TakeRateData" class="table table-bordered table-condensed dataTable cross-tab">
                 <thead>
                     <tr class="cross-tab-header">
-                        <th colspan="4" class="text-right first-cell">
+                        <th colspan="4" class="text-center first-cell">
+                            
                         </th>
                         @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
                         {
@@ -106,7 +86,7 @@
                             {
                                 modelClassName = "fdp-model";
                             }
-                            <th class="text-center model @modelClassName" data="@availableModel.StringIdentifier" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
+                            <th class="text-center model @modelClassName" data="@availableModel.StringIdentifier" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier" data-model="@availableModel.StringIdentifier">
                                 <div class="glyphicon glyphicon-alert validation-error model-validation-error"
                                      style="display: none"
                                      data-content=""></div>
@@ -127,7 +107,7 @@
                             {
                                 modelClassName = "fdp-model";
                             }
-                            <th class="text-center bmc @modelClassName">
+                            <th class="text-center bmc @modelClassName" data-model="@availableModel.StringIdentifier">
                                 @if (!string.IsNullOrEmpty(availableModel.BMC))
                                 {
                                     <span>@availableModel.BMC</span>
@@ -148,7 +128,7 @@
                             {
                                 modelClassName = "fdp-model";
                             }
-                            <th class="text-center trim-level @modelClassName">
+                            <th class="text-center trim-level @modelClassName" data-model="@availableModel.StringIdentifier">
                                 @if (!string.IsNullOrEmpty(availableModel.TrimLevel))
                                 {
                                     <span>

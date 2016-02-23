@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using FeatureDemandPlanning.DataStore;
 using FeatureDemandPlanning.Model.Filters;
 
 namespace FeatureDemandPlanning.DataStore
@@ -54,7 +52,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -75,7 +74,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpOxoDocumentsGetMany.OXODocGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -95,7 +95,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocGetManyByVehicle", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -115,7 +116,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocGetManyByUser", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -136,7 +138,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -178,8 +181,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocSave", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -201,8 +204,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocDelete", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -256,7 +259,8 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     catch (Exception ex)
                     {
-                        AppHelper.LogError("OXODocDataStore.OXODocGetItemData", ex.Message, CurrentCDSID);
+                        Log.Error(ex);
+                        throw;
                     }
                 }
 
@@ -305,7 +309,8 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     catch (Exception ex)
                     {
-                        AppHelper.LogError("OXODocDataStore.OXODocGetItemData", ex.Message, CurrentCDSID);
+                        Log.Error(ex);
+                        throw;
                     }
                 }
 
@@ -389,8 +394,8 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     catch (Exception ex)
                     {
-                        AppHelper.LogError("OXODocDataStore.OXODocBulkUpdate", ex.Message, CurrentCDSID);
-                        retVal = false;
+                        Log.Error(ex);
+                        throw;
                     }
                 }
                
@@ -434,7 +439,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocGetItemDataHistory", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -456,7 +462,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocAvailableModelsByMarketGroup", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -479,7 +486,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocAvailableModelsByMarket", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -501,7 +509,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.FdpModelsByMarketGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -522,7 +531,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.FdpModelsByMarketGroupGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -550,7 +560,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocGetItemDataChain", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -574,8 +585,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocValidateEFG", ex.Message, CurrentCDSID);
-                    retVal = -1000;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -599,8 +610,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.OXODocValidateEmptyCells", ex.Message, CurrentCDSID);
-                    retVal = -1000;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -619,7 +630,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDataStore.GatewayGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -652,8 +664,8 @@ namespace FeatureDemandPlanning.DataStore
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    retVal = false;
-                    AppHelper.LogError("OXODocDataStore.OXOCloneForwardDoc", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
                 finally
                 {
@@ -692,8 +704,8 @@ namespace FeatureDemandPlanning.DataStore
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    newDocId = -1000;
-                    AppHelper.LogError("OXODocDataStore.OXOCloneGatewayDoc", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
                 finally
                 {
@@ -724,7 +736,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODocDS.DocGetConfiguration", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 

@@ -1,4 +1,5 @@
-﻿using FeatureDemandPlanning.Model.Results;
+﻿using System;
+using FeatureDemandPlanning.Model.Results;
 using FluentValidation;
 using System.Net;
 using System.Web.Mvc;
@@ -23,6 +24,7 @@ namespace FeatureDemandPlanning.Model.Attributes
 
             if (filterContext.Exception is ValidationException)
             {
+                //filterContext.Exception.Message = filterContext.Exception.Message.Replace(Environment.NewLine, "<br/>");
                 statusCode = HttpStatusCode.BadRequest;
             }
           

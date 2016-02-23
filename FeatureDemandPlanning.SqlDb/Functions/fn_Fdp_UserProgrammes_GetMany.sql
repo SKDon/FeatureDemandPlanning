@@ -24,6 +24,8 @@ BEGIN
 	JOIN Fdp_UserAction		AS A ON P.FdpUserActionId	= A.FdpUserActionId
 	WHERE
 	U.CDSId = @CDSId
+	ORDER BY
+	O.VehicleName, O.ModelYear
 	
 	RETURN @Programmes
    

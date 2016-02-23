@@ -9,18 +9,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @if (!string.IsNullOrEmpty(@ViewBag.Title))
     {
-        <title>FDP - @ViewBag.Title</title>
+        <title>FDD - @ViewBag.Title</title>
     }
     else
     {
-        <title>FDP</title>
+        <title>FDD</title>
     }
 
     @Styles.Render("~/bundles/css")
 
     @RenderSection("PageStyles", false)
 
-    <link rel="icon" type="image/x-icon" href="@Url.Content("~/favicon.ico")" />
+    <link rel="icon" type="image/x-icon" href="@Url.Content("~/favicon.ico?v=3")" />
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -35,7 +35,7 @@
 
                 <a href="@Url.Action("Index", "Home")">
                     <div class="navbar-brand metal linear">
-                    <div style="margin-top:-3px">F.D.P</div>
+                    <div style="margin-top:-3px">F.D.D</div>
                     <p>Powered by RADS</p>
                     </div>
                 </a>

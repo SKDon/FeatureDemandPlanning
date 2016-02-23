@@ -42,6 +42,8 @@ namespace FeatureDemandPlanning.Model.Helpers
 
     public class ExcelReader
     {
+        private readonly Logger Log = Logger.Instance;
+
         public static DataTable ReadExcelAsDataTable(string filePath)
         {
             return ReadExcelAsDataTable(filePath, new ImportFileSettings());
@@ -85,6 +87,8 @@ namespace FeatureDemandPlanning.Model.Helpers
 
     public class ClosedXmlExcelGenerator
     {
+        private static readonly Logger Log = Logger.Instance;
+
         public static XLWorkbook GenerateExcelCoverSheet(XLWorkbook workbook, int progid, int docid, string cdsid, OXODoc OXODoc, bool popDoc)
         {
             Stopwatch stopWatch = new Stopwatch();
@@ -165,7 +169,8 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("ExcelHelper.GenerateExcelCoverSheet", ex.Message, "SYSTEM");
+                Log.Error(ex);
+                throw;
             }
 
             return workbook;
@@ -295,7 +300,8 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("ExcelHelper.GenerateExcelChangeLog", ex.Message, "SYSTEM");
+                Log.Error(ex);
+                throw;
             }
 
             return workbook;
@@ -383,7 +389,8 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("ExcelHelper.GenerateExcelRFR", ex.Message, "SYSTEM");
+                Log.Error(ex);
+                throw;
             }
 
             return workbook;
@@ -564,7 +571,8 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("ExcelHelper.GenerateExcelMBM", ex.Message, "SYSTEM");
+                Log.Error(ex);
+                throw;
             }
 
             return workbook;
@@ -953,7 +961,8 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("ExcelHelper.GenerateExcelFBM", ex.Message, "SYSTEM");
+                Log.Error(ex);
+                throw;
             }
 
             return workbook;
@@ -1129,7 +1138,8 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("ExcelHelper.GenerateExcelGSF", ex.Message, "SYSTEM");
+                Log.Error(ex);
+                throw;
             }
 
             return workbook;
@@ -1537,7 +1547,8 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("ExcelHelper.GenerateExcelOXO", ex.Message, "SYSTEM");
+                Log.Error(ex);
+                throw;
             }
 
             return workbook;
@@ -1945,7 +1956,8 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("ExcelHelper.GenerateExcelOXO", ex.Message, "SYSTEM");
+                Log.Error(ex);
+                throw;
             }
 
             return workbook;
@@ -2059,7 +2071,8 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("ExcelHelper.GenerateExcelChangeSet", ex.Message, "SYSTEM");
+                Log.Error(ex);
+                throw;
             }
 
             return workbook;
@@ -2082,7 +2095,8 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("ExcelHelper.HideNoDerivativeColumn", ex.Message, "SYSTEM");
+                Log.Error(ex);
+                throw;
             }
 
         }
@@ -2133,8 +2147,8 @@ namespace FeatureDemandPlanning.Model.Helpers
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("ExcelHelper.SplitKD", ex.Message, "SYSTEM");
-                return false;
+                Log.Error(ex);
+                throw;
             }
 
         }

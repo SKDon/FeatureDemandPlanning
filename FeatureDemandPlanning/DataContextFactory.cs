@@ -1,12 +1,19 @@
 ﻿using FeatureDemandPlanning.Model.Interfaces;
+using Ninject;
 
 namespace FeatureDemandPlanning
 {
     public static class DataContextFactory
     {
-        public static IDataContext CreateDataContext(string cdsId)
+        public static IDataContext CreateDataContext()
         {
-            return new DataStore.DataContext(cdsId);
+            IDataContext context;
+            using (var kernel = new StandardKernel(new Bindings.DataContextModule()))
+            {
+                context = kernel.Get<IDataContext>();
+            }
+
+            return context;
         }
     }
 }

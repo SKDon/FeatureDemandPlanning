@@ -156,7 +156,7 @@ namespace FeatureDemandPlanning.Model
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODoc.LoadSourceXML", ex.Message, "system");
+                    Log.Error(ex);
                 }
             }
             return sb.ToString();                
@@ -182,7 +182,7 @@ namespace FeatureDemandPlanning.Model
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("OXODoc.LoadSourceXSL", ex.Message, "system");
+                    Log.Error(ex);
                 }
             }
             return sb.ToString();
@@ -207,7 +207,7 @@ namespace FeatureDemandPlanning.Model
             }
             catch (Exception ex)
             {
-                AppHelper.LogError("MarketDataStore.MarketGetMany", ex.Message, cdsid);
+                Log.Error(ex);
                 retVal = false;        
             }
 

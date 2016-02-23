@@ -7,6 +7,7 @@ namespace FeatureDemandPlanning.Model
         public int? FdpUserId { get; set; }
         public string CDSId { get; set; }
         public string FullName { get; set; }
+        public string Mail { get; set; }
         public bool IsActive { get; set; }
         public bool IsAdmin { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -37,13 +38,11 @@ namespace FeatureDemandPlanning.Model
                 FdpUserId.GetValueOrDefault().ToString(),
                 CDSId, 
                 FullName,
+                Mail,
                 Roles,
                 Programmes,
                 Markets,
-                IsActive ? "YES" : "NO",
-                IsAdmin ? "YES" : "NO",
-                CreatedOn.HasValue ? CreatedOn.Value.ToString("dd/MM/yyyy HH:mm") : string.Empty,
-                CreatedBy
+                IsActive ? "YES" : "NO"
                 
             };
         }

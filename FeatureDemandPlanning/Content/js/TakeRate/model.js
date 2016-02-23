@@ -2,13 +2,6 @@
 
 var model = namespace("FeatureDemandPlanning.TakeRate");
 
-model.TakeRateFilter = function () {
-    var me = this;
-    me.TakeRateId = null;
-    me.FilterMessage = "";
-    me.TakeRateStatusId = null;
-}
-
 model.TakeRates = function (params) {
     var uid = 0;
     var privateStore = {};

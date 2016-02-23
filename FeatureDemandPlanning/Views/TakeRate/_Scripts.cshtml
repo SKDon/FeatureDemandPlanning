@@ -5,8 +5,8 @@
     var takeRates, page, modal;
     var params = {
         ActionsUri: "@Url.Action("ContextMenu")",
-        TakeRateUri: "@Url.Action("Index", "TakeRateData")",
-        TakeRatesUri: "@Url.Action("ListTakeRates")",
+        TakeRateUri: "@Url.RouteUrl("TakeRate")",
+        TakeRatesUri: "@Url.RouteUrl("ListTakeRates")",
         ModalContentUri: "@Url.Action("ModalContent")",
         ModalActionUri: "@Url.Action("ModalAction")",
         ModalDialogId: "modal",

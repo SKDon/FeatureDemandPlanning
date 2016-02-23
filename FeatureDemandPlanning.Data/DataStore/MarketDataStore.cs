@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
@@ -30,7 +29,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.MarketGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -50,7 +50,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.MarketGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -68,7 +69,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.MarketGroupGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -87,7 +89,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.MarketAvailableGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -96,16 +99,17 @@ namespace FeatureDemandPlanning.DataStore
         public IEnumerable<Market> FdpMarketAvailableGetMany()
         {
             IEnumerable<Market> retVal = null;
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
-                    var para = new DynamicParameters();
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     retVal = conn.Query<Market>("dbo.Fdp_Market_AvailableGetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.FdpMarketAvailableGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -128,7 +132,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.MarketGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -146,13 +150,13 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (SqlException sx)
                 {
-                    AppHelper.LogError("MarketDataStore.TopMarketGetMany::0", sx.Message, CurrentCDSID);
-                    throw new ApplicationException(sx.Message);
+                    Log.Error(sx);
+                    throw;
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.TopMarketGetMany::1", ex.Message, CurrentCDSID);
-                    throw new ApplicationException(ex.Message);
+                    Log.Error(ex);
+                    throw;
                 }
 
             }
@@ -172,13 +176,13 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (SqlException sx)
                 {
-                    AppHelper.LogError("MarketDataStore.TopMarketGet::0", sx.Message, CurrentCDSID);
-                    throw new ApplicationException(sx.Message);
+                    Log.Error(sx);
+                    throw;
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.TopMarketGet::1", ex.Message, CurrentCDSID);
-                    throw new ApplicationException(ex.Message);
+                    Log.Error(ex);
+                    throw;
                 }
             }
             return retVal;
@@ -200,13 +204,13 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (SqlException sx)
                 {
-                    AppHelper.LogError("MarketDataStore.TopMarketSave::0", sx.Message, CurrentCDSID);
-                    throw new ApplicationException(sx.Message);
+                    Log.Error(sx);
+                    throw;
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.TopMarketSave::1", ex.Message, CurrentCDSID);
-                    throw new ApplicationException(ex.Message);
+                    Log.Error(ex);
+                    throw;
                 }
             }
             return retVal;
@@ -226,13 +230,13 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (SqlException sx)
                 {
-                    AppHelper.LogError("MarketDataStore.TopMarketDelete::0", sx.Message, CurrentCDSID);
-                    throw new ApplicationException(sx.Message);
+                    Log.Error(sx);
+                    throw;
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.TopMarketDelete::1", ex.Message, CurrentCDSID);
-                    throw new ApplicationException(ex.Message);
+                    Log.Error(ex);
+                    throw;
                 }
             }
             return retVal;
@@ -315,7 +319,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FeatureDataStore.FdpMarketMappingGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -343,7 +347,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.FdpMarketMappingDelete", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -378,7 +382,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("MarketDataStore.FdpMarketMappingSave", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }
@@ -403,7 +407,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("FdpVolumeDataStore.FdpMarketMappingGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }

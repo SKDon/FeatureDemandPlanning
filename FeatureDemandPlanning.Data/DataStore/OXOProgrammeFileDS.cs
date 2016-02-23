@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
@@ -32,7 +31,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("OXOProgrammeFileDataStore.OXOProgrammeFileGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -53,7 +53,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-				   AppHelper.LogError("OXOProgrammeFileDataStore.OXOProgrammeFileGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -109,8 +110,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("OXOProgrammeFileDataStore.OXOProgrammeFileSave", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 
@@ -133,8 +134,8 @@ namespace FeatureDemandPlanning.DataStore
 				}
 				catch (Exception ex)
 				{
-					AppHelper.LogError("OXOProgrammeFileDataStore.OXOProgrammeFileDelete", ex.Message, CurrentCDSID);
-					retVal = false;
+                    Log.Error(ex);
+                    throw;
 				}
 			}
 

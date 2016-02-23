@@ -286,12 +286,18 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_TrimMapping_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_User_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_User_Get.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_User_GetMany.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_User_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_User_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_User_SetIsActive.sql" />
     <Build Include="Stored Procedures\Fdp_User_SetIsAdmin.sql">
       <AnsiNulls>Off</AnsiNulls>
@@ -769,18 +775,70 @@
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_UserProgrammes_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_UserMarkets_Save.sql" />
-    <Build Include="Views\Fdp_User_VW.sql" />
+    <Build Include="Stored Procedures\Fdp_UserProgrammes_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_UserMarkets_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_User_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Functions\fn_Fdp_UserRoles_GetMany.sql" />
     <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany.sql" />
     <Build Include="Functions\fn_Fdp_UserMarkets_GetMany.sql" />
-    <Build Include="Stored Procedures\Fdp_UserRoles_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_UserRoles_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Views\Fdp_VolumeHeader_VW.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Functions\fn_Fdp_FeatureApplicability_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_MarketReview_GetManyByUsername.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_MarketReview.sql" />
+    <Build Include="Functions\fn_Fdp_UserMarkets_GetMany2.sql" />
+    <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany2.sql" />
+    <Build Include="Tables\Fdp_MarketReviewStatus.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_MarketReview_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_MarketReview_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_MarketReview_Get.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_EmailTemplate.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_EmailTemplate_Get.sql" />
+    <Build Include="Tables\Fdp_MarketReviewAudit.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_GetHistory.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_Get.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>

@@ -1,4 +1,5 @@
-﻿using FeatureDemandPlanning.Model;
+﻿using System;
+using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,24 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<IEnumerable<News>> ListLatestNews()
         {
-            return await Task.FromResult<IEnumerable<News>>(_newsDataStore.NewsGetMany().Take(5));
+            return await Task.FromResult(_newsDataStore.NewsGetMany().Take(5));
         }
         public async Task<IEnumerable<News>> ListNews()
         {
-            return await Task.FromResult<IEnumerable<News>>(_newsDataStore.NewsGetMany());
+            return await Task.FromResult(_newsDataStore.NewsGetMany());
         }
 
-        private NewsDataStore _newsDataStore = null;
+        private readonly NewsDataStore _newsDataStore;
+
+
+        public void AddNews(string newArticle)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void RemoveNews(int articleId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

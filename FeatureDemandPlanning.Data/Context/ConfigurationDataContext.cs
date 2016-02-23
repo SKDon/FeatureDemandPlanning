@@ -20,7 +20,7 @@ namespace FeatureDemandPlanning.DataStore
  
         private void LoadConfigurationData()
         {
-            Log.Debug(MethodBase.GetCurrentMethod().Name);
+            //Log.Debug(MethodBase.GetCurrentMethod().Name);
 
             var dataStore = new ConfigurationDataStore(CDSID);
             _configurationData = dataStore.ConfigurationGetMany();
@@ -28,12 +28,12 @@ namespace FeatureDemandPlanning.DataStore
 
         private void BuildConfiguration()
         {
-            Log.Debug(MethodBase.GetCurrentMethod().Name);
+            //Log.Debug(MethodBase.GetCurrentMethod().Name);
 
             Configuration = new ConfigurationSettings();
             foreach (var setting in _configurationData)
             {
-                Log.Debug(string.Format("{0}:{1}:{2}", setting.ConfigurationKey, setting.Value, setting.DataType));
+                //Log.Debug(string.Format("{0}:{1}:{2}", setting.ConfigurationKey, setting.Value, setting.DataType));
                 switch (setting.DataType.ToLower())
                 {
                     case "system.string":

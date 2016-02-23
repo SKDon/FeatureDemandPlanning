@@ -22,6 +22,7 @@ model.AddNewUserAction = function (params) {
         return $.extend({}, getData(), {
             "CDSId": me.getCDSId(),
             "FullName": me.getFullName(),
+            "Mail": me.getMail(),
             "IsAdmin": me.getIsAdmin()
         });
     };
@@ -42,6 +43,9 @@ model.AddNewUserAction = function (params) {
     };
     me.getIsAdmin = function () {
         return $("#" + me.getIdentifierPrefix() + "_IsAdmin").is(":checked");
+    };
+    me.getMail = function() {
+        return $("#" + me.getIdentifierPrefix() + "_Mail").val();
     };
     me.initialise = function () {
         me.registerEvents();

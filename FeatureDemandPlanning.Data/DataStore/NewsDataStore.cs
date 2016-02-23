@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -34,7 +32,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("NewsDataStore.FdpNewsGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
                     throw;
                 }
             }

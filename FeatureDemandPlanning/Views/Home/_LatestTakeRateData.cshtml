@@ -13,9 +13,8 @@
     <div class="row inverse" style="font-size:0.8em;">
         <div class="col-lg-12">
             <blockquote style="padding:0px 20px;margin:0px 0px 10px">
-                <h5>@Html.ActionLink(
+                <h5>@Html.RouteLink(
                     string.Format("{0} - {1} - v{2}", summary.OxoDocument, summary.Status, summary.Version),
-                    "Index",
                     "TakeRateData",
                     new { TakeRateId = summary.TakeRateId },
                     new { @class = "inverse" })</h5>

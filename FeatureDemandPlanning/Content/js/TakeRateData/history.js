@@ -2,7 +2,7 @@
 
 var model = namespace("FeatureDemandPlanning.Volume");
 
-model.Save = function (params) {
+model.History = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
@@ -19,6 +19,9 @@ model.Save = function (params) {
     };
     me.getActionContentUri = function (action) {
         return privateStore[me.id].ModalContentUri;
+    };
+    me.getFilterAction = function() {
+        return 12;
     };
     me.getActionModel = function (action) {
         var actionModel = null;

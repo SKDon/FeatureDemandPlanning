@@ -6,6 +6,7 @@ CREATE PROCEDURE [dbo].[Fdp_ProgrammeByGateway_GetMany]
 	, @ModelYear			NVARCHAR(10)	= NULL
 	, @Gateway				NVARCHAR(10)	= NULL
 	, @TotalRecords			INT				OUTPUT
+	, @CDSId				NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
 	
@@ -14,7 +15,7 @@ AS
 	FROM Fdp_Configuration
 	WHERE
 	ConfigurationKey = 'ShowAllOXODocuments'
-	
+
 	SELECT 
 		  P.Id
 		, P.VehicleId
@@ -36,15 +37,16 @@ AS
 		, P.CreatedOn  
 		, P.UpdatedBy  
 		, P.LastUpdated
-	FROM dbo.OXO_Programme_VW	AS P
-	JOIN dbo.OXO_Doc			AS D ON		P.Id		= D.Programme_Id
-									 AND	
-									 (
-										@ShowAll = 1
-										OR
-										(@ShowAll = 0 AND D.[Status] = 'PUBLISHED')
-									 )
-	JOIN dbo.OXO_Gateway		AS G ON		D.Gateway	= G.Gateway
+	FROM dbo.OXO_Programme_VW		AS P
+	JOIN dbo.OXO_Doc				AS D	ON	P.Id = D.Programme_Id
+											AND	
+											(
+												@ShowAll = 1
+												OR
+												(@ShowAll = 0 AND D.[Status] = 'PUBLISHED')
+											)
+	JOIN dbo.OXO_Gateway			AS G	ON		D.Gateway	= G.Gateway
+	JOIN dbo.fn_Fdp_UserProgrammes_GetMany2(@CDSId) AS P1 ON P.Id = P1.ProgrammeId
 	WHERE
 	(@Make IS NULL OR P.VehicleMake = @Make)
 	AND
@@ -55,7 +57,6 @@ AS
 	(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
 	AND
 	(@Gateway IS NULL OR D.Gateway = @Gateway)
-	
 	ORDER BY 
 		P.VehicleName
 	  , P.ModelYear

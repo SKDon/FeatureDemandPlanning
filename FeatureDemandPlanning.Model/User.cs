@@ -12,6 +12,7 @@ namespace FeatureDemandPlanning.Model
         public int? FdpUserId { get; set; }
         public string CDSId { get; set; }
         public string FullName { get; set; }
+        public string Mail { get; set; }
         public bool IsActive { get; set; }
         public bool IsAdmin { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -28,6 +29,28 @@ namespace FeatureDemandPlanning.Model
             Markets = Enumerable.Empty<UserMarketMapping>();
         }
 
+        public bool HasEditRole()
+        {
+            return Roles.Any(
+                r => r == UserRole.Editor || r == UserRole.MarketReviewer);
+        }
+        public bool HasApproverRole()
+        {
+            return Roles.Any(r => r == UserRole.Approver);
+        }
+        public bool HasReviewerRole()
+        {
+            return Roles.Any(r => r == UserRole.MarketReviewer || r == UserRole.Approver);
+        }
+        public bool IsMarketEditable(int marketId)
+        {
+            return Markets.Any(m => m.Action == UserAction.Edit && m.MarketId == marketId);
+        }
+        public bool IsProgrammeEditable(int programmeId)
+        {
+            return Programmes.Any(
+                p => p.Action == UserAction.Edit && p.ProgrammeId == programmeId);
+        }
         public string[] ToJQueryDataTableResult()
         {
             return new[] 
@@ -35,12 +58,13 @@ namespace FeatureDemandPlanning.Model
                 FdpUserId.GetValueOrDefault().ToString(),
                 CDSId, 
                 FullName,
+                Mail,
+                Roles.ToCommaSeperatedString(),
                 Programmes.ToCommaSeperatedString(),
+                Markets.ToCommaSeperatedString(),
                 IsActive ? "YES" : "NO",
-                IsAdmin ? "YES" : "NO",
                 CreatedOn.HasValue ? CreatedOn.Value.ToString("dd/MM/yyyy HH:mm") : string.Empty,
-                CreatedBy,
-                Markets.ToCommaSeperatedString()
+                CreatedBy
             };
         }
 
@@ -51,6 +75,7 @@ namespace FeatureDemandPlanning.Model
                 CDSId = parameters.CDSId,
                 FullName = parameters.FullName,
                 IsAdmin = parameters.IsAdmin.GetValueOrDefault(),
+                Mail = parameters.Mail
             };
         }
     }

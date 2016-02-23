@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
@@ -26,11 +25,13 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     para.Add("@p_programme_id", progId, dbType: DbType.Int32);
-                    retVal = conn.Query<PackFeature>("dbo.OXO_PackFeature_GetMany", para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<PackFeature>("dbo.OXO_PackFeature_GetMany", para,
+                        commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("PackDataStore.FeaturePackGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -50,7 +51,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("PackDataStore.FeaturePackGetManyBlank", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -73,7 +75,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("PackDataStore.PackGet", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -114,8 +117,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("PackDataStore.PackSave", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -137,8 +140,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("PackDataStore.PackDelete", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -161,8 +164,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("PackDataStore.PackDelete", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -188,8 +191,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("PackDataStore.PackAddFeature", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -215,8 +218,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("PackDataStore.PackRemoveFeature", ex.Message, CurrentCDSID);
-                    retVal = false;
+                    Log.Error(ex);
+                    throw;
                 }
             }
 
@@ -238,7 +241,8 @@ namespace FeatureDemandPlanning.DataStore
                 }
                 catch (Exception ex)
                 {
-                    AppHelper.LogError("PackDataStore.ProgrammePackGetMany", ex.Message, CurrentCDSID);
+                    Log.Error(ex);
+                    throw;
                 }
             }
 

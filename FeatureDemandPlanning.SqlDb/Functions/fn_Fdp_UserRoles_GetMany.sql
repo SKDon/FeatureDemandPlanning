@@ -16,6 +16,8 @@ BEGIN
 	JOIN Fdp_UserRole				AS R1	ON	R.FdpUserRoleId		= R1.FdpUserRoleId
 	WHERE
 	U.CDSId = @CDSId
+	ORDER BY
+	R1.[Role]
 	
 	RETURN @Roles
    

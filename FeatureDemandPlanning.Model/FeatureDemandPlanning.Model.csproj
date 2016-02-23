@@ -57,13 +57,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FluentValidation.MVC5.5.6.2.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.2.0.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -112,12 +116,27 @@
     <Compile Include="BmcMapping.cs" />
     <Compile Include="CarLine.cs" />
     <Compile Include="ConfigurationSettings.cs" />
+    <Compile Include="EfgGrouping.cs" />
     <Compile Include="Empty\EmptyFdpValidation.cs" />
+    <Compile Include="Empty\EmptyMarketReview.cs" />
+    <Compile Include="Empty\EmptyRawTakeRateData.cs" />
+    <Compile Include="Enumerations\EmailEvent.cs" />
+    <Compile Include="Enumerations\MarketReviewStatus.cs" />
+    <Compile Include="Enumerations\TakeRateStatus.cs" />
     <Compile Include="Enumerations\UserAdminAction.cs" />
+    <Compile Include="Enumerations\ValidationRule.cs" />
     <Compile Include="ExclusiveFeatureGroup.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\UserExtensions.cs" />
     <Compile Include="FdpValidation.cs" />
     <Compile Include="Enumerations\UserRole.cs" />
+    <Compile Include="FeaturePack.cs" />
+    <Compile Include="Helpers\Logger.cs" />
+    <Compile Include="MarketReview.cs" />
+    <Compile Include="RawTakeRateData.cs" />
+    <Compile Include="RawTakeRateDataItem.cs" />
+    <Compile Include="RawTakeRateFeatureMixItem.cs" />
+    <Compile Include="RawTakeRateSummaryItem.cs" />
     <Compile Include="UserDataItem.cs" />
     <Compile Include="UserMarketMapping.cs" />
     <Compile Include="UserProgrammeMapping.cs" />
@@ -247,7 +266,6 @@
     <Compile Include="User.cs" />
     <Compile Include="Validators\AllFeatureVolumesMustBeLessThanModelVolume.cs" />
     <Compile Include="Validators\AllModelVolumesMustBeLessThanMarketVolume.cs" />
-    <Compile Include="Validators\ComparisonVehicleExtensions.cs" />
     <Compile Include="Interfaces\IConfigurationDataContext.cs" />
     <Compile Include="Interfaces\IForecast.cs" />
     <Compile Include="Interfaces\IImportDataContext.cs" />
@@ -320,13 +338,28 @@
     <Compile Include="Validators\ComparisonVehicleValidator.cs" />
     <Compile Include="Validators\ForecastVehicleValidator.cs" />
     <Compile Include="Validators\ImportExceptionParametersValidator.cs" />
+    <Compile Include="Validators\TakeRateForFeaturePackValidator.cs" />
+    <Compile Include="Validators\TakeRateForEfgValidator.cs" />
+    <Compile Include="Validators\TakeRateForModels100PercentValidator.cs" />
+    <Compile Include="Validators\Validator.cs" />
+    <Compile Include="Validators\VolumeForModelsNotEqualToMarketValidator.cs" />
+    <Compile Include="Validators\VolumeForFeatureGreaterThanModelValidator.cs" />
+    <Compile Include="Validators\NonApplicableFeature100PercentValidator.cs" />
+    <Compile Include="Validators\TakeRateFeatureMixValidator.cs" />
+    <Compile Include="Validators\TakeRateFeatureMixOutOfRangeValidator .cs" />
+    <Compile Include="Validators\TakeRateSummaryValidator.cs" />
+    <Compile Include="Validators\TakeRateDataValidator.cs" />
     <Compile Include="Validators\TakeRateParametersValidator.cs" />
+    <Compile Include="Validators\StandardFeature100PercentValidator.cs" />
+    <Compile Include="Validators\TakeRateDataOutOfRangeValidator.cs" />
+    <Compile Include="Validators\TakeRateSummaryOutOfRangeValidator.cs" />
     <Compile Include="Validators\VehicleValidator.cs" />
     <Compile Include="Validators\TakeRateDocumentValidator.cs" />
     <Compile Include="ViewModel\AdminViewModel.cs" />
     <Compile Include="FdpChangesetHistory.cs" />
     <Compile Include="ViewModel\IgnoredExceptionViewModel.cs" />
     <Compile Include="ViewModel\MarketMappingViewModel.cs" />
+    <Compile Include="ViewModel\MarketReviewViewModel.cs" />
     <Compile Include="ViewModel\SpecialFeatureMappingViewModel.cs" />
     <Compile Include="ViewModel\TrimMappingViewModel.cs" />
     <Compile Include="ViewModel\TrimViewModel.cs" />
@@ -362,8 +395,6 @@
     <Compile Include="Extensions\ModelTrimExtensions.cs" />
     <Compile Include="Extensions\ProgrammeExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Helpers\AppHelper.cs" />
-    <Compile Include="Helpers\EmailHelper.cs" />
     <Compile Include="Helpers\HtmlHelper.cs" />
     <Compile Include="Attributes\LogonAuthorize.cs" />
     <Compile Include="Dapper\sqlMapper.cs" />

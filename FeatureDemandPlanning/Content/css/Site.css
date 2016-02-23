@@ -62,6 +62,15 @@ a:hover {
     transition: 0.3s ease-in-out left;
 }
 
+.fade {
+   opacity: 0;
+   -webkit-transition: opacity 0.125s linear;
+      -moz-transition: opacity 0.125s linear;
+       -ms-transition: opacity 0.125s linear;
+        -o-transition: opacity 0.125s linear;
+           transition: opacity 0.125s linear;
+ }
+
 .fill {
     width:100%;
     height:100%;
@@ -785,6 +794,10 @@ ul.dropdown-menu > li span.glyphicon {
     /*text-decoration: underline;*/
 }
 
+.dropdown-menu > li > a:visited {
+    color: #061639;
+}
+
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > span:hover {
     text-decoration: none;
     color: #fff0aa !important;
@@ -991,7 +1004,7 @@ li.optionalFeature {
 .editable-cell input {
     width:75px !important;
     padding: 0 !important;
-    height: 20px !important;
+    height: 16px !important;
     color: #061639;
     font-weight:normal;
 }
@@ -1003,9 +1016,9 @@ li.optionalFeature {
 }
 
 .editable-header input {
-    width:75px !important;
+    width: 75px !important;
     padding: 0 !important;
-    height: 20px !important;
+    height: 16px !important;
     color: #061639;
     font-weight: normal;
 }
@@ -1254,13 +1267,18 @@ td.fdp-data-item-fixed {
 }
 
 .table-condensed > tbody > tr > td.feature-notes {
-    min-width: 55px;
-    max-width: 55px;
+    min-width: 75px;
+    max-width: 75px;
 }
 
 .table-condensed > tbody > tr > td.feature-code {
     min-width: 40px;
     max-width: 40px;
+}
+
+.table-condensed > tbody > tr > td.feature-mix {
+    min-width: 75px;
+    max-width: 75px;
 }
 
 .DTFC_LeftBodyWrapper {

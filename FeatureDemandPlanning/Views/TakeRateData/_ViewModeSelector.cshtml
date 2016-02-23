@@ -20,18 +20,18 @@
 <ul class="dropdown-menu">
     @if (!(Model.Document.Market is EmptyMarket))
     {
-        <li>@Html.ActionLink("Take Rate by %", "Index", new { takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
-        <li>@Html.ActionLink("Take Rate by Vol.", "Index", new { takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
+        <li>@Html.RouteLink("Take Rate by %", "TakeRateDataByMarket", new { takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id })</li>
+        <li>@Html.RouteLink("Take Rate by Vol.", "TakeRateDataByMarketRaw", new { takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id })</li>
     }
     else if (!(Model.Document.MarketGroup is EmptyMarketGroup))
     {
-        <li>@Html.ActionLink("Take Rate by %", "Index", new { takeRateId = Model.Document.TakeRateId, marketGroupId = Model.Document.MarketGroup.Id, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
-        <li>@Html.ActionLink("Take Rate by Vol.", "Index", new { takeRateId = Model.Document.TakeRateId, marketGroupId = Model.Document.MarketGroup.Id, resultsMode = enums.TakeRateResultMode.Raw })</li>
+        <li>@Html.RouteLink("Take Rate by %", "TakeRateDataByMarketGroup", new { takeRateId = Model.Document.TakeRateId, marketGroupId = Model.Document.MarketGroup.Id })</li>
+        <li>@Html.RouteLink("Take Rate by Vol.", "TakeRateDataByMarketGroupRaw", new { takeRateId = Model.Document.TakeRateId, marketGroupId = Model.Document.MarketGroup.Id })</li>
     }
     else
     {
-        <li>@Html.ActionLink("Take Rate by %", "Index", new { takeRateId = Model.Document.TakeRateId, resultsMode = enums.TakeRateResultMode.PercentageTakeRate })</li>
-        <li>@Html.ActionLink("Take Rate by Vol.", "Index", new { takeRateId = Model.Document.TakeRateId, resultsMode = enums.TakeRateResultMode.Raw })</li>
+        <li>@Html.RouteLink("Take Rate by %", "TakeRateData", new { takeRateId = Model.Document.TakeRateId })</li>
+        <li>@Html.RouteLink("Take Rate by Vol.", "TakeRateDataRaw", new { takeRateId = Model.Document.TakeRateId })</li>
     }
 </ul>
     </div>

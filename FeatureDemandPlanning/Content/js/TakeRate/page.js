@@ -31,7 +31,7 @@ page.TakeRatesPage = function (models) {
     me.configureDataTables = function () {
 
         var takeRateUri = getTakeRatesModel().getTakeRateUri();
-        var takeRateIndex = 0;
+        var takeRateIndex = 9;
 
         $("#tblTakeRates").DataTable({
             "serverSide": true,
@@ -50,7 +50,7 @@ page.TakeRatesPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 }
                 ,
@@ -60,7 +60,7 @@ page.TakeRatesPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -68,7 +68,7 @@ page.TakeRatesPage = function (models) {
                     "bSearchable": true,
                     "bSortable": true,
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -77,7 +77,7 @@ page.TakeRatesPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -86,7 +86,7 @@ page.TakeRatesPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -95,7 +95,7 @@ page.TakeRatesPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -104,7 +104,7 @@ page.TakeRatesPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + data + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + data + "</a>";
                     }
                 },
                 {
@@ -113,7 +113,7 @@ page.TakeRatesPage = function (models) {
                     "bSortable": false,
                     "sClass": "text-center",
                     "render": function (data, type, full) {
-                        return "<a href='" + takeRateUri + "?TakeRateId=" + full[takeRateIndex] + "'>" + (data === "False" ? "No" : "Yes") + "</a>";
+                        return "<a href='" + full[takeRateIndex] + "'>" + (data === "False" ? "No" : "Yes") + "</a>";
                     }
                 }
             ],

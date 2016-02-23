@@ -259,9 +259,9 @@ PRINT 'Fdp_TakeRateStatus'
 MERGE INTO Fdp_TakeRateStatus AS TARGET
 USING (VALUES
 	  (1, N'Work in Progress',			N'Work in Progress',																	1,	1)
-	, (2, N'Market Review',             N'Take rate file has been sent to markets for further review and feedback',				1,	2)
+	, (2, N'Market Review',             N'Take rate file has been sent to markets for further review and feedback',				0,	2)
 	, (3, N'Published',                 N'Take rate file has been published and is locked for further modification',			1,	6)
-	, (4, N'Challenge Market Inputs',   N'Based on feedback from markets, the supplied take rate data is being challenged',		1,	3)
+	, (4, N'Challenge Market Inputs',   N'Based on feedback from markets, the supplied take rate data is being challenged',		0,	3)
 	, (5, N'Pending PMC Approval',      N'The take rate file is pending PMC approval prior to being published',					1,	4)
 	, (6, N'Approved',                  N'The take rate file has been approved for publishing',									1,	5)
 )
@@ -299,6 +299,8 @@ USING (VALUES
 	, (6, N'TakeRateForPackFeaturesShouldBeEquivalent', N'Take rate for all features as part of packs should be equivalent', 1, 8, N'dbo.Fdp_Validation_TakeRateForPackFeaturesShouldBeEquivalent')
 	, (7, N'TakeRateForEFGShouldEqual100Percent', N'EFG (Exclusive feature group). All features in a group must add up to 100% (or less if information is incomplete)', 1, 5, N'dbo.Fdp_Validation_TakeRateForEFGShouldEqual100Percent')
 	, (8, N'NonApplicableFeaturesShouldBe0Percent', N'Take rate for non-applicable features should be 0%', 1, 7, N'dbo.Fdp_Validation_NonApplicableFeatures0Percent')
+	, (9, N'TakeRateForEfgShouldbeLessThanOrEqualTo100Percent', N'For exclusive feature groups not containing a standard feature, the take rate for features should be 100 % or less', 1, 9, N'')
+	, (10, N'OnlyOneFeatureInEfg', N'Only one feature in an exclusive feature group can have a take rate', 1, 10, N'')
 )
 AS SOURCE (FdpValidationRuleId, [Rule], [Description], IsActive, ValidationOrder, StoredProcedureName) ON TARGET.FdpValidationRuleId = SOURCE.FdpValidationRuleId
 WHEN MATCHED THEN
@@ -334,6 +336,8 @@ USING (VALUES
 	, (4, N'MarketReviewer', N'User can edit data for a take rate file when at the market review stage')
 	, (5, N'Administrator', N'User can perform all system operations, although still needs to be granted appropriate access to markets / programmes')
 	, (6, N'Importer', N'User can import take rate data from PPO files')
+	, (7, N'AllMarkets', N'User has access to all markets without having to explicitly grant access on a per market basis')
+	, (8, N'AllProgrammes', N'User has access to all programmes without having to explicitly grant access on a per programme basis')
 )
 AS SOURCE (FdpUserRoleId, [Role], [Description]) ON TARGET.FdpUserRoleId = SOURCE.FdpUserRoleId
 WHEN MATCHED THEN
@@ -376,6 +380,69 @@ WHEN NOT MATCHED BY TARGET THEN
 	-- Insert new type rows
 	INSERT (FdpUserActionId, [Action], [Description])
 	VALUES (FdpUserActionId, [Action], [Description])
+
+WHEN NOT MATCHED BY SOURCE THEN
+
+	-- Delete type rows that are no longer required
+	DELETE;
+
+/* Fdp_MarketReviewStatus */
+PRINT 'Fdp_MarketReviewStatus'
+
+MERGE INTO Fdp_MarketReviewStatus AS TARGET
+USING (VALUES
+	  (0, N'None', N'No status defined', 1)
+	, (1, N'Awaiting Review', N'The take rate data for the market is awaiting review', 1)
+	, (2, N'Awaiting Approval', N'The take rate data for the market has been examined by the markets, any changes made and submitted for approval', 1)
+	, (3, N'Rejected', N'The modifications from the market have been rejected', 1)
+	, (4, N'Approved', N'The modifications from the market have been approved', 1)
+)
+AS SOURCE (FdpMarketReviewStatusId, [Status], [Description], IsActive) ON TARGET.FdpMarketReviewStatusId = SOURCE.FdpMarketReviewStatusId
+WHEN MATCHED THEN
+
+	-- Update existing rows
+	UPDATE SET 
+		  [Status]			= SOURCE.[Status]
+		, [Description]		= SOURCE.[Description]
+		, IsActive			= SOURCE.IsActive
+
+WHEN NOT MATCHED BY TARGET THEN
+
+	-- Insert new type rows
+	INSERT (FdpMarketReviewStatusId, [Status], [Description])
+	VALUES (FdpMarketReviewStatusId, [Status], [Description])
+
+WHEN NOT MATCHED BY SOURCE THEN
+
+	-- Delete type rows that are no longer required
+	DELETE;
+
+/* Fdp_MarketReviewStatus */
+PRINT 'Fdp_EmailTemplate'
+
+MERGE INTO Fdp_EmailTemplate AS TARGET
+USING (VALUES
+	  (0, N'None', N'', N'', 1)
+	, (1, N'Sent For Market Review', N'', N'', 1)
+	, (2, N'Market Review Received', N'', N'', 1)
+	, (3, N'Market Review Rejected', N'', N'', 1)
+	, (4, N'Market Review Approved', N'', N'', 1)
+)
+AS SOURCE (FdpEmailTemplateId, [Event], [Subject], [Body], IsActive) ON TARGET.FdpEmailTemplateId = SOURCE.FdpEmailTemplateId
+WHEN MATCHED THEN
+
+	-- Update existing rows
+	UPDATE SET 
+		  [Event]	= SOURCE.[Event]
+		, [Subject]	= SOURCE.[Subject]
+		, Body		= SOURCE.Body
+		, IsActive	= SOURCE.IsActive
+
+WHEN NOT MATCHED BY TARGET THEN
+
+	-- Insert new type rows
+	INSERT (FdpEmailTemplateId, [Event], [Subject], Body)
+	VALUES (FdpEmailTemplateId, [Event], [Subject], Body)
 
 WHEN NOT MATCHED BY SOURCE THEN
 

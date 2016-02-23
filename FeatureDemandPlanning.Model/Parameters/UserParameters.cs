@@ -15,6 +15,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public string Roles { get; set; }
         public UserAction RoleAction { get; set; }
         public UserRole Role { get; set; }
+        public string Mail { get; set; }
 
         public UserParameters()
         {
@@ -56,7 +57,8 @@ namespace FeatureDemandPlanning.Model.Parameters
                     {
                         CDSId,
                         FullName,
-                        IsAdmin = IsAdmin.GetValueOrDefault()
+                        IsAdmin = IsAdmin.GetValueOrDefault(),
+                        Mail
                     };
                 case UserAdminAction.SetAsAdministrator:
                 case UserAdminAction.UnsetAsAdministrator:

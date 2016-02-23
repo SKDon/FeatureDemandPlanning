@@ -21,9 +21,12 @@ model.OxoVolume = function (params) {
     privateStore[me.id].GetChangesetUri = params.GetChangesetUri;
     privateStore[me.id].RevertChangesetUri = params.RevertChangesetUri;
     privateStore[me.id].SaveChangesetUri = params.SaveChangesetUri;
+    privateStore[me.id].MarketReviewUri = params.MarketReviewUri;
+    privateStore[me.id].MarketReviewConfirmUri = params.MarketReviewConfirmUri;
     privateStore[me.id].PersistChangesetUri = params.PersistChangesetUri;
     privateStore[me.id].PersistChangesetConfirmUri = params.PersistChangesetConfirmUri;
     privateStore[me.id].ChangesetHistoryUri = params.ChangesetHistoryUri;
+    privateStore[me.id].FilterUri = params.FilterUri;
     privateStore[me.id].UndoChangesetUri = params.UndoChangesetUri;
     privateStore[me.id].UpdateFilteredDataUri = params.UpdateFilteredDataUri;
     privateStore[me.id].GetValidationUri = params.GetValidationUri;
@@ -58,6 +61,8 @@ model.OxoVolume = function (params) {
             case 7:
                 actionModel = new FeatureDemandPlanning.Volume.HistoryAction(me.getParameters());
                 break;
+            case 12:
+                actionModel = new FeatureDemandPlanning.Volume.FilterAction(me.getParameters());
             default:
                 break;
         }
@@ -111,11 +116,17 @@ model.OxoVolume = function (params) {
     me.getChangesetHistoryAction = function() {
         return 7;
     };
+    me.getMarketReviewUri = function() {
+        return privateStore[me.id].MarketReviewUri;
+    };
     me.getPersistChangesetConfirmUri = function () {
         return privateStore[me.id].PersistChangesetConfirmUri;
     };
     me.getChangesetHistoryUri = function() {
         return privateStore[me.id].ChangesetHistoryUri;
+    };
+    me.getFilterUri = function() {
+        return privateStore[me.id].FilterUri;
     };
     me.getUndoChangesetUri = function() {
         return privateStore[me.id].UndoChangesetUri;
@@ -186,6 +197,23 @@ model.OxoVolume = function (params) {
             }
         });
     };
+    me.marketReview = function(callback) {
+        var params = getFilter();
+        $.ajax({
+            "dataType": "json",
+            "method": "POST",
+            "async": true,
+            "url": me.getMarketReviewUri(),
+            "data": params,
+            "success": function (json) {
+                $(document).trigger("Success", json);
+                callback(json);
+            },
+            "error": function (response) {
+                genericErrorCallback(response);
+            }
+        });
+    }
     me.revertChangeset = function (callback) {
         var params = getFilter();
         $.ajax({
@@ -249,7 +277,7 @@ model.OxoVolume = function (params) {
             "data": params,
             "success": function (json) {
                 $(document).trigger("Success", json);
-                callback(json);
+                callback(json.Data);
             },
             "error": function (response) {
                 genericErrorCallback(response);
@@ -335,7 +363,9 @@ model.OxoVolume = function (params) {
             privateStore[me.id].IsValid = false;
             $(document).trigger("Validation", [json]);
         } else {
-            $(document).trigger("Error", response);
+            var json = JSON.parse(response.responseText);
+            privateStore[me.id].IsValid = false;
+            $(document).trigger("Error", [json]);
         }
     };
     function getFilter() {

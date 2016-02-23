@@ -6,6 +6,7 @@ using FeatureDemandPlanning.Model.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Validators;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -45,7 +46,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<TakeRateSummary> GetTakeRateDocumentHeader(TakeRateFilter filter)
         {
-            return await Task.FromResult(_takeRateDataStore.TakeRateDocumentHeaderGet(filter));
+            return await Task.FromResult(_takeRateDataStore.FdpTakeRateHeaderGet(filter));
         }
         public async Task<ITakeRateDocument> GetTakeRateDocument(TakeRateFilter filter)
         {
@@ -95,7 +96,7 @@ namespace FeatureDemandPlanning.DataStore
             OXODoc document = new EmptyOxoDocument();
             if (!filter.DocumentId.HasValue)
             {
-                var summary = _takeRateDataStore.TakeRateDocumentHeaderGet(filter);
+                var summary = _takeRateDataStore.FdpTakeRateHeaderGet(filter);
                 document = _documentDataStore.OXODocGet(summary.OxoDocId, filter.ProgrammeId.GetValueOrDefault());
             }
             else
@@ -128,7 +129,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<FdpChangesetHistory> GetChangesetHistory(TakeRateFilter filter)
         {
-            return await Task.FromResult(_takeRateDataStore.FdpChangesetHistoryGet(filter));
+            return await Task.FromResult(_takeRateDataStore.FdpTakeRateHistoryGet(filter));
         }
         public async Task<FdpChangeset> SaveChangeset(TakeRateFilter filter, FdpChangeset changesetToSave)
         {
@@ -162,6 +163,64 @@ namespace FeatureDemandPlanning.DataStore
             var changeset = await GetUnsavedChangesForUser(filter);
             changeset.Comment = filter.Comment;
             return await Task.FromResult(_takeRateDataStore.FdpChangesetPersist(filter, changeset));
+        }
+
+        public async Task<IEnumerable<ValidationResult>> PersistValidationErrors(FluentValidation.Results.ValidationResult validationResult)
+        {
+            var results = new List<ValidationResult>();
+            foreach (var validationError in validationResult.Errors)
+            {
+                var state = (ValidationState) validationError.CustomState;
+                var validationData = new ValidationResult
+                {
+                    TakeRateId = state.TakeRateId,
+
+                    ValidationRule = state.ValidationRule,
+
+                    FdpVolumeDataItemId = state.FdpVolumeDataItemId,
+                    FdpTakeRateSummaryId = state.FdpTakeRateSummaryId,
+                    FdpTakeRateFeatureMixId = state.FdpTakeRateFeatureMixId,
+                    FdpChangesetDataItemId = state.FdpChangesetDataItemId,
+
+                    MarketId = state.MarketId,
+                    ModelId = state.ModelId,
+                    FdpModelId = state.FdpModelId,
+                    FeatureId = state.FdpFeatureId,
+                    FdpFeatureId = state.FdpFeatureId,
+                    FeaturePackId = state.FeaturePackId,
+
+                    Message = validationError.ErrorMessage
+                };
+                validationData = await Task.FromResult(_takeRateDataStore.FdpValidationPersist(validationData));
+                results.Add(validationData);
+
+                foreach (var childState in state.ChildStates)
+                {
+                    validationData = new ValidationResult
+                    {
+                        TakeRateId = childState.TakeRateId,
+
+                        FdpVolumeDataItemId = childState.FdpVolumeDataItemId,
+                        FdpTakeRateSummaryId = childState.FdpTakeRateSummaryId,
+                        FdpTakeRateFeatureMixId = childState.FdpTakeRateFeatureMixId,
+                        FdpChangesetDataItemId = childState.FdpChangesetDataItemId,
+
+                        ValidationRule = state.ValidationRule,
+
+                        MarketId = childState.MarketId,
+                        ModelId = childState.ModelId,
+                        FdpModelId = childState.FdpModelId,
+                        FeatureId = childState.FdpFeatureId,
+                        FdpFeatureId = childState.FdpFeatureId,
+                        FeaturePackId = childState.FeaturePackId,
+
+                        Message = validationError.ErrorMessage
+                    };
+                    validationData = await Task.FromResult(_takeRateDataStore.FdpValidationPersist(validationData));
+                    results.Add(validationData);
+                }
+            }
+            return results;
         }
         public async Task<FdpChangeset> UndoChangeset(TakeRateFilter takeRateFilter)
         {
@@ -200,6 +259,35 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<Programme> GetProgramme(TakeRateFilter takeRateFilter)
         {
             return await Task.FromResult(_programmeDataStore.ProgrammeGet(takeRateFilter.ProgrammeId.GetValueOrDefault()));
+        }
+        public async Task<MarketReview> GetMarketReview(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpMarketReviewGet(filter));
+        }
+        public async Task<MarketReview> SetMarketReview(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpMarketReviewSave(filter));
+        }
+        public async Task<PagedResults<MarketReview>> ListMarketReview(TakeRateFilter filter)
+        {
+            var marketReview = await Task.FromResult(_takeRateDataStore.FdpMarketReviewGetMany(filter));
+            foreach (var currentMarketReview in marketReview.CurrentPage)
+            {
+                currentMarketReview.Programme = _programmeDataStore.ProgrammeGet(currentMarketReview.ProgrammeId);
+                currentMarketReview.Document = _documentDataStore.OXODocGet(currentMarketReview.DocumentId,
+                    currentMarketReview.ProgrammeId);
+            }
+            return marketReview;
+        }
+        public async Task<RawTakeRateData> GetRawData(TakeRateFilter filter)
+        {
+            var rawData = new RawTakeRateData()
+            {
+                DataItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateDataGetRaw(filter)),
+                SummaryItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateSummaryGetRaw(filter)),
+                FeatureMixItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateFeatureMixGetRaw(filter))
+            };
+            return rawData;
         }
 
         #endregion

@@ -1,0 +1,30 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.MarketReviewViewModel
+
+<div class="panel panel-primary">
+    <div class="panel-heading" style="height:38px">
+        <h3 class="panel-title results-paging pull-right"></h3>
+        <h3 class="panel-title results-total pull-left">Files Requiring Market Review</h3>
+    </div>
+    <div class="panel-body">
+        <table id="@(Model.IdentifierPrefix)_MarketReviewTable" class="table table-hover table-striped table-bordered dataTable">
+            <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th class="text-center">Sent On</th>
+                <th>Sent By</th>
+                <th>Programme</th>
+                <th class="text-center">Gateway</th>
+                <th class="text-center">Version</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Market</th>
+                <th class="text-center">Review Status</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>

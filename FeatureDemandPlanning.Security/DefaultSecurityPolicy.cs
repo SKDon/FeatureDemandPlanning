@@ -1,11 +1,14 @@
-﻿using FluentSecurity;
-using FluentSecurity.Policy;
+﻿using FeatureDemandPlanning.Model.Interfaces;
+using FluentSecurity;
 
 namespace FeatureDemandPlanning.Security
 {
-    public class DefaultSecurityPolicy : ISecurityPolicy
+    public class DefaultSecurityPolicy : SecurityPolicyBase
     {
-        public PolicyResult Enforce(ISecurityContext context)
+        public DefaultSecurityPolicy(IDataContext context) : base(context)
+        {
+        }
+        public override PolicyResult Enforce(ISecurityContext context)
         {
             return PolicyResult.CreateFailureResult(this, "No security policy configured");
         }

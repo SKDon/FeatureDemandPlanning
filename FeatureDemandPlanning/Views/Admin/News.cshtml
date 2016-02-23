@@ -1,0 +1,87 @@
+﻿@using System.Web.Mvc.Html
+@using System.Web.UI.WebControls
+@using FeatureDemandPlanning.Model
+@using FeatureDemandPlanning.Model.Extensions
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.NewsViewModel
+
+@section PageContentHeader
+{
+    <form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
+    <div class="row">
+        <div class="col-lg-8 inverse" style="padding-top: 20px">
+            <div class="panel panel-primary" style="height:130px;background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-body" style="background:none !important">
+                    <div class="row">
+                        <div class="col-lg-1">
+                            <img src="~/Content/Images/Icons/news64.png" style="margin-top:15px" />
+                        </div>
+                        <div class="col-lg-11">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h3 style="margin-top:5px">News Article Management</h3>
+                                    <h4 id="lblVehicleDescription">&nbsp;</h4>
+                                </div>
+                            </div>
+                            <div class="row vertical-spacer">
+                                <div class="col-lg-12 vertical-align">
+                                    <p class="page-description">Manage news atricles to be displayed on the main FDD page</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section PageBody
+{
+    <div id="notifier" class="subscribers-notify col-lg-8 col-lg-offset-2"></div>
+    <ul id="contextMenu" class="dropdown-menu context-menu" role="menu" style="display:none"></ul>
+
+    <div class="row">
+        <div id="dvNews" class="col-xs-12 col-lg-6">
+            <div class="panel panel-primary col-lg-offset-1">
+                <div class="panel-heading">
+                    <div class="panel-title">Add News</div>
+                </div>
+                <div class="panel-body inverse">
+                    @using (Html.BeginForm("AddNews", "Admin"))
+                    {
+                        <div class="form-group">
+                            @Html.TextAreaFor(m => m.NewArticle, new { @class = "col-xs-12 form-control", style = "min-width:100%", @rows = 5})
+                            <button type="submit" class="btn btn-default pull-right">Add News</button>
+                        </div>
+
+                    }
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row col-lg-offset-1">
+        <h5 class="inverse">Current News Articles (click 'X' to remove article)</h5>
+        <ul>
+            @foreach (var news in Model.News)
+            {
+                <li class="inverse">
+                    @string.Format("{0:dd/MM/yyyy} - {1}", news.CreatedOn, news.Headline)
+
+
+                    <a href="@Url.Action("RemoveNews", "Admin", new { news.FdpNewsId })"><span class="glyphicon glyphicon-remove"></span></a>
+                </li>
+            }
+        </ul>
+    </div>
+
+
+}
+
+

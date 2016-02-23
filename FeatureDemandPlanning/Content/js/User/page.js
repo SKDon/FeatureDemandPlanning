@@ -59,6 +59,11 @@ page.UsersPage = function (models) {
                     "bSortable": true
                 }
                 , {
+                    "sTitle": "Mail",
+                    "sName": "MAIL",
+                    "bSearchable": true,
+                    "bSortable": true
+                }, {
                     "sTitle": "Roles",
                     "sName": "ROLES",
                     "bSearchable": true,
@@ -83,20 +88,8 @@ page.UsersPage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                     "render": function (data, type, full, meta) {
-                        var index = 6;
-                        var iconClassName = full[index] == "YES" ? "glyphicon glyphicon-ok" : "glyphicon glyphicon-remove";
-                        return "<span class=\"" + iconClassName + "\"></span>";
-                    }
-                }
-                , {
-                    "sTitle": "Admin?",
-                    "sName": "IS_ADMIN",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center",
-                    "render": function (data, type, full, meta) {
                         var index = 7;
-                        var iconClassName = full[index] == "YES" ? "glyphicon glyphicon-ok" : "glyphicon glyphicon-remove";
+                        var iconClassName = full[index] === "YES" ? "glyphicon glyphicon-ok" : "glyphicon glyphicon-remove";
                         return "<span class=\"" + iconClassName + "\"></span>";
                     }
                 }
@@ -216,13 +209,13 @@ page.UsersPage = function (models) {
         var prefix = me.getIdentifierPrefix();
 
         $(document)
-            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
-            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
-            .unbind("Results").on("Results", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnResultsDelegate", [eventArgs]); })
-            .unbind("Updated").on("Updated", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdatedDelegate", [eventArgs]); })
-            .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
-            .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
-            .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
+            .unbind("Success").on("Success", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
+            .unbind("Error").on("Error", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
+            .unbind("Results").on("Results", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnResultsDelegate", [eventArgs]); })
+            .unbind("Updated").on("Updated", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdatedDelegate", [eventArgs]); })
+            .unbind("Action").on("Action", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
+            .unbind("ModalLoaded").on("ModalLoaded", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
+            .unbind("ModalOk").on("ModalOk", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); });
 
         $("#" + prefix + "_AddUserButton").on("click", function (e) {
             var eventArgs = {
