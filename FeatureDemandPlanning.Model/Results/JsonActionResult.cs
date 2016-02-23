@@ -9,6 +9,7 @@ namespace FeatureDemandPlanning.Model.Results
     {
         public bool Success { get; set; }
         public string Message { get; set; }
+        public object Data { get; set; }
         public bool IsValidation { get; set; }
         public IEnumerable<string> ValidationErrors { get; set; }
 
@@ -16,10 +17,18 @@ namespace FeatureDemandPlanning.Model.Results
         {
             Success = true;
             Message = message;
+            Data = null;
         }
         public static JsonActionResult GetSuccess(string message = "")
         {
             return new JsonActionResult(message);
+        }
+        public static JsonActionResult GetSuccess(object data, string message = "")
+        {
+            return new JsonActionResult(message)
+            {
+                Data = data
+            };
         }
         public static JsonActionResult GetFailure(string message = "")
         {

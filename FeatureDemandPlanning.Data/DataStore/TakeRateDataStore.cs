@@ -666,7 +666,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
                     para.Add("@CDSID", CurrentCDSID, DbType.String);
                     para.Add("@IsSaved", false, DbType.Boolean);
@@ -1127,6 +1127,134 @@ namespace FeatureDemandPlanning.DataStore
                     if (marketReviews.Any())
                     {
                         retVal = marketReviews.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public IEnumerable<RawTakeRateDataItem> FdpTakeRateDataGetRaw(TakeRateFilter filter)
+        {
+            IEnumerable<RawTakeRateDataItem> retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    
+                    retVal = conn.Query<RawTakeRateDataItem>("dbo.Fdp_TakeRateData_GetRaw", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public IEnumerable<RawTakeRateSummaryItem> FdpTakeRateSummaryGetRaw(TakeRateFilter filter)
+        {
+            IEnumerable<RawTakeRateSummaryItem> retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+
+                    retVal = conn.Query<RawTakeRateSummaryItem>("dbo.Fdp_TakeRateSummary_GetRaw", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public IEnumerable<RawTakeRateFeatureMixItem> FdpTakeRateFeatureMixGetRaw(TakeRateFilter filter)
+        {
+            IEnumerable<RawTakeRateFeatureMixItem> retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+
+                    retVal = conn.Query<RawTakeRateFeatureMixItem>("dbo.Fdp_TakeRateFeatureMix_GetRaw", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public void FdpValidationClear(TakeRateFilter filter)
+        {
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+
+                    conn.Execute("dbo.Fdp_Validation_Clear", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+        }
+        public ValidationResult FdpValidationPersist(ValidationResult validationData)
+        {
+            ValidationResult retVal = null;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpVolumeHeaderId", validationData.TakeRateId, DbType.Int32);
+
+                    para.Add("@FdpValidationRuleId", (int)validationData.ValidationRule, DbType.Int32);
+
+                    para.Add("@MarketId", validationData.MarketId, DbType.Int32);
+                    para.Add("@ModelId", validationData.ModelId, DbType.Int32);
+                    para.Add("@FdpModelId", validationData.FdpModelId, DbType.Int32);
+                    para.Add("@FeatureId", validationData.FeatureId, DbType.Int32);
+                    para.Add("@FdpFeatureId", validationData.FdpFeatureId, DbType.Int32);
+                    para.Add("@FeaturePackId", validationData.FeaturePackId, DbType.Int32);
+
+                    para.Add("@FdpVolumeDataItemId", validationData.FdpVolumeDataItemId, DbType.Int32);
+                    para.Add("@FdpTakeRateSummaryId", validationData.FdpTakeRateSummaryId, DbType.Int32);
+                    para.Add("@FdpTakeRateFeatureMixId", validationData.FdpTakeRateFeatureMixId, DbType.Int32);
+                    para.Add("@FdpChangesetDataItemId", validationData.FdpChangesetDataItemId, DbType.Int32);
+
+                    para.Add("@Message", validationData.Message, DbType.String);
+
+                    var results = conn.Query<ValidationResult>("dbo.Fdp_Validation_Persist", para, commandType: CommandType.StoredProcedure);
+                    if (results != null && results.Any())
+                    {
+                        retVal = results.First();
                     }
                 }
                 catch (Exception ex)

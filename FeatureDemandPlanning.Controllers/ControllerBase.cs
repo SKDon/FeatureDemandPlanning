@@ -45,6 +45,18 @@ namespace FeatureDemandPlanning.Controllers
         {
             return JsonGet(JsonActionResult.GetSuccess());
         }
+        public JsonResult JsonGetSuccess(string message)
+        {
+            return JsonGet(JsonActionResult.GetSuccess(message));
+        }
+        public JsonResult JsonGetSuccess(object data)
+        {
+            return JsonGet(JsonActionResult.GetSuccess(data));
+        }
+        public JsonResult JsonGetSuccess(object data, string message)
+        {
+            return JsonGet(JsonActionResult.GetSuccess(data, message));
+        }
         public JsonResult JsonGetFailure(string message)
         {
             return JsonGet(JsonActionResult.GetFailure(message));

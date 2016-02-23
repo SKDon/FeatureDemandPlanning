@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FeatureDemandPlanning.Controllers")]
+[assembly: AssemblyTitle("FeatureDemandPlanning.ValidationTest")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("FeatureDemandPlanning.Controllers")]
+[assembly: AssemblyProduct("FeatureDemandPlanning.ValidationTest")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("16efcc7c-d0d7-4bd8-a709-f4d20f12ea01")]
+[assembly: Guid("df43759e-fc6d-425f-bc41-bcd11a5acf20")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -1094,6 +1094,12 @@ model.Page = function (models) {
         }
         me.fadeInNotify(html);
     };
+    me.fadeOutNotify = function() {
+        var control = $("#notifier");
+        if (control.is(":visible")) {
+            control.fadeOut("slow");
+        }
+    };
     me.fadeInNotify = function (displayHtml) {
         var control = $("#notifier");
         if (control.is(":visible")) {
@@ -1124,24 +1130,13 @@ model.Page = function (models) {
         });
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
-        var html = "";
-        switch (eventArgs.StatusCode) {
-            case "Success":
-                html = "<div class=\"alert alert-dismissible alert-success\">" + eventArgs.StatusMessage + "</div>";
-                break;
-            case "Warning":
-                html = "<div class=\"alert alert-dismissible alert-warning\">" + eventArgs.StatusMessage + "</div>";
-                break;
-            case "Failure":
-                html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.StatusMessage + "</div>";
-                break;
-            case "Information":
-                html = "<div class=\"alert alert-dismissible alert-info\">" + eventArgs.StatusMessage + "</div>";
-                break;
-            default:
-                break;
+        if (eventArgs.Message === "") {
+            me.fadeOutNotify();
+            return;
         }
-        $("notifier").html(html).fadeIn("slow");
+        var html = "<div class=\"alert alert-dismissible alert-success\">" + eventArgs.Message + "</div>";
+        me.scrollToNotify();
+        me.fadeInNotify(html);
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
         var html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.Message + "</div>";

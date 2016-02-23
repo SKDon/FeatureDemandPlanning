@@ -299,6 +299,8 @@ USING (VALUES
 	, (6, N'TakeRateForPackFeaturesShouldBeEquivalent', N'Take rate for all features as part of packs should be equivalent', 1, 8, N'dbo.Fdp_Validation_TakeRateForPackFeaturesShouldBeEquivalent')
 	, (7, N'TakeRateForEFGShouldEqual100Percent', N'EFG (Exclusive feature group). All features in a group must add up to 100% (or less if information is incomplete)', 1, 5, N'dbo.Fdp_Validation_TakeRateForEFGShouldEqual100Percent')
 	, (8, N'NonApplicableFeaturesShouldBe0Percent', N'Take rate for non-applicable features should be 0%', 1, 7, N'dbo.Fdp_Validation_NonApplicableFeatures0Percent')
+	, (9, N'TakeRateForEfgShouldbeLessThanOrEqualTo100Percent', N'For exclusive feature groups not containing a standard feature, the take rate for features should be 100 % or less', 1, 9, N'')
+	, (10, N'OnlyOneFeatureInEfg', N'Only one feature in an exclusive feature group can have a take rate', 1, 10, N'')
 )
 AS SOURCE (FdpValidationRuleId, [Rule], [Description], IsActive, ValidationOrder, StoredProcedureName) ON TARGET.FdpValidationRuleId = SOURCE.FdpValidationRuleId
 WHEN MATCHED THEN

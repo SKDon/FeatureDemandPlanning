@@ -1,12 +1,29 @@
-﻿namespace FeatureDemandPlanning.Model
+﻿using FeatureDemandPlanning.Model.Enumerations;
+
+namespace FeatureDemandPlanning.Model
 {
     public class ValidationResult
     {
+        public int TakeRateId { get; set; }
         public int MarketId { get; set; }
         public int MarketGroupId { get; set; }
+        public int? ModelId { get; set; }
+        public int? FdpModelId { get; set; }
+        public int? FeatureId { get; set; }
+        public int? FdpFeatureId { get; set; }
+        public int? FeaturePackId { get; set; }
+
         public string ModelIdentifier { get; set; }
         public string FeatureIdentifier { get; set; }
+
         public string Message { get; set; }
+
+        public int? FdpVolumeDataItemId { get; set; }
+        public int? FdpTakeRateSummaryId { get; set; }
+        public int? FdpTakeRateFeatureMixId { get; set; }
+        public int? FdpChangesetDataItemId { get; set; }
+
+        public ValidationRule ValidationRule { get; set; }
 
         public bool IsFeatureValidation
         {

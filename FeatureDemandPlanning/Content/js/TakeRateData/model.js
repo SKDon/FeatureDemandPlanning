@@ -277,7 +277,7 @@ model.OxoVolume = function (params) {
             "data": params,
             "success": function (json) {
                 $(document).trigger("Success", json);
-                callback(json);
+                callback(json.Data);
             },
             "error": function (response) {
                 genericErrorCallback(response);
@@ -363,7 +363,9 @@ model.OxoVolume = function (params) {
             privateStore[me.id].IsValid = false;
             $(document).trigger("Validation", [json]);
         } else {
-            $(document).trigger("Error", response);
+            var json = JSON.parse(response.responseText);
+            privateStore[me.id].IsValid = false;
+            $(document).trigger("Error", [json]);
         }
     };
     function getFilter() {

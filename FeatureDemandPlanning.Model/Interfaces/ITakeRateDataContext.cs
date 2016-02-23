@@ -54,5 +54,9 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<MarketReview> GetMarketReview(TakeRateFilter filter);
         Task<PagedResults<MarketReview>> ListMarketReview(TakeRateFilter filter);
         Task<MarketReview> SetMarketReview(TakeRateFilter filter);
+
+        Task<RawTakeRateData> GetRawData(TakeRateFilter filter);
+
+        Task<IEnumerable<ValidationResult>> PersistValidationErrors(FluentValidation.Results.ValidationResult validationResult);
     }
 }

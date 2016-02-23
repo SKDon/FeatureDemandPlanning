@@ -10,277 +10,306 @@ using FeatureDemandPlanning.Model.Attributes;
 using MvcSiteMapProvider.Web.Mvc.Filters;
 using System;
 using System.Reflection;
+using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Interfaces;
+using FluentValidation;
 
 namespace FeatureDemandPlanning.Controllers
 {
-    /// <summary>
-    /// Primary controller for handling viewing / editing and updating of take rate information
-    /// </summary>
-    public class TakeRateDataController : ControllerBase
-    {
-        #region "Constructors"
+	/// <summary>
+	/// Primary controller for handling viewing / editing and updating of take rate information
+	/// </summary>
+	public class TakeRateDataController : ControllerBase
+	{
+		#region "Constructors"
 
-        public TakeRateDataController(IDataContext context) : base(context, ControllerType.SectionChild)
-        {
-        }
+		public TakeRateDataController(IDataContext context) : base(context, ControllerType.SectionChild)
+		{
+		}
 
-        #endregion
+		#endregion
 
-        [HttpGet]
-        [ActionName("Index")]
-        [SiteMapTitle("DocumentName")]
-        public async Task<ActionResult> TakeRateDataPage(TakeRateParameters parameters)
-        {
-            Log.Debug(MethodBase.GetCurrentMethod().Name);
+		[HttpGet]
+		[ActionName("Index")]
+		[SiteMapTitle("DocumentName")]
+		public async Task<ActionResult> TakeRateDataPage(TakeRateParameters parameters)
+		{
+			Log.Debug(MethodBase.GetCurrentMethod().Name);
 
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.TakeRateDataPage;
-            var model = await TakeRateViewModel.GetModel(DataContext, filter);
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			filter.Action = TakeRateDataItemAction.TakeRateDataPage;
+			var model = await TakeRateViewModel.GetModel(DataContext, filter);
 
-            ViewData["DocumentName"] = model.Document.UnderlyingOxoDocument.Name;
-            ViewBag.Title = string.Format("{0} - {1} ({2}) - {3}", model.Document.Vehicle.Code,
-                model.Document.Vehicle.ModelYear, model.Document.UnderlyingOxoDocument.Gateway, model.Document.TakeRateSummary.First().Version);
+			ViewData["DocumentName"] = model.Document.UnderlyingOxoDocument.Name;
+			ViewBag.Title = string.Format("{0} - {1} ({2}) - {3}", model.Document.Vehicle.Code,
+				model.Document.Vehicle.ModelYear, model.Document.UnderlyingOxoDocument.Gateway, model.Document.TakeRateSummary.First().Version);
 
-            return View("TakeRateDataPage", model);
-        }
-        [HttpPost]
-        public async Task<ActionResult> TakeRateDataPartialPage(TakeRateParameters parameters)
-        {
-            Log.Debug(MethodBase.GetCurrentMethod().Name);
+			return View("TakeRateDataPage", model);
+		}
+		[HttpPost]
+		public async Task<ActionResult> TakeRateDataPartialPage(TakeRateParameters parameters)
+		{
+			Log.Debug(MethodBase.GetCurrentMethod().Name);
 
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.TakeRateDataPage;
-            var model = await TakeRateViewModel.GetModel(DataContext, filter);
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			filter.Action = TakeRateDataItemAction.TakeRateDataPage;
+			var model = await TakeRateViewModel.GetModel(DataContext, filter);
 
-            ViewData["DocumentName"] = model.Document.UnderlyingOxoDocument.Name;
-            ViewBag.Title = string.Format("{0} - {1} ({2}) - {3}", model.Document.Vehicle.Code,
-                model.Document.Vehicle.ModelYear, model.Document.UnderlyingOxoDocument.Gateway, model.Document.TakeRateSummary.First().Version);
+			ViewData["DocumentName"] = model.Document.UnderlyingOxoDocument.Name;
+			ViewBag.Title = string.Format("{0} - {1} ({2}) - {3}", model.Document.Vehicle.Code,
+				model.Document.Vehicle.ModelYear, model.Document.UnderlyingOxoDocument.Gateway, model.Document.TakeRateSummary.First().Version);
 
-            return PartialView("_TakeRateData", model);       
-        }
-        [HttpPost]
-        public async Task<ActionResult> ContextMenu(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+			return PartialView("_TakeRateData", model);       
+		}
+		[HttpPost]
+		public async Task<ActionResult> ContextMenu(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.TakeRateDataItemDetails;
-            var takeRateView = await TakeRateViewModel.GetModel(
-                DataContext,
-                filter);
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			filter.Action = TakeRateDataItemAction.TakeRateDataItemDetails;
+			var takeRateView = await TakeRateViewModel.GetModel(
+				DataContext,
+				filter);
 
-            return PartialView("_ContextMenu", takeRateView);
-        }
-        [HttpPost]
-        [HandleError(View = "_ModalError")]
-        public async Task<ActionResult> ModalContent(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+			return PartialView("_ContextMenu", takeRateView);
+		}
+		[HttpPost]
+		[HandleError(View = "_ModalError")]
+		public async Task<ActionResult> ModalContent(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            var takeRateView = await GetModelFromParameters(parameters);
+			var takeRateView = await GetModelFromParameters(parameters);
 
-            return PartialView(GetContentPartialViewName(parameters.Action), takeRateView);
-        }
-        [HttpPost]
-        [HandleErrorWithJson]
-        public ActionResult ModalAction(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+			return PartialView(GetContentPartialViewName(parameters.Action), takeRateView);
+		}
+		[HttpPost]
+		[HandleErrorWithJson]
+		public ActionResult ModalAction(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
 
-            return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
-        }
-        [HandleErrorWithJson]
-        [HttpPost]
-        public async Task<ActionResult> SaveChangeset(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+			return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
+		}
+		[HandleErrorWithJson]
+		[HttpPost]
+		public async Task<ActionResult> SaveChangeset(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
 
-            await CheckModelAllowsEdit(parameters);
+			await CheckModelAllowsEdit(parameters);
 
-            var savedChangeset = await DataContext.TakeRate.SaveChangeset(TakeRateFilter.FromTakeRateParameters(parameters), parameters.Changeset);
+			var savedChangeset = await DataContext.TakeRate.SaveChangeset(TakeRateFilter.FromTakeRateParameters(parameters), parameters.Changeset);
 
-            return Json(savedChangeset);
-        }
-        [HandleErrorWithJson]
-        [HttpPost]
-        public async Task<ActionResult> GetLatestChangeset(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+			return Json(savedChangeset);
+		}
+		[HandleErrorWithJson]
+		[HttpPost]
+		public async Task<ActionResult> GetLatestChangeset(TakeRateParameters parameters)
+		{
+			
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            var changeset = await DataContext.TakeRate.GetUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
+			var changeset = await DataContext.TakeRate.GetUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
 
-            return Json(changeset);
-        }
-        [HandleErrorWithJson]
-        [HttpPost]
-        public async Task<ActionResult> RevertLatestChangeset(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+			return Json(changeset);
+		}
+		[HandleErrorWithJson]
+		[HttpPost]
+		public async Task<ActionResult> RevertLatestChangeset(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            await CheckModelAllowsEdit(parameters);
+			await CheckModelAllowsEdit(parameters);
 
-            var changeset = await DataContext.TakeRate.RevertUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
+			var changeset = await DataContext.TakeRate.RevertUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
 
-            return Json(changeset);
-        }
-        [HandleErrorWithJson]
-        [HttpPost]
-        public async Task<ActionResult> ChangesetHistory(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+			return Json(changeset);
+		}
+		[HandleErrorWithJson]
+		[HttpPost]
+		public async Task<ActionResult> ChangesetHistory(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.Changeset;
-            var takeRateView = await TakeRateViewModel.GetModel(
-                DataContext,
-                filter);
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			filter.Action = TakeRateDataItemAction.Changeset;
+			var takeRateView = await TakeRateViewModel.GetModel(
+				DataContext,
+				filter);
 
-            takeRateView.History = await DataContext.TakeRate.GetChangesetHistory(filter);
+			takeRateView.History = await DataContext.TakeRate.GetChangesetHistory(filter);
 
-            return PartialView("_ChangesetHistory", takeRateView);
-        }
-        [HandleErrorWithJson]
-        [HttpPost]
-        public async Task<ActionResult> Filter(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+			return PartialView("_ChangesetHistory", takeRateView);
+		}
+		[HandleErrorWithJson]
+		[HttpPost]
+		public async Task<ActionResult> Filter(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.Filter;
-            var takeRateView = await TakeRateViewModel.GetModel(
-                DataContext,
-                filter);
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			filter.Action = TakeRateDataItemAction.Filter;
+			var takeRateView = await TakeRateViewModel.GetModel(
+				DataContext,
+				filter);
 
-            return PartialView("_Filter", takeRateView);
-        }
-        [HandleErrorWithJson]
-        [HttpPost]
-        public async Task<ActionResult> PersistChangeset(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangesetAndComment);
+			return PartialView("_Filter", takeRateView);
+		}
+		[HandleErrorWithJson]
+		[HttpPost]
+		public async Task<ActionResult> PersistChangeset(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangesetAndComment);
 
-            await CheckModelAllowsEdit(parameters);
+			await CheckModelAllowsEdit(parameters);
 
-            var persistedChangeset = await DataContext.TakeRate.PersistChangeset(
-                TakeRateFilter.FromTakeRateParameters(parameters));
+			var persistedChangeset = await DataContext.TakeRate.PersistChangeset(
+				TakeRateFilter.FromTakeRateParameters(parameters));
 
-            return Json(persistedChangeset);
-        }
-        [HandleErrorWithJson]
-        [HttpPost]
-        public async Task<ActionResult> PersistChangesetConfirm(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+			return Json(persistedChangeset);
+		}
+		[HandleErrorWithJson]
+		[HttpPost]
+		public async Task<ActionResult> PersistChangesetConfirm(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
 
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.TakeRateDataItemDetails;
-            var takeRateView = await TakeRateViewModel.GetModel(
-                DataContext,
-                filter);
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			filter.Action = TakeRateDataItemAction.TakeRateDataItemDetails;
+			var takeRateView = await TakeRateViewModel.GetModel(
+				DataContext,
+				filter);
 
-            takeRateView.Changes = await DataContext.TakeRate.GetUnsavedChangesForUser(filter);
+			takeRateView.Changes = await DataContext.TakeRate.GetUnsavedChangesForUser(filter);
 
-            return PartialView("_PersistChangesetConfirm", takeRateView);
-        }
-        [HandleErrorWithJson]
-        [HttpPost]
-        public async Task<ActionResult> UndoChangeset(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+			return PartialView("_PersistChangesetConfirm", takeRateView);
+		}
+		[HandleErrorWithJson]
+		[HttpPost]
+		public async Task<ActionResult> UndoChangeset(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
 
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.Changeset;
-            var takeRateView = await TakeRateViewModel.GetModel(
-                DataContext,
-                filter);
-            if (!takeRateView.AllowEdit)
-            {
-                throw new InvalidOperationException(NO_EDITS);
-            }
-            var undoneChangeset = await DataContext.TakeRate.UndoChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			filter.Action = TakeRateDataItemAction.Changeset;
+			var takeRateView = await TakeRateViewModel.GetModel(
+				DataContext,
+				filter);
+			if (!takeRateView.AllowEdit)
+			{
+				throw new InvalidOperationException(NO_EDITS);
+			}
+			var undoneChangeset = await DataContext.TakeRate.UndoChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
 
-            return Json(undoneChangeset);
-        }
-        [HandleErrorWithJson]
-        public async Task<ActionResult> AddNote(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.ModelPlusFeatureAndComment);
+			return JsonGetSuccess(undoneChangeset);
+		}
+		[HandleErrorWithJson]
+		public async Task<ActionResult> AddNote(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.ModelPlusFeatureAndComment);
 
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.AddNote;
-            var takeRateView = await TakeRateViewModel.GetModel(
-                DataContext,
-                filter);
-            if (!takeRateView.AllowEdit)
-            {
-                throw new InvalidOperationException(NO_EDITS);
-            }
-            var note = await DataContext.TakeRate.AddDataItemNote(TakeRateFilter.FromTakeRateParameters(parameters));
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			filter.Action = TakeRateDataItemAction.AddNote;
+			var takeRateView = await TakeRateViewModel.GetModel(
+				DataContext,
+				filter);
+			if (!takeRateView.AllowEdit)
+			{
+				throw new InvalidOperationException(NO_EDITS);
+			}
+			var note = await DataContext.TakeRate.AddDataItemNote(TakeRateFilter.FromTakeRateParameters(parameters));
 
-            return Json(note, JsonRequestBehavior.AllowGet);
-        }
-        [HandleErrorWithJson]
-        [HttpPost]
-        public async Task<ActionResult> GetValidation(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-               .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+			return Json(note, JsonRequestBehavior.AllowGet);
+		}
+		[HandleErrorWithJson]
+		[HttpPost]
+		public async Task<ActionResult> GetValidation(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            var validation =
-                await DataContext.TakeRate.GetValidation(TakeRateFilter.FromTakeRateParameters(parameters));
+			var validation =
+				await DataContext.TakeRate.GetValidation(TakeRateFilter.FromTakeRateParameters(parameters));
 
-            return Json(validation);
-        }
-        
-        public ActionResult ValidationMessage(ValidationMessage message)
-        {
-            // Something is making a GET request to this page and I can't figure out what
-            return PartialView("_ValidationMessage", message);
-        }
+			return Json(validation);
+		}
+		[HandleErrorWithJson]
+		[HttpPost]
+		public async Task<ActionResult> Validate(TakeRateParameters parameters)
+		{
+			FluentValidation.Results.ValidationResult validationResults = null;
+			
+			TakeRateParametersValidator
+			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-        #region "Private Methods"
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			filter.Action = TakeRateDataItemAction.Validate;
+			var takeRateView = await TakeRateViewModel.GetModel(
+				DataContext,
+				filter);
 
-        private async Task CheckModelAllowsEdit(TakeRateParameters parameters)
-        {
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.Changeset;
-            var takeRateView = await TakeRateViewModel.GetModel(
-                DataContext,
-                filter);
-            if (!takeRateView.AllowEdit)
-            {
-                throw new InvalidOperationException(NO_EDITS);
-            }
-        }
-        private async Task<TakeRateViewModel> GetModelFromParameters(TakeRateParameters parameters)
-        {
-            return await TakeRateViewModel.GetModel(
-                DataContext,
-                TakeRateFilter.FromTakeRateParameters(parameters));
-        }
+			try
+			{
+			    validationResults = await Validator.Validate(DataContext, takeRateView.RawData);
+			}
+			catch (ValidationException ex)
+			{
+				Log.Warning(ex);
+				// Just in case someone has thrown an exception from the validation, which we don't actually want
+			}
 
-        #endregion
+			return JsonGetSuccess(validationResults);
+		}
+		public ActionResult ValidationMessage(ValidationMessage message)
+		{
+			// Something is making a GET request to this page and I can't figure out what
+			return PartialView("_ValidationMessage", message);
+		}
 
-        #region "Private Constants"
+		#region "Private Methods"
 
-        private const string NO_EDITS =
-            "Either you do not have permission, or the take rate file does not allow edits in the current state";
+		private async Task CheckModelAllowsEdit(TakeRateParameters parameters)
+		{
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			filter.Action = TakeRateDataItemAction.Changeset;
+			var takeRateView = await TakeRateViewModel.GetModel(
+				DataContext,
+				filter);
+			if (!takeRateView.AllowEdit)
+			{
+				throw new InvalidOperationException(NO_EDITS);
+			}
+		}
+		private async Task<TakeRateViewModel> GetModelFromParameters(TakeRateParameters parameters)
+		{
+			return await TakeRateViewModel.GetModel(
+				DataContext,
+				TakeRateFilter.FromTakeRateParameters(parameters));
+		}
 
-        #endregion
-    }
+		#endregion
+
+		#region "Private Constants"
+
+		private const string NO_EDITS =
+			"Either you do not have permission, or the take rate file does not allow edits in the current state";
+
+		#endregion
+	}
 }

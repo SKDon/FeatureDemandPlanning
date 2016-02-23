@@ -102,8 +102,9 @@ namespace FeatureDemandPlanning.Model.Helpers
         }
         private static string GetAuthenticatedUser()
         {
-            return ParseUserName(HttpContext.Current.User.Identity.Name);
+            return HttpContext.Current == null ? string.Empty : ParseUserName(HttpContext.Current.User.Identity.Name);
         }
+
         private static string ParseUserName(string userName)
         {
             var retVal = userName;

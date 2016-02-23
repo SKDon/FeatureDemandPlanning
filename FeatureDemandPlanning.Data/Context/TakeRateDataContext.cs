@@ -6,6 +6,7 @@ using FeatureDemandPlanning.Model.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FeatureDemandPlanning.Model.Validators;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -163,6 +164,64 @@ namespace FeatureDemandPlanning.DataStore
             changeset.Comment = filter.Comment;
             return await Task.FromResult(_takeRateDataStore.FdpChangesetPersist(filter, changeset));
         }
+
+        public async Task<IEnumerable<ValidationResult>> PersistValidationErrors(FluentValidation.Results.ValidationResult validationResult)
+        {
+            var results = new List<ValidationResult>();
+            foreach (var validationError in validationResult.Errors)
+            {
+                var state = (ValidationState) validationError.CustomState;
+                var validationData = new ValidationResult
+                {
+                    TakeRateId = state.TakeRateId,
+
+                    ValidationRule = state.ValidationRule,
+
+                    FdpVolumeDataItemId = state.FdpVolumeDataItemId,
+                    FdpTakeRateSummaryId = state.FdpTakeRateSummaryId,
+                    FdpTakeRateFeatureMixId = state.FdpTakeRateFeatureMixId,
+                    FdpChangesetDataItemId = state.FdpChangesetDataItemId,
+
+                    MarketId = state.MarketId,
+                    ModelId = state.ModelId,
+                    FdpModelId = state.FdpModelId,
+                    FeatureId = state.FdpFeatureId,
+                    FdpFeatureId = state.FdpFeatureId,
+                    FeaturePackId = state.FeaturePackId,
+
+                    Message = validationError.ErrorMessage
+                };
+                validationData = await Task.FromResult(_takeRateDataStore.FdpValidationPersist(validationData));
+                results.Add(validationData);
+
+                foreach (var childState in state.ChildStates)
+                {
+                    validationData = new ValidationResult
+                    {
+                        TakeRateId = childState.TakeRateId,
+
+                        FdpVolumeDataItemId = childState.FdpVolumeDataItemId,
+                        FdpTakeRateSummaryId = childState.FdpTakeRateSummaryId,
+                        FdpTakeRateFeatureMixId = childState.FdpTakeRateFeatureMixId,
+                        FdpChangesetDataItemId = childState.FdpChangesetDataItemId,
+
+                        ValidationRule = state.ValidationRule,
+
+                        MarketId = childState.MarketId,
+                        ModelId = childState.ModelId,
+                        FdpModelId = childState.FdpModelId,
+                        FeatureId = childState.FdpFeatureId,
+                        FdpFeatureId = childState.FdpFeatureId,
+                        FeaturePackId = childState.FeaturePackId,
+
+                        Message = validationError.ErrorMessage
+                    };
+                    validationData = await Task.FromResult(_takeRateDataStore.FdpValidationPersist(validationData));
+                    results.Add(validationData);
+                }
+            }
+            return results;
+        }
         public async Task<FdpChangeset> UndoChangeset(TakeRateFilter takeRateFilter)
         {
             var changeset = await GetUnsavedChangesForUser(takeRateFilter);
@@ -219,6 +278,16 @@ namespace FeatureDemandPlanning.DataStore
                     currentMarketReview.ProgrammeId);
             }
             return marketReview;
+        }
+        public async Task<RawTakeRateData> GetRawData(TakeRateFilter filter)
+        {
+            var rawData = new RawTakeRateData()
+            {
+                DataItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateDataGetRaw(filter)),
+                SummaryItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateSummaryGetRaw(filter)),
+                FeatureMixItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateFeatureMixGetRaw(filter))
+            };
+            return rawData;
         }
 
         #endregion
