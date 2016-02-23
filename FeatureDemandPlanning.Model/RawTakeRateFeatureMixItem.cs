@@ -26,6 +26,26 @@
         public int ApplicableFeaturesInExclusiveFeatureGroup { get; set; }
         public int Volume { get; set; }
         public decimal PercentageTakeRate { get; set; }
+
+        public string FeatureIdentifier
+        {
+            get
+            {
+                if (FeatureId.HasValue)
+                {
+                    return "O" + FeatureId;
+                }
+                if (FdpFeatureId.HasValue)
+                {
+                    return "F" + FdpFeatureId;
+                }
+                if (!FeatureId.HasValue && FeaturePackId.HasValue)
+                {
+                    return "P" + FeaturePackId;
+                }
+                return string.Empty;
+            }
+        }
     }
 }
 

@@ -174,7 +174,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
 
             await HydrateFdpVolumeHeader(context, takeRateModel);
-            await HydrateRawData(context, takeRateModel);
+            HydrateRawData(context, takeRateModel);
 
             watch.Stop();
             Log.Debug("GetFullAndPartialViewModelForTakeRateDataPage : " + watch.ElapsedMilliseconds);
@@ -367,8 +367,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static async Task<RawTakeRateData> GetRawData(IDataContext context, TakeRateViewModel takeRateViewModel)
         {
             return
-                await
-                    context.TakeRate.GetRawData(new TakeRateFilter()
+                    await context.TakeRate.GetRawData(new TakeRateFilter()
                     {
                         TakeRateId = takeRateViewModel.Document.TakeRateId,
                         MarketId = takeRateViewModel.Document.Market.Id

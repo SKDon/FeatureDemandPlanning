@@ -4,6 +4,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_ChangesetDataItem_VW]
 AS
 	SELECT
@@ -47,6 +48,8 @@ AS
 		AND 
 		D.FdpFeatureId IS NULL
 		AND
+		D.FeaturePackId IS NULL
+		AND
 		(D.ModelId IS NOT NULL OR D.FdpModelId IS NOT NULL)
 		THEN
 		1
@@ -60,7 +63,7 @@ AS
 		AND 
 		D.FdpModelId IS NULL
 		AND
-		(D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL)
+		(D.FeatureId IS NOT NULL OR D.FdpFeatureId IS NOT NULL OR D.FeaturePackId IS NOT NULL)
 		THEN
 		1
 		ELSE
@@ -72,6 +75,8 @@ AS
 		D.FeatureId IS NULL 
 		AND 
 		D.FdpFeatureId IS NULL
+		AND
+		D.FeaturePackId IS NULL
 		AND
 		D.ModelId IS NULL
 		AND

@@ -17,8 +17,9 @@ namespace FeatureDemandPlanning.Model.Validators
                     GetModelTakeRate)
                 .WithState(d => new ValidationState(ValidationRule.TotalTakeRateForModelsOutOfRange)
                 {
+                    TakeRateId = d.DataItems.First().FdpVolumeHeaderId,
                     MarketId = d.SummaryItems.First().MarketId,
-                    PercentageTakeRate = (int)GetModelTakeRate(d),
+                    PercentageTakeRate = (decimal)GetModelTakeRate(d),
                     Volume = (int)GetModelVolume(d)
                 });
         }

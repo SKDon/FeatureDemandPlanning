@@ -31,7 +31,6 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<FdpChangeset> GetUnsavedChangesForUser(TakeRateFilter filter);
         Task<FdpChangeset> SaveChangeset(TakeRateFilter filter, FdpChangeset changesetToSave);
-        Task<DataChange> SaveChangesetDataChange(TakeRateFilter filter, DataChange changeToSave);
 
         Task<FdpChangeset> PersistChangeset(TakeRateFilter takeRateFilter);
         Task<FdpChangeset> UndoChangeset(TakeRateFilter takeRateFilter);
@@ -54,6 +53,6 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<RawTakeRateData> GetRawData(TakeRateFilter filter);
 
-        Task<IEnumerable<ValidationResult>> PersistValidationErrors(FluentValidation.Results.ValidationResult validationResult);
+        Task<IEnumerable<ValidationResult>> PersistValidationErrors(TakeRateFilter filter, FluentValidation.Results.ValidationResult validationResult);
     }
 }

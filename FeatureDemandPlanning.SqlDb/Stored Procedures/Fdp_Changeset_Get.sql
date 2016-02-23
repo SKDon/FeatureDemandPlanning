@@ -29,6 +29,7 @@ AS
 		  AS ModelIdentifier
 		, CASE 
 			WHEN D.FeatureId IS NOT NULL THEN 'O' + CAST(D.FeatureId AS NVARCHAR(10))
+			WHEN D.FeatureId IS NULL AND D.FeaturePackId IS NOT NULL THEN 'P' + CAST(D.FeaturePackId AS NVARCHAR(10))
 			ELSE 'F' + CAST(D.FdpFeatureId AS NVARCHAR(10))
 		  END
 		  AS FeatureIdentifier

@@ -37,7 +37,7 @@ AS
 		, ModelId		INT NULL
 		, FdpModelId	INT NULL
 		, Volume		INT NULL
-		, PercentageTakeRate DECIMAL(8,2)
+		, PercentageTakeRate DECIMAL(5,4)
 	);
 	CREATE TABLE #TakeRateDataByFeature
 	(
@@ -55,7 +55,7 @@ AS
 		, HasRule				BIT
 		, LongDescription		NVARCHAR(MAX)	NULL
 		, Volume				INT
-		, PercentageTakeRate	DECIMAL(8,2)
+		, PercentageTakeRate	DECIMAL(5,4)
 		, OxoCode				NVARCHAR(100)	NULL
 		, ModelId				INT
 		, FdpModelId			INT
@@ -255,7 +255,15 @@ AS
 		AND
 		FEA.Gateway = @Gateway
 		AND
-		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
+		(
+			@Filter IS NULL 
+			OR 
+			FEA.MappedFeatureCode LIKE '%' + @Filter + '%' 
+			OR 
+			FEA.BrandDescription LIKE '%' + @Filter + '%'
+			OR
+			FEA.ExclusiveFeatureGroup LIKE '%' + @Filter + '%'
+		)
 		
 		UNION
 		
@@ -292,7 +300,15 @@ AS
 		AND
 		FEA.Gateway = @Gateway
 		AND
-		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
+		(
+			@Filter IS NULL 
+			OR 
+			FEA.MappedFeatureCode LIKE '%' + @Filter + '%' 
+			OR 
+			FEA.BrandDescription LIKE '%' + @Filter + '%'
+			OR
+			FEA.ExclusiveFeatureGroup LIKE '%' + @Filter + '%'
+		)
 		
 		UNION
 		
@@ -333,7 +349,15 @@ AS
 		AND
 		FEA.Gateway = @Gateway
 		AND
-		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
+		(
+			@Filter IS NULL 
+			OR 
+			FEA.MappedFeatureCode LIKE '%' + @Filter + '%' 
+			OR 
+			FEA.BrandDescription LIKE '%' + @Filter + '%'
+			OR
+			FEA.ExclusiveFeatureGroup LIKE '%' + @Filter + '%'
+		)
 		
 		UNION
 		
@@ -374,7 +398,15 @@ AS
 		AND
 		FEA.Gateway = @Gateway
 		AND
-		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
+		(
+			@Filter IS NULL 
+			OR 
+			FEA.MappedFeatureCode LIKE '%' + @Filter + '%' 
+			OR 
+			FEA.BrandDescription LIKE '%' + @Filter + '%'
+			OR
+			FEA.ExclusiveFeatureGroup LIKE '%' + @Filter + '%'
+		)
 		
 		UNION
 		
@@ -415,7 +447,15 @@ AS
 		AND
 		FEA.Gateway = @Gateway
 		AND
-		(@Filter IS NULL OR FEA.MappedFeatureCode LIKE '%' + @Filter + '%' OR FEA.BrandDescription LIKE '%' + @Filter + '%')
+		(
+			@Filter IS NULL 
+			OR 
+			FEA.MappedFeatureCode LIKE '%' + @Filter + '%' 
+			OR 
+			FEA.BrandDescription LIKE '%' + @Filter + '%'
+			OR
+			FEA.ExclusiveFeatureGroup LIKE '%' + @Filter + '%'
+		)
 		
 	)	
 	INSERT INTO #TakeRateDataByFeature
@@ -468,7 +508,7 @@ AS
 		, F.ExclusiveFeatureGroup
 	FROM
 	TakeRateDataByFeature				AS F 
-	
+
 	INSERT INTO #AggregateVolumeByFeature
 	(
 		  AggregatedFeatureIdentifier

@@ -13,7 +13,7 @@ RETURNS
 	, ModelId				INT NULL
 	, FdpModelId			INT NULL
 	, Volume				INT NULL
-	, PercentageTakeRate	DECIMAL(5,2) NULL
+	, PercentageTakeRate	DECIMAL(5,4) NULL
 )
 AS
 BEGIN

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation.Results;
 
@@ -37,9 +38,10 @@ namespace FeatureDemandPlanning.Model.Validators
         }
 
         public static async Task<IEnumerable<ValidationResult>> Persist(IDataContext context,
+            TakeRateFilter filter,
             FluentValidation.Results.ValidationResult results)
         {
-            return await context.TakeRate.PersistValidationErrors(results);
+            return await context.TakeRate.PersistValidationErrors(filter, results);
         }
     }
     // Stores state information for validation such that it can be stored in the database and the appropriate objects

@@ -9,17 +9,17 @@ namespace FeatureDemandPlanning.Model
         public IEnumerable<RawTakeRateDataItem> DataItems { get; set; }
         public IEnumerable<RawTakeRateSummaryItem> SummaryItems { get; set; }
         public IEnumerable<RawTakeRateFeatureMixItem> FeatureMixItems { get; set; }
+        public int TotalVolume { get; set; }
+
         public IEnumerable<EfgGrouping> EfgGroupings
         {
-            get
-            {
-                return CalculateEfgGrouping();
-            }
+            get { return CalculateEfgGrouping(); }
         }
+
         public IEnumerable<FeaturePack> FeaturePacks
         {
             get { return CalculateFeaturePacks(); }
-        } 
+        }
 
         // This gets round a problem in FluentValidation with state and collections
         public IEnumerable<RawTakeRateDataItem> FeaturesWithVolumeGreaterThanModel
@@ -33,14 +33,15 @@ namespace FeatureDemandPlanning.Model
             SummaryItems = Enumerable.Empty<RawTakeRateSummaryItem>();
             FeatureMixItems = Enumerable.Empty<RawTakeRateFeatureMixItem>();
         }
+
         private IEnumerable<RawTakeRateDataItem> ListFeaturesWithVolumeGreaterThanModel()
         {
             var features = new List<RawTakeRateDataItem>();
             foreach (var dataItem in DataItems)
             {
-                var modelVolume = dataItem.ModelId.HasValue ? 
-                    SummaryItems.First(m => m.ModelId == dataItem.ModelId).Volume : 
-                    SummaryItems.First(m => m.FdpModelId == dataItem.FdpModelId).Volume;
+                var modelVolume = dataItem.ModelId.HasValue
+                    ? SummaryItems.First(m => m.ModelId == dataItem.ModelId).Volume
+                    : SummaryItems.First(m => m.FdpModelId == dataItem.FdpModelId).Volume;
 
                 if (dataItem.Volume > modelVolume)
                 {
@@ -49,6 +50,7 @@ namespace FeatureDemandPlanning.Model
             }
             return features;
         }
+
         private static bool IsInExclusiveFeatureGroup(RawTakeRateDataItem dataItem)
         {
             try
@@ -63,6 +65,7 @@ namespace FeatureDemandPlanning.Model
                 return false;
             }
         }
+
         private static bool IsInFeaturePack(RawTakeRateDataItem dataItem)
         {
             try
@@ -74,6 +77,7 @@ namespace FeatureDemandPlanning.Model
                 return false;
             }
         }
+
         private IEnumerable<EfgGrouping> CalculateEfgGrouping()
         {
             if (!DataItems.Any())
@@ -92,19 +96,19 @@ namespace FeatureDemandPlanning.Model
                     ModelId = dataItem.ModelId.GetValueOrDefault(),
                     dataItem.ExclusiveFeatureGroup
                 }
-                    into g
-                    select new EfgGrouping
-                    {
-                        TakeRateId = g.Key.TakeRateId,
-                        MarketId = g.Key.MarketId,
-                        Market = g.First().Market,
-                        ModelId = g.Key.ModelId,
-                        Model = g.First().Model,
-                        ExclusiveFeatureGroup = g.Key.ExclusiveFeatureGroup,
-                        TotalPercentageTakeRate = g.Sum(p => p.PercentageTakeRate),
-                        HasStandardFeatureInGroup = g.Any(d => d.IsStandardFeatureInGroup),
-                        NumberOfItemsWithTakeRate = g.Count(d => d.PercentageTakeRate > 0)
-                    };
+                into g
+                select new EfgGrouping
+                {
+                    TakeRateId = g.Key.TakeRateId,
+                    MarketId = g.Key.MarketId,
+                    Market = g.First().Market,
+                    ModelId = g.Key.ModelId,
+                    Model = g.First().Model,
+                    ExclusiveFeatureGroup = g.Key.ExclusiveFeatureGroup,
+                    TotalPercentageTakeRate = g.Sum(p => p.PercentageTakeRate),
+                    HasStandardFeatureInGroup = g.Any(d => d.IsStandardFeatureInGroup),
+                    NumberOfItemsWithTakeRate = g.Count(d => d.PercentageTakeRate > 0)
+                };
 
             _grouping = grouping;
 
@@ -150,5 +154,29 @@ namespace FeatureDemandPlanning.Model
 
         private IEnumerable<EfgGrouping> _grouping;
         private IEnumerable<FeaturePack> _packs;
+
+        public int GetModelVolume(int? modelId)
+        {
+            var model = SummaryItems.FirstOrDefault(s => s.ModelId == modelId);
+            return model != null ? model.Volume : 0;
+        }
+
+        public int GetFdpModelVolume(int? fdpModelId)
+        {
+            var model = SummaryItems.FirstOrDefault(s => s.FdpModelId == fdpModelId);
+            return model != null ? model.Volume : 0;
+        }
+
+        public int GetMarketVolume()
+        {
+            var models = SummaryItems.Where(s => !s.ModelId.HasValue && !s.FdpModelId.HasValue);
+            var rawTakeRateSummaryItems = models as IList<RawTakeRateSummaryItem> ?? models.ToList();
+            return rawTakeRateSummaryItems.Any() ? rawTakeRateSummaryItems.Sum(s => s.Volume) : 0;
+        }
+
+        public int GetAllMarketVolume()
+        {
+            return TotalVolume;
+        }
     }
 }

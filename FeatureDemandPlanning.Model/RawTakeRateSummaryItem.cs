@@ -14,5 +14,22 @@
         public string Model { get; set; }
         public int Volume { get; set; }
         public decimal PercentageTakeRate { get; set; }
+
+        public string ModelIdentifier
+        {
+            get
+            {
+                if (ModelId.HasValue)
+                {
+                    return "O" + ModelId;
+                }
+                if (FdpModelId.HasValue)
+                {
+                    return "F" + FdpModelId;
+                }
+                
+                return string.Empty;
+            }
+        }
     }
 }

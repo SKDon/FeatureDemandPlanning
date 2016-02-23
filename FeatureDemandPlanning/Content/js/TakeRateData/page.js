@@ -161,8 +161,8 @@ model.Page = function (models) {
             .unbind("EditCell").on("EditCell", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnEditCellDelegate", [eventArgs]); })
             .unbind("Save").on("Save", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSaveDelegate", [eventArgs]); })
             .unbind("Saved").on("Saved", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSavedDelegate", [eventArgs]); })
-            .unbind("UpdateFilterVolume").on("UpdateFilterVolume", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdateFilterVolumeDelegate", [eventArgs]); })
-            .unbind("Filtered").on("Filtered", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnFilteredDelegate", [eventArgs]); })
+            .unbind("UpdateFilterVolume").on("UpdateFilterVolume", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdateFilterVolumeDelegate", [eventArgs]); })
+            .unbind("Filtered").on("Filtered", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnFilteredDelegate", [eventArgs]); });
 
         $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
         $("#" + prefix + "_Undo").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoDelegate", [eventArgs]); });
@@ -189,7 +189,7 @@ model.Page = function (models) {
             .unbind("OnValidationDelegate").on("OnValidationDelegate", me.onValidationEventHandler)
             .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
             .unbind("OnUpdateFilterVolumeDelegate").on("OnUpdateFilterVolumeDelegate", me.onUpdateFilterVolumeEventHandler)
-            .unbind("OnFilteredDelegate").on("OnFilteredDelegate", me.onFilterChangedEventHandler)
+            .unbind("OnFilteredDelegate").on("OnFilteredDelegate", me.onFilterChangedEventHandler);
 
         $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel")
             .on("OnEditCellDelegate", me.onEditCellEventHandler)
@@ -417,7 +417,7 @@ model.Page = function (models) {
     me.saveCallback = function () {
         me.setInitial(false);
         me.loadChangeset();
-        me.loadValidation();
+        //me.loadValidation();
     };
     me.loadChangeset = function () {
         getTakeRateDataModel().loadChangeset(me.loadChangesetCallback);
@@ -520,7 +520,7 @@ model.Page = function (models) {
             if (currentChange.IsFeatureSummary) {
                 selector = $("tbody span[data-target='FS|" + currentChange.DataTarget + "']");
             } else if (currentChange.IsModelSummary) {
-                selector = $("thead th[data-target='MS|" + currentChange.DataTarget + "']").last();
+                selector = $(".editable-header[data-target='MS|" + currentChange.DataTarget + "']").first();
             } else if (currentChange.IsWholeMarketChange) {
                 selector = $(".input-filtered-volume");
             } else {

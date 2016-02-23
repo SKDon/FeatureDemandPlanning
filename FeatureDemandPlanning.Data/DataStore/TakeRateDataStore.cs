@@ -834,9 +834,11 @@ namespace FeatureDemandPlanning.DataStore
 
             tran.Connection.Execute("dbo.Fdp_Changeset_MarkSaved", para, tran, commandType: CommandType.StoredProcedure);
         }
-        public DataChange FdpChangesetDataItemSave(TakeRateFilter filter, DataChange dataItemToSave)
+
+        public IEnumerable<DataChange> FdpChangesetDataItemsSave(TakeRateFilter filter,
+            IEnumerable<DataChange> dataItemsToSave)
         {
-            DataChange retVal = new EmptyDataChange();
+            var retVal = new List<DataChange>();
 
             using (var conn = DbHelper.GetDBConnection())
             {
@@ -844,27 +846,17 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     try
                     {
-                        var para = new DynamicParameters();
-                        para.Add("@FdpChangesetId", dataItemToSave.FdpChangesetId.GetValueOrDefault(), DbType.Int32);
-                        para.Add("@MarketId", dataItemToSave.MarketId, DbType.Int32);
-                        para.Add(!dataItemToSave.IsFdpModel ? "@ModelId" : "@FdpModelId", dataItemToSave.GetModelId(),
-                            DbType.Int32);
-                        para.Add(!dataItemToSave.IsFdpFeature ? "@FeatureId" : "@FdpFeatureId",
-                            dataItemToSave.GetFeatureId(), DbType.Int32);
+                        int? parentId = null;
+                        foreach (var dataItemToSave in dataItemsToSave)
+                        {
+                            if (parentId.HasValue)
+                                dataItemToSave.ParentFdpChangesetDataItemId = parentId;
 
-                        if (dataItemToSave.Volume.HasValue)
-                        {
-                            para.Add("@TotalVolume", dataItemToSave.Volume, DbType.Int32);
-                        }
-                        if (dataItemToSave.PercentageTakeRateAsFraction.HasValue)
-                        {
-                            para.Add("@PercentageTakeRate", dataItemToSave.PercentageTakeRateAsFraction, DbType.Decimal);
-                        }
-                        var results = conn.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Save", para, tran, commandType: CommandType.StoredProcedure);
-                        var dataChanges = results as IList<DataChange> ?? results.ToList();
-                        if (dataChanges.Any())
-                        {
-                            retVal = dataChanges.First();
+                            var result = FdpChangesetDataItemSave(filter, dataItemToSave, tran);
+                            retVal.Add(result);
+
+                            if (!parentId.HasValue)
+                                parentId = result.FdpChangesetDataItemId;
                         }
                         tran.Commit();
                     }
@@ -875,6 +867,67 @@ namespace FeatureDemandPlanning.DataStore
                     }
                 }
             }
+            return retVal;
+        }
+        private DataChange FdpChangesetDataItemSave(TakeRateFilter filter, DataChange dataItemToSave, IDbTransaction tran)
+        {
+            DataChange retVal = new EmptyDataChange();
+
+            
+                    try
+                    {
+                        var para = new DynamicParameters();
+                        para.Add("@FdpChangesetId", dataItemToSave.FdpChangesetId.GetValueOrDefault(), DbType.Int32);
+                        para.Add("@ParentFdpChangesetDataItemId", dataItemToSave.ParentFdpChangesetDataItemId, DbType.Int32);
+                        para.Add("@MarketId", dataItemToSave.MarketId, DbType.Int32);
+                        para.Add(!dataItemToSave.IsFdpModel ? "@ModelId" : "@FdpModelId", dataItemToSave.GetModelId(),
+                            DbType.Int32);
+
+                        if (dataItemToSave.IsFdpFeature)
+                        {
+                            para.Add("@FdpFeatureId", dataItemToSave.GetFeatureId(), DbType.Int32);
+                        }
+                        else if (dataItemToSave.IsFeaturePack)
+                        {
+                            para.Add("@FeaturePackId", dataItemToSave.GetFeatureId(), DbType.Int32);
+                        }
+                        else
+                        {
+                            para.Add("@FeatureId", dataItemToSave.GetFeatureId(), DbType.Int32);
+                        }
+                        
+
+                        if (dataItemToSave.Volume.HasValue)
+                        {
+                            para.Add("@TotalVolume", dataItemToSave.Volume, DbType.Int32);
+                        }
+                        if (dataItemToSave.PercentageTakeRateAsFraction.HasValue)
+                        {
+                            para.Add("@PercentageTakeRate", dataItemToSave.PercentageTakeRateAsFraction, DbType.Decimal);
+                        }
+                        para.Add("@OriginalPercentageTakeRate", dataItemToSave.OriginalPercentageTakeRate, DbType.Decimal);
+                        para.Add("@OriginalVolume", dataItemToSave.OriginalVolume, DbType.Int32);
+                        para.Add("@FdpVolumeDataItemId", dataItemToSave.FdpVolumeDataItemId, DbType.Int32);
+                        para.Add("@FdpTakeRateSummaryId", dataItemToSave.FdpTakeRateSummaryId, DbType.Int32);
+                        para.Add("@FdpTakeRateFeatureMixId", dataItemToSave.FdpTakeRateFeatureMixId, DbType.Int32);
+
+                        para.Add("@IsVolumeUpdate", dataItemToSave.Mode == TakeRateResultMode.Raw, DbType.Boolean);
+                        para.Add("@IsPercentageUpdate", dataItemToSave.Mode == TakeRateResultMode.PercentageTakeRate, DbType.Boolean);
+
+                        var results = tran.Connection.Query<DataChange>("dbo.Fdp_ChangesetDataItem_Save", para, tran, commandType: CommandType.StoredProcedure);
+                        var dataChanges = results as IList<DataChange> ?? results.ToList();
+                        if (dataChanges.Any())
+                        {
+                            retVal = dataChanges.First();
+                        }
+                        
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex);
+                        throw;
+                    }
+                
             return retVal;
         }
         public DataChange FdpChangesetDataItemRecalculate(DataChange changeToRecalculate)

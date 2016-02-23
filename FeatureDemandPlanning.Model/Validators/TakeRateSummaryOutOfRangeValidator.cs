@@ -27,6 +27,7 @@ namespace FeatureDemandPlanning.Model.Validators
                     d => d.Model)
                 .WithState(d => new ValidationState(ValidationRule.TakeRateOutOfRange)
                 {
+                    TakeRateId = d.FdpVolumeHeaderId,
                     MarketId = d.MarketId,
                     ModelId = d.ModelId,
                     FdpModelId = d.FdpModelId,

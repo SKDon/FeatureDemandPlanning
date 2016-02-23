@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using FeatureDemandPlanning.Model.Enumerations;
 using FluentValidation;
 
 namespace FeatureDemandPlanning.Model.Validators
@@ -15,13 +16,26 @@ namespace FeatureDemandPlanning.Model.Validators
                 .WithMessage(Message,
                     GetModelVolume,
                     dataItems => dataItems.SummaryItems.First().Market,
-                    GetMarketVolume);
+                    GetMarketVolume)
+                .WithState(d => new ValidationState(ValidationRule.VolumeForModelsGreaterThanMarket)
+                {
+                    TakeRateId = d.SummaryItems.First().FdpVolumeHeaderId,
+                    MarketId = d.SummaryItems.First().MarketId,
+                    Volume = (int)GetMarketVolume(d),
+                    PercentageTakeRate = (decimal)GetMarketPercentageTake(d)
+                });
         }
         private static object GetMarketVolume(RawTakeRateData rawData)
         {
             var market = rawData.SummaryItems.First(s => !s.ModelId.HasValue && !s.FdpModelId.HasValue);
 
             return market != null ? market.Volume : 0;
+        }
+        private static object GetMarketPercentageTake(RawTakeRateData rawData)
+        {
+            var market = rawData.SummaryItems.First(s => !s.ModelId.HasValue && !s.FdpModelId.HasValue);
+
+            return market != null ? market.PercentageTakeRate : 0;
         }
         private static object GetModelVolume(RawTakeRateData rawData)
         {

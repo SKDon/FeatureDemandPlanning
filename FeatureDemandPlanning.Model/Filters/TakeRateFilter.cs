@@ -19,6 +19,7 @@ namespace FeatureDemandPlanning.Model.Filters
         public int? FdpModelId { get; set; }
         public int? FeatureId { get; set; }
         public int? FdpFeatureId { get; set; }
+        public int? FeaturePackId { get; set; }
         public MarketReviewStatus MarketReviewStatus { get; set; }
         public string Filter { get; set; }
 
@@ -100,6 +101,10 @@ namespace FeatureDemandPlanning.Model.Filters
             if (parameters.FeatureIdentifier.StartsWith("O"))
             {
                 filter.FeatureId = int.Parse(parameters.FeatureIdentifier.Substring(1));
+            }
+            else if (parameters.FeatureIdentifier.StartsWith("P"))
+            {
+                filter.FeaturePackId = int.Parse(parameters.FeatureIdentifier.Substring(1));
             }
             else
             {

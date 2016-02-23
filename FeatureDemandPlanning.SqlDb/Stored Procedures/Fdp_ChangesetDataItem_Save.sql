@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_ChangesetDataItem_Save]
 	  @FdpChangesetId		AS INT
+	, @ParentFdpChangesetDataItemId AS INT = NULL
 	, @MarketId				AS INT
 	, @ModelId				AS INT = NULL
 	, @FdpModelId			AS INT = NULL
@@ -8,6 +9,13 @@
 	, @FeaturePackId		AS INT = NULL
 	, @TotalVolume			AS INT = NULL
 	, @PercentageTakeRate	AS DECIMAL(5, 4) = NULL
+	, @OriginalVolume		AS INT = NULL
+	, @OriginalPercentageTakeRate AS DECIMAL(5, 4) = NULL
+	, @FdpVolumeDataItemId	AS INT = NULL
+	, @FdpTakeRateSummaryId	AS INT = NULL
+	, @FdpTakeRateFeatureMixId AS INT = NULL
+	, @IsVolumeUpdate		AS BIT = 0
+	, @IsPercentageUpdate	AS BIT = 0
 AS
 	SET NOCOUNT ON;
 	
@@ -16,6 +24,124 @@ AS
 	-- If an item already exists we must delete it, rather than update
 	-- Any changes need to be applied from the changeset sequentially, so that any calculations are 
 	-- performed in the correct order. New changes are appended to the changeset
+
+	UPDATE D SET IsDeleted = 1
+	FROM Fdp_ChangesetDataItem AS D
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.MarketId = @MarketId
+	AND
+	ModelId = @ModelId
+	AND
+	FeatureId = @FeatureId
+	AND
+	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+
+	UPDATE D SET IsDeleted = 1
+	FROM Fdp_ChangesetDataItem AS D
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.MarketId = @MarketId
+	AND
+	ModelId = @ModelId
+	AND
+	FdpFeatureId = @FdpFeatureId
+	AND
+	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+
+	UPDATE D SET IsDeleted = 1
+	FROM Fdp_ChangesetDataItem AS D
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.MarketId = @MarketId
+	AND
+	FdpModelId = @FdpModelId
+	AND
+	FeatureId = @FeatureId
+	AND
+	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+
+	UPDATE D SET IsDeleted = 1
+	FROM Fdp_ChangesetDataItem AS D
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.MarketId = @MarketId
+	AND
+	FdpModelId = @FdpModelId
+	AND
+	FdpFeatureId = @FdpFeatureId
+	AND
+	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+
+	UPDATE D SET IsDeleted = 1
+	FROM Fdp_ChangesetDataItem AS D
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.MarketId = @MarketId
+	AND
+	ModelId = @ModelId
+	AND
+	FeatureId IS NULL
+	AND
+	FeaturePackId = @FeaturePackId
+	AND
+	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+
+	-- Clear model summary
+
+	UPDATE D SET IsDeleted = 1
+	FROM Fdp_ChangesetDataItem AS D
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.MarketId = @MarketId
+	AND
+	ModelId = @ModelId
+	AND
+	FeatureId IS NULL
+	AND
+	FdpFeatureId IS NULL
+	AND
+	FeaturePackId IS NULL
+	AND
+	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+
+	UPDATE D SET IsDeleted = 1
+	FROM Fdp_ChangesetDataItem AS D
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.MarketId = @MarketId
+	AND
+	FdpModelId = @FdpModelId
+	AND
+	FeatureId IS NULL
+	AND
+	FdpFeatureId IS NULL
+	AND
+	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+
+	-- Always clear any feature mix entries
+
+	UPDATE D SET IsDeleted = 1
+	FROM Fdp_ChangesetDataItem AS D
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.MarketId = @MarketId
+	AND
+	ModelId IS NULL
+	AND
+	FdpModelId IS NULL
+	AND
+	FeatureId = @FeatureId
+	AND
+	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
 	
 	UPDATE D SET IsDeleted = 1
 	FROM Fdp_ChangesetDataItem AS D
@@ -24,153 +150,30 @@ AS
 	AND
 	D.MarketId = @MarketId
 	AND
-	(@ModelId IS NULL OR D.ModelId = @ModelId)
+	ModelId IS NULL
 	AND
-	(@FdpModelId IS NULL OR D.FdpModelId = @FdpModelId)
+	FdpModelId IS NULL
 	AND
-	(@FeatureId IS NULL OR D.FeatureId = @FeatureId)
+	FdpFeatureId = @FdpFeatureId
 	AND
-	(@FdpFeatureId IS NULL OR D.FdpFeatureId = @FdpFeatureId)
-	AND
-	(@FeaturePackId IS NULL OR D.FeaturePackId = @FeaturePackId)
-	AND
-	D.IsDeleted = 0;
-	
-	-- Work out the original volume and percentage
-	
-	DECLARE @OriginalVolume INT;
-	DECLARE @OriginalPercentageTakeRate DECIMAL(5, 4);
-	DECLARE @FdpVolumeDataItemId INT;
-	DECLARE @FdpTakeRateSummaryId INT;
-	
-	SELECT TOP 1 
-		  @OriginalVolume = OLD.Volume
-		, @OriginalPercentageTakeRate = OLD.PercentageTakeRate
-		, @FdpVolumeDataItemId = OLD.FdpVolumeDataItemId
-		, @FdpTakeRateSummaryId = OLD.FdpTakeRateSummaryId
-	FROM
-	(
-		SELECT 
-			Volume
-		  , PercentageTakeRate
-		  , FdpVolumeDataItemId
-		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
-		FROM
-		Fdp_Changeset			AS C
-		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
-		JOIN Fdp_VolumeDataItem AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-									 AND D.MarketId = @MarketId
-									 AND D.ModelId = @ModelId
-									 AND D.FeatureId = @FeatureId
-									 
-		UNION
-		
-		SELECT 
-			Volume
-		  , PercentageTakeRate
-		  , FdpVolumeDataItemId
-		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
-		FROM
-		Fdp_Changeset			AS C
-		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
-		JOIN Fdp_VolumeDataItem AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-									 AND D.MarketId = @MarketId
-									 AND D.FdpModelId = @FdpModelId
-									 AND D.FeatureId = @FeatureId
-									 
-		UNION
-		
-		SELECT 
-			Volume
-		  , PercentageTakeRate
-		  , FdpVolumeDataItemId
-		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
-		FROM
-		Fdp_Changeset			AS C
-		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
-		JOIN Fdp_VolumeDataItem AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-									 AND D.MarketId = @MarketId
-									 AND D.ModelId = @ModelId
-									 AND D.FdpFeatureId = @FdpFeatureId
-									 
-		UNION
-		
-		SELECT 
-			D.Volume
-		  , D.PercentageTakeRate
-		  , D.FdpVolumeDataItemId
-		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
-		FROM
-		Fdp_Changeset			AS C
-		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
-		JOIN Fdp_VolumeDataItem AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-									 AND D.MarketId			= @MarketId
-									 AND D.FdpModelId		= @FdpModelId
-									 AND D.FdpFeatureId		= @FdpFeatureId
-									 
-		UNION
-		
-		SELECT 
-			D.Volume
-		  , D.PercentageTakeRate
-		  , D.FdpVolumeDataItemId
-		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
-		FROM
-		Fdp_Changeset			AS C
-		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
-		JOIN Fdp_VolumeDataItem AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-									 AND D.MarketId			= @MarketId
-									 AND D.ModelId			= @ModelId
-									 AND D.FeaturePackId	= @FeaturePackId
-		
-		UNION
-		
-		SELECT 
-			D.Volume
-		  , D.PercentageTakeRate
-		  , D.FdpVolumeDataItemId
-		  , CAST(NULL AS INT) AS FdpTakeRateSummaryId
-		FROM
-		Fdp_Changeset			AS C
-		JOIN Fdp_VolumeHeader	AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
-		JOIN Fdp_VolumeDataItem AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-									 AND D.MarketId			= @MarketId
-									 AND D.FdpModelId		= @FdpModelId
-									 AND D.FeaturePackId	= @FeaturePackId
+	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
 
-		UNION
-
-		SELECT
-			  S.Volume
-			, S.PercentageTakeRate
-			, CAST(NULL AS INT) AS FdpVolumeDataItemId
-			, S.FdpTakeRateSummaryId
-		FROM
-		Fdp_Changeset				AS C
-		JOIN Fdp_VolumeHeader		AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
-		JOIN Fdp_TakeRateSummary	AS S ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
-										 AND S.MarketId			= @MarketId
-										 AND S.ModelId			= @ModelId
-										 AND @FeatureId			IS NULL
-										 AND @FdpFeatureId		IS NULL
-
-		UNION
-
-		SELECT
-			  S.Volume
-			, S.PercentageTakeRate
-			, CAST(NULL AS INT) AS FdpVolumeDataItemId
-			, S.FdpTakeRateSummaryId
-		FROM
-		Fdp_Changeset				AS C
-		JOIN Fdp_VolumeHeader		AS H ON C.FdpVolumeHeaderId = H.FdpVolumeHeaderId
-		JOIN Fdp_TakeRateSummary	AS S ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
-										 AND S.MarketId			= @MarketId
-										 AND S.FdpModelId		= @FdpModelId
-										 AND @FeatureId			IS NULL
-										 AND @FdpFeatureId		IS NULL
-	)
-	AS OLD
+	UPDATE D SET IsDeleted = 1
+	FROM Fdp_ChangesetDataItem AS D
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.MarketId = @MarketId
+	AND
+	ModelId IS NULL
+	AND
+	FdpModelId IS NULL
+	AND
+	FeatureId IS NULL
+	AND
+	FeaturePackId = @FeaturePackId
+	AND
+	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
 
 	INSERT INTO Fdp_ChangesetDataItem
 	(
@@ -189,6 +192,8 @@ AS
 		, OriginalPercentageTakeRate
 		, FdpVolumeDataItemId
 		, FdpTakeRateSummaryId
+		, FdpTakeRateFeatureMixId
+		, ParentFdpChangesetDataItemId
 	)
 	VALUES
 	(
@@ -201,12 +206,14 @@ AS
 		, @FeaturePackId
 		, @TotalVolume
 		, @PercentageTakeRate
-		, CASE WHEN @TotalVolume IS NOT NULL THEN 1 ELSE 0 END
-		, CASE WHEN @PercentageTakeRate IS NOT NULL THEN 1 ELSE 0 END
+		, @IsVolumeUpdate
+		, @IsPercentageUpdate
 		, @OriginalVolume
 		, @OriginalPercentageTakeRate
 		, @FdpVolumeDataItemId
 		, @FdpTakeRateSummaryId
+		, @FdpTakeRateFeatureMixId
+		, @ParentFdpChangesetDataItemId
 	);
 	
 	SET @FdpChangesetDataItemId = SCOPE_IDENTITY();

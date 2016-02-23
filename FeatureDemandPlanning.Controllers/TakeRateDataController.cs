@@ -11,6 +11,7 @@ using MvcSiteMapProvider.Web.Mvc.Filters;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
@@ -107,215 +108,377 @@ namespace FeatureDemandPlanning.Controllers
 
 			await CheckModelAllowsEdit(parameters);
 
-			var savedChangeset = await DataContext.TakeRate.SaveChangeset(TakeRateFilter.FromTakeRateParameters(parameters), parameters.Changeset);
+		    var changeset = parameters.Changeset;
+            var dataChange = changeset.Changes.First();
+
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+
+            if (dataChange.IsFeatureChange)
+		    {
+		        CalculateFeatureChange(parameters);
+		    }
+            else if (dataChange.IsModelSummary)
+            {
+                CalculateModelChange(parameters);
+            }
+            else if (dataChange.IsWholeMarketChange)
+            {
+                CalculateMarketChange(parameters);
+            }
+
+		    var savedChangeset = await DataContext.TakeRate.SaveChangeset(filter, changeset);
+
+            // TODO break this out into a separate call, as we want it to return as fast as possible
+            var rawData = await DataContext.TakeRate.GetRawData(filter);
+		    var validationResults = Validator.Validate(rawData);
+		    var savedValidationResults = await Validator.Persist(DataContext, filter, validationResults);
 
 			return Json(savedChangeset);
 		}
-		[HandleErrorWithJson]
-		[HttpPost]
-		public async Task<ActionResult> GetLatestChangeset(TakeRateParameters parameters)
-		{
-			
-			TakeRateParametersValidator
-				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+        // For a feature change, we simply re-compute the % take if the volume has been altered and vice versa
+        // The feature mix will then need to be recalculated
+	    private async void CalculateFeatureChange(TakeRateParameters parameters)
+	    {
+            var changeset = parameters.Changeset;
+            var dataChange = parameters.Changeset.Changes.First();
+            
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            var rawData = await DataContext.TakeRate.GetRawData(filter);
+           
+            var modelId = dataChange.GetModelId();
+            var modelVolumes = rawData.SummaryItems.Where(s => s.ModelId.HasValue || s.FdpModelId.HasValue).Sum(s => s.Volume);
 
-			var changeset = await DataContext.TakeRate.GetUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
+            // Get the original values from raw data
 
-			return Json(changeset);
-		}
-		[HandleErrorWithJson]
-		[HttpPost]
-		public async Task<ActionResult> RevertLatestChangeset(TakeRateParameters parameters)
-		{
-			TakeRateParametersValidator
-				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+            var modelVolume = dataChange.IsFdpModel ? rawData.GetFdpModelVolume(modelId) : rawData.GetModelVolume(modelId);
+            var existingFeature = rawData.DataItems.FirstOrDefault(d => IsMatchingModel(dataChange, d) && IsMatchingFeature(dataChange, d));
+            var existingFeatureVolumes = rawData.DataItems.Where(d => !IsMatchingModel(dataChange, d) && IsMatchingFeature(dataChange, d)).Sum(d => d.Volume);
+            var existingFeatureMix = rawData.FeatureMixItems.FirstOrDefault(f => IsMatchingFeatureMix(dataChange, f));
 
-			await CheckModelAllowsEdit(parameters);
+            switch (dataChange.Mode)
+            {
+                case TakeRateResultMode.PercentageTakeRate:
+                    dataChange.Volume = (int)(modelVolume * decimal.Divide(dataChange.PercentageTakeRate.GetValueOrDefault(), 100));
+                    break;
+                case TakeRateResultMode.Raw:
+                    dataChange.PercentageTakeRate = (dataChange.Volume / (decimal)modelVolume) * 100;
+                    break;
+                case TakeRateResultMode.NotSet:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
-			var changeset = await DataContext.TakeRate.RevertUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
+	        // Get the original values
 
-			return Json(changeset);
-		}
-		[HandleErrorWithJson]
-		[HttpPost]
-		public async Task<ActionResult> ChangesetHistory(TakeRateParameters parameters)
-		{
-			TakeRateParametersValidator
-			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+	        if (existingFeature != null)
+	        {
+	            dataChange.OriginalPercentageTakeRate = existingFeature.PercentageTakeRate;
+	            dataChange.OriginalVolume = existingFeature.Volume;
+	            dataChange.FdpVolumeDataItemId = existingFeature.FdpVolumeDataItemId;
+	        }
 
-			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-			filter.Action = TakeRateDataItemAction.Changeset;
-			var takeRateView = await TakeRateViewModel.GetModel(
-				DataContext,
-				filter);
+	        // Update the feature mix for the feature in question
 
-			takeRateView.History = await DataContext.TakeRate.GetChangesetHistory(filter);
+	        var featureMixDataChange = new DataChange(dataChange)
+	        {
+	            PercentageTakeRate = ((existingFeatureVolumes + dataChange.Volume)/(decimal) modelVolumes)*100, Volume = existingFeatureVolumes + dataChange.Volume, ModelIdentifier = string.Empty
+	        };
+	        if (existingFeatureMix != null)
+	        {
+	            featureMixDataChange.OriginalPercentageTakeRate = existingFeatureMix.PercentageTakeRate;
+	            featureMixDataChange.OriginalVolume = existingFeatureMix.Volume;
+	            featureMixDataChange.FdpTakeRateFeatureMixId = existingFeatureMix.FdpTakeRateFeatureMixId;
+	        }
+	        changeset.Changes.Add(featureMixDataChange);
+	    }
 
-			return PartialView("_ChangesetHistory", takeRateView);
-		}
-		[HandleErrorWithJson]
-		[HttpPost]
-		public async Task<ActionResult> Filter(TakeRateParameters parameters)
-		{
-			TakeRateParametersValidator
-			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+	    private async void CalculateModelChange(TakeRateParameters parameters)
+	    {
+	        var changeset = parameters.Changeset;
+	        var dataChange = parameters.Changeset.Changes.First();
 
-			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-			filter.Action = TakeRateDataItemAction.Filter;
-			var takeRateView = await TakeRateViewModel.GetModel(
-				DataContext,
-				filter);
+	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+	        var rawData = await DataContext.TakeRate.GetRawData(filter);
 
-			return PartialView("_Filter", takeRateView);
-		}
-		[HandleErrorWithJson]
-		[HttpPost]
-		public async Task<ActionResult> PersistChangeset(TakeRateParameters parameters)
-		{
-			TakeRateParametersValidator
-			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangesetAndComment);
+	        var marketVolume = rawData.GetMarketVolume();
+	        var existingModelVolumes = rawData.SummaryItems.Where(s => (s.ModelId.HasValue || s.FdpModelId.HasValue) && IsMatchingModel(dataChange, s)).Sum(s => s.Volume);
+	        var existingModel = rawData.SummaryItems.FirstOrDefault(s => IsMatchingModel(dataChange, s));
+	        var affectedFeatures = rawData.DataItems.Where(f => IsMatchingModel(dataChange, f));
 
-			await CheckModelAllowsEdit(parameters);
+	        switch (dataChange.Mode)
+	        {
+	            case TakeRateResultMode.PercentageTakeRate:
+	                dataChange.Volume = (int) (marketVolume*decimal.Divide(dataChange.PercentageTakeRate.GetValueOrDefault(), 100));
+	                break;
+	            case TakeRateResultMode.Raw:
+	                dataChange.PercentageTakeRate = (dataChange.Volume/(decimal) marketVolume)*100;
+	                break;
+	            case TakeRateResultMode.NotSet:
+	                break;
+	            default:
+	                throw new ArgumentOutOfRangeException();
+	        }
 
-			var persistedChangeset = await DataContext.TakeRate.PersistChangeset(
-				TakeRateFilter.FromTakeRateParameters(parameters));
+	        if (existingModel != null)
+	        {
+	            dataChange.OriginalPercentageTakeRate = existingModel.PercentageTakeRate;
+	            dataChange.OriginalVolume = existingModel.Volume;
+	            dataChange.FdpTakeRateSummaryId = existingModel.FdpTakeRateSummaryId;
+	        }
 
-			return Json(persistedChangeset);
-		}
-		[HandleErrorWithJson]
-		[HttpPost]
-		public async Task<ActionResult> PersistChangesetConfirm(TakeRateParameters parameters)
-		{
-			TakeRateParametersValidator
-			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+	        // Re-compute all affected features
 
-			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-			filter.Action = TakeRateDataItemAction.TakeRateDataItemDetails;
-			var takeRateView = await TakeRateViewModel.GetModel(
-				DataContext,
-				filter);
+	        foreach (var featureDataChange in affectedFeatures.Select(affectedFeature => new DataChange(dataChange)
+	        {
+	            Volume = (int) (dataChange.Volume*affectedFeature.PercentageTakeRate), PercentageTakeRate = affectedFeature.PercentageTakeRate*100, FdpVolumeDataItemId = affectedFeature.FdpVolumeDataItemId, OriginalVolume = affectedFeature.Volume, OriginalPercentageTakeRate = affectedFeature.PercentageTakeRate, FeatureIdentifier = affectedFeature.FeatureIdentifier
+	        }))
+	        {
+	            changeset.Changes.Add(featureDataChange);
+	        }
 
-			takeRateView.Changes = await DataContext.TakeRate.GetUnsavedChangesForUser(filter);
+	        // Re-compute the feature mix across the board
 
-			return PartialView("_PersistChangesetConfirm", takeRateView);
-		}
-		[HandleErrorWithJson]
-		[HttpPost]
-		public async Task<ActionResult> UndoChangeset(TakeRateParameters parameters)
-		{
-			TakeRateParametersValidator
-			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+	        foreach (var featureMixDataChange in rawData.FeatureMixItems.Select(featureMixItem => new DataChange(dataChange)
+	        {
+	            PercentageTakeRate = featureMixItem.PercentageTakeRate*100, Volume = (int) ((existingModelVolumes + dataChange.Volume)*featureMixItem.PercentageTakeRate), ModelIdentifier = string.Empty, OriginalPercentageTakeRate = featureMixItem.PercentageTakeRate, OriginalVolume = featureMixItem.Volume, FdpTakeRateFeatureMixId = featureMixItem.FdpTakeRateFeatureMixId, FeatureIdentifier = featureMixItem.FeatureIdentifier
+	        }))
+	        {
+	            changeset.Changes.Add(featureMixDataChange);
+	        }
+	    }
 
-			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-			filter.Action = TakeRateDataItemAction.Changeset;
-			var takeRateView = await TakeRateViewModel.GetModel(
-				DataContext,
-				filter);
-			if (!takeRateView.AllowEdit)
-			{
-				throw new InvalidOperationException(NO_EDITS);
-			}
-			var undoneChangeset = await DataContext.TakeRate.UndoChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
+	    private async void CalculateMarketChange(TakeRateParameters parameters)
+	    {
+	        var changeset = parameters.Changeset;
+	        var dataChange = parameters.Changeset.Changes.First();
 
-			return JsonGetSuccess(undoneChangeset);
-		}
-		[HandleErrorWithJson]
-		public async Task<ActionResult> AddNote(TakeRateParameters parameters)
-		{
-			TakeRateParametersValidator
-			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.ModelPlusFeatureAndComment);
+	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+	        var rawData = await DataContext.TakeRate.GetRawData(filter);
 
-			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-			filter.Action = TakeRateDataItemAction.AddNote;
-			var takeRateView = await TakeRateViewModel.GetModel(
-				DataContext,
-				filter);
-			if (!takeRateView.AllowEdit)
-			{
-				throw new InvalidOperationException(NO_EDITS);
-			}
-			var note = await DataContext.TakeRate.AddDataItemNote(TakeRateFilter.FromTakeRateParameters(parameters));
+            var marketVolume = rawData.GetAllMarketVolume();
+            
+            switch (dataChange.Mode)
+            {
+                case TakeRateResultMode.PercentageTakeRate:
+                    dataChange.Volume = (int)(marketVolume * decimal.Divide(dataChange.PercentageTakeRate.GetValueOrDefault(), 100));
+                    break;
+                case TakeRateResultMode.Raw:
+                    dataChange.PercentageTakeRate = (dataChange.Volume / (decimal)marketVolume) * 100;
+                    break;
+                case TakeRateResultMode.NotSet:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+	    }
 
-			return Json(note, JsonRequestBehavior.AllowGet);
-		}
-		[HandleErrorWithJson]
-		[HttpPost]
-		public async Task<ActionResult> GetValidation(TakeRateParameters parameters)
-		{
-			TakeRateParametersValidator
-			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+	    [HandleErrorWithJson]
+	    [HttpPost]
+	    public async Task<ActionResult> GetLatestChangeset(TakeRateParameters parameters)
+	    {
+	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-			var validation =
-				await DataContext.TakeRate.GetValidation(TakeRateFilter.FromTakeRateParameters(parameters));
+	        var changeset = await DataContext.TakeRate.GetUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
 
-			return Json(validation);
-		}
-		[HandleErrorWithJson]
-		[HttpPost]
-		public async Task<ActionResult> Validate(TakeRateParameters parameters)
-		{
-			var validationResults = Enumerable.Empty<ValidationResult>();
-			
-			TakeRateParametersValidator
-			   .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+	        return Json(changeset);
+	    }
 
-			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-			filter.Action = TakeRateDataItemAction.Validate;
-			var takeRateView = await TakeRateViewModel.GetModel(
-				DataContext,
-				filter);
+	    [HandleErrorWithJson]
+	    [HttpPost]
+	    public async Task<ActionResult> RevertLatestChangeset(TakeRateParameters parameters)
+	    {
+	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-		    try
-		    {
-		        var interimResults = Validator.Validate(takeRateView.RawData);
-		        validationResults = await Validator.Persist(DataContext, interimResults);
-		    }
-		    catch (ValidationException vex)
-		    {
-                // Just in case someone has thrown an exception from the validation, which we don't actually want
-                Log.Warning(vex);
-		    }
-		    catch (Exception ex)
-		    {
-		        Log.Error(ex);
-		    }
+	        await CheckModelAllowsEdit(parameters);
 
-			return JsonGetSuccess(validationResults);
-		}
-		public ActionResult ValidationMessage(ValidationMessage message)
-		{
-			// Something is making a GET request to this page and I can't figure out what
-			return PartialView("_ValidationMessage", message);
-		}
+	        var changeset = await DataContext.TakeRate.RevertUnsavedChangesForUser(TakeRateFilter.FromTakeRateParameters(parameters));
 
-		#region "Private Methods"
+	        return Json(changeset);
+	    }
 
-		private async Task CheckModelAllowsEdit(TakeRateParameters parameters)
-		{
-			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-			filter.Action = TakeRateDataItemAction.Changeset;
-			var takeRateView = await TakeRateViewModel.GetModel(
-				DataContext,
-				filter);
-			if (!takeRateView.AllowEdit)
-			{
-				throw new InvalidOperationException(NO_EDITS);
-			}
-		}
-		private async Task<TakeRateViewModel> GetModelFromParameters(TakeRateParameters parameters)
-		{
-			return await TakeRateViewModel.GetModel(
-				DataContext,
-				TakeRateFilter.FromTakeRateParameters(parameters));
-		}
+	    [HandleErrorWithJson]
+	    [HttpPost]
+	    public async Task<ActionResult> ChangesetHistory(TakeRateParameters parameters)
+	    {
+	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-		#endregion
+	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+	        filter.Action = TakeRateDataItemAction.Changeset;
+	        var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
 
-		#region "Private Constants"
+	        takeRateView.History = await DataContext.TakeRate.GetChangesetHistory(filter);
 
-		private const string NO_EDITS =
-			"Either you do not have permission, or the take rate file does not allow edits in the current state";
+	        return PartialView("_ChangesetHistory", takeRateView);
+	    }
 
-		#endregion
+	    [HandleErrorWithJson]
+	    [HttpPost]
+	    public async Task<ActionResult> Filter(TakeRateParameters parameters)
+	    {
+	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+
+	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+	        filter.Action = TakeRateDataItemAction.Filter;
+	        var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
+
+	        return PartialView("_Filter", takeRateView);
+	    }
+
+	    [HandleErrorWithJson]
+	    [HttpPost]
+	    public async Task<ActionResult> PersistChangeset(TakeRateParameters parameters)
+	    {
+	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangesetAndComment);
+
+	        await CheckModelAllowsEdit(parameters);
+
+	        var persistedChangeset = await DataContext.TakeRate.PersistChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
+
+	        return Json(persistedChangeset);
+	    }
+
+	    [HandleErrorWithJson]
+	    [HttpPost]
+	    public async Task<ActionResult> PersistChangesetConfirm(TakeRateParameters parameters)
+	    {
+	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+
+	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+	        filter.Action = TakeRateDataItemAction.TakeRateDataItemDetails;
+	        var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
+
+	        takeRateView.Changes = await DataContext.TakeRate.GetUnsavedChangesForUser(filter);
+
+	        return PartialView("_PersistChangesetConfirm", takeRateView);
+	    }
+
+	    [HandleErrorWithJson]
+	    [HttpPost]
+	    public async Task<ActionResult> UndoChangeset(TakeRateParameters parameters)
+	    {
+	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+
+	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+	        filter.Action = TakeRateDataItemAction.Changeset;
+	        var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
+	        if (!takeRateView.AllowEdit)
+	        {
+	            throw new InvalidOperationException(NO_EDITS);
+	        }
+	        var undoneChangeset = await DataContext.TakeRate.UndoChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
+
+	        return JsonGetSuccess(undoneChangeset);
+	    }
+
+	    [HandleErrorWithJson]
+	    public async Task<ActionResult> AddNote(TakeRateParameters parameters)
+	    {
+	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.ModelPlusFeatureAndComment);
+
+	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+	        filter.Action = TakeRateDataItemAction.AddNote;
+	        var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
+	        if (!takeRateView.AllowEdit)
+	        {
+	            throw new InvalidOperationException(NO_EDITS);
+	        }
+	        var note = await DataContext.TakeRate.AddDataItemNote(TakeRateFilter.FromTakeRateParameters(parameters));
+
+	        return Json(note, JsonRequestBehavior.AllowGet);
+	    }
+
+	    [HandleErrorWithJson]
+	    [HttpPost]
+	    public async Task<ActionResult> GetValidation(TakeRateParameters parameters)
+	    {
+	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+
+	        var validation = await DataContext.TakeRate.GetValidation(TakeRateFilter.FromTakeRateParameters(parameters));
+
+	        return Json(validation);
+	    }
+
+	    [HandleErrorWithJson]
+	    [HttpPost]
+	    public async Task<ActionResult> Validate(TakeRateParameters parameters)
+	    {
+	        var validationResults = Enumerable.Empty<ValidationResult>();
+
+	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+
+	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+	        filter.Action = TakeRateDataItemAction.Validate;
+	        var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
+
+	        try
+	        {
+	            var interimResults = Validator.Validate(takeRateView.RawData);
+	            validationResults = await Validator.Persist(DataContext, filter, interimResults);
+	        }
+	        catch (ValidationException vex)
+	        {
+	            // Just in case someone has thrown an exception from the validation, which we don't actually want
+	            Log.Warning(vex);
+	        }
+	        catch (Exception ex)
+	        {
+	            Log.Error(ex);
+	        }
+
+	        return JsonGetSuccess(validationResults);
+	    }
+
+	    public ActionResult ValidationMessage(ValidationMessage message)
+	    {
+	        // Something is making a GET request to this page and I can't figure out what
+	        return PartialView("_ValidationMessage", message);
+	    }
+
+	    #region "Private Methods"
+
+	    private async Task CheckModelAllowsEdit(TakeRateParameters parameters)
+	    {
+	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+	        filter.Action = TakeRateDataItemAction.Changeset;
+	        var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
+	        if (!takeRateView.AllowEdit)
+	        {
+	            throw new InvalidOperationException(NO_EDITS);
+	        }
+	    }
+
+	    private async Task<TakeRateViewModel> GetModelFromParameters(TakeRateParameters parameters)
+	    {
+	        return await TakeRateViewModel.GetModel(DataContext, TakeRateFilter.FromTakeRateParameters(parameters));
+	    }
+
+	    private static bool IsMatchingModel(DataChange dataChange, RawTakeRateDataItem dataItem)
+	    {
+	        return (dataChange.IsFdpModel && dataItem.FdpModelId == dataChange.GetModelId()) || (!dataChange.IsFdpModel && dataItem.ModelId == dataChange.GetModelId());
+	    }
+
+	    private static bool IsMatchingModel(DataChange dataChange, RawTakeRateSummaryItem summaryItem)
+	    {
+	        return (dataChange.IsFdpModel && summaryItem.FdpModelId == dataChange.GetModelId()) || (!dataChange.IsFdpModel && summaryItem.ModelId == dataChange.GetModelId());
+	    }
+
+	    private static bool IsMatchingFeature(DataChange dataChange, RawTakeRateDataItem dataItem)
+	    {
+	        return (dataChange.IsFdpFeature && dataItem.FdpFeatureId == dataChange.GetFeatureId()) || (dataChange.IsFeature && dataItem.FeatureId == dataChange.GetFeatureId()) || (dataChange.IsFeaturePack && !dataItem.FeatureId.HasValue && dataItem.FeaturePackId == dataChange.GetFeatureId());
+	    }
+
+	    private static bool IsMatchingFeatureMix(DataChange dataChange, RawTakeRateFeatureMixItem mixItem)
+	    {
+	        return (dataChange.IsFdpFeature && mixItem.FdpFeatureId == dataChange.GetFeatureId()) || (dataChange.IsFeature && mixItem.FeatureId == dataChange.GetFeatureId()) || (dataChange.IsFeaturePack && !mixItem.FeatureId.HasValue && mixItem.FeaturePackId == dataChange.GetFeatureId());
+	    }
+
+	    #endregion
+
+	    #region "Private Constants"
+
+	    private const string NO_EDITS = "Either you do not have permission, or the take rate file does not allow edits in the current state";
+
+	    #endregion
 	}
 }

@@ -25,6 +25,7 @@
 
     <td class="cross-tab-data-item @featureFixedClassName @featureClassName" data-feature="@featureIdentifier">
         @(featureRow.Field<string>("BrandDescription"))
+        <div style="display:none">@(featureRow.Field<string>("ExclusiveFeatureGroup"))</div>
     </td>
     <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName feature-notes" data-feature="@featureIdentifier">
         <div class="changed-indicator pull-right" style="display: none" title="Changes have been made to the take rate / volume data for this feature">

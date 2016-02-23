@@ -5,6 +5,7 @@
 AS
 BEGIN
 	SET NOCOUNT ON;
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 	
 	DECLARE @FdpChangesetId INT;
 	SET @FdpChangesetId = dbo.fn_Fdp_Changeset_GetLatestByUser(@FdpVolumeHeaderId, @MarketId, @CDSId);
@@ -63,6 +64,7 @@ BEGIN
 		, FA.ApplicableFeaturesInExclusiveFeatureGroup
 		, ISNULL(C.TotalVolume, D.Volume) AS Volume
 		, ISNULL(C.PercentageTakeRate, D.PercentageTakeRate) AS PercentageTakeRate
+		, C.FdpChangesetDataItemId
     FROM
     Fdp_VolumeHeader_VW						AS H
     JOIN Fdp_VolumeDataItem_VW				AS D	ON	H.FdpVolumeHeaderId = H.FdpVolumeHeaderId

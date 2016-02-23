@@ -21,6 +21,18 @@ namespace FeatureDemandPlanning.Model
         public int? OriginalVolume { get; set; }
         public decimal OriginalPercentageTakeRate { get; set; }
 
+        public DataChange()
+        {
+            
+        }
+        public DataChange(DataChange parentChange)
+        {
+            MarketId = parentChange.MarketId;
+            ModelIdentifier = parentChange.ModelIdentifier;
+            FeatureIdentifier = parentChange.FeatureIdentifier;
+            Comment = parentChange.Comment;
+        }
+
         public string DataTarget
         {
             get
@@ -81,11 +93,26 @@ namespace FeatureDemandPlanning.Model
                 return !string.IsNullOrEmpty(ModelIdentifier) && ModelIdentifier.StartsWith("F");
             }
         }
+
+        public bool IsFeature
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(FeatureIdentifier) && FeatureIdentifier.StartsWith("O");
+            }
+        }
         public bool IsFdpFeature
         {
             get
             {
                 return !string.IsNullOrEmpty(FeatureIdentifier) && FeatureIdentifier.StartsWith("F");
+            }
+        }
+        public bool IsFeaturePack
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(FeatureIdentifier) && FeatureIdentifier.StartsWith("P");
             }
         }
         public bool IsWholeMarketChange
@@ -130,5 +157,9 @@ namespace FeatureDemandPlanning.Model
                 return !IsModelSummary && !IsFeatureSummary && !IsWholeMarketChange;
             }
         }
+
+        public int? FdpVolumeDataItemId { get; set; }
+        public int? FdpTakeRateSummaryId { get; set; }
+        public int? FdpTakeRateFeatureMixId { get; set; }
     }
 }

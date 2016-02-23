@@ -61,7 +61,7 @@ namespace FeatureDemandPlanning.ValidationTest
                 Console.WriteLine(error.ErrorMessage);
             }
 
-            var persistedResults = await Validator.Persist(context, results);
+            var persistedResults = await Validator.Persist(context, filter, results);
         }
     }
 }
