@@ -137,7 +137,9 @@ namespace FeatureDemandPlanning
                     "~/Content/js/TakeRateData/model.js",
                     "~/Content/js/TakeRateData/page.js",
                     "~/Content/js/TakeRateData/save.js",
-                    "~/Content/js/TakeRateData/saveaction.js"
+                    "~/Content/js/TakeRateData/saveaction.js",
+                    "~/Content/js/TakeRateData/validationsummary.js",
+                    "~/Content/js/TakeRateData/validationsummaryaction.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/Forecast")

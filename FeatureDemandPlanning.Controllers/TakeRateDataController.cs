@@ -309,7 +309,7 @@ namespace FeatureDemandPlanning.Controllers
 
 	        takeRateView.History = await DataContext.TakeRate.GetChangesetHistory(filter);
 
-	        return PartialView("_ChangesetHistory", takeRateView);
+            return PartialView("_ChangesetHistory", takeRateView);
 	    }
 
 	    [HandleErrorWithJson]
@@ -398,7 +398,19 @@ namespace FeatureDemandPlanning.Controllers
 
 	        return Json(validation);
 	    }
+	    public async Task<ActionResult> GetValidationSummary(TakeRateParameters parameters)
+	    {
+            TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+	        filter.Action = TakeRateDataItemAction.ValidationSummary;
+	        var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
+            var validation = await DataContext.TakeRate.GetValidation(TakeRateFilter.FromTakeRateParameters(parameters));
+
+	        takeRateView.Validation = validation;
+
+            return PartialView("_ValidationSummary", takeRateView);
+	    }
 	    [HandleErrorWithJson]
 	    [HttpPost]
 	    public async Task<ActionResult> Validate(TakeRateParameters parameters)

@@ -14,6 +14,7 @@
         Validate = 9,
         Changeset = 10,
         MarketReview = 11,
-        Filter = 12
+        Filter = 12,
+        ValidationSummary = 13
     }
 }

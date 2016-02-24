@@ -32,6 +32,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public MarketReviewStatus MarketReviewStatus { get; set; }
         public string Filter { get; set; }
         public RawTakeRateData RawData { get; set; }
+        public FdpValidation Validation { get; set; }
 
         // Can the take rate file be edited
         public bool AllowEdit
@@ -120,6 +121,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 case TakeRateDataItemAction.History:
                 case TakeRateDataItemAction.Filter:
                 case TakeRateDataItemAction.MarketReview:
+                case TakeRateDataItemAction.ValidationSummary:
                     model = await GetFullAndPartialViewModelForTakeRateDataPageExcludingData(context, filter);
                     break;
                 case TakeRateDataItemAction.Changeset:

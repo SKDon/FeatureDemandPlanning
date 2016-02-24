@@ -85,6 +85,21 @@ model.Page = function (models) {
             ActionModel: actionModel
         });
     };
+    me.showValidationSummary = function() {
+        var model = getTakeRateDataModel();
+        var action = model.getValidationSummaryAction();
+        var actionModel = model.getActionModel(action);
+        var filter = getFilter("");
+        filter.Action = action;
+
+        getModal().showModal({
+            Title: "Validation Summary",
+            Uri: model.getValidationSummaryUri(),
+            Data: JSON.stringify(filter),
+            Model: model,
+            ActionModel: actionModel
+        });
+    };
     me.showFilter = function() {
         var model = getFilterModel();
         var action = model.getFilterAction();
@@ -167,6 +182,7 @@ model.Page = function (models) {
         $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
         $("#" + prefix + "_Undo").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoDelegate", [eventArgs]); });
         $("#" + prefix + "_History").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnHistoryDelegate", [eventArgs]); });
+        $("#" + prefix + "_Validation").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnValidationSummaryDelegate", [eventArgs]); });
 
         $("#" + prefix + "_MarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate", [{ MarketReviewStatus: 1 }]); });
         $("#" + prefix + "_SubmitMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate",[{ MarketReviewStatus: 2 }]); });
@@ -197,6 +213,7 @@ model.Page = function (models) {
             .on("OnSavedDelegate", me.onSavedEventHandler)
             .on("OnPersistDelegate", me.onPersistEventHandler)
             .on("OnHistoryDelegate", me.onHistoryEventHandler)
+            .on("OnValidationSummaryDelegate", me.onValidationSummaryEventHandler)
             .on("OnMarketReviewDelegate", me.onMarketReviewEventHandler)
             .on("OnUndoDelegate", me.onUndoEventHandler)
             .on("OnToggleDelegate", me.onToggleEventHandler)
@@ -682,6 +699,9 @@ model.Page = function (models) {
     me.onHistoryEventHandler = function () {
         me.showHistory();
     };
+    me.onValidationSummaryEventHandler = function () {
+        me.showValidationSummary();
+    };
     me.onFilterEventHandler = function() {
         me.showFilter();
     };
@@ -829,6 +849,17 @@ model.Page = function (models) {
         $(".primary-validation-error").on("click", function () {
             $(".primary-validation-error").not(this).popover("hide");
         });
+
+        $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover" });
+
+        var prefix = me.getIdentifierPrefix();
+        $("#" + prefix + "_Save").popover({ trigger: "hover", title: "Save Changes", placement: "auto bottom" });
+        $("#" + prefix + "_Undo").popover({ trigger: "hover", title: "Undo", placement: "auto bottom" });
+        $("#" + prefix + "_History").popover({ trigger: "hover", title: "Change History", placement: "auto bottom" });
+        $("#" + prefix + "_Validation").popover({ trigger: "hover", title: "Validation Summary", placement: "auto bottom" });
+        $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom" });
+        $("#" + prefix + "_Toggle").popover({ trigger: "hover", title: "Toggle", placement: "auto bottom" });
+        $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom" });
     };
     me.configureDataTables = function () {
 

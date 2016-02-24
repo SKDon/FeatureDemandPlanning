@@ -1,0 +1,46 @@
+﻿@using System.Diagnostics
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+<form>
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+</form>
+
+@if (Model.Validation == null || !Model.Validation.ValidationResults.Any())
+{
+    <div class="alert alert-warning">
+        <div class="row">
+            <div class="col-lg-1 text-center">
+                <span class="glyphicon glyphicon-warning-sign"></span>
+            </div>
+            <div class="col-lg-11">
+                <p>No changes have been saved for this market</p>
+            </div>
+        </div>
+    </div>
+}
+@if (Model.Validation != null && Model.Validation.ValidationResults.Any())
+{
+    <div style="height: 400px; overflow: scroll; overflow-x: hidden">
+        <table class="table dataTable table-bordered table-condensed table-responsive" style="font-size: 11px">
+            <thead>
+                <tr>
+                    <th>Validation Message</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.Validation.ValidationResults)
+                {
+                    <tr>
+                        <td>@item.Message</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+}
+
+
