@@ -13,7 +13,7 @@ RETURNS
 	, ModelId				INT NULL
 	, FdpModelId			INT NULL
 	, Volume				INT NULL
-	, PercentageTakeRate	DECIMAL(5,2) NULL
+	, PercentageTakeRate	DECIMAL(5,4) NULL
 )
 AS
 BEGIN
@@ -47,58 +47,121 @@ BEGIN
 		, PercentageTakeRate
 	)
 	SELECT 
-		  D.FeatureId
-		, D.FdpFeatureId
-		, D.FeaturePackId
-		, D.ModelId
+		  F.FeatureId
+		, F.FdpFeatureId
+		, F.FeaturePackId
+		, M.ModelId
 		, NULL
-		, SUM(D.Volume)			AS Volume
-		, MAX(D.PercentageTakeRate)	AS PercentageTakeRate	
+		, SUM(ISNULL(D.Volume, 0))			AS Volume
+		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate	
     FROM 
-    Fdp_VolumeDataItem_VW	AS D
-	JOIN OXO_Doc			AS D1	ON	D.DocumentId		= D1.Id
-    JOIN @Models			AS M	ON	D.ModelId			= M.ModelId
-									AND M.IsFdpModel		= 0
-	JOIN OXO_Programme_MarketGroupMarket_VW 
-							AS MK	ON	D.MarketId			= MK.Market_Id
-									AND D1.Programme_Id		= MK.Programme_Id
+	Fdp_VolumeHeader_VW		AS H
+	CROSS APPLY @Models		AS M
+	JOIN OXO_Programme_MarketGroupMarket_VW AS MK ON H.ProgrammeId = MK.Programme_Id
+	JOIN Fdp_Feature_VW		AS F	ON	H.ProgrammeId		= F.ProgrammeId
+									AND	H.Gateway			= F.Gateway
+    LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+		    							AND MK.Market_Id = D.MarketId
+										AND M.ModelId = D.ModelId
+										AND 
+										(
+											F.FeatureId = D.FeatureId
+											OR
+											F.FdpFeatureId = D.FdpFeatureId
+										)
 	WHERE 
-	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	M.IsFdpModel = 0
+	AND
+	(F.FeatureId IS NOT NULL OR F.FdpFeatureId IS NOT NULL)
 	AND
 	(@MarketGroupId IS NULL OR MK.Market_Group_Id = @MarketGroupId)
 	GROUP BY
-	  D.ModelId
-	, D.FeatureId
-	, D.FdpFeatureId
-	, D.FeaturePackId
+	  M.ModelId
+	, F.FeatureId
+	, F.FdpFeatureId
+	, F.FeaturePackId
 	
 	UNION
-	
+
 	SELECT 
-		  D.FeatureId
-		, D.FdpFeatureId
-		, D.FeaturePackId
+		  NULL
 		, NULL
-		, D.FdpModelId
-		, SUM(D.Volume)			AS Volume
-		, MAX(D.PercentageTakeRate)					AS PercentageTakeRate	
+		, F.FeaturePackId
+		, M.ModelId
+		, NULL
+		, SUM(ISNULL(D.Volume, 0))			AS Volume
+		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate	
     FROM 
-    Fdp_VolumeDataItem_VW	AS D
-	JOIN OXO_Doc			AS D1	ON	D.DocumentId		= D1.Id
-    JOIN @Models			AS M	ON	D.FdpModelId		= M.ModelId
-									AND M.IsFdpModel		= 1
-	JOIN OXO_Programme_MarketGroupMarket_VW 
-							AS MK	ON	D.MarketId			= MK.Market_Id
-									AND D1.Programme_Id		= MK.Programme_Id
+	Fdp_VolumeHeader_VW		AS H
+	CROSS APPLY @Models		AS M
+	JOIN OXO_Programme_MarketGroupMarket_VW AS MK ON H.ProgrammeId = MK.Programme_Id
+	JOIN Fdp_Feature_VW		AS F	ON	H.ProgrammeId		= F.ProgrammeId
+									AND	H.Gateway			= F.Gateway
+    LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+		    							AND MK.Market_Id = D.MarketId
+										AND M.ModelId = D.ModelId
+										AND 
+										(
+											F.FeatureId = D.FeatureId
+											OR
+											F.FdpFeatureId = D.FdpFeatureId
+										)
 	WHERE 
-	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	M.IsFdpModel = 0
+	AND
+	F.FeatureId IS NULL 
+	AND 
+	F.FdpFeatureId IS NULL
+	AND
+	F.FeaturePackId IS NOT NULL
 	AND
 	(@MarketGroupId IS NULL OR MK.Market_Group_Id = @MarketGroupId)
 	GROUP BY
-	  D.FdpModelId
-	, D.FeatureId
-	, D.FdpFeatureId
-	, D.FeaturePackId
+	  M.ModelId
+	, F.FeaturePackId
+
+	UNION
+	
+		SELECT 
+		  F.FeatureId
+		, F.FdpFeatureId
+		, F.FeaturePackId
+		, NULL
+		, M.ModelId
+		, SUM(ISNULL(D.Volume, 0))			AS Volume
+		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate	
+    FROM 
+	Fdp_VolumeHeader_VW		AS H
+	CROSS APPLY @Models		AS M
+	JOIN OXO_Programme_MarketGroupMarket_VW AS MK ON H.ProgrammeId = MK.Programme_Id
+	JOIN Fdp_Feature_VW		AS F	ON	H.ProgrammeId		= F.ProgrammeId
+									AND	H.Gateway			= F.Gateway
+    LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+		    							AND MK.Market_Id = D.MarketId
+										AND M.ModelId = D.FdpModelId
+										AND 
+										(
+											F.FeatureId = D.FeatureId
+											OR
+											F.FdpFeatureId = D.FdpFeatureId
+										)
+	WHERE 
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	M.IsFdpModel = 1
+	AND
+	(F.FeatureId IS NOT NULL OR F.FdpFeatureId IS NOT NULL)
+	AND
+	(@MarketGroupId IS NULL OR MK.Market_Group_Id = @MarketGroupId)
+	GROUP BY
+	  M.ModelId
+	, F.FeatureId
+	, F.FdpFeatureId
+	, F.FeaturePackId
 	
 	RETURN; 
 END
