@@ -200,7 +200,6 @@
     <Build Include="Views\Fdp_TopMarket_VW.sql" />
     <Build Include="Views\Fdp_TrimLevels.sql" />
     <Build Include="Views\Fdp_TrimMapping_VW.sql" />
-    <Build Include="Functions\Fdp_UserProgrammes.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_Edit.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_GetMany.sql" />

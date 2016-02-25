@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -63,6 +64,19 @@ namespace FeatureDemandPlanning.Model
                 EngineId = int.Parse(elements[1]),
                 TransmissionId = int.Parse(elements[2])
             };
+        }
+    }
+
+    public class DerivativeComparer : IEqualityComparer<Model>
+    {
+        public bool Equals(Model x, Model y)
+        {
+            return x.BodyId == y.BodyId && x.EngineId == y.EngineId && x.TransmissionId == y.TransmissionId;
+        }
+
+        public int GetHashCode(Model obj)
+        {
+            return ((obj.BodyId * 10) + (obj.EngineId * 100) + (obj.TransmissionId * 1000)).GetHashCode();
         }
     }
 }

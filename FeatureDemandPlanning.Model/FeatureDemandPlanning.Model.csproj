@@ -135,6 +135,7 @@
     <Compile Include="FeaturePack.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="MarketReview.cs" />
+    <Compile Include="RawPowertrainDataItem.cs" />
     <Compile Include="RawTakeRateData.cs" />
     <Compile Include="RawTakeRateDataItem.cs" />
     <Compile Include="RawTakeRateFeatureMixItem.cs" />

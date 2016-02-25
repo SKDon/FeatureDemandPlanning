@@ -16,6 +16,9 @@ AS
 		, V1.MarketGroupId
 		, V1.ModelIdentifier
 		, V1.FeatureIdentifier
+		, V1.BodyId
+		, V1.EngineId
+		, V1.TransmissionId
 		, V1.[Message]
 	FROM
 	(
@@ -27,6 +30,9 @@ AS
 			, V.MarketGroupId
 			, V.ModelIdentifier
 			, V.FeatureIdentifier
+			, V.BodyId
+			, V.EngineId
+			, V.TransmissionId
 			, V.[Message]
 			, V.ExclusiveFeatureGroup
 		FROM
@@ -56,6 +62,9 @@ AS
 			, V.MarketGroupId
 			, V.ModelIdentifier
 			, V.FeatureIdentifier
+			, V.BodyId
+			, V.EngineId
+			, V.TransmissionId
 			, V.[Message]
 			, V.ExclusiveFeatureGroup
 		FROM

@@ -7,12 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
-using FluentSecurity.Caching;
-using log4net.Config;
+using FeatureDemandPlanning.Model.Validators;
 using Cache = System.Web.Caching.Cache;
 
 namespace FeatureDemandPlanning.Model.ViewModel
@@ -154,8 +152,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
             await HydrateVehicle(context, takeRateModel);
             await HydrateMarket(context, takeRateModel);
             await HydrateMarketGroup(context, takeRateModel);
+            await HydrateMarketGroups(context, takeRateModel);
             await HydrateModelsByMarket(context, takeRateModel);
-            await HydrateDerivativesByMarket(context, takeRateModel);
             await HydrateData(context, takeRateModel);
             await HydrateMarketReview(context, takeRateModel);
 
@@ -176,10 +174,24 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
 
             await HydrateFdpVolumeHeader(context, takeRateModel);
-            HydrateRawData(context, takeRateModel);
+            await HydrateRawData(context, takeRateModel);
 
             watch.Stop();
             Log.Debug("GetFullAndPartialViewModelForTakeRateDataPage : " + watch.ElapsedMilliseconds);
+
+            return takeRateModel;
+        }
+        private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForPowertrain(IDataContext context, TakeRateFilter filter)
+        {
+            var modelBase = GetBaseModel(context);
+            var takeRateModel = new TakeRateViewModel(modelBase)
+            {
+                Document = (TakeRateDocument)TakeRateDocument.FromFilter(filter),
+                Configuration = context.ConfigurationSettings
+            };
+
+            await HydrateFdpVolumeHeader(context, takeRateModel);
+            await HydrateModelsByMarket(context, takeRateModel);
 
             return takeRateModel;
         }
@@ -200,8 +212,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
             await HydrateVehicle(context, takeRateModel);
             await HydrateMarket(context, takeRateModel);
             await HydrateMarketGroup(context, takeRateModel);
+            await HydrateMarketGroups(context, takeRateModel);
             await HydrateModelsByMarket(context, takeRateModel);
-            await HydrateDerivativesByMarket(context, takeRateModel);
             await HydrateMarketReview(context, takeRateModel);
 
             return takeRateModel;
@@ -233,7 +245,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             await HydrateVehicle(context, takeRateModel);
             await HydrateMarket(context, takeRateModel);
             await HydrateMarketGroup(context, takeRateModel);
-            await HydrateDerivativesByMarket(context, takeRateModel);
+            await HydrateModelsByMarket(context, takeRateModel);
             await HydrateFeatures(context, takeRateModel);
             await HydrateCurrentModel(context, takeRateModel);
             await HydrateCurrentFeature(context, takeRateModel);
@@ -397,7 +409,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             Log.Debug(watch.ElapsedMilliseconds);
             return volumeModel.Document.MarketGroup;
         }
-        private static async Task<IEnumerable<Model>> HydrateDerivativesByMarket(IDataContext context, TakeRateViewModel volumeModel)
+        private static async Task<IEnumerable<Model>> HydrateModelsByMarket(IDataContext context, TakeRateViewModel volumeModel)
         {
             var watch = Stopwatch.StartNew();
             volumeModel.Document.Vehicle.AvailableModels = await ListAvailableModelsFilteredByMarket(context, volumeModel.Document);
@@ -406,7 +418,42 @@ namespace FeatureDemandPlanning.Model.ViewModel
             Log.Debug(watch.ElapsedMilliseconds);
             return volumeModel.Document.Vehicle.AvailableModels;
         }
-        private static async Task<IEnumerable<MarketGroup>> HydrateModelsByMarket(IDataContext context, TakeRateViewModel takeRateModel)
+
+        private static async Task<IEnumerable<Derivative>> HydrateDerivativesByMarket(IDataContext context,
+            TakeRateViewModel takeRateModel)
+        {
+            IEnumerable<Derivative> derivatives = Enumerable.Empty<Derivative>();
+            var models = await ListAvailableModelsFilteredByMarket(context, takeRateModel.Document);
+            if (models != null && models.Any())
+            {
+                derivatives = models.Distinct(new DerivativeComparer()).Select(d => new Derivative()
+                {
+                    BodyId = d.BodyId,
+                    EngineId = d.EngineId,
+                    TransmissionId = d.TransmissionId,
+                    Body = new ModelBody()
+                    {
+                        Doors = d.Doors,
+                        Shape = d.BodyShape,
+                        Wheelbase = d.Wheelbase
+                    },
+                    Engine = new ModelEngine()
+                    {
+                        Size = d.EngineSize,
+                        Cylinder = d.Cylinder,
+                        FuelType = d.FuelType,
+                        Power = d.Power
+                    },
+                    Transmission = new ModelTransmission()
+                    {
+                        Type = d.TransType,
+                        Drivetrain = d.DriveTrain
+                    }
+                });
+            }
+            return derivatives;
+        }
+        private static async Task<IEnumerable<MarketGroup>> HydrateMarketGroups(IDataContext context, TakeRateViewModel takeRateModel)
         {
             var watch = Stopwatch.StartNew();
             takeRateModel.Document.Vehicle.AvailableMarketGroups = await ListAvailableMarketGroups(context, takeRateModel.Document);

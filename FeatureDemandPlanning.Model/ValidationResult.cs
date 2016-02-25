@@ -12,6 +12,9 @@ namespace FeatureDemandPlanning.Model
         public int? FeatureId { get; set; }
         public int? FdpFeatureId { get; set; }
         public int? FeaturePackId { get; set; }
+        public int? BodyId { get; set; }
+        public int? EngineId { get; set; }
+        public int? TransmissionId { get; set; }
         public string ExclusiveFeatureGroup { get; set; }
 
         public string ModelIdentifier { get; set; }
@@ -22,6 +25,7 @@ namespace FeatureDemandPlanning.Model
         public int? FdpVolumeDataItemId { get; set; }
         public int? FdpTakeRateSummaryId { get; set; }
         public int? FdpTakeRateFeatureMixId { get; set; }
+        public int? FdpPowertrainDataItemId { get; set; }
         public int? FdpChangesetDataItemId { get; set; }
 
         public ValidationRule ValidationRule { get; set; }
@@ -36,11 +40,20 @@ namespace FeatureDemandPlanning.Model
         }
         public bool IsWholeMarketValidation
         {
-            get { return string.IsNullOrEmpty(ModelIdentifier) && string.IsNullOrEmpty(FeatureIdentifier); }   
+            get
+            {
+                return string.IsNullOrEmpty(ModelIdentifier) && string.IsNullOrEmpty(FeatureIdentifier) &&
+                       !IsPowertrainValidation;
+            }   
         }
         public bool IsFeatureMixValidation
         {
             get { return string.IsNullOrEmpty(ModelIdentifier) && !string.IsNullOrEmpty(FeatureIdentifier); }   
+        }
+
+        public bool IsPowertrainValidation
+        {
+            get { return BodyId.HasValue && EngineId.HasValue && TransmissionId.HasValue; }
         }
 
         public string DataTarget
@@ -51,6 +64,10 @@ namespace FeatureDemandPlanning.Model
                 if (IsWholeMarketValidation)
                 {
                     dataTarget = MarketId.ToString();
+                }
+                else if (IsPowertrainValidation)
+                {
+                    dataTarget = "PT|" + MarketId;
                 }
                 else if (IsModelValidation)
                 {

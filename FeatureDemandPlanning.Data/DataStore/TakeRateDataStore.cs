@@ -910,6 +910,7 @@ namespace FeatureDemandPlanning.DataStore
                         para.Add("@FdpVolumeDataItemId", dataItemToSave.FdpVolumeDataItemId, DbType.Int32);
                         para.Add("@FdpTakeRateSummaryId", dataItemToSave.FdpTakeRateSummaryId, DbType.Int32);
                         para.Add("@FdpTakeRateFeatureMixId", dataItemToSave.FdpTakeRateFeatureMixId, DbType.Int32);
+                        para.Add("@FdpPowertrainDataItemId", dataItemToSave.FdpPowertrainDataItemId, DbType.Int32);
 
                         para.Add("@IsVolumeUpdate", dataItemToSave.Mode == TakeRateResultMode.Raw, DbType.Boolean);
                         para.Add("@IsPercentageUpdate", dataItemToSave.Mode == TakeRateResultMode.PercentageTakeRate, DbType.Boolean);
@@ -1236,6 +1237,28 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
+        public IEnumerable<RawPowertrainDataItem> FdpPowertrainDataItemGetRaw(TakeRateFilter filter)
+        {
+            IEnumerable<RawPowertrainDataItem> retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+
+                    retVal = conn.Query<RawPowertrainDataItem>("dbo.Fdp_PowertrainDataItem_GetRaw", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
         public IEnumerable<RawTakeRateFeatureMixItem> FdpTakeRateFeatureMixGetRaw(TakeRateFilter filter)
         {
             IEnumerable<RawTakeRateFeatureMixItem> retVal;
@@ -1301,6 +1324,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpVolumeDataItemId", validationData.FdpVolumeDataItemId, DbType.Int32);
                     para.Add("@FdpTakeRateSummaryId", validationData.FdpTakeRateSummaryId, DbType.Int32);
                     para.Add("@FdpTakeRateFeatureMixId", validationData.FdpTakeRateFeatureMixId, DbType.Int32);
+                    para.Add("@FdpPowertrainDataItemId", validationData.FdpPowertrainDataItemId, DbType.Int32);
                     para.Add("@FdpChangesetDataItemId", validationData.FdpChangesetDataItemId, DbType.Int32);
 
                     para.Add("@Message", validationData.Message, DbType.String);

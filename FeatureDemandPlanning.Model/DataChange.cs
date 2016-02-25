@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model
@@ -17,6 +18,12 @@ namespace FeatureDemandPlanning.Model
         public decimal? PercentageTakeRate { get; set; }
         public TakeRateResultMode Mode { get; set; }
         public string Note { get; set; }
+
+        // Only way of identifying powertrain changes
+
+        public int? BodyId { get; set; }
+        public int? EngineId { get; set; }
+        public int? TransmissionId { get; set; }
 
         public int? OriginalVolume { get; set; }
         public decimal OriginalPercentageTakeRate { get; set; }
@@ -117,15 +124,24 @@ namespace FeatureDemandPlanning.Model
         }
         public bool IsWholeMarketChange
         {
-            get 
+            get
             {
                 return MarketId.HasValue &&
-                string.IsNullOrEmpty(ModelIdentifier) &&
-                string.IsNullOrEmpty(FeatureIdentifier);
+                       string.IsNullOrEmpty(ModelIdentifier) &&
+                       string.IsNullOrEmpty(FeatureIdentifier) &&
+                       !IsPowertrainChange;
             }
+        }
+        public bool IsPowertrainChange
+        {
+            get { return BodyId.HasValue && EngineId.HasValue && TransmissionId.HasValue; }
         }
         public TakeRateDataItem ToDataItem()
         {
+            if (IsPowertrainChange)
+            {
+                return new EmptyTakeRateDataItem();
+            }
             var dataItem = new TakeRateDataItem()
             {
                 Volume = Volume.GetValueOrDefault(),
@@ -161,5 +177,6 @@ namespace FeatureDemandPlanning.Model
         public int? FdpVolumeDataItemId { get; set; }
         public int? FdpTakeRateSummaryId { get; set; }
         public int? FdpTakeRateFeatureMixId { get; set; }
+        public int? FdpPowertrainDataItemId { get; set; }
     }
 }

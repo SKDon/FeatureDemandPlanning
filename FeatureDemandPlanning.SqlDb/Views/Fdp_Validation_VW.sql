@@ -1,4 +1,6 @@
-﻿CREATE VIEW [dbo].[Fdp_Validation_VW] AS
+﻿
+
+CREATE VIEW [dbo].[Fdp_Validation_VW] AS
 
 	SELECT 
 		  H.FdpVolumeHeaderId
@@ -22,11 +24,15 @@
 			WHEN V.FeaturePackId IS NOT NULL THEN 'P' + CAST(V.FeaturePackId AS NVARCHAR(10))
 			ELSE 'F' + CAST(V.FdpFeatureId AS NVARCHAR(10))
 		  END AS FeatureIdentifier
+		, V.BodyId
+		, V.EngineId
+		, V.TransmissionId
 		, V.[Message]
 		, V.FdpVolumeDataItemId
 		, V.FdpChangesetDataItemId
 		, V.FdpTakeRateSummaryId
 		, V.FdpTakeRateFeatureMixId
+		, V.FdpPowertrainDataItemId
 	FROM
 	Fdp_VolumeHeader_VW			AS H
 	JOIN Fdp_Validation			AS V	ON	H.FdpVolumeHeaderId		= V.FdpVolumeHeaderId

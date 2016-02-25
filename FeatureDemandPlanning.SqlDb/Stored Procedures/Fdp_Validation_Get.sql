@@ -19,11 +19,15 @@ SELECT
 , FeaturePackId
 , ExclusiveFeatureGroup
 , FeatureIdentifier
+, BodyId
+, EngineId
+, TransmissionId
 , [Message]
 , FdpVolumeDataItemId
 , FdpChangesetDataItemId
 , FdpTakeRateSummaryId
 , FdpTakeRateFeatureMixId
+, FdpPowertrainDataItemId
 FROM 
 Fdp_Validation_VW 
 WHERE 

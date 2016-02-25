@@ -39,7 +39,7 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<PagedResults<TakeRateSummary>> ListLatestTakeRateDocuments()
         {
             var documents = await ListTakeRateDocuments(new TakeRateFilter());
-            documents.CurrentPage = documents.CurrentPage.Take(2);
+            documents.CurrentPage = documents.CurrentPage.OrderByDescending(d => d.TakeRateId).Take(2);
             return documents;
         }
         public async Task<IEnumerable<TakeRateStatus>> ListTakeRateStatuses()
@@ -290,6 +290,7 @@ namespace FeatureDemandPlanning.DataStore
                 DataItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateDataGetRaw(filter)),
                 SummaryItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateSummaryGetRaw(filter)),
                 FeatureMixItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateFeatureMixGetRaw(filter)),
+                PowertrainDataItems = await Task.FromResult(_takeRateDataStore.FdpPowertrainDataItemGetRaw(filter))
             };
             return rawData;
         }

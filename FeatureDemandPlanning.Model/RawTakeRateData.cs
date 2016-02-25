@@ -9,6 +9,7 @@ namespace FeatureDemandPlanning.Model
         public IEnumerable<RawTakeRateDataItem> DataItems { get; set; }
         public IEnumerable<RawTakeRateSummaryItem> SummaryItems { get; set; }
         public IEnumerable<RawTakeRateFeatureMixItem> FeatureMixItems { get; set; }
+        public IEnumerable<RawPowertrainDataItem> PowertrainDataItems { get; set; } 
         public int TotalVolume { get; set; }
 
         public IEnumerable<EfgGrouping> EfgGroupings
@@ -32,6 +33,7 @@ namespace FeatureDemandPlanning.Model
             DataItems = Enumerable.Empty<RawTakeRateDataItem>();
             SummaryItems = Enumerable.Empty<RawTakeRateSummaryItem>();
             FeatureMixItems = Enumerable.Empty<RawTakeRateFeatureMixItem>();
+            PowertrainDataItems = Enumerable.Empty<RawPowertrainDataItem>();
         }
 
         private IEnumerable<RawTakeRateDataItem> ListFeaturesWithVolumeGreaterThanModel()

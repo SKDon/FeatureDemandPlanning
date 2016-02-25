@@ -7,10 +7,14 @@
 	, @FeatureId				INT = NULL
 	, @FdpFeatureId				INT = NULL
 	, @FeaturePackId			INT = NULL
+	, @BodyId					INT = NULL
+	, @EngineId					INT = NULL
+	, @TransmissionId			INT = NULL
 	, @ExclusiveFeatureGroup	NVARCHAR(200) = NULL
 	, @FdpVolumeDataItemId		INT = NULL
 	, @FdpTakeRateSummaryId		INT = NULL
 	, @FdpTakeRateFeatureMixId	INT = NULL
+	, @FdpPowertrainDataItemId	INT	= NULL
 	, @FdpChangesetDataItemId	INT = NULL
 	, @Message					NVARCHAR(MAX)
 	, @CDSId					NVARCHAR(16)
@@ -31,10 +35,14 @@ INSERT INTO Fdp_Validation
 	, FeatureId	
 	, FdpFeatureId
 	, FeaturePackId
+	, BodyId
+	, EngineId
+	, TransmissionId
 	, ExclusiveFeatureGroup	
 	, FdpVolumeDataItemId
 	, FdpTakeRateSummaryId
 	, FdpTakeRateFeatureMixId
+	, FdpPowertrainDataItemId
 	, FdpChangesetDataItemId
 	, [Message]
 )
@@ -49,10 +57,14 @@ VALUES
 	, @FeatureId
 	, @FdpFeatureId
 	, @FeaturePackId
+	, @BodyId
+	, @EngineId
+	, @TransmissionId
 	, @ExclusiveFeatureGroup
 	, @FdpVolumeDataItemId
 	, @FdpTakeRateSummaryId
 	, @FdpTakeRateFeatureMixId
+	, @FdpPowertrainDataItemId
 	, @FdpChangesetDataItemId
 	, @Message
 );

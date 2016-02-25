@@ -1,21 +1,25 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_ChangesetDataItem_Save]
-	  @FdpChangesetId		AS INT
+	  @FdpChangesetId				AS INT
 	, @ParentFdpChangesetDataItemId AS INT = NULL
-	, @MarketId				AS INT
-	, @ModelId				AS INT = NULL
-	, @FdpModelId			AS INT = NULL
-	, @FeatureId			AS INT = NULL
-	, @FdpFeatureId			AS INT = NULL
-	, @FeaturePackId		AS INT = NULL
-	, @TotalVolume			AS INT = NULL
-	, @PercentageTakeRate	AS DECIMAL(5, 4) = NULL
-	, @OriginalVolume		AS INT = NULL
-	, @OriginalPercentageTakeRate AS DECIMAL(5, 4) = NULL
-	, @FdpVolumeDataItemId	AS INT = NULL
-	, @FdpTakeRateSummaryId	AS INT = NULL
-	, @FdpTakeRateFeatureMixId AS INT = NULL
-	, @IsVolumeUpdate		AS BIT = 0
-	, @IsPercentageUpdate	AS BIT = 0
+	, @MarketId						AS INT
+	, @ModelId						AS INT = NULL
+	, @FdpModelId					AS INT = NULL
+	, @FeatureId					AS INT = NULL
+	, @FdpFeatureId					AS INT = NULL
+	, @FeaturePackId				AS INT = NULL
+	, @BodyId						AS INT = NULL
+	, @EngineId						AS INT = NULL
+	, @TransmissionId				AS INT = NULL
+	, @TotalVolume					AS INT = NULL
+	, @PercentageTakeRate			AS DECIMAL(5, 4) = NULL
+	, @OriginalVolume				AS INT = NULL
+	, @OriginalPercentageTakeRate	AS DECIMAL(5, 4) = NULL
+	, @FdpVolumeDataItemId			AS INT = NULL
+	, @FdpTakeRateSummaryId			AS INT = NULL
+	, @FdpTakeRateFeatureMixId		AS INT = NULL
+	, @FdpPowertrainDataItemId		AS INT = NULL
+	, @IsVolumeUpdate				AS BIT = 0
+	, @IsPercentageUpdate			AS BIT = 0
 AS
 	SET NOCOUNT ON;
 	
@@ -175,6 +179,23 @@ AS
 	AND
 	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
 
+	-- Clear any powertrain level changes
+
+	UPDATE D SET IsDeleted = 1
+	FROM Fdp_ChangesetDataItem AS D
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.MarketId = @MarketId
+	AND
+	BodyId IS NOT NULL
+	AND
+	EngineId IS NOT NULL
+	AND
+	TransmissionId IS NOT NULL
+	AND
+	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+
 	INSERT INTO Fdp_ChangesetDataItem
 	(
 		  FdpChangesetId
@@ -184,6 +205,9 @@ AS
 		, FeatureId
 		, FdpFeatureId
 		, FeaturePackId
+		, BodyId
+		, EngineId
+		, TransmissionId
 		, TotalVolume
 		, PercentageTakeRate
 		, IsVolumeUpdate
@@ -193,6 +217,7 @@ AS
 		, FdpVolumeDataItemId
 		, FdpTakeRateSummaryId
 		, FdpTakeRateFeatureMixId
+		, FdpPowertrainDataItemId
 		, ParentFdpChangesetDataItemId
 	)
 	VALUES
@@ -204,6 +229,9 @@ AS
 		, @FeatureId
 		, @FdpFeatureId
 		, @FeaturePackId
+		, @BodyId
+		, @EngineId
+		, @TransmissionId
 		, @TotalVolume
 		, @PercentageTakeRate
 		, @IsVolumeUpdate
@@ -213,6 +241,7 @@ AS
 		, @FdpVolumeDataItemId
 		, @FdpTakeRateSummaryId
 		, @FdpTakeRateFeatureMixId
+		, @FdpPowertrainDataItemId
 		, @ParentFdpChangesetDataItemId
 	);
 	
