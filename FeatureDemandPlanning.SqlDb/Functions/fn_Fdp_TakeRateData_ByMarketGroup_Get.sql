@@ -14,6 +14,7 @@ RETURNS
 	, FdpModelId			INT NULL
 	, Volume				INT NULL
 	, PercentageTakeRate	DECIMAL(5,4) NULL
+	, IsOrphanedData		BIT
 )
 AS
 BEGIN
@@ -45,6 +46,7 @@ BEGIN
 		, FdpModelId
 		, Volume
 		, PercentageTakeRate
+		, IsOrphanedData
 	)
 	SELECT 
 		  F.FeatureId
@@ -52,23 +54,24 @@ BEGIN
 		, F.FeaturePackId
 		, M.ModelId
 		, NULL
-		, SUM(ISNULL(D.Volume, 0))			AS Volume
-		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate	
+		, SUM(ISNULL(D.Volume, 0))				AS Volume
+		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate
+		, CAST(0 AS BIT)						AS IsOrphanedData		
     FROM 
-	Fdp_VolumeHeader_VW		AS H
-	CROSS APPLY @Models		AS M
-	JOIN OXO_Programme_MarketGroupMarket_VW AS MK ON H.ProgrammeId = MK.Programme_Id
-	JOIN Fdp_Feature_VW		AS F	ON	H.ProgrammeId		= F.ProgrammeId
-									AND	H.Gateway			= F.Gateway
-    LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-		    							AND MK.Market_Id = D.MarketId
-										AND M.ModelId = D.ModelId
-										AND 
-										(
-											F.FeatureId = D.FeatureId
-											OR
-											F.FdpFeatureId = D.FdpFeatureId
-										)
+	Fdp_VolumeHeader_VW						AS H
+	CROSS APPLY @Models						AS M
+	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	H.ProgrammeId		= MK.Programme_Id
+	JOIN Fdp_Feature_VW						AS F	ON	H.ProgrammeId		= F.ProgrammeId
+													AND	H.Gateway			= F.Gateway
+    LEFT JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+		    										AND MK.Market_Id = D.MarketId
+													AND M.ModelId = D.ModelId
+													AND 
+													(
+														F.FeatureId = D.FeatureId
+														OR
+														F.FdpFeatureId = D.FdpFeatureId
+													)
 	WHERE 
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
@@ -91,23 +94,24 @@ BEGIN
 		, F.FeaturePackId
 		, M.ModelId
 		, NULL
-		, SUM(ISNULL(D.Volume, 0))			AS Volume
-		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate	
+		, SUM(ISNULL(D.Volume, 0))				AS Volume
+		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate
+		, CAST(0 AS BIT)						AS IsOrphanedData		
     FROM 
-	Fdp_VolumeHeader_VW		AS H
-	CROSS APPLY @Models		AS M
-	JOIN OXO_Programme_MarketGroupMarket_VW AS MK ON H.ProgrammeId = MK.Programme_Id
-	JOIN Fdp_Feature_VW		AS F	ON	H.ProgrammeId		= F.ProgrammeId
-									AND	H.Gateway			= F.Gateway
-    LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-		    							AND MK.Market_Id = D.MarketId
-										AND M.ModelId = D.ModelId
-										AND 
-										(
-											F.FeatureId = D.FeatureId
-											OR
-											F.FdpFeatureId = D.FdpFeatureId
-										)
+	Fdp_VolumeHeader_VW						AS H
+	CROSS APPLY @Models						AS M
+	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	H.ProgrammeId		= MK.Programme_Id
+	JOIN Fdp_Feature_VW						AS F	ON	H.ProgrammeId		= F.ProgrammeId
+													AND	H.Gateway			= F.Gateway
+    LEFT JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
+		    										AND MK.Market_Id		= D.MarketId
+													AND M.ModelId			= D.ModelId
+													AND 
+													(
+														F.FeatureId = D.FeatureId
+														OR
+														F.FdpFeatureId = D.FdpFeatureId
+													)
 	WHERE 
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
@@ -132,23 +136,24 @@ BEGIN
 		, F.FeaturePackId
 		, NULL
 		, M.ModelId
-		, SUM(ISNULL(D.Volume, 0))			AS Volume
-		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate	
+		, SUM(ISNULL(D.Volume, 0))				AS Volume
+		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate
+		, CAST(0 AS BIT)						AS IsOrphanedData		
     FROM 
-	Fdp_VolumeHeader_VW		AS H
-	CROSS APPLY @Models		AS M
-	JOIN OXO_Programme_MarketGroupMarket_VW AS MK ON H.ProgrammeId = MK.Programme_Id
-	JOIN Fdp_Feature_VW		AS F	ON	H.ProgrammeId		= F.ProgrammeId
-									AND	H.Gateway			= F.Gateway
-    LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-		    							AND MK.Market_Id = D.MarketId
-										AND M.ModelId = D.FdpModelId
-										AND 
-										(
-											F.FeatureId = D.FeatureId
-											OR
-											F.FdpFeatureId = D.FdpFeatureId
-										)
+	Fdp_VolumeHeader_VW						AS H
+	CROSS APPLY @Models						AS M
+	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	H.ProgrammeId		= MK.Programme_Id
+	JOIN Fdp_Feature_VW						AS F	ON	H.ProgrammeId		= F.ProgrammeId
+													AND	H.Gateway			= F.Gateway
+    LEFT JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+		    										AND MK.Market_Id		= D.MarketId
+													AND M.ModelId			= D.FdpModelId
+													AND 
+													(
+														F.FeatureId = D.FeatureId
+														OR
+														F.FdpFeatureId = D.FdpFeatureId
+													)
 	WHERE 
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
@@ -162,6 +167,48 @@ BEGIN
 	, F.FeatureId
 	, F.FdpFeatureId
 	, F.FeaturePackId
+	
+	UNION
+	
+	SELECT 
+		  D.FeatureId
+		, D.FdpFeatureId
+		, D.FeaturePackId
+		, M.ModelId
+		, NULL
+		, SUM(ISNULL(D.Volume, 0))				AS Volume
+		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate
+		, CAST(1 AS BIT)						AS IsOrphanedData	
+    FROM 
+	Fdp_VolumeHeader_VW						AS H
+	CROSS APPLY @Models						AS M
+	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	H.ProgrammeId		= MK.Programme_Id
+	JOIN Fdp_VolumeDataItem_VW				AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+		    										AND MK.Market_Id		= D.MarketId
+													AND M.ModelId			= D.ModelId
+	LEFT JOIN Fdp_Feature_VW				AS F	ON	H.ProgrammeId		= F.ProgrammeId
+													AND H.Gateway			= F.Gateway
+													AND 
+													(
+														(D.FeatureId = F.FeatureId)
+														OR
+														(D.FdpFeatureId = F.FdpFeatureId)
+														OR
+														(D.FeaturePackId = F.FeaturePackId AND D.FeatureId IS NULL)
+													)											
+	WHERE 
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	M.IsFdpModel = 0
+	AND
+	F.Id IS NULL
+	AND
+	(@MarketGroupId IS NULL OR MK.Market_Group_Id = @MarketGroupId)
+	GROUP BY
+	  M.ModelId
+	, D.FeatureId
+	, D.FdpFeatureId
+	, D.FeaturePackId
 	
 	RETURN; 
 END

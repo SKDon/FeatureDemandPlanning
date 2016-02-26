@@ -5,9 +5,9 @@
 <div class="btn-group pull-right">
     @if (Model.AllowEdit)
     {
-        <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Save" disabled="disabled" data-content="Permanently save any outstanding changes, merging them into the take rate document" data-toggle="popover"><i class="glyphicon glyphicon-save"></i> Commit Changes</button>
-    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Undo" disabled="disabled" data-content="Undo the last change" data-toggle="popover"><span class="glyphicon glyphicon-repeat"></span> Undo</button>
-    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History" data-content="Show a history of all saved changes for the currently selected market" data-toggle="popover"><span class="glyphicon glyphicon glyphicon-list-alt"></span> History</button>
+        <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Save" disabled="disabled" data-content="Permanently save any outstanding changes, merging them into the take rate document" data-toggle="popover"><i class="glyphicon glyphicon-save"></i></button>
+    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Undo" disabled="disabled" data-content="Undo the last change" data-toggle="popover"><span class="glyphicon glyphicon-repeat"></span></button>
+    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History" data-content="Show a history of all saved changes for the currently selected market" data-toggle="popover"><span class="glyphicon glyphicon glyphicon-list-alt"></span></button>
         <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Validation" data-content="Show a summary of all validation errors for the currently selected market" data-toggle="popover"><span class="glyphicon glyphicon glyphicon-alert"></span></button>
         @Html.Partial("_MarketReviewButtons")
     <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Filter" data-content="Filter the results for the selected market" data-toggle="popover"><span class="glyphicon glyphicon-search"></span></button>
@@ -18,8 +18,8 @@
     }
     else
     {
-        <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History" data-content="Show a history of all saved changes for the currently selected market" data-toggle="popover"><span class="glyphicon glyphicon glyphicon-list-alt"></span> History</button>
-    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Validation" data-content="Show a summary of all validation errors for the currently selected market" data-toggle="popover"><span class="glyphicon glyphicon glyphicon-alert"></span> Validation</button>
+        <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_History" data-content="Show a history of all saved changes for the currently selected market" data-toggle="popover"><span class="glyphicon glyphicon glyphicon-list-alt"></span></button>
+    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Validation" data-content="Show a summary of all validation errors for the currently selected market" data-toggle="popover"><span class="glyphicon glyphicon glyphicon-alert"></span></button>
     <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Filter" data-content="Filter the results for the selected market" data-toggle="popover"><span class="glyphicon glyphicon-search"></span></button>
     <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Toggle" data-content="Expand / collapse the feature groups" data-toggle="popover"><span class="glyphicon glyphicon-minus"></span></button>
         <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">

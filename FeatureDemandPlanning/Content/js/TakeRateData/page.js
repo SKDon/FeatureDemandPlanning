@@ -192,6 +192,7 @@ model.Page = function (models) {
         $("#" + prefix + "_Toggle").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnToggleDelegate", [eventArgs]); });
         $("#" + prefix + "_Filter").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnFilterDelegate", [eventArgs]); });
         $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
+        $(".efg-item").unbind("click").on("click", function (sender, eventArgs) { me.filterItem(this); })
     };
     me.registerSubscribers = function () {
         var prefix = me.getIdentifierPrefix();
@@ -811,46 +812,46 @@ model.Page = function (models) {
         me.saveData(me.saveCallback);
     };
     me.configureComments = function () {
-        $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover" });
+        $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover", placement: "auto bottom" });
 
         $(".comment-item").on("click", function () {
             $(".comment-item").not(this).popover("hide");
         });
 
-        $(".rule-item").popover({ html: true, title: "Rules", container: "body", trigger: "hover" });
+        $(".rule-item").popover({ html: true, title: "Rules", container: "body", trigger: "hover", placement: "auto bottom" });
 
         $(".rule-item").on("click", function () {
             $(".rule-item").not(this).popover("hide");
         });
 
-        $(".efg-item").popover({ html: true, title: "Exclusive Feature Group", container: "body", trigger: "hover" });
+        $(".efg-item").popover({ html: true, title: "Exclusive Feature Group", container: "body", trigger: "hover", placement: "auto bottom" });
 
         $(".efg-item").on("click", function () {
             $(".efg-item").not(this).popover("hide");
         });
 
-        $(".pack-item").popover({ html: true, title: "Feature Pack", container: "body", trigger: "hover" });
+        $(".pack-item").popover({ html: true, title: "Feature Pack", container: "body", trigger: "hover", placement: "auto bottom" });
 
         $(".pack-item").on("click", function () {
             $(".pack-item").not(this).popover("hide");
         });
 
-        $(".feature-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover" });
+        $(".feature-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover", placement: "auto bottom" });
         $(".feature-validation-error").on("click", function () {
             $(".feature-validation-error").not(this).popover("hide");
         });
-        $(".model-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover" });
+        $(".model-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover", placement: "auto bottom" });
         $(".model-validation-error").on("click", function () {
             $(".model-validation-error").not(this).popover("hide");
         });
         $(".primary-validation-error")
             //.attr("data-content", "One or more validation errors exist for the dataset. Examine each indicated market in turn to rectify any errors.")
-            .popover({ html: true, title: "Validation Error", container: "body", trigger: "hover" });
+            .popover({ html: true, title: "Validation Error", container: "body", trigger: "hover", placement: "auto bottom" });
         $(".primary-validation-error").on("click", function () {
             $(".primary-validation-error").not(this).popover("hide");
         });
 
-        $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover" });
+        $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover", placement: "auto bottom" });
 
         var prefix = me.getIdentifierPrefix();
         $("#" + prefix + "_Save").popover({ trigger: "hover", title: "Save Changes", placement: "auto bottom" });
@@ -880,14 +881,6 @@ model.Page = function (models) {
             drawCallback: function (left) {
                 me.configureRowGroupings(table, left);
                 me.bindContextMenu();
-
-                //$(table.table().container()).on("keyup", "#" + prefix + "_FilterResults", function () {
-                //    var filter = $("#" + prefix + "_FilterResults").val();
-                //    var length = filter.length;
-                //    if (length === 0 || length > 2) {
-                //        me.onFilterChangedEventHandler(filter);
-                //    }
-                //});
             }
         });
         me.setDataTable(table);
@@ -1173,6 +1166,13 @@ model.Page = function (models) {
         var html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.Message + "</div>";
         me.scrollToNotify();
         me.fadeInNotify(html);
+    };
+    me.filterItem = function(item) {
+        var filter = $(item).attr("data-filter");
+        me.filter(filter);
+    }
+    me.filter = function(searchFilter) {
+        $(document).trigger("Filtered", { Filter: searchFilter });
     };
     me.onFilterChangedEventHandler = function (sender, eventArgs) {
         var filter = eventArgs.Filter;

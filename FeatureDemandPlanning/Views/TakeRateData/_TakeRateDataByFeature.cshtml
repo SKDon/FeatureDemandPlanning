@@ -46,13 +46,15 @@
         }
         @if (!string.IsNullOrEmpty(featureRow.Field<string>("ExclusiveFeatureGroup")))
         {
-            <div class="indicator efg-item pull-right" data-toggle="popover" title="Exclusive Feature Group: @(featureRow.Field<string>("ExclusiveFeatureGroup"))" data-content="@RenderExclusiveFeatureGroup(featureRow.Field<string>("ExclusiveFeatureGroup"))">
+            <div class="indicator efg-item pull-right" data-filter="@(featureRow.Field<string>("ExclusiveFeatureGroup"))" data-toggle="popover" title="Exclusive Feature Group: @(featureRow.Field<string>("ExclusiveFeatureGroup"))" data-content="@RenderExclusiveFeatureGroup(featureRow.Field<string>("ExclusiveFeatureGroup"))">
                 <span class="glyphicon glyphicon-link"></span>&nbsp;
             </div>
         }
         @if (featureRow.Field<int?>("FeaturePackId").HasValue)
         {
-            <div class="indicator pack-item pull-right" data-toggle="popover" title="Feature Pack: @Model.Document.TakeRateData.PackFeatures.FirstOrDefault(p => p.PackId == featureRow.Field<int?>("FeaturePackId").GetValueOrDefault()).PackName" data-content="@RenderPack(featureRow.Field<int?>("FeaturePackId").GetValueOrDefault())">
+            <div class="indicator pack-item pull-right" data-toggle="popover"
+                 data-filter="@Model.Document.TakeRateData.PackFeatures.FirstOrDefault(p => p.PackId == featureRow.Field<int?>("FeaturePackId").GetValueOrDefault()).PackName"
+                 title="Feature Pack: @Model.Document.TakeRateData.PackFeatures.FirstOrDefault(p => p.PackId == featureRow.Field<int?>("FeaturePackId").GetValueOrDefault()).PackName" data-content="@RenderPack(featureRow.Field<int?>("FeaturePackId").GetValueOrDefault())">
                 <span class="glyphicon glyphicon-duplicate"></span>&nbsp;
             </div>
         }

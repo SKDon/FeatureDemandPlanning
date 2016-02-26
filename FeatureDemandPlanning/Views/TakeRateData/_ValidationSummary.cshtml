@@ -25,16 +25,21 @@
     <div style="height: 400px; overflow: scroll; overflow-x: hidden">
         <table class="table dataTable table-bordered table-condensed table-responsive" style="font-size: 11px">
             <thead>
-                <tr>
-                    <th>Validation Message</th>
-                </tr>
+            <tr>
+                <th></th>
+                <th>Validation Message</th>
+            </tr>
             </thead>
             <tbody>
-
+                @{
+                    var i = 1;
+                }
                 @foreach (var item in Model.Validation.ValidationResults)
                 {
                     <tr>
+                        <td>@(i++).</td>
                         <td>@item.Message</td>
+                        <td>@item.</td>
                     </tr>
                 }
 

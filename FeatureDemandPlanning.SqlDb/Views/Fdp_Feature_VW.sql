@@ -1,6 +1,7 @@
 ﻿
 
 
+
 CREATE VIEW [dbo].[Fdp_Feature_VW]
 AS
 
@@ -14,7 +15,40 @@ WITH Packs AS
 	GROUP BY
 	ProgrammeId, FeatureCode
 )
-SELECT 
+SELECT
+	  ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS Id
+	, F.FeatureId
+	, F.CreatedOn
+	, F.CreatedBy
+	, F.FdpFeatureId
+	, F.Name
+	, F.AKA
+	, F.ModelYear
+	, F.ProgrammeId
+	, F.Gateway
+	, F.Make
+	, F.FeatureCode
+	, F.OACode
+	, F.SystemDescription
+	, F.BrandDescription
+	, F.FeatureGroupId
+	, F.FeatureGroup
+	, F.FeatureSubGroup
+	, F.FeaturePackId
+	, F.FeaturePackName
+	, F.FeaturePackCode
+	, F.DisplayOrder
+	, F.FeatureComment
+	, F.FeatureRuleText
+	, F.LongDescription
+	, F.EFGName
+	, F.IsFdpFeature
+	, F.UpdatedOn
+	, F.UpdatedBy
+	, F.ExclusiveFeatureGroup
+FROM
+(
+SELECT
 	  F.ID					AS FeatureId
 	, E.Created_On			AS CreatedOn
 	, E.Created_By			AS CreatedBy
@@ -136,3 +170,5 @@ SELECT
 FROM OXO_Programme_Pack AS P
 JOIN Fdp_Gateways_VW	AS G	ON P.Programme_Id	= G.ProgrammeId
 JOIN OXO_Programme_VW	AS P1	ON P.Programme_Id	= P1.Id
+)
+AS F

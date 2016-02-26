@@ -869,6 +869,10 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Stored Procedures\Fdp_Powertrain_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_PowertrainDataItem_GetRaw.sql" />
+    <Build Include="Tables\Fdp_PowertrainDataItem.sql" />
+    <Build Include="Views\Fdp_PowertrainDataItem_VW.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">
