@@ -11,8 +11,11 @@
     [PercentageTakeRate]         DECIMAL (5, 4) CONSTRAINT [DF_Fdp_TakeRateSummary_PercentageTakeRate] DEFAULT ((0)) NOT NULL,
     [UpdatedOn]                  DATETIME       NULL,
     [UpdatedBy]                  NVARCHAR (16)  NULL,
+    [OriginalTakeRateSummaryId]  INT            NULL,
     CONSTRAINT [PK_Fdp_TakeRateSummary] PRIMARY KEY CLUSTERED ([FdpTakeRateSummaryId] ASC)
 );
+
+
 
 
 
