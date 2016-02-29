@@ -21,3 +21,15 @@
 
 
 
+
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_NC_Fdp_Model_OriginalFdpModelId]
+    ON [dbo].[Fdp_Model]([OriginalFdpModelId] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_NC_Fdp_Model_Cover]
+    ON [dbo].[Fdp_Model]([ProgrammeId] ASC, [Gateway] ASC, [FdpModelId] ASC, [FdpTrimId] ASC, [TrimId] ASC);
+

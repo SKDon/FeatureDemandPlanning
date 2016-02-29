@@ -22,7 +22,16 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_FdpTrim_ProgrammeId]
-    ON [dbo].[Fdp_Trim]([ProgrammeId] ASC);
+    ON [dbo].[Fdp_Trim]([ProgrammeId] ASC, [Gateway] ASC);
+
+
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_NC_Fdp_Trim_OriginalFdpTrimId]
+    ON [dbo].[Fdp_Trim]([OriginalFdpTrimId] ASC);
 

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Fdp_Derivatives_Clone
+﻿CREATE PROCEDURE [dbo].[Fdp_Derivative_Clone]
 	  @SourceFdpVolumeHeaderId		AS INT
 	, @DestinationFdpVolumeHeaderId AS INT
 	, @CDSId						AS NVARCHAR(16)
@@ -53,4 +53,6 @@ AS
 	WHERE
 	ProgrammeId = @SourceProgrammeId
 	AND
-	Gateway = @SourceGateway;
+	Gateway = @SourceGateway
+	AND
+	IsActive = 1;

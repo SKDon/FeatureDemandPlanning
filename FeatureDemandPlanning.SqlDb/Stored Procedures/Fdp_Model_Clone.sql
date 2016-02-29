@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Fdp_Model_Clone
+﻿CREATE PROCEDURE [dbo].[Fdp_Model_Clone]
 	  @SourceFdpVolumeHeaderId		AS INT
 	, @DestinationFdpVolumeHeaderId AS INT
 	, @CDSId						AS NVARCHAR(16)
@@ -55,4 +55,6 @@ AS
 	WHERE
 	M.ProgrammeId = @SourceProgrammeId
 	AND
-	M.Gateway = @SourceGateway;
+	M.Gateway = @SourceGateway
+	AND
+	M.IsActive = 1;

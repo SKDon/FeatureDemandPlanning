@@ -19,7 +19,14 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_Feature_FeatureCode]
     ON [dbo].[Fdp_Feature]([FeatureCode] ASC, [ProgrammeId] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_NC_Fdp_Feature_OriginalFdpFeatureId]
+    ON [dbo].[Fdp_Feature]([OriginalFdpFeatureId] ASC);
 

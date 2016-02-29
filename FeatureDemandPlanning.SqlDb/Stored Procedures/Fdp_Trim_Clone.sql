@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Fdp_Trim_Clone
+﻿CREATE PROCEDURE [dbo].[Fdp_Trim_Clone]
 	  @SourceFdpVolumeHeaderId		AS INT
 	, @DestinationFdpVolumeHeaderId AS INT
 	, @CDSId						AS NVARCHAR(16)
@@ -55,4 +55,6 @@ AS
 	WHERE
 	ProgrammeId = @SourceProgrammeId
 	AND
-	Gateway = @SourceGateway;
+	Gateway = @SourceGateway
+	AND
+	IsActive = 1;
