@@ -884,7 +884,10 @@
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_TakeRateData_Clone.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateData_Clone.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_TakeRateHeader_Clear.sql" />
     <Build Include="Stored Procedures\Fdp_Trim_Clone.sql">
       <AnsiNulls>Off</AnsiNulls>
@@ -897,6 +900,10 @@
     <Build Include="Stored Procedures\Fdp_Derivative_Clone.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_TakeRateHeaderNote.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
   </ItemGroup>
   <ItemGroup>
