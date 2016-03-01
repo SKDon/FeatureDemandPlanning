@@ -15,29 +15,32 @@ AS
 		-- Clear all information from the current take rate file
 		EXEC Fdp_TakeRateHeader_Clear @FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	END
+	ELSE
+	BEGIN
+		-- Create a new header entry
 	
-	-- Create a new header entry
+		INSERT INTO Fdp_VolumeHeader
+		(
+			  CreatedBy
+			, DocumentId
+			, IsManuallyEntered
+			, TotalVolume
+			, FdpTakeRateStatusId
+		)
+		SELECT 
+			  @CDSId
+			, @DestinationDocumentId
+			, 0
+			, H.TotalVolume
+			, 1 -- WIP
+		FROM
+		Fdp_VolumeHeader AS H
+		WHERE
+		H.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
+		
+		SET @FdpVolumeHeaderId = SCOPE_IDENTITY();
 	
-	INSERT INTO Fdp_VolumeHeader
-	(
-		  CreatedBy
-		, DocumentId
-		, IsManuallyEntered
-		, TotalVolume
-		, FdpTakeRateStatusId
-	)
-	SELECT 
-		  @CDSId
-		, @DestinationDocumentId
-		, 0
-		, H.TotalVolume
-		, 1 -- WIP
-	FROM
-	Fdp_VolumeHeader AS H
-	WHERE
-	H.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
-	
-	SET @FdpVolumeHeaderId = SCOPE_IDENTITY();
+	END
 	
 	-- Create a new version entry
 	
@@ -257,3 +260,5 @@ AS
 	JOIN Fdp_TakeRateDataItemNote AS N ON S.OriginalTakeRateSummaryId = N.FdpTakeRateSummaryId
 	WHERE
 	S.FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	
+	EXEC Fdp_TakeRateHeader_Get @FdpVolumeHeaderId = @FdpVolumeHeaderId;

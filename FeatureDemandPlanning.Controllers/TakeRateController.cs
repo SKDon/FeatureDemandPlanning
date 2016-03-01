@@ -10,6 +10,7 @@ using FeatureDemandPlanning.Model.Attributes;
 using System;
 using System.Web.Script.Serialization;
 using FeatureDemandPlanning.Model.Interfaces;
+using FluentValidation;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -68,14 +69,24 @@ namespace FeatureDemandPlanning.Controllers
         [HttpPost]
         public async Task<ActionResult> ContextMenu(TakeRateParameters parameters)
         {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+            try
+            {
+                TakeRateParametersValidator
+                    .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            var takeRateView = await TakeRateViewModel.GetModel(
-                DataContext,
-                TakeRateFilter.FromTakeRateId(parameters.TakeRateId.GetValueOrDefault()));
+                var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+                filter.Action = TakeRateDataItemAction.TakeRates;
 
-            return PartialView("_ContextMenu", takeRateView);
+                var takeRateView = await TakeRateViewModel.GetModel(
+                    DataContext,
+                    filter);
+
+                return PartialView("_ContextMenu", takeRateView);
+            }
+            catch (Exception ex)
+            {
+                return PartialView("_ModalError");
+            }
         }
         [HttpPost]
         [HandleError(View = "_ModalError")]
@@ -90,14 +101,45 @@ namespace FeatureDemandPlanning.Controllers
         }
         [HttpPost]
         [HandleErrorWithJson]
-        public ActionResult ModalAction(TakeRateParameters parameters)
+        public async Task<ActionResult> ModalAction(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
                 .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
             TakeRateParametersValidator
                 .ValidateTakeRateParameters(DataContext, parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
 
-            return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
+            return RedirectToRoute(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
+        }
+        [HandleErrorWithJson]
+        public async Task<ActionResult> Clone(TakeRateParameters parameters)
+        {
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            var clone = await DataContext.TakeRate.CloneTakeRateDocument(filter);
+
+            // Revalidate the clone, as the new document may have different feature applicability
+            filter = new TakeRateFilter()
+            {
+                TakeRateId = clone.TakeRateId
+            };
+
+            var markets = await DataContext.Market.ListMarkets(filter);
+            foreach (var market in markets)
+            {
+                try
+                {
+                    filter.MarketId = market.Id;
+                    var rawData = await DataContext.TakeRate.GetRawData(filter);
+
+                    var validationResults = Validator.Validate(rawData);
+                    await Validator.Persist(DataContext, filter, validationResults);
+                }
+                catch (ValidationException ex)
+                {
+                    // Sink the exception, as we don't want any validation errors propagating up
+                }
+            }
+            
+            return JsonGetSuccess(clone);
         }
 
         #region "Private Methods"

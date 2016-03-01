@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Validators;
-using log4net.Config;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -294,6 +293,10 @@ namespace FeatureDemandPlanning.DataStore
             };
             return rawData;
         }
+        public async Task<TakeRateSummary> CloneTakeRateDocument(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpTakeRateDataClone(filter));
+        }
 
         #endregion
 
@@ -320,5 +323,6 @@ namespace FeatureDemandPlanning.DataStore
         private readonly ProgrammeDataStore _programmeDataStore;
 
         #endregion
+
     }
 }

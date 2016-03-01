@@ -81,7 +81,7 @@ namespace FeatureDemandPlanning.Model.Filters
                 MarketId = parameters.MarketId,
                 Comment = parameters.Comment,
                 MarketReviewStatus = parameters.MarketReviewStatus,
-                Filter = parameters.Filter
+                Filter = parameters.Filter,
             };
 
             if (!string.IsNullOrEmpty(parameters.ModelIdentifier))

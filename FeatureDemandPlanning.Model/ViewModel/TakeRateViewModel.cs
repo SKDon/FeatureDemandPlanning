@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
+using FeatureDemandPlanning.Model.Extensions;
 using FeatureDemandPlanning.Model.Validators;
 using Cache = System.Web.Caching.Cache;
 
@@ -32,6 +33,9 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public RawTakeRateData RawData { get; set; }
         public FdpValidation Validation { get; set; }
 
+        public IEnumerable<Programme> AvailableProgrammes { get; set; }
+        public IEnumerable<OXODoc> AvailableDocuments { get; set; }
+
         // Can the take rate file be edited
         public bool AllowEdit
         {
@@ -53,6 +57,49 @@ namespace FeatureDemandPlanning.Model.ViewModel
                        !TakeRate.IsPublished();
 
                 return _allowEdit.Value;
+            }
+        }
+
+        public IEnumerable<CarLine> CarLines
+        {
+            get
+            {
+                return AvailableProgrammes.Where(p => CurrentUser.IsProgrammeEditable(p.Id) && p.VehicleName == Document.Vehicle.Code).ListCarLines();
+            }
+        }
+        public IEnumerable<Gateway> Gateways
+        {
+            get
+            {
+                return AvailableProgrammes.Where(p => CurrentUser.IsProgrammeEditable(p.Id))
+                    .Select(p => new Gateway
+                {
+                    VehicleName = p.VehicleName,
+                    Name = p.Gateway,
+                    ModelYear = p.ModelYear
+                })
+                    .Distinct(new GatewayComparer())
+                    .OrderBy(p => p.Name);
+            }
+        }
+        public IEnumerable<OXODoc> Documents
+        {
+            get
+            {
+                return AvailableDocuments.Where(d=> d.Id != Document.UnderlyingOxoDocument.Id);
+            }
+        }
+        public IEnumerable<ModelYear> ModelYears
+        {
+            get
+            {
+                return AvailableProgrammes.Where(p => CurrentUser.IsProgrammeEditable(p.Id))
+                    .Select(p => new ModelYear
+                {
+                    VehicleName = p.VehicleName,
+                    Name = p.ModelYear
+                })
+                    .Distinct(new ModelYearComparer());
             }
         }
 
@@ -124,6 +171,9 @@ namespace FeatureDemandPlanning.Model.ViewModel
                     break;
                 case TakeRateDataItemAction.Changeset:
                     model = await GetFullAndPartialViewModelForChangeset(context, filter);
+                    break;
+                case TakeRateDataItemAction.Clone:
+                    model = await GetFullAndPartialViewModelForClone(context, filter);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -260,6 +310,27 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
 
             return model;
+        }
+
+        private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForClone(IDataContext context,
+            TakeRateFilter filter)
+        {
+            var takeRateModel = new TakeRateViewModel(GetBaseModel(context))
+            {
+                Document = (TakeRateDocument)TakeRateDocument.FromFilter(filter),
+                Configuration = context.ConfigurationSettings,
+            };
+
+            await HydrateOxoDocument(context, takeRateModel);
+            await HydrateFdpVolumeHeader(context, takeRateModel);
+            await HydrateVehicle(context, takeRateModel);
+
+            takeRateModel.AvailableProgrammes = await
+                Task.FromResult(context.Vehicle.ListProgrammes(new ProgrammeFilter()));
+            takeRateModel.AvailableDocuments = await
+                Task.FromResult(context.Vehicle.ListPublishedDocuments(new ProgrammeFilter()));
+
+            return takeRateModel;
         }
         private static async Task<IVehicle> GetVehicle(IDataContext context, Vehicle forVehicle, OXODoc forDocument)
         {

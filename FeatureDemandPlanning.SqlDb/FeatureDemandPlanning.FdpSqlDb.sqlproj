@@ -108,9 +108,13 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Fdp_Configuration.sql" />
-    <Build Include="Tables\Fdp_Derivative.sql" />
+    <Build Include="Tables\Fdp_Derivative.sql">
+      <AnsiNulls>Off</AnsiNulls>
+    </Build>
     <Build Include="Tables\Fdp_DerivativeMapping.sql" />
-    <Build Include="Tables\Fdp_Feature.sql" />
+    <Build Include="Tables\Fdp_Feature.sql">
+      <AnsiNulls>Off</AnsiNulls>
+    </Build>
     <Build Include="Tables\Fdp_FeatureMapping.sql" />
     <Build Include="Tables\Fdp_Import.sql" />
     <Build Include="Tables\Fdp_ImportData.sql" />
@@ -153,7 +157,9 @@
     <Build Include="Tables\Fdp_SpecialFeatureType.sql" />
     <Build Include="Tables\Fdp_TakeRateStatus.sql" />
     <Build Include="Tables\Fdp_TopMarket.sql" />
-    <Build Include="Tables\Fdp_Trim.sql" />
+    <Build Include="Tables\Fdp_Trim.sql">
+      <AnsiNulls>Off</AnsiNulls>
+    </Build>
     <Build Include="Tables\Fdp_TrimMapping.sql" />
     <Build Include="Tables\Fdp_TrimMapping_Old.sql" />
     <Build Include="Tables\Fdp_User.sql" />
@@ -874,6 +880,24 @@
     <Build Include="Tables\Fdp_PowertrainDataItem.sql" />
     <Build Include="Views\Fdp_PowertrainDataItem_VW.sql" />
     <Build Include="Views\Fdp_ChangesetPowertrainDataItem_VW.sql" />
+    <Build Include="Stored Procedures\Fdp_Model_Clone.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateData_Clone.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_Clear.sql" />
+    <Build Include="Stored Procedures\Fdp_Trim_Clone.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Feature_Clone.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Derivative_Clone.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">

@@ -1344,5 +1344,39 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
+
+        public TakeRateSummary FdpTakeRateDataClone(TakeRateFilter filter)
+        {
+            TakeRateSummary retVal = new EmptyTakeRateSummary();
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                using (var tran = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                        para.Add("@SourceFdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                        para.Add("@DestinationDocumentId", filter.DocumentId, DbType.Int32);
+
+                        var results = conn.Query<TakeRateSummary>("dbo.Fdp_TakeRateData_Clone", 
+                            transaction: tran, 
+                            param: para,
+                            commandType: CommandType.StoredProcedure);
+                        if (results != null && results.Any())
+                        {
+                            retVal = results.First();
+                        }
+                        tran.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex);
+                        throw;
+                    }
+                }
+            }
+            return retVal;
+        }
     }
 }

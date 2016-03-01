@@ -1,11 +1,9 @@
 ﻿using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using enums = FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Context;
@@ -122,10 +120,17 @@ namespace FeatureDemandPlanning.DataStore
         {
             throw new NotImplementedException();
         }
+        public async Task<IEnumerable<Market>> ListMarkets(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_marketDataStore.MarketGetMany(filter));
+        }
 
         private MarketDataStore _marketDataStore;
         private MarketGroupDataStore _marketGroupDataStore;
         private OXODocDataStore _documentDataStore;
         private ModelDataStore _modelDataStore;
+
+
+       
     }
 }

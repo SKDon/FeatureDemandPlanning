@@ -15,6 +15,7 @@
         Changeset = 10,
         MarketReview = 11,
         Filter = 12,
-        ValidationSummary = 13
+        ValidationSummary = 13,
+        Clone = 14
     }
 }

@@ -29,5 +29,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<FdpMarketMapping> CopyFdpMarketMappingToGateway(FdpMarketMapping fdpMarketMapping, IEnumerable<string> gateways);
         Task<FdpMarketMapping> CopyFdpMarketMappingsToGateway(FdpMarketMapping fdpMarketMapping, IEnumerable<string> gateways);
+
+        Task<IEnumerable<Market>> ListMarkets(TakeRateFilter filter);
     }
 }
