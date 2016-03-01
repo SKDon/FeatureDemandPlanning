@@ -135,7 +135,8 @@ model.CloneAction = function (params) {
     };
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
-            "DocumentId": me.getSelectedDocumentId()
+            "DocumentId": me.getSelectedDocumentId(),
+            "Comment": me.getComment()
         });
     };
     me.getIdentifierPrefix = function () {
@@ -147,12 +148,9 @@ model.CloneAction = function (params) {
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
     };
-    me.getFeatureId = function () {
-        return $("#" + me.getIdentifierPrefix() + "_FeatureId").val();
-    };
-    me.getFeatureCode = function () {
-        return privateStore[me.id].FeatureCode;
-    };
+    me.getComment = function() {
+        return $("#" + me.getIdentifierPrefix() + "_NoteText").val();
+    }
     me.getSelectedCarLine = function () {
         return privateStore[me.id].SelectedCarLine;
     };

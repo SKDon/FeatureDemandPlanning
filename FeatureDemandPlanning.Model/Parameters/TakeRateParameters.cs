@@ -77,7 +77,8 @@ namespace FeatureDemandPlanning.Model.Parameters
                     return new
                     {
                         TakeRateId,
-                        DocumentId
+                        DocumentId,
+                        Comment
                     };
                 default:
                     throw new ArgumentOutOfRangeException();

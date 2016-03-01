@@ -338,6 +338,8 @@ USING (VALUES
 	, (6, N'Importer', N'User can import take rate data from PPO files')
 	, (7, N'AllMarkets', N'User has access to all markets without having to explicitly grant access on a per market basis')
 	, (8, N'AllProgrammes', N'User has access to all programmes without having to explicitly grant access on a per programme basis')
+	, (9, N'Approver', N'User can approve market review changes')
+	, (10, N'Cloner', N'User can clone take rate data into other take rate documents')
 )
 AS SOURCE (FdpUserRoleId, [Role], [Description]) ON TARGET.FdpUserRoleId = SOURCE.FdpUserRoleId
 WHEN MATCHED THEN

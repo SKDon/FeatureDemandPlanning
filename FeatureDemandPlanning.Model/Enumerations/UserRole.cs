@@ -11,6 +11,7 @@
         Importer = 6,
         AllMarkets = 7,
         AllProgrammes = 8,
-        Approver = 9
+        Approver = 9,
+        Cloner = 10
     }
 }

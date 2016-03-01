@@ -60,6 +60,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
             }
         }
 
+        public bool AllowClone
+        {
+            get { return CurrentUser.HasCloneRole(); }
+        }
+
         public IEnumerable<CarLine> CarLines
         {
             get
@@ -86,7 +91,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             get
             {
-                return AvailableDocuments.Where(d=> d.Id != Document.UnderlyingOxoDocument.Id);
+                //return AvailableDocuments.Where(d=> d.Id != Document.UnderlyingOxoDocument.Id);
+                return AvailableDocuments;
             }
         }
         public IEnumerable<ModelYear> ModelYears

@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateData_Clone]
 	  @SourceFdpVolumeHeaderId	INT
 	, @DestinationDocumentId	INT
+	, @Comment					NVARCHAR(MAX)
 	, @CDSId					NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
@@ -54,9 +55,9 @@ AS
 	VALUES
 	(
 		  @FdpVolumeHeaderId
-		, 0
-		, 0
 		, 1
+		, 0
+		, 0
 	)
 	
 	-- Copy and FDP specific models, derivatives, trim levels and features

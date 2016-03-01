@@ -798,7 +798,7 @@ ul.dropdown-menu > li span.glyphicon {
     color: #061639;
 }
 
-.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > span:hover {
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > span:hover:not([disabled]) {
     text-decoration: none;
     color: #fff0aa !important;
     background-color: #403075;
@@ -813,6 +813,17 @@ ul.dropdown-menu > li span.glyphicon {
     color: #061639;
     white-space: nowrap;
     cursor: pointer;
+}
+
+.dropdown-menu > li > span[disabled] {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857;
+    color: #aaaaaa;
+    white-space: nowrap;
+    cursor:initial
 }
 
 .dropdown-header {
@@ -1025,6 +1036,10 @@ li.optionalFeature {
 
 .dirty {
     color: #f00 !important;
+}
+
+.disabled {
+    color: #a0a0a0;
 }
 
 button, input, optgroup, select, textarea {

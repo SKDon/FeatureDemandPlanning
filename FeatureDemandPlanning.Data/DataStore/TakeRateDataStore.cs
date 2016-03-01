@@ -1358,6 +1358,7 @@ namespace FeatureDemandPlanning.DataStore
                         var para = DynamicParameters.FromCDSId(CurrentCDSID);
                         para.Add("@SourceFdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
                         para.Add("@DestinationDocumentId", filter.DocumentId, DbType.Int32);
+                        para.Add("@Comment", filter.Comment.Trim(), DbType.String);
 
                         var results = conn.Query<TakeRateSummary>("dbo.Fdp_TakeRateData_Clone", 
                             transaction: tran, 

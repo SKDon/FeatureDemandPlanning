@@ -33,78 +33,88 @@
     </div>
  </div>
 <div class="col-xs-12">
-<div class="panel panel-primary">
-    <div class="panel-heading">
-        <div class="panel-title">Destination Document</div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">Destination Document</div>
+        </div>
+        <div class="panel-body">
+            <form class="form-horizontal">
+                <div class="form-group-sm" style="margin-bottom: 15px;">
+                    <label for="@(Model.IdentifierPrefix)_SelectCarLine" class="col-lg-3 control-label">Car Line:</label>
+                    <div class="col-lg-9" style="margin-bottom: 15px;">
+                        <button id="@(Model.IdentifierPrefix)_SelectCarLine" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
+                            <span id="@(Model.IdentifierPrefix)_SelectedCarLine">Select Car Line</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul id="@(Model.IdentifierPrefix)_CarLineList" class="dropdown-menu">
+                            @foreach (var carLine in Model.CarLines)
+                            {
+                                <li><a class="car-line-item" href="#" data-filter="@carLine.VehicleName" data-target="@carLine.VehicleName" data-content="@string.Format("{0} - {1}", carLine.VehicleName, carLine.VehicleAKA)">@string.Format("{0} - {1}", carLine.VehicleName, carLine.VehicleAKA)</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group-sm" style="margin-bottom: 15px;">
+                    <label for="@(Model.IdentifierPrefix)_SelectModelYear" class="col-lg-3 control-label">Model Year:</label>
+                    <div class="col-lg-9" style="margin-bottom: 15px;">
+                        <button id="@(Model.IdentifierPrefix)_SelectModelYear" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
+                            <span id="@(Model.IdentifierPrefix)_SelectedModelYear">Select Model Year</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul id="@(Model.IdentifierPrefix)_ModelYearList" class="dropdown-menu">
+                            @foreach (var modelYear in Model.ModelYears)
+                            {
+                                <li><a class="model-year-item" href="#" data-filter="@modelYear.VehicleName" data-target="@modelYear.Name">@modelYear.Name</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group-sm" style="margin-bottom: 15px;">
+                    <label for="@(Model.IdentifierPrefix)_SelectGateway" class="col-lg-3 control-label">Gateway:</label>
+                    <div class="col-lg-9" style="margin-bottom: 15px;">
+                        <button id="@(Model.IdentifierPrefix)_SelectGateway" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
+                            <span id="@(Model.IdentifierPrefix)_SelectedGateway">Select Gateway</span>
+                            <span class="caret"></span>
+                        </button>
+
+                        <ul id="@(Model.IdentifierPrefix)_GatewayList" class="dropdown-menu">
+                            @foreach (var gateway in Model.Gateways.OrderBy(g => g.DisplayOrder))
+                            {
+                                <li><a class="gateway-item" href="#" data-filter="@gateway.VehicleName|@gateway.ModelYear" data-target="@gateway.Name">@gateway.Name</a></li>
+                            }
+                        </ul>
+
+                    </div>
+                </div>
+                <div class="form-group-sm" style="margin-bottom: 15px;">
+                    <label for="@(Model.IdentifierPrefix)_SelectDocument" class="col-lg-3 control-label">Document:</label>
+                    <div class="col-lg-9" style="margin-bottom: 15px;">
+                        <button id="@(Model.IdentifierPrefix)_SelectDocument" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
+                            <span id="@(Model.IdentifierPrefix)_SelectedDocument">Select Document</span>
+                            <span class="caret"></span>
+                        </button>
+
+                        <ul id="@(Model.IdentifierPrefix)_DocumentList" class="dropdown-menu">
+                            @foreach (var document in Model.Documents)
+                            {
+                                <li><a class="document-item" href="#" data-filter="@document.VehicleName|@document.ModelYear|@document.Gateway" data-target="@document.Id" data-content="@document.Name">@document.Name</a></li>
+                            }
+                        </ul>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
     </div>
-    <div class="panel-body">
-        <form class="form-horizontal">
-            <div class="form-group-sm" style="margin-bottom:15px;">
-                <label for="@(Model.IdentifierPrefix)_SelectCarLine" class="col-lg-3 control-label">Car Line:</label>
-                <div class="col-lg-9" style="margin-bottom:15px;">
-                    <button id="@(Model.IdentifierPrefix)_SelectCarLine" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
-                        <span id="@(Model.IdentifierPrefix)_SelectedCarLine">Select Car Line</span>
-                        <span class="caret"></span>
-                    </button>
-                    <ul id="@(Model.IdentifierPrefix)_CarLineList" class="dropdown-menu">
-                        @foreach (var carLine in Model.CarLines)
-                        {
-                            <li><a class="car-line-item" href="#" data-filter="@carLine.VehicleName" data-target="@carLine.VehicleName" data-content="@string.Format("{0} - {1}", carLine.VehicleName, carLine.VehicleAKA)">@string.Format("{0} - {1}", carLine.VehicleName, carLine.VehicleAKA)</a></li>
-                        }
-                    </ul>
-                </div>
+    <div class="panel panel-primary panel-sm">
+        <div class="panel-heading small-panel-heading">
+            <div class="panel-title small-panel-title">Comments</div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group-sm">
+                <textarea class="form-control" id="@(Model.IdentifierPrefix)_NoteText" rows="1" style="min-width: 100%;margin-bottom:10px;"></textarea>
             </div>
-            <div class="form-group-sm" style="margin-bottom:15px;">
-                <label for="@(Model.IdentifierPrefix)_SelectModelYear" class="col-lg-3 control-label">Model Year:</label>
-                <div class="col-lg-9" style="margin-bottom:15px;">
-                    <button id="@(Model.IdentifierPrefix)_SelectModelYear" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
-                        <span id="@(Model.IdentifierPrefix)_SelectedModelYear">Select Model Year</span>
-                        <span class="caret"></span>
-                    </button>
-                    <ul id="@(Model.IdentifierPrefix)_ModelYearList" class="dropdown-menu">
-                        @foreach (var modelYear in Model.ModelYears)
-                        {
-                            <li><a class="model-year-item" href="#" data-filter="@modelYear.VehicleName" data-target="@modelYear.Name">@modelYear.Name</a></li>
-                        }
-                    </ul>
-                </div>
-            </div>
-            <div class="form-group-sm" style="margin-bottom:15px;">
-                <label for="@(Model.IdentifierPrefix)_SelectGateway" class="col-lg-3 control-label">Gateway:</label>
-                <div class="col-lg-9" style="margin-bottom:15px;">
-                    <button id="@(Model.IdentifierPrefix)_SelectGateway" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
-                        <span id="@(Model.IdentifierPrefix)_SelectedGateway">Select Gateway</span>
-                        <span class="caret"></span>
-                    </button>
-
-                    <ul id="@(Model.IdentifierPrefix)_GatewayList" class="dropdown-menu">
-                        @foreach (var gateway in Model.Gateways.OrderBy(g => g.DisplayOrder))
-                        {
-                            <li><a class="gateway-item" href="#" data-filter="@gateway.VehicleName|@gateway.ModelYear" data-target="@gateway.Name">@gateway.Name</a></li>
-                        }
-                    </ul>
-
-                </div>
-            </div>
-            <div class="form-group-sm" style="margin-bottom:15px;">
-                <label for="@(Model.IdentifierPrefix)_SelectDocument" class="col-lg-3 control-label">Document:</label>
-                <div class="col-lg-9" style="margin-bottom:15px;">
-                    <button id="@(Model.IdentifierPrefix)_SelectDocument" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
-                        <span id="@(Model.IdentifierPrefix)_SelectedDocument">Select Document</span>
-                        <span class="caret"></span>
-                    </button>
-
-                    <ul id="@(Model.IdentifierPrefix)_DocumentList" class="dropdown-menu">
-                        @foreach (var document in Model.Documents)
-                        {
-                            <li><a class="document-item" href="#" data-filter="@document.VehicleName|@document.ModelYear|@document.Gateway" data-target="@document.Id" data-content="@document.Name">@document.Name</a></li>
-                        }
-                    </ul>
-
-                </div>
-            </div>
-
-        </form>
+        </div>
     </div>
-</div>
     </div>
