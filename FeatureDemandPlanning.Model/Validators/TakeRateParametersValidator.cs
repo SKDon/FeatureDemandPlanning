@@ -15,7 +15,7 @@ namespace FeatureDemandPlanning.Model.Validators
         public const string TakeRateIdentifierWithCommentAndMarket = "TAKE_RATE_ID_WITH_COMMENT_AND_MARKET";
         public const string TakeRateIdentifierWithCommentAndMarketAndReviewStatus = "TAKE_RATE_ID_WITH_COMMENT_AND_MARKET_AND_REVIEWSTATUS";
         public const string ModelPlusFeatureAndComment = "MODEL_PLUS_FEATURE_AND_COMMENT";
-        public const string TakeRateIdentifierWithDestinationDocumentAndComment = "TAKE_RATE_ID_WITH_DESTINATION_DOCUMENT";
+        public const string Clone = "Clone";
         public const string NoValidation = "NO_VALIDATION";
 
         public TakeRateParametersValidator(IDataContext context)
@@ -68,7 +68,7 @@ namespace FeatureDemandPlanning.Model.Validators
                 RuleFor(p => p.MarketId).NotNull().WithMessage("'Market Id' not specified");
                 RuleFor(p => p.MarketReviewStatus).NotEqual(MarketReviewStatus.NotSet).WithMessage("'Market Review Status' not specified");
             });
-            RuleSet(TakeRateIdentifierWithDestinationDocumentAndComment, () =>
+            RuleSet(Clone, () =>
             {
                 RuleFor(p => p.TakeRateId).NotNull().WithMessage("'Take Rate Id' not specified");
                 RuleFor(p => p.DocumentId).NotNull().WithMessage("'Destination Document Id' not specified");

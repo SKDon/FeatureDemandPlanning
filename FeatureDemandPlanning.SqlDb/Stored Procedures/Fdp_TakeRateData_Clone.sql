@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateData_Clone]
 	  @SourceFdpVolumeHeaderId	INT
 	, @DestinationDocumentId	INT
+	, @Comment					NVARCHAR(MAX)
 	, @CDSId					NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
@@ -323,7 +324,7 @@ AS
 	(
 		  @SourceFdpVolumeHeaderId
 		, @CDSId
-		, N'Data cloned into document ''' + @DestinationDocumentName + ''' by ' + @CDSId
+		, @Comment
 	)
 
 	-- Add a note to the destination to indicate that it was cloned from source

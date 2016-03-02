@@ -25,7 +25,8 @@
 
     <td class="cross-tab-data-item @featureFixedClassName @featureClassName" data-feature="@featureIdentifier">
         @(featureRow.Field<string>("BrandDescription"))
-        <div style="display:none">@(featureRow.Field<string>("ExclusiveFeatureGroup"))</div>
+        <div style="display: none">@(featureRow.Field<string>("ExclusiveFeatureGroup"))</div>
+        <div style="display:none">@RenderPackList(featureRow.Field<string>("FeatureIdentifier"))</div>
     </td>
     <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName feature-notes" data-feature="@featureIdentifier">
         <div class="changed-indicator pull-right" style="display: none" title="Changes have been made to the take rate / volume data for this feature">
@@ -53,8 +54,7 @@
         @if (featureRow.Field<int?>("FeaturePackId").HasValue)
         {
             <div class="indicator pack-item pull-right" data-toggle="popover"
-                 data-filter="@Model.Document.TakeRateData.PackFeatures.FirstOrDefault(p => p.PackId == featureRow.Field<int?>("FeaturePackId").GetValueOrDefault()).PackName"
-                 title="Feature Pack: @Model.Document.TakeRateData.PackFeatures.FirstOrDefault(p => p.PackId == featureRow.Field<int?>("FeaturePackId").GetValueOrDefault()).PackName" data-content="@RenderPack(featureRow.Field<int?>("FeaturePackId").GetValueOrDefault())">
+                 title="Feature Packs" data-content="@RenderPacks(featureRow.Field<string>("FeatureIdentifier"))">
                 <span class="glyphicon glyphicon-duplicate"></span>&nbsp;
             </div>
         }
@@ -189,15 +189,60 @@
     @sb.ToString();
 }
 
-@helper RenderPack(int packId)
+@helper RenderPacks(string featureIdentifier)
 {
-    var packFeatures = Model.Document.TakeRateData.PackFeatures.Where(p => p.PackId == packId).OrderBy(p => p.BrandDescription);
-    //.OrderBy(g => g.Feature);
     var sb = new StringBuilder();
-    foreach (var packFeature in packFeatures)
+
+    if (featureIdentifier.StartsWith("O"))
     {
-        sb.Append(packFeature.BrandDescription);
-        sb.Append("<br/>");
+        var featureId = 0;
+        int.TryParse(featureIdentifier.Substring(1), out featureId);
+
+        var matchingPacks = Model.Document.TakeRateData.PackFeatures
+            .Where(pf => pf.Id == featureId)
+            .Select(pf => pf.PackId).Distinct();
+        
+        var packsContainingFeature =
+            from packFeature in Model.Document.TakeRateData.PackFeatures
+            where matchingPacks.Contains(packFeature.PackId)
+            group new
+            {
+                packFeature.PackName,
+                packFeature.BrandDescription
+            }
+            by packFeature.PackId
+            into packGroup
+            select packGroup;
+
+        foreach (var packContainingFeature in packsContainingFeature)
+        {
+            sb.Append("<strong>" + packContainingFeature.First().PackName + "</strong>");
+            sb.Append("<br/>");
+            foreach (var packFeature in packContainingFeature)
+            {
+                sb.Append(packFeature.BrandDescription);
+                sb.Append("<br/>");
+            }
+            sb.Append("<br/>");
+        }
+    }
+    @sb.ToString();
+}
+
+@helper RenderPackList(string featureIdentifier)
+{
+    var sb = new StringBuilder();
+
+    if (featureIdentifier.StartsWith("O"))
+    {
+        var featureId = 0;
+        int.TryParse(featureIdentifier.Substring(1), out featureId);
+
+        var matchingPacks = Model.Document.TakeRateData.PackFeatures
+            .Where(pf => pf.Id == featureId)
+            .Select(pf => pf.PackId).Distinct();
+
+        sb.Append(string.Join(",", matchingPacks));
     }
     @sb.ToString();
 }

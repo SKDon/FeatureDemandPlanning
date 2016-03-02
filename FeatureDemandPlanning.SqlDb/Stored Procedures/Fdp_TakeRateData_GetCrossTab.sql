@@ -781,20 +781,22 @@ AS
 	JOIN OXO_Doc	AS D ON H.DocumentId = D.Id
 	JOIN OXO_Programme_Feature_VW AS F ON D.Programme_Id = F.ProgrammeId
 	WHERE
-	H.FdpVolumeHeaderId = 2 --@FdpVolumeHeaderId
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	F.EFGName IS NOT NULL
 
 	-- Packs
 
-	SELECT PackId
+	SELECT
+		  Id AS FeatureId 
+		, PackId
 		, PackName
 		, ISNULL(P.BrandDescription, P.SystemDescription) AS Feature
 	FROM
 	Fdp_VolumeHeader_VW AS H
 	JOIN OXO_Pack_Feature_VW AS P ON H.ProgrammeId = P.ProgrammeId
 	WHERE
-	H.FdpVolumeHeaderId = 2
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	
 	-- Tidy up
 	

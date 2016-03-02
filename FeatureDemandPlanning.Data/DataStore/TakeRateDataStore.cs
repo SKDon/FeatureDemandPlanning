@@ -187,6 +187,7 @@ namespace FeatureDemandPlanning.DataStore
 
                     retVal.PackFeatures = ds.Tables[6].AsEnumerable().Select(p => new PackFeature
                     {
+                        Id = p.Field<int>("FeatureId"),
                         PackId = p.Field<int>("PackId"),
                         PackName = p.Field<string>("PackName"),
                         BrandDescription = p.Field<string>("Feature")
