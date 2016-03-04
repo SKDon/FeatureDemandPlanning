@@ -4,7 +4,7 @@
     [CreatedBy]               NVARCHAR (16)  CONSTRAINT [DF_Fdp_Derivative_CreatedBy] DEFAULT (suser_sname()) NOT NULL,
     [ProgrammeId]             INT            NOT NULL,
     [Gateway]                 NVARCHAR (100) NOT NULL,
-    [DerivativeCode]          NCHAR (20)     NOT NULL,
+    [DerivativeCode]          NVARCHAR (20)  NOT NULL,
     [BodyId]                  INT            NOT NULL,
     [EngineId]                INT            NOT NULL,
     [TransmissionId]          INT            NOT NULL,
@@ -17,6 +17,8 @@
     CONSTRAINT [FK_Fdp_Derivative_OXO_Programme_Body] FOREIGN KEY ([BodyId]) REFERENCES [dbo].[OXO_Programme_Body] ([Id]),
     CONSTRAINT [FK_Fdp_Derivative_OXO_Programme_Engine] FOREIGN KEY ([EngineId]) REFERENCES [dbo].[OXO_Programme_Engine] ([Id])
 );
+
+
 
 
 

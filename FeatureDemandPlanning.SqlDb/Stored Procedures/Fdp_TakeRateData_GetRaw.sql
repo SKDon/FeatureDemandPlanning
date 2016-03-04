@@ -66,6 +66,7 @@ BEGIN
 		, ISNULL(C.TotalVolume, D.Volume) AS Volume
 		, ISNULL(C.PercentageTakeRate, D.PercentageTakeRate) AS PercentageTakeRate
 		, C.FdpChangesetDataItemId
+		, CAST(CASE WHEN D.FeatureId IS NOT NULL AND (F1.Id IS NULL OR F1.[Status] = 'REMOVED') THEN 1 ELSE 0 END AS BIT) AS IsOrphanedData
     FROM
     Fdp_VolumeHeader_VW						AS H
     JOIN Fdp_VolumeDataItem_VW				AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId

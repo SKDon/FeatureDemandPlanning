@@ -7,9 +7,7 @@
 	, @FeatureId					AS INT = NULL
 	, @FdpFeatureId					AS INT = NULL
 	, @FeaturePackId				AS INT = NULL
-	, @BodyId						AS INT = NULL
-	, @EngineId						AS INT = NULL
-	, @TransmissionId				AS INT = NULL
+	, @DerivativeCode				AS NVARCHAR(20) = NULL
 	, @TotalVolume					AS INT = NULL
 	, @PercentageTakeRate			AS DECIMAL(5, 4) = NULL
 	, @OriginalVolume				AS INT = NULL
@@ -188,11 +186,7 @@ AS
 	AND
 	D.MarketId = @MarketId
 	AND
-	BodyId IS NOT NULL
-	AND
-	EngineId IS NOT NULL
-	AND
-	TransmissionId IS NOT NULL
+	D.DerivativeCode IS NOT NULL
 	AND
 	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
 
@@ -205,9 +199,7 @@ AS
 		, FeatureId
 		, FdpFeatureId
 		, FeaturePackId
-		, BodyId
-		, EngineId
-		, TransmissionId
+		, DerivativeCode
 		, TotalVolume
 		, PercentageTakeRate
 		, IsVolumeUpdate
@@ -229,9 +221,7 @@ AS
 		, @FeatureId
 		, @FdpFeatureId
 		, @FeaturePackId
-		, @BodyId
-		, @EngineId
-		, @TransmissionId
+		, @DerivativeCode
 		, @TotalVolume
 		, @PercentageTakeRate
 		, @IsVolumeUpdate

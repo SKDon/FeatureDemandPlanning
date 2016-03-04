@@ -54,6 +54,23 @@ AS
 	D.IsSaved = 0
 	AND
 	D.IsFeatureMixUpdate = 1
+	
+	-- Powertrain changes
+	
+	UPDATE P SET
+		  Volume				= D.TotalVolume
+		, PercentageTakeRate	= D.PercentageTakeRate
+		, UpdatedOn				= D.CreatedOn
+		, UpdatedBy				= D.CDSId
+	FROM
+	Fdp_ChangesetDataItem_VW AS D
+	JOIN Fdp_PowertrainDataItem AS P ON D.FdpPowertrainDataItemId = P.FdpPowertrainDataItemId
+	WHERE
+	D.FdpChangesetId = @FdpChangesetId
+	AND
+	D.IsSaved = 0
+	AND
+	D.IsPowertrainUpdate = 1
 
 	-- Add the comment to the changeset
 	

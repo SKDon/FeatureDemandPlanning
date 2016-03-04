@@ -636,7 +636,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             if (volumeModel.Document.TakeRateSummary.Any())
                 return;
 
-            var volumeHeaders = await ListVolumeSummary(context, volumeModel.Document);
+            var volumeHeaders = await ListVolumeSummary(context, volumeModel);
             volumeModel.Document.TakeRateSummary = volumeHeaders.CurrentPage;
 
             watch.Stop();
@@ -679,7 +679,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static async Task<TakeRateData> HydrateData(IDataContext context, TakeRateViewModel takeRateModel)
         {
             var watch = Stopwatch.StartNew();
-            takeRateModel.Document.TakeRateData = await ListTakeRateData(context, takeRateModel.Document);
+            takeRateModel.Document.TakeRateData = await ListTakeRateData(context, takeRateModel);
 
             watch.Stop();
             Log.Debug(watch.ElapsedMilliseconds);
@@ -759,12 +759,12 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return await context.Vehicle.ListFeatures(FeatureFilter.FromOxoDocumentId(forDocument.UnderlyingOxoDocument.Id));
         }
-        private static async Task<TakeRateData> ListTakeRateData(IDataContext context, TakeRateDocument forDocument)
+        private static async Task<TakeRateData> ListTakeRateData(IDataContext context, TakeRateViewModel takeRateViewModel)
         {
-            if (forDocument.UnderlyingOxoDocument is EmptyOxoDocument)
+            if (takeRateViewModel.Document.UnderlyingOxoDocument is EmptyOxoDocument)
                 return new TakeRateData();
 
-            return await context.TakeRate.GetTakeRateDocumentData(TakeRateFilter.FromTakeRateDocument(forDocument));
+            return await context.TakeRate.GetTakeRateDocumentData(TakeRateFilter.FromTakeRateViewModel(takeRateViewModel));
         }
 
         //private static async Task<TakeRateSummary> GetVolumeSummary(IDataContext context, TakeRateDocument forVolume)
@@ -772,14 +772,14 @@ namespace FeatureDemandPlanning.Model.ViewModel
         //    if (forVolume.UnderlyingOxoDocument is EmptyOxoDocument)
         //        return new TakeRateSummary();
 
-        //    return await context.TakeRate.GetTakeRateDocument(TakeRateFilter.FromTakeRateDocument(forVolume));
+        //    return await context.TakeRate.GetTakeRateDocument(TakeRateFilter.FromTakeRateViewModel(forVolume));
         //}
-        private static async Task<PagedResults<TakeRateSummary>> ListVolumeSummary(IDataContext context, TakeRateDocument forVolume)
+        private static async Task<PagedResults<TakeRateSummary>> ListVolumeSummary(IDataContext context, TakeRateViewModel takeRateViewModel)
         {
-            if (forVolume.UnderlyingOxoDocument is EmptyOxoDocument)
+            if (takeRateViewModel.Document.UnderlyingOxoDocument is EmptyOxoDocument)
                 return new PagedResults<TakeRateSummary>();
 
-            return await context.TakeRate.ListTakeRateDocuments(TakeRateFilter.FromTakeRateDocument(forVolume));
+            return await context.TakeRate.ListTakeRateDocuments(TakeRateFilter.FromTakeRateViewModel(takeRateViewModel));
         }
         #endregion
 

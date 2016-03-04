@@ -3,14 +3,14 @@
 AS
 	SET NOCOUNT ON;
 
-	DECLARE @FdpChangesetDataItemId INT;
-	DECLARE @PriorFdpChangesetDataItemId INT;
-	DECLARE @FdpVolumeDataItemId INT;
-	DECLARE @FdpTakeRateSummaryId INT;
-	DECLARE @FdpTakeRateFeatureMixId INT;
-	DECLARE @FdpVolumeHeaderId INT;
-	DECLARE @MarketId INT;
-	DECLARE @CDSId NVARCHAR(16);
+	DECLARE @FdpChangesetDataItemId			INT;
+	DECLARE @PriorFdpChangesetDataItemId	INT;
+	DECLARE @FdpVolumeDataItemId			INT;
+	DECLARE @FdpTakeRateSummaryId			INT;
+	DECLARE @FdpTakeRateFeatureMixId		INT;
+	DECLARE @FdpVolumeHeaderId				INT;
+	DECLARE @MarketId						INT;
+	DECLARE @CDSId							NVARCHAR(16);
 
 	DECLARE @UndoneChanges AS TABLE
 	(
@@ -20,6 +20,7 @@ AS
 		, MarketId						INT
 		, ModelIdentifier				NVARCHAR(10)
 		, FeatureIdentifier				NVARCHAR(10)
+		, DerivativeIdentifier			NVARCHAR(10)
 		, TotalVolume					INT
 		, PercentageTakeRate			DECIMAL(5,4)
 		, IsVolumeUpdate				BIT
@@ -29,6 +30,7 @@ AS
 		, FdpVolumeDataItemId			INT NULL
 		, FdpTakeRateSummaryId			INT	NULL
 		, FdpTakeRateFeatureMixId		INT	NULL
+		, FdpPowertrainDataItemId		INT NULL
 		, ParentFdpChangesetDataItemId	INT NULL
 	)
 
@@ -71,7 +73,8 @@ AS
 		, FdpChangesetId				
 		, MarketId						
 		, ModelIdentifier									
-		, FeatureIdentifier									
+		, FeatureIdentifier
+		, DerivativeIdentifier									
 		, TotalVolume					
 		, PercentageTakeRate							
 		, IsVolumeUpdate				
@@ -80,7 +83,8 @@ AS
 		, OriginalPercentageTakeRate	
 		, FdpVolumeDataItemId			
 		, FdpTakeRateSummaryId
-		, FdpTakeRateFeatureMixId			
+		, FdpTakeRateFeatureMixId
+		, FdpPowertrainDataItemId			
 		, ParentFdpChangesetDataItemId
 	)
 	SELECT 
@@ -97,7 +101,13 @@ AS
 			WHEN FeatureId IS NOT NULL THEN 'O' + CAST(FeatureId AS NVARCHAR(10))
 			WHEN FdpFeatureId IS NOT NULL THEN 'F' + CAST(FdpFeatureId AS NVARCHAR(10))
 			ELSE NULL
-		  END AS FeatureIdentifier					
+		  END AS FeatureIdentifier	
+		, CASE
+			WHEN BodyId IS NOT NULL AND EngineId IS NOT NULL AND TransmissionId IS NOT NULL
+			THEN
+			CAST(BodyId AS NVARCHAR(10)) + '|' + CAST(EngineId AS NVARCHAR(10)) + '|' + CAST(TransmissionId AS NVARCHAR(10))
+			ELSE NULL
+		  END AS DerivativeIdentifier				
 		, TotalVolume					
 		, PercentageTakeRate						
 		, IsVolumeUpdate				
@@ -106,7 +116,8 @@ AS
 		, OriginalPercentageTakeRate	
 		, FdpVolumeDataItemId			
 		, FdpTakeRateSummaryId
-		, FdpTakeRateFeatureMixId			
+		, FdpTakeRateFeatureMixId
+		, FdpPowertrainDataItemId			
 		, ParentFdpChangesetDataItemId
 
 	FROM Fdp_ChangesetDataItem
@@ -159,7 +170,8 @@ AS
 		, U.FdpChangesetId				
 		, U.MarketId						
 		, U.ModelIdentifier									
-		, U.FeatureIdentifier											
+		, U.FeatureIdentifier
+		, U.DerivativeIdentifier											
 		, U.TotalVolume					
 		, U.PercentageTakeRate								
 		, U.IsVolumeUpdate				
@@ -168,11 +180,12 @@ AS
 		, V.PercentageTakeRate AS OriginalPercentageTakeRate	
 		, U.FdpVolumeDataItemId			
 		, U.FdpTakeRateSummaryId
-		, U.FdpTakeRateFeatureMixId					
+		, U.FdpTakeRateFeatureMixId	
+		, U.FdpPowertrainDataItemId				
 		, U.ParentFdpChangesetDataItemId 
 	FROM
 	@UndoneChanges						AS U
-	JOIN Fdp_VolumeDataItem_VW		AS V	ON	U.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
+	JOIN Fdp_VolumeDataItem_VW			AS V	ON	U.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId		= D.FdpChangesetId
 												AND U.FdpVolumeDataItemId	= D.FdpVolumeDataItemId
 	WHERE
@@ -186,7 +199,8 @@ AS
 		, U.FdpChangesetId				
 		, U.MarketId						
 		, U.ModelIdentifier										
-		, U.FeatureIdentifier					
+		, U.FeatureIdentifier
+		, U.DerivativeIdentifier					
 		, U.TotalVolume					
 		, U.PercentageTakeRate								
 		, U.IsVolumeUpdate				
@@ -195,7 +209,8 @@ AS
 		, S.PercentageTakeRate AS OriginalPercentageTakeRate	
 		, U.FdpVolumeDataItemId			
 		, U.FdpTakeRateSummaryId	
-		, U.FdpTakeRateFeatureMixId				
+		, U.FdpTakeRateFeatureMixId
+		, U.FdpPowertrainDataItemId				
 		, U.ParentFdpChangesetDataItemId 
 	FROM
 	@UndoneChanges						AS U
@@ -213,7 +228,8 @@ AS
 		, U.FdpChangesetId				
 		, U.MarketId						
 		, U.ModelIdentifier										
-		, U.FeatureIdentifier					
+		, U.FeatureIdentifier
+		, U.DerivativeIdentifier					
 		, U.TotalVolume					
 		, U.PercentageTakeRate								
 		, U.IsVolumeUpdate				
@@ -223,6 +239,7 @@ AS
 		, U.FdpVolumeDataItemId			
 		, U.FdpTakeRateSummaryId
 		, U.FdpTakeRateFeatureMixId			
+		, U.FdpPowertrainDataItemId
 		, U.ParentFdpChangesetDataItemId 
 	FROM
 	@UndoneChanges						AS U
@@ -230,4 +247,33 @@ AS
 	LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId			= D.FdpChangesetId
 												AND U.FdpTakeRateSummaryId		= D.FdpTakeRateSummaryId
 	WHERE
-	D.FdpChangesetDataItemId IS NULL;
+	D.FdpChangesetDataItemId IS NULL
+	
+	UNION
+	
+	SELECT 
+		  U.FdpChangesetDataItemId		
+		, U.CreatedOn						
+		, U.FdpChangesetId				
+		, U.MarketId						
+		, U.ModelIdentifier										
+		, U.FeatureIdentifier
+		, U.DerivativeIdentifier					
+		, U.TotalVolume					
+		, U.PercentageTakeRate								
+		, U.IsVolumeUpdate				
+		, U.IsPercentageUpdate			
+		, P.Volume AS OriginalVolume				
+		, P.PercentageTakeRate AS OriginalPercentageTakeRate	
+		, U.FdpVolumeDataItemId			
+		, U.FdpTakeRateSummaryId
+		, U.FdpTakeRateFeatureMixId	
+		, U.FdpPowertrainDataItemId		
+		, U.ParentFdpChangesetDataItemId 
+	FROM
+	@UndoneChanges						AS U
+	JOIN Fdp_PowertrainDataItem			AS P	ON	U.FdpPowertrainDataItemId	= P.FdpPowertrainDataItemId
+	LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId			= D.FdpChangesetId
+												AND U.FdpPowertrainDataItemId	= D.FdpPowertrainDataItemId
+	WHERE
+	D.FdpChangesetDataItemId IS NULL

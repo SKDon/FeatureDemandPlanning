@@ -7,6 +7,7 @@
 @{
     var featureRow = (DataRow)TempData["CurrentRow"];
     var featureIdentifier = featureRow.Field<string>("FeatureIdentifier");
+    var featurePackId = featureRow.Field<int?>("FeaturePackId");
     var marketIdentifier = Model.Document.Market.Id;
 }
 
@@ -21,12 +22,31 @@
             featureFixedClassName = "fdp-data-item-fixed";
             featureFixedLastClassName = "fdp-data-item-fixed-last";
         }
+
+        var isOrphanedData = featureRow.Field<bool>("IsOrphanedData");
+        if (isOrphanedData)
+        {
+            featureClassName = "orphaned-data-item";
+            featureFixedClassName = "orphaned-data-item-fixed";
+            featureFixedLastClassName = "orphaned-data-item-fixed-last";
+        }
     }
 
     <td class="cross-tab-data-item @featureFixedClassName @featureClassName" data-feature="@featureIdentifier">
         @(featureRow.Field<string>("BrandDescription"))
         <div style="display: none">@(featureRow.Field<string>("ExclusiveFeatureGroup"))</div>
-        <div style="display:none">@RenderPackList(featureRow.Field<string>("FeatureIdentifier"))</div>
+        @if (!featureIdentifier.StartsWith("P"))
+        {
+            // If this is not a pack feature, render a hidden list of packs that contain the feature 
+            // This allows us to click on a feature pack and filter the available features to show the features in that pack 
+            <div style="display: none">@RenderPackList(featureIdentifier)</div>
+        }
+        else
+        {
+            // If this is a feature pack, render a hidden pack identifier
+            // When clicking on a pack heading in the list of feature packs containing that feature, we can filter to just that pack
+            <div style="display: none">P@(featurePackId)</div>
+        }
     </td>
     <td class="cross-tab-data-item @featureFixedClassName text-center @featureClassName feature-notes" data-feature="@featureIdentifier">
         <div class="changed-indicator pull-right" style="display: none" title="Changes have been made to the take rate / volume data for this feature">
@@ -51,10 +71,17 @@
                 <span class="glyphicon glyphicon-link"></span>&nbsp;
             </div>
         }
-        @if (featureRow.Field<int?>("FeaturePackId").HasValue)
+        @if (featurePackId.HasValue && !featureIdentifier.StartsWith("P"))
         {
-            <div class="indicator pack-item pull-right" data-toggle="popover"
-                 title="Feature Packs" data-content="@RenderPacks(featureRow.Field<string>("FeatureIdentifier"))">
+            <div class="indicator feature-pack-item pull-right" data-toggle="popover"
+                 title="Feature Packs" data-content="@RenderPacks(featureIdentifier)">
+                <span class="glyphicon glyphicon-duplicate"></span>&nbsp;
+            </div>
+        }
+        @if (featurePackId.HasValue && featureIdentifier.StartsWith("P"))
+        {
+            <div class="indicator pack-item pull-right" data-filter="P@(featurePackId)" data-toggle="popover" data-trigger="focus"
+                 data-content="@RenderPack(featurePackId.Value)">
                 <span class="glyphicon glyphicon-duplicate"></span>&nbsp;
             </div>
         }
@@ -207,6 +234,7 @@
             where matchingPacks.Contains(packFeature.PackId)
             group new
             {
+                packFeature.PackId,
                 packFeature.PackName,
                 packFeature.BrandDescription
             }
@@ -216,7 +244,8 @@
 
         foreach (var packContainingFeature in packsContainingFeature)
         {
-            sb.Append("<strong>" + packContainingFeature.First().PackName + "</strong>");
+            var pack = packContainingFeature.First();
+            sb.Append("<strong class='feature-pack-item-header' data-filter='P" + pack.PackId + "'>" + pack.PackName + "</strong>");
             sb.Append("<br/>");
             foreach (var packFeature in packContainingFeature)
             {
@@ -225,6 +254,22 @@
             }
             sb.Append("<br/>");
         }
+    }
+    @sb.ToString();
+}
+
+@helper RenderPack(int packId)
+{
+    var sb = new StringBuilder();
+
+    var packFeatures = Model.Document.TakeRateData.PackFeatures
+        .Where(pf => pf.PackId == packId)
+        .Select(pf => pf.BrandDescription).Distinct();
+
+    foreach (var packFeature in packFeatures)
+    {
+        sb.Append(packFeature);
+        sb.Append("<br/>");
     }
     @sb.ToString();
 }
@@ -240,7 +285,7 @@
 
         var matchingPacks = Model.Document.TakeRateData.PackFeatures
             .Where(pf => pf.Id == featureId)
-            .Select(pf => pf.PackId).Distinct();
+            .Select(pf => "P" + pf.PackId).Distinct();
 
         sb.Append(string.Join(",", matchingPacks));
     }
@@ -254,6 +299,13 @@
         Model.Document.TakeRateData.FeatureApplicabilityData.Where(fa => fa.Field<long?>("Id") == rowIdentity)
         .Select(fa => fa.IsNull(modelIdentifier) ? string.Empty : fa.Field<string>(modelIdentifier))
         .FirstOrDefault();
+    var isOrphanedData = dataItem.Field<bool>("IsOrphanedData");
+
+    if (isOrphanedData)
+    {
+        @("orphanedFeature")
+        return;
+    }
 
     if (string.IsNullOrEmpty(featureApplicability))
     {

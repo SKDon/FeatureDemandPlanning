@@ -105,8 +105,20 @@ namespace FeatureDemandPlanning.DataStore
                     cmd.CommandText = fdpTakeRateDataGetCrossTabStoredProcedureName;
                     cmd.CommandTimeout = 0;
 
-                    if (filter.DocumentId != null)
-                        cmd.Parameters.Add(new SqlParameter("@DocumentId", SqlDbType.Int) { Value = filter.DocumentId.Value });
+                    if (filter.TakeRateId.HasValue)
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@FdpVolumeHeaderId", SqlDbType.Int)
+                        {
+                            Value = filter.TakeRateId
+                        });
+                    }
+                    if (filter.DocumentId.HasValue)
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@DocumentId", SqlDbType.Int)
+                        {
+                            Value = filter.DocumentId.Value
+                        });
+                    }
                     cmd.Parameters.Add(new SqlParameter("@ModelIds", SqlDbType.NVarChar, -1) { Value = filter.Models.ToCommaSeperatedString() });
 
                     if (filter.MarketGroupId.HasValue)

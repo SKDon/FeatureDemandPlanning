@@ -301,6 +301,7 @@ USING (VALUES
 	, (8, N'NonApplicableFeaturesShouldBe0Percent', N'Take rate for non-applicable features should be 0%', 1, 7, N'dbo.Fdp_Validation_NonApplicableFeatures0Percent')
 	, (9, N'TakeRateForEfgShouldbeLessThanOrEqualTo100Percent', N'For exclusive feature groups not containing a standard feature, the take rate for features should be 100 % or less', 1, 9, N'')
 	, (10, N'OnlyOneFeatureInEfg', N'Only one feature in an exclusive feature group can have a take rate', 1, 10, N'')
+	, (11, N'NonCodedFeatureShouldNotHaveTakeRate', N'An uncoded feature should not have take rate data', 1, 11, N'')
 )
 AS SOURCE (FdpValidationRuleId, [Rule], [Description], IsActive, ValidationOrder, StoredProcedureName) ON TARGET.FdpValidationRuleId = SOURCE.FdpValidationRuleId
 WHEN MATCHED THEN

@@ -2,6 +2,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_ChangesetPowertrainDataItem_VW]
 AS
 	SELECT
@@ -20,10 +21,7 @@ AS
 
 	FROM Fdp_Changeset			AS C
 	JOIN Fdp_ChangesetDataItem	AS D	ON	C.FdpChangesetId = D.FdpChangesetId
-										AND D.ModelId		IS NULL
-										AND D.FdpModelId	IS NULL
-										AND D.FeatureId		IS NULL 
-										AND D.FdpFeatureId	IS NULL
+										AND D.DerivativeCode IS NOT NULL
 										AND D.IsDeleted = 0
 	WHERE
 	C.IsSaved = 0

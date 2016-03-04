@@ -2,6 +2,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_Feature_VW]
 AS
 
@@ -46,6 +47,7 @@ SELECT
 	, F.UpdatedOn
 	, F.UpdatedBy
 	, F.ExclusiveFeatureGroup
+	, F.IsActive
 FROM
 (
 SELECT
@@ -78,6 +80,7 @@ SELECT
 	, E.Last_Updated		AS UpdatedOn
 	, E.Updated_By			AS UpdatedBy
 	, F.EFGName				AS ExclusiveFeatureGroup
+	, CAST(CASE WHEN ISNULL(F.[Status], '') = 'REMOVED' THEN 0 ELSE 1 END AS BIT) AS IsActive
 	
 FROM OXO_Programme_Feature_VW	AS F 
 JOIN OXO_Feature_Ext			AS E	ON F.FeatureCode	= E.Feat_Code
@@ -92,7 +95,6 @@ LEFT JOIN OXO_Feature_Group		AS GR	ON F.FeatureGroup	= GR.Group_Name
 LEFT JOIN Packs					AS P1	ON	F.ProgrammeId	= P1.ProgrammeId
 										AND F.FeatureCode	= P1.FeatureCode
 LEFT JOIN OXO_Pack_Feature_VW	AS P	ON	P1.PackId		= P.PackId
-
 
 UNION
 
@@ -126,12 +128,11 @@ SELECT
 	, F.UpdatedOn
 	, F.UpdatedBy
 	, CAST(NULL AS NVARCHAR(100)) AS ExclusiveFeatureGroup
+	, F.IsActive
 						
 FROM Fdp_Feature			AS F 
 JOIN OXO_Programme_VW		AS P ON F.ProgrammeId		= P.Id
 LEFT JOIN OXO_Feature_Group AS G ON F.FeatureGroupId	= G.Id
-WHERE
-F.IsActive = 1
 
 UNION
 
@@ -166,6 +167,7 @@ SELECT
 	, P.Last_Updated		AS UpdatedOn			
 	, P.Updated_By			AS UpdatedBy
 	, CAST(NULL AS NVARCHAR(100)) AS ExclusiveFeatureGroup
+	, CAST(1 AS BIT)		AS IsActive
 	
 FROM OXO_Programme_Pack AS P
 JOIN Fdp_Gateways_VW	AS G	ON P.Programme_Id	= G.ProgrammeId

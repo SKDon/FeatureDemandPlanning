@@ -1,35 +1,16 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateData_Clone]
 	  @SourceFdpVolumeHeaderId	INT
 	, @DestinationDocumentId	INT
-	, @Comment					NVARCHAR(MAX)
 	, @CDSId					NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
 	
 	-- Clear any information that already exists for the document
 	
-	DECLARE @FdpVolumeHeaderId				AS INT;
-	DECLARE @DestinationFdpTakeRateStatusId AS INT;
-	DECLARE @SourceDocumentName				AS NVARCHAR(MAX);
-	DECLARE @DestinationDocumentName		AS NVARCHAR(MAX);
-
+	DECLARE @FdpVolumeHeaderId AS INT;
 	SELECT @FdpVolumeHeaderId = dbo.fn_Fdp_LatestTakeRateFileByDocument_Get(@DestinationDocumentId);
-	SET @DestinationFdpTakeRateStatusId = 1 -- WIP
-
+	
 	IF @FdpVolumeHeaderId IS NOT NULL
-		SELECT TOP 1 @DestinationFdpTakeRateStatusId = FdpTakeRateStatusId 
-		FROM Fdp_VolumeHeader_VW 
-		WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId
-
-	SELECT @SourceDocumentName = P.VehicleName + ' - ' + P.VehicleAKA + ' - ' + P.ModelYear + ' (' + H.Gateway + '), v' + CAST(D.Version_Id AS NVARCHAR(10)) + ' - ' + D.[Status]
-	FROM
-	Fdp_VolumeHeader_VW AS H
-	JOIN OXO_Programme_VW AS P ON H.ProgrammeId = P.Id
-	JOIN OXO_Doc AS D ON H.DocumentId = D.Id
-	WHERE
-	H.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
-
-	IF @FdpVolumeHeaderId IS NOT NULL AND @DestinationFdpTakeRateStatusId <> 3 -- If we don't have any data or if we do, but it's not been published
 	BEGIN
 		-- Clear all information from the current take rate file
 		EXEC Fdp_TakeRateHeader_Clear @FdpVolumeHeaderId = @FdpVolumeHeaderId;
@@ -51,7 +32,7 @@ AS
 			, @DestinationDocumentId
 			, 0
 			, H.TotalVolume
-			, @DestinationFdpTakeRateStatusId
+			, 1 -- WIP
 		FROM
 		Fdp_VolumeHeader AS H
 		WHERE
@@ -60,55 +41,23 @@ AS
 		SET @FdpVolumeHeaderId = SCOPE_IDENTITY();
 	
 	END
-
-	SELECT @DestinationDocumentName = P.VehicleName + ' - ' + P.VehicleAKA + ' - ' + P.ModelYear + ' (' + H.Gateway + '), v' + CAST(D.Version_Id AS NVARCHAR(10)) + ' - ' + D.[Status]
-	FROM
-	Fdp_VolumeHeader_VW AS H
-	JOIN OXO_Programme_VW AS P ON H.ProgrammeId = P.Id
-	JOIN OXO_Doc AS D ON H.DocumentId = D.Id
-	WHERE
-	H.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
 	
 	-- Create a new version entry
-	-- If the destination had been published and a new copy created, we increment the major version
-	-- Otherwise reset to version 1.0.0
-
-	IF @DestinationFdpTakeRateStatusId = 3
-	BEGIN
-		INSERT INTO Fdp_TakeRateVersion
-		(
-			  FdpTakeRateHeaderId
-			, MajorVersion
-			, MinorVersion
-			, Revision
-		)
-		SELECT
-			  V.FdpVolumeHeaderId
-			, V.MajorVersion + 1
-			, 0
-			, 0
-		FROM
-		Fdp_Version_VW AS V
-		WHERE
-		V.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	END
-	ELSE
-	BEGIN
-		INSERT INTO Fdp_TakeRateVersion
-		(
-			  FdpTakeRateHeaderId
-			, MajorVersion
-			, MinorVersion
-			, Revision
-		)
-		VALUES
-		(
-			  @FdpVolumeHeaderId
-			, 1
-			, 0
-			, 0
-		)
-	END
+	
+	INSERT INTO Fdp_TakeRateVersion
+	(
+		  FdpTakeRateHeaderId
+		, MajorVersion
+		, MinorVersion
+		, Revision
+	)
+	VALUES
+	(
+		  @FdpVolumeHeaderId
+		, 0
+		, 0
+		, 1
+	)
 	
 	-- Copy and FDP specific models, derivatives, trim levels and features
 	-- We will then replace the data items with the new identifiers as necessary
@@ -311,35 +260,5 @@ AS
 	JOIN Fdp_TakeRateDataItemNote AS N ON S.OriginalTakeRateSummaryId = N.FdpTakeRateSummaryId
 	WHERE
 	S.FdpVolumeHeaderId = @FdpVolumeHeaderId;
-
-	-- Add a note to the source to indicate that it was cloned
-
-	INSERT INTO Fdp_TakeRateHeaderNote
-	(
-		  FdpTakeRateHeaderId
-		, EnteredBy
-		, Note
-	)
-	VALUES
-	(
-		  @SourceFdpVolumeHeaderId
-		, @CDSId
-		, @Comment
-	)
-
-	-- Add a note to the destination to indicate that it was cloned from source
-
-	INSERT INTO Fdp_TakeRateHeaderNote
-	(
-		  FdpTakeRateHeaderId
-		, EnteredBy
-		, Note
-	)
-	VALUES
-	(
-		  @FdpVolumeHeaderId
-		, @CDSId
-		, N'Data cloned from document ''' + @SourceDocumentName + ''' by ' + @CDSId
-	)
 	
 	EXEC Fdp_TakeRateHeader_Get @FdpVolumeHeaderId = @FdpVolumeHeaderId;

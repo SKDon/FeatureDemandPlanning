@@ -18,6 +18,7 @@ AS
 			ELSE 'F' + CAST(D.FdpFeatureId AS NVARCHAR(10))
 		  END
 		  AS FeatureIdentifier
+		, D.DerivativeCode
 		, D.PercentageTakeRate
 		, D.TotalVolume
 		, D.OriginalPercentageTakeRate

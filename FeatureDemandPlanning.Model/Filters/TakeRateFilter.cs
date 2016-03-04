@@ -4,6 +4,7 @@ using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Parameters;
 using System.Collections.Generic;
 using System.Linq;
+using FeatureDemandPlanning.Model.ViewModel;
 
 namespace FeatureDemandPlanning.Model.Filters
 {
@@ -36,27 +37,30 @@ namespace FeatureDemandPlanning.Model.Filters
             Models = Enumerable.Empty<FdpModel>();
         }
 
-        public static TakeRateFilter FromTakeRateDocument(ITakeRateDocument document)
+        public static TakeRateFilter FromTakeRateViewModel(TakeRateViewModel takeRateViewModel)
         {
             var filter = new TakeRateFilter()
             {
-                ProgrammeId = document.Vehicle.ProgrammeId,
-                Gateway = document.Vehicle.Gateway
+                ProgrammeId = takeRateViewModel.Document.UnderlyingOxoDocument.ProgrammeId,
+                Gateway = takeRateViewModel.Document.UnderlyingOxoDocument.Gateway
             };
 
-            if (!(document.UnderlyingOxoDocument is EmptyOxoDocument))
-                filter.DocumentId = document.UnderlyingOxoDocument.Id;
+            if (!(takeRateViewModel.Document.UnderlyingOxoDocument is EmptyOxoDocument))
+            {
+                filter.TakeRateId = takeRateViewModel.Document.TakeRateId;
+                filter.DocumentId = takeRateViewModel.Document.UnderlyingOxoDocument.Id;
+            }
 
-            if (!(document.Market is EmptyMarket))
-                filter.MarketId = document.Market.Id;
+            if (!(takeRateViewModel.Document.Market is EmptyMarket))
+                filter.MarketId = takeRateViewModel.Document.Market.Id;
 
-            if (!(document.MarketGroup is EmptyMarketGroup))
-                filter.MarketGroupId = document.MarketGroup.Id;
+            if (!(takeRateViewModel.Document.MarketGroup is EmptyMarketGroup))
+                filter.MarketGroupId = takeRateViewModel.Document.MarketGroup.Id;
 
-            if (!(document.Vehicle is EmptyVehicle))
-                filter.Models = document.Vehicle.AvailableModels;
+            if (!(takeRateViewModel.Document.Vehicle is EmptyVehicle))
+                filter.Models = takeRateViewModel.Document.Vehicle.AvailableModels;
 
-            filter.Mode = document.Mode;
+            filter.Mode = takeRateViewModel.Document.Mode;
 
             return filter;
         }

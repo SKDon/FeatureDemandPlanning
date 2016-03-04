@@ -11,6 +11,7 @@
         TakeRateForEfgShouldEqualTo100Percent = 7,
         NonApplicableFeaturesShouldBe0Percent = 8,
         TakeRateForEfgShouldbeLessThanOrEqualTo100Percent = 9,
-        OnlyOneFeatureInEfg = 10
+        OnlyOneFeatureInEfg = 10,
+        NonCodedFeatureHasTakeRate = 11
     }
 }

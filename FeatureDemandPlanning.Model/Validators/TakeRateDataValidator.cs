@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace FeatureDemandPlanning.Model.Validators
 {
@@ -21,6 +20,8 @@ namespace FeatureDemandPlanning.Model.Validators
                 .SetValidator(new TakeRateForEfgValidator());
             RuleFor(d => d)
                 .SetValidator(new TakeRateForFeaturePackValidator());
+            RuleFor(d => d.DataItems)
+                .SetCollectionValidator(new NonCodedFeatureTakeRateValidator());
         }
         
         public static FluentValidation.Results.ValidationResult ValidateData(RawTakeRateData data)

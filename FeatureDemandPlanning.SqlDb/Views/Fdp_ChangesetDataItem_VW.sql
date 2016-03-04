@@ -5,6 +5,8 @@
 
 
 
+
+
 CREATE VIEW [dbo].[Fdp_ChangesetDataItem_VW]
 AS
 	SELECT
@@ -19,6 +21,7 @@ AS
 	, D.FeatureId
 	, D.FdpFeatureId
 	, D.FeaturePackId
+	, D.DerivativeCode
 	, D.TotalVolume
 	, D.PercentageTakeRate
 	, D.IsDeleted
@@ -29,6 +32,7 @@ AS
 	, D.FdpVolumeDataItemId
 	, D.FdpTakeRateSummaryId
 	, D.FdpTakeRateFeatureMixId
+	, D.FdpPowertrainDataItemId
 	, D.ParentFdpChangesetDataItemId
 	, C.IsSaved
 	, CAST(CASE
@@ -71,6 +75,15 @@ AS
 	  END AS BIT)
 	  AS IsFeatureMixUpdate
 	, CAST(CASE
+		WHEN
+		D.DerivativeCode IS NOT NULL
+		THEN
+		1
+		ELSE
+		0
+	  END AS BIT)
+	  AS IsPowertrainUpdate
+	, CAST(CASE
 		WHEN 
 		D.FeatureId IS NULL 
 		AND 
@@ -81,6 +94,8 @@ AS
 		D.ModelId IS NULL
 		AND
 		D.FdpModelId IS NULL
+		AND
+		D.DerivativeCode IS NULL
 		THEN
 		1
 		ELSE
