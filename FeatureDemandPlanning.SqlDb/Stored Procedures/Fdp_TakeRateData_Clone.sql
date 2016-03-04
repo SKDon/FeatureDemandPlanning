@@ -203,9 +203,8 @@ AS
 		  CreatedBy
 		, FdpVolumeHeaderId
 		, MarketId
-		, BodyId
-		, EngineId
-		, TransmissionId
+		, FdoOxoDerivativeId
+		, FdpDerivativeId
 		, Volume
 		, PercentageTakeRate
 	)
@@ -213,9 +212,8 @@ AS
 		  @CDSId
 		, @FdpVolumeHeaderId
 		, P.MarketId
-		, P.BodyId
-		, P.EngineId
-		, P.TransmissionId
+		, P.FdoOxoDerivativeId
+		, P.FdpDerivativeId
 		, P.Volume
 		, P.PercentageTakeRate
 	FROM

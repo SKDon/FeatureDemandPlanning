@@ -8,6 +8,7 @@ AS
 	DECLARE @FdpVolumeDataItemId			INT;
 	DECLARE @FdpTakeRateSummaryId			INT;
 	DECLARE @FdpTakeRateFeatureMixId		INT;
+	DECLARE @FdpPowertrainDataItemId		INT;
 	DECLARE @FdpVolumeHeaderId				INT;
 	DECLARE @MarketId						INT;
 	DECLARE @CDSId							NVARCHAR(16);
@@ -103,9 +104,9 @@ AS
 			ELSE NULL
 		  END AS FeatureIdentifier	
 		, CASE
-			WHEN BodyId IS NOT NULL AND EngineId IS NOT NULL AND TransmissionId IS NOT NULL
+			WHEN DerivativeCode IS NOT NULL
 			THEN
-			CAST(BodyId AS NVARCHAR(10)) + '|' + CAST(EngineId AS NVARCHAR(10)) + '|' + CAST(TransmissionId AS NVARCHAR(10))
+			'D' + DerivativeCode
 			ELSE NULL
 		  END AS DerivativeIdentifier				
 		, TotalVolume					

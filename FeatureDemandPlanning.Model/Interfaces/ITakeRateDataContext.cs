@@ -2,7 +2,6 @@
 using FeatureDemandPlanning.Model.Filters;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.Interfaces
 {
@@ -56,5 +55,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<IEnumerable<ValidationResult>> PersistValidationErrors(TakeRateFilter filter, FluentValidation.Results.ValidationResult validationResult);
 
         Task<TakeRateSummary> CloneTakeRateDocument(TakeRateFilter filter);
+
+        Task<IEnumerable<RawPowertrainDataItem>> ListPowertrainData(TakeRateFilter takeRateFilter);
     }
 }
