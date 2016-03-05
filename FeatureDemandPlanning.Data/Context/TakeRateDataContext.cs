@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Validators;
-using log4net.Config;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -290,9 +289,17 @@ namespace FeatureDemandPlanning.DataStore
                 DataItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateDataGetRaw(filter)),
                 SummaryItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateSummaryGetRaw(filter)),
                 FeatureMixItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateFeatureMixGetRaw(filter)),
-                PowertrainDataItems = await Task.FromResult(_takeRateDataStore.FdpPowertrainDataItemGetRaw(filter))
+                PowertrainDataItems = await ListPowertrainData(filter)
             };
             return rawData;
+        }
+        public async Task<TakeRateSummary> CloneTakeRateDocument(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpTakeRateDataClone(filter));
+        }
+        public async Task<IEnumerable<RawPowertrainDataItem>> ListPowertrainData(TakeRateFilter takeRateFilter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpPowertrainDataItemGetRaw(takeRateFilter));
         }
 
         #endregion

@@ -2,6 +2,7 @@
 	@FdpVolumeHeaderId	INT
 AS
 	SET NOCOUNT ON;
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED; -- Called at the end of the clone proc inside a transaction
 	
 	;WITH Errors AS
 	(

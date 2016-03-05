@@ -69,6 +69,17 @@ namespace FeatureDemandPlanning.Model.Parameters
                     break;
                 case TakeRateDataItemAction.MarketReview:
                     break;
+                case TakeRateDataItemAction.Filter:
+                    break;
+                case TakeRateDataItemAction.ValidationSummary:
+                    break;
+                case TakeRateDataItemAction.Clone:
+                    return new
+                    {
+                        TakeRateId,
+                        DocumentId,
+                        Comment
+                    };
                 default:
                     throw new ArgumentOutOfRangeException();
             }

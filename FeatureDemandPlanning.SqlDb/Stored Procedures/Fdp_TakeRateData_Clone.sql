@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Fdp_TakeRateData_Clone
+﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateData_Clone]
 	  @SourceFdpVolumeHeaderId	INT
 	, @DestinationDocumentId	INT
 	, @CDSId					NVARCHAR(16)
@@ -15,29 +15,32 @@ AS
 		-- Clear all information from the current take rate file
 		EXEC Fdp_TakeRateHeader_Clear @FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	END
+	ELSE
+	BEGIN
+		-- Create a new header entry
 	
-	-- Create a new header entry
+		INSERT INTO Fdp_VolumeHeader
+		(
+			  CreatedBy
+			, DocumentId
+			, IsManuallyEntered
+			, TotalVolume
+			, FdpTakeRateStatusId
+		)
+		SELECT 
+			  @CDSId
+			, @DestinationDocumentId
+			, 0
+			, H.TotalVolume
+			, 1 -- WIP
+		FROM
+		Fdp_VolumeHeader AS H
+		WHERE
+		H.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
+		
+		SET @FdpVolumeHeaderId = SCOPE_IDENTITY();
 	
-	INSERT INTO Fdp_VolumeHeader
-	(
-		  CreatedBy
-		, DocumentId
-		, IsManuallyEntered
-		, TotalVolume
-		, FdpTakeRateStatusId
-	)
-	SELECT 
-		  @CDSId
-		, @DestinationDocumentId
-		, 0
-		, H.TotalVolume
-		, 1 -- WIP
-	FROM
-	Fdp_VolumeHeader AS H
-	WHERE
-	H.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
-	
-	SET @FdpVolumeHeaderId = SCOPE_IDENTITY();
+	END
 	
 	-- Create a new version entry
 	
@@ -55,6 +58,29 @@ AS
 		, 0
 		, 1
 	)
+	
+	-- Copy and FDP specific models, derivatives, trim levels and features
+	-- We will then replace the data items with the new identifiers as necessary
+	
+	EXEC Fdp_Derivative_Clone 
+		@SourceFdpVolumeHeaderId		= @SourceFdpVolumeHeaderId, 
+		@DestinationFdpVolumeHeaderId	= @FdpVolumeHeaderId, 
+		@CDSId							= @CDSId;
+		
+	EXEC Fdp_Trim_Clone
+		@SourceFdpVolumeHeaderId		= @SourceFdpVolumeHeaderId, 
+		@DestinationFdpVolumeHeaderId	= @FdpVolumeHeaderId, 
+		@CDSId							= @CDSId;
+	
+	EXEC Fdp_Model_Clone
+		@SourceFdpVolumeHeaderId		= @SourceFdpVolumeHeaderId, 
+		@DestinationFdpVolumeHeaderId	= @FdpVolumeHeaderId, 
+		@CDSId							= @CDSId;
+	
+	EXEC Fdp_Feature_Clone
+		@SourceFdpVolumeHeaderId		= @SourceFdpVolumeHeaderId, 
+		@DestinationFdpVolumeHeaderId	= @FdpVolumeHeaderId, 
+		@CDSId							= @CDSId;
 	
 	-- Copy any data over
 	
@@ -83,19 +109,32 @@ AS
 		, D.MarketId
 		, D.MarketGroupId
 		, D.ModelId
-		, D.FdpModelId
+		, ISNULL(M.FdpModelId, D.FdpModelId)
 		, D.TrimId
-		, D.FdpTrimId
+		, ISNULL(T.FdpTrimId, D.FdpTrimId)
 		, D.FeatureId
-		, D.FdpFeatureId
+		, ISNULL(F.FdpFeatureId, D.FdpFeatureId)
 		, D.FeaturePackId
 		, D.Volume
 		, D.PercentageTakeRate
 		, D.FdpVolumeDataItemId
 	FROM
-	Fdp_VolumeDataItem AS D
+	Fdp_VolumeHeader_VW		AS H
+	JOIN Fdp_VolumeDataItem	AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+	LEFT JOIN Fdp_Model		AS M	ON	D.FdpModelId		= M.OriginalFdpModelId
+									AND H.ProgrammeId		= M.ProgrammeId
+									AND H.Gateway			= M.Gateway
+									AND D.FdpModelId		IS NOT NULL
+	LEFT JOIN Fdp_Trim		AS T	ON	D.FdpTrimId			= T.OriginalFdpTrimId
+									AND H.ProgrammeId		= M.ProgrammeId
+									AND H.Gateway			= M.Gateway
+									AND D.FdpTrimId			IS NOT NULL
+	LEFT JOIN Fdp_Feature	AS F	ON	D.FdpFeatureId		= F.OriginalFdpFeatureId
+									AND H.ProgrammeId		= M.ProgrammeId
+									AND H.Gateway			= M.Gateway
+									AND F.FdpFeatureId		IS NOT NULL
 	WHERE
-	D.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
+	H.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
 	
 	INSERT INTO Fdp_TakeRateSummary
 	(
@@ -115,14 +154,19 @@ AS
 		, S.FdpSpecialFeatureMappingId
 		, S.MarketId
 		, S.ModelId
-		, S.FdpModelId
+		, ISNULL(M.FdpModelId, S.FdpModelId)
 		, S.Volume
 		, S.PercentageTakeRate
 		, S.FdpTakeRateSummaryId
 	FROM
-	Fdp_TakeRateSummary AS S
+	Fdp_VolumeHeader_VW			AS H
+	JOIN Fdp_TakeRateSummary	AS S	ON	H.FdpVolumeHeaderId  = S.FdpVolumeHeaderId
+	LEFT JOIN Fdp_Model			AS M	ON	S.FdpModelId		= M.OriginalFdpModelId
+										AND H.ProgrammeId		= M.ProgrammeId
+										AND H.Gateway			= M.Gateway
+										AND S.FdpModelId		IS NOT NULL
 	WHERE
-	S.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
+	H.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
 	
 	INSERT INTO Fdp_TakeRateFeatureMix
 	(
@@ -140,23 +184,27 @@ AS
 		, @FdpVolumeHeaderId
 		, F.MarketId
 		, F.FeatureId
-		, F.FdpFeatureId
+		, ISNULL(F1.FdpFeatureId, F.FdpFeatureId)
 		, F.FeaturePackId
 		, F.Volume
 		, F.PercentageTakeRate
 	FROM
-	Fdp_TakeRateFeatureMix AS F 
+	Fdp_VolumeHeader_VW			AS H
+	JOIN Fdp_TakeRateFeatureMix AS F	ON	H.FdpVolumeHeaderId = F.FdpVolumeHeaderId
+	LEFT JOIN Fdp_Feature		AS F1	ON	F.FdpFeatureId		= F1.OriginalFdpFeatureId
+										AND H.ProgrammeId		= F1.ProgrammeId
+										AND H.Gateway			= F1.Gateway
+										AND F.FdpFeatureId		IS NOT NULL
 	WHERE
-	F.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
+	H.FdpVolumeHeaderId = @SourceFdpVolumeHeaderId;
 	
 	INSERT INTO Fdp_PowertrainDataItem
 	(
 		  CreatedBy
 		, FdpVolumeHeaderId
 		, MarketId
-		, BodyId
-		, EngineId
-		, TransmissionId
+		, FdoOxoDerivativeId
+		, FdpDerivativeId
 		, Volume
 		, PercentageTakeRate
 	)
@@ -164,9 +212,8 @@ AS
 		  @CDSId
 		, @FdpVolumeHeaderId
 		, P.MarketId
-		, P.BodyId
-		, P.EngineId
-		, P.TransmissionId
+		, P.FdoOxoDerivativeId
+		, P.FdpDerivativeId
 		, P.Volume
 		, P.PercentageTakeRate
 	FROM
@@ -211,3 +258,5 @@ AS
 	JOIN Fdp_TakeRateDataItemNote AS N ON S.OriginalTakeRateSummaryId = N.FdpTakeRateSummaryId
 	WHERE
 	S.FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	
+	EXEC Fdp_TakeRateHeader_Get @FdpVolumeHeaderId = @FdpVolumeHeaderId;

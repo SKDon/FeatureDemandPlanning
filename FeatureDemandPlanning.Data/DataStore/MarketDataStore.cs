@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data;
-using FeatureDemandPlanning.Model.Dapper;
-using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Helpers;
 using System.Data.SqlClient;
-using FeatureDemandPlanning.Model.Filters;
-using FeatureDemandPlanning.Model.Empty;
+using System.Linq;
+using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Dapper;
+using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -20,7 +21,7 @@ namespace FeatureDemandPlanning.DataStore
         public IEnumerable<Market> MarketGetMany()
         {
             IEnumerable<Market> retVal = null;
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -38,14 +39,14 @@ namespace FeatureDemandPlanning.DataStore
         }
         public IEnumerable<Market> MarketGetMany(int progId, int docId)
         {
-            IEnumerable<Market> retVal = Enumerable.Empty<Market>();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            var retVal = Enumerable.Empty<Market>();
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progId, dbType: DbType.Int32);
-                    para.Add("@p_doc_id", docId, dbType: DbType.Int32);
+                    para.Add("@p_prog_id", progId, DbType.Int32);
+                    para.Add("@p_doc_id", docId, DbType.Int32);
                     retVal = conn.Query<Market>("dbo.OXO_Programme_Market_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
@@ -57,10 +58,31 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
+        public IEnumerable<Market> MarketGetMany(TakeRateFilter filter)
+        {
+            IEnumerable<Market> retVal;
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    
+                    retVal = conn.Query<Market>("dbo.Fdp_Market_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+
+            }
+            return retVal;
+        } 
         public IEnumerable<Market> MarketGroupMarketGetMany()
         {
-            IEnumerable<Market> retVal = Enumerable.Empty<Market>();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            var retVal = Enumerable.Empty<Market>();
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -79,12 +101,12 @@ namespace FeatureDemandPlanning.DataStore
         public IEnumerable<Market> MarketAvailableGetMany(int progId)
         {
             IEnumerable<Market> retVal = null;
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progId, dbType: DbType.Int32);
+                    para.Add("@p_prog_id", progId, DbType.Int32);
                     retVal = conn.Query<Market>("dbo.OXO_Market_AvailableGetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
@@ -118,12 +140,12 @@ namespace FeatureDemandPlanning.DataStore
         public Market MarketGet(int id)
         {
             Market retVal = new EmptyMarket();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_Id", id, dbType: DbType.Int32);
+                    para.Add("@p_Id", id, DbType.Int32);
                     var results = conn.Query<Market>("dbo.OXO_Market_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
                     {
@@ -140,8 +162,8 @@ namespace FeatureDemandPlanning.DataStore
         }
         public IEnumerable<Market> TopMarketGetMany()
         {
-            IEnumerable<Market> retVal = Enumerable.Empty<Market>();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            var retVal = Enumerable.Empty<Market>();
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -166,12 +188,12 @@ namespace FeatureDemandPlanning.DataStore
         public Market TopMarketGet(int marketId)
         {
             Market retVal = new EmptyMarket();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@MarketId", marketId, dbType: DbType.Int32);
+                    para.Add("@MarketId", marketId, DbType.Int32);
                     retVal = conn.Query<Market>("dbo.Fdp_TopMarket_GetMany", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (SqlException sx)
@@ -191,14 +213,14 @@ namespace FeatureDemandPlanning.DataStore
         public Market TopMarketSave(Market marketToSave)
         {
             Market retVal = new EmptyMarket();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@MarketId", marketToSave.Id, dbType: DbType.Int32);
-                    para.Add("@CdsId", CurrentCDSID, dbType: DbType.String);
-                    para.Add("@TopMarketId", null, dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@MarketId", marketToSave.Id, DbType.Int32);
+                    para.Add("@CdsId", CurrentCDSID, DbType.String);
+                    para.Add("@TopMarketId", null, DbType.Int32, ParameterDirection.Output);
 
                     retVal = conn.Query<Market>("dbo.Fdp_TopMarket_New", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -218,13 +240,13 @@ namespace FeatureDemandPlanning.DataStore
         public Market TopMarketDelete(Market marketToDelete)
         {
             Market retVal = new EmptyMarket();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@MarketId", marketToDelete.Id, dbType: DbType.Int32);
-                    para.Add("@CdsId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@MarketId", marketToDelete.Id, DbType.Int32);
+                    para.Add("@CdsId", CurrentCDSID, DbType.String);
 
                     retVal = conn.Query<Market>("dbo.Fdp_TopMarket_Delete", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -245,7 +267,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             PagedResults<FdpMarketMapping> retVal = null;
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -255,40 +277,40 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (!string.IsNullOrEmpty(filter.CarLine))
                     {
-                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                        para.Add("@CarLine", filter.CarLine, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.ModelYear))
                     {
-                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                        para.Add("@ModelYear", filter.ModelYear, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    if (filter.SortDirection != SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        var direction = filter.SortDirection == SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
                     if (filter.ProgrammeId.HasValue)
                     {
-                        para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
+                        para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -301,7 +323,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<FdpMarketMapping>()
+                    retVal = new PagedResults<FdpMarketMapping>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -329,14 +351,14 @@ namespace FeatureDemandPlanning.DataStore
         {
             FdpMarketMapping retVal = new EmptyFdpMarketMapping();
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
 
-                    para.Add("@FdpMarketMappingId", mapping.FdpMarketMappingId, dbType: DbType.String);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@FdpMarketMappingId", mapping.FdpMarketMappingId, DbType.String);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<FdpMarketMapping>("dbo.Fdp_MarketMapping_Delete", para, commandType: CommandType.StoredProcedure);
                     if (!results.Any())
@@ -357,21 +379,21 @@ namespace FeatureDemandPlanning.DataStore
         {
             FdpMarketMapping retVal = new EmptyFdpMarketMapping();
 
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
 
-                    para.Add("@ImportMarket", mapping.ImportMarket, dbType: DbType.String);
-                    para.Add("@MappedMarketId", mapping.MarketId, dbType: DbType.Int32);
+                    para.Add("@ImportMarket", mapping.ImportMarket, DbType.String);
+                    para.Add("@MappedMarketId", mapping.MarketId, DbType.Int32);
                     if (!mapping.IsGlobalMapping)
                     {
-                        para.Add("@ProgrammeId", mapping.ProgrammeId, dbType: DbType.Int32);
-                        para.Add("@Gateway", mapping.Gateway, dbType: DbType.String);
+                        para.Add("@ProgrammeId", mapping.ProgrammeId, DbType.Int32);
+                        para.Add("@Gateway", mapping.Gateway, DbType.String);
                     }
-                    para.Add("@IsGlobalMapping", mapping.IsGlobalMapping, dbType: DbType.Boolean);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@IsGlobalMapping", mapping.IsGlobalMapping, DbType.Boolean);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<FdpMarketMapping>("dbo.Fdp_MarketMapping_Save", para, commandType: CommandType.StoredProcedure);
                     if (!results.Any())
@@ -392,12 +414,12 @@ namespace FeatureDemandPlanning.DataStore
         public FdpMarketMapping FdpMarketMappingGet(MarketMappingFilter filter)
         {
             FdpMarketMapping retVal = new EmptyFdpMarketMapping();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpDerivativeMappingId", filter.MarketMappingId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpDerivativeMappingId", filter.MarketMappingId.GetValueOrDefault(), DbType.Int32);
 
                     var results = conn.Query<FdpMarketMapping>("Fdp_MarketMapping_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())

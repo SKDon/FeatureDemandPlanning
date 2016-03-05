@@ -301,6 +301,7 @@ USING (VALUES
 	, (8, N'NonApplicableFeaturesShouldBe0Percent', N'Take rate for non-applicable features should be 0%', 1, 7, N'dbo.Fdp_Validation_NonApplicableFeatures0Percent')
 	, (9, N'TakeRateForEfgShouldbeLessThanOrEqualTo100Percent', N'For exclusive feature groups not containing a standard feature, the take rate for features should be 100 % or less', 1, 9, N'')
 	, (10, N'OnlyOneFeatureInEfg', N'Only one feature in an exclusive feature group can have a take rate', 1, 10, N'')
+	, (11, N'NonCodedFeatureShouldNotHaveTakeRate', N'An uncoded feature should not have take rate data', 1, 11, N'')
 )
 AS SOURCE (FdpValidationRuleId, [Rule], [Description], IsActive, ValidationOrder, StoredProcedureName) ON TARGET.FdpValidationRuleId = SOURCE.FdpValidationRuleId
 WHEN MATCHED THEN
@@ -338,6 +339,8 @@ USING (VALUES
 	, (6, N'Importer', N'User can import take rate data from PPO files')
 	, (7, N'AllMarkets', N'User has access to all markets without having to explicitly grant access on a per market basis')
 	, (8, N'AllProgrammes', N'User has access to all programmes without having to explicitly grant access on a per programme basis')
+	, (9, N'Approver', N'User can approve market review changes')
+	, (10, N'Cloner', N'User can clone take rate data into other take rate documents')
 )
 AS SOURCE (FdpUserRoleId, [Role], [Description]) ON TARGET.FdpUserRoleId = SOURCE.FdpUserRoleId
 WHEN MATCHED THEN

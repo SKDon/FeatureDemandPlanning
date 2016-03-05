@@ -51,7 +51,6 @@ model.Page = function (models) {
         me.loadChangeset();
         me.configureDataTables();
         me.configureCellEditing();
-        me.configureComments();
         me.configureRowHighlight();
     };
     me.persistData = function () {
@@ -192,7 +191,8 @@ model.Page = function (models) {
         $("#" + prefix + "_Toggle").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnToggleDelegate", [eventArgs]); });
         $("#" + prefix + "_Filter").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnFilterDelegate", [eventArgs]); });
         $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
-        $(".efg-item").unbind("click").on("click", function (sender, eventArgs) { me.filterItem(this); })
+        $(".efg-item").unbind("click").on("click", function(sender, eventArgs) { me.filterItem(this); });
+        //$(".pack-item").unbind("click").on("click", function (sender, eventArgs) { me.filterItem(this); });
     };
     me.registerSubscribers = function () {
         var prefix = me.getIdentifierPrefix();
@@ -812,42 +812,94 @@ model.Page = function (models) {
         me.saveData(me.saveCallback);
     };
     me.configureComments = function () {
+
+        // We need to destroy and re-initialise the popovers each time the filter results is performed
+        // Otherwise we get unexpected results
+
+        $("[data-toggle='popover']").popover("destroy");
+
         $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover", placement: "auto bottom" });
 
-        $(".comment-item").on("click", function () {
+        $(".comment-item").on("click", function() {
             $(".comment-item").not(this).popover("hide");
         });
 
         $(".rule-item").popover({ html: true, title: "Rules", container: "body", trigger: "hover", placement: "auto bottom" });
 
-        $(".rule-item").on("click", function () {
+        $(".rule-item").on("click", function() {
             $(".rule-item").not(this).popover("hide");
         });
 
         $(".efg-item").popover({ html: true, title: "Exclusive Feature Group", container: "body", trigger: "hover", placement: "auto bottom" });
 
-        $(".efg-item").on("click", function () {
+        $(".efg-item").on("click", function() {
             $(".efg-item").not(this).popover("hide");
         });
 
-        $(".pack-item").popover({ html: true, title: "Feature Pack", container: "body", trigger: "hover", placement: "auto bottom" });
+        $(".pack-item")
+            .popover({
+                html: true,
+                container: "body",
+                placement: "auto bottom",
+                trigger: "manual",
+                title: "Pack Contents <span class='glyphicon glyphicon-filter'></span> Click to Filter"
+            })
+            .unbind("mouseenter").on("mouseenter", function() {
+                $(this).popover("show");
+            })
+            .unbind("mouseleave").on("mouseleave", function() {
+                $(this).popover("hide");
+            })
+            .unbind("click").on("click", function() {
+                var filter = $(this).attr("data-filter");
+                $("[data-toggle='popover']").popover("destroy");
+                me.filter(filter);
+            });
 
-        $(".pack-item").on("click", function () {
-            $(".pack-item").not(this).popover("hide");
-        });
+        $(".feature-pack-item")
+            .data("state", "hover")
+            .popover({
+                html: true,
+                container: "body",
+                placement: "auto bottom",
+                trigger: "manual",
+                title: "Feature Packs <span class='glyphicon glyphicon-filter'></span> Click Pack Name to Filter"
+            })
+            .unbind("mouseenter").on("mouseenter", function () {
+                if ($(this).data("state") === "hover")
+                    $(this).popover("show");
+            })
+            .unbind("mouseleave").on("mouseleave", function () {
+                if ($(this).data("state") === "hover")
+                    $(this).popover("hide");
+            })
+            .unbind("click").on("click", function () {
+                if ($(this).data("state") === "hover") {
+                    $(this).data("state", "pinned");
+                    $(".feature-pack-item-header").unbind("click").on("click", function() {
+                        var filter = $(this).attr("data-filter");
+                        $("[data-toggle='popover']").popover("destroy");
+                        me.filter(filter);
+                    })
+                } else {
+                    $(this).data("state", "hover")
+                    $(this).popover("hover");
+                }
+            });
+        
 
         $(".feature-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover", placement: "auto bottom" });
-        $(".feature-validation-error").on("click", function () {
+        $(".feature-validation-error").on("click", function() {
             $(".feature-validation-error").not(this).popover("hide");
         });
         $(".model-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover", placement: "auto bottom" });
-        $(".model-validation-error").on("click", function () {
+        $(".model-validation-error").on("click", function() {
             $(".model-validation-error").not(this).popover("hide");
         });
         $(".primary-validation-error")
             //.attr("data-content", "One or more validation errors exist for the dataset. Examine each indicated market in turn to rectify any errors.")
             .popover({ html: true, title: "Validation Error", container: "body", trigger: "hover", placement: "auto bottom" });
-        $(".primary-validation-error").on("click", function () {
+        $(".primary-validation-error").on("click", function() {
             $(".primary-validation-error").not(this).popover("hide");
         });
 
@@ -865,6 +917,7 @@ model.Page = function (models) {
     me.configureDataTables = function () {
 
         var prefix = me.getIdentifierPrefix();
+        var filterModel = getFilterModel();
         
         var table = $("#" + prefix + "_TakeRateData").DataTable({
             serverSide: false,
@@ -879,7 +932,16 @@ model.Page = function (models) {
         var oFixedColumns = new $.fn.dataTable.FixedColumns(table, {
             leftColumns: 4,
             drawCallback: function (left) {
-                me.configureRowGroupings(table, left);
+                // If we are filtering, remove the row groupings, as they aren't necessary and mess up the resizing
+                // upon filter
+                if (filterModel.getCurrentFilter() === null || filterModel.getCurrentFilter() === "") {
+                    me.configureRowGroupings(table, left);
+                } else {
+                    var cloned = $(".DTFC_LeftBodyWrapper").find(".DTFC_Cloned")[0];
+                    var offset = $(cloned).offset();
+                    //$(cloned).offset({ top: 280, left: offset.left });
+                }
+                me.configureComments();
                 me.bindContextMenu();
             }
         });

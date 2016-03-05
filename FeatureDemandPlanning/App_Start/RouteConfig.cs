@@ -59,6 +59,27 @@ namespace FeatureDemandPlanning
                 );
 
             routes.MapRoute(
+                "TakeRateMenu",
+                "TakeRate/Menu",
+                new { controller = "TakeRate", action = "ContextMenu", takeRateId = UrlParameter.Optional }
+                );
+            routes.MapRoute(
+                "TakeRateAction",
+                "TakeRate/Action",
+                new { controller = "TakeRate", action = "ModalAction" }
+                );
+            routes.MapRoute(
+                "TakeRateContent",
+                "TakeRate/Content",
+                new { controller = "TakeRate", action = "ModalContent", takeRateId = UrlParameter.Optional }
+                );
+            routes.MapRoute(
+                "Clone",
+                "TakeRate/Clone/{takeRateId}/{documentId}",
+                new { controller = "TakeRate", action = "Clone", takeRateId = UrlParameter.Optional, documentId = UrlParameter.Optional }
+                );
+
+            routes.MapRoute(
                 "TakeRateData",
                 "TakeRate/{takeRateId}",
                 new {controller = "TakeRateData", action = "Index"}

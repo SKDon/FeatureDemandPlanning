@@ -16,6 +16,7 @@ BEGIN
 		, M.Market_Name AS Market
 		, M.Market_Group_Id AS MarketGroupId
 		, M.Market_Group_Name AS MarketGroup
+		, P.DerivativeCode
 		, P.BodyId
 		, P.EngineId
 		, P.TransmissionId
@@ -23,7 +24,7 @@ BEGIN
 		, P.Doors
 		, P.Drivetrain
 		, P.Electrification
-		, P.Fuel_Type AS FuelType
+		, P.FuelType
 		, P.Shape
 		, P.Size
 		, P.Turbo

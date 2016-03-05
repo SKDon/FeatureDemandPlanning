@@ -121,7 +121,8 @@ namespace FeatureDemandPlanning
 
             bundles.Add(new ScriptBundle("~/bundles/js/takerate").Include(
                     "~/Content/js/TakeRate/model.js",
-                    "~/Content/js/TakeRate/page.js"
+                    "~/Content/js/TakeRate/page.js",
+                    "~/Content/js/TakeRate/clone.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/takeratedata").Include(

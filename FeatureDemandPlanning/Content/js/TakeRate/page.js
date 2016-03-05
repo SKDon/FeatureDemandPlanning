@@ -15,13 +15,13 @@ page.TakeRatesPage = function (models) {
 
     me.actionTriggered = function (invokedOn, action) {
         var eventArgs = {
-            ForecastId: parseInt($(this).attr("data-target")),
+            TakeRateId: parseInt($(this).attr("data-target")),
             Action: parseInt($(this).attr("data-role"))
         };
         $(document).trigger("Action", eventArgs);
     };
     me.bindContextMenu = function () {
-        $("#tblTakeRates td").contextMenu({
+        $(".dataTable td").contextMenu({
             menuSelector: "#contextMenu",
             dynamicContent: me.getContextMenu,
             contentIdentifier: me.getTakeRateId,
@@ -119,7 +119,7 @@ page.TakeRatesPage = function (models) {
             ],
             "fnCreatedRow": function (row, data) {
                 var takeRateId = data[0];
-                $(row).attr("data-takeRate-id", takeRateId);
+                $(row).attr("data-target", takeRateId);
             },
             "fnDrawCallback": function () {
                 $(document).trigger("Results", me.getSummary());
@@ -182,7 +182,11 @@ page.TakeRatesPage = function (models) {
     me.getSelectedTakeRateStatusId = function () {
         return privateStore[me.id].SelectedTakeRateStatusId;
     };
-    me.getTakeRateId = function () {
+    me.getTakeRateId = function (cell) {
+        var tr = $(cell).closest("tr").attr("data-target");
+        if (!isNaN(tr)) {
+            return parseInt(tr);
+        }
         return null;
     };
     me.initialise = function () {

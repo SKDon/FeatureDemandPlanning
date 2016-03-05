@@ -9,6 +9,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_FdpTakeRateVersion_FdpTakeRateHeaderId]
     ON [dbo].[Fdp_TakeRateVersion]([FdpTakeRateHeaderId] ASC);

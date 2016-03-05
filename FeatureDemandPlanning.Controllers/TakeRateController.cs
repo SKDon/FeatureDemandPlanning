@@ -10,109 +10,155 @@ using FeatureDemandPlanning.Model.Attributes;
 using System;
 using System.Web.Script.Serialization;
 using FeatureDemandPlanning.Model.Interfaces;
+using FluentValidation;
 
 namespace FeatureDemandPlanning.Controllers
 {
-    /// <summary>
-    /// Primary controller for handling take rate files
-    /// </summary>
-    public class TakeRateController : ControllerBase
-    {
-        #region "Constructors"
+	/// <summary>
+	/// Primary controller for handling take rate files
+	/// </summary>
+	public class TakeRateController : ControllerBase
+	{
+		#region "Constructors"
 
-        public TakeRateController(IDataContext context) : base(context, ControllerType.SectionChild)
-        {
-        }
+		public TakeRateController(IDataContext context) : base(context, ControllerType.SectionChild)
+		{
+		}
 
-        #endregion
+		#endregion
 
-        [ActionName("Index")]
-        [HttpGet]
-        public async Task<ActionResult> TakeRatePage(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.NoValidation);
+		[ActionName("Index")]
+		[HttpGet]
+		public async Task<ActionResult> TakeRatePage(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.NoValidation);
 
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.TakeRates;
-            var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			filter.Action = TakeRateDataItemAction.TakeRates;
+			var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
 
-            return View("TakeRatePage", takeRateView);
-        }
-        [HttpPost]
-        [HandleErrorWithJson]
-        public async Task<ActionResult> ListTakeRates(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.NoValidation);
+			return View("TakeRatePage", takeRateView);
+		}
+		[HttpPost]
+		[HandleErrorWithJson]
+		public async Task<ActionResult> ListTakeRates(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.NoValidation);
 
-            var js = new JavaScriptSerializer();
-            var filter = new TakeRateFilter()
-            {
-                FilterMessage = parameters.FilterMessage,
-                TakeRateStatusId = parameters.TakeRateStatusId,
-                Action = TakeRateDataItemAction.TakeRates
-            };
-            filter.InitialiseFromJson(parameters);
+			var js = new JavaScriptSerializer();
+			var filter = new TakeRateFilter()
+			{
+				FilterMessage = parameters.FilterMessage,
+				TakeRateStatusId = parameters.TakeRateStatusId,
+				Action = TakeRateDataItemAction.TakeRates
+			};
+			filter.InitialiseFromJson(parameters);
 
-            var results = await TakeRateViewModel.GetModel(DataContext, filter);
-            var jQueryResult = new JQueryDataTableResultModel(results);
+			var results = await TakeRateViewModel.GetModel(DataContext, filter);
+			var jQueryResult = new JQueryDataTableResultModel(results);
 
-            foreach (var result in results.TakeRates.CurrentPage)
-            {
-                jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
-            }
+			foreach (var result in results.TakeRates.CurrentPage)
+			{
+				jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
+			}
 
-            return Json(jQueryResult);
-        }
-        [HttpPost]
-        public async Task<ActionResult> ContextMenu(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+			return Json(jQueryResult);
+		}
+		[HttpPost]
+		public async Task<ActionResult> ContextMenu(TakeRateParameters parameters)
+		{
+			try
+			{
+				TakeRateParametersValidator
+					.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            var takeRateView = await TakeRateViewModel.GetModel(
-                DataContext,
-                TakeRateFilter.FromTakeRateId(parameters.TakeRateId.GetValueOrDefault()));
+				var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+				filter.Action = TakeRateDataItemAction.TakeRates;
 
-            return PartialView("_ContextMenu", takeRateView);
-        }
-        [HttpPost]
-        [HandleError(View = "_ModalError")]
-        public async Task<ActionResult> ModalContent(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+				var takeRateView = await TakeRateViewModel.GetModel(
+					DataContext,
+					filter);
 
-            var takeRateView = await GetModelFromParameters(parameters);
+				return PartialView("_ContextMenu", takeRateView);
+			}
+			catch (Exception ex)
+			{
+				return PartialView("_ModalError");
+			}
+		}
+		[HttpPost]
+		[HandleError(View = "_ModalError")]
+		public async Task<ActionResult> ModalContent(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-            return PartialView(GetContentPartialViewName(parameters.Action), takeRateView);
-        }
-        [HttpPost]
-        [HandleErrorWithJson]
-        public ActionResult ModalAction(TakeRateParameters parameters)
-        {
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
-            TakeRateParametersValidator
-                .ValidateTakeRateParameters(DataContext, parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+			var takeRateView = await GetModelFromParameters(parameters);
 
-            return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
-        }
+			return PartialView(GetContentPartialViewName(parameters.Action), takeRateView);
+		}
+		[HttpPost]
+		[HandleErrorWithJson]
+		public async Task<ActionResult> ModalAction(TakeRateParameters parameters)
+		{
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+			TakeRateParametersValidator
+				.ValidateTakeRateParameters(DataContext, parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
 
-        #region "Private Methods"
+			return RedirectToRoute(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
+		}
+		[HandleErrorWithJson]
+		public async Task<ActionResult> Clone(TakeRateParameters parameters)
+		{
+			var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+			var clone = await DataContext.TakeRate.CloneTakeRateDocument(filter);
 
-        private async Task<TakeRateViewModel> GetModelFromParameters(TakeRateParameters parameters)
-        {
-            return await TakeRateViewModel.GetModel(DataContext, TakeRateFilter.FromTakeRateParameters(parameters));
-        }
+			// Revalidate the clone, as the new document may have different feature applicability
+			filter = new TakeRateFilter()
+			{
+				TakeRateId = clone.TakeRateId
+			};
 
-        #endregion
+			var markets = await DataContext.Market.ListMarkets(filter);
+			foreach (var market in markets)
+			{
+			    try
+			    {
+			        filter.MarketId = market.Id;
+			        var rawData = await DataContext.TakeRate.GetRawData(filter);
 
-        #region "Private Members"
+			        var validationResults = Validator.Validate(rawData);
+			        await Validator.Persist(DataContext, filter, validationResults);
+			    }
+			    catch (ValidationException vex)
+			    {
+			        // Sink the exception, as we don't want any validation errors propagating up
+			    }
+			    catch (Exception ex)
+			    {
+			        
+			    }
+			}
+			
+			return JsonGetSuccess(clone);
+		}
 
-        private PageFilter _pageFilter = new PageFilter();
+		#region "Private Methods"
 
-        #endregion
-    }
+		private async Task<TakeRateViewModel> GetModelFromParameters(TakeRateParameters parameters)
+		{
+			return await TakeRateViewModel.GetModel(DataContext, TakeRateFilter.FromTakeRateParameters(parameters));
+		}
+
+		#endregion
+
+		#region "Private Members"
+
+		private PageFilter _pageFilter = new PageFilter();
+
+		#endregion
+	}
 }

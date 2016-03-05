@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateData_GetRaw]
 	  @FdpVolumeHeaderId	INT
-	, @MarketId				INT
+	, @MarketId				INT = NULL
 	, @CDSId				NVARCHAR(16)
 AS
 BEGIN
@@ -8,7 +8,8 @@ BEGIN
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 	
 	DECLARE @FdpChangesetId INT;
-	SET @FdpChangesetId = dbo.fn_Fdp_Changeset_GetLatestByUser(@FdpVolumeHeaderId, @MarketId, @CDSId);
+	IF @MarketId IS NOT NULL
+		SET @FdpChangesetId = dbo.fn_Fdp_Changeset_GetLatestByUser(@FdpVolumeHeaderId, @MarketId, @CDSId);
 
     WITH FeatureApplicability AS
 	(
@@ -65,9 +66,10 @@ BEGIN
 		, ISNULL(C.TotalVolume, D.Volume) AS Volume
 		, ISNULL(C.PercentageTakeRate, D.PercentageTakeRate) AS PercentageTakeRate
 		, C.FdpChangesetDataItemId
+		, CAST(CASE WHEN D.FeatureId IS NOT NULL AND (F1.Id IS NULL OR F1.[Status] = 'REMOVED') THEN 1 ELSE 0 END AS BIT) AS IsOrphanedData
     FROM
     Fdp_VolumeHeader_VW						AS H
-    JOIN Fdp_VolumeDataItem_VW				AS D	ON	H.FdpVolumeHeaderId = H.FdpVolumeHeaderId
+    JOIN Fdp_VolumeDataItem_VW				AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
     JOIN OXO_Programme_MarketGroupMarket_VW AS M	ON	D.MarketId			= M.Market_Id
 													AND H.ProgrammeId		= M.Programme_Id
 	-- Features
@@ -105,6 +107,6 @@ BEGIN
     WHERE
     H.FdpVolumeHeaderId = @FdpVolumeHeaderId
     AND
-    D.MarketId = @MarketId;
+    (@MarketId IS NULL OR D.MarketId = @MarketId);
     
 END

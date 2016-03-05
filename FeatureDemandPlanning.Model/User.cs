@@ -38,6 +38,10 @@ namespace FeatureDemandPlanning.Model
         {
             return Roles.Any(r => r == UserRole.Approver);
         }
+        public bool HasCloneRole()
+        {
+            return Roles.Any(r => r == UserRole.Cloner);
+        }
         public bool HasReviewerRole()
         {
             return Roles.Any(r => r == UserRole.MarketReviewer || r == UserRole.Approver);

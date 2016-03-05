@@ -2,14 +2,15 @@
 	@FdpVolumeHeaderId	INT
 AS
 	SET NOCOUNT ON;
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 	
 	-- Delete any validation errors
 		
-	DELETE FROM Fdp_Validation				WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	DELETE FROM Fdp_Validation WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	
 	-- Delete any changeset information
 	
-	DELETE FROM Fdp_ChangesetDataItem		WHERE FdpChangesetId IN 
+	DELETE FROM Fdp_ChangesetDataItem WHERE FdpChangesetId IN 
 	(
 		SELECT FdpChangesetId FROM Fdp_Changeset WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId
 	)
@@ -52,7 +53,7 @@ AS
 	
 	-- Delete the take rate record itself
 	
-	DELETE FROM Fdp_VolumeHeader			WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	--DELETE FROM Fdp_VolumeHeader			WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	
 	-- Delete any additional FDP trim levels, models and features
 	

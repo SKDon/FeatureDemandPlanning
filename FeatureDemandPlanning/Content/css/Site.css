@@ -798,7 +798,7 @@ ul.dropdown-menu > li span.glyphicon {
     color: #061639;
 }
 
-.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > span:hover {
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > span:hover:not([disabled]) {
     text-decoration: none;
     color: #fff0aa !important;
     background-color: #403075;
@@ -813,6 +813,17 @@ ul.dropdown-menu > li span.glyphicon {
     color: #061639;
     white-space: nowrap;
     cursor: pointer;
+}
+
+.dropdown-menu > li > span[disabled] {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857;
+    color: #aaaaaa;
+    white-space: nowrap;
+    cursor:initial
 }
 
 .dropdown-header {
@@ -945,6 +956,14 @@ ul.dropdown-menu > li span.glyphicon {
     border-right: solid 1px #bf7613;
 }
 
+.table-bordered > tbody > tr > td.orphanedFeature {
+    background-color: #d6d6d6;
+    color: #7E7E7E;
+    /*width: 100%;*/
+    border-bottom: solid 1px #7E7E7E;
+    border-right: solid 1px #7E7E7E;
+}
+
 .table-bordered > tbody > tr > td.standardFeature {
     background-color: #a5c4a5;
     color: #1c271c;
@@ -980,6 +999,12 @@ li.optionalFeature {
     background-color: #fca5a5;
     color: #12073b;
     border-color:#78a !important;
+}
+
+li.orphanedFeature {
+    background-color: #d6d6d6;
+    color: #7E7E7E;
+    border-color:#7E7E7E !important;
 }
 
 .list-group-item {
@@ -1025,6 +1050,10 @@ li.optionalFeature {
 
 .dirty {
     color: #f00 !important;
+}
+
+.disabled {
+    color: #a0a0a0;
 }
 
 button, input, optgroup, select, textarea {
@@ -1153,6 +1182,16 @@ button.close {
     vertical-align: middle
 }
 
+.table-bordered > tbody > tr > td.orphaned-data-item-fixed {
+    background-color: #d6d6d6;
+    /*border-color: #805b15 !important;*/
+    border-top:none;
+    border-bottom: solid 1px #7E7E7E;
+    border-right: solid 1px #7E7E7E;
+    color: #7E7E7E;
+    vertical-align: middle
+}
+
 /*td.cross-tab-data-item {
     width:80px;
     min-width:80px;
@@ -1174,10 +1213,26 @@ button.close {
     padding-top:10px;
 }
 
+.table-bordered > tbody > tr > td.orphaned-data-item {
+    width:80px;
+    min-width:80px;
+    max-width:80px;
+    background-color: #d6d6d6;
+    color: #7E7E7E;
+    height:15px;
+    padding-top:10px;
+}
+
 td.fdp-data-item-fixed {
     background-color: #b4abd0;
     border-color: #887cb0;
     color: #12073b;
+}
+
+td.orphaned-data-item-fixed {
+    background-color: #d6d6d6;
+    border-color: #7E7E7E;
+    color: #7E7E7E;
 }
 
 .table-condensed > thead > tr > th.first-cell {
@@ -1444,6 +1499,18 @@ div.edited-fdp {
     left:5px;
     cursor:pointer;
     color: #c60000;
+}
+
+.pack-item {
+    cursor: pointer;
+}
+
+.popover-title {
+    cursor: pointer;
+}
+
+.feature-pack-item-header {
+    cursor: pointer;
 }
 
 .context-menu-custom {

@@ -276,6 +276,7 @@
     <Content Include="Content\js\TakeRateData\validationsummaryaction.js" />
     <Content Include="Content\js\TakeRateData\marketreview.js" />
     <Content Include="Content\js\TakeRateData\marketreviewaction.js" />
+    <Content Include="Content\js\TakeRate\clone.js" />
     <Content Include="Error\NoProgrammeAccess.aspx" />
     <Content Include="Error\NoMarketAccess.aspx" />
     <Content Include="Error\403.aspx" />
@@ -1090,7 +1091,6 @@
     <Content Include="Views\TakeRateData\_TakeRateData.cshtml" />
     <Content Include="Views\TakeRateData\_MarketSelector.cshtml" />
     <Content Include="Views\TakeRateData\_Scripts.cshtml" />
-    <Content Include="Views\TakeRate\_Modal.cshtml" />
     <Content Include="Views\TakeRate\_Scripts.cshtml" />
     <Content Include="Views\TakeRate\TakeRatePage.cshtml" />
     <Content Include="Views\TakeRateData\_ContextMenu.cshtml" />
@@ -1112,6 +1112,8 @@
     <Content Include="Views\Admin\News.cshtml" />
     <Content Include="Views\TakeRateData\_Filter.cshtml" />
     <Content Include="Views\TakeRateData\_ValidationSummary.cshtml" />
+    <Content Include="Views\TakeRate\_ContextMenu.cshtml" />
+    <Content Include="Views\TakeRate\_Clone.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

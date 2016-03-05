@@ -8,6 +8,7 @@
 		public string Market { get; set; }
 		public int MarketGroupId { get; set; }
 		public string MarketGroup { get; set; }
+        public string DerivativeCode { get; set; }
 		public int BodyId { get; set; }
 		public int EngineId { get; set; }
 		public int TransmissionId { get; set; }

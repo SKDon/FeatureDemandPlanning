@@ -29,6 +29,7 @@
         public int ApplicableFeaturesInExclusiveFeatureGroup { get; set; }
         public int Volume { get; set; }
         public decimal PercentageTakeRate { get; set; }
+        public bool IsOrphanedData { get; set; }
 
         public string FeatureIdentifier
         {

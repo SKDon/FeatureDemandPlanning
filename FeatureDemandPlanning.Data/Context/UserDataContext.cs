@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FeatureDemandPlanning.Helpers;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Enumerations;
@@ -47,7 +48,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public User GetUser()
         {
-            var user = _userDataStore.FdpUserGet(new UserFilter { CDSId = CDSID});
+            var user = _userDataStore.FdpUserGet(new UserFilter { CDSId = SecurityHelper.GetAuthenticatedUser()});
             user.Roles = _userDataStore.FdpUserGetRoles(user);
             user.Markets = _userDataStore.FdpUserMarketMappingsGetMany(user);
             user.Programmes = _userDataStore.FdpUserProgrammeMappingsGetMany(user);

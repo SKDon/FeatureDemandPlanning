@@ -19,7 +19,8 @@ namespace FeatureDemandPlanning.Model
         public IEnumerable<ModelTakeRateSummary> TakeRateSummaryByModel { get; set; }
         public IEnumerable<TakeRateDataItemNote> NoteAvailability { get; set; }
         public IEnumerable<ExclusiveFeatureGroup> ExclusiveFeatureGroups { get; set; }
-        public IEnumerable<PackFeature> PackFeatures { get; set; } 
+        public IEnumerable<PackFeature> PackFeatures { get; set; }
+        public IEnumerable<RawPowertrainDataItem> PowertrainData { get; set; } 
 
         public bool HasData
         {
@@ -33,6 +34,7 @@ namespace FeatureDemandPlanning.Model
             TakeRateSummaryByModel = Enumerable.Empty<ModelTakeRateSummary>();
             NoteAvailability = Enumerable.Empty<TakeRateDataItemNote>();
             ExclusiveFeatureGroups = Enumerable.Empty<ExclusiveFeatureGroup>();
+            PowertrainData = Enumerable.Empty<RawPowertrainDataItem>();
         }
     }
 }

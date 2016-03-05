@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Fdp_Powertrain_GetMany
+﻿CREATE PROCEDURE [dbo].[Fdp_Powertrain_GetMany]
 	  @FdpVolumeHeaderId	INT
 	, @MarketId				INT = NULL
 AS
@@ -13,12 +13,13 @@ AS
 		, DocumentId
 		, Gateway
 		, MarketId
+		, DerivativeCode
 		, EngineId
 		, Size
 		, Turbo
 		, Cylinder
 		, Electrification
-		, Fuel_Type
+		, FuelType
 		, BodyId
 		, Shape
 		, Wheelbase

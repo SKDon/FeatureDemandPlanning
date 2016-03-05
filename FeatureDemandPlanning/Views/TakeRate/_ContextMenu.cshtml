@@ -1,0 +1,27 @@
+﻿@using DocumentFormat.OpenXml.Vml.Spreadsheet
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+<li>
+    @{
+        var currentTakeRateFile = Model.TakeRates.CurrentPage.FirstOrDefault();
+        int? takeRateId = null;
+        if (currentTakeRateFile != null)
+        {
+            takeRateId = currentTakeRateFile.TakeRateId;
+        }
+    }
+    @if (Model.AllowClone)
+    {
+        <a tabindex="-1" href="#" data-role="@((int) enums.TakeRateDataItemAction.Clone)" data-target="@takeRateId">
+            <span class="glyphicon glyphicon-copy pull-left"></span> Copy Take Rate Data into Document...
+        </a>
+    }
+    else
+    {
+        <span disabled><span class="glyphicon glyphicon-copy pull-left"></span> Copy Take Rate Data into Document...</span>
+    }
+</li>
+
+

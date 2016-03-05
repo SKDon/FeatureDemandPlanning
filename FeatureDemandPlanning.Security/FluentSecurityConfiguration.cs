@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using FeatureDemandPlanning.Controllers;
 using FeatureDemandPlanning.Helpers;
+using FeatureDemandPlanning.Model.Parameters;
 using FluentSecurity;
 
 namespace FeatureDemandPlanning.Security
@@ -68,6 +69,10 @@ namespace FeatureDemandPlanning.Security
                     .RemovePolicy<DefaultSecurityPolicy>()
                     .AddPolicy<HasAccessToMarketPolicy>()
                     .AddPolicy<HasAccessToProgrammePolicy>();
+
+                configuration.For<TakeRateController>(t => t.Clone(new TakeRateParameters()))
+                    .RequireAnyRole("Cloner");
+               
 
                 configuration.For<TakeRateDataController>()
                     .RemovePolicy<DefaultSecurityPolicy>()

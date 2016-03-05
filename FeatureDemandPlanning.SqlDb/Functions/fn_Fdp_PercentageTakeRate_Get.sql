@@ -17,7 +17,7 @@ BEGIN
 	IF ISNULL(@TotalVolume, 0) = 0
 		SET @PercentageTakeRate = 0;
 	ELSE
-		SET @PercentageTakeRate = @Volume / CAST(@TotalVolume AS DECIMAL(10, 4))
+		SET @PercentageTakeRate = @Volume / CAST(@TotalVolume AS DECIMAL(12, 4))
 
 	IF @PercentageTakeRate > 1
 		SET @PercentageTakeRate = 1;
