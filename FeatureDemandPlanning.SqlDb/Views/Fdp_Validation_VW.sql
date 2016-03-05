@@ -1,5 +1,6 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_Validation_VW] AS
 
 	SELECT 
@@ -33,6 +34,7 @@ CREATE VIEW [dbo].[Fdp_Validation_VW] AS
 		, V.FdpTakeRateSummaryId
 		, V.FdpTakeRateFeatureMixId
 		, V.FdpPowertrainDataItemId
+		, V.FdpValidationRuleId AS ValidationRule
 	FROM
 	Fdp_VolumeHeader_VW			AS H
 	JOIN Fdp_Validation			AS V	ON	H.FdpVolumeHeaderId		= V.FdpVolumeHeaderId

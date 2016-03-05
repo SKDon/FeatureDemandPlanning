@@ -764,9 +764,4 @@ AS
 	WHERE
 	I.FdpImportId = @FdpImportId;
 
-	-- Perform validation on the import data
-
-	SET @Message = 'Validating data...';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT
-
-	EXEC Fdp_Validation_Validate @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSId = @CDSId;
+	EXEC Fdp_TakeRateHeader_Get @FdpVolumeHeaderId = @FdpVolumeHeaderId;

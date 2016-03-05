@@ -1,4 +1,6 @@
-﻿using FeatureDemandPlanning.Model.Enumerations;
+﻿using System.ComponentModel;
+using System.Reflection;
+using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -83,6 +85,23 @@ namespace FeatureDemandPlanning.Model
                 }
                 return dataTarget;
             }
+        }
+
+        public string RuleDescription
+        {
+            get
+            {
+                var retVal = string.Empty;
+                var fi = ValidationRule.GetType().GetField(ValidationRule.ToString());
+
+                if (fi == null) return retVal;
+                var attrs = fi.GetCustomAttributes(typeof(DescriptionAttribute), true);
+                if (attrs.Length > 0)
+                    retVal = ((DescriptionAttribute)attrs[0]).Description;
+
+                return retVal;
+            }
+
         }
     }
 }
