@@ -13,7 +13,8 @@ namespace FeatureDemandPlanning
             bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
                         "~/Content/js/jquery-1.12.0.js",
                         "~/Content/js/jquery.jeditable.js",
-                        "~/Content/js/jquery.spin.js"));
+                        "~/Content/js/jquery.spin.js",
+                        "~/Content/js/jquery.contextMenu.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
                 "~/Content/js/bootstrap.js"));
@@ -176,7 +177,8 @@ namespace FeatureDemandPlanning
                 .Include("~/Content/css/bootstrap.css", cssFixer)
                 .Include("~/Content/css/responsive.bootstrap.css", cssFixer)
                 .Include("~/Content/css/site.css", cssFixer)
-                .Include("~/Content/css/BrushedMetal.css", cssFixer));
+                .Include("~/Content/css/BrushedMetal.css", cssFixer)
+                .Include("~/Content/css/jquery.contextMenu.css", cssFixer));
 
             bundles.Add(new StyleBundle("~/bundles/css/dataTables").Include(
                     "~/Content/css/dataTables.bootstrap.css",

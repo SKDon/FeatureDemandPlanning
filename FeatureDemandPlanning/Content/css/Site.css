@@ -1445,3 +1445,19 @@ div.edited-fdp {
     cursor:pointer;
     color: #c60000;
 }
+
+.context-menu-custom {
+    background-color: #FFF !important;
+    color: #061639 !important;
+    font-size: 11px !important
+}
+
+.context-menu-item {
+    padding: 3px 10px !important;
+    color: #061639 !important;
+}
+
+.context-menu-hover {
+    color: #fff !important;
+    background-color: #7485a5 !important;
+}

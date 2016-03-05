@@ -991,18 +991,83 @@ model.Page = function (models) {
     };
     me.bindContextMenu = function () {
         var prefix = me.getIdentifierPrefix();
-        $("#" + prefix + "_TakeRateData .cross-tab-data-item").contextMenu({
-            menuSelector: "#" + prefix + "_ContextMenu",
-            dynamicContent: me.getContextMenu,
-            contentIdentifier: me.getDataItemId,
-            menuSelected: me.actionTriggered
+        $.contextMenu({
+            selector: "#" + prefix + "_TakeRateData .cross-tab-data-item",
+            callback: function (key, options) {
+                var m = "clicked: " + key;
+                window.console && console.log(m) || alert(m);
+            },
+            items: {
+                view: {
+                    name: "ViewDetails",
+                    icon: function (opt, $itemElement) {
+                        // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                        $itemElement.html('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> View Details...' + opt.selector);
+                    },
+                    callback: function (itemKey, opt) {
+                        var target = opt.$trigger.children().first();
+                        me.actionTriggered(target, 4);
+                    }
+                },
+                addNote: {
+                    name: "AddNote",
+                    icon: function (opt, $itemElement) {
+                        // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                        $itemElement.html('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Add Note...' + opt.selector);
+                    },
+                    callback: function (itemKey, opt) {
+                        var target = opt.$trigger.children().first();
+                        me.actionTriggered(target, 8);
+                    }
+                }
+            },
+            className: "context-menu-custom"
         });
-        $("#" + prefix + "_TakeRateDataPanel .model-mix").contextMenu({
-            menuSelector: "#" + prefix + "_ContextMenu",
-            dynamicContent: me.getContextMenu,
-            contentIdentifier: me.getModelMixDataItemId,
-            menuSelected: me.actionTriggered
+        $.contextMenu({
+            selector: "#" + prefix + "_TakeRateDataPanel .model-mix",
+            callback: function (key, options) {
+                var m = "clicked: " + key;
+                window.console && console.log(m) || alert(m);
+            },
+            items: {
+                view: {
+                    name: "ViewDetails",
+                    icon: function (opt, $itemElement) {
+                        // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                        $itemElement.html('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> View Model Mix Details...' + opt.selector);
+                    },
+                    callback: function (itemKey, opt) {
+                        var target = opt.$trigger;
+                        me.actionTriggered(target, 4);
+                    }
+                },
+                addNote: {
+                    name: "AddNote",
+                    icon: function (opt, $itemElement) {
+                        // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                        $itemElement.html('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Add Note...' + opt.selector);
+                    },
+                    callback: function (itemKey, opt) {
+                        var target = opt.$trigger;
+                        me.actionTriggered(target, 8);
+                    }
+                }
+            },
+            className: "context-menu-custom"
         });
+        //var prefix = me.getIdentifierPrefix();
+        //$("#" + prefix + "_TakeRateData .cross-tab-data-item").contextMenu({
+        //    menuSelector: "#" + prefix + "_ContextMenu",
+        //    dynamicContent: me.getContextMenu,
+        //    contentIdentifier: me.getDataItemId,
+        //    menuSelected: me.actionTriggered
+        //});
+        //$("#" + prefix + "_TakeRateDataPanel .model-mix").contextMenu({
+        //    menuSelector: "#" + prefix + "_ContextMenu",
+        //    dynamicContent: me.getContextMenu,
+        //    contentIdentifier: me.getModelMixDataItemId,
+        //    menuSelected: me.actionTriggered
+        //});
     };
     me.raiseFilteredVolumeChanged = function () {
 
@@ -1071,9 +1136,10 @@ model.Page = function (models) {
         });
     };
     me.actionTriggered = function (invokedOn, action) {
-        var dataItemString = $(this).attr("data-target")
+        var dataItemString = $(invokedOn).data("target");
+        dataItemString = dataItemString.replace("MS|", "");
         var filter = getFilter(dataItemString);
-        filter.Action = parseInt($(this).attr("data-role")),
+        filter.Action = action,
 
         $(document).trigger("Action", filter);
     };

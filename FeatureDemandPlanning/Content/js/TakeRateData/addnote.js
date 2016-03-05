@@ -20,6 +20,9 @@ model.AddNote = function(params) {
     me.getActionContentUri = function () {
         return privateStore[me.id].ModalContentUri;
     };
+    me.getAction = function() {
+        return 8;
+    };
     me.getActionModel = function (action) {
         var actionModel = null;
         switch (action) {

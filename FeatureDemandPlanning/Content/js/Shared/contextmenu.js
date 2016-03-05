@@ -1,62 +1,62 @@
-﻿(function ($, window) {
+﻿//(function ($, window) {
 
-    $.fn.contextMenu = function (settings) {
+//    $.fn.contextMenu = function (settings) {
 
-        return this.each(function () {
+//        return this.each(function () {
 
-            // Open context menu
-            $(this).on("contextmenu", function (e) {
-                // return native menu if pressing control
-                if (e.ctrlKey) return;
+//            // Open context menu
+//            $(this).on("contextmenu", function (e) {
+//                // return native menu if pressing control
+//                if (e.ctrlKey) return;
 
-                var id = null;
-                if (settings.contentIdentifier != null) {
-                    id = settings.contentIdentifier(this);
-                }
-                if (id != null && settings.dynamicContent != null) {
-                    settings.dynamicContent(id);
-                }
+//                var id = null;
+//                if (settings.contentIdentifier != null) {
+//                    id = settings.contentIdentifier(this);
+//                }
+//                if (id != null && settings.dynamicContent != null) {
+//                    settings.dynamicContent(id);
+//                }
 
-                //open menu
-                var $menu = $(settings.menuSelector)
-                    .data("invokedOn", $(e.target))
-                    .show()
-                    .css({
-                        position: "absolute",
-                        left: getMenuPosition(e.clientX, 'width', 'scrollLeft'),
-                        top: getMenuPosition(e.clientY, 'height', 'scrollTop')
-                    })
-                    .off('click')
-                    .on('click', 'a', function (e) {
-                        $menu.hide();
+//                //open menu
+//                var $menu = $(settings.menuSelector)
+//                    .data("invokedOn", $(e.target))
+//                    .show()
+//                    .css({
+//                        position: "absolute",
+//                        left: getMenuPosition(e.clientX, 'width', 'scrollLeft'),
+//                        top: getMenuPosition(e.clientY, 'height', 'scrollTop')
+//                    })
+//                    .off('click')
+//                    .on('click', 'a', function (e) {
+//                        $menu.hide();
 
-                        var $invokedOn = $menu.data("invokedOn");
-                        var $selectedMenu = $(e.target);
+//                        var $invokedOn = $menu.data("invokedOn");
+//                        var $selectedMenu = $(e.target);
 
-                        settings.menuSelected.call(this, $invokedOn, $selectedMenu);
-                    });
+//                        settings.menuSelected.call(this, $invokedOn, $selectedMenu);
+//                    });
 
-                return false;
-            });
+//                return false;
+//            });
 
-            //make sure menu closes on any click
-            $(document).click(function () {
-                $(settings.menuSelector).hide();
-            });
-        });
+//            //make sure menu closes on any click
+//            $(document).click(function () {
+//                $(settings.menuSelector).hide();
+//            });
+//        });
 
-        function getMenuPosition(mouse, direction, scrollDir) {
-            var win = $(window)[direction](),
-                scroll = $(window)[scrollDir](),
-                menu = $(settings.menuSelector)[direction](),
-                position = mouse + scroll;
+//        function getMenuPosition(mouse, direction, scrollDir) {
+//            var win = $(window)[direction](),
+//                scroll = $(window)[scrollDir](),
+//                menu = $(settings.menuSelector)[direction](),
+//                position = mouse + scroll;
 
-            // opening menu would pass the side of the page
-            if (mouse + menu > win && menu < mouse)
-                position -= menu;
+//            // opening menu would pass the side of the page
+//            if (mouse + menu > win && menu < mouse)
+//                position -= menu;
 
-            return position;
-        }
+//            return position;
+//        }
 
-    };
-})(jQuery, window);
+//    };
+//})(jQuery, window);
