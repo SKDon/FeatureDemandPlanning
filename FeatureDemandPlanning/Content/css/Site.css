@@ -1511,4 +1511,6 @@ div.edited-fdp {
 
 .feature-pack-item-header {
     cursor: pointer;
+    text-decoration: underline;
+    color: #061639;
 }

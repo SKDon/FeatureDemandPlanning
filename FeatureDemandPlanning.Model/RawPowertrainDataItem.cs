@@ -19,6 +19,7 @@
 		public string FuelType { get; set; }
 		public string Shape { get; set; }
 		public string Size { get; set; }
+        public string Power { get; set; }
 		public string Turbo { get; set; }
 		public string Type { get; set; }
 		public string Wheelbase { get; set; }

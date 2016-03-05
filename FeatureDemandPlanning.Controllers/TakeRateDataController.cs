@@ -324,20 +324,20 @@ namespace FeatureDemandPlanning.Controllers
 
 	        return PartialView("_Filter", takeRateView);
 	    }
-
 	    [HandleErrorWithJson]
 	    [HttpPost]
 	    public async Task<ActionResult> PersistChangeset(TakeRateParameters parameters)
 	    {
-	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangesetAndComment);
+	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters,
+	            TakeRateParametersValidator.TakeRateIdentifierWithChangesetAndComment);
 
 	        await CheckModelAllowsEdit(parameters);
 
-	        var persistedChangeset = await DataContext.TakeRate.PersistChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
+	        var persistedChangeset =
+	            await DataContext.TakeRate.PersistChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
 
 	        return Json(persistedChangeset);
 	    }
-
 	    [HandleErrorWithJson]
 	    [HttpPost]
 	    public async Task<ActionResult> PersistChangesetConfirm(TakeRateParameters parameters)
@@ -352,7 +352,18 @@ namespace FeatureDemandPlanning.Controllers
 
 	        return PartialView("_PersistChangesetConfirm", takeRateView);
 	    }
+	    [HandleErrorWithJson]
+	    [HttpPost]
+	    public async Task<ActionResult> Powertrain(TakeRateParameters parameters)
+	    {
+            TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.Powertrain;
+            var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
+
+            return PartialView("_Powertrain", takeRateView);
+	    }
 	    [HandleErrorWithJson]
 	    [HttpPost]
 	    public async Task<ActionResult> UndoChangeset(TakeRateParameters parameters)

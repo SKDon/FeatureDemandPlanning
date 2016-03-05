@@ -267,7 +267,9 @@
     <Content Include="Content\js\MarketReview\model.js" />
     <Content Include="Content\js\MarketReview\page.js" />
     <Content Include="Content\js\Shared\takeratefilter.js" />
+    <Content Include="Content\js\TakeRateData\powertrain.js" />
     <Content Include="Content\js\TakeRateData\filter.js" />
+    <Content Include="Content\js\TakeRateData\powertrainaction.js" />
     <Content Include="Content\js\TakeRateData\filteraction.js" />
     <Content Include="Content\js\TakeRateData\validationsummary.js" />
     <Content Include="Content\js\TakeRateData\validationsummaryaction.js" />
@@ -1107,6 +1109,7 @@
     <Content Include="Views\TakeRateData\_ValidationSummary.cshtml" />
     <Content Include="Views\TakeRate\_ContextMenu.cshtml" />
     <Content Include="Views\TakeRate\_Clone.cshtml" />
+    <Content Include="Views\TakeRateData\_Powertrain.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
