@@ -28,6 +28,7 @@ model.OxoVolume = function (params) {
     privateStore[me.id].ChangesetHistoryUri = params.ChangesetHistoryUri;
     privateStore[me.id].ValidationSummaryUri = params.ValidationSummaryUri;
     privateStore[me.id].FilterUri = params.FilterUri;
+    privateStore[me.id].PowertrainUri = params.PowertrainUri;
     privateStore[me.id].UndoChangesetUri = params.UndoChangesetUri;
     privateStore[me.id].UpdateFilteredDataUri = params.UpdateFilteredDataUri;
     privateStore[me.id].GetValidationUri = params.GetValidationUri;
@@ -64,8 +65,12 @@ model.OxoVolume = function (params) {
                 break;
             case 12:
                 actionModel = new FeatureDemandPlanning.Volume.FilterAction(me.getParameters());
+                break;
             case 13:
                 actionModel = new FeatureDemandPlanning.Volume.ValidationSummaryAction(me.getParameters());
+                break;
+            case 15:
+                actionModel = new FeatureDemandPlanning.Volume.PowertrainAction(me.getParameters());
             default:
                 break;
         }
@@ -122,6 +127,9 @@ model.OxoVolume = function (params) {
     me.getValidationSummaryAction = function() {
         return 13;
     };
+    me.getPowertrainAction = function() {
+        return 15;
+    };
     me.getMarketReviewUri = function() {
         return privateStore[me.id].MarketReviewUri;
     };
@@ -130,6 +138,9 @@ model.OxoVolume = function (params) {
     };
     me.getChangesetHistoryUri = function() {
         return privateStore[me.id].ChangesetHistoryUri;
+    };
+    me.getPowertrainUri = function() {
+        return privateStore[me.id].PowertrainUri;
     };
     me.getValidationSummaryUri = function() {
         return privateStore[me.id].ValidationSummaryUri;
@@ -360,11 +371,6 @@ model.OxoVolume = function (params) {
     };
     me.setHasValidationErrors = function(hasValidationErrors) {
         privateStore[me.id].HasValidationErrors = hasValidationErrors;
-    };
-    function validateVolumeCallback(response) {
-        var json = JSON.parse(response.responseText);
-        privateStore[me.id].IsValid = json.IsValid;
-        $(document).trigger("Validation", [json]);
     };
     function genericErrorCallback(response) {
         if (response.status === 400) {

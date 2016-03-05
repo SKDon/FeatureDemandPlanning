@@ -16,6 +16,7 @@
         MarketReview = 11,
         Filter = 12,
         ValidationSummary = 13,
-        Clone = 14
+        Clone = 14,
+        Powertrain = 15
     }
 }

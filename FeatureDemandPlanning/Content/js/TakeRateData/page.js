@@ -84,6 +84,21 @@ model.Page = function (models) {
             ActionModel: actionModel
         });
     };
+    me.showPowertrain = function() {
+        var model = getTakeRateDataModel();
+        var action = model.getPowertrainAction();
+        var actionModel = model.getActionModel(action);
+        var filter = getFilter("");
+        filter.Action = action;
+
+        getModal().showModal({
+            Title: "Derivative Mix Data",
+            Uri: model.getPowertrainUri(),
+            Data: JSON.stringify(filter),
+            Model: model,
+            ActionModel: actionModel
+        });
+    };
     me.showValidationSummary = function() {
         var model = getTakeRateDataModel();
         var action = model.getValidationSummaryAction();
@@ -182,6 +197,7 @@ model.Page = function (models) {
         $("#" + prefix + "_Undo").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoDelegate", [eventArgs]); });
         $("#" + prefix + "_History").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnHistoryDelegate", [eventArgs]); });
         $("#" + prefix + "_Validation").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnValidationSummaryDelegate", [eventArgs]); });
+        $("#" + prefix + "_Powertrain").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPowertrainDelegate", [eventArgs]); });
 
         $("#" + prefix + "_MarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate", [{ MarketReviewStatus: 1 }]); });
         $("#" + prefix + "_SubmitMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate",[{ MarketReviewStatus: 2 }]); });
@@ -214,6 +230,7 @@ model.Page = function (models) {
             .on("OnSavedDelegate", me.onSavedEventHandler)
             .on("OnPersistDelegate", me.onPersistEventHandler)
             .on("OnHistoryDelegate", me.onHistoryEventHandler)
+            .on("OnPowertrainDelegate", me.onPowertrainEventHandler)
             .on("OnValidationSummaryDelegate", me.onValidationSummaryEventHandler)
             .on("OnMarketReviewDelegate", me.onMarketReviewEventHandler)
             .on("OnUndoDelegate", me.onUndoEventHandler)
@@ -717,6 +734,9 @@ model.Page = function (models) {
     me.onHistoryEventHandler = function () {
         me.showHistory();
     };
+    me.onPowertrainEventHandler = function() {
+        me.showPowertrain();
+    };
     me.onValidationSummaryEventHandler = function () {
         me.showValidationSummary();
     };
@@ -927,6 +947,7 @@ model.Page = function (models) {
         $("#" + prefix + "_Undo").popover({ trigger: "hover", title: "Undo", placement: "auto bottom" });
         $("#" + prefix + "_History").popover({ trigger: "hover", title: "Change History", placement: "auto bottom" });
         $("#" + prefix + "_Validation").popover({ trigger: "hover", title: "Validation Summary", placement: "auto bottom" });
+        $("#" + prefix + "_Powertrain").popover({ trigger: "hover", title: "Powertrain Data", placement: "auto bottom" });
         $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom" });
         $("#" + prefix + "_Toggle").popover({ trigger: "hover", title: "Toggle", placement: "auto bottom" });
         $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom" });
@@ -1138,7 +1159,6 @@ model.Page = function (models) {
                 }
             },
             className: "context-menu-custom"
-        });
         //var prefix = me.getIdentifierPrefix();
         //$("#" + prefix + "_TakeRateData .cross-tab-data-item").contextMenu({
         //    menuSelector: "#" + prefix + "_ContextMenu",
@@ -1419,7 +1439,10 @@ model.Page = function (models) {
     };
     function getFilterModel() {
         return getModel("Filter");
-    }
+    };
+    function getPowertrainModel() {
+        return getModel("Powertrain");
+    };
     function getModal() {
         return getModel("Modal");
     };
@@ -1434,6 +1457,9 @@ model.Page = function (models) {
                 break;
             case 11:
                 model = getMarketReviewModel();
+                break;
+            case 15:
+                model = getPowertrainModel();
             default:
                 break;
         }

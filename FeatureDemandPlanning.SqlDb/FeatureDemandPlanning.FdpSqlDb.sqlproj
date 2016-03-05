@@ -109,7 +109,7 @@
   <ItemGroup>
     <Build Include="Tables\Fdp_Configuration.sql" />
     <Build Include="Tables\Fdp_Derivative.sql">
-      <AnsiNulls>Off</AnsiNulls>
+      <AnsiNulls>On</AnsiNulls>
     </Build>
     <Build Include="Tables\Fdp_DerivativeMapping.sql" />
     <Build Include="Tables\Fdp_Feature.sql">
@@ -541,7 +541,10 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_TakeRateHeader_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_TakeRateHeader_IncrementRevision.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
@@ -875,18 +878,30 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_Powertrain_GetMany.sql" />
-    <Build Include="Stored Procedures\Fdp_PowertrainDataItem_GetRaw.sql" />
+    <Build Include="Stored Procedures\Fdp_Powertrain_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_PowertrainDataItem_GetRaw.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Tables\Fdp_PowertrainDataItem.sql" />
-    <Build Include="Views\Fdp_PowertrainDataItem_VW.sql" />
-    <Build Include="Views\Fdp_ChangesetPowertrainDataItem_VW.sql" />
+    <Build Include="Views\Fdp_PowertrainDataItem_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_ChangesetPowertrainDataItem_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_Model_Clone.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_TakeRateData_Clone.sql">
-      <AnsiNulls>Off</AnsiNulls>
-      <QuotedIdentifier>Off</QuotedIdentifier>
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_TakeRateHeader_Clear.sql" />
     <Build Include="Stored Procedures\Fdp_Trim_Clone.sql">
@@ -907,9 +922,22 @@
     </Build>
     <Build Include="CloneOxo.sql" />
     <Build Include="Stored Procedures\Fdp_Market_GetMany.sql" />
-    <Build Include="Tables\Fdp_OxoDervivative.sql" />
-    <Build Include="Tables\Fdp_PowertrainDataItemAudit.sql" />
-    <Build Include="Views\Fdp_AllFeatures_VW.sql" />
+    <Build Include="Tables\Fdp_PowertrainDataItemAudit.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_OxoDervivative.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_AllFeatures_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Functions\fn_Fdp_TakeRateData_ByMarket_Get2.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">

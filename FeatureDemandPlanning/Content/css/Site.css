@@ -1541,6 +1541,8 @@ div.edited-fdp-market-review {
 
 .feature-pack-item-header {
     cursor: pointer;
+    text-decoration: underline;
+    color: #061639;
 }
 
 .context-menu-custom {

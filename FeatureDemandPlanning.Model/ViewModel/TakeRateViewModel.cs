@@ -150,6 +150,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             TakeRateViewModel model = null;
             
+            // Here we determine which parts of the complex take rate model we need to hydrate dependant upon the
+            // action being performed. This eliminates unnecessary database calls if the properties in question
+            // aren't being used
+
             switch (filter.Action)
             {
                 case TakeRateDataItemAction.TakeRates:
@@ -180,6 +184,9 @@ namespace FeatureDemandPlanning.Model.ViewModel
                     break;
                 case TakeRateDataItemAction.Clone:
                     model = await GetFullAndPartialViewModelForClone(context, filter);
+                    break;
+                case TakeRateDataItemAction.Powertrain:
+                    model = await GetFullAndPartialViewModelForPowertrain(context, filter);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -247,7 +254,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
 
             await HydrateFdpVolumeHeader(context, takeRateModel);
-            await HydrateModelsByMarket(context, takeRateModel);
+            await HydratePowertrain(context, takeRateModel);
 
             return takeRateModel;
         }
@@ -495,41 +502,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
             Log.Debug(watch.ElapsedMilliseconds);
             return volumeModel.Document.Vehicle.AvailableModels;
         }
-
-        private static async Task<IEnumerable<Derivative>> HydrateDerivativesByMarket(IDataContext context,
-            TakeRateViewModel takeRateModel)
-        {
-            IEnumerable<Derivative> derivatives = Enumerable.Empty<Derivative>();
-            var models = await ListAvailableModelsFilteredByMarket(context, takeRateModel.Document);
-            if (models != null && models.Any())
-            {
-                derivatives = models.Distinct(new DerivativeComparer()).Select(d => new Derivative()
-                {
-                    BodyId = d.BodyId,
-                    EngineId = d.EngineId,
-                    TransmissionId = d.TransmissionId,
-                    Body = new ModelBody()
-                    {
-                        Doors = d.Doors,
-                        Shape = d.BodyShape,
-                        Wheelbase = d.Wheelbase
-                    },
-                    Engine = new ModelEngine()
-                    {
-                        Size = d.EngineSize,
-                        Cylinder = d.Cylinder,
-                        FuelType = d.FuelType,
-                        Power = d.Power
-                    },
-                    Transmission = new ModelTransmission()
-                    {
-                        Type = d.TransType,
-                        Drivetrain = d.DriveTrain
-                    }
-                });
-            }
-            return derivatives;
-        }
         private static async Task<IEnumerable<MarketGroup>> HydrateMarketGroups(IDataContext context, TakeRateViewModel takeRateModel)
         {
             var watch = Stopwatch.StartNew();
@@ -537,6 +509,16 @@ namespace FeatureDemandPlanning.Model.ViewModel
             watch.Stop();
             Log.Debug(watch.ElapsedMilliseconds);
             return takeRateModel.Document.Vehicle.AvailableMarketGroups;
+        }
+
+        private static async Task<IEnumerable<RawPowertrainDataItem>> HydratePowertrain(IDataContext context,
+            TakeRateViewModel takeRateViewModel)
+        {
+            if (takeRateViewModel.Document.TakeRateData is EmptyTakeRateData)
+                takeRateViewModel.Document.TakeRateData = new TakeRateData();
+
+            takeRateViewModel.Document.TakeRateData.PowertrainData = await ListPowertrainData(context, takeRateViewModel);
+            return takeRateViewModel.Document.TakeRateData.PowertrainData;
         }
         private static async Task<RawTakeRateData> HydrateRawData(IDataContext context,
             TakeRateViewModel takeRateViewModel)
@@ -629,18 +611,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
             Log.Debug(watch.ElapsedMilliseconds);
 
             return volumeSummary;
-        }
-        private static async Task HydrateFdpVolumeHeadersFromOxoDocument(IDataContext context, TakeRateViewModel volumeModel)
-        {
-            var watch = Stopwatch.StartNew();
-            if (volumeModel.Document.TakeRateSummary.Any())
-                return;
-
-            var volumeHeaders = await ListVolumeSummary(context, volumeModel);
-            volumeModel.Document.TakeRateSummary = volumeHeaders.CurrentPage;
-
-            watch.Stop();
-            Log.Debug(watch.ElapsedMilliseconds);
         }
         private static async Task HydrateMarketReview(IDataContext context, TakeRateViewModel volumeModel)
         {
@@ -767,20 +737,12 @@ namespace FeatureDemandPlanning.Model.ViewModel
             return await context.TakeRate.GetTakeRateDocumentData(TakeRateFilter.FromTakeRateViewModel(takeRateViewModel));
         }
 
-        //private static async Task<TakeRateSummary> GetVolumeSummary(IDataContext context, TakeRateDocument forVolume)
-        //{
-        //    if (forVolume.UnderlyingOxoDocument is EmptyOxoDocument)
-        //        return new TakeRateSummary();
-
-        //    return await context.TakeRate.GetTakeRateDocument(TakeRateFilter.FromTakeRateViewModel(forVolume));
-        //}
-        private static async Task<PagedResults<TakeRateSummary>> ListVolumeSummary(IDataContext context, TakeRateViewModel takeRateViewModel)
+        private static async Task<IEnumerable<RawPowertrainDataItem>> ListPowertrainData(IDataContext context,
+            TakeRateViewModel takeRateViewModel)
         {
-            if (takeRateViewModel.Document.UnderlyingOxoDocument is EmptyOxoDocument)
-                return new PagedResults<TakeRateSummary>();
-
-            return await context.TakeRate.ListTakeRateDocuments(TakeRateFilter.FromTakeRateViewModel(takeRateViewModel));
+            return await context.TakeRate.ListPowertrainData(TakeRateFilter.FromTakeRateViewModel(takeRateViewModel));
         }
+       
         #endregion
 
         #region "Private Members"
