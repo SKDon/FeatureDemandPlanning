@@ -907,6 +907,9 @@
     </Build>
     <Build Include="CloneOxo.sql" />
     <Build Include="Stored Procedures\Fdp_Market_GetMany.sql" />
+    <Build Include="Tables\Fdp_OxoDervivative.sql" />
+    <Build Include="Tables\Fdp_PowertrainDataItemAudit.sql" />
+    <Build Include="Views\Fdp_AllFeatures_VW.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">

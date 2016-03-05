@@ -7,6 +7,7 @@ namespace FeatureDemandPlanning.Model
         public ImportStatus Status { get; set; }
         public int NumberOfRecords { get; set; }
         public IEnumerable<ImportError> Exceptions { get; set; }
+        public int? TakeRateId { get; set; }
 
         public ImportResult()
         {

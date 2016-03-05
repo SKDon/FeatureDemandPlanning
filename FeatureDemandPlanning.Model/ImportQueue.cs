@@ -29,6 +29,7 @@ namespace FeatureDemandPlanning.Model
         public string Gateway { get; set; }
         public int? DocumentId { get; set; }
         public string Document { get; set; }
+        public int? TakeRateId { get; set; }
 
         public string Error { get; set; }
 

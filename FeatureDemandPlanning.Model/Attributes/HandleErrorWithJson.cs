@@ -1,5 +1,4 @@
-﻿using System;
-using FeatureDemandPlanning.Model.Results;
+﻿using FeatureDemandPlanning.Model.Results;
 using FluentValidation;
 using System.Net;
 using System.Web.Mvc;

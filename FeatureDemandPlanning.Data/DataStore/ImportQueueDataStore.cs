@@ -49,18 +49,28 @@ namespace FeatureDemandPlanning.DataStore
         }
         public ImportQueue ImportQueueBulkImportProcess(ImportQueue importQueue)
         {
+            TakeRateSummary takeRateFile = new EmptyTakeRateSummary();
+
             using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
                     para.Add("@FdpImportId", importQueue.ImportId, DbType.Int32);
+                    para.Add("@FdpVolumeHeaderId", null, DbType.Int32, ParameterDirection.Output);
+
                     if (importQueue.LineNumber.HasValue)
                     {
                         para.Add("@LineNumber", importQueue.LineNumber, DbType.Int32);
                     }
 
-                    conn.Execute("dbo.Fdp_ImportData_Process", para, commandType: CommandType.StoredProcedure, commandTimeout:600);
+                   
+                    var results = conn.Query<TakeRateSummary>("dbo.Fdp_ImportData_Process", para, commandType: CommandType.StoredProcedure, commandTimeout:600);
+                    var takeRateSummaries = results as IList<TakeRateSummary> ?? results.ToList();
+                    if (results != null && takeRateSummaries.Any())
+                    {
+                        takeRateFile = takeRateSummaries.First();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -68,7 +78,9 @@ namespace FeatureDemandPlanning.DataStore
                     throw;
                 }
             }
-            return ImportQueueGet(importQueue.ImportQueueId.GetValueOrDefault());
+            var retVal = ImportQueueGet(importQueue.ImportQueueId.GetValueOrDefault());
+            retVal.TakeRateId = takeRateFile.TakeRateId;
+            return retVal;
         }
         public PagedResults<ImportQueue> ImportQueueGetMany(ImportQueueFilter filter)
         {

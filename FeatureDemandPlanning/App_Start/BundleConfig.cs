@@ -36,12 +36,14 @@ namespace FeatureDemandPlanning
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/derivative").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Derivative/delete.js",
                     "~/Content/js/Derivative/model.js",
                     "~/Content/js/Derivative/page.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/derivativemapping").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/DerivativeMapping/copy.js",
                     "~/Content/js/DerivativeMapping/delete.js",
                     "~/Content/js/DerivativeMapping/model.js",
@@ -49,12 +51,14 @@ namespace FeatureDemandPlanning
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/feature").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Feature/delete.js",
                     "~/Content/js/Feature/model.js",
                     "~/Content/js/Feature/page.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/featuremapping").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/FeatureMapping/copy.js",
                     "~/Content/js/FeatureMapping/delete.js",
                     "~/Content/js/FeatureMapping/model.js",
@@ -62,6 +66,7 @@ namespace FeatureDemandPlanning
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/ignoredexception").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/IgnoredException/delete.js",
                     "~/Content/js/IgnoredException/model.js",
                     "~/Content/js/IgnoredException/page.js"
@@ -71,6 +76,7 @@ namespace FeatureDemandPlanning
                     "~/Content/js/Import/addderivativeaction.js",
                     "~/Content/js/Import/addfeatureaction.js",
                     "~/Content/js/Import/addtrimaction.js",
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Import/derivative.js",
                     "~/Content/js/Import/exceptions.js",
                     "~/Content/js/Import/exceptionspage.js",
@@ -91,6 +97,7 @@ namespace FeatureDemandPlanning
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/marketmapping").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/MarketMapping/copy.js",
                     "~/Content/js/MarketMapping/delete.js",
                     "~/Content/js/MarketMapping/model.js",
@@ -98,6 +105,7 @@ namespace FeatureDemandPlanning
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/marketreview").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/MarketReview/model.js",
                     "~/Content/js/MarketReview/page.js"
                 ));
@@ -105,7 +113,6 @@ namespace FeatureDemandPlanning
             bundles.Add(new ScriptBundle("~/bundles/js/shared").Include(
                     "~/Content/js/Shared/namespace.js",
                     "~/Content/js/Shared/modal.js",
-                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Shared/cookie.js",
                     "~/Content/js/Shared/pager.js",
                     "~/Content/js/Shared/vehicle.js",
@@ -113,6 +120,7 @@ namespace FeatureDemandPlanning
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/specialfeaturemapping").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/SpecialFeatureMapping/copy.js",
                     "~/Content/js/SpecialFeatureMapping/delete.js",
                     "~/Content/js/SpecialFeatureMapping/model.js",
@@ -120,6 +128,7 @@ namespace FeatureDemandPlanning
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/takerate").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/TakeRate/model.js",
                     "~/Content/js/TakeRate/page.js",
                     "~/Content/js/TakeRate/clone.js"
@@ -149,12 +158,14 @@ namespace FeatureDemandPlanning
                          "~/Content/js/Forecast/forecast.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/js/trim").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Trim/delete.js",
                     "~/Content/js/Trim/model.js",
                     "~/Content/js/Trim/page.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/trimmapping").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/TrimMapping/copy.js",
                     "~/Content/js/TrimMapping/delete.js",
                     "~/Content/js/TrimMapping/model.js",
@@ -162,6 +173,7 @@ namespace FeatureDemandPlanning
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/user").Include(
+                    "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/User/addnewuseraction.js",
                     "~/Content/js/User/disableuseraction.js",
                     "~/Content/js/User/enableuseraction.js",
