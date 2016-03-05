@@ -1,8 +1,7 @@
-﻿using FeatureDemandPlanning.Model.Interfaces;
+﻿using System;
+using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model;
 using System.Collections.Generic;
-using System.Reflection;
-using log4net;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -10,20 +9,24 @@ namespace FeatureDemandPlanning.DataStore
     {
         public ConfigurationSettings Configuration { get; private set; }
 
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         public ConfigurationDataContext(string cdsId) : base(cdsId)
         {
-            LoadConfigurationData();
-            BuildConfiguration();
+            try
+            {
+                LoadConfigurationData();
+                BuildConfiguration();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
         }
- 
+
         private void LoadConfigurationData()
         {
-            //Log.Debug(MethodBase.GetCurrentMethod().Name);
-
             var dataStore = new ConfigurationDataStore(CDSID);
             _configurationData = dataStore.ConfigurationGetMany();
+
         }
 
         private void BuildConfiguration()

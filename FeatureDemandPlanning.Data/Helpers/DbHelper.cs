@@ -33,15 +33,13 @@ namespace FeatureDemandPlanning.Model.Helpers
     public class DbHelperNonSingleton : IDbHelper
     {
         public string GetConnectionString()
-        {
-            // need to get this from the web.config           
-            string retVal = ConfigurationManager.ConnectionStrings["RADS"].ConnectionString;
-            return retVal;
+        {       
+            return ConfigurationManager.ConnectionStrings["RADS"].ConnectionString;
         }
 
         public IDbConnection GetDBConnection()
         {
-            SqlConnection conn = new SqlConnection(GetConnectionString());
+            var conn = new SqlConnection(GetConnectionString());
             conn.Open();
 
             return conn;

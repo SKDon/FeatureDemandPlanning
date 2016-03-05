@@ -263,6 +263,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Content\css\jquery.contextMenu.css" />
+    <Content Include="Content\js\jquery.contextMenu.js" />
+    <Content Include="Content\js\jquery.ui.position.js" />
     <Content Include="Content\js\MarketReview\init.js" />
     <Content Include="Content\js\MarketReview\model.js" />
     <Content Include="Content\js\MarketReview\page.js" />
@@ -275,7 +278,6 @@
     <Content Include="Content\js\TakeRateData\validationsummaryaction.js" />
     <Content Include="Content\js\TakeRateData\marketreview.js" />
     <Content Include="Content\js\TakeRateData\marketreviewaction.js" />
-    <Content Include="Content\js\TakeRate\clone.js" />
     <Content Include="Error\NoProgrammeAccess.aspx" />
     <Content Include="Error\NoMarketAccess.aspx" />
     <Content Include="Error\403.aspx" />
@@ -903,6 +905,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\js\jquery.jeditable.js" />
+    <Content Include="Content\css\font\context-menu-icons.eot" />
+    <Content Include="Content\css\font\context-menu-icons.ttf" />
+    <Content Include="Content\css\font\context-menu-icons.woff" />
+    <Content Include="Content\css\font\context-menu-icons.woff2" />
     <None Include="MvcSiteMapSchema.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -1086,6 +1092,7 @@
     <Content Include="Views\TakeRateData\_TakeRateData.cshtml" />
     <Content Include="Views\TakeRateData\_MarketSelector.cshtml" />
     <Content Include="Views\TakeRateData\_Scripts.cshtml" />
+    <Content Include="Views\TakeRate\_Modal.cshtml" />
     <Content Include="Views\TakeRate\_Scripts.cshtml" />
     <Content Include="Views\TakeRate\TakeRatePage.cshtml" />
     <Content Include="Views\TakeRateData\_ContextMenu.cshtml" />
@@ -1107,8 +1114,6 @@
     <Content Include="Views\Admin\News.cshtml" />
     <Content Include="Views\TakeRateData\_Filter.cshtml" />
     <Content Include="Views\TakeRateData\_ValidationSummary.cshtml" />
-    <Content Include="Views\TakeRate\_ContextMenu.cshtml" />
-    <Content Include="Views\TakeRate\_Clone.cshtml" />
     <Content Include="Views\TakeRateData\_Powertrain.cshtml" />
   </ItemGroup>
   <ItemGroup>

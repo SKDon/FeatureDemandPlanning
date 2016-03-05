@@ -117,6 +117,7 @@ namespace FeatureDemandPlanning.DataStore
             File.Delete(queuedItem.FilePath);
 
             result.Status = queuedItem.ImportStatus;
+            result.TakeRateId = queuedItem.TakeRateId;
 
             return result;
         }

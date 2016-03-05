@@ -1,4 +1,6 @@
-﻿namespace FeatureDemandPlanning.Model
+﻿using FeatureDemandPlanning.Model.Helpers;
+
+namespace FeatureDemandPlanning.Model
 {
     public class BaseDataContext
     {
@@ -8,5 +10,7 @@
         {
             CDSID = cdsId;
         }
+
+        protected static readonly Logger Log = Logger.Instance;
     }
 }

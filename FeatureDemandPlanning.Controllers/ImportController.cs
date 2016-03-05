@@ -14,6 +14,7 @@ using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.Attributes;
 using FluentValidation;
 using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Validators;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -21,6 +22,7 @@ namespace FeatureDemandPlanning.Controllers
     {
         public ImportParameters Parameters { get; set; }
         public ImportQueue CurrentQueuedItem { get; set; }
+        public ImportResult Result { get; set; }
 
         public ImportController(IDataContext context) : base(context, ControllerType.SectionChild)
         {
@@ -108,6 +110,7 @@ namespace FeatureDemandPlanning.Controllers
             SaveImportFileToFileSystem();
             QueueItemForProcessing();
             ProcessQueuedItem();
+            ValidateProcessedItem();
             RefreshQueuedItem();
 
             return CurrentQueuedItem.HasErrors ? 
@@ -165,7 +168,9 @@ namespace FeatureDemandPlanning.Controllers
                     SkipFirstXRows = ConfigurationSettings.GetInteger("SkipFirstXRowsInImportFile")
                 };
                 if (!(CurrentQueuedItem is EmptyImportQueue))
-                    DataContext.Import.ProcessImportQueue(CurrentQueuedItem, settings);
+                {
+                    Result = DataContext.Import.ProcessImportQueue(CurrentQueuedItem, settings);
+                }
             }
             catch (Exception ex)
             {
@@ -185,6 +190,33 @@ namespace FeatureDemandPlanning.Controllers
             }
         }
 
+        private void ValidateProcessedItem()
+        {
+            if (Result == null || !Result.TakeRateId.HasValue)
+                return;
+
+            var filter = new TakeRateFilter()
+            {
+                TakeRateId = Result.TakeRateId
+            };
+
+            var markets = DataContext.Market.ListMarkets(filter).Result;
+            foreach (var market in markets)
+            {
+                try
+                {
+                    filter.MarketId = market.Id;
+                    var rawData = DataContext.TakeRate.GetRawData(filter).Result;
+
+                    var validationResults = Validator.Validate(rawData);
+                    Validator.Persist(DataContext, filter, validationResults).RunSynchronously();
+                }
+                catch (ValidationException vex)
+                {
+                    // Sink the exception, as we don't want any validation errors propagating up
+                }
+            }
+        }
         private void RefreshQueuedItem()
         {
             if (CurrentQueuedItem == null || CurrentQueuedItem is EmptyImportQueue)

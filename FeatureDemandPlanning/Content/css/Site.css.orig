@@ -1501,20 +1501,7 @@ div.edited-fdp {
     color: #c60000;
 }
 
-.pack-item {
-    cursor: pointer;
-}
-
-.popover-title {
-    cursor: pointer;
-}
-
-.feature-pack-item-header {
-    cursor: pointer;
-    text-decoration: underline;
-    color: #061639;
-}
-
+<<<<<<< HEAD
 .context-menu-custom {
     background-color: #FFF !important;
     color: #061639 !important;
@@ -1529,4 +1516,16 @@ div.edited-fdp {
 .context-menu-hover {
     color: #fff !important;
     background-color: #7485a5 !important;
+=======
+.pack-item {
+    cursor: pointer;
+}
+
+.popover-title {
+    cursor: pointer;
+}
+
+.feature-pack-item-header {
+    cursor: pointer;
+>>>>>>> 501f8bdafafbca2a772ec1262e725e76d8ae88f6
 }
