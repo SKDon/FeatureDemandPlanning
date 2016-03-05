@@ -28,6 +28,8 @@ namespace FeatureDemandPlanning.Model
         public int? OriginalVolume { get; set; }
         public decimal OriginalPercentageTakeRate { get; set; }
 
+        public bool IsMarketReview { get; set; }
+
         public DataChange()
         {
             

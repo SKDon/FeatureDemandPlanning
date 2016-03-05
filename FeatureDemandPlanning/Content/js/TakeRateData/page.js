@@ -452,8 +452,8 @@ model.Page = function (models) {
         var modelIndicators = $(".model-validation-error");
         var featureIndicators = $(".feature-validation-error");
 
-        model.setHasValidationErrors(validationData !== null && validationData.length > 0);
-        if (model.HasValidationErrors) {
+        model.setHasValidationErrors(validationData !== null && validationData.ValidationResults.length > 0);
+        if (model.HasValidationErrors()) {
             $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", true);
             //$("#" + me.getIdentifierPrefix() + "_MarketReview").prop("disabled", true);
             //$("#" + me.getIdentifierPrefix() + "_SubmitMarketReview").prop("disabled", true);
@@ -571,11 +571,19 @@ model.Page = function (models) {
             } else {
                 selector = $("tbody div[data-target='" + revertedChange.DataTarget + "']");
             }
-
-            if (revertedChange.IsWholeMarketChange) {
-                selector.removeClass(me.getEditedDataClass(revertedChange)).val(displayValue);
-            } else {
-                selector.removeClass("edited").removeClass(me.getEditedDataClass(revertedChange)).html(displayValue);
+            if (revertedChange.IsMarketReview) {
+                if (revertedChange.IsWholeMarketChange) {
+                    selector.removeClass(me.getEditedDataClass(revertedChange)).val(displayValue);
+                } else {
+                    selector.removeClass("edited-market-review").removeClass(me.getEditedDataClass(revertedChange)).html(displayValue);
+                }
+            }
+            else {
+                if (revertedChange.IsWholeMarketChange) {
+                    selector.removeClass(me.getEditedDataClass(revertedChange)).val(displayValue);
+                } else {
+                    selector.removeClass("edited").removeClass(me.getEditedDataClass(revertedChange)).html(displayValue);
+                }
             }
         }
     };
@@ -654,6 +662,9 @@ model.Page = function (models) {
         if (changesetChange.FeatureIdentifier !== null && changesetChange.FeatureIdentifier.charAt(0) === "F") {
             className = "edited-fdp-data";
         }
+        if (changesetChange.IsMarketReview) {
+            className = className + "-market-review";
+        }
         return className;
     };
     me.getEditedDataClassForModelSummary = function (changesetChange) {
@@ -661,12 +672,18 @@ model.Page = function (models) {
         if (changesetChange.ModelIdentifier !== null && changesetChange.ModelIdentifier.charAt(0) === "F") {
             className = "edited";
         }
+        if (changesetChange.IsMarketReview) {
+            className = className + "-market-review";
+        }
         return className;
     };
     me.getEditedDataClassForDataItem = function (changesetChange) {
         var className = "edited";
         if (changesetChange.FeatureIdentifier !== null && changesetChange.FeatureIdentifier.charAt(0) === "F") {
             className = "edited-fdp-data";
+        }
+        if (changesetChange.IsMarketReview) {
+            className = className + "-market-review";
         }
         return className;
     };
@@ -913,6 +930,11 @@ model.Page = function (models) {
         $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom" });
         $("#" + prefix + "_Toggle").popover({ trigger: "hover", title: "Toggle", placement: "auto bottom" });
         $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom" });
+
+        $("#" + prefix + "_MarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
+        $("#" + prefix + "_SubmitMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
+        $("#" + prefix + "_ApproveMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
+        $("#" + prefix + "_RejectMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
     };
     me.configureDataTables = function () {
 

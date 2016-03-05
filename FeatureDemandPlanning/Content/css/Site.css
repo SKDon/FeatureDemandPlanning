@@ -1409,6 +1409,36 @@ div.edited-fdp {
     color: #801505;
 }
 
+div.edited-market-review {
+    font-weight:bold;
+    color: #0000ff;
+}
+
+th.edited-market-review {
+    font-weight:bold;
+    color: #0000ff !important;
+}
+
+input.edited-market-review {
+    font-weight:bold;
+    color: #0000ff;
+}
+
+span.edited-market-review {
+    font-weight:bold;
+    color: #0000ff;
+}
+
+span.edited-fdp-market-review {
+    font-weight:bold;
+    color: #0000ff;
+}
+
+div.edited-fdp-market-review {
+    font-weight:bold;
+    color: #0000ff;
+}
+
 .table-bordered.dataTable > thead > tr > th.edited-fdp {
     width: 80px;
     min-width: 80px;
