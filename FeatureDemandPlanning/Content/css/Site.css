@@ -1048,6 +1048,20 @@ li.orphanedFeature {
     font-weight: normal;
 }
 
+.editable-derivative {
+    width: 100%;
+    height: 100%;
+    /*padding: 5px;*/
+}
+
+.editable-derivative input {
+    width: 75px !important;
+    padding: 0 !important;
+    height: 16px !important;
+    color: #061639;
+    font-weight: normal;
+}
+
 .dirty {
     color: #f00 !important;
 }
@@ -1411,32 +1425,42 @@ div.edited-fdp {
 
 div.edited-market-review {
     font-weight:bold;
-    color: #0000ff;
+    color: #1f1fff;
 }
 
 th.edited-market-review {
     font-weight:bold;
-    color: #0000ff !important;
+    color: #1f1fff !important;
 }
 
 input.edited-market-review {
     font-weight:bold;
-    color: #0000ff;
+    color: #1f1fff;
 }
 
 span.edited-market-review {
     font-weight:bold;
-    color: #0000ff;
+    color: #1f1fff;
 }
 
 span.edited-fdp-market-review {
     font-weight:bold;
-    color: #0000ff;
+    color: #1f1fff;
 }
 
 div.edited-fdp-market-review {
     font-weight:bold;
-    color: #0000ff;
+    color: #1f1fff;
+}
+
+td.edited {
+    font-weight:bold;
+    color: #1f1fff;
+}
+
+td.edited-market-review {
+    font-weight:bold;
+    color: #1f1fff;
 }
 
 .table-bordered.dataTable > thead > tr > th.edited-fdp {

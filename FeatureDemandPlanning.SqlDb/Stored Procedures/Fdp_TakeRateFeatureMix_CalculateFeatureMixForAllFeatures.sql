@@ -26,6 +26,7 @@ AS
 		, FeaturePackId					INT NULL
 		, TotalVolume					INT
 		, PercentageTakeRate			DECIMAL(5, 4)
+		, FdpTakeRateFeatureMixId		INT NULL
 	)
 	DECLARE @Market AS TABLE
 	(
@@ -57,21 +58,52 @@ AS
 		, FdpVolumeDataItemId
 	)
 	SELECT
-		  D.FdpVolumeHeaderId
-		, D.MarketId
-		, D.FeatureId
-		, D.FdpFeatureId
-		, D.FeaturePackId
-		, D.Volume
-		, D.PercentageTakeRate
+		  F.FdpVolumeHeaderId
+		, M.MarketId
+		, F.FeatureId
+		, F.FdpFeatureId
+		, NULL
+		, ISNULL(D.Volume, 0)
+		, ISNULL(D.PercentageTakeRate, 0)
 		, D.FdpVolumeDataItemId
 	FROM
-	Fdp_VolumeDataItem_VW	AS D
-	JOIN @Market			AS M ON D.MarketId = M.MarketId
+	Fdp_AllFeatures_VW		AS F
+	CROSS APPLY @Market		AS M
+	LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON M.MarketId = D.MarketId
+										 AND F.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+										 AND D.IsFeatureData = 1
+										 AND 
+										 (
+											F.FeatureId = D.FeatureId
+											OR
+											F.FdpFeatureId = D.FdpFeatureId
+										)
 	WHERE
-	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	F.FdpVolumeHeaderId = @FdpVolumeHeaderId
+
+	UNION
+
+	SELECT
+		  F.FdpVolumeHeaderId
+		, M.MarketId
+		, NULL
+		, NULL
+		, F.FeaturePackId
+		, ISNULL(D.Volume, 0)
+		, ISNULL(D.PercentageTakeRate, 0)
+		, D.FdpVolumeDataItemId
+	FROM
+	Fdp_AllFeatures_VW		AS F
+	CROSS APPLY @Market		AS M
+	LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON M.MarketId = D.MarketId
+										 AND F.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+										 AND D.IsFeatureData = 1
+										 AND F.FeaturePackId = D.FeaturePackId
+										 AND D.FeatureId IS NULL
+	WHERE
+	F.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	D.IsFeatureData = 1;
+	F.FeatureId IS NULL
 
 	INSERT INTO @FeatureMix
 	(
@@ -82,6 +114,7 @@ AS
 		, FeaturePackId
 		, TotalVolume
 		, PercentageTakeRate
+		, FdpTakeRateFeatureMixId
 	)
 	SELECT 
 		  D.FdpVolumeHeaderId
@@ -92,9 +125,13 @@ AS
 		, SUM(D.TotalVolume) AS TotalVolume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), 
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
+		, MAX(CUR.FdpTakeRateFeatureMixId) AS FdpTakeRateFeatureMixId
 	FROM 
 	@DataForFeature AS D
 	JOIN @Market	AS M ON D.MarketId = M.MarketId
+	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON	D.FeatureId = CUR.FeatureId
+											AND D.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
+											AND D.MarketId = CUR.MarketId
 	WHERE
 	D.FeatureId IS NOT NULL
 	GROUP BY
@@ -113,9 +150,13 @@ AS
 		, SUM(D.TotalVolume) AS TotalVolume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), 
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
+		, MAX(CUR.FdpTakeRateFeatureMixId) AS FdpTakeRateFeatureMixId
 	FROM 
 	@DataForFeature AS D
 	JOIN @Market	AS M ON D.MarketId = M.MarketId
+	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON	D.FdpFeatureId = CUR.FdpFeatureId
+											AND D.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
+											AND D.MarketId = CUR.MarketId
 	WHERE
 	D.FdpFeatureId IS NOT NULL
 	GROUP BY
@@ -134,9 +175,14 @@ AS
 		, SUM(D.TotalVolume) AS TotalVolume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), 
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
+		, MAX(CUR.FdpTakeRateFeatureMixId) AS FdpTakeRateFeatureMixId
 	FROM 
 	@DataForFeature AS D
 	JOIN @Market	AS M ON D.MarketId = M.MarketId
+	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON	D.FeaturePackId = CUR.FeaturePackId
+											AND D.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
+											AND D.MarketId = CUR.MarketId
+											AND CUR.FeatureId IS NULL
 	WHERE
 	D.FeaturePackId IS NOT NULL
 	AND
@@ -155,10 +201,7 @@ AS
 		, UpdatedOn				= GETDATE()
 	FROM
 	@FeatureMix					AS F
-	JOIN @Market				AS M	ON	F.MarketId			= M.MarketId
-	JOIN Fdp_TakeRateFeatureMix AS F1	ON  F.FdpVolumeHeaderId = F1.FdpVolumeHeaderId
-										AND F.MarketId			= F1.MarketId
-										AND F.FeatureId			= F1.FeatureId
+	JOIN Fdp_TakeRateFeatureMix AS F1	ON  F.FdpTakeRateFeatureMixId = F1.FdpTakeRateFeatureMixId
 										AND 
 										(
 											F.PercentageTakeRate <> F1.PercentageTakeRate
@@ -189,52 +232,5 @@ AS
 		, F.PercentageTakeRate
 	FROM
 	@FeatureMix AS F
-	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON F.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
-											AND F.MarketId			= CUR.MarketId
-											AND F.FeatureId			= CUR.FeatureId
 	WHERE
-	CUR.FdpTakeRateFeatureMixId IS NULL
-	AND
-	F.FeatureId IS NOT NULL
-
-	UNION
-
-	SELECT
-		  @CDSId
-		, F.FdpVolumeHeaderId
-		, F.MarketId  
-		, F.FeatureId
-		, F.FdpFeatureId
-		, F.FeaturePackId
-		, F.TotalVolume
-		, F.PercentageTakeRate
-	FROM 
-	@FeatureMix AS F
-	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON F.FdpVolumeHeaderId  = CUR.FdpVolumeHeaderId
-											AND F.MarketId			= CUR.MarketId
-											AND F.FdpFeatureId		= CUR.FdpFeatureId
-	WHERE
-	CUR.FdpTakeRateFeatureMixId IS NULL
-	AND
-	F.FdpFeatureId IS NOT NULL
-	
-	UNION
-
-	SELECT
-		  @CDSId
-		, F.FdpVolumeHeaderId
-		, F.MarketId  
-		, F.FeatureId
-		, F.FdpFeatureId
-		, F.FeaturePackId
-		, F.TotalVolume
-		, F.PercentageTakeRate
-	FROM 
-	@FeatureMix AS F
-	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON F.FdpVolumeHeaderId  = CUR.FdpVolumeHeaderId
-											AND F.MarketId			= CUR.MarketId
-											AND F.FeaturePackId		= CUR.FeaturePackId
-	WHERE
-	CUR.FdpTakeRateFeatureMixId IS NULL
-	AND
-	F.FeaturePackId IS NOT NULL;
+	F.FdpTakeRateFeatureMixId IS NULL

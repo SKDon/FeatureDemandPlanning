@@ -12,6 +12,7 @@
         public int? ModelId { get; set; }
         public int? FdpModelId { get; set; }
         public string Model { get; set; }
+        public string DerivativeCode { get; set; }
         public int Volume { get; set; }
         public decimal PercentageTakeRate { get; set; }
 

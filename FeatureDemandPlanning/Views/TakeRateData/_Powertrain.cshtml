@@ -1,57 +1,79 @@
-﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+﻿@using FeatureDemandPlanning.Model
+@using FeatureDemandPlanning.Model.Empty
+@using enums = FeatureDemandPlanning.Model.Enumerations
 
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
 <form>
-    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix"/>
 
-                <table id="@(Model.IdentifierPrefix)_TakeRateData" class="table table-bordered table-condensed dataTable cross-tab">
-                    <thead>
-                        <tr class="cross-tab-header">
-                            <th>
+    <table id="@(Model.IdentifierPrefix)_PowertrainData" class="table table-bordered table-condensed dataTable cross-tab">
+        <thead>
+        <tr class="cross-tab-header">
+            <th>
 
-                            </th>
-                            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
-                            {
-                                <th class="text-center model"  style="min-width: 80px;max-width: 80px" data="@powertrainItem.DerivativeCode" data-target="D|@Model.Document.Market.Id|@powertrainItem.DerivativeCode" data-model="@powertrainItem.DerivativeCode">
-                                    <div class="glyphicon glyphicon-alert validation-error model-validation-error"
-                                         style="display: none"
-                                         data-content=""></div>
+            </th>
+            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
+            {
+                <th class="text-center model" style="min-width: 80px; max-width: 80px" data="@powertrainItem.DerivativeCode" data-target="D|@Model.Document.Market.Id|@powertrainItem.DerivativeCode" data-model="@powertrainItem.DerivativeCode">
+                    <div class="glyphicon glyphicon-alert validation-error model-validation-error"
+                         style="display: none"
+                         data-content=""></div>
 
-                                    @powertrainItem.Doors&nbsp;@powertrainItem.Shape<br />
-                                    @powertrainItem.Size&nbsp;@powertrainItem.Cylinder<br />
-                                    @powertrainItem.FuelType<br />
-                                    @powertrainItem.Power&nbsp;PS
-                                </th>
-                            }
-                        </tr>
-                        <tr class ="cross-tab-header">
-                            <th class="text-right bmc">
-                                BMC
-                            </th>
-                            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
-                            {
-                                <th class="text-center bmc">@powertrainItem.DerivativeCode</th>
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="cross-tab-data-item cross-tab-fixed">Volume</td>
-                            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
-                            {
-                                <td class="text-center cross-tab-data-item">@powertrainItem.Volume.ToString("N0")</td>
-                            }
-                        </tr>
-                        <tr>
-                            <td class="cross-tab-data-item cross-tab-fixed">
-                                % Take Rate
-                            </td>
-                            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
-                            {
-                                <td class="text-center cross-tab-data-item editable">@powertrainItem.PercentageTakeRate.ToString("P2")</td>
-                            }
-                        </tr>
-                    </tbody>
-                </table>
+                    @powertrainItem.Doors&nbsp;@powertrainItem.Shape<br/>
+                    @powertrainItem.Size&nbsp;@powertrainItem.Cylinder<br/>
+                    @powertrainItem.FuelType<br/>
+                    @powertrainItem.Power&nbsp;PS
+                </th>
+            }
+        </tr>
+        <tr class="cross-tab-header">
+            <th class="text-right bmc">
+                BMC
+            </th>
+            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
+            {
+                <th class="text-center bmc">@powertrainItem.DerivativeCode</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr>
+            <td class="cross-tab-data-item cross-tab-fixed">Volume</td>
+            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
+            {
+                <td class="text-center cross-tab-data-item">@powertrainItem.Volume.ToString("N0")</td>
+            }
+        </tr>
+
+        <tr>
+            <td class="cross-tab-data-item cross-tab-fixed">
+                % Take Rate
+            </td>
+            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
+            {
+                <td class="text-center cross-tab-data-item editable-derivative @RenderEdited(powertrainItem)" data-target="@Model.Document.Market.Id|@powertrainItem.DerivativeCode">@powertrainItem.PercentageTakeRate.ToString("P2")</td>
+            }
+        </tr>
+
+        </tbody>
+    </table>
 </form>
+
+@helper RenderEdited(RawPowertrainDataItem powertrainData)
+{
+    if (!powertrainData.IsDirty)
+    {
+        return;
+    }
+        
+    if (!(Model.TakeRate.MarketReview is EmptyMarketReview))
+    {
+        @("edited-market-review")
+    }
+    else
+    {
+        @("edited")
+    }
+}

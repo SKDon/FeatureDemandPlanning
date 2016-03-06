@@ -904,6 +904,10 @@ namespace FeatureDemandPlanning.DataStore
                         {
                             para.Add("@FeaturePackId", dataItemToSave.GetFeatureId(), DbType.Int32);
                         }
+                        else if (dataItemToSave.IsPowertrainChange)
+                        {
+                            para.Add("@DerivativeCode", dataItemToSave.DerivativeCode, DbType.String);
+                        }
                         else
                         {
                             para.Add("@FeatureId", dataItemToSave.GetFeatureId(), DbType.Int32);

@@ -125,6 +125,10 @@ namespace FeatureDemandPlanning.Controllers
             {
                 CalculateMarketChange(parameters);
             }
+            else if (dataChange.IsPowertrainChange)
+            {
+                CalculatePowertrainChange(parameters);
+            }
 
 		    var savedChangeset = await DataContext.TakeRate.SaveChangeset(filter, changeset);
 
@@ -192,6 +196,88 @@ namespace FeatureDemandPlanning.Controllers
 	        }
 	        changeset.Changes.Add(featureMixDataChange);
 	    }
+
+        // For a feature change, we simply re-compute the % take if the volume has been altered and vice versa
+        // The feature mix will then need to be recalculated
+        private async void CalculatePowertrainChange(TakeRateParameters parameters)
+        {
+            var changeset = parameters.Changeset;
+            var dataChange = parameters.Changeset.Changes.First();
+
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            var rawData = await DataContext.TakeRate.GetRawData(filter);
+
+            var marketVolume = rawData.SummaryItems.Where(s => !string.IsNullOrEmpty(s.ModelIdentifier)).Sum(s => s.Volume);
+
+            // Get the original values from raw data
+            var existingDerivative = rawData.PowertrainDataItems.FirstOrDefault(p => p.DerivativeCode == dataChange.DerivativeCode);
+            var affectedModels = rawData.SummaryItems.Where(s => s.DerivativeCode == dataChange.DerivativeCode).ToList();
+
+            switch (dataChange.Mode)
+            {
+                case TakeRateResultMode.PercentageTakeRate:
+                    dataChange.Volume = (int)(marketVolume * decimal.Divide(dataChange.PercentageTakeRate.GetValueOrDefault(), 100));
+                    break;
+                case TakeRateResultMode.Raw:
+                    dataChange.PercentageTakeRate = (dataChange.Volume / (decimal)marketVolume) * 100;
+                    break;
+                case TakeRateResultMode.NotSet:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            // Get the original values
+
+            if (existingDerivative != null)
+            {
+                dataChange.OriginalPercentageTakeRate = existingDerivative.PercentageTakeRate;
+                dataChange.OriginalVolume = existingDerivative.Volume;
+                dataChange.FdpPowertrainDataItemId = existingDerivative.FdpPowertrainDataItemId;
+            }
+
+            // Update the mix for each of the models under the derivative in question
+            // Split the volume and percentage take rate equally amongst all models
+
+            var rawTakeRateSummaryItems = affectedModels as IList<RawTakeRateSummaryItem> ?? affectedModels.ToList();
+            var numberOfAffectedModels = rawTakeRateSummaryItems.Count();
+            var volumePerModel = dataChange.Volume / numberOfAffectedModels;
+            var remainder = dataChange.Volume % numberOfAffectedModels;
+
+            var counter = 0;
+            foreach (var modelDataChange in rawTakeRateSummaryItems.Select(affectedModel => new DataChange(dataChange)
+            {
+                Volume = volumePerModel,
+                PercentageTakeRate = decimal.Divide(volumePerModel.Value, dataChange.Volume.Value) * 100,
+                FdpTakeRateSummaryId = affectedModel.FdpTakeRateSummaryId,
+                OriginalVolume = affectedModel.Volume,
+                OriginalPercentageTakeRate = affectedModel.PercentageTakeRate,
+                ModelIdentifier = affectedModel.ModelIdentifier
+            }))
+            {
+                if (++counter == numberOfAffectedModels)
+                {
+                    modelDataChange.Volume += remainder;
+                }
+                changeset.Changes.Add(modelDataChange);
+
+                var affectedFeatures = rawData.DataItems.Where(f => IsMatchingModel(modelDataChange, f)).ToList();
+                var change = modelDataChange;
+                foreach (var featureDataChange in affectedFeatures.Select(affectedFeature => new DataChange(dataChange)
+                {
+                    Volume = (int)(change.Volume * affectedFeature.PercentageTakeRate),
+                    PercentageTakeRate = affectedFeature.PercentageTakeRate * 100,
+                    FdpVolumeDataItemId = affectedFeature.FdpVolumeDataItemId,
+                    OriginalVolume = affectedFeature.Volume,
+                    OriginalPercentageTakeRate = affectedFeature.PercentageTakeRate,
+                    FeatureIdentifier = affectedFeature.FeatureIdentifier,
+                    ModelIdentifier = change.ModelIdentifier
+                }))
+                {
+                    changeset.Changes.Add(featureDataChange);
+                }
+            }
+        }
 
 	    private async void CalculateModelChange(TakeRateParameters parameters)
 	    {

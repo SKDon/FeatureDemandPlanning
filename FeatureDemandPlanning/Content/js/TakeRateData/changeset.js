@@ -17,7 +17,8 @@ model.DataChange = function () {
     me.Mode = 0,
     me.PercentageTakeRate = null,
     me.Volume = null,
-    me.Comment = ""
+    me.Comment = "",
+    me.DerivativeCode = null
 };
 
 model.Change = function (marketIdentifier, 
@@ -37,6 +38,7 @@ model.Change = function (marketIdentifier,
     privateStore[me.id].ModelIdentifier = modelIdentifier;
     privateStore[me.id].FeatureIdentifier = featureIdentifier;
     privateStore[me.id].MarketIdentifier = marketIdentifier;
+    privateStore[me.id].DerivativeCode = null;
     privateStore[me.id].Mode = "PercentageTakeRate";
     privateStore[me.id].Index = 0;
     privateStore[me.id].IsSaved = false;
@@ -61,6 +63,9 @@ model.Change = function (marketIdentifier,
     };
     me.getChangedTakeRate = function () {
         return privateStore[me.id].ChangedTakeRate;
+    };
+    me.getDerivativeCode = function() {
+        return privateStore[me.id].DerivativeCode;
     };
     me.setChangedTakeRate = function (changedTakeRate) {
         privateStore[me.id].ChangedTakeRate = changedTakeRate;
@@ -106,20 +111,24 @@ model.Change = function (marketIdentifier,
     me.setIndex = function (index) {
         privateStore[me.id].Index = index;
     };
+    me.setDerivativeCode = function(derivativeCode) {
+        privateStore[me.id].DerivativeCode = derivativeCode;
+    };
     me.toDataChange = function()
     {
         var dataChange = new FeatureDemandPlanning.Volume.DataChange();
         dataChange.ModelIdentifier = me.getModelIdentifier();
         dataChange.FeatureIdentifier = me.getFeatureIdentifier();
         if (me.getMode() === "Raw") {
-            dataChange.Mode = 1
+            dataChange.Mode = 1;
         }
         else {
-            dataChange.Mode = 2
+            dataChange.Mode = 2;
         }
         dataChange.PercentageTakeRate = me.getChangedTakeRate();
         dataChange.Volume = me.getChangedVolume();
         dataChange.MarketId = me.getMarketIdentifier();
+        dataChange.DerivativeCode = me.getDerivativeCode();
 
         return dataChange;
     }
@@ -138,16 +147,18 @@ model.Changeset = function (params) {
             console.log(changesetData.Changes[i]);
         }
     };
-    me.getChange = function (marketIdentifier, modelIdentifier, featureIdentifier) {
+    me.getChange = function (marketIdentifier, modelIdentifier, featureIdentifier, derivativeCode) {
         var retVal = null;
         for (var i = 0; i < privateStore[me.id].Changes.length; i++) {
             var currentMarketIdentifier = privateStore[me.id].Changes[i].getMarketIdentifier();
             var currentModelIdentifier = privateStore[me.id].Changes[i].getModelIdentifier();
             var currentFeatureIdentifier = privateStore[me.id].Changes[i].getFeatureIdentifier();
+            var currentDerivativeCode = privateStore[me.id].Changes[i].getDerivativeCode();
 
             if (marketIdentifier === currentMarketIdentifier &&
                 modelIdentifier === currentModelIdentifier &&
-                featureIdentifier === currentFeatureIdentifier) {
+                featureIdentifier === currentFeatureIdentifier &&
+                derivativeCode === currentDerivativeCode) {
                 retVal = privateStore[me.id].Changes[i];
                 retVal.setIndex(i);
                 break;
@@ -201,9 +212,20 @@ model.Changeset = function (params) {
         }
         return retVal;
     };
+    me.getChangesForDerivativeCode = function(derivativeCode) {
+        var retVal = [];
+        for (var i = 0; i < privateStore[me.id].Changes.length; i++) {
+            var currentDerivativeCode = privateStore[me.id].Changes[i].getDerivativeCode();
+
+            if (derivativeCode === currentDerivativeCode) {
+                retVal.push(privateStore[me.id].Changes[i]);
+            }
+        }
+        return retVal;
+    };
     me.addChange = function (change) {
         for (var i = 0; i < privateStore[me.id].Changes.length; i++) {
-            var currentChange = me.getChange(change.getModelIdentifier(), change.getFeatureIdentifier())
+            var currentChange = me.getChange(change.getModelIdentifier(), change.getFeatureIdentifier(), change.getDerivativeCode());
             // If the change exists, overwrite it, but preserve the original value
             if (currentChange !== null) {
                 privateStore[me.id].Changes[i].setChangedVolume(change.getChangedVolume());
@@ -215,12 +237,12 @@ model.Changeset = function (params) {
         }
         privateStore[me.id].Changes.push(change);
     };
-    me.removeChanges = function (marketIdentifier, modelIdentifier, featureIdentifier) {
+    me.removeChanges = function (marketIdentifier, modelIdentifier, featureIdentifier, derivativeCode) {
         // As the array indexes will change, we need to delete any changes one at a time
-        var currentChange = me.getChange(marketIdentifier, modelIdentifier, featureIdentifier);
+        var currentChange = me.getChange(marketIdentifier, modelIdentifier, featureIdentifier, derivativeCode);
         while (currentChange !== null) {
             privateStore[me.id].Changes.splice(currentChange.getIndex(), 1);
-            currentChange = me.getChange(marketIdentifier, modelIdentifier, featureIdentifier);
+            currentChange = me.getChange(marketIdentifier, modelIdentifier, featureIdentifier, derivativeCode);
         }
     };
     me.removeChangesForMarket = function (marketIdentifier) {

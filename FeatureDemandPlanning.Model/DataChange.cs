@@ -19,11 +19,9 @@ namespace FeatureDemandPlanning.Model
         public TakeRateResultMode Mode { get; set; }
         public string Note { get; set; }
 
-        // Only way of identifying powertrain changes
-
-        public int? BodyId { get; set; }
-        public int? EngineId { get; set; }
-        public int? TransmissionId { get; set; }
+        public string DerivativeCode { get; set; }
+        public int? FdpOxoDerivativeId { get; set; }
+        public int? FdpDerivativeId { get; set; }
 
         public int? OriginalVolume { get; set; }
         public decimal OriginalPercentageTakeRate { get; set; }
@@ -136,7 +134,7 @@ namespace FeatureDemandPlanning.Model
         }
         public bool IsPowertrainChange
         {
-            get { return BodyId.HasValue && EngineId.HasValue && TransmissionId.HasValue; }
+            get { return !string.IsNullOrEmpty(DerivativeCode); }
         }
         public TakeRateDataItem ToDataItem()
         {
@@ -172,7 +170,7 @@ namespace FeatureDemandPlanning.Model
         {
             get
             {
-                return !IsModelSummary && !IsFeatureSummary && !IsWholeMarketChange;
+                return !IsModelSummary && !IsFeatureSummary && !IsWholeMarketChange && !IsPowertrainChange;
             }
         }
 

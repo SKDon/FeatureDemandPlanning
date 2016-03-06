@@ -4,6 +4,23 @@ AS
 	SET NOCOUNT ON;
 	
 	-- First dataset yields the header details
+
+	DECLARE @IsMarketReview AS BIT = 1;
+	IF EXISTS(
+		SELECT TOP 1 1
+		FROM
+		Fdp_Changeset					AS C
+		LEFT JOIN Fdp_MarketReview_VW	AS M	ON	C.FdpVolumeHeaderId = M.FdpVolumeHeaderId
+												AND M.FdpMarketReviewStatusId <> 4
+												AND C.MarketId = M.MarketId
+												AND C.CreatedOn >= M.CreatedOn
+		WHERE
+		C.FdpChangesetId = @FdpChangesetId
+	)
+	BEGIN
+		SET @IsMarketReview = 1
+	END
+
 	
 	SELECT TOP 1 
 		    C.FdpChangesetId
@@ -12,8 +29,13 @@ AS
 		  , C.IsDeleted
 		  , C.IsSaved
 		  , C.Comment
+		  , @IsMarketReview AS IsMarketReview
 	FROM
-	Fdp_Changeset	AS C
+	Fdp_Changeset					AS C
+	LEFT JOIN Fdp_MarketReview_VW	AS M	ON	C.FdpVolumeHeaderId = M.FdpVolumeHeaderId
+											AND M.FdpMarketReviewStatusId <> 4
+											AND C.MarketId = M.MarketId
+											AND C.CreatedOn >= M.CreatedOn
 	WHERE
 	C.FdpChangesetId = @FdpChangesetId
 	
@@ -35,6 +57,7 @@ AS
 		  AS FeatureIdentifier
 		, D.TotalVolume AS Volume
 		, D.PercentageTakeRate * 100 AS PercentageTakeRate
+		, @IsMarketReview AS IsMarketReview
 	FROM
 	Fdp_ChangesetDataItem AS D
 	WHERE

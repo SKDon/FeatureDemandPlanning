@@ -25,5 +25,6 @@
 		public string Wheelbase { get; set; }
 		public int Volume { get; set; }
         public decimal PercentageTakeRate { get; set; }
+        public bool IsDirty { get; set; }
     }
 }

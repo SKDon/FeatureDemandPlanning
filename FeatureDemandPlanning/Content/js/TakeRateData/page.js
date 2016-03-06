@@ -394,6 +394,7 @@ model.Page = function (models) {
         var marketIdentifier = eventArgs.getMarketIdentifier();
         var modelIdentifier = eventArgs.getModelIdentifier();
         var featureIdentifier = eventArgs.getFeatureIdentifier();
+        var derivativeCode = eventArgs.getDerivativeCode();
          
         var editedCell;
         if (featureIdentifier !== null)
@@ -404,16 +405,20 @@ model.Page = function (models) {
         {
             editedCell = $("thead th[data-target='MS|" + marketIdentifier + "|" + modelIdentifier + "']");
         }
+
+        if (derivativeCode != null) {
+            editedCell = $("td[data-target='" + marketIdentifier + "|" + derivativeCode + "']");
+        }
         //var editedRow = $(".DTFC_Cloned tbody tr[data-target='" + marketIdentifier + "|" + featureIdentifier + "']");
         var changeSet = getChangeset();
 
         // If any changes have reverted back to the original value, we need to lower any change flags and remove from the changeset
-        var priorChanges = changeSet.getChange(marketIdentifier, modelIdentifier, featureIdentifier);
-        if (priorChanges != null && priorChanges.length > 0 && (
+        var priorChanges = changeSet.getChange(marketIdentifier, modelIdentifier, featureIdentifier, derivativeCode);
+        if (priorChanges !== null && priorChanges.length > 0 && (
                 (eventArgs.Mode === "PercentageTakeRate" && eventArgs.getChangedTakeRate() === priorChanges[0].getOriginalTakeRate()) ||
                 (eventArgs.Mode === "Raw" && eventArgs.getChangedVolume() === priorChanges[0].getOriginalVolume())))
         {
-            changeSet.removeChanges(marketIdentifier, modelIdentifier, featureIdentifier);
+            changeSet.removeChanges(marketIdentifier, modelIdentifier, featureIdentifier, derivativeCode);
             editedCell.removeClass("edited");
 
             // If there are no other changes to the feature, lower the feature changed indicator
@@ -947,7 +952,7 @@ model.Page = function (models) {
         $("#" + prefix + "_Undo").popover({ trigger: "hover", title: "Undo", placement: "auto bottom" });
         $("#" + prefix + "_History").popover({ trigger: "hover", title: "Change History", placement: "auto bottom" });
         $("#" + prefix + "_Validation").popover({ trigger: "hover", title: "Validation Summary", placement: "auto bottom" });
-        $("#" + prefix + "_Powertrain").popover({ trigger: "hover", title: "Powertrain Data", placement: "auto bottom" });
+        $("#" + prefix + "_Powertrain").popover({ trigger: "hover", title: "Derivative Mix Data", placement: "auto bottom" });
         $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom" });
         $("#" + prefix + "_Toggle").popover({ trigger: "hover", title: "Toggle", placement: "auto bottom" });
         $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom" });
@@ -975,15 +980,11 @@ model.Page = function (models) {
         var oFixedColumns = new $.fn.dataTable.FixedColumns(table, {
             leftColumns: 4,
             drawCallback: function (left) {
-                // If we are filtering, remove the row groupings, as they aren't necessary and mess up the resizing
-                // upon filter
+                //// If we are filtering, remove the row groupings, as they aren't necessary and mess up the resizing
+                //// upon filter
                 if (filterModel.getCurrentFilter() === null || filterModel.getCurrentFilter() === "") {
                     me.configureRowGroupings(table, left);
-                } else {
-                    var cloned = $(".DTFC_LeftBodyWrapper").find(".DTFC_Cloned")[0];
-                    var offset = $(cloned).offset();
-                    //$(cloned).offset({ top: 280, left: offset.left });
-                }
+                } 
                 me.configureComments();
                 me.bindContextMenu();
             }
@@ -1130,48 +1131,36 @@ model.Page = function (models) {
         });
         $.contextMenu({
             selector: "#" + prefix + "_TakeRateDataPanel .model-mix",
-            callback: function (key, options) {
+            callback: function(key, options) {
                 var m = "clicked: " + key;
                 window.console && console.log(m) || alert(m);
             },
             items: {
                 view: {
                     name: "ViewDetails",
-                    icon: function (opt, $itemElement) {
+                    icon: function(opt, $itemElement) {
                         // Set the content to the menu trigger selector and add an bootstrap icon to the item.
                         $itemElement.html('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> View Model Mix Details...' + opt.selector);
                     },
-                    callback: function (itemKey, opt) {
+                    callback: function(itemKey, opt) {
                         var target = opt.$trigger;
                         me.actionTriggered(target, 4);
                     }
                 },
                 addNote: {
                     name: "AddNote",
-                    icon: function (opt, $itemElement) {
+                    icon: function(opt, $itemElement) {
                         // Set the content to the menu trigger selector and add an bootstrap icon to the item.
                         $itemElement.html('<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Add Note...' + opt.selector);
                     },
-                    callback: function (itemKey, opt) {
+                    callback: function(itemKey, opt) {
                         var target = opt.$trigger;
                         me.actionTriggered(target, 8);
                     }
                 }
             },
             className: "context-menu-custom"
-        //var prefix = me.getIdentifierPrefix();
-        //$("#" + prefix + "_TakeRateData .cross-tab-data-item").contextMenu({
-        //    menuSelector: "#" + prefix + "_ContextMenu",
-        //    dynamicContent: me.getContextMenu,
-        //    contentIdentifier: me.getDataItemId,
-        //    menuSelected: me.actionTriggered
-        //});
-        //$("#" + prefix + "_TakeRateDataPanel .model-mix").contextMenu({
-        //    menuSelector: "#" + prefix + "_ContextMenu",
-        //    dynamicContent: me.getContextMenu,
-        //    contentIdentifier: me.getModelMixDataItemId,
-        //    menuSelected: me.actionTriggered
-        //});
+        });
     };
     me.raiseFilteredVolumeChanged = function () {
 

@@ -33,7 +33,24 @@ AS
 		, FdpTakeRateFeatureMixId		INT	NULL
 		, FdpPowertrainDataItemId		INT NULL
 		, ParentFdpChangesetDataItemId	INT NULL
+		, IsMarketReview				BIT
 	)
+
+	DECLARE @IsMarketReview AS BIT = 1;
+	IF EXISTS(
+		SELECT TOP 1 1
+		FROM
+		Fdp_Changeset					AS C
+		LEFT JOIN Fdp_MarketReview_VW	AS M	ON	C.FdpVolumeHeaderId = M.FdpVolumeHeaderId
+												AND M.FdpMarketReviewStatusId <> 4
+												AND C.MarketId = M.MarketId
+												AND C.CreatedOn >= M.CreatedOn
+		WHERE
+		C.FdpChangesetId = @FdpChangesetId
+	)
+	BEGIN
+		SET @IsMarketReview = 1
+	END
 
 	-- Get the most recent change for that changeset
 
@@ -87,6 +104,7 @@ AS
 		, FdpTakeRateFeatureMixId
 		, FdpPowertrainDataItemId			
 		, ParentFdpChangesetDataItemId
+		, IsMarketReview
 	)
 	SELECT 
 		  FdpChangesetDataItemId		
@@ -120,6 +138,7 @@ AS
 		, FdpTakeRateFeatureMixId
 		, FdpPowertrainDataItemId			
 		, ParentFdpChangesetDataItemId
+		, @IsMarketReview
 
 	FROM Fdp_ChangesetDataItem
 	WHERE
@@ -157,11 +176,6 @@ AS
 	AND
 	@PriorFdpChangesetDataItemId IS NOT NULL
 	
-	-- Redo any validation
-	-- This has been moved to a seperate routine, as there were performance issues waiting for the validation to complete
-	
-	--EXEC Fdp_Validation_Validate @FdpVolumeHeaderId = @FdpVolumeHeaderId, @MarketId = @MarketId, @CDSId = @CDSId;
-
 	-- This dataset contains any  that have been undone so far as they have reverted to their original committed values
 	-- We need to use this to revert values in the UI without having to resort to reloading the page
 
@@ -184,13 +198,18 @@ AS
 		, U.FdpTakeRateFeatureMixId	
 		, U.FdpPowertrainDataItemId				
 		, U.ParentFdpChangesetDataItemId 
+		, U.IsMarketReview
 	FROM
 	@UndoneChanges						AS U
-	JOIN Fdp_VolumeDataItem_VW			AS V	ON	U.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
-	LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId		= D.FdpChangesetId
-												AND U.FdpVolumeDataItemId	= D.FdpVolumeDataItemId
+	LEFT JOIN Fdp_VolumeDataItem_VW			AS V	ON	U.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
+	--LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId		= D.FdpChangesetId
+	--											AND U.FdpVolumeDataItemId	= D.FdpVolumeDataItemId
 	WHERE
-	D.FdpChangesetDataItemId IS NULL
+	--D.FdpChangesetDataItemId IS NULL
+	--AND
+	U.FeatureIdentifier IS NOT NULL
+	AND 
+	U.ModelIdentifier IS NOT NULL
 
 	UNION
 
@@ -213,13 +232,18 @@ AS
 		, U.FdpTakeRateFeatureMixId
 		, U.FdpPowertrainDataItemId				
 		, U.ParentFdpChangesetDataItemId 
+		, U.IsMarketReview
 	FROM
 	@UndoneChanges						AS U
-	JOIN Fdp_TakeRateSummary			AS S	ON	U.FdpTakeRateSummaryId	= S.FdpTakeRateSummaryId
-	LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId		= D.FdpChangesetId
-												AND U.FdpTakeRateSummaryId	= D.FdpTakeRateSummaryId
+	LEFT JOIN Fdp_TakeRateSummary			AS S	ON	U.FdpTakeRateSummaryId	= S.FdpTakeRateSummaryId
+	--LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId		= D.FdpChangesetId
+	--											AND U.FdpTakeRateSummaryId	= D.FdpTakeRateSummaryId
 	WHERE
-	D.FdpChangesetDataItemId IS NULL
+	--D.FdpChangesetDataItemId IS NULL
+	--AND
+	U.FeatureIdentifier IS NULL
+	AND 
+	U.ModelIdentifier IS NOT NULL
 
 	UNION
 
@@ -242,13 +266,18 @@ AS
 		, U.FdpTakeRateFeatureMixId			
 		, U.FdpPowertrainDataItemId
 		, U.ParentFdpChangesetDataItemId 
+		, U.IsMarketReview
 	FROM
 	@UndoneChanges						AS U
-	JOIN Fdp_TakeRateFeatureMix			AS M	ON	U.FdpTakeRateFeatureMixId	= M.FdpTakeRateFeatureMixId
-	LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId			= D.FdpChangesetId
-												AND U.FdpTakeRateSummaryId		= D.FdpTakeRateSummaryId
+	LEFT JOIN Fdp_TakeRateFeatureMix			AS M	ON	U.FdpTakeRateFeatureMixId	= M.FdpTakeRateFeatureMixId
+	--LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId			= D.FdpChangesetId
+	--											AND U.FdpTakeRateFeatureMixId	= D.FdpTakeRateFeatureMixId
 	WHERE
-	D.FdpChangesetDataItemId IS NULL
+	--D.FdpChangesetDataItemId IS NULL
+	--AND
+	U.FeatureIdentifier IS NOT NULL
+	AND 
+	U.ModelIdentifier IS NULL
 	
 	UNION
 	
@@ -271,10 +300,13 @@ AS
 		, U.FdpTakeRateFeatureMixId	
 		, U.FdpPowertrainDataItemId		
 		, U.ParentFdpChangesetDataItemId 
+		, U.IsMarketReview
 	FROM
 	@UndoneChanges						AS U
-	JOIN Fdp_PowertrainDataItem			AS P	ON	U.FdpPowertrainDataItemId	= P.FdpPowertrainDataItemId
-	LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId			= D.FdpChangesetId
-												AND U.FdpPowertrainDataItemId	= D.FdpPowertrainDataItemId
+	LEFT JOIN Fdp_PowertrainDataItem			AS P	ON	U.FdpPowertrainDataItemId	= P.FdpPowertrainDataItemId
+	--LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId			= D.FdpChangesetId
+	--											AND U.FdpPowertrainDataItemId	= D.FdpPowertrainDataItemId
 	WHERE
-	D.FdpChangesetDataItemId IS NULL
+	--D.FdpChangesetDataItemId IS NULL
+	--AND
+	U.DerivativeIdentifier IS NOT NULL
