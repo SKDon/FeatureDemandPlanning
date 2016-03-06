@@ -11,7 +11,6 @@ using MvcSiteMapProvider.Web.Mvc.Filters;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
@@ -212,6 +211,7 @@ namespace FeatureDemandPlanning.Controllers
             // Get the original values from raw data
             var existingDerivative = rawData.PowertrainDataItems.FirstOrDefault(p => p.DerivativeCode == dataChange.DerivativeCode);
             var affectedModels = rawData.SummaryItems.Where(s => s.DerivativeCode == dataChange.DerivativeCode).ToList();
+            var unaffectedModels = rawData.SummaryItems.Where(s => s.DerivativeCode != dataChange.DerivativeCode && !string.IsNullOrEmpty(s.DerivativeCode)).ToList();
 
             switch (dataChange.Mode)
             {
@@ -239,7 +239,7 @@ namespace FeatureDemandPlanning.Controllers
             // Update the mix for each of the models under the derivative in question
             // Split the volume and percentage take rate equally amongst all models
 
-            var rawTakeRateSummaryItems = affectedModels as IList<RawTakeRateSummaryItem> ?? affectedModels.ToList();
+            var rawTakeRateSummaryItems = affectedModels.ToList();
             var numberOfAffectedModels = rawTakeRateSummaryItems.Count();
             var volumePerModel = dataChange.Volume / numberOfAffectedModels;
             var remainder = dataChange.Volume % numberOfAffectedModels;
@@ -248,7 +248,7 @@ namespace FeatureDemandPlanning.Controllers
             foreach (var modelDataChange in rawTakeRateSummaryItems.Select(affectedModel => new DataChange(dataChange)
             {
                 Volume = volumePerModel,
-                PercentageTakeRate = decimal.Divide(volumePerModel.Value, dataChange.Volume.Value) * 100,
+                PercentageTakeRate = decimal.Divide(volumePerModel.Value, marketVolume) * 100,
                 FdpTakeRateSummaryId = affectedModel.FdpTakeRateSummaryId,
                 OriginalVolume = affectedModel.Volume,
                 OriginalPercentageTakeRate = affectedModel.PercentageTakeRate,
@@ -276,6 +276,23 @@ namespace FeatureDemandPlanning.Controllers
                 {
                     changeset.Changes.Add(featureDataChange);
                 }
+            }
+
+            var unaffectedModelVolume = unaffectedModels.Sum(m => m.Volume);
+
+            // Calculate the feature mix changes now that the volumes for the models have changed
+            foreach (var featureMixDataChange in rawData.FeatureMixItems.Select(featureMixItem => new DataChange(dataChange)
+            {
+                PercentageTakeRate = featureMixItem.PercentageTakeRate * 100,
+                Volume = (int)((unaffectedModelVolume + dataChange.Volume) * featureMixItem.PercentageTakeRate),
+                ModelIdentifier = string.Empty,
+                OriginalPercentageTakeRate = featureMixItem.PercentageTakeRate,
+                OriginalVolume = featureMixItem.Volume,
+                FdpTakeRateFeatureMixId = featureMixItem.FdpTakeRateFeatureMixId,
+                FeatureIdentifier = featureMixItem.FeatureIdentifier
+            }))
+            {
+                changeset.Changes.Add(featureMixDataChange);
             }
         }
 

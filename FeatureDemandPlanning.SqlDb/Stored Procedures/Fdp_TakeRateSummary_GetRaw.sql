@@ -23,6 +23,11 @@ BEGIN
 			WHEN MD2.FdpModelId IS NOT NULL THEN MD2.Name
 		  END
 		  AS Model
+		, CASE
+			WHEN MD1.Id IS NOT NULL THEN MD1.BMC
+			WHEN MD2.FdpModelId IS NOT NULL THEN MD2.BMC
+		  END
+		  AS DerivativeCode
 		, ISNULL(C.TotalVolume, S.Volume) AS Volume
 		, ISNULL(C.PercentageTakeRate, S.PercentageTakeRate) AS PercentageTakeRate
     FROM

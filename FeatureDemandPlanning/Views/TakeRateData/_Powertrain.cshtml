@@ -43,7 +43,7 @@
             <td class="cross-tab-data-item cross-tab-fixed">Volume</td>
             @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
             {
-                <td class="text-center cross-tab-data-item">@powertrainItem.Volume.ToString("N0")</td>
+                <td class="text-center cross-tab-data-item @RenderEdited(powertrainItem)" data-target="@Model.Document.Market.Id|@powertrainItem.DerivativeCode">@powertrainItem.Volume.ToString("N0")</td>
             }
         </tr>
 

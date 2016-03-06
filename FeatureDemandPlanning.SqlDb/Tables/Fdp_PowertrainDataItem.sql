@@ -1,9 +1,10 @@
-CREATE TABLE [dbo].[Fdp_PowertrainDataItem] (
+﻿CREATE TABLE [dbo].[Fdp_PowertrainDataItem] (
     [FdpPowertrainDataItemId] INT            IDENTITY (1, 1) NOT NULL,
     [CreatedOn]               DATETIME       CONSTRAINT [DF_Fdp_PowertrainDataItem_CreatedOn] DEFAULT (getdate()) NOT NULL,
     [CreatedBy]               NVARCHAR (16)  CONSTRAINT [DF_Fdp_PowertrainDataItem_CreatedBy] DEFAULT (suser_sname()) NOT NULL,
     [FdpVolumeHeaderId]       INT            NOT NULL,
     [MarketId]                INT            NOT NULL,
+    [DerivativeCode]          NVARCHAR (20)  NULL,
     [FdoOxoDerivativeId]      INT            NULL,
     [FdpDerivativeId]         INT            NULL,
     [Volume]                  INT            CONSTRAINT [DF_Fdp_PowertrainDataItem_Volume] DEFAULT ((0)) NOT NULL,
@@ -16,6 +17,8 @@ CREATE TABLE [dbo].[Fdp_PowertrainDataItem] (
     CONSTRAINT [FK_Fdp_PowertrainDataItem_Fdp_VolumeHeader] FOREIGN KEY ([FdpVolumeHeaderId]) REFERENCES [dbo].[Fdp_VolumeHeader] ([FdpVolumeHeaderId]),
     CONSTRAINT [FK_Fdp_PowertrainDataItem_OXO_Master_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[OXO_Master_Market] ([Id])
 );
+
+
 
 
 

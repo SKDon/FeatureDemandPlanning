@@ -3,7 +3,7 @@
     [CreatedOn]                  DATETIME       CONSTRAINT [DF_Fdp_TakeRateSummary_CreatedOn] DEFAULT (getdate()) NOT NULL,
     [CreatedBy]                  NVARCHAR (25)  CONSTRAINT [DF_Fdp_TakeRateSummary_CreatedBy] DEFAULT (suser_sname()) NOT NULL,
     [FdpVolumeHeaderId]          INT            NOT NULL,
-    [FdpSpecialFeatureMappingId] INT            NOT NULL,
+    [FdpSpecialFeatureMappingId] INT            NULL,
     [MarketId]                   INT            NULL,
     [ModelId]                    INT            NULL,
     [FdpModelId]                 INT            NULL,
@@ -14,6 +14,8 @@
     [OriginalTakeRateSummaryId]  INT            NULL,
     CONSTRAINT [PK_Fdp_TakeRateSummary] PRIMARY KEY CLUSTERED ([FdpTakeRateSummaryId] ASC)
 );
+
+
 
 
 

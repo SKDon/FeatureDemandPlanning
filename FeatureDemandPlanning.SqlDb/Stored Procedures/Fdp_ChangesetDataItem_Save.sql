@@ -38,7 +38,7 @@ AS
 	AND
 	FeatureId = @FeatureId
 	AND
-	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+	(@ParentFdpChangesetDataItemId IS NULL OR (D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId))
 
 	UPDATE D SET IsDeleted = 1
 	FROM Fdp_ChangesetDataItem AS D
@@ -51,7 +51,7 @@ AS
 	AND
 	FdpFeatureId = @FdpFeatureId
 	AND
-	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+	(@ParentFdpChangesetDataItemId IS NULL OR (D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId))
 
 	UPDATE D SET IsDeleted = 1
 	FROM Fdp_ChangesetDataItem AS D
@@ -64,7 +64,7 @@ AS
 	AND
 	FeatureId = @FeatureId
 	AND
-	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+	(@ParentFdpChangesetDataItemId IS NULL OR (D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId))
 
 	UPDATE D SET IsDeleted = 1
 	FROM Fdp_ChangesetDataItem AS D
@@ -77,7 +77,7 @@ AS
 	AND
 	FdpFeatureId = @FdpFeatureId
 	AND
-	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+	(@ParentFdpChangesetDataItemId IS NULL OR (D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId))
 
 	UPDATE D SET IsDeleted = 1
 	FROM Fdp_ChangesetDataItem AS D
@@ -92,7 +92,7 @@ AS
 	AND
 	FeaturePackId = @FeaturePackId
 	AND
-	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+	(@ParentFdpChangesetDataItemId IS NULL OR (D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId))
 
 	-- Clear model summary
 
@@ -111,7 +111,7 @@ AS
 	AND
 	FeaturePackId IS NULL
 	AND
-	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+	(@ParentFdpChangesetDataItemId IS NULL OR (D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId))
 
 	UPDATE D SET IsDeleted = 1
 	FROM Fdp_ChangesetDataItem AS D
@@ -126,7 +126,7 @@ AS
 	AND
 	FdpFeatureId IS NULL
 	AND
-	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+	(@ParentFdpChangesetDataItemId IS NULL OR (D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId))
 
 	-- Always clear any feature mix entries
 
@@ -143,8 +143,8 @@ AS
 	AND
 	FeatureId = @FeatureId
 	AND
-	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
-	
+	(@ParentFdpChangesetDataItemId IS NULL OR (D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId))
+
 	UPDATE D SET IsDeleted = 1
 	FROM Fdp_ChangesetDataItem AS D
 	WHERE
@@ -158,7 +158,7 @@ AS
 	AND
 	FdpFeatureId = @FdpFeatureId
 	AND
-	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+	(@ParentFdpChangesetDataItemId IS NULL OR (D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId))
 
 	UPDATE D SET IsDeleted = 1
 	FROM Fdp_ChangesetDataItem AS D
@@ -175,7 +175,7 @@ AS
 	AND
 	FeaturePackId = @FeaturePackId
 	AND
-	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+	(@ParentFdpChangesetDataItemId IS NULL OR (D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId))
 
 	-- Clear any powertrain level changes
 
@@ -188,7 +188,7 @@ AS
 	AND
 	D.DerivativeCode IS NOT NULL
 	AND
-	(@ParentFdpChangesetDataItemId IS NULL OR D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId OR D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
+	(@ParentFdpChangesetDataItemId IS NULL OR (D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId))
 
 	INSERT INTO Fdp_ChangesetDataItem
 	(

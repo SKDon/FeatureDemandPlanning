@@ -55,6 +55,7 @@ AS
 			ELSE 'F' + CAST(D.FdpFeatureId AS NVARCHAR(10))
 		  END
 		  AS FeatureIdentifier
+		, D.DerivativeCode
 		, D.TotalVolume AS Volume
 		, D.PercentageTakeRate * 100 AS PercentageTakeRate
 		, @IsMarketReview AS IsMarketReview

@@ -32,6 +32,7 @@ BEGIN
 		, P.Wheelbase
 		, ISNULL(C.TotalVolume, P.Volume) AS Volume
 		, ISNULL(C.PercentageTakeRate, P.PercentageTakeRate) AS PercentageTakeRate
+		, CAST(CASE WHEN C.FdpChangesetId IS NOT NULL THEN 1 ELSE 0 END AS BIT) AS IsDirty
     FROM
     Fdp_VolumeHeader_VW						AS H
     JOIN Fdp_PowertrainDataItem_VW			AS P	ON	H.FdpVolumeHeaderId = P.FdpVolumeHeaderId

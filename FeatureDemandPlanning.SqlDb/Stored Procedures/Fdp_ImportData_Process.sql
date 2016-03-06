@@ -462,69 +462,93 @@ AS
 
 	-- Add the summary volume information for each market / derivative / trim level
 	-- Only add information if it differs from the previous volume data
+	-- Add zero-valued data is a model exists but we have no take rate information for it
 	
 	SET @Message = 'Adding summary information...';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT
-	
-	;WITH Summary AS
+
+	;WITH Markets AS 
+	(
+		SELECT FdpVolumeHeaderId, MarketId
+		FROM
+		Fdp_Import_VW AS I
+		WHERE
+		FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		FdpImportId = @FdpImportId
+		GROUP BY
+		FdpVolumeHeaderId, MarketId
+	)
+	, Summary AS
 	(
 		SELECT
-			  I.FdpImportId
-			, I.FdpVolumeHeaderId
-			, MAX(I.CreatedBy) AS CreatedBy
-			, MAX(I.FdpSpecialFeatureMappingId) AS FdpSpecialFeatureMappingId
-			, I.MarketId
-			, I.ModelId 
-			, CAST(NULL AS INT) AS FdpModelId
-			, SUM(CAST(I.ImportVolume AS INT)) AS ImportVolume
+			  H.FdpVolumeHeaderId
+			, MAX(ISNULL(I.CreatedBy, H.CreatedBy))								AS CreatedBy
+			, MAX(I.FdpSpecialFeatureMappingId)				AS FdpSpecialFeatureMappingId
+			, MK.MarketId
+			, M.Id											AS ModelId 
+			, CAST(NULL AS INT)								AS FdpModelId
+			, SUM(ISNULL(CAST(I.ImportVolume AS INT), 0))	AS ImportVolume
 			, 0 AS PercentageTakeRate
 		FROM
-		Fdp_Import_VW AS I
+		Fdp_VolumeHeader_VW		AS H
+		JOIN Markets			AS MK ON H.FdpVolumeHeaderId = MK.FdpVolumeHeaderId
+		CROSS APPLY dbo.fn_Fdp_AvailableModelByMarket_GetMany(H.FdpVolumeHeaderId, MK.MarketId) 
+								AS M
+		LEFT JOIN Fdp_Import_VW AS I	ON	H.FdpVolumeHeaderId		= I.FdpVolumeHeaderId
+										AND I.FdpImportId			= @FdpImportId
+										AND I.ModelId				= M.Id
+										AND MK.MarketId				= I.MarketId
+										AND I.IsSpecialFeatureCode	= 1
+										AND I.IsMarketMissing		= 0
+										AND I.IsDerivativeMissing	= 0
+										AND I.IsTrimMissing			= 0
 		WHERE
-		I.IsSpecialFeatureCode = 1
+		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND
-		I.IsMarketMissing = 0
+		M.Available = 1
 		AND
-		I.IsDerivativeMissing = 0
-		AND
-		I.IsTrimMissing = 0
-		AND
-		I.ModelId IS NOT NULL
+		M.Id IS NOT NULL
 		GROUP BY
-		  I.FdpImportId
-		, I.FdpVolumeHeaderId
-		, I.MarketId
-		, I.ModelId
-		
+		  H.FdpVolumeHeaderId
+		, MK.MarketId
+		, M.Id
+
 		UNION
-		
+
 		SELECT
-			  I.FdpImportId
-			, I.FdpVolumeHeaderId
-			, MAX(I.CreatedBy) AS CreatedBy
-			, MAX(I.FdpSpecialFeatureMappingId) AS FdpSpecialFeatureMappingId
-			, I.MarketId
-			, CAST(NULL AS INT) AS ModelId 
-			, I.FdpModelId
-			, SUM(CAST(I.ImportVolume AS INT)) AS ImportVolume
+			  H.FdpVolumeHeaderId
+			, MAX(ISNULL(I.CreatedBy, H.CreatedBy))			AS CreatedBy
+			, MAX(I.FdpSpecialFeatureMappingId)				AS FdpSpecialFeatureMappingId
+			, MK.MarketId
+			, CAST(NULL AS INT)								AS ModelId 
+			, M.FdpModelId
+			, SUM(ISNULL(CAST(I.ImportVolume AS INT), 0))	AS ImportVolume
 			, 0 AS PercentageTakeRate
 		FROM
-		Fdp_Import_VW AS I
+		Fdp_VolumeHeader_VW		AS H
+		JOIN Markets			AS MK ON H.FdpVolumeHeaderId = MK.FdpVolumeHeaderId
+		CROSS APPLY dbo.fn_Fdp_AvailableModelByMarket_GetMany(H.FdpVolumeHeaderId, MK.MarketId) 
+								AS M
+		LEFT JOIN Fdp_Import_VW AS I	ON	H.FdpVolumeHeaderId		= I.FdpVolumeHeaderId
+										AND I.FdpImportId			= @FdpImportId
+										AND M.FdpModelId			= I.FdpModelId
+										AND MK.MarketId				= I.MarketId
+										AND I.IsSpecialFeatureCode	= 1
+										AND I.IsMarketMissing		= 0
+										AND I.IsDerivativeMissing	= 0
+										AND I.IsTrimMissing			= 0
 		WHERE
-		I.IsSpecialFeatureCode = 1
+		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND
-		I.IsMarketMissing = 0
+		M.Available = 1
 		AND
-		I.IsDerivativeMissing = 0
-		AND
-		I.IsTrimMissing = 0
-		AND
-		I.FdpModelId IS NOT NULL
+		M.FdpModelId IS NOT NULL
 		GROUP BY
-		  I.FdpImportId
-		, I.FdpVolumeHeaderId
-		, I.MarketId
-		, I.FdpModelId
+		  H.FdpVolumeHeaderId
+		, MK.MarketId
+		, M.FdpModelId
+		
 	)
 	INSERT INTO Fdp_TakeRateSummary
 	(
@@ -583,14 +607,12 @@ AS
 		, S.FdpModelId
 	)
 	AS CUR	ON	S.FdpVolumeHeaderId				= CUR.FdpVolumeHeaderId
-			AND S.FdpSpecialFeatureMappingId	= CUR.FdpSpecialFeatureMappingId
+			AND ISNULL(S.FdpSpecialFeatureMappingId, 0)	= ISNULL(CUR.FdpSpecialFeatureMappingId, 0)
 			AND S.MarketId						= CUR.MarketId
 			AND (S.ModelId		IS NULL	OR S.ModelId	= CUR.ModelId)
 			AND (S.FdpModelId	IS NULL OR S.FdpModelId = CUR.FdpModelId)
 			AND CAST(S.ImportVolume AS INT)		= CUR.Volume
 	WHERE
-	S.FdpImportId = @FdpImportId
-	AND
 	CUR.Volume IS NULL
 	
 	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' summary items added';
@@ -602,36 +624,23 @@ AS
 	(
 		  FdpVolumeHeaderId
 		, CreatedBy
-		, FdpSpecialFeatureMappingId
 		, MarketId
 		, Volume
 		, PercentageTakeRate
 	)
 	SELECT
-		  H.FdpVolumeHeaderId
-		, H.CreatedBy
-		, I.FdpSpecialFeatureMappingId
-		, I.MarketId
-		, SUM(CAST(I.ImportVolume AS INT))
+		  S.FdpVolumeHeaderId
+		, MAX(S.CreatedBy)
+		, S.MarketId
+		, SUM(S.Volume)
 		, 0
 	FROM
-	Fdp_Import_VW					AS I
-	JOIN Fdp_VolumeHeader			AS H	ON	I.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
+	Fdp_TakeRateSummary				AS S
 	WHERE
-	I.FdpImportId = @FdpImportId
-	AND
-	I.IsSpecialFeatureCode = 1
-	AND
-	I.IsMarketMissing = 0
-	AND
-	I.IsDerivativeMissing = 0
-	AND
-	I.IsTrimMissing = 0
+	S.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	GROUP BY
-	  H.FdpVolumeHeaderId
-	, H.CreatedBy
-	, I.FdpSpecialFeatureMappingId
-	, I.MarketId
+	  S.FdpVolumeHeaderId
+	, S.MarketId
 
 	-- Update existing summary entries at market level
 
@@ -643,7 +652,6 @@ AS
 											AND M.MarketId = S.MarketId
 											AND S.ModelId IS NULL
 											AND S.FdpModelId IS NULL
-											AND M.FdpSpecialFeatureMappingId = S.FdpSpecialFeatureMappingId;
 
 	-- Add new summary entries at market level
 
@@ -651,7 +659,6 @@ AS
 	(
 		  CreatedBy
 		, FdpVolumeHeaderId
-		, FdpSpecialFeatureMappingId
 		, MarketId
 		, Volume
 		, PercentageTakeRate
@@ -659,7 +666,6 @@ AS
 	SELECT
 		  M.CreatedBy  
 		, M.FdpVolumeHeaderId
-		, M.FdpSpecialFeatureMappingId
 		, M.MarketId
 		, M.Volume
 		, M.PercentageTakeRate 
@@ -669,7 +675,6 @@ AS
 											AND M.MarketId		= S.MarketId
 											AND S.ModelId		IS NULL
 											AND S.FdpModelId	IS NULL
-											AND M.FdpSpecialFeatureMappingId = S.FdpSpecialFeatureMappingId
 	WHERE
 	S.FdpTakeRateSummaryId IS NULL;
 
@@ -748,6 +753,11 @@ AS
 	RAISERROR(@Message, 0, 1) WITH NOWAIT
 
 	EXEC Fdp_TakeRateFeatureMix_CalculateFeatureMixForAllFeatures @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSID = @CDSId;
+
+	SET @Message = 'Calculating derivative mix...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
+
+	EXEC Fdp_PowertrainDataItem_CalculateMixForAllDerivatives @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSID = @CDSId;
 	
 	-- Update the status of the import queue item
 	
