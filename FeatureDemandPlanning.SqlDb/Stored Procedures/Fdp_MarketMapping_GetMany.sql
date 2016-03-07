@@ -29,14 +29,15 @@ AS
 	SELECT M.FdpMarketMappingId
 	FROM
 	Fdp_MarketMapping		AS M
-	JOIN OXO_Programme_VW	AS P ON M.ProgrammeId = P.Id
+	--JOIN OXO_Programme_VW	AS P ON M.ProgrammeId = P.Id
+	--WHERE
+	--(@CarLine IS NULL OR P.VehicleName = @CarLine)
+	--AND
+	--(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
+	--AND
+	--(@Gateway IS NULL OR M.Gateway = @Gateway)
+	--AND
 	WHERE
-	(@CarLine IS NULL OR P.VehicleName = @CarLine)
-	AND
-	(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
-	AND
-	(@Gateway IS NULL OR M.Gateway = @Gateway)
-	AND
 	M.IsActive = 1
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
@@ -58,9 +59,10 @@ AS
 		, M.IsGlobalMapping
 		, M.ImportMarket
 		, M.MappedMarketId			AS MappedMarketId
-		, MK.Name					AS MarketName
+		, MK.Market_Group_Name		AS GroupName
+		, MK.Market_Name			AS Name
 
 	FROM @PageRecords				AS P
 	JOIN Fdp_MarketMapping			AS M	ON	P.FdpMarketMappingId = M.FdpMarketMappingId
 											AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex
-	JOIN OXO_Master_Market			AS MK	ON	M.MappedMarketId = MK.Id
+	JOIN OXO_Market_Group_Market_VW	AS MK	ON	M.MappedMarketId = MK.Market_Id

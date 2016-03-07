@@ -20,7 +20,6 @@ namespace FeatureDemandPlanning.Model
                 Programme.GetDisplayString(),
                 Gateway,
                 ImportMarket,
-                GroupName,
                 Name
             };
         }

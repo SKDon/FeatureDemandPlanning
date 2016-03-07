@@ -7,8 +7,9 @@ namespace FeatureDemandPlanning.Model.Extensions
     {
         public static string GetDisplayString(this Programme programme)
         {
-            return string.Format("{0} - {1} ({2})", programme.VehicleName, programme.VehicleAKA, programme.ModelYear);
+            return programme == null ? string.Empty : string.Format("{0} - {1} ({2})", programme.VehicleName, programme.VehicleAKA, programme.ModelYear);
         }
+
         public static string GetDisplayString(this OXODoc document)
         {
             return string.Format("{0} {1} {2}", document.Gateway, document.VersionLabel, document.Status);

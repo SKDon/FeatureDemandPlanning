@@ -105,18 +105,17 @@
     <Folder Include="Security\" />
     <Folder Include="Functions\" />
     <Folder Include="Stored Procedures\" />
-    <Folder Include="DML" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Fdp_Configuration.sql" />
-    <Build Include="Tables\Fdp_Derivative.sql" />
+    <Build Include="Tables\Fdp_Derivative.sql">
+      <AnsiNulls>On</AnsiNulls>
+    </Build>
     <Build Include="Tables\Fdp_DerivativeMapping.sql" />
-    <Build Include="Tables\Fdp_Feature.sql" />
+    <Build Include="Tables\Fdp_Feature.sql">
+      <AnsiNulls>Off</AnsiNulls>
+    </Build>
     <Build Include="Tables\Fdp_FeatureMapping.sql" />
-    <Build Include="Tables\Fdp_Forecast.sql" />
-    <Build Include="Tables\Fdp_ForecastComparison.sql" />
-    <Build Include="Tables\Fdp_ForecastComparisonTrim.sql" />
-    <Build Include="Tables\Fdp_ForecastVehicle.sql" />
     <Build Include="Tables\Fdp_Import.sql" />
     <Build Include="Tables\Fdp_ImportData.sql" />
     <Build Include="Tables\Fdp_ImportError.sql" />
@@ -150,28 +149,54 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="Tables\Fdp_PermissionObjectType.sql" />
-    <Build Include="Tables\Fdp_PermissionOperation.sql" />
+    <Build Include="Tables\Fdp_PermissionOperation.sql">
+      <AnsiNulls>Off</AnsiNulls>
+    </Build>
     <Build Include="Tables\Fdp_PermissionType.sql" />
     <Build Include="Tables\Fdp_SpecialFeature.sql" />
     <Build Include="Tables\Fdp_SpecialFeatureType.sql" />
     <Build Include="Tables\Fdp_TakeRateStatus.sql" />
     <Build Include="Tables\Fdp_TopMarket.sql" />
-    <Build Include="Tables\Fdp_Trim.sql" />
+    <Build Include="Tables\Fdp_Trim.sql">
+      <AnsiNulls>Off</AnsiNulls>
+    </Build>
     <Build Include="Tables\Fdp_TrimMapping.sql" />
     <Build Include="Tables\Fdp_TrimMapping_Old.sql" />
     <Build Include="Tables\Fdp_User.sql" />
-    <Build Include="Tables\Fdp_UserProgramme.sql" />
-    <Build Include="Tables\Fdp_VolumeDataItem.sql" />
+    <Build Include="Tables\Fdp_UserProgramme.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_VolumeDataItem.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Tables\Fdp_VolumeHeader.sql" />
     <Build Include="Views\Fdp_Derivative_VW.sql" />
-    <Build Include="Views\Fdp_DerivativeMapping_VW.sql" />
-    <Build Include="Views\Fdp_FeatureMapping_VW.sql" />
-    <Build Include="Views\Fdp_Forecast_VW.sql" />
-    <Build Include="Views\Fdp_ForecastComparison_VW.sql" />
-    <Build Include="Views\Fdp_Gateways_VW.sql" />
-    <Build Include="Views\Fdp_Import_VW.sql" />
-    <Build Include="Views\Fdp_ImportError_VW.sql" />
-    <Build Include="Views\Fdp_ImportQueue_VW.sql" />
+    <Build Include="Views\Fdp_DerivativeMapping_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_FeatureMapping_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_Gateways_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_Import_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_ImportError_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_ImportQueue_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Views\Fdp_ImportQueueError_VW.sql" />
     <Build Include="Views\Fdp_MarketMapping_VW.sql">
       <AnsiNulls>Off</AnsiNulls>
@@ -181,9 +206,6 @@
     <Build Include="Views\Fdp_TopMarket_VW.sql" />
     <Build Include="Views\Fdp_TrimLevels.sql" />
     <Build Include="Views\Fdp_TrimMapping_VW.sql" />
-    <Build Include="Views\Fdp_UserProgramme_VW.sql" />
-    <Build Include="Functions\Fdp_UserProgrammes.sql" />
-    <Build Include="Functions\Fdp_UserProgrammes_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_Edit.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_GetMany.sql" />
@@ -195,7 +217,10 @@
     <Build Include="Stored Procedures\Fdp_DerivativeMapping_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_DerivativeMapping_Get.sql" />
     <Build Include="Stored Procedures\Fdp_DerivativeMapping_GetMany.sql" />
-    <Build Include="Stored Procedures\Fdp_DerivativeMapping_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_DerivativeMapping_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_Feature_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_Feature_Get.sql" />
     <Build Include="Stored Procedures\Fdp_Feature_GetMany.sql" />
@@ -210,9 +235,18 @@
     <Build Include="Stored Procedures\Fdp_ForecastComparisonTrim_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_ForecastComparisonTrim_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ForecastComparisonVehicle_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportData_Process.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportError_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportError_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportData_Process.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ImportError_Get.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ImportError_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_ImportError_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_Save.sql" />
@@ -220,7 +254,10 @@
     <Build Include="Stored Procedures\Fdp_ImportQueue_Get.sql" />
     <Build Include="Stored Procedures\Fdp_ImportQueue_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_ImportQueue_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportQueue_UpdateStatus.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportQueue_UpdateStatus.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_ImportQueueError_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_ImportQueueError_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ImportStatus_Get.sql" />
@@ -233,7 +270,10 @@
     <Build Include="Stored Procedures\Fdp_MarketMapping_Save.sql" />
     <Build Include="Stored Procedures\Fdp_News_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_News_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_ProgrammeByGateway_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ProgrammeByGateway_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_SpecialFeatureType_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_TakeRateStatus_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_TopMarket_Delete.sql" />
@@ -246,14 +286,32 @@
     <Build Include="Stored Procedures\Fdp_TrimLevels_Get.sql" />
     <Build Include="Stored Procedures\Fdp_TrimMapping_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_TrimMapping_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_TrimMapping_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_TrimMapping_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_TrimMapping_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_User_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_User_GetMany.sql" />
-    <Build Include="Stored Procedures\Fdp_User_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_User_Get.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_User_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_User_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_User_SetIsActive.sql" />
-    <Build Include="Stored Procedures\Fdp_User_SetIsAdmin.sql" />
-    <Build Include="Stored Procedures\Fdp_UserProgramme_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_User_SetIsAdmin.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_UserProgramme_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_VolumeHeader_GetManyByOxoDocId.sql" />
     <Build Include="Views\Fdp_SpecialFeatureMapping_VW.sql">
       <AnsiNulls>On</AnsiNulls>
@@ -401,7 +459,10 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_TakeRateDataItem_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_TakeRateDataItemNote_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateDataItemNote_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Tables\Fdp_TakeRateDataItemAudit.sql" />
     <Build Include="Tables\Fdp_TakeRateDataItemNote.sql" />
     <Build Include="Tables\Fdp_ChangesetDataItem.sql">
@@ -480,7 +541,10 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_TakeRateHeader_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_TakeRateHeader_IncrementRevision.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
@@ -573,10 +637,7 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-<<<<<<< HEAD
-    <Build Include="Stored Procedures\Fdp_TakeRateModelSummaryItem_Get.sql" />
-=======
-    <Build Include="Stored Procedures\Fdp_ChangesetDataItem_Undo.sql">
+    <Build Include="Stored Procedures\Fdp_TakeRateModelSummaryItem_Get.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
@@ -592,13 +653,299 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
->>>>>>> 19e275f561ac253b47f31f8f8ef3eca7c63a329a
+    <Build Include="Security\RoleMemberships_1.sql" />
+    <Build Include="Stored Procedures\Fdp_Changeset_GetHistory.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Changeset_Undo.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_MarketGroup_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_ForecastVehicle_1.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_ForecastComparisonTrim_1.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_ForecastComparison_1.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_Forecast_1.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_ForecastComparison_VW_1.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_Forecast_VW_1.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_ValidationRule.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_Validation.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ValidationRule_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_Validation_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_FeaturePackFeature_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_FeaturePack_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_TakeRateOutOfRange.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_StandardFeatures100Percent.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_NonApplicableFeatures0Percent.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Derivative_GetMappedBMC_1.sql" />
+    <Build Include="Stored Procedures\Fdp_Validation_VolumeForModelGreaterThanMarket.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_VolumeForFeatureGreaterThanModel.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_TotalTakeRateForModelsOutOfRange.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_TakeRateForPackFeaturesShouldBeEquivalent.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_TakeRateForEFGShouldEqual100Percent.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_Validate.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_UserRole_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_UserRoleMapping.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_UserRole.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_UserProgrammeMapping.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_UserMarketMapping.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_UserAction.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_UserMarket_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_UserProgrammes_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_UserMarkets_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_User_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Functions\fn_Fdp_UserRoles_GetMany.sql" />
+    <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany.sql" />
+    <Build Include="Functions\fn_Fdp_UserMarkets_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_UserRoles_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_VolumeHeader_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Functions\fn_Fdp_FeatureApplicability_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_MarketReview_GetManyByUsername.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_MarketReview.sql" />
+    <Build Include="Functions\fn_Fdp_UserMarkets_GetMany2.sql" />
+    <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany2.sql" />
+    <Build Include="Tables\Fdp_MarketReviewStatus.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_MarketReview_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_MarketReview_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_MarketReview_Get.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_EmailTemplate.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_EmailTemplate_Get.sql" />
+    <Build Include="Tables\Fdp_MarketReviewAudit.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_GetHistory.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Functions\fn_Fdp_Changeset_GetLatestByUser.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_Persist.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Validation_Clear.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateSummary_GetRaw.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateFeatureMix_GetRaw.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateData_GetRaw.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Powertrain_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_PowertrainDataItem_GetRaw.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_PowertrainDataItem.sql" />
+    <Build Include="Views\Fdp_PowertrainDataItem_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_ChangesetPowertrainDataItem_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Model_Clone.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateData_Clone.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateHeader_Clear.sql" />
+    <Build Include="Stored Procedures\Fdp_Trim_Clone.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Feature_Clone.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_Derivative_Clone.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_TakeRateHeaderNote.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="CloneOxo.sql" />
+    <Build Include="Stored Procedures\Fdp_Market_GetMany.sql" />
+<<<<<<< HEAD
+    <Build Include="Tables\Fdp_PowertrainDataItemAudit.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Tables\Fdp_OxoDervivative.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Views\Fdp_AllFeatures_VW.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Functions\fn_Fdp_TakeRateData_ByMarket_Get2.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+=======
+    <Build Include="Tables\Fdp_OxoDervivative.sql" />
+    <Build Include="Tables\Fdp_PowertrainDataItemAudit.sql" />
+    <Build Include="Views\Fdp_AllFeatures_VW.sql" />
+>>>>>>> c9d6c42a130a05c5764d318ed9a65d1e787bb103
   </ItemGroup>
   <ItemGroup>
-    <ArtifactReference Include="..\..\Oxo\OxoSqlDb\Snapshots\Oxo.dacpac">
-      <HintPath>..\..\Oxo\OxoSqlDb\Snapshots\Oxo.dacpac</HintPath>
-      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
-    </ArtifactReference>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">
       <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac</HintPath>
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
@@ -609,5 +956,23 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
+    <ArtifactReference Include="..\..\OXO\OxoSqlDb\bin\Debug\OxoSqlDb.dacpac">
+      <HintPath>..\..\OXO\OxoSqlDb\bin\Debug\OxoSqlDb.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
+    </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Script.PostDeployment1.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <SqlCmdVariable Include="OxoSqlDb">
+      <DefaultValue>OxoSqlDb</DefaultValue>
+      <Value>$(SqlCmdVar__1)</Value>
+    </SqlCmdVariable>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FeatureDemandPlanning.FdpSqlDb.publish.xml" />
+    <None Include="L494.sql" />
+    <None Include="L462.sql" />
   </ItemGroup>
 </Project>

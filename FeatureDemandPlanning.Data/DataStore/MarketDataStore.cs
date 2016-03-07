@@ -419,7 +419,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpDerivativeMappingId", filter.MarketMappingId.GetValueOrDefault(), DbType.Int32);
+                    para.Add("@FdpMarketMappingId", filter.MarketMappingId.GetValueOrDefault(), DbType.Int32);
 
                     var results = conn.Query<FdpMarketMapping>("Fdp_MarketMapping_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
