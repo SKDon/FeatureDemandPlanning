@@ -84,6 +84,46 @@ namespace FeatureDemandPlanning.Security
                     .AddPolicy<HasAccessToMarketPolicy>()
                     .AddPolicy<HasAccessToProgrammePolicy>()
                     .RequireAnyRole("Administrator", "Editor", "MarketReviewer");
+
+                configuration.For<DerivativeController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
+                
+                configuration.For<DerivativeMappingController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
+
+                configuration.For<TrimController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
+
+                configuration.For<TrimMappingController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
+
+                configuration.For<FeatureController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
+
+                configuration.For<FeatureMappingController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
+
+                configuration.For<MarketController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
+
+                configuration.For<MarketMappingController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
+
+                configuration.For<IgnoredExceptionController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
+
+                configuration.For<SpecialFeatureMappingController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("Administrator", "Importer");
             });
             GlobalFilters.Filters.Add(new HandleSecurityAttribute(), 0);
         }

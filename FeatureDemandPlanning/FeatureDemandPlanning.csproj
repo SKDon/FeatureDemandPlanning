@@ -1092,7 +1092,6 @@
     <Content Include="Views\TakeRateData\_TakeRateData.cshtml" />
     <Content Include="Views\TakeRateData\_MarketSelector.cshtml" />
     <Content Include="Views\TakeRateData\_Scripts.cshtml" />
-    <Content Include="Views\TakeRate\_Modal.cshtml" />
     <Content Include="Views\TakeRate\_Scripts.cshtml" />
     <Content Include="Views\TakeRate\TakeRatePage.cshtml" />
     <Content Include="Views\TakeRateData\_ContextMenu.cshtml" />
