@@ -57,7 +57,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     para.Add("@FdpImportId", importQueue.ImportId, DbType.Int32);
-                    para.Add("@FdpVolumeHeaderId", null, DbType.Int32, ParameterDirection.Output);
+                    //para.Add("@FdpVolumeHeaderId", null, DbType.Int32, ParameterDirection.Output);
 
                     if (importQueue.LineNumber.HasValue)
                     {

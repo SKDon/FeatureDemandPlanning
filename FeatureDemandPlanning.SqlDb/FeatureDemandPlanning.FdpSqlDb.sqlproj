@@ -266,7 +266,10 @@
     <Build Include="Stored Procedures\Fdp_ImportType_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_MarketMapping_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_MarketMapping_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_MarketMapping_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_MarketMapping_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_MarketMapping_Save.sql" />
     <Build Include="Stored Procedures\Fdp_News_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_News_Save.sql" />
@@ -920,7 +923,7 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="CloneOxo.sql" />
+    <None Include="CloneOxo.sql" />
     <Build Include="Stored Procedures\Fdp_Market_GetMany.sql" />
     <Build Include="Tables\Fdp_PowertrainDataItemAudit.sql">
       <AnsiNulls>On</AnsiNulls>
@@ -977,5 +980,6 @@
     <None Include="FeatureDemandPlanning.FdpSqlDb.publish.xml" />
     <None Include="L494.sql" />
     <None Include="L462.sql" />
+    <None Include="FirstUser.sql" />
   </ItemGroup>
 </Project>

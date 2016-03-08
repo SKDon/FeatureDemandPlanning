@@ -22,7 +22,7 @@ USING (VALUES
 	, (N'FdpUploadFilePath', N'K:\Data\wwwroot\Upload\FDP', N'The location where uploaded files are placed', N'System.String')
 	, (N'NumberOfComparisonVehicles', N'5', N'The number of vehicles to use for comparison data', N'System.Int32')
 	, (N'NumberOfTopMarkets', N'28', N'The number of markets to use for comparison data', N'System.Int32')
-	, (N'ShowAllOXODocuments', N'0', N'Determines whether or not to show all OXO documents, regardless as to published state', N'System.Boolean')
+	, (N'ShowAllOXODocuments', N'1', N'Determines whether or not to show all OXO documents, regardless as to published state', N'System.Boolean')
 	, (N'SkipFirstXRowsInImportFile', N'3', N'Specifies the number of rows to skip for FDP import files. Eliminates header information', N'System.Int32')
 	, (N'ReprocessImportAfterHandleError', N'1', N'Whether to reprocess the entire dataset each time an error is handled in the worktray', N'System.Boolean')
 )
