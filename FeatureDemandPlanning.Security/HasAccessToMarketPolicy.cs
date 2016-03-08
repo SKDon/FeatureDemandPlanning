@@ -36,7 +36,7 @@ namespace FeatureDemandPlanning.Security
         {
             var user = Context.User.GetUser();
 
-            return user.Markets.Any(m => m.MarketId == marketId);
+            return user.Markets.Any(m => m.MarketId == marketId) || user.HasAccessAllMarketsRole();
         }
         private string GetMarketName(int marketId)
         {

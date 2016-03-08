@@ -46,14 +46,24 @@ namespace FeatureDemandPlanning.Model
         {
             return Roles.Any(r => r == UserRole.MarketReviewer || r == UserRole.Approver);
         }
+        public bool HasAccessAllProgrammesRole()
+        {
+            return Roles.Any(r => r == UserRole.AllProgrammes);
+        }
+        public bool HasAccessAllMarketsRole()
+        {
+            return Roles.Any(r => r == UserRole.AllMarkets);
+        }
         public bool IsMarketEditable(int marketId)
         {
-            return Markets.Any(m => m.Action == UserAction.Edit && m.MarketId == marketId);
+            return Markets.Any(m => m.Action == UserAction.Edit && m.MarketId == marketId) ||
+                (HasEditRole() && HasAccessAllMarketsRole());
         }
         public bool IsProgrammeEditable(int programmeId)
         {
             return Programmes.Any(
-                p => p.Action == UserAction.Edit && p.ProgrammeId == programmeId);
+                p => p.Action == UserAction.Edit && p.ProgrammeId == programmeId) ||
+                   (HasEditRole() && HasAccessAllProgrammesRole());
         }
         public string[] ToJQueryDataTableResult()
         {

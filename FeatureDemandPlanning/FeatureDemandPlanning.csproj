@@ -264,6 +264,8 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Content\css\jquery.contextMenu.css" />
+    <Content Include="Content\Images\Icons\news32.png" />
+    <Content Include="Content\Images\Icons\news64.png" />
     <Content Include="Content\js\jquery.contextMenu.js" />
     <Content Include="Content\js\jquery.ui.position.js" />
     <Content Include="Content\js\MarketReview\init.js" />

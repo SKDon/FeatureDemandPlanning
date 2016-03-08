@@ -64,7 +64,7 @@ namespace FeatureDemandPlanning.Security
         {
             var user = Context.User.GetUser();
 
-            return user.Programmes.Any(m => m.ProgrammeId == programmeId);
+            return user.Programmes.Any(m => m.ProgrammeId == programmeId) || user.HasAccessAllProgrammesRole();
         }
         private string GetProgrammeName(int programmeId)
         {
