@@ -1,5 +1,6 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_ImportError_VW] AS
 
 	SELECT 
@@ -22,9 +23,9 @@ CREATE VIEW [dbo].[Fdp_ImportError_VW] AS
 		, D.[Trim Pack Description] AS ImportDerivative
 		, D.[Trim Pack Description] AS ImportTrim
 		
-	FROM Fdp_ImportError	 AS E
-	JOIN Fdp_Import			 AS I ON E.FdpImportQueueId		= I.FdpImportQueueId
-	JOIN Fdp_ImportErrorType AS T ON E.FdpImportErrorTypeId = T.FdpImportErrorTypeId
-	JOIN Fdp_ImportData		 AS D ON I.FdpImportId			= D.FdpImportId
-								  AND E.LineNumber			= D.LineNumber	
+	FROM Fdp_Import			 AS I 
+	JOIN Fdp_ImportError	 AS	E	ON	I.FdpImportQueueId		= E.FdpImportQueueId
+	JOIN Fdp_ImportErrorType AS T	ON	E.FdpImportErrorTypeId	= T.FdpImportErrorTypeId
+	JOIN Fdp_ImportData		 AS D	ON	I.FdpImportId			= D.FdpImportId
+									AND E.LineNumber			= D.LineNumber	
 

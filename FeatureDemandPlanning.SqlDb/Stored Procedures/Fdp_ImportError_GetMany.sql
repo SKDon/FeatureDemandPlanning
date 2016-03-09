@@ -18,6 +18,7 @@ AS
 	IF @PageIndex IS NULL 
 		SET @PageIndex = 1;
 	
+	DECLARE @FdpImportId AS INT;
 	DECLARE @MinIndex AS INT;
 	DECLARE @MaxIndex AS INT;
 	DECLARE @PageRecords AS TABLE
@@ -26,6 +27,9 @@ AS
 		, FdpImportErrorId INT
 		, LineNumber INT
 	);
+	
+	SELECT @FdpImportId = FdpImportId FROM Fdp_Import WHERE FdpImportQueueId = @FdpImportQueueId;
+	
 	INSERT INTO @PageRecords 
 	(
 		  E.FdpImportErrorId
@@ -38,6 +42,8 @@ AS
 	FROM Fdp_ImportError_VW AS E
 	WHERE
 	E.FdpImportQueueId = @FdpImportQueueId
+	AND
+	E.FdpImportId = @FdpImportId
 	AND
 	E.IsExcluded = 0
 	AND
