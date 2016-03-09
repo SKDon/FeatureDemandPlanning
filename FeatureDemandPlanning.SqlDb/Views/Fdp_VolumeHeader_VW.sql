@@ -1,4 +1,4 @@
-﻿CREATE VIEW Fdp_VolumeHeader_VW AS
+﻿CREATE VIEW [dbo].[Fdp_VolumeHeader_VW] AS
 
 	SELECT
 		  H.FdpVolumeHeaderId

@@ -1,4 +1,4 @@
-﻿CREATE VIEW Fdp_AllFeatures_VW
+﻿CREATE VIEW [dbo].[Fdp_AllFeatures_VW]
 AS
 
 	-- Features where we have data

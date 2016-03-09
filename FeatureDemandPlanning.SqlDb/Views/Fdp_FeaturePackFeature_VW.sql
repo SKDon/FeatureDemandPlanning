@@ -1,4 +1,4 @@
-﻿CREATE VIEW Fdp_FeaturePackFeature_VW AS
+﻿CREATE VIEW [dbo].[Fdp_FeaturePackFeature_VW] AS
 
 	SELECT P.FdpVolumeHeaderId
 	, P.MarketId

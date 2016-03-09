@@ -170,8 +170,6 @@ AS
 			, MAX(OXO_Code)
 			, 'O' + CAST(Model_Id AS NVARCHAR(10))
 		FROM dbo.FN_OXO_Data_Get_FBM_MarketGroup(@DocumentId, @MarketGroupId, @OxoModelIds)
-		WHERE
-		CAST(SUBSTRING(OXO_Code, 1, 1) AS INT) <= 2 -- Don't look lower than market group level
 		GROUP BY
 		Model_Id, Feature_Id
 	END

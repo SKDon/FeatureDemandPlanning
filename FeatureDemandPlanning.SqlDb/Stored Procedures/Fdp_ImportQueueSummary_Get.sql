@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE Fdp_ImportQueueSummary_Get
+﻿CREATE PROCEDURE [dbo].[Fdp_ImportQueueSummary_Get]
 	@FdpImportQueueId INT
 AS
 	SET NOCOUNT ON;

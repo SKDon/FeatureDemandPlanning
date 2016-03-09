@@ -4,6 +4,7 @@
 	, @CDSId				AS NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
+	SET ANSI_WARNINGS OFF;
 
 	DECLARE @DataForFeature AS TABLE
 	(
@@ -122,8 +123,8 @@ AS
 		, D.FeatureId
 		, CAST(NULL AS INT) AS FdpFeatureId
 		, CAST(NULL AS INT) AS FeaturePackId
-		, SUM(D.TotalVolume) AS TotalVolume
-		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), 
+		, SUM(ISNULL(D.TotalVolume, 0)) AS TotalVolume
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(ISNULL(D.TotalVolume, 0)), 
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
 		, MAX(CUR.FdpTakeRateFeatureMixId) AS FdpTakeRateFeatureMixId
 	FROM 
@@ -147,8 +148,8 @@ AS
 		, CAST(NULL AS INT) AS FeatureId
 		, D.FdpFeatureId
 		, CAST(NULL AS INT) AS FeaturePackId
-		, SUM(D.TotalVolume) AS TotalVolume
-		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), 
+		, SUM(ISNULL(D.TotalVolume, 0)) AS TotalVolume
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(ISNULL(D.TotalVolume, 0)), 
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
 		, MAX(CUR.FdpTakeRateFeatureMixId) AS FdpTakeRateFeatureMixId
 	FROM 
@@ -172,8 +173,8 @@ AS
 		, CAST(NULL AS INT) AS FeatureId
 		, CAST(NULL AS INT) AS FdpFeatureId
 		, D.FeaturePackId
-		, SUM(D.TotalVolume) AS TotalVolume
-		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), 
+		, SUM(ISNULL(D.TotalVolume, 0)) AS TotalVolume
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(ISNULL(D.TotalVolume, 0)), 
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
 		, MAX(CUR.FdpTakeRateFeatureMixId) AS FdpTakeRateFeatureMixId
 	FROM 

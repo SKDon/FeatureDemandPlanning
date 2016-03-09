@@ -677,6 +677,9 @@ AS
 											AND S.FdpModelId	IS NULL
 	WHERE
 	S.FdpTakeRateSummaryId IS NULL;
+	
+	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' market level summary items added';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
 
 	-- Update the percentage take rates for each market
 	-- We need to do this afterwards as the import may only contain partial data
@@ -696,10 +699,18 @@ AS
 	FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	TotalVolume <> @TotalVolume;
+	
+	SET @Message = 'Total volume for all markets updated: ' + CAST(@TotalVolume AS NVARCHAR(10));
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
 
 	-- % Take at market level	
 	
-	UPDATE S SET PercentageTakeRate = Volume / CAST(@TotalVolume AS DECIMAL(10, 4))
+	UPDATE S SET PercentageTakeRate = 
+		CASE
+			WHEN @TotalVolume = 0 THEN 0
+			WHEN ISNULL(@TotalVolume, 0) <> 0 THEN Volume / CAST(@TotalVolume AS DECIMAL(10, 4))
+			ELSE 0
+		END
 	FROM
 	Fdp_TakeRateSummary AS S
 	WHERE
@@ -708,11 +719,15 @@ AS
 	S.ModelId IS NULL
 	AND
 	S.FdpModelId IS NULL;
+	
+	SET @Message = 'Take rate for each market updated';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
 
 	-- % Take at model level
 	
 	UPDATE M SET PercentageTakeRate = 
-		CASE 
+		CASE
+			WHEN MK.Volume = 0 THEN 0 
 			WHEN ISNULL(MK.Volume, 0) <> 0 THEN M.Volume / CAST(MK.Volume AS DECIMAL(10,4))
 			ELSE 0
 		END
@@ -735,6 +750,7 @@ AS
 	
 	UPDATE F SET PercentageTakeRate = 
 		CASE 
+			WHEN M.Volume = 0 THEN 0
 			WHEN ISNULL(M.Volume, 0) <> 0 THEN F.Volume / CAST(M.Volume AS DECIMAL(10,4))
 			ELSE 0
 		END
@@ -746,6 +762,9 @@ AS
 										AND F.FdpVolumeHeaderId = M.FdpVolumeHeaderId
 	WHERE
 	F.FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	
+	SET @Message = 'Take rate for features updated';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
 	
 	-- Calculate and persist the feature mix for each feature / for each market
 

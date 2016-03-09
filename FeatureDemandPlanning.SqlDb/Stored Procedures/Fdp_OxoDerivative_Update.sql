@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE Fdp_OxoDerivative_Update
+﻿CREATE PROCEDURE [dbo].[Fdp_OxoDerivative_Update]
 	@FdpVolumeHeaderId AS INT
 AS
 	SET NOCOUNT ON;
@@ -25,6 +25,8 @@ AS
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	CUR.FdpOxoDervivativeId IS NULL
+	AND
+	M.BMC IS NOT NULL
 	GROUP BY
 	H.ProgrammeId, M.BMC, M.Body_Id, M.Engine_Id, M.Transmission_Id
 
@@ -45,5 +47,7 @@ AS
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	CUR.FdpOxoDervivativeId IS NULL
+	AND
+	M.BMC IS NOT NULL
 	GROUP BY
 	H.ProgrammeId, M.BMC, M.Body_Id, M.Engine_Id, M.Transmission_Id

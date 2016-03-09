@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE Fdp_ValidationRule_GetMany
+﻿CREATE PROCEDURE [dbo].[Fdp_ValidationRule_GetMany]
 AS
 BEGIN
 
