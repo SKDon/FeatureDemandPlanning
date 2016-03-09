@@ -123,6 +123,8 @@ AS
 		
 	FROM @PageRecords		AS P
 	JOIN Fdp_ImportError_VW AS E	ON	P.FdpImportErrorId = E.FdpImportErrorId
+									AND E.FdpImportId = @FdpImportId
+									AND E.FdpImportQueueId = @FdpImportQueueId
 									AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex
 	ORDER BY
 	P.RowIndex;
