@@ -13,7 +13,7 @@
     [UpdatedBy]               NVARCHAR (16)  NULL,
     CONSTRAINT [PK_Fdp_PowertrainDataItem] PRIMARY KEY CLUSTERED ([FdpPowertrainDataItemId] ASC),
     CONSTRAINT [FK_Fdp_PowertrainDataItem_Fdp_Derivative] FOREIGN KEY ([FdpDerivativeId]) REFERENCES [dbo].[Fdp_Derivative] ([FdpDerivativeId]),
-    CONSTRAINT [FK_Fdp_PowertrainDataItem_Fdp_OxoDervivative] FOREIGN KEY ([FdoOxoDerivativeId]) REFERENCES [dbo].[Fdp_OxoDervivative] ([FdpOxoDervivativeId]),
+    CONSTRAINT [FK_Fdp_PowertrainDataItem_Fdp_OxoDervivative] FOREIGN KEY ([FdoOxoDerivativeId]) REFERENCES [dbo].[Fdp_OxoDerivative] ([FdpOxoDerivativeId]),
     CONSTRAINT [FK_Fdp_PowertrainDataItem_Fdp_VolumeHeader] FOREIGN KEY ([FdpVolumeHeaderId]) REFERENCES [dbo].[Fdp_VolumeHeader] ([FdpVolumeHeaderId]),
     CONSTRAINT [FK_Fdp_PowertrainDataItem_OXO_Master_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[OXO_Master_Market] ([Id])
 );

@@ -5,7 +5,7 @@ AS
 		  D.FdpVolumeHeaderId
 		, D.MarketId
 		, D.DerivativeCode
-		, D.FdpOxoDervivativeId
+		, D.FdpOxoDerivativeId
 		, D.FdpDerivativeId
 		, D.BodyId
 		, D.EngineId
@@ -28,7 +28,7 @@ AS
 		  H.FdpVolumeHeaderId
 		, O.Market_Id			AS MarketId
 		, D.DerivativeCode
-		, D.FdpOxoDervivativeId
+		, D.FdpOxoDerivativeId
 		, CAST(NULL AS INT) AS FdpDerivativeId
 		, D.BodyId
 		, D.EngineId
@@ -37,13 +37,13 @@ AS
 	Fdp_VolumeHeader_VW				AS H
 	JOIN OXO_Item_Data_MBM			AS O	ON H.DocumentId			= O.OXO_Doc_Id
 	JOIN OXO_Programme_Model		AS M	ON O.Model_Id			= M.Id
-	JOIN Fdp_OxoDervivative			AS D	ON M.BMC				= D.DerivativeCode
+	JOIN Fdp_OxoDerivative			AS D	ON M.BMC				= D.DerivativeCode
 
 	GROUP BY
 	  H.FdpVolumeHeaderId
 	, O.Market_Id
 	, D.DerivativeCode
-	, D.FdpOxoDervivativeId
+	, D.FdpOxoDerivativeId
 	, D.BodyId
 	, D.EngineId
 	, D.TransmissionId
@@ -55,7 +55,7 @@ AS
 	      H.FdpVolumeHeaderId
 		, S.MarketId
 		, D.DerivativeCode
-		, D.FdpOxoDervivativeId
+		, D.FdpOxoDerivativeId
 		, CAST(NULL AS INT) AS FdpDerivativeId
 		, D.BodyId
 		, D.EngineId
@@ -63,12 +63,12 @@ AS
 	FROM
 	Fdp_VolumeHeader_VW							AS H
 	JOIN Fdp_TakeRateSummaryByModelAndMarket_VW AS S ON H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
-	JOIN Fdp_OxoDervivative						AS D ON S.BMC				= D.DerivativeCode
+	JOIN Fdp_OxoDerivative						AS D ON S.BMC				= D.DerivativeCode
 	GROUP BY
 	  H.FdpVolumeHeaderId
 	, S.MarketId
 	, D.DerivativeCode
-	, D.FdpOxoDervivativeId
+	, D.FdpOxoDerivativeId
 	, D.BodyId
 	, D.EngineId
 	, D.TransmissionId

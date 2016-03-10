@@ -3,7 +3,7 @@
 AS
 	SET NOCOUNT ON;
 
-	INSERT INTO Fdp_OxoDervivative
+	INSERT INTO Fdp_OxoDerivative
 	(
 		  ProgrammeId
 		, DerivativeCode
@@ -20,11 +20,11 @@ AS
 	FROM
 	Fdp_VolumeHeader_VW				AS H 
 	JOIN OXO_Programme_Model		AS M	ON H.ProgrammeId	= M.Programme_Id
-	LEFT JOIN Fdp_OxoDervivative	AS CUR	ON M.BMC			= CUR.DerivativeCode			
+	LEFT JOIN Fdp_OxoDerivative	AS CUR	ON M.BMC			= CUR.DerivativeCode			
 	WHERE
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	CUR.FdpOxoDervivativeId IS NULL
+	CUR.FdpOxoDerivativeId IS NULL
 	AND
 	M.BMC IS NOT NULL
 	GROUP BY
@@ -42,11 +42,11 @@ AS
 	Fdp_VolumeHeader_VW				AS H
 	JOIN Fdp_VolumeDataItem_VW		AS D	ON H.FdpVolumeHeaderId	= D.FdpVolumeHeaderId
 	JOIN OXO_Programme_Model		AS M	ON D.ModelId			= M.Id
-	LEFT JOIN Fdp_OxoDervivative	AS CUR	ON M.BMC				= CUR.DerivativeCode			
+	LEFT JOIN Fdp_OxoDerivative		AS CUR	ON M.BMC				= CUR.DerivativeCode			
 	WHERE
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	CUR.FdpOxoDervivativeId IS NULL
+	CUR.FdpOxoDerivativeId IS NULL
 	AND
 	M.BMC IS NOT NULL
 	GROUP BY

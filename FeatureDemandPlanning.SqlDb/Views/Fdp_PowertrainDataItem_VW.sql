@@ -32,7 +32,7 @@ AS
 	FROM
 	Fdp_VolumeHeader_VW				AS H
 	JOIN Fdp_PowertrainDataItem		AS P	ON	H.FdpVolumeHeaderId		= P.FdpVolumeHeaderId
-	LEFT JOIN Fdp_OxoDervivative	AS O	ON	P.FdoOxoDerivativeId	= O.FdpOxoDervivativeId
+	LEFT JOIN Fdp_OxoDerivative		AS O	ON	P.FdoOxoDerivativeId	= O.FdpOxoDerivativeId
 	LEFT JOIN Fdp_Derivative		AS F	ON	P.FdpDerivativeId		= F.FdpDerivativeId
 	
 	-- OXO Derivatives
