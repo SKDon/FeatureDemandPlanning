@@ -3,6 +3,7 @@
 	, @ModelYear				NVARCHAR(10)	= NULL
 	, @Gateway					NVARCHAR(16)	= NULL
 	, @IncludeAllDerivatives	BIT = 0
+	, @OxoDerivativesOnly		BIT = 0
 	, @CDSId					NVARCHAR(16)
 	, @FilterMessage			NVARCHAR(50)	= NULL
 	, @PageIndex				INT				= NULL
@@ -49,6 +50,14 @@ AS
 		OR
 		(@IncludeAllDerivatives = 1)
 	)
+	AND
+	(
+		(@OxoDerivativesOnly = 0)
+		OR
+		(@OxoDerivativesOnly = 1 AND D.IsMappedDerivative = 0)
+	)
+	ORDER BY
+	P.VehicleName, P.ModelYear, D.Gateway
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
 	SELECT @TotalDisplayRecords = @TotalRecords;
@@ -66,6 +75,7 @@ AS
 		, D.FdpDerivativeMappingId
 		, D.ImportDerivativeCode
 		, D.MappedDerivativeCode AS DerivativeCode
+		, D.DocumentId
 		, D.ProgrammeId
 		, D.Gateway
 		, D.BodyId

@@ -48,6 +48,8 @@ AS
 	JOIN dbo.OXO_Gateway			AS G	ON		D.Gateway	= G.Gateway
 	JOIN dbo.fn_Fdp_UserProgrammes_GetMany2(@CDSId) AS P1 ON P.Id = P1.ProgrammeId
 	WHERE
+	P.Active = 1
+	AND
 	(@Make IS NULL OR P.VehicleMake = @Make)
 	AND
 	(@VehicleId IS NULL OR P.VehicleId = @VehicleId)

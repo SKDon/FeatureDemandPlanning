@@ -75,5 +75,9 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<FdpTrimMapping> CopyFdpTrimMappingToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways);
         Task<FdpTrimMapping> CopyFdpTrimMappingsToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways);
+
+        Task<PagedResults<OxoDerivative>> ListOxoDerivatives(DerivativeMappingFilter filter);
+
+        Task<OxoDerivative> UpdateBrochureModelCode(OxoDerivative derivative);
     }
 }

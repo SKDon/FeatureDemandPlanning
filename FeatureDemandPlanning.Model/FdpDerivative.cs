@@ -7,6 +7,7 @@ namespace FeatureDemandPlanning.Model
     public class FdpDerivative : Derivative
     {
         public int? FdpDerivativeId { get; set; }
+        public int? DocumentId { get; set; }
         public int? ProgrammeId { get; set; }
         public string Gateway { get; set; }
         public Programme Programme { get; set; }

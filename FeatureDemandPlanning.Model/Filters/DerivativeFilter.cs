@@ -17,6 +17,7 @@ namespace FeatureDemandPlanning.Model.Filters
         public int? TransmissionId { get; set; }
 
         public bool IncludeAllDerivatives { get; set; }
+        public bool OxoDerivativesOnly { get; set; }
 
         public DerivativeAction Action { get; set; }
 

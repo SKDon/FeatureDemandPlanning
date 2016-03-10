@@ -208,7 +208,10 @@
     <Build Include="Views\Fdp_ProgrammeByGateway_VW.sql" />
     <Build Include="Views\Fdp_TopMarket_VW.sql" />
     <Build Include="Views\Fdp_TrimLevels.sql" />
-    <Build Include="Views\Fdp_TrimMapping_VW.sql" />
+    <Build Include="Views\Fdp_TrimMapping_VW.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_Configuration_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_Edit.sql" />
     <Build Include="Stored Procedures\Fdp_Configuration_GetMany.sql" />
@@ -802,7 +805,10 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="Functions\fn_Fdp_UserRoles_GetMany.sql" />
-    <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany.sql" />
+    <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Functions\fn_Fdp_UserMarkets_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_UserRoles_Save.sql">
       <AnsiNulls>Off</AnsiNulls>
@@ -822,7 +828,10 @@
     </Build>
     <Build Include="Tables\Fdp_MarketReview.sql" />
     <Build Include="Functions\fn_Fdp_UserMarkets_GetMany2.sql" />
-    <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany2.sql" />
+    <Build Include="Functions\fn_Fdp_UserProgrammes_GetMany2.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Tables\Fdp_MarketReviewStatus.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
@@ -966,6 +975,10 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Functions\fn_Fdp_ImportErrorCount_GetMany.sql" />
+    <Build Include="Functions\fn_Fdp_ImportErrorCount_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">

@@ -16,6 +16,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public DerivativeMappingAction CurrentAction { get; set; }
         public FdpDerivativeMapping DerivativeMapping { get; set; }
         public PagedResults<FdpDerivativeMapping> DerivativeMappings { get; set; }
+        public PagedResults<OxoDerivative> OxoDerivatives { get; set; } 
         public IEnumerable<Programme> Programmes { get; set; }
         public IEnumerable<ModelBody> Bodies { get; set; }
         public IEnumerable<ModelEngine> Engines { get; set; }
@@ -23,6 +24,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<CarLine> CarLines { get; set; }
         public IEnumerable<Gateway> Gateways { get; set; }
         public IEnumerable<ModelYear> ModelYears { get; set;}
+        public IEnumerable<OXODoc> Documents { get; set; }
        
         public DerivativeMappingViewModel() : base()
         {
@@ -47,6 +49,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 filter.Action == DerivativeMappingAction.CopyAll)
             {
                 model = await GetFullAndPartialViewModelForDerivativeMappings(context, filter);
+            }
+            else if (filter.Action == DerivativeMappingAction.BrochureModelCodes)
+            {
+                model = await GetFullAndPartialViewModelForBrochureModelCodes(context, filter);
             }
             else
             {
@@ -148,6 +154,48 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return model;
         }
+        private static async Task<DerivativeMappingViewModel> GetFullAndPartialViewModelForBrochureModelCodes
+        (
+            IDataContext context,
+            DerivativeMappingFilter filter
+        )
+        {
+            var baseModel = GetBaseModel(context);
+            var model = new DerivativeMappingViewModel(baseModel)
+            {
+                PageIndex = filter.PageIndex ?? 1,
+                PageSize = filter.PageSize ?? int.MaxValue,
+                Configuration = context.ConfigurationSettings,
+                CurrentUser = baseModel.CurrentUser,
+                CurrentVersion = baseModel.CurrentVersion
+            };
+
+            var programmeFilter = new ProgrammeFilter()
+            {
+                ProgrammeId = filter.ProgrammeId,
+                Gateway = filter.Gateway
+            };
+            HydrateModelWithCommonProperties(model, context, programmeFilter);
+
+            filter.IncludeAllDerivatives = false;
+
+            model.OxoDerivatives = await context.Vehicle.ListOxoDerivatives(filter);
+            model.TotalPages = model.OxoDerivatives.TotalPages;
+            model.TotalRecords = model.OxoDerivatives.TotalRecords;
+            model.TotalDisplayRecords = model.OxoDerivatives.TotalDisplayRecords;
+
+            foreach (var oxoDerivative in model.OxoDerivatives.CurrentPage)
+            {
+                oxoDerivative.Programme = model.Programmes.FirstOrDefault(p => p.Id == oxoDerivative.ProgrammeId.GetValueOrDefault());
+                oxoDerivative.Body = model.Bodies.FirstOrDefault(b => b.Id == oxoDerivative.BodyId);
+                oxoDerivative.Engine = model.Engines.FirstOrDefault(e => e.Id == oxoDerivative.EngineId);
+                oxoDerivative.Transmission = model.Transmissions.FirstOrDefault(t => t.Id == oxoDerivative.TransmissionId);
+
+                oxoDerivative.Document = model.Documents.FirstOrDefault(d => d.Id == oxoDerivative.DocumentId);
+            }
+
+            return model;
+        }
         private static void HydrateModelWithCommonProperties(DerivativeMappingViewModel model, IDataContext context)
         {
             HydrateModelWithCommonProperties(model, context, new ProgrammeFilter());
@@ -161,6 +209,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.Gateways = model.Programmes.ListGateways();
             model.CarLines = model.Programmes.ListCarLines();
             model.ModelYears = model.Programmes.ListModelYears();
+            model.Documents = context.Vehicle.ListPublishedDocuments(programmeFilter);
         }
         private void InitialiseMembers()
         {
@@ -174,6 +223,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             CarLines = Enumerable.Empty<CarLine>();
             ModelYears = Enumerable.Empty<ModelYear>();
             CurrentAction = DerivativeMappingAction.NotSet;
+            Documents = Enumerable.Empty<OXODoc>();
         }
     }
 }

@@ -46,8 +46,10 @@ namespace FeatureDemandPlanning
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/DerivativeMapping/copy.js",
                     "~/Content/js/DerivativeMapping/delete.js",
+                    "~/Content/js/DerivativeMapping/bmc.js",
                     "~/Content/js/DerivativeMapping/model.js",
-                    "~/Content/js/DerivativeMapping/page.js"
+                    "~/Content/js/DerivativeMapping/page.js",
+                    "~/Content/js/DerivativeMapping/bmcpage.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/feature").Include(

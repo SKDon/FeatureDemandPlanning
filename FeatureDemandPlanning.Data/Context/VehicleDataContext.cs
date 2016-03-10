@@ -292,6 +292,12 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult<PagedResults<FdpDerivativeMapping>>(_derivativeDataStore.FdpDerivativeMappingGetMany(filter));
         }
+        public async Task<PagedResults<OxoDerivative>> ListOxoDerivatives(DerivativeMappingFilter filter)
+        {
+            filter.IncludeAllDerivatives = true;
+            filter.OxoDerivativesOnly = true;
+            return await Task.FromResult(_derivativeDataStore.FdpOxoDerivativeGetMany(filter));
+        }
         public async Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> gateways)
         {
             return await Task.FromResult<FdpDerivativeMapping>(_derivativeDataStore.FdpDerivativeMappingCopy(fdpDerivativeMapping, gateways));
@@ -413,7 +419,10 @@ namespace FeatureDemandPlanning.DataStore
                 };
             }
         }
-
+        public async Task<OxoDerivative> UpdateBrochureModelCode(OxoDerivative derivative)
+        {
+            return await Task.FromResult(_derivativeDataStore.BrochureModelCodeUpdate(derivative));
+        }
         #region "Private Methods"
 
         private IVehicle HydrateVehicleFromProgramme(Programme programme)

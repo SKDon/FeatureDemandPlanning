@@ -131,6 +131,10 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@IncludeAllDerivatives", true, DbType.Boolean);
                     }
+                    if (filter.OxoDerivativesOnly)
+                    {
+                        para.Add("@OxoDerivativesOnly", filter.OxoDerivativesOnly, DbType.Boolean);
+                    }
                     para.Add("@TotalPages", DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalDisplayRecords", DbType.Int32, direction: ParameterDirection.Output);
@@ -403,6 +407,53 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
             return mapping;
+        }
+
+        public PagedResults<OxoDerivative> FdpOxoDerivativeGetMany(DerivativeMappingFilter filter)
+        {
+            var results = FdpDerivativeMappingGetMany(filter);
+            var page = results.CurrentPage.Select(result => new OxoDerivative(result)).ToList();
+            return new PagedResults<OxoDerivative>
+            {
+                PageIndex = results.PageIndex,
+                PageSize = results.PageSize,
+                TotalDisplayRecords = results.TotalDisplayRecords,
+                TotalFail = results.TotalFail,
+                TotalRecords = results.TotalRecords,
+                TotalSuccess = results.TotalSuccess,
+                CurrentPage = page
+            };
+
+        }
+
+        public OxoDerivative BrochureModelCodeUpdate(OxoDerivative derivative)
+        {
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+
+                    para.Add("@DocumentId", derivative.DocumentId, DbType.Int32);
+                    para.Add("@BodyId", derivative.BodyId, DbType.String);
+                    para.Add("@EngineId", derivative.EngineId, DbType.Int32);
+                    para.Add("@TransmissionId", derivative.TransmissionId, DbType.Int32);
+                    para.Add("@DerivativeCode", derivative.DerivativeCode, DbType.String);
+
+                    var results = conn.Query<OxoDerivative>("Fdp_BrochureModelCode_Update", para, commandType: CommandType.StoredProcedure);
+                    var derivatives = results as IList<OxoDerivative> ?? results.ToList();
+                    if (results != null && derivatives.Any())
+                    {
+                        derivative = derivatives.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return derivative;
         }
     }
 }

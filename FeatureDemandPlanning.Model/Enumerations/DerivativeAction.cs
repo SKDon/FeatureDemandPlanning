@@ -5,6 +5,7 @@
         NotSet = 0,
         Delete = 1,
         Derivative = 2,
-        Derivatives = 3
+        Derivatives = 3,
+        OxoDerivatives = 4
     }
 }

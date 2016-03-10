@@ -66,7 +66,7 @@ BEGIN
 		  H.FdpVolumeHeaderId
 		, D.MarketId
 		, D.DerivativeCode
-		, D.FdpOxoDervivativeId
+		, D.FdpOxoDerivativeId
 		, D.FdpDerivativeId
 		, ISNULL(S.TotalVolume, 0) AS Volume
 		, ISNULL(S.PercentageTakeRate, 0) AS PercentageTakeRate

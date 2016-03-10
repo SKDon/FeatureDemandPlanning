@@ -37,6 +37,16 @@ namespace FeatureDemandPlanning.Controllers
             };
             return View(await DerivativeMappingViewModel.GetModel(DataContext, filter));
         }
+        [HttpGet]
+        public async Task<ActionResult> BMCPage(DerivativeMappingParameters parameters)
+        {
+            var filter = new DerivativeMappingFilter()
+            {
+                PageIndex = PageIndex,
+                PageSize = PageSize
+            };
+            return View(await DerivativeMappingViewModel.GetModel(DataContext, filter));
+        }
         [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> ListDerivativeMappings(DerivativeMappingParameters parameters)
@@ -62,6 +72,46 @@ namespace FeatureDemandPlanning.Controllers
             }
 
             return Json(jQueryResult);
+        }
+        [HttpPost]
+        [HandleErrorWithJson]
+        public async Task<ActionResult> ListBrochureModelCodes(DerivativeMappingParameters parameters)
+        {
+            ValidateDerivativeMappingParameters(parameters, DerivativeMappingParametersValidator.NoValidation);
+
+            var filter = new DerivativeMappingFilter()
+            {
+                FilterMessage = parameters.FilterMessage,
+                CarLine = parameters.CarLine,
+                ModelYear = parameters.ModelYear,
+                Gateway = parameters.Gateway,
+                Action = DerivativeMappingAction.BrochureModelCodes
+            };
+            filter.InitialiseFromJson(parameters);
+
+            var results = await DerivativeMappingViewModel.GetModel(DataContext, filter);
+            var jQueryResult = new JQueryDataTableResultModel(results);
+
+            foreach (var result in results.OxoDerivatives.CurrentPage)
+            {
+                try
+                {
+                    jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
+                
+            }
+            return Json(jQueryResult);
+        }
+        [HttpPost]
+        public async Task<ActionResult> UpdateBrochureModelCode(DerivativeMappingParameters parameters)
+        {
+            await DataContext.Vehicle.UpdateBrochureModelCode(OxoDerivative.FromParameters(parameters));
+
+            return JsonGetSuccess();
         }
         [HttpPost]
         public async Task<ActionResult> ContextMenu(DerivativeMappingParameters parameters)

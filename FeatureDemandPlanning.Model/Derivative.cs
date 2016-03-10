@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -63,6 +62,21 @@ namespace FeatureDemandPlanning.Model
                 BodyId = int.Parse(elements[0]),
                 EngineId = int.Parse(elements[1]),
                 TransmissionId = int.Parse(elements[2])
+            };
+        }
+
+        public string[] ToJQueryDataTableResult()
+        {
+            return new[]
+            {
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                DerivativeCode,
+                Body.Name,
+                Engine.Name,
+                Transmission.Name
             };
         }
     }

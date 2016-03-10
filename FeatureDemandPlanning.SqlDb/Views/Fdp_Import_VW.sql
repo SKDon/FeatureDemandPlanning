@@ -1,11 +1,4 @@
 ﻿
-
-
-
-
-
-
-
 CREATE VIEW [dbo].[Fdp_Import_VW] AS
 
 	WITH TakeRateFiles AS
@@ -48,32 +41,69 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 		, MMAP.Market_Name									AS Market
 		, MMAP.Market_Group_Id								AS MarketGroupId
 		, MMAP.Market_Group_Name							AS MarketGroup
-		, M1.Id												AS ModelId
+		, CASE 
+			WHEN DMAP.IsArchived = 0 THEN M1.Id
+			ELSE M3.Id
+		  END												AS ModelId
 		, M2.FdpModelId
 		, CASE
 			WHEN M1.Id			IS NOT NULL THEN M1.BMC
 			WHEN M2.FdpModelId	IS NOT NULL THEN M2.BMC
+			WHEN M3.Id			IS NOT NULL THEN M3.BMC
 			ELSE DMAP.MappedDerivativeCode
 		  END												AS BMC
-		, B.Id												AS BodyId
-		, B.Shape											AS BodyShape
-		, B.Doors											AS BodyDoors
-		, B.Wheelbase										AS BodyWheelbase
+		, DMAP.BodyId
+		, CASE 
+			WHEN DMAP.IsArchived = 0 THEN B1.Shape
+			ELSE B2.Shape
+		  END												AS BodyShape
+		, CASE 
+			WHEN DMAP.IsArchived = 0 THEN B1.Doors
+			ELSE B2.Doors
+		  END												AS BodyDoors
+		, CASE 
+			WHEN DMAP.IsArchived = 0 THEN B1.Wheelbase
+			ELSE B2.Wheelbase
+		  END												AS BodyWheelbase
 		, TMAP.TrimId
 		, TMAP.FdpTrimId
 		, TMAP.MappedTrim									AS TrimName
 		, TMAP.[Level]										AS TrimLevel
 		, TMAP.DPCK
-		, E.Id												AS EngineId
-		, E.Size											AS EngineSize
-		, E.Fuel_Type										AS EngineFuelType
-		, E.Cylinder										AS EngineCylinder
-		, ISNULL(E.Turbo, '')								AS EngineTurbo
-		, E.[Power]											AS EnginePower
-		, ISNULL(E.Electrification, '')						AS EngineElectrification
-		, TM.Id												AS TransmissionId
-		, TM.[Type]											AS TransmissionType
-		, TM.Drivetrain										AS TransmissionDrivetrain
+		, DMAP.EngineId
+		, CASE 
+			WHEN DMAP.IsArchived = 0 THEN E1.Size
+			ELSE E2.Size
+		  END												AS EngineSize
+		, CASE 
+			WHEN DMAP.IsArchived = 0 THEN E1.Fuel_Type
+			ELSE E2.Fuel_Type
+		  END												AS EngineFuelType
+		, CASE 
+			WHEN DMAP.IsArchived = 0 THEN E1.Cylinder
+			ELSE E2.Cylinder
+		  END												AS EngineCylinder
+		, ISNULL(CASE 
+			WHEN DMAP.IsArchived = 0 THEN E1.Turbo
+			ELSE E2.Turbo
+		  END, '')											AS EngineTurbo
+		, CASE 
+			WHEN DMAP.IsArchived = 0 THEN E1.[Power]
+			ELSE E2.[Power]
+		  END												AS EnginePower
+		, ISNULL(CASE 
+			WHEN DMAP.IsArchived = 0 THEN E1.Electrification
+			ELSE E2.Electrification
+		  END, '')											AS EngineElectrification
+		, DMAP.TransmissionId
+		, CASE 
+			WHEN DMAP.IsArchived = 0 THEN TM1.[Type]
+			ELSE TM2.[Type]
+		  END												AS TransmissionType
+		, CASE 
+			WHEN DMAP.IsArchived = 0 THEN TM1.Drivetrain
+			ELSE TM2.Drivetrain
+		  END												AS TransmissionDrivetrain
 		, FMAP.FeatureId
 		, FMAP.FdpFeatureId
 		, FMAP.MappedFeatureCode							AS FeatureCode
@@ -120,8 +150,10 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 	FROM Fdp_Import							AS IH
 	JOIN Fdp_ImportData						AS I		ON	IH.FdpImportId				= I.FdpImportId
 														AND I.[Count of Specific Order No] IS NOT NULL
+	JOIN OXO_Doc							AS D		ON	IH.DocumentId				= D.Id
 	JOIN Fdp_ImportQueue					AS Q		ON	IH.FdpImportQueueId			= Q.FdpImportQueueId
 	JOIN Fdp_ImportStatus					AS S		ON	Q.FdpImportStatusId			= S.FdpImportStatusId
+	
 	JOIN OXO_Programme_VW					AS P		ON	IH.ProgrammeId				= P.Id
 	
 	-- Mapping of market details
@@ -130,20 +162,31 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 														AND IH.ProgrammeId				= MMAP.ProgrammeId
 														AND IH.Gateway					= MMAP.Gateway
 	
-	-- Mapping of derivative details
+	-- Mapping of derivative details (non-archived)
 	
 	LEFT JOIN Fdp_DerivativeMapping_VW		AS DMAP		ON	LTRIM(RTRIM(I.[Derivative Code])) = DMAP.ImportDerivativeCode
 														AND IH.ProgrammeId				= DMAP.ProgrammeId
 														AND IH.Gateway					= DMAP.Gateway
-	LEFT JOIN OXO_Programme_Body			AS B		ON	DMAP.BodyId					= B.Id												
-	LEFT JOIN OXO_Programme_Engine			AS E		ON	DMAP.EngineId				= E.Id												
-	LEFT JOIN OXO_Programme_Transmission	AS TM		ON	DMAP.TransmissionId			= TM.Id
+	LEFT JOIN OXO_Programme_Body			AS B1		ON	DMAP.BodyId					= B1.Id
+														AND DMAP.IsArchived				= 0												
+	LEFT JOIN OXO_Programme_Engine			AS E1		ON	DMAP.EngineId				= E1.Id
+														AND DMAP.IsArchived				= 0													
+	LEFT JOIN OXO_Programme_Transmission	AS TM1		ON	DMAP.TransmissionId			= TM1.Id
+														AND DMAP.IsArchived				= 0	
+
+	-- Mapping of derivative details (archived)
+
+	LEFT JOIN OXO_Archived_Programme_Body	AS B2		ON	DMAP.BodyId					= B2.Id
+														AND DMAP.IsArchived				= 1												
+	LEFT JOIN OXO_Archived_Programme_Engine	AS E2		ON	DMAP.EngineId				= E2.Id
+														AND DMAP.IsArchived				= 1													
+	LEFT JOIN OXO_Archived_Programme_Transmission	AS TM2		ON	DMAP.TransmissionId			= TM2.Id
+														AND DMAP.IsArchived				= 1
 														
 	-- Mapping of trim details	
 																										
 	LEFT JOIN Fdp_TrimMapping_VW			AS TMAP		ON	I.[Trim Pack Description]	= TMAP.ImportTrim
-														AND IH.ProgrammeId				= TMAP.ProgrammeId
-														AND IH.Gateway					= TMAP.Gateway															
+														AND IH.DocumentId				= TMAP.DocumentId															
 	-- Mapping of features		
 													
 	LEFT JOIN Fdp_FeatureMapping_VW			AS FMAP		ON	I.[Bff Feature Code]		= FMAP.ImportFeatureCode
@@ -162,9 +205,11 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 														AND DMAP.EngineId				= M1.Engine_Id
 														AND DMAP.TransmissionId			= M1.Transmission_Id
 														AND TMAP.TrimId					= M1.Trim_Id
-														--AND M1.Active					= 1
+														AND M1.Active					= 1
+														AND DMAP.IsArchived				= 0
 														
 	LEFT JOIN Fdp_Model_VW					AS M2		ON	IH.ProgrammeId				= M2.ProgrammeId
+														AND IH.Gateway					= M2.Gateway
 														AND DMAP.BodyId					= M2.BodyId
 														AND DMAP.EngineId				= M2.EngineId
 														AND DMAP.TransmissionId			= M2.TransmissionId
@@ -183,6 +228,14 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 															)
 														)
 														AND M2.IsActive					= 1
+
+	LEFT JOIN OXO_Archived_Programme_Model	AS M3		ON	IH.DocumentId				= M3.Doc_Id
+														AND DMAP.BodyId					= M3.Body_Id
+														AND DMAP.EngineId				= M3.Engine_Id
+														AND DMAP.TransmissionId			= M3.Transmission_Id
+														AND TMAP.TrimId					= M3.Trim_Id
+														AND M3.Active					= 1
+														AND DMAP.IsArchived				= 1
 													
 	-- Get extended details for the features
 	
@@ -200,7 +253,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 			, SUM(Volume) AS Volume
 		FROM Fdp_VolumeDataItem
 		GROUP BY
-		FdpVolumeHeaderId
+		  FdpVolumeHeaderId
 		, MarketId
 		, ModelId
 		, FdpModelId

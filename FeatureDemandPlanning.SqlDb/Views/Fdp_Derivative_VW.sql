@@ -1,10 +1,11 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	
 	SELECT
 		  O.Id						AS DocumentId
-		, D.Programme_Id			AS ProgrammeId
+		, O.Programme_Id			AS ProgrammeId
 		, G.Gateway
 		, MAX(D.Created_On)			AS CreatedOn
 		, MAX(D.Created_By)			AS CreatedBy
@@ -21,7 +22,9 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	FROM
 	OXO_Doc							AS O
 	JOIN OXO_Programme_Model		AS D	ON O.Programme_Id		= D.Programme_Id
+											AND D.Active			= 1
 	JOIN Fdp_Gateways_VW			AS G	ON D.Programme_Id		= G.ProgrammeId
+											AND G.IsArchived		= 0
 	JOIN OXO_Programme_Body			AS B	ON D.Body_Id			= B.Id
 											AND B.Active			= 1
 	JOIN OXO_Programme_Engine		AS E	ON D.Engine_Id			= E.Id
@@ -34,7 +37,7 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	ISNULL(O.Archived, 0) = 0
 	GROUP BY
 	  O.Id
-	, D.Programme_Id
+	, O.Programme_Id
 	, G.Gateway
 	, D.Body_Id
 	, D.Engine_Id
@@ -44,7 +47,7 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 
 	SELECT
 		  O.Id						AS DocumentId
-		, D.Programme_Id			AS ProgrammeId
+		, O.Programme_Id			AS ProgrammeId
 		, G.Gateway
 		, MAX(D.Created_On)			AS CreatedOn
 		, MAX(D.Created_By)			AS CreatedBy
@@ -60,7 +63,9 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	FROM
 	OXO_Doc										AS O
 	JOIN OXO_Archived_Programme_Model			AS D	ON	O.Id				= D.Doc_Id
+														AND D.Active			= 1
 	JOIN Fdp_Gateways_VW						AS G	ON	D.Programme_Id		= G.ProgrammeId
+														AND G.IsArchived		= 1
 	JOIN OXO_Archived_Programme_Body			AS B	ON	D.Body_Id			= B.Id
 														AND B.Active			= 1
 	JOIN OXO_Archived_Programme_Engine			AS E	ON	D.Engine_Id			= E.Id
@@ -68,12 +73,10 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	JOIN OXO_Archived_Programme_Transmission	AS T	ON	D.Transmission_Id	= T.Id
 														AND T.Active			= 1
 	WHERE
-	D.Active = 1
-	AND
 	O.Archived = 1
 	GROUP BY
 	  O.Id
-	, D.Programme_Id
+	, O.Programme_Id
 	, G.Gateway
 	, D.Body_Id
 	, D.Engine_Id
@@ -100,6 +103,7 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	OXO_Doc							AS O
 	JOIN Fdp_Derivative				AS D	ON O.Programme_Id	= D.ProgrammeId
 											AND O.Gateway		= D.Gateway
+											AND D.IsActive		= 1
 	JOIN OXO_Programme_Body			AS B	ON D.BodyId			= B.Id
 											AND B.Active		= 1
 	JOIN OXO_Programme_Engine		AS E	ON D.EngineId		= E.Id

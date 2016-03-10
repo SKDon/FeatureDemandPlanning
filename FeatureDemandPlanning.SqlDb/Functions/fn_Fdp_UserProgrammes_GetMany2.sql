@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION dbo.fn_Fdp_UserProgrammes_GetMany2
+﻿CREATE FUNCTION [dbo].[fn_Fdp_UserProgrammes_GetMany2]
 (
 	@CDSId NVARCHAR(16)
 )
@@ -42,7 +42,9 @@ BEGIN
 										AND P.FdpUserActionId	= P1.FdpUserActionId 
 	JOIN OXO_Programme_VW		 AS P2	ON	P1.ProgrammeId		= P2.Id
 	WHERE
-	U.CDSId = @CDSId;
+	U.CDSId = @CDSId
+	AND
+	P2.Active = 1;
 
 	INSERT INTO @Programme
 	(
@@ -74,6 +76,8 @@ BEGIN
 	U.CDSId = @CDSId
 	AND
 	P1.ProgrammeId IS NULL -- We haven't already defined the programme manually
+	AND
+	P.Active = 1
 	
 	RETURN 
 END

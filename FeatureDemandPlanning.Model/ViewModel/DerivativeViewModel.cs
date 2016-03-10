@@ -22,6 +22,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<CarLine> CarLines { get; set; }
         public IEnumerable<Gateway> Gateways { get; set; }
         public IEnumerable<ModelYear> ModelYears { get; set; }
+        public IEnumerable<Derivative> OxoDerivatives { get; set; }
 
         public DerivativeAction CurrentAction { get; set; }
     
@@ -45,6 +46,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
             {
                 model = await GetFullAndPartialViewModelForDerivatives(context, derivativeFilter);
             }
+            else if (derivativeFilter.Action == DerivativeAction.OxoDerivatives)
+            {
+                model = GetFullAndPartialViewModelForOxoDerivatives(context, derivativeFilter);
+            }
             else
             {
                 model = GetFullAndPartialViewModel(context, derivativeFilter);
@@ -59,7 +64,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static DerivativeViewModel GetFullAndPartialViewModel(IDataContext context,
                                                                       DerivativeFilter filter)
         {
-            var model = new DerivativeViewModel(SharedModelBase.GetBaseModel(context))
+            var model = new DerivativeViewModel(GetBaseModel(context))
             {
                 Configuration = context.ConfigurationSettings,
             };
@@ -129,6 +134,31 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return model;
         }
+
+        private static DerivativeViewModel GetFullAndPartialViewModelForOxoDerivatives(IDataContext context,
+            DerivativeFilter filter)
+        {
+            var baseModel = GetBaseModel(context);
+            var model = new DerivativeViewModel()
+            {
+                PageIndex = filter.PageIndex ?? 1,
+                PageSize = filter.PageSize ?? int.MaxValue,
+                Configuration = context.ConfigurationSettings,
+                CurrentUser = baseModel.CurrentUser,
+                CurrentVersion = baseModel.CurrentVersion
+            };
+
+            var programmeFilter = new ProgrammeFilter()
+            {
+                ProgrammeId = filter.ProgrammeId,
+                Gateway = filter.Gateway
+            };
+            HydrateModelWithCommonProperties(model, context, programmeFilter);
+
+            model.OxoDerivatives = context.Vehicle.ListDerivatives(filter);
+
+            return model;
+        }
         private static void HydrateModelWithCommonProperties(DerivativeViewModel model, IDataContext context)
         {
             HydrateModelWithCommonProperties(model, context, new ProgrammeFilter());
@@ -155,8 +185,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             CarLines = Enumerable.Empty<CarLine>();
             ModelYears = Enumerable.Empty<ModelYear>();
             CurrentAction = DerivativeAction.NotSet;
+            OxoDerivatives = Enumerable.Empty<Derivative>();
         }
-
-        
     }
 }

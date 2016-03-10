@@ -1,12 +1,14 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 
-	SELECT 
-		  T.CreatedOn
+	SELECT
+		  T.DocumentId 
+		, T.CreatedOn
 		, T.CreatedBy
-		, P.Id				AS ProgrammeId
-		, T.Gateway			AS Gateway
+		, T.ProgrammeId
+		, T.Gateway
 		, T.Name			AS ImportTrim
 		, T.Name			AS MappedTrim
 		, T.Abbreviation
@@ -21,15 +23,16 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 		, T.IsActive
 		, T.UpdatedOn
 		, T.UpdatedBy
+		, T.IsArchived
 		
 	FROM
-	OXO_Programme		AS P
-	JOIN Fdp_Trim_VW	AS T	ON	P.Id = T.ProgrammeId
+	Fdp_Trim_VW	AS T
 											
 	UNION
 	
 	SELECT 
-		  M.CreatedOn
+		  T.DocumentId
+		, M.CreatedOn
 		, M.CreatedBy
 		, T.ProgrammeId
 		, T.Gateway
@@ -47,6 +50,7 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 		, M.IsActive
 		, M.UpdatedOn
 		, M.UpdatedBy
+		, T.IsArchived
 		
 	FROM
 	Fdp_Trim_VW				AS T
