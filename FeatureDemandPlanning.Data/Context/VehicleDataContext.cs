@@ -178,7 +178,14 @@ namespace FeatureDemandPlanning.DataStore
         public IEnumerable<Derivative> ListDerivatives(DerivativeFilter filter)
         {
             var derivatives =_derivativeDataStore.DerivativeGetMany(filter);
-            foreach (var derivative in derivatives)
+
+            var listDerivatives = derivatives as IList<Derivative> ?? derivatives.ToList();
+            // Eliminate the derivatives with no BMC as this will cause real issues
+            if (derivatives != null && listDerivatives.Any())
+            {
+                listDerivatives = listDerivatives.Where(d => !string.IsNullOrEmpty(d.DerivativeCode)).ToList();
+            }
+            foreach (var derivative in listDerivatives)
             {
                 if (derivative.BodyId.HasValue)
                     derivative.Body = _bodyDataStore.ModelBodyGet(derivative.BodyId.Value);
@@ -189,7 +196,7 @@ namespace FeatureDemandPlanning.DataStore
                 if (derivative.TransmissionId.HasValue)
                     derivative.Transmission = _transmissionDataStore.ModelTransmissionGet(derivative.TransmissionId.Value);
             }
-            return derivatives;
+            return listDerivatives;
         }
         public IEnumerable<Gateway> ListGateways(ProgrammeFilter filter)
         {

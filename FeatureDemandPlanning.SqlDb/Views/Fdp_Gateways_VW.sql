@@ -1,9 +1,11 @@
 ﻿
+
 CREATE VIEW [dbo].[Fdp_Gateways_VW] AS
 	
 	SELECT 
 	  Programme_Id AS ProgrammeId
-	, Gateway 
+	, Gateway
+	, ISNULL(Archived, 0) AS IsArchived 
 	FROM OXO_Doc
 	CROSS APPLY
 	(
@@ -22,3 +24,4 @@ CREATE VIEW [dbo].[Fdp_Gateways_VW] AS
 	GROUP BY 
 	  Programme_Id
 	, Gateway
+	, Archived
