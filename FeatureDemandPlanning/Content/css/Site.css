@@ -1584,3 +1584,8 @@ td.edited-market-review {
     color: #fff !important;
     background-color: #7485a5 !important;
 }
+
+.bmc-editable {
+    width: 10%;
+    height: 100%;
+}

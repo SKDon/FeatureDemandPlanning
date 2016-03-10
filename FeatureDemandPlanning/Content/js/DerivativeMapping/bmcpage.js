@@ -17,6 +17,7 @@ page.BmcPage = function (models) {
     privateStore[me.id].SelectedDocument = "";
     privateStore[me.id].SelectedDocument = null;
     privateStore[me.id].SelectedDocumentDescription = "";
+    privateStore[me.id].SaveData = null;
 
     me.carLineSelectedEventHandler = function (sender) {
         me.setSelectedCarLine($(sender.target).attr("data-target"));
@@ -196,7 +197,8 @@ page.BmcPage = function (models) {
                     "sName": "BMC",
                     "bSearchable": true,
                     "bSortable": true,
-                    "sClass": "text-center"
+                    "sClass": "text-center bmc-editable",
+                    "sWidth": "10%"
                 }
                 , {
                     "sTitle": "Body",
@@ -226,7 +228,8 @@ page.BmcPage = function (models) {
             },
             "fnDrawCallback": function (oSettings) {
                 //$(document).trigger("Results", me.getSummary());
-                me.bindContextMenu();
+                //me.bindContextMenu();
+                me.configureCellEditing();
             }
         });
     };
@@ -314,6 +317,48 @@ page.BmcPage = function (models) {
     me.loadData = function () {
         me.configureDataTables(getFilter());
     };
+    me.configureCellEditing = function () {
+        $(".bmc-editable").editable(me.cellEditCallback,
+        {
+            tooltip: "Click to edit brochure model code (BMC)",
+            cssclass: "editable-cell",
+            data: me.parseInputData,
+            select: true,
+            onblur: "submit",
+            maxlength: 4
+        });
+    };
+    me.cellEditCallback = function (value) {
+
+        var target = $(this).closest("tr").attr("data-target");
+        var identifiers = target.split("|");
+
+        var formattedValue = me.parseCellValue(value);
+
+        var data = {
+            DocumentId: parseInt(identifiers[0]),
+            BodyId: parseInt(identifiers[1]),
+            EngineId: parseInt(identifiers[2]),
+            TransmissionId: parseInt(identifiers[3]),
+            DerivativeCode: formattedValue
+        };
+      
+        $(document).trigger("EditCell", data);
+
+        return formattedValue;
+    };
+    me.parseInputData = function (value) {
+        var parsedValue = value.replace("%", "");
+        parsedValue = parsedValue.replace("-", "");
+        var trimmedValue = $.trim(parsedValue);
+        return trimmedValue.toUpperCase();
+    };
+    me.parseCellValue = function (value) {
+        if (value === null || value === "")
+            return "";
+
+        return $.trim(value).toUpperCase();
+    };
     me.modelYearSelectedEventHandler = function (sender) {
         me.setSelectedModelYear($(sender.target).attr("data-target"));
         me.displaySelectedModelYear();
@@ -362,6 +407,7 @@ page.BmcPage = function (models) {
             .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
             .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
             .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
+            .unbind("EditCell").on("EditCell", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnEditCellDelegate", [eventArgs]); })
 
         $("#" + prefix + "_CarLineList").find("a.car-line-item").on("click", function (e) {
             me.carLineSelectedEventHandler(e);
@@ -386,12 +432,30 @@ page.BmcPage = function (models) {
             .unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
             .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
             .unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
+            .unbind("OnEditCellDelegate").on("OnEditCellDelegate", me.onEditCellEventHandler)
             .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler);
 
         $("#" + prefix + "_FilterMessage").on("keyup", me.onFilterChangedEventHandler);
     };
+    me.onEditCellEventHandler = function(sender, eventArgs) {
+        me.setDataToSave(eventArgs);
+        me.saveData(me.saveCallback);
+    };
+    me.saveData = function(callback) {
+        var data = me.getDataToSave();
+        getBmcModel().saveData(data, callback);
+    };
+    me.saveCallback = function() {
+        me.setDataToSave(null);
+    };
+    me.getDataToSave = function() {
+        return privateStore[me.id].SaveData;
+    }
+    me.setDataToSave = function(data) {
+        privateStore[me.id].SaveData = data;
+    };
     me.setDataTable = function (dataTable) {
-        privateStore[me.id].DataTable = dataTable
+        privateStore[me.id].DataTable = dataTable;
     };
     me.setSelectedCarLine = function (carLine) {
         privateStore[me.id].SelectedCarLine = carLine;

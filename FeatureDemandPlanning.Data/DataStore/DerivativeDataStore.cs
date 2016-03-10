@@ -432,13 +432,14 @@ namespace FeatureDemandPlanning.DataStore
             {
                 try
                 {
-                    var para = new DynamicParameters();
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
 
                     para.Add("@DocumentId", derivative.DocumentId, DbType.Int32);
                     para.Add("@BodyId", derivative.BodyId, DbType.String);
                     para.Add("@EngineId", derivative.EngineId, DbType.Int32);
                     para.Add("@TransmissionId", derivative.TransmissionId, DbType.Int32);
                     para.Add("@DerivativeCode", derivative.DerivativeCode, DbType.String);
+              
 
                     var results = conn.Query<OxoDerivative>("Fdp_BrochureModelCode_Update", para, commandType: CommandType.StoredProcedure);
                     var derivatives = results as IList<OxoDerivative> ?? results.ToList();

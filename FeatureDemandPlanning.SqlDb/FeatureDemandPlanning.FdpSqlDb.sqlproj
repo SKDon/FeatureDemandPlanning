@@ -222,7 +222,10 @@
     <Build Include="Stored Procedures\Fdp_Derivative_Save.sql" />
     <Build Include="Stored Procedures\Fdp_DerivativeMapping_Delete.sql" />
     <Build Include="Stored Procedures\Fdp_DerivativeMapping_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_DerivativeMapping_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_DerivativeMapping_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_DerivativeMapping_Save.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
@@ -976,6 +979,10 @@
     </Build>
     <Build Include="Functions\fn_Fdp_ImportErrorCount_GetMany.sql" />
     <Build Include="Functions\fn_Fdp_ImportErrorCount_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_BrochureModelCode_Update.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>

@@ -18,6 +18,7 @@ model.BrochureModelCode = function (params) {
     privateStore[me.id].Configuration = params.Configuration;
     privateStore[me.id].ModalContentUri = params.ModalContentUri;
     privateStore[me.id].ModalActionUri = params.ModalActionUri;
+    privateStore[me.id].UpdateBrochureModelCodeUri = params.UpdateBrochureModelCodeUri;
     privateStore[me.id].PageSize = params.PageSize;
     privateStore[me.id].PageIndex = params.PageIndex;
     privateStore[me.id].Parameters = params;
@@ -74,6 +75,9 @@ model.BrochureModelCode = function (params) {
     me.getBmcUri = function () {
         return privateStore[me.id].BmcUri;
     };
+    me.getUpdateBrochureModelCodeUri = function() {
+        return privateStore[me.id].UpdateBrochureModelCodeUri;
+    };
     me.getIdentifierPrefix = function () {
         return $("#Page_IdentifierPrefix").val();
     };
@@ -101,6 +105,9 @@ model.BrochureModelCode = function (params) {
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;
     };
+    me.saveData = function(data, callback) {
+        sendData(me.getUpdateBrochureModelCodeUri(), data, callback);
+    };
     function getData() {
         var params = me.getParameters();
         if (params.Data != undefined)
@@ -116,7 +123,7 @@ model.BrochureModelCode = function (params) {
             "url": uri,
             "data": params,
             "success": function (json) {
-                callback(json)
+                callback(json);
             }
         });
     };
