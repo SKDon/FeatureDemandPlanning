@@ -325,7 +325,7 @@ page.BmcPage = function (models) {
             data: me.parseInputData,
             select: true,
             onblur: "submit",
-            maxlength: 4
+            maxlength: 5
         });
     };
     me.cellEditCallback = function (value) {
