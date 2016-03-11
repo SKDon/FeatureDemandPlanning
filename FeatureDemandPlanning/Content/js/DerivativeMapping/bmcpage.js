@@ -487,7 +487,7 @@ page.BmcPage = function (models) {
         var info = $(".dataTable").DataTable().page.info();
         var prefix = me.getIdentifierPrefix();
         var total = info.recordsTotal;
-        $(".results-total").html(total + " Mapped Derivatives");
+        $(".results-total").html(total + " Derivatives");
     }
     function getModal() {
         return getModel("Modal");
