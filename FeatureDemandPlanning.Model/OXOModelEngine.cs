@@ -14,12 +14,14 @@ namespace FeatureDemandPlanning.Model
     {
         public string TypeName { get { return "ModelEngine"; } }
 
+        public int? DocumentId { get; set; }
         public int ProgrammeId { get; set; }
         public string Size { get; set; }
         public string Cylinder { get; set; }
         public string Turbo { get; set; }
         public string FuelType { get; set; }
         public string Power { get; set; }
+        public bool? IsArchived { get; set; }
                       
         // A blank constructor
         public ModelEngine() {;}

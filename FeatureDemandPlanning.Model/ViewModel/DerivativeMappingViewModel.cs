@@ -123,11 +123,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
             DerivativeMappingFilter filter
         )
         {
-            var baseModel = SharedModelBase.GetBaseModel(context);
+            var baseModel = GetBaseModel(context);
             var model = new DerivativeMappingViewModel(baseModel)
             {
-                PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
-                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : Int32.MaxValue,
+                PageIndex = filter.PageIndex ?? 1,
+                PageSize = filter.PageSize ?? int.MaxValue,
                 Configuration = context.ConfigurationSettings,
                 CurrentUser = baseModel.CurrentUser,
                 CurrentVersion = baseModel.CurrentVersion
@@ -146,10 +146,14 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             foreach (var derivativeMapping in model.DerivativeMappings.CurrentPage)
             {
-                derivativeMapping.Programme = model.Programmes.FirstOrDefault(p => p.Id == derivativeMapping.ProgrammeId.GetValueOrDefault());
-                derivativeMapping.Body = model.Bodies.FirstOrDefault(b => b.Id == derivativeMapping.BodyId);
-                derivativeMapping.Engine = model.Engines.FirstOrDefault(e => e.Id == derivativeMapping.EngineId);
-                derivativeMapping.Transmission = model.Transmissions.FirstOrDefault(t => t.Id == derivativeMapping.TransmissionId);
+                derivativeMapping.Programme = model.Programmes
+                    .FirstOrDefault(p => p.Id == derivativeMapping.ProgrammeId.GetValueOrDefault());
+                derivativeMapping.Body = model.Bodies
+                    .FirstOrDefault(b => b.DocumentId == derivativeMapping.DocumentId && b.Id == derivativeMapping.BodyId);
+                derivativeMapping.Engine = model.Engines
+                    .FirstOrDefault(e => e.DocumentId == derivativeMapping.DocumentId && e.Id == derivativeMapping.EngineId);
+                derivativeMapping
+                    .Transmission = model.Transmissions.FirstOrDefault(t => t.DocumentId == derivativeMapping.DocumentId && t.Id == derivativeMapping.TransmissionId);
             }
 
             return model;
@@ -186,12 +190,16 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             foreach (var oxoDerivative in model.OxoDerivatives.CurrentPage)
             {
-                oxoDerivative.Programme = model.Programmes.FirstOrDefault(p => p.Id == oxoDerivative.ProgrammeId.GetValueOrDefault());
-                oxoDerivative.Body = model.Bodies.FirstOrDefault(b => b.Id == oxoDerivative.BodyId);
-                oxoDerivative.Engine = model.Engines.FirstOrDefault(e => e.Id == oxoDerivative.EngineId);
-                oxoDerivative.Transmission = model.Transmissions.FirstOrDefault(t => t.Id == oxoDerivative.TransmissionId);
-
-                oxoDerivative.Document = model.Documents.FirstOrDefault(d => d.Id == oxoDerivative.DocumentId);
+                oxoDerivative.Document = model.Documents
+                    .FirstOrDefault(d => d.Id == oxoDerivative.DocumentId);
+                oxoDerivative.Programme = model.Programmes
+                    .FirstOrDefault(p => p.Id == oxoDerivative.ProgrammeId.GetValueOrDefault());
+                oxoDerivative.Body = model.Bodies
+                    .FirstOrDefault(b => b.DocumentId == oxoDerivative.DocumentId && b.Id == oxoDerivative.BodyId);
+                oxoDerivative.Engine = model.Engines
+                    .FirstOrDefault(e => e.DocumentId == oxoDerivative.DocumentId && e.Id == oxoDerivative.EngineId);
+                oxoDerivative.Transmission = model.Transmissions
+                    .FirstOrDefault(t => t.DocumentId == oxoDerivative.DocumentId && t.Id == oxoDerivative.TransmissionId);
             }
 
             return model;

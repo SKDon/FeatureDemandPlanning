@@ -5,6 +5,7 @@ using System.Linq;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
@@ -37,6 +38,28 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;   
         }
+
+        public IEnumerable<ModelBody> ModelBodyGetMany(ProgrammeFilter filter)
+        {
+            IEnumerable<ModelBody> retVal;
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
+
+                    retVal = conn.Query<ModelBody>("dbo.Fdp_ModelBody_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+
+            return retVal;
+        } 
 
         public ModelBody ModelBodyGet(int id)
         {

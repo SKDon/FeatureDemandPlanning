@@ -14,6 +14,7 @@ using System.Linq;
 using System.Data;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
@@ -34,7 +35,7 @@ namespace FeatureDemandPlanning.DataStore
 				try
 				{
 					var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progId, dbType: DbType.Int32);    
+                    para.Add("@p_prog_id", progId, DbType.Int32);    
 					retVal = conn.Query<ModelEngine>("dbo.OXO_ModelEngine_GetMany", para, commandType: CommandType.StoredProcedure);
 				}
 				catch (Exception ex)
@@ -46,6 +47,28 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;   
         }
+
+        public IEnumerable<ModelEngine> ModelEngineGetMany(ProgrammeFilter filter)
+        {
+            IEnumerable<ModelEngine> retVal;
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
+
+                    retVal = conn.Query<ModelEngine>("dbo.Fdp_ModelEngine_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+
+            return retVal;
+        } 
 
         public ModelEngine ModelEngineGet(int id)
         {

@@ -14,9 +14,11 @@ namespace FeatureDemandPlanning.Model
     {
         public string TypeName { get { return "ModelTransmission"; } }
 
+        public int? DocumentId { get; set; }
         public int ProgrammeId { get; set; }
         public string Type { get; set; }
         public string Drivetrain { get; set; }
+        public bool? IsArchived { get; set; }
             
         // A blank constructor
         public ModelTransmission() {;}

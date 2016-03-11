@@ -24,17 +24,53 @@ AS
 	DECLARE @PageRecords AS TABLE
 	(
 		  RowIndex INT IDENTITY(1, 1)
-		, DerivativeCode NVARCHAR(20)
-		, MappedDerivativeCode NVARCHAR(20)
+		, CreatedOn		DATETIME
+		, CreatedBy		NVARCHAR(16)
+		, DocumentId	INT
+		, ImportDerivativeCode NVARCHAR(20) NULL
+		, MappedDerivativeCode NVARCHAR(20) NULL
 		, ProgrammeId INT
 		, Gateway NVARCHAR(200)
+		, BodyId	INT
+		, EngineId	INT
+		, TransmissionId INT
+		, IsMappedDerivative BIT
+		, UpdatedOn DATETIME NULL
+		, UpdatedBy NVARCHAR(16) NULL
+		, FdpDerivativeMappingId INT NULL
 	);
-	INSERT INTO @PageRecords (DerivativeCode, MappedDerivativeCode, ProgrammeId, Gateway)
-	SELECT 
-		  D.ImportDerivativeCode
+	INSERT INTO @PageRecords 
+	(
+		  CreatedOn
+		, CreatedBy
+		, DocumentId
+		, ImportDerivativeCode
+		, MappedDerivativeCode
+		, ProgrammeId
+		, Gateway
+		, BodyId
+		, EngineId
+		, TransmissionId
+		, IsMappedDerivative
+		, UpdatedOn
+		, UpdatedBy
+		, FdpDerivativeMappingId
+	)
+	SELECT
+		  D.CreatedOn
+		, D.CreatedBy
+		, D.DocumentId 
+		, D.ImportDerivativeCode
 		, D.MappedDerivativeCode
 		, D.ProgrammeId
 		, D.Gateway
+		, D.BodyId
+		, D.EngineId
+		, D.TransmissionId
+		, D.IsMappedDerivative
+		, D.UpdatedOn
+		, D.UpdatedBy
+		, D.FdpDerivativeMappingId
 	FROM
 	Fdp_DerivativeMapping_VW AS D
 	JOIN OXO_Programme_VW	 AS P ON D.ProgrammeId = P.Id
@@ -85,15 +121,5 @@ AS
 		, D.UpdatedOn
 		, D.UpdatedBy
 
-	FROM @PageRecords				AS P
-	JOIN Fdp_DerivativeMapping_VW	AS D	ON	P.DerivativeCode = D.ImportDerivativeCode
-											AND P.MappedDerivativeCode = D.MappedDerivativeCode
-											AND P.ProgrammeId = D.ProgrammeId
-											AND
-											(
-												(@IncludeAllDerivatives = 0 AND D.IsMappedDerivative = 1)
-												OR
-												(@IncludeAllDerivatives = 1)
-											)
-											AND P.Gateway = D.Gateway
-											AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex;
+	FROM @PageRecords				AS D
+	WHERE D.RowIndex BETWEEN @MinIndex AND @MaxIndex;

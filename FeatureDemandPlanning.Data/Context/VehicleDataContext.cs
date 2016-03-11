@@ -173,7 +173,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public IEnumerable<ModelBody> ListBodies(ProgrammeFilter filter)
         {
-            return _bodyDataStore.ModelBodyGetMany(filter.ProgrammeId.GetValueOrDefault());
+            return _bodyDataStore.ModelBodyGetMany(filter);
         }
         public IEnumerable<Derivative> ListDerivatives(DerivativeFilter filter)
         {
@@ -208,11 +208,11 @@ namespace FeatureDemandPlanning.DataStore
         }
         public IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter)
         {
-            return _transmissionDataStore.ModelTransmissionGetMany(filter.ProgrammeId.GetValueOrDefault());   
+            return _transmissionDataStore.ModelTransmissionGetMany(filter);   
         }
         public IEnumerable<ModelEngine> ListEngines(ProgrammeFilter filter)
         {
-            return _engineDataStore.ModelEngineGetMany(filter.ProgrammeId.GetValueOrDefault());
+            return _engineDataStore.ModelEngineGetMany(filter);
         }
         public IEnumerable<FdpTrimMapping> ListTrim(TrimFilter filter)
         {
