@@ -1,6 +1,7 @@
 ﻿
 
 
+
 CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	
 	SELECT
@@ -22,15 +23,15 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	FROM
 	OXO_Doc							AS O
 	JOIN OXO_Programme_Model		AS D	ON O.Programme_Id		= D.Programme_Id
-											AND D.Active			= 1
+											AND ISNULL(D.Active, 1)	= 1
 	JOIN Fdp_Gateways_VW			AS G	ON D.Programme_Id		= G.ProgrammeId
 											AND G.IsArchived		= 0
 	JOIN OXO_Programme_Body			AS B	ON D.Body_Id			= B.Id
-											AND B.Active			= 1
+											AND ISNULL(B.Active, 1)	= 1
 	JOIN OXO_Programme_Engine		AS E	ON D.Engine_Id			= E.Id
-											AND E.Active			= 1
+											AND ISNULL(E.Active, 1)	= 1
 	JOIN OXO_Programme_Transmission AS T	ON D.Transmission_Id	= T.Id
-											AND T.Active			= 1
+											AND ISNULL(T.Active, 1)	= 1
 	WHERE
 	D.Active = 1
 	AND
@@ -63,15 +64,15 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	FROM
 	OXO_Doc										AS O
 	JOIN OXO_Archived_Programme_Model			AS D	ON	O.Id				= D.Doc_Id
-														AND D.Active			= 1
+														AND ISNULL(D.Active, 1)	= 1
 	JOIN Fdp_Gateways_VW						AS G	ON	D.Programme_Id		= G.ProgrammeId
 														AND G.IsArchived		= 1
 	JOIN OXO_Archived_Programme_Body			AS B	ON	D.Body_Id			= B.Id
-														AND B.Active			= 1
+														AND ISNULL(B.Active, 1)	= 1
 	JOIN OXO_Archived_Programme_Engine			AS E	ON	D.Engine_Id			= E.Id
-														AND E.Active			= 1
+														AND ISNULL(E.Active, 1)	= 1
 	JOIN OXO_Archived_Programme_Transmission	AS T	ON	D.Transmission_Id	= T.Id
-														AND T.Active			= 1
+														AND ISNULL(T.Active, 1)	= 1
 	WHERE
 	O.Archived = 1
 	GROUP BY
@@ -105,10 +106,45 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 											AND O.Gateway		= D.Gateway
 											AND D.IsActive		= 1
 	JOIN OXO_Programme_Body			AS B	ON D.BodyId			= B.Id
-											AND B.Active		= 1
+											AND ISNULL(B.Active, 1)		= 1
 	JOIN OXO_Programme_Engine		AS E	ON D.EngineId		= E.Id
-											AND E.Active		= 1
+											AND ISNULL(E.Active, 1)		= 1
 	JOIN OXO_Programme_Transmission AS T	ON D.TransmissionId	= T.Id
-											AND T.Active		= 1
+											AND ISNULL(T.Active, 1)	= 1
 	WHERE
 	D.IsActive = 1
+	AND
+	ISNULL(O.Archived, 0) = 0
+	
+	UNION
+	
+	SELECT
+		  O.Id AS DocumentId 
+		, D.ProgrammeId
+		, D.Gateway
+		, D.CreatedOn
+		, D.CreatedBy
+		, D.BodyId
+		, D.EngineId
+		, D.TransmissionId
+		, D.DerivativeCode	AS BMC
+		, D.UpdatedOn
+		, D.UpdatedBy
+		, CAST(1 AS BIT) AS IsFdpDerivative
+		, D.FdpDerivativeId
+		, CAST(1 AS BIT) AS IsArchived
+	FROM 
+	OXO_Doc										AS O
+	JOIN Fdp_Derivative							AS D	ON	O.Programme_Id		= D.ProgrammeId
+														AND O.Gateway			= D.Gateway
+														AND D.IsActive			= 1
+	JOIN OXO_Archived_Programme_Body			AS B	ON	D.BodyId			= B.Id
+														AND ISNULL(B.Active, 1)	= 1
+	JOIN OXO_Archived_Programme_Engine			AS E	ON	D.EngineId			= E.Id
+														AND ISNULL(E.Active, 1)	= 1
+	JOIN OXO_Archived_Programme_Transmission	AS T	ON	D.TransmissionId	= T.Id
+														AND ISNULL(T.Active, 1)	= 1
+	WHERE
+	D.IsActive = 1
+	AND
+	ISNULL(O.Archived, 0) = 1
