@@ -8,6 +8,7 @@ using FeatureDemandPlanning.Model.ViewModel;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using FeatureDemandPlanning.Model.Interfaces;
@@ -176,7 +177,7 @@ namespace FeatureDemandPlanning.Controllers
                 return JsonGetFailure("DerivativeMapping does not exist");
             }
 
-            derivativeMappingView.DerivativeMapping = await DataContext.Vehicle.CopyFdpDerivativeMappingToGateway(FdpDerivativeMapping.FromParameters(parameters), parameters.CopyToGateways);
+            derivativeMappingView.DerivativeMapping = await DataContext.Vehicle.CopyFdpDerivativeMappingToDocument(FdpDerivativeMapping.FromParameters(parameters), parameters.TargetDocumentId.GetValueOrDefault());
             if (derivativeMappingView.DerivativeMapping is EmptyFdpDerivativeMapping)
             {
                 return JsonGetFailure(string.Format("DerivativeMapping '{0}' could not be copied", derivativeMappingView.DerivativeMapping.ImportDerivativeCode));
@@ -193,10 +194,13 @@ namespace FeatureDemandPlanning.Controllers
                 return JsonGetFailure("DerivativeMapping does not exist");
             }
 
-            derivativeMappingView.DerivativeMapping = await DataContext.Vehicle.CopyFdpDerivativeMappingsToGateway(FdpDerivativeMapping.FromParameters(parameters), parameters.CopyToGateways);
-            if (derivativeMappingView.DerivativeMapping is EmptyFdpDerivativeMapping)
+            var results =
+                await
+                    DataContext.Vehicle.CopyFdpDerivativeMappingsToDocument(parameters.DocumentId.GetValueOrDefault(),
+                        parameters.TargetDocumentId.GetValueOrDefault());
+            if (results == null || !results.Any())
             {
-                return JsonGetFailure(string.Format("DerivativeMappings could not be copied", derivativeMappingView.DerivativeMapping.ImportDerivativeCode));
+                return JsonGetFailure("DerivativeMappings could not be copied");
             }
 
             return JsonGetSuccess();

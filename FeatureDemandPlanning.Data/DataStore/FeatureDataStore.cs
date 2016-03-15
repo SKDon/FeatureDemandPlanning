@@ -819,17 +819,17 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public FdpFeatureMapping FdpFeatureMappingCopy(FdpFeatureMapping featureMappingToCopy, IEnumerable<string> gateways)
+        public FdpFeatureMapping FdpFeatureMappingCopy(FdpFeatureMapping featureMappingToCopy, int targetDocumentId)
         {
             FdpFeatureMapping retVal = new EmptyFdpFeatureMapping();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
 
                     para.Add("@FdpFeatureMappingId", featureMappingToCopy.FdpFeatureMappingId, DbType.Int32);
-                    para.Add("@Gateways", gateways.ToCommaSeperatedList(), DbType.String);
+                    para.Add("@TargetDocumentId", targetDocumentId, DbType.Int32);
                     para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
 
                     var rows = conn.Execute("Fdp_FeatureMapping_Copy", para, commandType: CommandType.StoredProcedure);
@@ -970,7 +970,7 @@ namespace FeatureDemandPlanning.DataStore
             return retVal;
         }
 
-        public FdpSpecialFeatureMapping FdpSpecialFeatureMappingCopy(FdpSpecialFeatureMapping featureMappingToCopy, IEnumerable<string> gateways)
+        public FdpSpecialFeatureMapping FdpSpecialFeatureMappingCopy(FdpSpecialFeatureMapping featureMappingToCopy, int targetDocumentId)
         {
             FdpSpecialFeatureMapping retVal = new EmptyFdpSpecialFeatureMapping();
             using (IDbConnection conn = DbHelper.GetDBConnection())
@@ -980,7 +980,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
 
                     para.Add("@FdpSpecialFeatureMappingId", featureMappingToCopy.FdpSpecialFeatureMappingId, DbType.Int32);
-                    para.Add("@Gateways", gateways.ToCommaSeperatedList(), DbType.String);
+                    para.Add("@TargetDocumentId", targetDocumentId, DbType.Int32);
                     para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
 
                     var rows = conn.Execute("Fdp_SpecialFeatureMapping_Copy", para, commandType: CommandType.StoredProcedure);
@@ -994,6 +994,11 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
             return retVal;
+        }
+
+        public IEnumerable<FdpFeatureMapping> FdpFeatureMappingsCopy(int sourceDocumentId, int targetDocumentId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

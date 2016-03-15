@@ -129,48 +129,6 @@ namespace FeatureDemandPlanning.DataStore
             return programmes.Select(p => p.VehicleMake).Distinct().OrderBy(p => p);
         }
 
-        //public PagedResults<EngineCodeMapping> ListEngineCodeMappings(EngineCodeFilter filter)
-        //{
-        //    var results = new PagedResults<EngineCodeMapping>();
-
-        //    var engineCodeMappings = _programmeDataStore.EngineCodeMappingGetMany();
-        //    if (engineCodeMappings == null || !engineCodeMappings.Any())
-        //        return results;
-
-        //    // Filter the results 
-        //    // TODO, get this in the database as parameters
-
-        //    engineCodeMappings = engineCodeMappings
-        //        .Where(e => !filter.ProgrammeId.HasValue || e.Id == filter.ProgrammeId.Value)
-        //        .Where(e => !filter.VehicleId.HasValue || e.VehicleId == filter.VehicleId.Value)
-        //        .Where(e => string.IsNullOrEmpty(filter.Code) || e.VehicleName.Equals(filter.Code, StringComparison.InvariantCultureIgnoreCase))
-        //        .Where(e => string.IsNullOrEmpty(filter.Make) || e.VehicleMake.Equals(filter.Make, StringComparison.InvariantCultureIgnoreCase))
-        //        .Where(e => string.IsNullOrEmpty(filter.ModelYear) || e.ModelYear.Equals(filter.ModelYear, StringComparison.InvariantCultureIgnoreCase))
-        //        .Where(e => string.IsNullOrEmpty(filter.Gateway) || e.Gateway.Equals(filter.Gateway, StringComparison.InvariantCultureIgnoreCase))
-        //        .Where(e => string.IsNullOrEmpty(filter.DerivativeCode) || (string.IsNullOrEmpty(e.ExternalEngineCode) ? string.Empty : e.ExternalEngineCode.ToUpper()).Contains(filter.DerivativeCode.ToUpper()))
-        //        .Where(e => !filter.EngineId.HasValue || e.EngineId == filter.EngineId.Value)
-        //        .Where(e => string.IsNullOrEmpty(filter.EngineSize) || e.EngineSize.Equals(filter.EngineSize, StringComparison.InvariantCultureIgnoreCase))
-        //        .Where(e => string.IsNullOrEmpty(filter.Cylinder) || e.Cylinder.Equals(filter.Cylinder, StringComparison.InvariantCultureIgnoreCase))
-        //        .Where(e => string.IsNullOrEmpty(filter.Fuel) || e.Fuel.Equals(filter.Fuel, StringComparison.InvariantCultureIgnoreCase))
-        //        .Where(e => string.IsNullOrEmpty(filter.Power) || e.Power.Equals(filter.Power, StringComparison.InvariantCultureIgnoreCase))
-        //        .Where(e => string.IsNullOrEmpty(filter.Electrification) || e.Electrification.Equals(filter.Electrification, StringComparison.InvariantCultureIgnoreCase));
-
-        //    results.TotalRecords = engineCodeMappings.Count();
-
-        //    if (filter.PageIndex.HasValue && filter.PageSize.HasValue)
-        //    {
-        //        results.CurrentPage = engineCodeMappings.Skip((filter.PageIndex.Value - 1) * filter.PageSize.Value).Take(filter.PageSize.Value);
-        //        results.PageIndex = filter.PageIndex.Value;
-        //        results.PageSize = filter.PageSize.Value;
-        //    }
-        //    else
-        //    {
-        //        results.CurrentPage = engineCodeMappings;
-        //    }
-
-        //    return results;
-        //}
-
         public IEnumerable<ModelBody> ListBodies(ProgrammeFilter filter)
         {
             return _bodyDataStore.ModelBodyGetMany(filter);
@@ -270,27 +228,27 @@ namespace FeatureDemandPlanning.DataStore
         
         public async Task<FdpDerivative> DeleteFdpDerivative(FdpDerivative derivativeToDelete)
         {
-            return await Task.FromResult<FdpDerivative>(_derivativeDataStore.FdpDerivativeDelete(derivativeToDelete));
+            return await Task.FromResult(_derivativeDataStore.FdpDerivativeDelete(derivativeToDelete));
         }
         public async Task<FdpDerivative> GetFdpDerivative(DerivativeFilter filter)
         {
-            return await Task.FromResult<FdpDerivative>(_derivativeDataStore.FdpDerivativeGet(filter));
+            return await Task.FromResult(_derivativeDataStore.FdpDerivativeGet(filter));
         }
         public async Task<PagedResults<FdpDerivative>> ListFdpDerivatives(DerivativeFilter filter)
         {
-            return await Task.FromResult<PagedResults<FdpDerivative>>(_derivativeDataStore.FdpDerivativeGetMany(filter));
+            return await Task.FromResult(_derivativeDataStore.FdpDerivativeGetMany(filter));
         }
         public async Task<FdpDerivativeMapping> DeleteFdpDerivativeMapping(FdpDerivativeMapping derivativeMappingToDelete)
         {
-            return await Task.FromResult<FdpDerivativeMapping>(_derivativeDataStore.FdpDerivativeMappingDelete(derivativeMappingToDelete));
+            return await Task.FromResult(_derivativeDataStore.FdpDerivativeMappingDelete(derivativeMappingToDelete));
         }
         public async Task<FdpDerivativeMapping> GetFdpDerivativeMapping(DerivativeMappingFilter filter)
         {
-            return await Task.FromResult<FdpDerivativeMapping>(_derivativeDataStore.FdpDerivativeMappingGet(filter));
+            return await Task.FromResult(_derivativeDataStore.FdpDerivativeMappingGet(filter));
         }
         public async Task<PagedResults<FdpDerivativeMapping>> ListFdpDerivativeMappings(DerivativeMappingFilter filter)
         {
-            return await Task.FromResult<PagedResults<FdpDerivativeMapping>>(_derivativeDataStore.FdpDerivativeMappingGetMany(filter));
+            return await Task.FromResult(_derivativeDataStore.FdpDerivativeMappingGetMany(filter));
         }
         public async Task<PagedResults<OxoDerivative>> ListOxoDerivatives(DerivativeMappingFilter filter)
         {
@@ -304,7 +262,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<IEnumerable<FdpDerivativeMapping>> CopyFdpDerivativeMappingsToDocument(int sourceDocumentId, int targetDocumentId)
         {
-            throw await Task.FromResult(_derivativeDataStore.FdpDerivativeMappingsCopy(sourceDocumentId, targetDocumentId));
+            return await Task.FromResult(_derivativeDataStore.FdpDerivativeMappingsCopy(sourceDocumentId, targetDocumentId));
         }
         public async Task<BmcMapping> GetMappedBmc(DerivativeFilter filter)
         {
@@ -315,53 +273,53 @@ namespace FeatureDemandPlanning.DataStore
 
         public async Task<FdpFeature> DeleteFdpFeature(FdpFeature featureToDelete)
         {
-            return await Task.FromResult<FdpFeature>(_featureDataStore.FdpFeatureDelete(featureToDelete));
+            return await Task.FromResult(_featureDataStore.FdpFeatureDelete(featureToDelete));
         }
         public async Task<FdpFeature> GetFdpFeature(FeatureFilter filter)
         {
-            return await Task.FromResult<FdpFeature>(_featureDataStore.FdpFeatureGet(filter));
+            return await Task.FromResult(_featureDataStore.FdpFeatureGet(filter));
         }
         public async Task<PagedResults<FdpFeature>> ListFdpFeatures(FeatureFilter filter)
         {
-            return await Task.FromResult<PagedResults<FdpFeature>>(_featureDataStore.FdpFeatureGetMany(filter));
+            return await Task.FromResult(_featureDataStore.FdpFeatureGetMany(filter));
         }
         public async Task<FdpFeatureMapping> DeleteFdpFeatureMapping(FdpFeatureMapping featureMappingToDelete)
         {
-            return await Task.FromResult<FdpFeatureMapping>(_featureDataStore.FdpFeatureMappingDelete(featureMappingToDelete));
+            return await Task.FromResult(_featureDataStore.FdpFeatureMappingDelete(featureMappingToDelete));
         }
         public async Task<FdpFeatureMapping> GetFdpFeatureMapping(FeatureMappingFilter filter)
         {
-            return await Task.FromResult<FdpFeatureMapping>(_featureDataStore.FdpFeatureMappingGet(filter));
+            return await Task.FromResult(_featureDataStore.FdpFeatureMappingGet(filter));
         }
         public async Task<PagedResults<FdpFeatureMapping>> ListFdpFeatureMappings(FeatureMappingFilter filter)
         {
-            return await Task.FromResult<PagedResults<FdpFeatureMapping>>(_featureDataStore.FdpFeatureMappingGetMany(filter));
+            return await Task.FromResult(_featureDataStore.FdpFeatureMappingGetMany(filter));
         }
-        public async Task<FdpFeatureMapping> CopyFdpFeatureMappingToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways)
+        public async Task<FdpFeatureMapping> CopyFdpFeatureMappingToDocument(FdpFeatureMapping fdpFeatureMapping, int targetDocumentId)
         {
-            return await Task.FromResult<FdpFeatureMapping>(_featureDataStore.FdpFeatureMappingCopy(fdpFeatureMapping, gateways));
+            return await Task.FromResult(_featureDataStore.FdpFeatureMappingCopy(fdpFeatureMapping, targetDocumentId));
         }
-        public Task<FdpFeatureMapping> CopyFdpFeatureMappingsToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways)
+        public async Task<IEnumerable<FdpFeatureMapping>> CopyFdpFeatureMappingsToDocument(int sourceDocumentId, int targetDocumentId)
         {
-            throw new NotImplementedException();
+            return await Task.FromResult(_featureDataStore.FdpFeatureMappingsCopy(sourceDocumentId, targetDocumentId));
         }
         public async Task<FdpSpecialFeatureMapping> DeleteFdpSpecialFeatureMapping(FdpSpecialFeatureMapping featureMappingToDelete)
         {
-            return await Task.FromResult<FdpSpecialFeatureMapping>(_featureDataStore.FdpSpecialFeatureMappingDelete(featureMappingToDelete));
+            return await Task.FromResult(_featureDataStore.FdpSpecialFeatureMappingDelete(featureMappingToDelete));
         }
         public async Task<FdpSpecialFeatureMapping> GetFdpSpecialFeatureMapping(SpecialFeatureMappingFilter filter)
         {
-            return await Task.FromResult<FdpSpecialFeatureMapping>(_featureDataStore.FdpSpecialFeatureMappingGet(filter));
+            return await Task.FromResult(_featureDataStore.FdpSpecialFeatureMappingGet(filter));
         }
         public async Task<PagedResults<FdpSpecialFeatureMapping>> ListFdpSpecialFeatureMappings(SpecialFeatureMappingFilter filter)
         {
-            return await Task.FromResult<PagedResults<FdpSpecialFeatureMapping>>(_featureDataStore.FdpSpecialFeatureMappingGetMany(filter));
+            return await Task.FromResult(_featureDataStore.FdpSpecialFeatureMappingGetMany(filter));
         }
-        public async Task<FdpSpecialFeatureMapping> CopyFdpSpecialFeatureMappingToGateway(FdpSpecialFeatureMapping fdpSpecialFeatureMapping, IEnumerable<string> gateways)
+        public async Task<FdpSpecialFeatureMapping> CopyFdpSpecialFeatureMappingToDocument(FdpSpecialFeatureMapping fdpSpecialFeatureMapping, int targetDocumentId)
         {
-            return await Task.FromResult<FdpSpecialFeatureMapping>(_featureDataStore.FdpSpecialFeatureMappingCopy(fdpSpecialFeatureMapping, gateways));
+            return await Task.FromResult(_featureDataStore.FdpSpecialFeatureMappingCopy(fdpSpecialFeatureMapping, targetDocumentId));
         }
-        public Task<FdpSpecialFeatureMapping> CopyFdpSpecialFeatureMappingsToGateway(FdpSpecialFeatureMapping fdpSpecialFeatureMapping, IEnumerable<string> gateways)
+        public Task<IEnumerable<FdpSpecialFeatureMapping>> CopyFdpSpecialFeatureMappingsToDocument(int sourceDocumentId, int targetDocumentId)
         {
             throw new NotImplementedException();
         }
@@ -370,33 +328,33 @@ namespace FeatureDemandPlanning.DataStore
 
         public async Task<FdpTrim> DeleteFdpTrim(FdpTrim trimToDelete)
         {
-            return await Task.FromResult<FdpTrim>(_trimDataStore.FdpTrimDelete(trimToDelete));
+            return await Task.FromResult(_trimDataStore.FdpTrimDelete(trimToDelete));
         }
         public async Task<FdpTrim> GetFdpTrim(TrimFilter filter)
         {
-            return await Task.FromResult<FdpTrim>(_trimDataStore.FdpTrimGet(filter));
+            return await Task.FromResult(_trimDataStore.FdpTrimGet(filter));
         }
         public async Task<PagedResults<FdpTrim>> ListFdpTrims(TrimFilter filter)
         {
-            return await Task.FromResult<PagedResults<FdpTrim>>(_trimDataStore.FdpTrimGetMany(filter));
+            return await Task.FromResult(_trimDataStore.FdpTrimGetMany(filter));
         }
         public async Task<FdpTrimMapping> DeleteFdpTrimMapping(FdpTrimMapping trimMappingToDelete)
         {
-            return await Task.FromResult<FdpTrimMapping>(_trimDataStore.FdpTrimMappingDelete(trimMappingToDelete));
+            return await Task.FromResult(_trimDataStore.FdpTrimMappingDelete(trimMappingToDelete));
         }
         public async Task<FdpTrimMapping> GetFdpTrimMapping(TrimMappingFilter filter)
         {
-            return await Task.FromResult<FdpTrimMapping>(_trimDataStore.FdpTrimMappingGet(filter));
+            return await Task.FromResult(_trimDataStore.FdpTrimMappingGet(filter));
         }
         public async Task<PagedResults<FdpTrimMapping>> ListFdpTrimMappings(TrimMappingFilter filter)
         {
-            return await Task.FromResult<PagedResults<FdpTrimMapping>>(_trimDataStore.FdpTrimMappingGetMany(filter));
+            return await Task.FromResult(_trimDataStore.FdpTrimMappingGetMany(filter));
         }
-        public Task<FdpTrimMapping> CopyFdpTrimMappingToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways)
+        public Task<FdpTrimMapping> CopyFdpTrimMappingToDocument(FdpTrimMapping fdpTrimMapping, int targetDocumentId)
         {
             throw new NotImplementedException();
         }
-        public Task<FdpTrimMapping> CopyFdpTrimMappingsToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways)
+        public Task<IEnumerable<FdpTrimMapping>> CopyFdpTrimMappingsToDocument(int sourceDocumentId, int targetDocumentId)
         {
             throw new NotImplementedException();
         }

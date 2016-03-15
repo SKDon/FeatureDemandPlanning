@@ -6,6 +6,8 @@ namespace FeatureDemandPlanning.Model.Parameters
 {
     public class FeatureMappingParameters : FeatureParameters
     {
+        public int? DocumentId { get; set; }
+        public int? TargetDocumentId { get; set; }
         public int? FeatureMappingId { get; set; }
         public string ImportFeatureCode { get; set; }
       

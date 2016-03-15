@@ -126,7 +126,7 @@ namespace FeatureDemandPlanning.Controllers
                 return JsonGetFailure("FeatureMapping does not exist");
             }
 
-            derivativeMappingView.SpecialFeatureMapping = await DataContext.Vehicle.CopyFdpSpecialFeatureMappingToGateway(FdpSpecialFeatureMapping.FromParameters(parameters), parameters.CopyToGateways);
+            derivativeMappingView.SpecialFeatureMapping = await DataContext.Vehicle.CopyFdpSpecialFeatureMappingToDocument(FdpSpecialFeatureMapping.FromParameters(parameters), parameters.DocumentId.GetValueOrDefault());
             if (derivativeMappingView.SpecialFeatureMapping is EmptyFdpSpecialFeatureMapping)
             {
                 return JsonGetFailure(string.Format("FeatureMapping '{0}' could not be copied", derivativeMappingView.SpecialFeatureMapping.ImportFeatureCode));
@@ -143,8 +143,8 @@ namespace FeatureDemandPlanning.Controllers
                 return JsonGetFailure("FeatureMapping does not exist");
             }
 
-            derivativeMappingView.SpecialFeatureMapping = await DataContext.Vehicle.CopyFdpSpecialFeatureMappingsToGateway(FdpSpecialFeatureMapping.FromParameters(parameters), parameters.CopyToGateways);
-            if (derivativeMappingView.SpecialFeatureMapping is EmptyFdpSpecialFeatureMapping)
+            var results = await DataContext.Vehicle.CopyFdpSpecialFeatureMappingsToDocument(parameters.DocumentId.GetValueOrDefault(), parameters.TargetDocumentId.GetValueOrDefault());
+            if (results == null || ! results.Any())
             {
                 return JsonGetFailure(string.Format("FeatureMappings could not be copied", derivativeMappingView.SpecialFeatureMapping.ImportFeatureCode));
             }

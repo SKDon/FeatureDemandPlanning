@@ -6,6 +6,7 @@ namespace FeatureDemandPlanning.Model.Parameters
 {
     public class DerivativeMappingParameters : DerivativeParameters
     {
+        public int? TargetDocumentId { get; set; }
         public int? DerivativeMappingId { get; set; }
         public string ImportDerivativeCode { get; set; }
       

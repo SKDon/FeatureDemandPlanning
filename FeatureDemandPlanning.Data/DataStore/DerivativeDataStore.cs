@@ -457,5 +457,10 @@ namespace FeatureDemandPlanning.DataStore
             }
             return derivative;
         }
+
+        public IEnumerable<FdpDerivativeMapping> FdpDerivativeMappingsCopy(int sourceDocumentId, int targetDocumentId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

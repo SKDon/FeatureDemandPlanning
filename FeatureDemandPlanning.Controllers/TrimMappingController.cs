@@ -8,6 +8,7 @@ using FeatureDemandPlanning.Model.ViewModel;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using FeatureDemandPlanning.Model.Interfaces;
@@ -125,7 +126,7 @@ namespace FeatureDemandPlanning.Controllers
                 return JsonGetFailure("TrimMapping does not exist");
             }
 
-            derivativeMappingView.TrimMapping = await DataContext.Vehicle.CopyFdpTrimMappingToGateway(FdpTrimMapping.FromParameters(parameters), parameters.CopyToGateways);
+            derivativeMappingView.TrimMapping = await DataContext.Vehicle.CopyFdpTrimMappingToDocument(FdpTrimMapping.FromParameters(parameters), parameters.TargetDocumentId.GetValueOrDefault());
             if (derivativeMappingView.TrimMapping is EmptyFdpTrimMapping)
             {
                 return JsonGetFailure(string.Format("TrimMapping '{0}' could not be copied", derivativeMappingView.TrimMapping.ImportTrim));
@@ -142,8 +143,8 @@ namespace FeatureDemandPlanning.Controllers
                 return JsonGetFailure("TrimMapping does not exist");
             }
 
-            derivativeMappingView.TrimMapping = await DataContext.Vehicle.CopyFdpTrimMappingsToGateway(FdpTrimMapping.FromParameters(parameters), parameters.CopyToGateways);
-            if (derivativeMappingView.TrimMapping is EmptyFdpTrimMapping)
+            var results = await DataContext.Vehicle.CopyFdpTrimMappingsToDocument(parameters.DocumentId.GetValueOrDefault(), parameters.TargetDocumentId.GetValueOrDefault());
+            if (results == null || !results.Any())
             {
                 return JsonGetFailure(string.Format("TrimMappings could not be copied", derivativeMappingView.TrimMapping.ImportTrim));
             }
