@@ -4,9 +4,6 @@
 AS
 	SET NOCOUNT ON;
 	
-	-- TO DO, this routine needs refactoring into child stored procedures. It's quite linear and procedural, so
-	-- is simply a matter of breaking the code up
-	
 	DECLARE @ProgrammeId		INT;
 	DECLARE @Gateway			NVARCHAR(100);
 	DECLARE @OxoDocId			INT;
@@ -14,6 +11,7 @@ AS
 	DECLARE @CDSId				NVARCHAR(16);
 	DECLARE @FdpImportQueueId	INT;
 	DECLARE @Message			NVARCHAR(400);
+	DECLARE @ErrorCount AS INT;
 	DECLARE @MarketMix AS TABLE
 	(
 		  FdpVolumeHeaderId INT
@@ -72,153 +70,32 @@ AS
 		JOIN Fdp_Import			AS I ON Q.FdpImportQueueId = I.FdpImportQueueId 
 		WHERE
 		Q.FdpImportStatusId = 5 -- Cancelled
-	)
+	);
 	
 	-- Create exceptions of varying types based on the data that cannot be processed
 	
-	SET @Message = 'Adding missing markets...';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+	EXEC Fdp_ImportData_ProcessMissingMarkets @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId
 	
-	INSERT INTO Fdp_ImportError
-	(
-		  FdpImportQueueId
-		, LineNumber
-		, ErrorOn
-		, FdpImportErrorTypeId
-		, ErrorMessage
-	)
+	EXEC Fdp_ImportData_ProcessMissingDerivatives @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
+	
+	EXEC Fdp_ImportData_ProcessMissingTrim @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
+	
+	EXEC Fdp_ImportData_ProcessMissingFeatures @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
+
 	SELECT 
-		  I.FdpImportQueueId
-		, I.ImportLineNumber
-		, GETDATE() AS ErrorOn
-		, 1 AS FdpImportErrorTypeId -- Missing Market
-		, 'Missing market ''' + I.ImportCountry + '''' AS ErrorMessage
-	FROM
-	Fdp_Import_VW				AS I
-	LEFT JOIN Fdp_ImportError	AS CUR	ON	I.FdpImportQueueId	= CUR.FdpImportQueueId
-										AND	I.ImportLineNumber	= CUR.LineNumber
-										AND CUR.IsExcluded		= 0
-	WHERE
-	I.FdpImportId = @FdpImportId
-	AND
-	I.FdpImportQueueId = @FdpImportQueueId
-	AND
-	I.IsMarketMissing = 1
-	AND
-	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
-	AND
-	CUR.FdpImportErrorId IS NULL
-	
-	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing market errors added';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT;
-	
-	SET @Message = 'Adding missing derivatives...';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT;
-		
-	INSERT INTO Fdp_ImportError
-	(
-		  FdpImportQueueId
-		, LineNumber
-		, ErrorOn
-		, FdpImportErrorTypeId
-		, ErrorMessage
-	)
-	SELECT 
-		  I.FdpImportQueueId
-		, I.ImportLineNumber
-		, GETDATE() AS ErrorOn
-		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, 'Missing derivative ''' + I.ImportDerivativeCode + ' - ' + I.ImportTrim + '''' AS ErrorMessage
+		@ErrorCount = COUNT(1) 
 	FROM 
-	Fdp_Import_VW				AS I
-	LEFT JOIN Fdp_ImportError	AS CUR	ON	I.FdpImportQueueId	= CUR.FdpImportQueueId
-										AND	I.ImportLineNumber	= CUR.LineNumber
-										AND CUR.IsExcluded		= 0
-	WHERE
-	I.FdpImportId = @FdpImportId
+	Fdp_ImportError 
+	WHERE 
+	FdpImportQueueId = @FdpImportQueueId
 	AND
-	I.FdpImportQueueId = @FdpImportQueueId
-	AND
-	I.IsDerivativeMissing = 1
-	AND
-	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
-	AND
-	CUR.FdpImportErrorId IS NULL;
-	
-	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing derivative errors added';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT;
-	
-	SET @Message = 'Adding missing trim...';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT;
-	
-	INSERT INTO Fdp_ImportError
-	(
-		  FdpImportQueueId
-		, LineNumber
-		, ErrorOn
-		, FdpImportErrorTypeId
-		, ErrorMessage
-		, AdditionalData
-	)
-	SELECT 
-		  I.FdpImportQueueId
-		, I.ImportLineNumber
-		, GETDATE() AS ErrorOn
-		, 4 AS FdpImportErrorTypeId -- Missing Trim
-		, 'Missing trim ''' + I.ImportTrim + ''' for derivative ''' + I.BMC + '''' AS ErrorMessage
-		, I.BMC
-	FROM Fdp_Import_VW			AS I
-	LEFT JOIN Fdp_ImportError	AS CUR	ON	I.FdpImportQueueId			= CUR.FdpImportQueueId
-										AND	I.ImportLineNumber			= CUR.LineNumber
-										AND CUR.IsExcluded		= 0
-	WHERE
-	I.FdpImportId = @FdpImportId
-	AND
-	I.FdpImportQueueId = @FdpImportQueueId
-	AND
-	I.IsTrimMissing = 1 
-	AND
-	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
-	AND
-	CUR.FdpImportErrorId IS NULL;
-	
-	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing trim errors added';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT;
-	
-	SET @Message = 'Adding features...';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT;
-		
-	INSERT INTO Fdp_ImportError
-	(
-		  FdpImportQueueId
-		, LineNumber
-		, ErrorOn
-		, FdpImportErrorTypeId
-		, ErrorMessage
-	)
-	SELECT 
-		  I.FdpImportQueueId
-		, I.ImportLineNumber
-		, GETDATE() AS ErrorOn
-		, 2 AS FdpImportErrorTypeId -- Missing Feature
-		, 'Missing feature ''' + I.ImportFeatureCode + ' - ' + I.ImportFeature + '''' AS ErrorMessage
-	FROM Fdp_Import_VW			AS I
-	LEFT JOIN Fdp_ImportError	AS CUR	ON	I.FdpImportQueueId	= CUR.FdpImportQueueId
-										AND	I.ImportLineNumber	= CUR.LineNumber
-										AND CUR.IsExcluded		= 0
-	WHERE
-	I.FdpImportId = @FdpImportId
-	AND
-	I.FdpImportQueueId = @FdpImportQueueId
-	AND
-	I.IsFeatureMissing = 1
-	AND
-	(@LineNumber IS NULL OR I.ImportLineNumber = @LineNumber)
-	AND
-	CUR.FdpImportErrorId IS NULL
-	
-	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing feature errors added';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+	IsExcluded = 0;
+
+	IF @ErrorCount > 0
+	BEGIN
+		EXEC Fdp_ImportQueue_UpdateStatus @ImportQueueId = @FdpImportQueueId, @ImportStatusId = 4
+		SET NOEXEC ON;
+	END
 	
 	-- From the import data, create an FDP_VolumeHeader entry for each distinct programme 
 	-- in the import. Note that if a volume header (take rate file) already exists
@@ -677,9 +554,6 @@ AS
 											AND S.FdpModelId	IS NULL
 	WHERE
 	S.FdpTakeRateSummaryId IS NULL;
-	
-	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' market level summary items added';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT
 
 	-- Update the percentage take rates for each market
 	-- We need to do this afterwards as the import may only contain partial data
@@ -699,18 +573,10 @@ AS
 	FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	TotalVolume <> @TotalVolume;
-	
-	SET @Message = 'Total volume for all markets updated: ' + CAST(@TotalVolume AS NVARCHAR(10));
-	RAISERROR(@Message, 0, 1) WITH NOWAIT
 
 	-- % Take at market level	
 	
-	UPDATE S SET PercentageTakeRate = 
-		CASE
-			WHEN @TotalVolume = 0 THEN 0
-			WHEN ISNULL(@TotalVolume, 0) <> 0 THEN Volume / CAST(@TotalVolume AS DECIMAL(10, 4))
-			ELSE 0
-		END
+	UPDATE S SET PercentageTakeRate = Volume / CAST(@TotalVolume AS DECIMAL(10, 4))
 	FROM
 	Fdp_TakeRateSummary AS S
 	WHERE
@@ -719,15 +585,11 @@ AS
 	S.ModelId IS NULL
 	AND
 	S.FdpModelId IS NULL;
-	
-	SET @Message = 'Take rate for each market updated';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT
 
 	-- % Take at model level
 	
 	UPDATE M SET PercentageTakeRate = 
-		CASE
-			WHEN MK.Volume = 0 THEN 0 
+		CASE 
 			WHEN ISNULL(MK.Volume, 0) <> 0 THEN M.Volume / CAST(MK.Volume AS DECIMAL(10,4))
 			ELSE 0
 		END
@@ -750,7 +612,6 @@ AS
 	
 	UPDATE F SET PercentageTakeRate = 
 		CASE 
-			WHEN M.Volume = 0 THEN 0
 			WHEN ISNULL(M.Volume, 0) <> 0 THEN F.Volume / CAST(M.Volume AS DECIMAL(10,4))
 			ELSE 0
 		END
@@ -762,9 +623,6 @@ AS
 										AND F.FdpVolumeHeaderId = M.FdpVolumeHeaderId
 	WHERE
 	F.FdpVolumeHeaderId = @FdpVolumeHeaderId;
-	
-	SET @Message = 'Take rate for features updated';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT
 	
 	-- Calculate and persist the feature mix for each feature / for each market
 
@@ -779,18 +637,9 @@ AS
 	EXEC Fdp_PowertrainDataItem_CalculateMixForAllDerivatives @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSID = @CDSId;
 	
 	-- Update the status of the import queue item
-	
-	UPDATE Q 
-		SET FdpImportStatusId = 
-			CASE 
-				WHEN E.FdpImportErrorId IS NOT NULL THEN 4 -- Error
-				ELSE 3 -- Processed
-			END
-	FROM Fdp_ImportQueue		AS Q
-	JOIN Fdp_Import				AS I ON Q.FdpImportQueueId	= I.FdpImportQueueId
-	LEFT JOIN Fdp_ImportError	AS E ON Q.FdpImportQueueId	= E.FdpImportQueueId
-									 AND E.IsExcluded		= 0
-	WHERE
-	I.FdpImportId = @FdpImportId;
+
+	EXEC Fdp_ImportQueue_UpdateStatus @ImportQueueId = @FdpImportQueueId, @ImportStatusId = 3
 
 	EXEC Fdp_TakeRateHeader_Get @FdpVolumeHeaderId = @FdpVolumeHeaderId;
+
+	SET NOEXEC ON;
