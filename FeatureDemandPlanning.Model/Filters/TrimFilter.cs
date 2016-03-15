@@ -18,6 +18,7 @@ namespace FeatureDemandPlanning.Model.Filters
         public TrimAction Action { get; set; }
 
         public bool IncludeAllTrim { get; set; }
+        public bool OxoTrimOnly { get; set; }
         public string DerivativeCode { get; set; }
 
         public TrimFilter()

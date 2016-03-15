@@ -381,6 +381,13 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_derivativeDataStore.BrochureModelCodeUpdate(derivative));
         }
+        public async Task<PagedResults<OxoTrim>> ListOxoTrim(TrimMappingFilter filter)
+        {
+            filter.IncludeAllTrim = true;
+            filter.OxoTrimOnly = true;
+            return await Task.FromResult(_trimDataStore.FdpOxoTrimGetMany(filter));
+        }
+
         #region "Private Methods"
 
         private IVehicle HydrateVehicleFromProgramme(Programme programme)

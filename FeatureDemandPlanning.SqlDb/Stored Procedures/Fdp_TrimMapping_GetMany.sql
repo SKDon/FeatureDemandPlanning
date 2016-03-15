@@ -2,8 +2,9 @@
 	  @CarLine					NVARCHAR(10)	= NULL
 	, @ModelYear				NVARCHAR(10)	= NULL
 	, @Gateway					NVARCHAR(16)	= NULL
-	, @DerivativeCode			NVARCHAR(20)	= NULL
+	, @DPCK						NVARCHAR(20)	= NULL
 	, @IncludeAllTrim			BIT = 0
+	, @OxoTrimOnly				BIT = 0
 	, @CDSId					NVARCHAR(16)
 	, @FilterMessage			NVARCHAR(50)	= NULL
 	, @PageIndex				INT				= NULL
@@ -23,19 +24,51 @@ AS
 	DECLARE @MaxIndex AS INT;
 	DECLARE @PageRecords AS TABLE
 	(
-		  RowIndex INT IDENTITY(1, 1)
-		, Trim NVARCHAR(1000)
-		, MappedTrim NVARCHAR(1000)
-		, ProgrammeId INT
-		, Gateway NVARCHAR(200)
+		  RowIndex			INT IDENTITY(1, 1)
+		, CreatedOn			DATETIME
+		, CreatedBy			NVARCHAR(16)
+		, DocumentId		INT
+		, ImportTrim		NVARCHAR(1000) NULL
+		, DPCK				NVARCHAR(1000) NULL
+		, ProgrammeId		INT
+		, Gateway			NVARCHAR(200)
+		, TrimId			INT
+		, IsMappedTrim		BIT
+		, UpdatedOn			DATETIME NULL
+		, UpdatedBy			NVARCHAR(16) NULL
+		, FdpTrimMappingId	INT NULL
 	);
-	INSERT INTO @PageRecords (Trim, MappedTrim, ProgrammeId, Gateway)
-	SELECT T.ImportTrim, T.MappedTrim, T.ProgrammeId, T.Gateway
+	INSERT INTO @PageRecords 
+	(
+		  CreatedOn			
+		, CreatedBy			
+		, DocumentId		
+		, ImportTrim		
+		, DPCK		
+		, ProgrammeId		
+		, Gateway			
+		, TrimId			
+		, IsMappedTrim		
+		, UpdatedOn			
+		, UpdatedBy			
+		, FdpTrimMappingId	
+	)
+	SELECT
+		  T.CreatedOn
+		, T.CreatedBy
+		, T.DocumentId 
+		, T.ImportTrim
+		, T.DPCK
+		, T.ProgrammeId
+		, T.Gateway
+		, T.TrimId
+		, T.IsMappedTrim
+		, T.UpdatedOn
+		, T.UpdatedBy
+		, T.FdpTrimMappingId
 	FROM
-	Fdp_TrimMapping_VW AS T
-	JOIN OXO_Programme_VW	 AS P ON T.ProgrammeId = P.Id
-	LEFT JOIN OXO_Programme_Model AS M ON P.Id  = M.Programme_Id
-										AND M.Active = 1
+	Fdp_TrimMapping_VW			AS T
+	JOIN OXO_Programme_VW		AS P ON T.ProgrammeId = P.Id
 	WHERE
 	(@CarLine IS NULL OR P.VehicleName = @CarLine)
 	AND
@@ -44,20 +77,18 @@ AS
 	(@Gateway IS NULL OR T.Gateway = @Gateway)
 	AND
 	(
-		(
-			@IncludeAllTrim = 0 
-			AND
-			M.Trim_Id = T.TrimId
-			AND
-			(@DerivativeCode IS NULL OR M.BMC = @DerivativeCode)
-			AND
-			T.IsMappedTrim = 0
-		)
+		(@IncludeAllTrim = 0 AND T.IsMappedTrim = 1)
 		OR
 		(@IncludeAllTrim = 1)
 	)
 	AND
-	(@DerivativeCode IS NULL OR (T.BMC = @DerivativeCode OR T.BMC IS NULL))
+	(
+		(@OxoTrimOnly = 0)
+		OR
+		(@OxoTrimOnly = 1 AND T.IsMappedTrim = 0)
+	)
+	AND
+	(@DPCK IS NULL OR (T.DPCK = @DPCK OR T.DPCK IS NULL))
 	AND
 	T.IsActive = 1;
 	
@@ -72,26 +103,18 @@ AS
 	SET @MaxIndex = @MinIndex + (@PageSize - 1);
 
 	SELECT DISTINCT
-		  T.TrimId
-		, T.FdpTrimId
-		, T.FdpTrimMappingId
-		, T.CreatedOn
+		  T.CreatedOn
 		, T.CreatedBy
+		, T.FdpTrimMappingId
 		, T.ImportTrim
-		, T.MappedTrim AS Name
+		, T.DPCK
+		, T.DocumentId
 		, T.ProgrammeId
 		, T.Gateway
-		, T.BMC
-		, T.[Level]
-		, T.DPCK
-		, T.IsFdpTrim
+		, T.TrimId
+		, T.IsMappedTrim
 		, T.UpdatedOn
 		, T.UpdatedBy
 
-	FROM @PageRecords				AS P
-	JOIN Fdp_TrimMapping_VW	AS T	ON	P.Trim = T.ImportTrim
-									AND P.ProgrammeId = T.ProgrammeId
-									AND P.Gateway = T.Gateway
-									AND P.MappedTrim = T.MappedTrim
-									AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex
-									AND T.IsActive = 1;
+	FROM @PageRecords				AS T
+	WHERE T.RowIndex BETWEEN @MinIndex AND @MaxIndex;

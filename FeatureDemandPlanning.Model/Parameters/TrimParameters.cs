@@ -28,7 +28,7 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    TrimId = TrimId
+                    TrimId
                 };
             }
 

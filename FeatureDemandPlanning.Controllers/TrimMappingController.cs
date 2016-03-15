@@ -37,6 +37,16 @@ namespace FeatureDemandPlanning.Controllers
             };
             return View(await TrimMappingViewModel.GetModel(DataContext, filter));
         }
+        [HttpGet]
+        public async Task<ActionResult> DPCKPage(TrimMappingParameters parameters)
+        {
+            var filter = new TrimMappingFilter()
+            {
+                PageIndex = PageIndex,
+                PageSize = PageSize
+            };
+            return View(await TrimMappingViewModel.GetModel(DataContext, filter));
+        }
         [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> ListTrimMappings(TrimMappingParameters parameters)
@@ -61,6 +71,39 @@ namespace FeatureDemandPlanning.Controllers
                 jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
             }
 
+            return Json(jQueryResult);
+        }
+        [HttpPost]
+        [HandleErrorWithJson]
+        public async Task<ActionResult> ListDPCKCodes(TrimMappingParameters parameters)
+        {
+            ValidateTrimMappingParameters(parameters, TrimMappingParametersValidator.NoValidation);
+
+            var filter = new TrimMappingFilter()
+            {
+                FilterMessage = parameters.FilterMessage,
+                CarLine = parameters.CarLine,
+                ModelYear = parameters.ModelYear,
+                Gateway = parameters.Gateway,
+                Action = TrimMappingAction.DPCKCodes
+            };
+            filter.InitialiseFromJson(parameters);
+
+            var results = await TrimMappingViewModel.GetModel(DataContext, filter);
+            var jQueryResult = new JQueryDataTableResultModel(results);
+
+            foreach (var result in results.TrimMappings.CurrentPage)
+            {
+                try
+                {
+                    jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
+
+            }
             return Json(jQueryResult);
         }
         [HttpPost]
@@ -92,10 +135,10 @@ namespace FeatureDemandPlanning.Controllers
         {
             ValidateTrimMappingParameters(parameters, TrimMappingParametersValidator.TrimIdentifierWithAction);
             ValidateTrimMappingParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
-            if (parameters.Action == TrimMappingAction.CopyAll || parameters.Action == TrimMappingAction.Copy)
-            {
-                TempData["CopyToGateways"] = parameters.CopyToGateways;
-            }
+            //if (parameters.Action == TrimMappingAction.CopyAll || parameters.Action == TrimMappingAction.Copy)
+            //{
+            //    TempData["CopyToGateways"] = parameters.CopyToGateways;
+            //}
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
@@ -119,7 +162,7 @@ namespace FeatureDemandPlanning.Controllers
         [HandleErrorWithJson]
         public async Task<ActionResult> Copy(TrimMappingParameters parameters)
         {
-            parameters.CopyToGateways = (IEnumerable<string>)TempData["CopyToGateways"];
+            //parameters.CopyToGateways = (IEnumerable<string>)TempData["CopyToGateways"];
             var derivativeMappingView = await GetModelFromParameters(parameters);
             if (derivativeMappingView.TrimMapping is EmptyFdpTrimMapping)
             {

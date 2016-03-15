@@ -38,7 +38,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<ModelEngine> AvailableEngines { get; set; }
         public IEnumerable<ModelTransmission> AvailableTransmissions { get; set; }
         public IEnumerable<ModelBody> AvailableBodies { get; set; }
-        public IEnumerable<FdpTrimMapping> AvailableTrim { get; set; }
+        public IEnumerable<OxoTrim> AvailableTrim { get; set; }
         public IEnumerable<SpecialFeature> AvailableSpecialFeatures { get; set; }
         public IEnumerable<Market> AvailableMarkets { get; set; }
         public IEnumerable<FdpFeature> AvailableFeatures { get; set; }
@@ -283,7 +283,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 DerivativeCode = mapping.Bmc,
                 IncludeAllTrim = false
             };
-            model.AvailableTrim = context.Vehicle.ListOxoTrim(trimFilter);
+            model.AvailableTrim = (await context.Vehicle.ListOxoTrim(trimFilter)).CurrentPage;
             model.Document = model.AvailableDocuments.FirstOrDefault(d => d.Id == programmeFilter.DocumentId);
 
             return model;
@@ -341,7 +341,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             AvailableEngines = Enumerable.Empty<ModelEngine>();
             AvailableTransmissions = Enumerable.Empty<ModelTransmission>();
             AvailableBodies = Enumerable.Empty<ModelBody>();
-            AvailableTrim = Enumerable.Empty<FdpTrimMapping>();
+            AvailableTrim = Enumerable.Empty<OxoTrim>();
             AvailableSpecialFeatures  = Enumerable.Empty<SpecialFeature>();
             AvailableMarkets = Enumerable.Empty<Market>();
             AvailableFeatures = Enumerable.Empty<FdpFeature>();

@@ -23,11 +23,13 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IEnumerable<ModelTransmission> ListTransmissions(ProgrammeFilter filter);
         IEnumerable<ModelEngine> ListEngines(ProgrammeFilter filter);
         IEnumerable<FdpTrimMapping> ListTrim(TrimFilter filter);
-        IEnumerable<FdpTrimMapping> ListOxoTrim(TrimFilter filter); 
+       
         Task<IEnumerable<Feature>> ListFeatures(ProgrammeFilter filter); // Get rid of this one
         Task<IEnumerable<FdpFeature>> ListFeatures(FeatureFilter filter);
         IEnumerable<FeatureGroup> ListFeatureGroups(ProgrammeFilter filter);
         IEnumerable<TrimLevel> ListTrimLevels(ProgrammeFilter programmeFilter);
+
+        Task<PagedResults<OxoTrim>> ListOxoTrim(TrimMappingFilter filter); 
 
         // Derivatives and mappings
 
@@ -42,6 +44,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToDocument(FdpDerivativeMapping fdpDerivativeMapping, int targetDocumentId);
         Task<IEnumerable<FdpDerivativeMapping>> CopyFdpDerivativeMappingsToDocument(int sourceDocumentId, int targetDocumentId);
+
+        Task<PagedResults<OxoDerivative>> ListOxoDerivatives(DerivativeMappingFilter filter);
 
         // Features and mappings
 
@@ -75,8 +79,6 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<FdpTrimMapping> CopyFdpTrimMappingToDocument(FdpTrimMapping fdpTrimMapping, int targetDocumentId);
         Task<IEnumerable<FdpTrimMapping>> CopyFdpTrimMappingsToDocument(int sourceDocumentId, int targetDocumentId);
-
-        Task<PagedResults<OxoDerivative>> ListOxoDerivatives(DerivativeMappingFilter filter);
 
         Task<OxoDerivative> UpdateBrochureModelCode(OxoDerivative derivative);
     }

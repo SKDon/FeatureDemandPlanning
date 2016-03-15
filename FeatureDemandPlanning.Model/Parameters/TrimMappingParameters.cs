@@ -13,12 +13,9 @@ namespace FeatureDemandPlanning.Model.Parameters
       
         public new TrimMappingAction Action { get; set; }
 
-        public IEnumerable<string> CopyToGateways { get; set; }
-
         public TrimMappingParameters()
         {
             Action = TrimMappingAction.NotSet;
-            CopyToGateways = Enumerable.Empty<string>();
         }
 
         public new object GetActionSpecificParameters()
@@ -29,8 +26,7 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    TrimMappingId,
-                    CopyToGateways
+                    TrimMappingId
                 };
             }
 

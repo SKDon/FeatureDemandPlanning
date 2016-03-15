@@ -47,4 +47,54 @@ namespace FeatureDemandPlanning.Model
             }
         }
     }
+
+    public class OxoTrim : FdpTrimMapping
+    {
+        public OXODoc Document { get; set; }
+
+        public OxoTrim()
+        {
+
+        }
+
+        public OxoTrim(FdpTrim fromTrim)
+        {
+            DocumentId = fromTrim.DocumentId;
+            ProgrammeId = fromTrim.ProgrammeId;
+            Gateway = fromTrim.Gateway;
+            CreatedOn = fromTrim.CreatedOn;
+            CreatedBy = fromTrim.CreatedBy;
+            UpdatedOn = fromTrim.UpdatedOn;
+            UpdatedBy = fromTrim.UpdatedBy;
+            IsActive = fromTrim.IsActive;
+            DPCK = fromTrim.DPCK;
+            Name = fromTrim.Name;
+            Level = fromTrim.Level;
+            Abbreviation = fromTrim.Abbreviation;
+            TrimId = fromTrim.TrimId;
+        }
+
+        public new string[] ToJQueryDataTableResult()
+        {
+            return new[] 
+            { 
+                string.Format("{0}|{1}", DocumentId, TrimId),
+                Programme.GetDisplayString(),
+                Gateway,
+                Document.Name,
+                DPCK,
+                Name,
+                Level
+            };
+        }
+
+        public new static OxoTrim FromParameters(TrimMappingParameters parameters)
+        {
+            return new OxoTrim()
+            {
+                TrimId = parameters.TrimId,
+                DocumentId = parameters.DocumentId
+            };
+        }
+    }
 }

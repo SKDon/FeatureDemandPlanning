@@ -16,10 +16,12 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public TrimMappingAction CurrentAction { get; set; }
         public FdpTrimMapping TrimMapping { get; set; }
         public PagedResults<FdpTrimMapping> TrimMappings { get; set; }
+        public PagedResults<OxoTrim> OxoTrim { get; set; } 
         public IEnumerable<Programme> Programmes { get; set; }
         public IEnumerable<CarLine> CarLines { get; set; }
         public IEnumerable<Gateway> Gateways { get; set; }
         public IEnumerable<ModelYear> ModelYears { get; set;}
+        public IEnumerable<OXODoc> Documents { get; set; }
        
         public TrimMappingViewModel() : base()
         {
@@ -45,6 +47,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
             {
                 model = await GetFullAndPartialViewModelForTrimMappings(context, filter);
             }
+            else if (filter.Action == TrimMappingAction.DPCKCodes)
+            {
+                model = await GetFullAndPartialViewModelForDPCKCodes(context, filter);
+            }
             else
             {
                 model = GetFullAndPartialViewModel(context, filter);
@@ -53,6 +59,46 @@ namespace FeatureDemandPlanning.Model.ViewModel
             {
                 model.IdentifierPrefix = Enum.GetName(filter.Action.GetType(), filter.Action);
             }
+            return model;
+        }
+        private static async Task<TrimMappingViewModel> GetFullAndPartialViewModelForDPCKCodes
+        (
+            IDataContext context,
+            TrimMappingFilter filter
+        )
+        {
+            var baseModel = GetBaseModel(context);
+            var model = new TrimMappingViewModel(baseModel)
+            {
+                PageIndex = filter.PageIndex ?? 1,
+                PageSize = filter.PageSize ?? int.MaxValue,
+                Configuration = context.ConfigurationSettings,
+                CurrentUser = baseModel.CurrentUser,
+                CurrentVersion = baseModel.CurrentVersion
+            };
+
+            var programmeFilter = new ProgrammeFilter()
+            {
+                ProgrammeId = filter.ProgrammeId,
+                Gateway = filter.Gateway
+            };
+            HydrateModelWithCommonProperties(model, context, programmeFilter);
+
+            filter.IncludeAllTrim = false;
+
+            model.OxoTrim = await context.Vehicle.ListOxoTrim(filter);
+            model.TotalPages = model.OxoTrim.TotalPages;
+            model.TotalRecords = model.OxoTrim.TotalRecords;
+            model.TotalDisplayRecords = model.OxoTrim.TotalDisplayRecords;
+
+            foreach (var oxoTrim in model.OxoTrim.CurrentPage)
+            {
+                oxoTrim.Document = model.Documents
+                    .FirstOrDefault(d => d.Id == oxoTrim.DocumentId);
+                oxoTrim.Programme = model.Programmes
+                    .FirstOrDefault(p => p.Id == oxoTrim.ProgrammeId);
+            }
+
             return model;
         }
         private static TrimMappingViewModel GetFullAndPartialViewModel(IDataContext context,
@@ -143,6 +189,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.Gateways = model.Programmes.ListGateways();
             model.CarLines = model.Programmes.ListCarLines();
             model.ModelYears = model.Programmes.ListModelYears();
+            model.Documents = context.Vehicle.ListPublishedDocuments(programmeFilter);
         }
         private void InitialiseMembers()
         {

@@ -525,6 +525,10 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@IncludeAllTrim", filter.IncludeAllTrim, DbType.Boolean);
                     }
+                    if (filter.OxoTrimOnly)
+                    {
+                        para.Add("@OxoTrimOnly", filter.OxoTrimOnly, DbType.Boolean);
+                    }
                     if (filter.PageIndex.HasValue)
                     {
                         para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
@@ -597,6 +601,22 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
             return retVal;
+        }
+
+        public PagedResults<OxoTrim> FdpOxoTrimGetMany(TrimMappingFilter filter)
+        {
+            var results = FdpTrimMappingGetMany(filter);
+            var page = results.CurrentPage.Select(result => new OxoTrim(result)).ToList();
+            return new PagedResults<OxoTrim>
+            {
+                PageIndex = results.PageIndex,
+                PageSize = results.PageSize,
+                TotalDisplayRecords = results.TotalDisplayRecords,
+                TotalFail = results.TotalFail,
+                TotalRecords = results.TotalRecords,
+                TotalSuccess = results.TotalSuccess,
+                CurrentPage = page
+            };
         }
     }
 }
