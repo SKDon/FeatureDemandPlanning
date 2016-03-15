@@ -3,6 +3,8 @@
 
 
 
+
+
 CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 	
 	SELECT
@@ -10,6 +12,7 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, F.FdpFeatureId
 		, F.CreatedOn
 		, F.CreatedBy
+		, F.DocumentId
 		, F.ProgrammeId
 		, F.Gateway				AS Gateway
 		, F.FeatureCode			AS ImportFeatureCode
@@ -43,6 +46,7 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, NULL					AS FdpFeatureId
 		, M.CreatedOn
 		, M.CreatedBy
+		, F.DocumentId
 		, F.ProgrammeId
 		, M.Gateway				AS Gateway
 		, M.ImportFeatureCode	AS ImportFeatureCode
@@ -68,8 +72,7 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 	FROM
 	OXO_Programme					AS P 
 	JOIN Fdp_Feature_VW				AS F	ON	P.Id			= F.ProgrammeId
-	JOIN Fdp_FeatureMapping			AS M	ON	F.ProgrammeId	= M.ProgrammeId
-											AND F.Gateway		= M.Gateway
+	JOIN Fdp_FeatureMapping			AS M	ON	F.DocumentId	= M.DocumentId
 											AND F.FeatureId		= M.FeatureId
 											AND M.IsActive		= 1
 											AND F.FeatureCode	<> M.ImportFeatureCode
@@ -81,6 +84,7 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, NULL					AS FdpFeatureId
 		, M.CreatedOn
 		, M.CreatedBy
+		, F.DocumentId
 		, F.ProgrammeId
 		, M.Gateway				AS Gateway
 		, M.ImportFeatureCode	AS ImportFeatureCode
@@ -106,8 +110,7 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 	FROM
 	OXO_Programme					AS P 
 	JOIN Fdp_Feature_VW				AS F	ON	P.Id			= F.ProgrammeId
-	JOIN Fdp_FeatureMapping			AS M	ON	F.ProgrammeId	= M.ProgrammeId
-											AND F.Gateway		= M.Gateway
+	JOIN Fdp_FeatureMapping			AS M	ON	F.DocumentId	= M.DocumentId
 											AND F.FeaturePackId	= M.FeaturePackId
 											AND M.IsActive		= 1
 											AND F.FeatureId		IS NULL

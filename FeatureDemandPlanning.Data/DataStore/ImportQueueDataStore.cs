@@ -728,7 +728,8 @@ namespace FeatureDemandPlanning.DataStore
                 ModelYear = dataItem.ModelYear,
                 HasErrors = dataItem.HasErrors,
                 ErrorCount = dataItem.ErrorCount,
-                Error = dataItem.Error
+                Error = dataItem.Error,
+                DocumentId = dataItem.DocumentId
             };
         }
     }

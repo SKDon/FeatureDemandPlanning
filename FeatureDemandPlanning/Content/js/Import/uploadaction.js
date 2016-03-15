@@ -70,6 +70,8 @@ model.UploadAction = function (params, model) {
                 .removeClass("alert-success")
                 .addClass("alert-danger").html(eventArgs.Message).show();
         }
+        $("#Modal_OK").hide();
+        $("#Modal_Cancel").html("Close");
     };
     me.registerEvents = function () {
         var prefix = me.getIdentifierPrefix();

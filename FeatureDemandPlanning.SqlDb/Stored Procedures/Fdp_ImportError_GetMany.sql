@@ -52,40 +52,8 @@ AS
 	(ISNULL(@FilterMessage, '') = '' 
 		OR E.ErrorMessage LIKE '%' + @FilterMessage + '%' 
 		OR E.[Type] LIKE '%' + @FilterMessage + '%')
-	--ORDER BY
-	--	--CASE @SortDirection
-	--	--	WHEN 'ASC' THEN
-	--			CASE ISNULL(@SortIndex, 0)
-	--				WHEN 0 THEN LineNumber
-	--				WHEN 1 THEN 0
-	--				WHEN 2 THEN 0
-	--				WHEN 3 THEN 0
-	--				ELSE LineNumber
-	--			END,
-	--			CASE ISNULL(@SortIndex, 0)
-	--				WHEN 0 THEN ''
-	--				WHEN 1 THEN [Type]
-	--				WHEN 2 THEN ErrorMessage
-	--				WHEN 3 THEN ''
-	--				ELSE ''
-	--			END,
-	--			CASE ISNULL(@SortIndex, 0)
-	--				WHEN 0 THEN 0
-	--				WHEN 1 THEN 0
-	--				WHEN 2 THEN 0
-	--				WHEN 3 THEN ErrorOn
-	--				ELSE ErrorOn
-	--			END
-		--END ASC,
-		--CASE @SortDirection
-		--	WHEN 'DESC' THEN
-		--		CASE ISNULL(@SortIndex, 0)
-		--			WHEN 0 THEN LineNumber
-		--			WHEN 1 THEN [Type]
-		--			WHEN 2 THEN ErrorMessage
-		--			WHEN 3 THEN CONVERT(VARCHAR(20), ErrorOn, 20)
-		--		END	
-		--END DESC;
+	ORDER BY
+	ErrorMessage
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
 	

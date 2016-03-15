@@ -2,8 +2,8 @@
     [FdpImportDataId]                            INT            IDENTITY (1, 1) NOT NULL,
     [FdpImportId]                                INT            NOT NULL,
     [LineNumber]                                 INT            NULL,
-	[Pipeline Code]								 NVARCHAR (50)  NULL,
-	[Model Year Desc]							 NVARCHAR (50)  NULL,
+    [Pipeline Code]                              NVARCHAR (50)  NULL,
+    [Model Year Desc]                            NVARCHAR (50)  NULL,
     [NSC or Importer Description (Vista Market)] NVARCHAR (100) NULL,
     [Country Description]                        NVARCHAR (100) NULL,
     [Derivative Code]                            NVARCHAR (10)  NULL,
@@ -14,6 +14,8 @@
     CONSTRAINT [PK_Fdp_ImportData] PRIMARY KEY CLUSTERED ([FdpImportDataId] ASC),
     CONSTRAINT [FK_Fdp_ImportData_Fdp_Import] FOREIGN KEY ([FdpImportId]) REFERENCES [dbo].[Fdp_Import] ([FdpImportId])
 );
+
+
 
 
 
@@ -50,4 +52,15 @@ CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_ImportData_FdpImportId]
     INCLUDE([LineNumber], [NSC or Importer Description (Vista Market)], [Country Description], [Derivative Code], [Trim Pack Description], [Bff Feature Code], [Feature Description], [Count of Specific Order No]);
 
 
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_ImportData_DerivativeCode]
+    ON [dbo].[Fdp_ImportData]([FdpImportId] ASC, [Derivative Code] ASC, [Count of Specific Order No] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_ImportData_Count]
+    ON [dbo].[Fdp_ImportData]([FdpImportId] ASC, [Count of Specific Order No] ASC)
+    INCLUDE([Derivative Code]);
 

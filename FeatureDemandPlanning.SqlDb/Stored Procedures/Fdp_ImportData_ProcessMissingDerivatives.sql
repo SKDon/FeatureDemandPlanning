@@ -38,11 +38,20 @@ AS
 		, AdditionalData
 	)
 	SELECT
-		  @FdpImportQueueId
-		, 0
+		  I.FdpImportQueueId
+		, I.LineNumber
+		, I.ErrorOn
+		, I.FdpImportErrorTypeId
+		, I.ErrorMessage
+		, I.AdditionalData
+	FROM
+	(
+	SELECT
+		  @FdpImportQueueId AS FdpImportQueueId
+		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, 'No import data matching OXO derivative ''' + D.MappedDerivativeCode + '''' AS ErrorMessage
+		, '2 - No import data matching OXO derivative ''' + D.MappedDerivativeCode + '''' AS ErrorMessage
 		, D.MappedDerivativeCode AS AdditionalData
 	FROM Fdp_DerivativeMapping_VW AS D
 	LEFT JOIN 
@@ -73,11 +82,11 @@ AS
 	UNION
 
 	SELECT 
-		  @FdpImportQueueId
-		, 0
+		  @FdpImportQueueId AS FdpImportQueueId
+		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, 'No OXO derivative mapped for ''' + I.ImportDerivativeCode + '''' AS ErrorMessage
+		, '3 - No OXO derivative mapped for import derivative ''' + I.ImportDerivativeCode + '''' AS ErrorMessage
 		, I.ImportDerivativeCode AS AdditionalData
 	FROM
 	(
@@ -95,7 +104,34 @@ AS
 											AND CUR.FdpImportErrorTypeId = 3
 											AND CUR.IsExcluded = 0
 	WHERE
-	CUR.FdpImportErrorId IS NULL;
-	
+	CUR.FdpImportErrorId IS NULL
+
+	UNION
+
+	-- Where we have no brochure model code defined for a derivative
+
+	SELECT
+		  @FdpImportQueueId AS FdpImportQueueId
+		, 0 AS LineNumber
+		, GETDATE() AS ErrorOn
+		, 3 AS FdpImportErrorTypeId
+		, '1 - No brochure model code defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
+		, M.ExportRow1 + ' ' + M.ExportRow2 AS AdditionalData
+
+	FROM OXO_Models_VW AS M
+	LEFT JOIN Fdp_ImportError	AS CUR	ON	CUR.FdpImportQueueId = @FdpImportQueueId
+											AND M.ExportRow1 + ' ' + M.ExportRow2 = CUR.AdditionalData
+											AND CUR.FdpImportErrorTypeId = 3
+											AND CUR.IsExcluded = 0
+	WHERE
+	M.Programme_Id = @ProgrammeId
+	AND
+	ISNULL(M.BMC, '') = ''
+	GROUP BY
+	M.ExportRow1, M.ExportRow2
+	)
+	AS I
+	ORDER BY I.ErrorMessage
+
 	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing derivative errors added';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;

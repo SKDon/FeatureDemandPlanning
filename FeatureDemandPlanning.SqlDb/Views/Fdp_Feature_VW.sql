@@ -3,6 +3,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_Feature_VW]
 AS
 
@@ -25,6 +26,7 @@ SELECT
 	, F.Name
 	, F.AKA
 	, F.ModelYear
+	, F.DocumentId
 	, F.ProgrammeId
 	, F.Gateway
 	, F.Make
@@ -58,6 +60,7 @@ SELECT
 	, F.Name 
 	, F.AKA
 	, F.ModelYear
+	, O.Id AS DocumentId
 	, F.ProgrammeId
 	, G.Gateway
 	, F.Make
@@ -82,7 +85,9 @@ SELECT
 	, F.EFGName				AS ExclusiveFeatureGroup
 	, CAST(CASE WHEN ISNULL(F.[Status], '') = 'REMOVED' THEN 0 ELSE 1 END AS BIT) AS IsActive
 	
-FROM OXO_Programme_Feature_VW	AS F 
+FROM 
+OXO_Doc							AS O
+JOIN OXO_Programme_Feature_VW	AS F	ON O.Programme_Id	= F.ProgrammeId  
 JOIN OXO_Feature_Ext			AS E	ON F.FeatureCode	= E.Feat_Code
 JOIN Fdp_Gateways_VW			AS G	ON F.ProgrammeId	= G.ProgrammeId
 LEFT JOIN OXO_Feature_Group		AS GR	ON F.FeatureGroup	= GR.Group_Name
@@ -106,6 +111,7 @@ SELECT
 	, P.VehicleName			AS Name
 	, P.VehicleAKA			AS AKA
 	, P.ModelYear
+	, O.Id					AS DocumentId
 	, F.ProgrammeId
 	, F.Gateway
 	, P.VehicleMake			AS Make
@@ -130,7 +136,10 @@ SELECT
 	, CAST(NULL AS NVARCHAR(100)) AS ExclusiveFeatureGroup
 	, F.IsActive
 						
-FROM Fdp_Feature			AS F 
+FROM 
+OXO_Doc						AS O
+JOIN Fdp_Feature			AS F ON	O.Programme_Id		= F.ProgrammeId
+								 AND O.Gateway			= F.Gateway
 JOIN OXO_Programme_VW		AS P ON F.ProgrammeId		= P.Id
 LEFT JOIN OXO_Feature_Group AS G ON F.FeatureGroupId	= G.Id
 
@@ -144,6 +153,7 @@ SELECT
 	, P1.VehicleName		AS Name
 	, P1.VehicleAKA			AS AKA
 	, P1.ModelYear
+	, O.Id					AS DocumentId
 	, P1.Id					AS ProgrammeId
 	, G.Gateway
 	, P1.VehicleMake		AS Make
@@ -169,7 +179,9 @@ SELECT
 	, CAST(NULL AS NVARCHAR(100)) AS ExclusiveFeatureGroup
 	, CAST(1 AS BIT)		AS IsActive
 	
-FROM OXO_Programme_Pack AS P
+FROM 
+OXO_Doc					AS O
+JOIN OXO_Programme_Pack AS P	ON O.Programme_Id	= P.Programme_Id
 JOIN Fdp_Gateways_VW	AS G	ON P.Programme_Id	= G.ProgrammeId
 JOIN OXO_Programme_VW	AS P1	ON P.Programme_Id	= P1.Id
 )

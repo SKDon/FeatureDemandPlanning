@@ -130,7 +130,8 @@ page.ExceptionsPage = function (models) {
                     "sName": "LINE_NUMBER",
                     "bSearchable": true,
                     "bSortable": true,
-                    "sClass": "text-left"
+                    "sClass": "text-left",
+                    "bVisible": false
                 }
                 ,
                 {
