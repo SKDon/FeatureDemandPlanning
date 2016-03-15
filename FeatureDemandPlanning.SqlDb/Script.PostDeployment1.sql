@@ -48,10 +48,10 @@ PRINT 'Fdp_ImportErrorType'
 
 MERGE INTO Fdp_ImportErrorType AS TARGET
 USING (VALUES
-	  (1, N'Missing Market', N'The import data does not correspond to a market within FDP', 1)
-	, (2, N'Missing Feature', N'The import feature code does not exist within FDP', 4)
-	, (3, N'Missing Derivative', N'The import data contains information for a vehicle derivative not found within FDP', 2)
-	, (4, N'Missing Trim', N'The import data contains information for a trim level not found within FDP', 3)
+	  (1, N'Market', N'The import data does not correspond to a market within FDP', 1)
+	, (2, N'Feature', N'TErrors with features either not existing or having no corresponding mapping between OXO and FDP', 4)
+	, (3, N'Derivative', N'Errors with derivatives either not existing or having no corresponding mapping between OXO and FDP', 2)
+	, (4, N'Trim', N'Errors with trim either not existing or having no corresponding mapping between OXO and FDP', 3)
 )
 AS SOURCE (FdpImportErrorTypeId, [Type], [Description], WorkflowOrder) ON TARGET.FdpImportErrorTypeId = SOURCE.FdpImportErrorTypeId
 WHEN MATCHED THEN
