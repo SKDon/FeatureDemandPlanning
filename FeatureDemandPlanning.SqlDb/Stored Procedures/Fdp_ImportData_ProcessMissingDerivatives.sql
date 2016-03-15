@@ -8,6 +8,7 @@ AS
 	DECLARE @Message AS NVARCHAR(400);
 	DECLARE @ProgrammeId AS INT;
 	DECLARE @Gateway AS NVARCHAR(100);
+	DECLARE @FlagOrphanedImportData AS BIT = 0;
 
 	SELECT @ProgrammeId = ProgrammeId, @Gateway = Gateway
 	FROM Fdp_Import
@@ -15,6 +16,8 @@ AS
 	FdpImportQueueId = @FdpImportQueueId
 	AND
 	FdpImportId = @FdpImportId;
+
+	SELECT TOP 1 @FlagOrphanedImportData = CAST(Value AS BIT) FROM Fdp_Configuration WHERE ConfigurationKey = 'FlagOrphanedImportDataAsError';
 
 	SET @Message = 'Removing old errors...'
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
@@ -51,7 +54,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, '2 - No import data matching OXO derivative ''' + D.MappedDerivativeCode + ' - ' + REPLACE(D.Name, '#', '') + '''' AS ErrorMessage
+		, 'No import data matching OXO derivative ''' + D.MappedDerivativeCode + ' - ' + REPLACE(D.Name, '#', '') + '''' AS ErrorMessage
 		, D.MappedDerivativeCode AS AdditionalData
 	FROM Fdp_DerivativeMapping_VW AS D
 	LEFT JOIN 
@@ -86,7 +89,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, '3 - No OXO derivative matching import derivative ''' + I.ImportDerivativeCode + '''' AS ErrorMessage
+		, 'No OXO derivative matching import derivative ''' + I.ImportDerivativeCode + '''' AS ErrorMessage
 		, I.ImportDerivativeCode AS AdditionalData
 	FROM
 	(
@@ -105,6 +108,8 @@ AS
 											AND CUR.IsExcluded = 0
 	WHERE
 	CUR.FdpImportErrorId IS NULL
+	AND
+	@FlagOrphanedImportData = 1
 
 	UNION
 
@@ -115,7 +120,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId
-		, '1 - No brochure model code defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
+		, 'No brochure model code defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
 		, M.ExportRow1 + ' ' + M.ExportRow2 AS AdditionalData
 
 	FROM OXO_Models_VW AS M

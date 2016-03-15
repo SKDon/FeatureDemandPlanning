@@ -10,13 +10,16 @@ AS
 	DECLARE @ProgrammeId AS INT;
 	DECLARE @Gateway AS NVARCHAR(100);
 	DECLARE @DocumentId AS INT;
+	DECLARE @FlagOrphanedImportData AS BIT = 0;
 
-	SELECT @ProgrammeId = ProgrammeId, @Gateway = Gateway, @DocumentId = DocumentId
+	SELECT @ProgrammeId = ProgrammeId, @Gateway = Gateway
 	FROM Fdp_Import
 	WHERE
 	FdpImportQueueId = @FdpImportQueueId
 	AND
 	FdpImportId = @FdpImportId;
+
+	SELECT TOP 1 @FlagOrphanedImportData = CAST(Value AS BIT) FROM Fdp_Configuration WHERE ConfigurationKey = 'FlagOrphanedImportDataAsError';
 
 	SET @Message = 'Removing old errors...'
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
@@ -53,7 +56,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 2 AS FdpImportErrorTypeId -- Missing Feature
-		, '1 - No import data matching OXO feature ''' + F.MappedFeatureCode + ' - ' + ISNULL(F.BrandDescription, F.[Description]) + '''' AS ErrorMessage
+		, 'No import data matching OXO feature ''' + F.MappedFeatureCode + ' - ' + ISNULL(F.BrandDescription, F.[Description]) + '''' AS ErrorMessage
 		, F.MappedFeatureCode AS AdditionalData
 	FROM Fdp_FeatureMapping_VW AS F
 	LEFT JOIN 
@@ -81,31 +84,33 @@ AS
 	AND
 	F.MappedFeatureCode IS NOT NULL
 
-	--UNION
+	UNION
 
-	--SELECT 
-	--	  @FdpImportQueueId AS FdpImportQueueId
-	--	, 0 AS LineNumber
-	--	, GETDATE() AS ErrorOn
-	--	, 2 AS FdpImportErrorTypeId -- Missing Derivative
-	--	, '2 - No OXO feature mapped for import feature ''' + I.ImportFeatureCode + '''' AS ErrorMessage
-	--	, I.ImportFeatureCode AS AdditionalData
-	--FROM
-	--(
-	--	SELECT DISTINCT I.ImportFeatureCode FROM Fdp_Import_VW AS I
-	--	LEFT JOIN Fdp_FeatureMapping_VW AS F ON I.DocumentId = F.DocumentId
-	--										AND I.ImportFeatureCode = F.ImportFeatureCode
-	--	WHERE FdpImportId  = @FdpImportId AND FdpImportQueueId = @FdpImportQueueId
-	--	AND
-	--	F.MappedFeatureCode IS NULL
-	--)
-	--AS I
-	--LEFT JOIN Fdp_ImportError	AS CUR	ON	CUR.FdpImportQueueId = @FdpImportQueueId
-	--										AND	I.ImportFeatureCode	= CUR.AdditionalData
-	--										AND CUR.FdpImportErrorTypeId = 2
-	--										AND CUR.IsExcluded = 0
-	--WHERE
-	--CUR.FdpImportErrorId IS NULL
+	SELECT 
+		  @FdpImportQueueId AS FdpImportQueueId
+		, 0 AS LineNumber
+		, GETDATE() AS ErrorOn
+		, 2 AS FdpImportErrorTypeId -- Missing Derivative
+		, 'No OXO feature mapped for import feature ''' + I.ImportFeatureCode + '''' AS ErrorMessage
+		, I.ImportFeatureCode AS AdditionalData
+	FROM
+	(
+		SELECT DISTINCT I.ImportFeatureCode FROM Fdp_Import_VW AS I
+		LEFT JOIN Fdp_FeatureMapping_VW AS F ON I.DocumentId = F.DocumentId
+											AND I.ImportFeatureCode = F.ImportFeatureCode
+		WHERE FdpImportId  = @FdpImportId AND FdpImportQueueId = @FdpImportQueueId
+		AND
+		F.MappedFeatureCode IS NULL
+	)
+	AS I
+	LEFT JOIN Fdp_ImportError	AS CUR	ON	CUR.FdpImportQueueId = @FdpImportQueueId
+											AND	I.ImportFeatureCode	= CUR.AdditionalData
+											AND CUR.FdpImportErrorTypeId = 2
+											AND CUR.IsExcluded = 0
+	WHERE
+	CUR.FdpImportErrorId IS NULL
+	AND
+	@FlagOrphanedImportData = 1
 
 	)
 	AS I

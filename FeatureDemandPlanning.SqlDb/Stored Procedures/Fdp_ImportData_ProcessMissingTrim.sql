@@ -9,13 +9,16 @@ AS
 	DECLARE @ProgrammeId AS INT;
 	DECLARE @Gateway AS NVARCHAR(100);
 	DECLARE @DocumentId AS INT;
+	DECLARE @FlagOrphanedImportData AS BIT = 0;
 
-	SELECT @ProgrammeId = ProgrammeId, @Gateway = Gateway, @DocumentId = DocumentId
+	SELECT @ProgrammeId = ProgrammeId, @Gateway = Gateway
 	FROM Fdp_Import
 	WHERE
 	FdpImportQueueId = @FdpImportQueueId
 	AND
 	FdpImportId = @FdpImportId;
+
+	SELECT TOP 1 @FlagOrphanedImportData = CAST(Value AS BIT) FROM Fdp_Configuration WHERE ConfigurationKey = 'FlagOrphanedImportDataAsError';
 
 	SET @Message = 'Removing old errors...'
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
@@ -52,7 +55,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId -- Missing Trim
-		, '2 - No import data matching OXO trim ''' + T.DPCK + '''' AS ErrorMessage
+		, 'No import data matching OXO trim ''' + T.DPCK + '''' AS ErrorMessage
 		, T.DPCK AS AdditionalData
 	FROM Fdp_TrimMapping_VW AS T
 	LEFT JOIN 
@@ -87,7 +90,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId -- Missing Trim
-		, '3 - No OXO trim mapped for ''' + I.ImportTrim + '''' AS ErrorMessage
+		, 'No OXO trim mapped for ''' + I.ImportTrim + '''' AS ErrorMessage
 		, I.ImportTrim AS AdditionalData
 	FROM
 	(
@@ -108,6 +111,8 @@ AS
 											AND CUR.IsExcluded = 0
 	WHERE
 	CUR.FdpImportErrorId IS NULL
+	AND
+	@FlagOrphanedImportData = 1
 
 	UNION
 
@@ -118,7 +123,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId
-		, '1 - No DPCK code defined for ''' + T.Name + ' - ' + T.[Level] + '''' AS ErrorMessage
+		, 'No DPCK code defined for ''' + T.Name + ' - ' + T.[Level] + '''' AS ErrorMessage
 		, T.Name + ' ' + T.[Level] AS AdditionalData
 
 	FROM OXO_Programme_Trim AS T
@@ -140,7 +145,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId
-		, '1 - No DPCK code defined for ''' + T.Name + ' - ' + T.[Level] + '''' AS ErrorMessage
+		, 'No DPCK code defined for ''' + T.Name + ' - ' + T.[Level] + '''' AS ErrorMessage
 		, T.Name + ' ' + T.[Level] AS AdditionalData
 
 	FROM OXO_Archived_Programme_Trim AS T
