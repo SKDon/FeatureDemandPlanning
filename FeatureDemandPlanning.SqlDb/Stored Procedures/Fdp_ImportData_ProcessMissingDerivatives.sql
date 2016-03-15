@@ -51,7 +51,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, '2 - No import data matching OXO derivative ''' + D.MappedDerivativeCode + '''' AS ErrorMessage
+		, '2 - No import data matching OXO derivative ''' + D.MappedDerivativeCode + ' - ' + REPLACE(D.Name, '#', '') + '''' AS ErrorMessage
 		, D.MappedDerivativeCode AS AdditionalData
 	FROM Fdp_DerivativeMapping_VW AS D
 	LEFT JOIN 
@@ -86,7 +86,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, '3 - No OXO derivative mapped for import derivative ''' + I.ImportDerivativeCode + '''' AS ErrorMessage
+		, '3 - No OXO derivative matching import derivative ''' + I.ImportDerivativeCode + '''' AS ErrorMessage
 		, I.ImportDerivativeCode AS AdditionalData
 	FROM
 	(

@@ -53,7 +53,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 2 AS FdpImportErrorTypeId -- Missing Feature
-		, '1 - No import data matching OXO feature ''' + F.MappedFeatureCode + '''' AS ErrorMessage
+		, '1 - No import data matching OXO feature ''' + F.MappedFeatureCode + ' - ' + ISNULL(F.BrandDescription, F.[Description]) + '''' AS ErrorMessage
 		, F.MappedFeatureCode AS AdditionalData
 	FROM Fdp_FeatureMapping_VW AS F
 	LEFT JOIN 

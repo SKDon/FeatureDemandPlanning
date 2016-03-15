@@ -2,6 +2,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	
 	SELECT
@@ -19,6 +20,7 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 		, CAST(0 AS BIT)			AS IsFdpDerivative
 		, NULL						AS FdpDerivativeId
 		, CAST(0 AS BIT)			AS IsArchived
+		, M.ExportRow1 + ' - ' + M.ExportRow2 AS Name
 		
 	FROM
 	OXO_Doc							AS O
@@ -32,6 +34,8 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 											AND ISNULL(E.Active, 1)	= 1
 	JOIN OXO_Programme_Transmission AS T	ON D.Transmission_Id	= T.Id
 											AND ISNULL(T.Active, 1)	= 1
+	JOIN OXO_Models_VW				AS M	ON D.Id = M.Id
+	
 	WHERE
 	D.Active = 1
 	AND
@@ -43,6 +47,8 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	, D.Body_Id
 	, D.Engine_Id
 	, D.Transmission_Id
+	, M.ExportRow1
+	, M.ExportRow2
 	
 	UNION
 
@@ -61,6 +67,8 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 		, CAST(0 AS BIT)			AS IsFdpDerivative
 		, NULL						AS FdpDerivativeId
 		, CAST(1 AS BIT)			AS IsArchived
+		, M.ExportRow1 + ' - ' + M.ExportRow2 AS Name
+
 	FROM
 	OXO_Doc										AS O
 	JOIN OXO_Archived_Programme_Model			AS D	ON	O.Id				= D.Doc_Id
@@ -73,6 +81,8 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 														AND ISNULL(E.Active, 1)	= 1
 	JOIN OXO_Archived_Programme_Transmission	AS T	ON	D.Transmission_Id	= T.Id
 														AND ISNULL(T.Active, 1)	= 1
+	JOIN OXO_Archived_Models_VW					AS M	ON D.Id = M.Id
+														AND O.Id = M.Doc_Id
 	WHERE
 	O.Archived = 1
 	GROUP BY
@@ -82,6 +92,8 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 	, D.Body_Id
 	, D.Engine_Id
 	, D.Transmission_Id
+	, M.ExportRow1
+	, M.ExportRow2
 
 	UNION
 	
@@ -100,6 +112,7 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 		, CAST(1 AS BIT) AS IsFdpDerivative
 		, D.FdpDerivativeId
 		, CAST(0 AS BIT) AS IsArchived
+		, '' AS Name
 	FROM 
 	OXO_Doc							AS O
 	JOIN Fdp_Derivative				AS D	ON O.Programme_Id	= D.ProgrammeId
@@ -133,6 +146,7 @@ CREATE VIEW [dbo].[Fdp_Derivative_VW] AS
 		, CAST(1 AS BIT) AS IsFdpDerivative
 		, D.FdpDerivativeId
 		, CAST(1 AS BIT) AS IsArchived
+		, '' AS Name
 	FROM 
 	OXO_Doc										AS O
 	JOIN Fdp_Derivative							AS D	ON	O.Programme_Id		= D.ProgrammeId

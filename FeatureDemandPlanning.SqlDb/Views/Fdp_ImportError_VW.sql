@@ -2,6 +2,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_ImportError_VW] AS
 
 	SELECT 
@@ -17,16 +18,14 @@ CREATE VIEW [dbo].[Fdp_ImportError_VW] AS
 		, E.ErrorMessage
 		, E.ErrorOn
 		, E.IsExcluded
-		, D.[Country Description]	AS ImportMarket
-		, D.[Bff Feature Code]		AS ImportFeatureCode
-		, D.[Feature Description]	AS ImportFeature
-		, D.[Derivative Code]		AS ImportDerivativeCode
-		, D.[Trim Pack Description] AS ImportDerivative
-		, D.[Trim Pack Description] AS ImportTrim
+		, CASE WHEN E.FdpImportErrorTypeId = 1 THEN E.AdditionalData ELSE NULL END	AS ImportMarket
+		, CASE WHEN E.FdpImportErrorTypeId = 2 THEN E.AdditionalData ELSE NULL END	AS ImportFeatureCode
+		, '' AS ImportFeature
+		, CASE WHEN E.FdpImportErrorTypeId = 3 THEN E.AdditionalData ELSE NULL END	AS ImportDerivativeCode
+		, '' AS ImportDerivative
+		, CASE WHEN E.FdpImportErrorTypeId = 4 THEN E.AdditionalData ELSE NULL END	AS ImportTrim
 		
 	FROM Fdp_Import			 AS I 
 	JOIN Fdp_ImportError	 AS	E	ON	I.FdpImportQueueId		= E.FdpImportQueueId
-	JOIN Fdp_ImportErrorType AS T	ON	E.FdpImportErrorTypeId	= T.FdpImportErrorTypeId
-	LEFT JOIN Fdp_ImportData		 AS D	ON	I.FdpImportId			= D.FdpImportId
-									AND E.LineNumber			= D.LineNumber	
+	JOIN Fdp_ImportErrorType AS T	ON	E.FdpImportErrorTypeId	= T.FdpImportErrorTypeId	
 

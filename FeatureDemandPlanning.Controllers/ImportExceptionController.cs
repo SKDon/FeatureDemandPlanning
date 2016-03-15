@@ -122,6 +122,20 @@ namespace FeatureDemandPlanning.Controllers
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
+
+        [HttpGet]
+        public async Task<ActionResult> RefreshWorktray(ImportExceptionParameters parameters)
+        {
+            ImportExceptionParametersValidator
+                .ValidateImportExceptionParameters(parameters, ImportExceptionParametersValidator.ImportQueueIdentifier);
+
+            var filter = ImportQueueFilter.FromParameters(parameters);
+            var queuedItem = await DataContext.Import.GetImportQueue(filter);
+            
+            DataContext.Import.ReprocessImportQueue(queuedItem);
+
+            return RedirectToAction("ImportExceptionsPage", parameters);
+        }
         [HandleErrorWithJson]
         public async Task<ActionResult> AddMissingDerivative(ImportExceptionParameters parameters)
         {

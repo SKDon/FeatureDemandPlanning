@@ -1000,10 +1000,19 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_ImportData_ProcessMissingDerivatives.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportData_ProcessMissingFeatures.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportData_ProcessMissingDerivatives.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ImportData_ProcessMissingFeatures.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_ImportData_ProcessMissingMarkets.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportData_ProcessMissingTrim.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportData_ProcessMissingTrim.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Functions\fn_Fdp_TakeRateData_ByMarketGroup_Get.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>

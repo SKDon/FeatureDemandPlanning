@@ -1,4 +1,8 @@
-﻿CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
+﻿
+
+
+
+CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 
 	SELECT 
 		  D.CreatedOn
@@ -18,6 +22,7 @@
 		, D.UpdatedOn
 		, D.UpdatedBy
 		, D.IsArchived
+		, D.Name
 		
 	FROM
 	OXO_Programme					AS P
@@ -51,6 +56,7 @@
 		, M.UpdatedOn
 		, M.UpdatedBy
 		, D.IsArchived
+		, D.Name
 		
 	FROM
 	OXO_Programme					AS P

@@ -17,16 +17,31 @@
             <div class="panel panel-primary" style="height:160px; background-color: #12073b; background-color: rgba(18, 7, 59, 0.75);">
                 <div class="panel-body" style="background:none !important">
                     <div class="row">
-                        <div class="col-lg-2">
-                            <img src="~/Content/Images/Icons/import64.png" style="margin-top:15px" />
+                        <div class="col-md-2 hidden-xs hidden-sm">
+                            <img src="~/Content/Images/Icons/import64.png" style="margin-top: 15px"/>
                         </div>
-                        <div class="col-lg-10">
-                            <h3 style="margin-top:5px">Import Exception Work Tray</h3>
-                            <h4 id="lblVehicleDescription">@Model.Programme.GetDisplayString() (@Model.Gateway)</h4>
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h3 style="margin-top: 5px">Import Exception Work Tray</h3>
+                                    <h4 id="lblVehicleDescription">@Model.Programme.GetDisplayString() (@Model.Gateway)</h4>
+                                </div>
+                            </div>
+                            <div class="row vertical-spacer" style="margin-top:20px">
+                                <div class="col-xs-6 vertical-align">
+                                    <p class="page-description">View the exception information for the selected import and take action as appropriate</p>
+                                </div>
+                                <div class="col-xs-6 vertical-align">
+                                    <a href="@Url.Action("RefreshWorktray", new {ImportId = Model.CurrentImport.ImportId, ImportQueueId = Model.CurrentImport.ImportQueueId})" class="btn btn-primary center-block">
+                                        <span class="glyphicon glyphicon-refresh"></span>
+                                        Refresh Worktray
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
 
-                            <p class="page-description">View the exception information for the selected import and take action as appropriate</p>
-                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
