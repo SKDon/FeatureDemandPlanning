@@ -25,6 +25,7 @@ USING (VALUES
 	, (N'ShowAllOXODocuments', N'1', N'Determines whether or not to show all OXO documents, regardless as to published state', N'System.Boolean')
 	, (N'SkipFirstXRowsInImportFile', N'3', N'Specifies the number of rows to skip for FDP import files. Eliminates header information', N'System.Int32')
 	, (N'ReprocessImportAfterHandleError', N'1', N'Whether to reprocess the entire dataset each time an error is handled in the worktray', N'System.Boolean')
+	, (N'FlagOrphanedImportDataAsError', N'0', N'Whether to flag import data that cannot be mapped to an OXO derivative / trim level or feature as an error', N'System.Boolean')
 )
 AS SOURCE (ConfigurationKey, Value, [Description], DataType) ON TARGET.ConfigurationKey = SOURCE.ConfigurationKey
 WHEN MATCHED THEN
@@ -48,10 +49,10 @@ PRINT 'Fdp_ImportErrorType'
 
 MERGE INTO Fdp_ImportErrorType AS TARGET
 USING (VALUES
-	  (1, N'Missing Market', N'The import data does not correspond to a market within FDP', 1)
-	, (2, N'Missing Feature', N'The import feature code does not exist within FDP', 4)
-	, (3, N'Missing Derivative', N'The import data contains information for a vehicle derivative not found within FDP', 2)
-	, (4, N'Missing Trim', N'The import data contains information for a trim level not found within FDP', 3)
+	  (1, N'Market', N'The import data does not correspond to a market within FDP', 1)
+	, (2, N'Feature', N'The import feature code does not exist within FDP', 4)
+	, (3, N'Derivative', N'The import data contains information for a vehicle derivative not found within FDP', 2)
+	, (4, N'Trim', N'The import data contains information for a trim level not found within FDP', 3)
 )
 AS SOURCE (FdpImportErrorTypeId, [Type], [Description], WorkflowOrder) ON TARGET.FdpImportErrorTypeId = SOURCE.FdpImportErrorTypeId
 WHEN MATCHED THEN
