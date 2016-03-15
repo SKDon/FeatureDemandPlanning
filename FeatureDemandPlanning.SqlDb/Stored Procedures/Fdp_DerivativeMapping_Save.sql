@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_DerivativeMapping_Save]
 	  @ImportDerivativeCode NVARCHAR(20)
-	, @ProgrammeId			INT
-	, @Gateway				NVARCHAR(100)
+	, @DocumentId			INT
 	, @DerivativeCode		NVARCHAR(10) = NULL
 	, @BodyId				INT
 	, @EngineId				INT
@@ -20,9 +19,7 @@ BEGIN
 					  WHERE 
 					  ImportDerivativeCode = @ImportDerivativeCode
 					  AND
-					  ProgrammeId = @ProgrammeId
-					  AND
-					  Gateway = @Gateway
+					  DocumentId = @DocumentId
 					  AND
 					  (@DerivativeCode IS NULL OR DerivativeCode = @DerivativeCode))
 					  
@@ -37,17 +34,19 @@ BEGIN
 				, TransmissionId
 				, CreatedBy
 			)
-			VALUES
-			(
+			SELECT
 				  @ImportDerivativeCode
-				, @ProgrammeId
-				, @Gateway
+				, D.Programme_Id
+				, D.Gateway
 				, @DerivativeCode
 				, @BodyId
 				, @EngineId
 				, @TransmissionId
 				, @CDSId
-			);
+			FROM
+			OXO_Doc AS D
+			WHERE
+			Id = @DocumentId;
 			
 		SET @FdpDerivativeMappingId = SCOPE_IDENTITY();
 	  

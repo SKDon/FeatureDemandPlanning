@@ -103,6 +103,6 @@ AS
 	JOIN Fdp_Import				AS I	ON	Q.FdpImportQueueId	= I.FdpImportQueueId
 	JOIN OXO_Programme_VW		AS V	ON	I.ProgrammeId		= V.Id
 	JOIN OXO_Doc				AS D	ON	I.DocumentId		= D.Id
-	CROSS APPLY dbo.fn_Fdp_ImportErrorCount_GetMany(I.FdpImportId) AS E
+	OUTER APPLY dbo.fn_Fdp_ImportErrorCount_GetMany(I.FdpImportId) AS E
 	ORDER BY
 	P.RowIndex

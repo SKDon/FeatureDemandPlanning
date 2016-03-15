@@ -29,6 +29,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public PagedResults<ImportQueue> ImportQueue { get; set; }
         public ImportSummary Summary { get; set; }
 
+        public OXODoc Document { get; set; }
         public Programme Programme { get; set; }
         public string Gateway { get; set; }
 
@@ -250,6 +251,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             programmeFilter.VehicleId = model.Programme.VehicleId;
 
             model.Gateway = model.CurrentException.Gateway;
+            model.AvailableDocuments = context.Vehicle.ListPublishedDocuments(programmeFilter);
             model.AvailableEngines = context.Vehicle.ListEngines(programmeFilter);
             model.AvailableTransmissions = context.Vehicle.ListTransmissions(programmeFilter);
             model.AvailableBodies = context.Vehicle.ListBodies(programmeFilter);
@@ -282,6 +284,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 IncludeAllTrim = false
             };
             model.AvailableTrim = context.Vehicle.ListOxoTrim(trimFilter);
+            model.Document = model.AvailableDocuments.FirstOrDefault(d => d.Id == programmeFilter.DocumentId);
 
             return model;
         }
@@ -297,11 +300,16 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 AvailableExceptionTypes = await context.Import.ListExceptionTypes(filter)
             };
 
-            var programmeFilter = new ProgrammeFilter(model.CurrentImport.ProgrammeId);
+            var programmeFilter = new ProgrammeFilter(model.CurrentImport.ProgrammeId)
+            {
+                DocumentId = model.CurrentImport.DocumentId
+            };
+            model.AvailableDocuments = context.Vehicle.ListPublishedDocuments(programmeFilter);
             model.Exceptions = await context.Import.ListExceptions(filter);
             model.TotalPages = model.Exceptions.TotalPages;
             model.TotalRecords = model.Exceptions.TotalRecords;
             model.TotalDisplayRecords = model.Exceptions.TotalDisplayRecords;
+            model.Document = model.AvailableDocuments.FirstOrDefault(d => d.Id == programmeFilter.DocumentId);
             model.Programme = context.Vehicle.GetProgramme(programmeFilter);
             model.Gateway = model.CurrentImport.Gateway;
             model.Summary = await context.Import.GetImportSummary(filter);

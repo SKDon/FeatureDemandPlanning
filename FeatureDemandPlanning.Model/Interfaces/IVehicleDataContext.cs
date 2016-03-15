@@ -40,8 +40,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<FdpDerivativeMapping> GetFdpDerivativeMapping(DerivativeMappingFilter filter);
         Task<PagedResults<FdpDerivativeMapping>> ListFdpDerivativeMappings(DerivativeMappingFilter filter);
 
-        Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> gateways);
-        Task<FdpDerivativeMapping> CopyFdpDerivativeMappingsToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> gateways);
+        Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToDocument(FdpDerivativeMapping fdpDerivativeMapping, int targetDocumentId);
+        Task<IEnumerable<FdpDerivativeMapping>> CopyFdpDerivativeMappingsToDocument(int sourceDocumentId, int targetDocumentId);
 
         // Features and mappings
 
@@ -53,15 +53,15 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<FdpFeatureMapping> GetFdpFeatureMapping(FeatureMappingFilter filter);
         Task<PagedResults<FdpFeatureMapping>> ListFdpFeatureMappings(FeatureMappingFilter filter);
 
-        Task<FdpFeatureMapping> CopyFdpFeatureMappingToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways);
-        Task<FdpFeatureMapping> CopyFdpFeatureMappingsToGateway(FdpFeatureMapping fdpFeatureMapping, IEnumerable<string> gateways);
+        Task<FdpFeatureMapping> CopyFdpFeatureMappingToDocument(FdpFeatureMapping fdpFeatureMapping, int targetDocumentId);
+        Task<IEnumerable<FdpFeatureMapping>> CopyFdpFeatureMappingsToDocument(int sourceDocumentId, int targetDocumentId);
 
         Task<FdpSpecialFeatureMapping> DeleteFdpSpecialFeatureMapping(FdpSpecialFeatureMapping fdpSpecialFeatureMapping);
         Task<FdpSpecialFeatureMapping> GetFdpSpecialFeatureMapping(SpecialFeatureMappingFilter filter);
         Task<PagedResults<FdpSpecialFeatureMapping>> ListFdpSpecialFeatureMappings(SpecialFeatureMappingFilter filter);
 
-        Task<FdpSpecialFeatureMapping> CopyFdpSpecialFeatureMappingToGateway(FdpSpecialFeatureMapping fdpSpecialFeatureMapping, IEnumerable<string> gateways);
-        Task<FdpSpecialFeatureMapping> CopyFdpSpecialFeatureMappingsToGateway(FdpSpecialFeatureMapping fdpSpecialFeatureMapping, IEnumerable<string> gateways);
+        Task<FdpSpecialFeatureMapping> CopyFdpSpecialFeatureMappingToDocument(FdpSpecialFeatureMapping fdpSpecialFeatureMapping, int targetDocumentId);
+        Task<IEnumerable<FdpSpecialFeatureMapping>> CopyFdpSpecialFeatureMappingsToDocument(int sourceDocumentId, int targetDocumentId);
 
         // Trim and mappings
 
@@ -73,8 +73,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<FdpTrimMapping> GetFdpTrimMapping(TrimMappingFilter filter);
         Task<PagedResults<FdpTrimMapping>> ListFdpTrimMappings(TrimMappingFilter filter);
 
-        Task<FdpTrimMapping> CopyFdpTrimMappingToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways);
-        Task<FdpTrimMapping> CopyFdpTrimMappingsToGateway(FdpTrimMapping fdpTrimMapping, IEnumerable<string> gateways);
+        Task<FdpTrimMapping> CopyFdpTrimMappingToDocument(FdpTrimMapping fdpTrimMapping, int targetDocumentId);
+        Task<IEnumerable<FdpTrimMapping>> CopyFdpTrimMappingsToDocument(int sourceDocumentId, int targetDocumentId);
 
         Task<PagedResults<OxoDerivative>> ListOxoDerivatives(DerivativeMappingFilter filter);
 

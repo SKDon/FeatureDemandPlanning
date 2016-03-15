@@ -1,7 +1,4 @@
-﻿
-
-
-CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
+﻿CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 
 	SELECT 
 		  D.CreatedOn
@@ -27,6 +24,8 @@ CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 	JOIN Fdp_Derivative_VW			AS D	ON	P.Id				= D.ProgrammeId
 	WHERE
 	P.Active = 1
+	AND
+	ISNULL(D.BMC, '') <> ''
 
 	UNION
 	
@@ -56,11 +55,13 @@ CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 	FROM
 	OXO_Programme					AS P
 	JOIN Fdp_Derivative_VW			AS D	ON	P.Id				= D.ProgrammeId
-	JOIN Fdp_DerivativeMapping		AS M	ON	D.ProgrammeId		= M.ProgrammeId
-											AND D.Gateway			= M.Gateway
+	JOIN Fdp_DerivativeMapping		AS M	ON	D.DocumentId		= M.DocumentId
 											AND	D.BodyId			= M.BodyId
 											AND D.EngineId			= M.EngineId
 											AND D.TransmissionId	= M.TransmissionId
 											AND M.IsActive			= 1
+											AND ISNULL(M.DerivativeCode, '')	<> ''
 	WHERE
 	P.Active = 1
+	
+GO

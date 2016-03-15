@@ -25,6 +25,7 @@ model.Exceptions = function (params) {
     privateStore[me.id].IgnoreContentUri = params.IgnoreContentUri;
     privateStore[me.id].IgnoreActionUri = params.IgnoreActionUri;
     privateStore[me.id].ImportQueueId = params.ImportQueueId;
+    privateStore[me.id].DocumentId = params.DocumentId;
     privateStore[me.id].ProgrammeId = params.ProgrammeId;
     privateStore[me.id].Gateway = params.Gateway;
     privateStore[me.id].PageSize = params.PageSize;
@@ -115,6 +116,9 @@ model.Exceptions = function (params) {
     me.getExceptionsUri = function () {
         return privateStore[me.id].ExceptionsUri;
     };
+    me.getDocumentId= function() {
+        return privateStore[me.id].DocumentId;
+    }
     me.getGateway = function () {
         return privateStore[me.id].Gateway;
     }

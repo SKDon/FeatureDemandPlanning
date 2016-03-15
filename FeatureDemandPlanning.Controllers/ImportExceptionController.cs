@@ -217,6 +217,7 @@ namespace FeatureDemandPlanning.Controllers
             {
                 ImportDerivativeCode = parameters.ImportDerivativeCode,
                 
+                DocumentId = parameters.DocumentId.GetValueOrDefault(),
                 ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
                 Gateway = parameters.Gateway,
                 DerivativeCode = derivative.DerivativeCode,

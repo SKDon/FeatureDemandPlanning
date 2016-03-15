@@ -27,6 +27,7 @@ AS
 		, V.ModelYear
 		, I.Gateway
 		, CAST(CASE WHEN Q.ErrorOn IS NOT NULL THEN 1 ELSE 0 END AS BIT) AS HasErrors
+		, I.DocumentId
 		
 	FROM Fdp_ImportQueue_VW AS Q
 	JOIN Fdp_Import			AS I	ON Q.FdpImportQueueId	= I.FdpImportQueueId

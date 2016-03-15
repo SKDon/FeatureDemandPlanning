@@ -180,8 +180,9 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
 
                     para.Add("@ImportDerivativeCode", derivativeMapping.ImportDerivativeCode, DbType.String);
-                    para.Add("@ProgrammeId", derivativeMapping.ProgrammeId, DbType.Int32);
-                    para.Add("@Gateway", derivativeMapping.Gateway, DbType.String);
+                    para.Add("@DocumentId", derivativeMapping.DocumentId, DbType.Int32);
+                    //para.Add("@ProgrammeId", derivativeMapping.ProgrammeId, DbType.Int32);
+                    //para.Add("@Gateway", derivativeMapping.Gateway, DbType.String);
                     if (!string.IsNullOrEmpty(derivativeMapping.DerivativeCode))
                     {
                         para.Add("@DerivativeCode", derivativeMapping.DerivativeCode, DbType.String);
@@ -354,17 +355,17 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        public FdpDerivativeMapping FdpDerivativeMappingCopy(FdpDerivativeMapping derivativeMappingToCopy, IEnumerable<string> gateways)
+        public FdpDerivativeMapping FdpDerivativeMappingCopy(FdpDerivativeMapping derivativeMappingToCopy, int toDocumentId)
         {
             FdpDerivativeMapping retVal = new EmptyFdpDerivativeMapping();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = new DynamicParameters();
 
                     para.Add("@FdpDerivativeMappingId", derivativeMappingToCopy.FdpDerivativeMappingId, DbType.Int32);
-                    para.Add("@Gateways", gateways.ToCommaSeperatedList(), DbType.String);
+                    para.Add("@DocumentId", toDocumentId, DbType.Int32);
                     para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var rows = conn.Execute("Fdp_DerivativeMapping_Copy", para, commandType: CommandType.StoredProcedure);

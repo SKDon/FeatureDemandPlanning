@@ -10,10 +10,23 @@ AS
 	SET NOCOUNT ON;
 
 	DECLARE @IsArchived AS BIT;
+	DECLARE @OldBMC AS NVARCHAR(20);
 	SELECT TOP 1 @IsArchived = ISNULL(Archived, 0) FROM Oxo_Doc WHERE Id = @DocumentId;
 
 	IF @IsArchived = 1
 	BEGIN
+		SELECT TOP 1 @OldBMC = BMC
+		FROM
+		OXO_Archived_Programme_Model
+		WHERE
+		Doc_Id = @DocumentId
+		AND
+		Body_Id = @BodyId
+		AND
+		Engine_Id = @EngineId
+		AND
+		Transmission_Id = @TransmissionId;
+
 		UPDATE OXO_Archived_Programme_Model SET 
 			BMC = @DerivativeCode,
 			Updated_By = @CDSID,
@@ -47,6 +60,16 @@ AS
 	END
 	ELSE
 	BEGIN
+		SELECT TOP 1 @OldBMC = BMC
+		FROM
+		OXO_Programme_Model
+		WHERE
+		Body_Id = @BodyId
+		AND
+		Engine_Id = @EngineId
+		AND
+		Transmission_Id = @TransmissionId;
+
 		UPDATE M SET BMC = @DerivativeCode,
 			Updated_By = @CDSID,
 			Last_Updated = GETDATE()
@@ -79,4 +102,13 @@ AS
 		Engine_Id = @EngineId
 		AND
 		Transmission_Id = @TransmissionId;
+	END
+
+	IF ISNULL(@OldBMC, '') <> ''
+	BEGIN
+		UPDATE M SET DerivativeCode = @DerivativeCode
+		FROM
+		Fdp_DerivativeMapping AS M
+		WHERE
+		M.DocumentId = @DocumentId
 	END

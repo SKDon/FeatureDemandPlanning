@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="580929e8-7e59-483a-a930-3db889754b0e" ChangeDateTime="03/14/2016 10:23:30">
+    <Property Name="ElementName" Value="[dbo].[FK_Fdp_DerivativeMapping_ToTable]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Fdp_DerivativeMapping]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Fdp_DerivativeMapping_OXO_Doc]" />
+  </Operation>
+</Operations>

@@ -59,7 +59,7 @@ AS
 	AND
 	I.FdpImportId <> @FdpImportId
 	AND
-	Q.FdpImportStatusId = 1; -- Queued
+	Q.FdpImportStatusId IN (1, 4); -- Queued or error
 	
 	-- Remove all data from cancelled import queue items
 	

@@ -260,8 +260,14 @@
     <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ImportErrorType_GetMany.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportQueue_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportQueue_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportQueue_Get.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ImportQueue_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_ImportQueue_Save.sql" />
     <Build Include="Stored Procedures\Fdp_ImportQueue_UpdateStatus.sql">
       <AnsiNulls>Off</AnsiNulls>
@@ -986,6 +992,18 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Stored Procedures\Fdp_ModelTransmission_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ModelEngine_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ModelBody_GetMany.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">
@@ -1017,5 +1035,8 @@
     <None Include="L494.sql" />
     <None Include="L462.sql" />
     <None Include="FirstUser.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="FeatureDemandPlanning.FdpSqlDb.refactorlog" />
   </ItemGroup>
 </Project>

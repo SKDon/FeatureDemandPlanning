@@ -6,6 +6,7 @@ AS
 	SELECT 
 	  MAP.FdpDerivativeMappingId
 	, MAP.ImportDerivativeCode
+	, MAP.DocumentId
 	, MAP.ProgrammeId
 	, MAP.Gateway
 	, MAP.DerivativeCode

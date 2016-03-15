@@ -1,20 +1,24 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_SpecialFeatureMapping_Copy] 
-	  @FdpSpecialFeatureMappingId INT
-	, @Gateways NVARCHAR(MAX)
-	, @CDSId NVARCHAR(16)
+	  @FdpSpecialFeatureMappingId	INT = NULL
+	, @SourceDocumentId				INT = NULL
+	, @TargetDocumentId				INT
+	, @CDSId						NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
 	
-	DECLARE @GatewayList AS TABLE
-	(
-		Gateway NVARCHAR(100)
-	)
-	INSERT INTO @GatewayList
-	SELECT * FROM dbo.FN_SPLIT_MODEL_IDS(@Gateways) -- Use model-ids as the function does what we need
+	DECLARE @ProgrammeId AS INT;
+	DECLARE @Gateway AS NVARCHAR(100);
+	
+	SELECT TOP 1 @ProgrammeId = Programme_Id, @Gateway = Gateway
+	FROM
+	OXO_Doc
+	WHERE
+	Id = @TargetDocumentId;
 	
 	INSERT INTO Fdp_SpecialFeature
 	(
 		  CreatedBy
+		, DocumentId
 		, ProgrammeId
 		, Gateway
 		, FeatureCode
@@ -22,17 +26,21 @@ AS
 	)
 	SELECT 
 		  @CDSId
-		, S.ProgrammeId
-		, G.Gateway
+		, @TargetDocumentId
+		, @ProgrammeId
+		, @Gateway
 		, S.FeatureCode
 		, S.FdpSpecialFeatureTypeId
 	FROM
 	Fdp_SpecialFeature				AS S 
-	CROSS APPLY @GatewayList		AS G
-	LEFT JOIN Fdp_SpecialFeature	AS EXISTING ON S.FeatureCode	= EXISTING.FeatureCode
-												AND S.ProgrammeId	= EXISTING.ProgrammeId
-												AND G.Gateway		= EXISTING.Gateway
+	LEFT JOIN Fdp_SpecialFeature	AS EXISTING ON	S.FeatureCode		= EXISTING.FeatureCode
+												AND EXISTING.IsActive	= 1
+												AND EXISTING.DocumentId = @TargetDocumentId
 	WHERE
-	S.FdpSpecialFeatureId = @FdpSpecialFeatureMappingId
+	(@FdpSpecialFeatureMappingId IS NULL OR S.FdpSpecialFeatureId = @FdpSpecialFeatureMappingId)
+	AND
+	(@SourceDocumentId IS NULL OR S.DocumentId = @SourceDocumentId)
 	AND 
 	EXISTING.FdpSpecialFeatureId IS NULL
+	AND
+	S.IsActive = 1

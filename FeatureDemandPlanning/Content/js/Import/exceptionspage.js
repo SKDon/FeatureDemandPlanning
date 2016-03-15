@@ -249,6 +249,7 @@ page.ExceptionsPage = function (models) {
         var eventArgs = {
             ExceptionId: parseInt($(this).attr("data-target")),
             Action: parseInt($(this).attr("data-role")),
+            DocumentId: getExceptionsModel().getDocumentId(),
             ProgrammeId: getExceptionsModel().getProgrammeId(),
             Gateway: getExceptionsModel().getGateway(),
             ErrorMessage: $(this).attr("data-content")

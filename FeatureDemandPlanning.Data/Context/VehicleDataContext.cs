@@ -298,13 +298,13 @@ namespace FeatureDemandPlanning.DataStore
             filter.OxoDerivativesOnly = true;
             return await Task.FromResult(_derivativeDataStore.FdpOxoDerivativeGetMany(filter));
         }
-        public async Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> gateways)
+        public async Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToDocument(FdpDerivativeMapping fdpDerivativeMapping, int targetDocumentId)
         {
-            return await Task.FromResult<FdpDerivativeMapping>(_derivativeDataStore.FdpDerivativeMappingCopy(fdpDerivativeMapping, gateways));
+            return await Task.FromResult(_derivativeDataStore.FdpDerivativeMappingCopy(fdpDerivativeMapping, targetDocumentId));
         }
-        public Task<FdpDerivativeMapping> CopyFdpDerivativeMappingsToGateway(FdpDerivativeMapping fdpDerivativeMapping, IEnumerable<string> gateways)
+        public async Task<IEnumerable<FdpDerivativeMapping>> CopyFdpDerivativeMappingsToDocument(int sourceDocumentId, int targetDocumentId)
         {
-            throw new NotImplementedException();
+            throw await Task.FromResult(_derivativeDataStore.FdpDerivativeMappingsCopy(sourceDocumentId, targetDocumentId));
         }
         public async Task<BmcMapping> GetMappedBmc(DerivativeFilter filter)
         {
