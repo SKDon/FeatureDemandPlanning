@@ -190,3 +190,4 @@ ModelManifest.xml
 
 # Web.Config
 FeatureDemandPlanning/Web.config
+FeatureDemandPlanning.SqlDb/Stored Procedures/Fdp_ImportData_Process.sql.orig

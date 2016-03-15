@@ -24,6 +24,8 @@
 
 
 
+
+
 GO
 CREATE TRIGGER [dbo].[tr_Fdp_TakeRateSummary_Audit] ON [dbo].[Fdp_TakeRateSummary] FOR UPDATE
 AS
@@ -48,3 +50,13 @@ AS
 		
 	FROM deleted	AS D
 	JOIN inserted	AS I ON D.FdpTakeRateSummaryId = I.FdpTakeRateSummaryId
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_TakeRateSummary_Model]
+    ON [dbo].[Fdp_TakeRateSummary]([FdpVolumeHeaderId] ASC, [ModelId] ASC, [FdpModelId] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_TakeRateSummary_Market]
+    ON [dbo].[Fdp_TakeRateSummary]([FdpVolumeHeaderId] ASC, [MarketId] ASC)
+    INCLUDE([ModelId], [FdpModelId], [Volume], [PercentageTakeRate]);
+

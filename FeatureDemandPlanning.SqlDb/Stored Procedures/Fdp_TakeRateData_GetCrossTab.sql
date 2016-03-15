@@ -71,7 +71,11 @@ AS
 	(
 		  AggregatedFeatureIdentifier	NVARCHAR(10)
 		, AggregatedVolume				INT
-	);
+		, CONSTRAINT [PK_AggregatedVolumeByFeature] PRIMARY KEY CLUSTERED 
+		(
+			AggregatedFeatureIdentifier ASC
+		)
+	)
 	CREATE TABLE #Model
 	(
 		  ModelId		INT PRIMARY KEY
@@ -406,6 +410,17 @@ AS
 	ORDER BY
 	F.DisplayOrder, F.BrandDescription 
 	
+	CREATE NONCLUSTERED INDEX Ix_NC_TmpTakeRateDataByFeature ON #TakeRateDataByFeature
+	(
+		  FeatureId
+		, FdpFeatureId
+		, ModelId
+		, FdpModelId
+		, StringIdentifier
+		, FeatureIdentifier
+		, FeatureCode
+	) 
+	
 	INSERT INTO #AggregateVolumeByFeature
 	(
 		  AggregatedFeatureIdentifier
@@ -445,7 +460,7 @@ AS
 	AND
 	T.FeaturePackId IS NOT NULL
 	GROUP BY 
-	FeaturePackId
+	FeaturePackId;
 	
 	-- Work out total volumes so we can calculate percentage take from the feature mix
 	
@@ -464,7 +479,14 @@ AS
 		AND
 		(@MarketGroupId IS NULL OR MarketGroupId = @MarketGroupId);
 
-		SELECT @FilteredPercentage = @FilteredVolume / CAST(@TotalVolume AS DECIMAL(10,4));
+		IF ISNULL(@TotalVolume, 0) = 0
+		BEGIN
+			SELECT @FilteredPercentage = 0
+		END
+		ELSE
+		BEGIN
+			SELECT @FilteredPercentage = @FilteredVolume / CAST(@TotalVolume AS DECIMAL(10,4));
+		END
 	END
 	ELSE
 	BEGIN
