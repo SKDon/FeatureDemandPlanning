@@ -437,5 +437,11 @@ namespace FeatureDemandPlanning.DataStore
         private DerivativeDataStore _derivativeDataStore = null;
 
         #endregion
+
+
+        public async Task<OxoTrim> UpdateDpckCode(OxoTrim trim)
+        {
+            return await Task.FromResult(_trimDataStore.DpckUpdate(trim));
+        }
     }
 }

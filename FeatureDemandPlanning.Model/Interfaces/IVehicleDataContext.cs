@@ -47,6 +47,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<PagedResults<OxoDerivative>> ListOxoDerivatives(DerivativeMappingFilter filter);
 
+        Task<OxoDerivative> UpdateBrochureModelCode(OxoDerivative derivative);
+
         // Features and mappings
 
         Task<FdpFeature> DeleteFdpFeature(FdpFeature featureToDelete);
@@ -80,6 +82,6 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<FdpTrimMapping> CopyFdpTrimMappingToDocument(FdpTrimMapping fdpTrimMapping, int targetDocumentId);
         Task<IEnumerable<FdpTrimMapping>> CopyFdpTrimMappingsToDocument(int sourceDocumentId, int targetDocumentId);
 
-        Task<OxoDerivative> UpdateBrochureModelCode(OxoDerivative derivative);
+        Task<OxoTrim> UpdateDpckCode(OxoTrim oxoTrim);
     }
 }

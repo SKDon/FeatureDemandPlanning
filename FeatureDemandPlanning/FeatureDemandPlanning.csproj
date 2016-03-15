@@ -283,6 +283,9 @@
     <Content Include="Content\js\TakeRateData\validationsummaryaction.js" />
     <Content Include="Content\js\TakeRateData\marketreview.js" />
     <Content Include="Content\js\TakeRateData\marketreviewaction.js" />
+    <Content Include="Content\js\TrimMapping\dpck.js" />
+    <Content Include="Content\js\TrimMapping\dpckinit.js" />
+    <Content Include="Content\js\TrimMapping\dpckpage.js" />
     <Content Include="Error\NoProgrammeAccess.aspx" />
     <Content Include="Error\NoMarketAccess.aspx" />
     <Content Include="Error\403.aspx" />
@@ -1122,6 +1125,9 @@
     <Content Include="Views\DerivativeMapping\_BMC.cshtml" />
     <Content Include="Views\DerivativeMapping\BMCPage.cshtml" />
     <Content Include="Views\DerivativeMapping\_BMCScripts.cshtml" />
+    <Content Include="Views\TrimMapping\_DPCK.cshtml" />
+    <Content Include="Views\TrimMapping\_DPCKScripts.cshtml" />
+    <Content Include="Views\TrimMapping\DPCKPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

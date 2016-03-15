@@ -10,6 +10,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public int? TargetDocumentId { get; set; }
         public int? TrimMappingId { get; set; }
         public string ImportTrim { get; set; }
+        public string Dpck { get; set; }
       
         public new TrimMappingAction Action { get; set; }
 

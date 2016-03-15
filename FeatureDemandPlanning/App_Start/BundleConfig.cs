@@ -172,8 +172,10 @@ namespace FeatureDemandPlanning
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/TrimMapping/copy.js",
                     "~/Content/js/TrimMapping/delete.js",
+                    "~/Content/js/TrimMapping/dpck.js",
                     "~/Content/js/TrimMapping/model.js",
-                    "~/Content/js/TrimMapping/page.js"
+                    "~/Content/js/TrimMapping/page.js",
+                    "~/Content/js/TrimMapping/dpckpage.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/user").Include(

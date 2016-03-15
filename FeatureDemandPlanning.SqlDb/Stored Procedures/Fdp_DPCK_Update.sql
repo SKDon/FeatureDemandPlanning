@@ -14,7 +14,7 @@ AS
 	BEGIN
 		UPDATE OXO_Archived_Programme_Trim SET 
 			DPCK = @DPCK,
-			Updated_By = @CDSID,
+			--Updated_By = @CDSID,
 			Last_Updated = GETDATE()
 		WHERE
 		Doc_Id = @DocumentId
@@ -23,7 +23,7 @@ AS
 
 		SELECT
 			  D.Id AS DocumentId
-			, T.DPCK AS DerivativeCode
+			, T.DPCK
 			, T.Name
 			, T.[Level]
 		FROM
@@ -37,7 +37,7 @@ AS
 	ELSE
 	BEGIN
 		UPDATE T SET DPCK = @DPCK,
-			Updated_By = @CDSID,
+			--Updated_By = @CDSID,
 			Last_Updated = GETDATE()
 		FROM
 		OXO_Doc AS D
@@ -49,7 +49,7 @@ AS
 
 		SELECT
 			  D.Id AS DocumentId
-			, T.DPCK AS DerivativeCode
+			, T.DPCK
 			, T.Name
 			, T.[Level]
 		FROM

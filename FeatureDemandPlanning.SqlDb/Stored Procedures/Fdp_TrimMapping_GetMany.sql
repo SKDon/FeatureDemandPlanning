@@ -33,6 +33,8 @@ AS
 		, ProgrammeId		INT
 		, Gateway			NVARCHAR(200)
 		, TrimId			INT
+		, Name				NVARCHAR(2000) 
+		, [Level]			NVARCHAR(2000)
 		, IsMappedTrim		BIT
 		, UpdatedOn			DATETIME NULL
 		, UpdatedBy			NVARCHAR(16) NULL
@@ -47,7 +49,9 @@ AS
 		, DPCK		
 		, ProgrammeId		
 		, Gateway			
-		, TrimId			
+		, TrimId
+		, Name
+		, [Level]
 		, IsMappedTrim		
 		, UpdatedOn			
 		, UpdatedBy			
@@ -62,6 +66,8 @@ AS
 		, T.ProgrammeId
 		, T.Gateway
 		, T.TrimId
+		, T.MappedTrim
+		, T.[Level]
 		, T.IsMappedTrim
 		, T.UpdatedOn
 		, T.UpdatedBy
@@ -112,6 +118,8 @@ AS
 		, T.ProgrammeId
 		, T.Gateway
 		, T.TrimId
+		, T.Name
+		, T.[Level]
 		, T.IsMappedTrim
 		, T.UpdatedOn
 		, T.UpdatedBy

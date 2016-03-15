@@ -618,5 +618,34 @@ namespace FeatureDemandPlanning.DataStore
                 CurrentPage = page
             };
         }
+
+        public OxoTrim DpckUpdate(OxoTrim trim)
+        {
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+
+                    para.Add("@DocumentId", trim.DocumentId, DbType.Int32);
+                    para.Add("@TrimId", trim.TrimId, DbType.Int32);
+                    para.Add("@DPCK", trim.DPCK, DbType.String);
+
+
+                    var results = conn.Query<OxoTrim>("Fdp_Dpck_Update", para, commandType: CommandType.StoredProcedure);
+                    var trimLevels = results as IList<OxoTrim> ?? results.ToList();
+                    if (results != null && trimLevels.Any())
+                    {
+                        trim = trimLevels.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return trim;
+        }
     }
 }

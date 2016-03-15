@@ -93,7 +93,8 @@ namespace FeatureDemandPlanning.Model
             return new OxoTrim()
             {
                 TrimId = parameters.TrimId,
-                DocumentId = parameters.DocumentId
+                DocumentId = parameters.DocumentId,
+                DPCK = parameters.Dpck
             };
         }
     }

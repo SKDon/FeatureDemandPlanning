@@ -1,0 +1,28 @@
+﻿@model FeatureDemandPlanning.Model.ViewModel.TrimMappingViewModel
+
+<script language="javascript">
+
+    var dpck, page, modal;
+    var params = {
+        ActionsUri: "@Url.Action("ContextMenu")",
+        ProcessUri: "@Url.Action("Process")",
+        CancelUri: "@Url.Action("Cancel")",
+        TrimMappingsUri: "@Url.Action("ListTrimMappings")",
+        DpckUri: "@Url.Action("ListDpckCodes")",
+        UpdateDpckUri: "@Url.Action("UpdateDpckCode")",
+        ModalContentUri: "@Url.Action("ModalContent")",
+        ModalActionUri: "@Url.Action("ModalAction")",
+        ModalDialogId: "modal",
+        ModalContentId: "modalBody",
+        Configuration: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        _lastParam: null
+    };
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+
+</script>
+
+@Scripts.Render("~/bundles/js/shared")
+@Scripts.Render("~/bundles/js/trimmapping")
+<script language="javascript" src="@Url.Content("~/Content/js/TrimMapping/dpckinit.js")?v=@Model.CurrentVersion"></script>

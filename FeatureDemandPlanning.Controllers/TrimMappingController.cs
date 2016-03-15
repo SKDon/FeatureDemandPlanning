@@ -75,7 +75,7 @@ namespace FeatureDemandPlanning.Controllers
         }
         [HttpPost]
         [HandleErrorWithJson]
-        public async Task<ActionResult> ListDPCKCodes(TrimMappingParameters parameters)
+        public async Task<ActionResult> ListDpckCodes(TrimMappingParameters parameters)
         {
             ValidateTrimMappingParameters(parameters, TrimMappingParametersValidator.NoValidation);
 
@@ -92,7 +92,7 @@ namespace FeatureDemandPlanning.Controllers
             var results = await TrimMappingViewModel.GetModel(DataContext, filter);
             var jQueryResult = new JQueryDataTableResultModel(results);
 
-            foreach (var result in results.TrimMappings.CurrentPage)
+            foreach (var result in results.OxoTrim.CurrentPage)
             {
                 try
                 {
@@ -105,6 +105,13 @@ namespace FeatureDemandPlanning.Controllers
 
             }
             return Json(jQueryResult);
+        }
+        [HttpPost]
+        public async Task<ActionResult> UpdateDpckCode(TrimMappingParameters parameters)
+        {
+            await DataContext.Vehicle.UpdateDpckCode(OxoTrim.FromParameters(parameters));
+
+            return JsonGetSuccess();
         }
         [HttpPost]
         public async Task<ActionResult> ContextMenu(TrimMappingParameters parameters)
