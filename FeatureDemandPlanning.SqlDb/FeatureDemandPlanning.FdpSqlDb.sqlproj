@@ -1052,6 +1052,8 @@
     <None Include="L494.sql" />
     <None Include="L462.sql" />
     <None Include="FirstUser.sql" />
+    <None Include="CleanData.sql" />
+    <None Include="RebuildIndexesAndStats.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="FeatureDemandPlanning.FdpSqlDb.refactorlog" />
