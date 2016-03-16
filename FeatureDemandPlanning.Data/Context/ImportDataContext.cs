@@ -114,7 +114,7 @@ namespace FeatureDemandPlanning.DataStore
             queuedItem = BulkImportDataTableToDataStore(queuedItem);
             queuedItem = ProcessImportData(queuedItem);
 
-            File.Delete(queuedItem.FilePath);
+            //File.Delete(queuedItem.FilePath);
 
             result.Status = queuedItem.ImportStatus;
             result.TakeRateId = queuedItem.TakeRateId;
@@ -164,6 +164,11 @@ namespace FeatureDemandPlanning.DataStore
             return await Task.FromResult(_importDataStore.FdpImportErrorExclusionDelete(fdpImportErrorExclusion));
         }
 
+        public async Task<IEnumerable<ImportDerivative>> ListImportDerivatives(ImportQueueFilter importQueueFilter)
+        {
+            return await Task.FromResult(_importDataStore.FdpImportDerivativesGetMany(importQueueFilter));
+        }
+
         private static DataTable GetImportFileAsDataTable(ImportQueue queuedItem, ImportFileSettings settings)
         {
             return ExcelReader.ReadExcelAsDataTable(queuedItem.FilePath, settings);
@@ -176,14 +181,15 @@ namespace FeatureDemandPlanning.DataStore
             importColumn.SetOrdinal(0);
             lineNumberColumn.SetOrdinal(1);
 
-            var lineNumber = 1;
+            var lineNumber = 0;
 
             foreach (DataRow row in importQueue.ImportData.Rows)
             {
                 row[importColumn] = importQueue.ImportId;
-                row[lineNumberColumn] = lineNumber++;
+                row[lineNumberColumn] = ++lineNumber;
             }
-            return _importDataStore.ImportQueueBulkImport(importQueue);
+
+            return _importDataStore.ImportQueueBulkImport(importQueue);;
         }
         private ImportQueue ProcessImportData(ImportQueue importQueue)
         {

@@ -517,9 +517,9 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
                     }
-                    if (!string.IsNullOrEmpty(filter.DerivativeCode))
+                    if (!string.IsNullOrEmpty(filter.Dpck))
                     {
-                        para.Add("@DerivativeCode", filter.DerivativeCode, DbType.String);
+                        para.Add("@DPCK", filter.Dpck, DbType.String);
                     }
                     if (filter.IncludeAllTrim)
                     {

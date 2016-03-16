@@ -13,25 +13,41 @@
 
 @if (Model.CurrentException.ErrorType == enums.ImportExceptionType.MissingDerivative)
 {
-    <li>
-        <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int)enums.ImportAction.AddMissingDerivative)" data-content="@Model.CurrentException.ErrorMessage">
-            <span class="glyphicon glyphicon-plus pull-left"></span> Add new derivative '@Model.CurrentException.ImportDerivativeCode'...
-        </a>
-    </li>
-    <li>
-        <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int)enums.ImportAction.MapMissingDerivative)" data-content="@Model.CurrentException.ErrorMessage">
-            <span class="glyphicon glyphicon-link pull-left"></span> Map '@Model.CurrentException.ImportDerivativeCode' to existing OXO derivative...
-        </a>
-    </li>
+    if (Model.CurrentException.SubType == enums.ImportExceptionType.NoBmc)
+    {
+        <li>
+            <a href="@Url.Action("BMCPage", "DerivativeMapping", new { DocumentId = Model.CurrentException.DocumentId })">
+                <span class="glyphicon glyphicon-pencil pull-left"></span> Edit Brochure Model Codes...
+            </a>
+        </li>
+    }
+
+    if (Model.CurrentException.SubType == enums.ImportExceptionType.NoHistoricDerivative)
+    {
+        <li>
+            <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int) enums.ImportAction.MapOxoDerivative)" data-content="@Model.CurrentException.ErrorMessage">
+                <span class="glyphicon glyphicon-link pull-left"></span> Map '@Model.CurrentException.AdditionalData' to historic derivative(s)...
+            </a>
+        </li>
+    }
+
+    if (Model.CurrentException.SubType == enums.ImportExceptionType.NoOxoDerivative)
+    {
+        <li>
+            <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int) enums.ImportAction.MapMissingDerivative)" data-content="@Model.CurrentException.ErrorMessage">
+                <span class="glyphicon glyphicon-link pull-left"></span> Map '@Model.CurrentException.AdditionalData' to existing OXO derivative...
+            </a>
+        </li>
+    }
 }
 
 @if (Model.CurrentException.ErrorType == enums.ImportExceptionType.MissingFeature)
 {
-    <li>
+    @*<li>
         <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int)enums.ImportAction.AddMissingFeature)" data-content="@Model.CurrentException.ErrorMessage">
             <span class="glyphicon glyphicon-plus pull-left"></span> Add new feature '@Model.CurrentException.ImportFeatureCode'...
         </a>
-    </li>
+    </li>*@
     <li>
         <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int)enums.ImportAction.MapMissingFeature)" data-content="@Model.CurrentException.ErrorMessage">
             <span class="glyphicon glyphicon-link pull-left"></span> Map '@Model.CurrentException.ImportFeatureCode' to existing OXO feature...
@@ -46,11 +62,11 @@
 
 @if (Model.CurrentException.ErrorType == enums.ImportExceptionType.MissingTrim)
 {
-    <li>
+    @*<li>
         <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int)enums.ImportAction.AddMissingTrim)" data-content="@Model.CurrentException.ErrorMessage">
             <span class="glyphicon glyphicon-plus pull-left"></span> Add new trim '@Model.CurrentException.ImportTrim'...
         </a>
-    </li>
+    </li>*@
     <li>
         <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int)enums.ImportAction.MapMissingTrim)" data-content="@Model.CurrentException.ErrorMessage">
             <span class="glyphicon glyphicon-link pull-left"></span> Map '@Model.CurrentException.ImportTrim' to existing OXO trim...

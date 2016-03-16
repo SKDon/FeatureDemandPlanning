@@ -11,6 +11,7 @@ namespace FeatureDemandPlanning.Model.Filters
         public string ModelYear { get; set; }
         public int? ProgrammeId { get; set; }
         public string Gateway { get; set; }
+        public int? DocumentId { get; set; }
 
         public string Name { get; set; }
         public string Level { get; set; }
@@ -19,7 +20,7 @@ namespace FeatureDemandPlanning.Model.Filters
 
         public bool IncludeAllTrim { get; set; }
         public bool OxoTrimOnly { get; set; }
-        public string DerivativeCode { get; set; }
+        public string Dpck { get; set; }
 
         public TrimFilter()
         {

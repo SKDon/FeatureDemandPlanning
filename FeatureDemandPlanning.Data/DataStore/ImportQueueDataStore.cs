@@ -670,6 +670,27 @@ namespace FeatureDemandPlanning.DataStore
 
             importQueue.Errors = connection.Query<ImportError>("dbo.Fdp_ImportError_GetMany", para, commandType: CommandType.StoredProcedure);
         }
+
+        public IEnumerable<ImportDerivative> FdpImportDerivativesGetMany(ImportQueueFilter filter)
+        {
+            var retVal = Enumerable.Empty<Derivative>();
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpImportQueueId", filter.ImportQueueId, DbType.Int32);
+                   
+                    retVal = conn.Query<Derivative>("Fdp_ImportDerivatives_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
     }
     internal class ImportStatusDataItem : ImportStatus
     {

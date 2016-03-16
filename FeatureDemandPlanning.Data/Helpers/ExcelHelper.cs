@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using ClosedXML.Excel;
 using FeatureDemandPlanning.DataStore;
 using System.Data;
+using CsvHelper;
 using FeatureDemandPlanning.Model.Filters;
 
 namespace FeatureDemandPlanning.Model.Helpers
@@ -44,12 +45,71 @@ namespace FeatureDemandPlanning.Model.Helpers
     {
         private readonly Logger Log = Logger.Instance;
 
-        public static DataTable ReadExcelAsDataTable(string filePath)
-        {
-            return ReadExcelAsDataTable(filePath, new ImportFileSettings());
-        }
-
         public static DataTable ReadExcelAsDataTable(string filePath, ImportFileSettings settings)
+        {
+            DataTable retVal = null;
+            var extension = Path.GetExtension(filePath);
+            if (string.IsNullOrEmpty(extension))
+            {
+                return retVal;
+            }
+
+            switch (extension.ToUpper())
+            {
+                case ".CSV":
+                    retVal = ReadCsv(filePath, settings);
+                    break;
+                case ".XLSX":
+                    retVal = ReadExcel(filePath, settings);
+                    break;
+            }
+
+            return retVal;
+        }
+        public static DataTable ReadCsv(string filePath, ImportFileSettings settings)
+        {
+            var reader = new StreamReader(new FileStream(filePath, FileMode.Open));
+            var csvHelper = new CsvReader(reader);
+            var result = new DataTable();
+            
+            // If the input file contains columns headings and such like, we can skip them
+            var skipRows = settings.SkipFirstXRows.GetValueOrDefault();
+            var hasRows = false;
+            for (var i = 0; i < skipRows; i++)
+            {
+                hasRows = csvHelper.Read();
+            }
+
+            var firstRow = true;
+            while (hasRows)
+            {
+                // Use the first row to add columns to DataTable.
+                if (firstRow)
+                {
+                    foreach (var cell in csvHelper.CurrentRecord)
+                    {
+                        result.Columns.Add(cell);
+                    }
+                    firstRow = false;
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(csvHelper.CurrentRecord.First()))
+                    {
+                        result.Rows.Add();
+                        var i = 0;
+                        foreach (var cell in csvHelper.CurrentRecord)
+                        {
+                            result.Rows[result.Rows.Count - 1][i] = cell;
+                            i++;
+                        }
+                    }
+                }
+                hasRows = csvHelper.Read();
+            }
+            return result;
+        }
+        private static DataTable ReadExcel(string filePath, ImportFileSettings settings)
         {
             var result = new DataTable();
             using (var workBook = new XLWorkbook(filePath))

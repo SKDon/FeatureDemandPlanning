@@ -21,4 +21,5 @@ DELETE FROM Fdp_VolumeHeader
 DELETE FROM Fdp_ImportError
 DELETE FROM Fdp_ImportData
 DELETE FROM Fdp_Import
+DELETE FROM Fdp_ImportQueueError
 DELETE FROM Fdp_ImportQueue

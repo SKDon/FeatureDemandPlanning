@@ -47,6 +47,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<ImportExceptionType> AvailableExceptionTypes { get; set; }
         public IEnumerable<ImportStatus> AvailableImportStatuses { get; set; }
         public IEnumerable<TrimLevel> AvailableTrimLevels { get; set; }
+        public IEnumerable<ImportDerivative> AvailableImportDerivatives { get; set; }
 
         #endregion
 
@@ -270,6 +271,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
 
             model.AvailableDerivatives = context.Vehicle.ListDerivatives(derivativeFilter);
+            model.AvailableImportDerivatives = await
+                context.Import.ListImportDerivatives(new ImportQueueFilter()
+                {
+                    ImportQueueId = model.CurrentException.ImportQueueId
+                });
 
             derivativeFilter.Bmc = model.CurrentException.ImportDerivativeCode;
             var mapping = await context.Vehicle.GetMappedBmc(derivativeFilter);
@@ -280,11 +286,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 CarLine = model.Programme.VehicleName,
                 ModelYear = model.Programme.ModelYear,
                 Gateway = model.Gateway,
-                DerivativeCode = mapping.Bmc,
+                DocumentId = model.CurrentException.DocumentId,
                 IncludeAllTrim = false
             };
             model.AvailableTrim = (await context.Vehicle.ListOxoTrim(trimFilter)).CurrentPage;
-            model.Document = model.AvailableDocuments.FirstOrDefault(d => d.Id == programmeFilter.DocumentId);
+            model.Document = model.AvailableDocuments.FirstOrDefault(d => d.Id == model.CurrentException.DocumentId);
 
             return model;
         }
@@ -347,6 +353,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             AvailableFeatures = Enumerable.Empty<FdpFeature>();
             AvailableFeatureGroups = Enumerable.Empty<FeatureGroup>();
             AvailableDerivatives = Enumerable.Empty<Derivative>();
+            AvailableImportDerivatives = Enumerable.Empty<ImportDerivative>();
             AvailableExceptionTypes = Enumerable.Empty<ImportExceptionType>();
             AvailableImportStatuses = Enumerable.Empty<ImportStatus>();
             AvailableTrimLevels = Enumerable.Empty<TrimLevel>();

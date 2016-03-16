@@ -1128,6 +1128,7 @@
     <Content Include="Views\TrimMapping\_DPCK.cshtml" />
     <Content Include="Views\TrimMapping\_DPCKScripts.cshtml" />
     <Content Include="Views\TrimMapping\DPCKPage.cshtml" />
+    <Content Include="Views\ImportException\_MapOxoDerivative.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

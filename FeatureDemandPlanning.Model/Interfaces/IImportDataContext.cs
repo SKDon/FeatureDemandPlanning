@@ -46,5 +46,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<PagedResults<FdpImportErrorExclusion>> ListFdpIgnoredExceptions(IgnoredExceptionFilter filter);
 
         Task<FdpImportErrorExclusion> DeleteFdpImportErrorExclusion(FdpImportErrorExclusion fdpImportErrorExclusion);
+
+        Task<IEnumerable<ImportDerivative>> ListImportDerivatives(ImportQueueFilter importQueueFilter);
     }
 }

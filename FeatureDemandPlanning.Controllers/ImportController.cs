@@ -264,8 +264,8 @@ namespace FeatureDemandPlanning.Controllers
                     .NotNull()
                     .Must(NotBeEmpty)
                     .WithMessage("'File to import' not specified")
-                    .Must(BeAnExcelFile)
-                    .WithMessage("'File to import' is not a valid Excel file");
+                    .Must(BeAnExcelOrCsvFile)
+                    .WithMessage("'File to import' is not a valid Excel or CSV file");
                 RuleFor(p => p.CarLine).NotEmpty().WithMessage("'Car Line' not specified");
                 RuleFor(p => p.ModelYear).NotEmpty().WithMessage("'Model Year' not specified");
                 RuleFor(p => p.Gateway).NotEmpty().WithMessage("'Gateway' not specified");
@@ -301,6 +301,10 @@ namespace FeatureDemandPlanning.Controllers
         private bool BeAnExcelFile(HttpPostedFileBase arg)
         {
             return arg.FileName.EndsWith(".xls") || arg.FileName.EndsWith(".xlsx");
+        }
+        private bool BeAnExcelOrCsvFile(HttpPostedFileBase arg)
+        {
+            return BeAnExcelFile(arg) || arg.FileName.EndsWith(".csv");
         }
         private bool NotBeEmpty(HttpPostedFileBase arg)
         {

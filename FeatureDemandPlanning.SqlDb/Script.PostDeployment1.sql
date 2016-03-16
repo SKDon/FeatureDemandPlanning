@@ -53,6 +53,15 @@ USING (VALUES
 	, (2, N'Feature', N'The import feature code does not exist within FDP', 4)
 	, (3, N'Derivative', N'The import data contains information for a vehicle derivative not found within FDP', 2)
 	, (4, N'Trim', N'The import data contains information for a trim level not found within FDP', 3)
+	, (201, N'No Feature Code', N'No feature code is defined for OXO feature', 1)
+	, (202, N'No Historic Feature', N'No historic feature maps to OXO feature', 2)
+	, (203, N'No OXO Feature', N'No OXO feature maps to historic feature', 3)
+	, (301, N'No BMC', N'No brochure model code is defined for OXO derivative', 1)
+	, (302, N'No Historic Derivative', N'No historic derivative maps to OXO derivative', 2)
+	, (303, N'No OXO Derivative', N'No OXO derivative maps to historic derivative', 3)
+	, (401, N'No DPCK', N'No DPCK code is defined for OXO trim level', 1)
+	, (402, N'No Historic Trim', N'No historic trim level maps to OXO trim level', 2)
+	, (403, N'No OXO Trim', N'No OXO trim level maps to historic trim level', 3)
 )
 AS SOURCE (FdpImportErrorTypeId, [Type], [Description], WorkflowOrder) ON TARGET.FdpImportErrorTypeId = SOURCE.FdpImportErrorTypeId
 WHEN MATCHED THEN

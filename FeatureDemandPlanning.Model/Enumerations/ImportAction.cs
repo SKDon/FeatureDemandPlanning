@@ -15,6 +15,7 @@
         Exception = 10,
         ImportQueue = 11,
         ImportQueueItem = 12,
+        MapOxoDerivative = 13,
 
         Upload = 100,
         Summary,

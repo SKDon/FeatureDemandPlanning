@@ -31,6 +31,8 @@ namespace FeatureDemandPlanning.Model
         public string Document { get; set; }
         public int? TakeRateId { get; set; }
 
+        public int? CurrentLineNumber { get; set; }
+
         public string Error { get; set; }
 
         public string VehicleDescription

@@ -27,7 +27,7 @@ namespace FeatureDemandPlanning.Model
             }
         }
 
-        public string Identifier
+        public virtual string Identifier
         {
             get
             {
@@ -78,6 +78,14 @@ namespace FeatureDemandPlanning.Model
                 Engine.Name,
                 Transmission.Name
             };
+        }
+    }
+
+    public class ImportDerivative : Derivative
+    {
+        public override string Identifier
+        {
+            get { return DerivativeCode; }
         }
     }
 

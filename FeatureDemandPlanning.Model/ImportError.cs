@@ -14,8 +14,11 @@ namespace FeatureDemandPlanning.Model
 
         public string LineNumber { get; set; }
         public int FdpImportErrorTypeId { get; set; }
+        public int? SubTypeId { get; set; }
         public bool IsActive { get; set; }
         public bool IsExcluded { get; set; }
+
+        public string AdditionalData { get; set; }
 
         public enums.ImportExceptionType ErrorType
         {
@@ -23,6 +26,16 @@ namespace FeatureDemandPlanning.Model
             {
                 return (enums.ImportExceptionType)FdpImportErrorTypeId;
             }
+        }
+        public enums.ImportExceptionType SubType
+        {
+            get
+            {
+                if (!SubTypeId.HasValue)
+                    return enums.ImportExceptionType.NotSet;
+
+                return (enums.ImportExceptionType) SubTypeId;
+            }   
         }
         public string ErrorTypeDescription { get; set; }
         public DateTime ErrorOn { get; set; }
