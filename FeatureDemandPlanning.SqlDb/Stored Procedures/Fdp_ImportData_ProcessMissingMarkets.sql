@@ -46,10 +46,14 @@ AS
 		, 'Missing market ''' + I.ImportCountry + '''' AS ErrorMessage
 		, I.ImportCountry AS AdditionalData
 	FROM
-	Fdp_Import_VW				AS I
-	LEFT JOIN Fdp_ImportError	AS CUR	ON	I.FdpImportQueueId	= CUR.FdpImportQueueId
-										AND I.ImportCountry		= CUR.AdditionalData
-										AND CUR.IsExcluded		= 0
+	Fdp_Import_VW						AS I
+	LEFT JOIN Fdp_ImportError			AS CUR	ON	I.FdpImportQueueId		= CUR.FdpImportQueueId
+												AND I.ImportCountry			= CUR.AdditionalData
+												AND CUR.IsExcluded			= 0
+	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	I.DocumentId			= EX.DocumentId
+												AND EX.FdpImportErrorTypeId = 1
+												AND EX.IsActive				= 1
+												AND I.ImportCountry			= EX.AdditionalData
 	WHERE
 	I.FdpImportId = @FdpImportId
 	AND
@@ -58,6 +62,8 @@ AS
 	I.IsMarketMissing = 1
 	AND
 	CUR.FdpImportErrorId IS NULL
+	AND
+	EX.FdpImportErrorExclusionId IS NULL
 	GROUP BY
 	I.ImportCountry
 	

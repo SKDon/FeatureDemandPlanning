@@ -112,6 +112,21 @@ AS
 	AND
 	@FlagOrphanedImportData = 1
 
+	UNION
+	
+	SELECT 
+		  @FdpImportQueueId AS FdpImportQueueId
+		, 0 AS LineNumber
+		, GETDATE() AS ErrorOn
+		, 2 AS FdpImportErrorTypeId -- Feature
+		, 'No feature code for ''' + ISNULL(F.BrandDescription, F.[Description]) + '''' AS ErrorMessage
+		, ISNULL(F.BrandDescription, F.[Description]) AS AdditionalData
+	FROM
+	Fdp_FeatureMapping_VW AS F
+	WHERE
+	F.DocumentId = @DocumentId
+	AND
+	F.MappedFeatureCode IS NULL
 	)
 	AS I
 	ORDER BY I.ErrorMessage

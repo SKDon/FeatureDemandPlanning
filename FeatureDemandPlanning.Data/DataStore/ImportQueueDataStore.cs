@@ -673,7 +673,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public IEnumerable<ImportDerivative> FdpImportDerivativesGetMany(ImportQueueFilter filter)
         {
-            var retVal = Enumerable.Empty<Derivative>();
+            var retVal = Enumerable.Empty<ImportDerivative>();
             using (var conn = DbHelper.GetDBConnection())
             {
                 try
@@ -681,7 +681,7 @@ namespace FeatureDemandPlanning.DataStore
                     var para = new DynamicParameters();
                     para.Add("@FdpImportQueueId", filter.ImportQueueId, DbType.Int32);
                    
-                    retVal = conn.Query<Derivative>("Fdp_ImportDerivatives_GetMany", para, commandType: CommandType.StoredProcedure);
+                    retVal = conn.Query<ImportDerivative>("Fdp_ImportDerivatives_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {

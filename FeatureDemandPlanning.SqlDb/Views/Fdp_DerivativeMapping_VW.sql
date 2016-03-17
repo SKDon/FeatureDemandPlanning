@@ -2,6 +2,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 
 	SELECT 
@@ -29,8 +30,8 @@ CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 	JOIN Fdp_Derivative_VW			AS D	ON	P.Id				= D.ProgrammeId
 	WHERE
 	P.Active = 1
-	AND
-	ISNULL(D.BMC, '') <> ''
+	--AND
+	--ISNULL(D.BMC, '') <> ''
 
 	UNION
 	
@@ -66,7 +67,7 @@ CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 											AND D.EngineId			= M.EngineId
 											AND D.TransmissionId	= M.TransmissionId
 											AND M.IsActive			= 1
-											AND ISNULL(M.DerivativeCode, '')	<> ''
+											--AND ISNULL(M.DerivativeCode, '')	<> ''
 	WHERE
 	P.Active = 1
 	

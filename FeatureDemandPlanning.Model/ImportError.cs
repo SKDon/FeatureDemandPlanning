@@ -38,6 +38,7 @@ namespace FeatureDemandPlanning.Model
             }   
         }
         public string ErrorTypeDescription { get; set; }
+        public string SubTypeDescription { get; set; }
         public DateTime ErrorOn { get; set; }
         public string ErrorMessage { get; set; }
 
@@ -59,5 +60,7 @@ namespace FeatureDemandPlanning.Model
                 ErrorOn.ToString("dd/MM/yyyy HH:mm")
             };
         }
+
+        
     }
 }

@@ -6,22 +6,41 @@
     <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
 </form>
 <div class="well col-xs-12">
-    <div class="col-xs-4 text-right">
-        <strong>Exception:</strong>
+    <div class="row">
+        <div class="col-xs-4 text-right">
+            <strong>Type:</strong>
+        </div>
+        <div class="col-xs-8">
+            @Model.IgnoredException.TypeDescription
+        </div>
     </div>
-    <div class="col-xs-8">
-        @Model.IgnoredException.ErrorMessage
+    <div class="row">
+        <div class="col-xs-4 text-right">
+            <strong>Sub-Type:</strong>
+        </div>
+        <div class="col-xs-8">
+            @Model.IgnoredException.SubTypeDescription
+        </div>
     </div>
-    <div class="col-xs-4 text-right">
-        <strong>Programme:</strong>
+    <div class="vertical-spacer">
+
     </div>
-    <div class="col-xs-8">
-        @Model.IgnoredException.Programme.GetDisplayString()
+    <div class="row">
+        <div class="col-xs-4 text-right">
+            <strong>Document:</strong>
+        </div>
+        <div class="col-xs-8">
+            @Model.IgnoredException.Document.Name
+        </div>
     </div>
-    <div class="col-xs-4 text-right" style="margin-bottom:15px">
-        <strong>Gateway:</strong>
+    <div class="vertical-spacer"></div>
+    <div class="row">
+        <div class="col-xs-4 text-right">
+            <strong>Exception:</strong>
+        </div>
+        <div class="col-xs-8">
+            @Model.IgnoredException.ErrorMessage
+        </div>
     </div>
-    <div class="col-xs-8" style="margin-bottom:15px">
-        @Model.IgnoredException.Gateway
-    </div>
+
  </div>

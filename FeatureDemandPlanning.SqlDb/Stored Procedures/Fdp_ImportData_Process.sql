@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_ImportData_Process] 
 	  @FdpImportId	INT
-	, @LineNumber	INT = NULL
+	, @LineNumber	INT = NULL -- No longer used
 AS
 	SET NOCOUNT ON;
 	
@@ -43,38 +43,13 @@ AS
 	AND
 	FdpImportStatusId IN (1, 4);
 	
-	-- Update all prior queued imports for the same programme and gateway setting the status to cancelled
-
-	SET @Message = 'Cancelling old imports...'
-	RAISERROR(@Message, 0, 1) WITH NOWAIT
+	-- Remove redundant data if for example we are re-importing data for a previous import that errored
 	
-	UPDATE Q 
-		SET FdpImportStatusId = 5 -- Cancelled
-	FROM Fdp_ImportQueue	AS Q
-	JOIN Fdp_Import			AS I ON Q.FdpImportQueueId = I.FdpImportQueueId
-	WHERE
-	I.DocumentId = @OxoDocId
-	AND
-	I.FdpImportId <> @FdpImportId
-	AND
-	Q.FdpImportStatusId IN (1, 4); -- Queued or error
-	
-	-- Remove all data from cancelled import queue items
-	
-	DELETE FROM Fdp_ImportData
-	WHERE
-	FdpImportId IN 
-	(
-		SELECT FdpImportId
-		FROM Fdp_ImportQueue	AS Q
-		JOIN Fdp_Import			AS I ON Q.FdpImportQueueId = I.FdpImportQueueId 
-		WHERE
-		Q.FdpImportStatusId = 5 -- Cancelled
-	);
+	EXEC Fdp_ImportData_RemoveRedundantData @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
 	
 	-- Create exceptions of varying types based on the data that cannot be processed
 	
-	EXEC Fdp_ImportData_ProcessMissingMarkets @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId
+	EXEC Fdp_ImportData_ProcessMissingMarkets @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
 	
 	EXEC Fdp_ImportData_ProcessMissingDerivatives @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
 	

@@ -86,23 +86,52 @@
     @if (Model.CurrentAction == enums.ImportAction.IgnoreException)
     {
         <div class="row">
-            <div class="col-xs-4 text-right"><strong>Error Type:</strong></div>
+            <div class="col-xs-4 text-right"><strong>Error Type:</strong>
+            </div>
             <div class="col-xs-8">
                 @Model.CurrentException.ErrorTypeDescription
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-4 text-right"><strong>Message:</strong></div>
+            <div class="col-xs-4 text-right"><strong>Sub Type:</strong>
+            </div>
+            <div class="col-xs-8">
+                @Model.CurrentException.SubTypeDescription
+            </div>
+        </div>
+    <div class="vertical-spacer">
+
+    </div>
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Message:</strong>
+            </div>
             <div id="@(Model.IdentifierPrefix)_ErrorMessage" class=" col-xs-8">
                 @Model.CurrentException.ErrorMessage
             </div>
         </div>
+    <div class="vertical-spacer">
+        
+    </div>
     }
 
     <div class="row">
-        <div class="col-xs-4 text-right"><strong>Programme:</strong></div>
+        <div class="col-xs-4 text-right"><strong>Programme:</strong>
+        </div>
         <div class="col-xs-8">
             @Model.Programme.GetDisplayString()
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4 text-right"><strong>Gateway:</strong>
+        </div>
+        <div class="col-xs-8">
+            @Model.Gateway
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4 text-right"><strong>Document:</strong></div>
+        <div class="col-xs-8">
+            @Model.Document.Name
         </div>
     </div>
 </div>

@@ -74,11 +74,18 @@ AS
 		  E.FdpImportErrorExclusionId
 		, E.CreatedOn
 		, E.CreatedBy
+		, E.DocumentId
 		, E.ProgrammeId
 		, E.Gateway
 		, E.ErrorMessage
 		, E.IsActive
+		, E.FdpImportErrorTypeId
+		, E.SubTypeId
+		, T1.[Type] AS TypeDescription
+		, ISNULL(T2.[Type], '') AS SubTypeDescription
 
 	FROM @PageRecords				AS	P
 	JOIN Fdp_ImportErrorExclusion	AS	E	ON	P.FdpImportErrorExclusionId = E.FdpImportErrorExclusionId
-											AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex;
+											AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex
+	JOIN Fdp_ImportErrorType		AS	T1	ON	E.FdpImportErrorTypeId = T1.FdpImportErrorTypeId
+	LEFT JOIN Fdp_ImportErrorType	AS	T2	ON	E.SubTypeId = T2.FdpImportErrorTypeId

@@ -8,10 +8,14 @@
     [IsExcluded]           BIT            CONSTRAINT [DF__Fdp_Impor__IsExc__1B13F4C6] DEFAULT ((0)) NOT NULL,
     [UpdatedOn]            DATETIME       NULL,
     [UpdatedBy]            NVARCHAR (16)  NULL,
-    [AdditionalData]       NVARCHAR (100) NULL,
-    CONSTRAINT [PK_Fdp_ImportError] PRIMARY KEY CLUSTERED ([FdpImportErrorId] ASC),
-    CONSTRAINT [FK_Fdp_ImportError_Fdp_ImportErrorType] FOREIGN KEY ([FdpImportErrorTypeId]) REFERENCES [dbo].[Fdp_ImportErrorType] ([FdpImportErrorTypeId])
+    [AdditionalData]       NVARCHAR (MAX) NULL,
+    [SubTypeId]            INT            NULL,
+    CONSTRAINT [PK_Fdp_ImportError] PRIMARY KEY CLUSTERED ([FdpImportErrorId] ASC) WITH (FILLFACTOR = 90),
+    CONSTRAINT [FK_Fdp_ImportError_Fdp_ImportErrorType] FOREIGN KEY ([FdpImportErrorTypeId]) REFERENCES [dbo].[Fdp_ImportErrorType] ([FdpImportErrorTypeId]),
+    CONSTRAINT [FK_Fdp_ImportError_Fdp_ImportErrorType1] FOREIGN KEY ([SubTypeId]) REFERENCES [dbo].[Fdp_ImportErrorType] ([FdpImportErrorTypeId])
 );
+
+
 
 
 
@@ -24,7 +28,9 @@
 
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_ImportError_FdpImportErrorTypeId]
-    ON [dbo].[Fdp_ImportError]([FdpImportErrorTypeId] ASC);
+    ON [dbo].[Fdp_ImportError]([FdpImportErrorTypeId] ASC, [SubTypeId] ASC) WITH (FILLFACTOR = 90);
+
+
 
 
 GO

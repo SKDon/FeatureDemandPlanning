@@ -8,55 +8,82 @@ BEGIN
 	BEGIN TRY
 		BEGIN TRANSACTION;
 		
-		DECLARE @FdpImportQueueId	INT;
-		DECLARE @ProgrammeId	INT;
-		DECLARE @Gateway		NVARCHAR(100);
-		DECLARE @Message		NVARCHAR(MAX);
+		-- Determine the worktray to which this error belongs so we can reprocess it
 		
-		SELECT 
-			  @FdpImportQueueId	= I.FdpImportQueueId
-			, @Message			= E.ErrorMessage
-			, @ProgrammeId		= I.ProgrammeId
-			, @Gateway			= I.Gateway
-			
-		FROM Fdp_ImportError	AS E
-		JOIN Fdp_Import			AS I ON E.FdpImportQueueId = I.FdpImportQueueId
+		DECLARE @FdpImportErrorTypeId	AS INT;
+		DECLARE @FdpImportQueueId		AS INT;
+		DECLARE @FdpImportId			AS INT;
+		
+		SELECT TOP 1 
+			  @FdpImportErrorTypeId = FdpImportErrorTypeId
+			, @FdpImportId			= FdpImportId
+			, @FdpImportQueueId		= FdpImportQueueId 
+		FROM 
+		Fdp_ImportError_VW 
 		WHERE 
-		E.FdpImportErrorId = @ExceptionId;
-		
-		-- Update all errors with the same message for that import
-		
-		UPDATE E SET IsExcluded = @IsExcluded
-		FROM Fdp_ImportError AS E
-		WHERE
-		E.FdpImportQueueId = @FdpImportQueueId
-		AND
-		E.ErrorMessage = @Message;
+		FdpImportErrorId = @ExceptionId;
 	
 		-- Add an exclusion rule
 		
-		IF NOT EXISTS(  SELECT TOP 1 1 FROM Fdp_ImportErrorExclusion
-						WHERE 
-						ProgrammeId = @ProgrammeId
-						AND
-						ErrorMessage = @Message
-						AND
-						IsActive = 1)
-			
+		IF NOT EXISTS(  
+			SELECT TOP 1 1 
+			FROM 
+			Fdp_ImportErrorExclusion		AS	EX 
+			LEFT JOIN Fdp_ImportError_VW	AS	E WITH (NOLOCK)
+											ON  EX.DocumentId			= E.DocumentId
+											AND EX.AdditionalData		= E.AdditionalData
+											AND EX.FdpImportErrorTypeId	= E.FdpImportErrorTypeId
+											AND (EX.SubTypeId IS NULL OR EX.SubTypeId = E.SubTypeId)
+			WHERE 
+			E.FdpImportErrorId = @ExceptionId
+			AND
+			EX.IsActive = 1
+		)
+		BEGIN
 			INSERT INTO Fdp_ImportErrorExclusion
 			(
-				  ProgrammeId
+				  DocumentId
+				, ProgrammeId
 				, Gateway
+				, FdpImportErrorTypeId
+				, SubTypeId
 				, ErrorMessage
+				, AdditionalData
 				, CreatedBy
 			)
-			VALUES
-			(
-				  @ProgrammeId
-				, @Gateway
-				, @Message
+			SELECT 
+				  E.DocumentId
+				, E.ProgrammeId
+				, E.Gateway
+				, E.FdpImportErrorTypeId
+				, E.SubTypeId
+				, E.ErrorMessage
+				, E.AdditionalData
 				, @CDSId
-			) 
+			FROM
+			Fdp_ImportError_VW AS E WITH (NOLOCK)
+			WHERE
+			FdpImportErrorId = @ExceptionId;
+			
+			-- Reprocess any open worktray items for that document, we can further refine it by looking at the error type
+		
+			IF @FdpImportErrorTypeId = 1
+			BEGIN
+				EXEC Fdp_ImportData_ProcessMissingMarkets @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
+			END
+			ELSE IF @FdpImportErrorTypeId = 2
+			BEGIN
+				EXEC Fdp_ImportData_ProcessMissingFeatures @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
+			END
+			ELSE IF @FdpImportErrorTypeId = 3
+			BEGIN
+				EXEC Fdp_ImportData_ProcessMissingDerivatives @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
+			END
+			ELSE IF @FdpImportErrorTypeId = 4
+			BEGIN
+				EXEC Fdp_ImportData_ProcessMissingTrim @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
+			END
+		END;
 	  
 		COMMIT TRANSACTION;
 		

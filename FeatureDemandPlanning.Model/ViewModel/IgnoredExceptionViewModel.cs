@@ -16,6 +16,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IgnoredExceptionAction CurrentAction { get; set; }
         public FdpImportErrorExclusion IgnoredException { get; set; }
         public PagedResults<FdpImportErrorExclusion> IgnoredExceptions { get; set; }
+        public IEnumerable<OXODoc> Documents { get; set; }
         public IEnumerable<Programme> Programmes { get; set; }
         public IEnumerable<ModelBody> Bodies { get; set; }
         public IEnumerable<ModelEngine> Engines { get; set; }
@@ -95,6 +96,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
             if (!(ignoredException is EmptyFdpImportErrorExclusion))
             {
                 ignoredException.Programme = model.Programmes.FirstOrDefault(p => p.Id == ignoredException.ProgrammeId.GetValueOrDefault());
+                ignoredException.Document =
+                    model.Documents.FirstOrDefault(d => d.Id == ignoredException.DocumentId.GetValueOrDefault());
             }
             model.IgnoredException = ignoredException;
            
@@ -130,6 +133,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
             foreach (var ignoredException in model.IgnoredExceptions.CurrentPage)
             {
                 ignoredException.Programme = model.Programmes.FirstOrDefault(p => p.Id == ignoredException.ProgrammeId.GetValueOrDefault());
+                ignoredException.Document =
+                    model.Documents.FirstOrDefault(d => d.Id == ignoredException.DocumentId.GetValueOrDefault());
             }
 
             return model;
@@ -144,6 +149,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.Bodies = context.Vehicle.ListBodies(programmeFilter);
             model.Engines = context.Vehicle.ListEngines(programmeFilter);
             model.Transmissions = context.Vehicle.ListTransmissions(programmeFilter);
+            model.Documents = context.Vehicle.ListPublishedDocuments(programmeFilter);
             model.Gateways = model.Programmes.ListGateways();
             model.CarLines = model.Programmes.ListCarLines();
             model.ModelYears = model.Programmes.ListModelYears();
@@ -152,6 +158,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             IgnoredException = new EmptyFdpImportErrorExclusion();
             IdentifierPrefix = "Page";
+            Documents = Enumerable.Empty<OXODoc>();
             Programmes = Enumerable.Empty<Programme>();
             Bodies = Enumerable.Empty<ModelBody>();
             Engines = Enumerable.Empty<ModelEngine>();

@@ -278,9 +278,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 });
 
             derivativeFilter.Bmc = model.CurrentException.ImportDerivativeCode;
-            var mapping = await context.Vehicle.GetMappedBmc(derivativeFilter);
-            if (mapping == null) return model;
-
+           
             var trimFilter = new TrimMappingFilter
             {
                 CarLine = model.Programme.VehicleName,

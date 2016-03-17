@@ -4,6 +4,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_ImportQueue_VW] AS
 
 	SELECT 
@@ -19,10 +20,13 @@ CREATE VIEW [dbo].[Fdp_ImportQueue_VW] AS
 		, Q.UpdatedOn
 		, E2.Error
 		, E1.ErrorOn
+		, I.FdpImportId
+		, I.DocumentId
 		
 	FROM Fdp_ImportQueue			AS Q
 	JOIN Fdp_ImportType				AS T	ON	Q.FdpImportTypeId	= T.FdpImportTypeId
 	JOIN Fdp_ImportStatus			AS S	ON	Q.FdpImportStatusId	= S.FdpImportStatusId
+	JOIN Fdp_Import					AS I	ON	Q.FdpImportQueueId	= I.FdpImportId
 	LEFT JOIN 
 	(
 		SELECT 

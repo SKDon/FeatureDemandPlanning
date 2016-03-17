@@ -5,12 +5,12 @@
 AS
 	SET NOCOUNT ON;
 
-	DECLARE @Message AS NVARCHAR(400);
-	DECLARE @ProgrammeId AS INT;
-	DECLARE @Gateway AS NVARCHAR(100);
+	DECLARE @ErrorCount		AS INT = 0
+	DECLARE @Message		AS NVARCHAR(400);
+	DECLARE @DocumentId		AS INT;
 	DECLARE @FlagOrphanedImportData AS BIT = 0;
 
-	SELECT @ProgrammeId = ProgrammeId, @Gateway = Gateway
+	SELECT @DocumentId = DocumentId
 	FROM Fdp_Import
 	WHERE
 	FdpImportQueueId = @FdpImportQueueId
@@ -30,6 +30,8 @@ AS
 
 	SET @Message = 'Adding missing derivatives...';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+	
+	-- Non-archived
 		
 	INSERT INTO Fdp_ImportError
 	(
@@ -39,23 +41,114 @@ AS
 		, FdpImportErrorTypeId
 		, ErrorMessage
 		, AdditionalData
+		, SubTypeId
 	)
 	SELECT
-		  I.FdpImportQueueId
-		, I.LineNumber
-		, I.ErrorOn
-		, I.FdpImportErrorTypeId
-		, I.ErrorMessage
-		, I.AdditionalData
-	FROM
+		  @FdpImportQueueId AS FdpImportQueueId
+		, 0 AS LineNumber
+		, GETDATE() AS ErrorOn
+		, 3 AS FdpImportErrorTypeId
+		, 'No brochure model code defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
+		, M.ExportRow1 + ' ' + M.ExportRow2 AS AdditionalData
+		, 301 AS SubTypeId
+
+	FROM 
+	OXO_Doc								AS D
+	JOIN OXO_Models_VW					AS M	ON	D.Programme_Id				= M.Programme_Id
+	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
+												AND M.ExportRow1 + ' ' + M.ExportRow2 
+																				= CUR.AdditionalData
+												AND CUR.FdpImportErrorTypeId	= 3
+												AND CUR.IsExcluded				= 0
+	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= @DocumentId
+												AND EX.FdpImportErrorTypeId		= 3
+												AND EX.SubTypeId				= 301
+												AND EX.IsActive					= 1
+												AND M.ExportRow1 + ' ' + M.ExportRow2 
+																				= EX.AdditionalData
+	WHERE
+	D.Id = @DocumentId
+	AND
+	ISNULL(D.Archived, 0) = 0
+	AND
+	ISNULL(M.BMC, '') = ''
+	AND
+	EX.FdpImportErrorExclusionId IS NULL
+	GROUP BY
+	M.ExportRow1, M.ExportRow2
+	ORDER BY 
+	ErrorMessage
+	
+	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
+	
+	-- Archived
+	
+	INSERT INTO Fdp_ImportError
 	(
+		  FdpImportQueueId
+		, LineNumber
+		, ErrorOn
+		, FdpImportErrorTypeId
+		, ErrorMessage
+		, AdditionalData
+		, SubTypeId
+	)
+	SELECT
+		  @FdpImportQueueId AS FdpImportQueueId
+		, 0 AS LineNumber
+		, GETDATE() AS ErrorOn
+		, 3 AS FdpImportErrorTypeId
+		, 'No brochure model code defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
+		, M.ExportRow1 + ' ' + M.ExportRow2 AS AdditionalData
+		, 301 AS SubTypeId
+
+	FROM 
+	OXO_Doc								AS D
+	JOIN OXO_Archived_Models_VW			AS M	ON	D.Id						= M.Doc_Id
+	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
+												AND M.ExportRow1 + ' ' + M.ExportRow2 
+																				= CUR.AdditionalData
+												AND CUR.FdpImportErrorTypeId	= 3
+												AND CUR.IsExcluded				= 0
+	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= @DocumentId
+												AND EX.FdpImportErrorTypeId		= 3
+												AND EX.SubTypeId				= 301
+												AND EX.IsActive					= 1
+												AND M.ExportRow1 + ' ' + M.ExportRow2 
+																				= EX.AdditionalData
+	WHERE
+	D.Id = @DocumentId
+	AND
+	D.Archived = 1
+	AND
+	ISNULL(M.BMC, '') = ''
+	AND
+	EX.FdpImportErrorExclusionId IS NULL
+	GROUP BY
+	M.ExportRow1, M.ExportRow2
+	ORDER BY 
+	ErrorMessage
+	
+	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
+	
+	INSERT INTO Fdp_ImportError
+	(
+		  FdpImportQueueId
+		, LineNumber
+		, ErrorOn
+		, FdpImportErrorTypeId
+		, ErrorMessage
+		, AdditionalData
+		, SubTypeId
+	)
 	SELECT
 		  @FdpImportQueueId AS FdpImportQueueId
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, 'No import data matching OXO derivative ''' + D.MappedDerivativeCode + ' - ' + REPLACE(D.Name, '#', '') + '''' AS ErrorMessage
+		, 'No historic data mapping to OXO derivative ''' + D.MappedDerivativeCode + ' - ' + REPLACE(D.Name, '#', '') + '''' AS ErrorMessage
 		, D.MappedDerivativeCode AS AdditionalData
+		, 302 AS SubTypeId
 	FROM Fdp_DerivativeMapping_VW AS D
 	LEFT JOIN 
 	(
@@ -73,30 +166,57 @@ AS
 											AND	D.MappedDerivativeCode	= CUR.AdditionalData
 											AND CUR.FdpImportErrorTypeId = 3
 											AND CUR.IsExcluded = 0
+	-- Don't add if there are any active missing BMC errors
+	LEFT JOIN Fdp_ImportError   AS CUR2 ON	CUR2.FdpImportQueueId = @FdpImportQueueId
+										AND	CUR2.FdpImportErrorTypeId = 3
+										AND CUR2.SubTypeId = 301
+										AND CUR2.IsExcluded = 0
+	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= @DocumentId
+												AND EX.FdpImportErrorTypeId		= 3
+												AND EX.SubTypeId				= 302
+												AND EX.IsActive					= 1
+												AND D.MappedDerivativeCode		= EX.AdditionalData
 	WHERE 
-	D.ProgrammeId = @ProgrammeId
-	AND 
-	D.Gateway = @Gateway
+	D.DocumentId = @DocumentId
 	AND
 	I1.ImportDerivativeCode IS NULL
 	AND
 	CUR.FdpImportErrorId IS NULL
+	AND
+	ISNULL(D.MappedDerivativeCode, '') <> ''
+	AND
+	CUR2.FdpImportErrorId IS NULL 
+	AND
+	EX.FdpImportErrorExclusionId IS NULL
+	ORDER BY 
+	ErrorMessage;
+	
+	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
 
-	UNION
-
+	INSERT INTO Fdp_ImportError
+	(
+		  FdpImportQueueId
+		, LineNumber
+		, ErrorOn
+		, FdpImportErrorTypeId
+		, ErrorMessage
+		, AdditionalData
+		, SubTypeId
+	)
 	SELECT 
 		  @FdpImportQueueId AS FdpImportQueueId
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, 'No OXO derivative matching import derivative ''' + I.ImportDerivativeCode + '''' AS ErrorMessage
+		, 'No OXO derivative matching historic derivative ''' + I.ImportDerivativeCode + '''' AS ErrorMessage
 		, I.ImportDerivativeCode AS AdditionalData
+		, 303 AS SubTypeId
 	FROM
 	(
 		SELECT DISTINCT I.ImportDerivativeCode FROM Fdp_Import_VW AS I
-		LEFT JOIN Fdp_DerivativeMapping_VW AS D ON I.ProgrammeId = D.ProgrammeId
-											AND I.Gateway	= D.Gateway
-											AND I.ImportDerivativeCode = D.ImportDerivativeCode
+		LEFT JOIN Fdp_DerivativeMapping_VW AS D ON I.DocumentId = D.DocumentId
+												AND I.ImportDerivativeCode	= D.ImportDerivativeCode
+												AND ISNULL(D.MappedDerivativeCode, '') <> ''
 		WHERE FdpImportId  = @FdpImportId AND FdpImportQueueId = @FdpImportQueueId
 		AND
 		D.MappedDerivativeCode IS NULL
@@ -106,37 +226,28 @@ AS
 											AND	I.ImportDerivativeCode	= CUR.AdditionalData
 											AND CUR.FdpImportErrorTypeId = 3
 											AND CUR.IsExcluded = 0
+	-- Don't add if there are any active missing BMC errors
+	LEFT JOIN Fdp_ImportError   AS CUR2 ON	CUR2.FdpImportQueueId = @FdpImportQueueId
+										AND	CUR2.FdpImportErrorTypeId = 3
+										AND CUR2.SubTypeId IN (301, 302)
+										AND CUR2.IsExcluded = 0
+	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= @DocumentId
+												AND EX.FdpImportErrorTypeId		= 3
+												AND EX.SubTypeId				= 303
+												AND EX.IsActive					= 1
+												AND I.ImportDerivativeCode		= EX.AdditionalData
 	WHERE
 	CUR.FdpImportErrorId IS NULL
 	AND
 	@FlagOrphanedImportData = 1
-
-	UNION
-
-	-- Where we have no brochure model code defined for a derivative
-
-	SELECT
-		  @FdpImportQueueId AS FdpImportQueueId
-		, 0 AS LineNumber
-		, GETDATE() AS ErrorOn
-		, 3 AS FdpImportErrorTypeId
-		, 'No brochure model code defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
-		, M.ExportRow1 + ' ' + M.ExportRow2 AS AdditionalData
-
-	FROM OXO_Models_VW AS M
-	LEFT JOIN Fdp_ImportError	AS CUR	ON	CUR.FdpImportQueueId = @FdpImportQueueId
-											AND M.ExportRow1 + ' ' + M.ExportRow2 = CUR.AdditionalData
-											AND CUR.FdpImportErrorTypeId = 3
-											AND CUR.IsExcluded = 0
-	WHERE
-	M.Programme_Id = @ProgrammeId
 	AND
-	ISNULL(M.BMC, '') = ''
-	GROUP BY
-	M.ExportRow1, M.ExportRow2
-	)
-	AS I
-	ORDER BY I.ErrorMessage
+	CUR2.FdpImportErrorId IS NULL
+	AND
+	EX.FdpImportErrorExclusionId IS NULL
+	ORDER BY
+	ErrorMessage;
+	
+	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
 
-	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing derivative errors added';
+	SET @Message = CAST(@ErrorCount AS NVARCHAR(10)) + ' derivative errors added';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;

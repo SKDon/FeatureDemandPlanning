@@ -5,13 +5,12 @@
 AS
 	SET NOCOUNT ON;
 
-	DECLARE @Message AS NVARCHAR(400);
-	DECLARE @ProgrammeId AS INT;
-	DECLARE @Gateway AS NVARCHAR(100);
-	DECLARE @DocumentId AS INT;
+	DECLARE @ErrorCount				AS INT = 0
+	DECLARE @Message				AS NVARCHAR(400);
+	DECLARE @DocumentId				AS INT;
 	DECLARE @FlagOrphanedImportData AS BIT = 0;
-
-	SELECT @ProgrammeId = ProgrammeId, @Gateway = Gateway
+	
+	SELECT @DocumentId = DocumentId
 	FROM Fdp_Import
 	WHERE
 	FdpImportQueueId = @FdpImportQueueId
@@ -31,7 +30,9 @@ AS
 
 	SET @Message = 'Adding missing trim...';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
-		
+	
+	-- Where we have no DPCK code defined for a trim level
+
 	INSERT INTO Fdp_ImportError
 	(
 		  FdpImportQueueId
@@ -40,23 +41,107 @@ AS
 		, FdpImportErrorTypeId
 		, ErrorMessage
 		, AdditionalData
+		, SubTypeId
 	)
 	SELECT
-		  I.FdpImportQueueId
-		, I.LineNumber
-		, I.ErrorOn
-		, I.FdpImportErrorTypeId
-		, I.ErrorMessage
-		, I.AdditionalData
-	FROM
+		  @FdpImportQueueId AS FdpImportQueueId
+		, 0 AS LineNumber
+		, GETDATE() AS ErrorOn
+		, 4 AS FdpImportErrorTypeId
+		, 'No DPCK code defined for ''' + T.Name + ' - ' + T.[Level] + '''' AS ErrorMessage
+		, T.Name + ' ' + T.[Level] AS AdditionalData
+		, 401
+
+	FROM 
+	OXO_Doc								AS D
+	JOIN OXO_Programme_Trim				AS T	ON	D.Programme_Id				= T.Programme_Id
+	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
+												AND T.Name + ' ' + T.[Level]	= CUR.AdditionalData
+												AND CUR.FdpImportErrorTypeId	= 4
+												AND CUR.IsExcluded				= 0
+	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= D.Id
+												AND EX.FdpImportErrorTypeId		= 4
+												AND EX.SubTypeId				= 401
+												AND EX.IsActive					= 1
+												AND T.Name + ' ' + T.[Level]	= EX.AdditionalData
+	WHERE
+	D.Id = @DocumentId
+	AND
+	ISNULL(D.Archived, 0) = 0
+	AND
+	ISNULL(T.DPCK, '') = ''
+	AND
+	EX.FdpImportErrorExclusionId IS NULL
+	GROUP BY
+	T.Name, T.[Level]
+	ORDER BY
+	ErrorMessage
+	
+	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
+
+	INSERT INTO Fdp_ImportError
 	(
+		  FdpImportQueueId
+		, LineNumber
+		, ErrorOn
+		, FdpImportErrorTypeId
+		, ErrorMessage
+		, AdditionalData
+		, SubTypeId
+	)
+	SELECT
+		  @FdpImportQueueId AS FdpImportQueueId
+		, 0 AS LineNumber
+		, GETDATE() AS ErrorOn
+		, 4 AS FdpImportErrorTypeId
+		, 'No DPCK code defined for ''' + T.Name + ' - ' + T.[Level] + '''' AS ErrorMessage
+		, T.Name + ' ' + T.[Level] AS AdditionalData
+		, 401
+	FROM 
+	OXO_Doc								AS D
+	JOIN OXO_Archived_Programme_Trim	AS T	ON	D.Id						= T.Doc_Id
+	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
+												AND T.Name + ' ' + T.[Level]	= CUR.AdditionalData
+												AND CUR.FdpImportErrorTypeId	= 4
+												AND CUR.SubTypeId				= 401
+												AND CUR.IsExcluded				= 0
+	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= D.Id
+												AND EX.FdpImportErrorTypeId		= 4
+												AND EX.SubTypeId				= 401
+												AND EX.IsActive					= 1
+												AND T.Name + ' ' + T.[Level]	= EX.AdditionalData
+	WHERE
+	T.Doc_Id = @DocumentId
+	AND
+	D.Archived = 1
+	AND
+	ISNULL(T.DPCK, '') = ''
+	AND
+	EX.FdpImportErrorExclusionId IS NULL
+	GROUP BY
+	T.Name, T.[Level]
+	ORDER BY ErrorMessage
+	
+	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
+
+	INSERT INTO Fdp_ImportError
+	(
+		  FdpImportQueueId
+		, LineNumber
+		, ErrorOn
+		, FdpImportErrorTypeId
+		, ErrorMessage
+		, AdditionalData
+		, SubTypeId
+	)
 	SELECT
 		  @FdpImportQueueId AS FdpImportQueueId
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId -- Missing Trim
-		, 'No import data matching OXO trim ''' + T.DPCK + '''' AS ErrorMessage
+		, 'No historic data mapping to OXO trim ''' + T.DPCK + '''' AS ErrorMessage
 		, T.DPCK AS AdditionalData
+		, 402
 	FROM Fdp_TrimMapping_VW AS T
 	LEFT JOIN 
 	(
@@ -70,10 +155,21 @@ AS
 		FdpImportQueueId, ImportTrim
 	)
 	AS I1 ON T.ImportTrim = I1.ImportTrim
-	LEFT JOIN Fdp_ImportError	AS CUR	ON	CUR.FdpImportQueueId = @FdpImportQueueId
-											AND	T.DPCK	= CUR.AdditionalData
-											AND CUR.FdpImportErrorTypeId = 4
-											AND CUR.IsExcluded = 0
+	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
+												AND	T.DPCK						= CUR.AdditionalData
+												AND CUR.FdpImportErrorTypeId	= 4
+												AND CUR.IsExcluded				= 0
+												AND CUR.SubTypeId				= 402
+	-- Don't add if there are any active missing DPCK errors
+	LEFT JOIN Fdp_ImportError			AS CUR2 ON	CUR2.FdpImportQueueId		= @FdpImportQueueId
+												AND	CUR2.FdpImportErrorTypeId	= 4
+												AND CUR2.SubTypeId				= 401
+												AND CUR2.IsExcluded				= 0
+	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= @DocumentId
+												AND EX.FdpImportErrorTypeId		= 4
+												AND EX.SubTypeId				= 402
+												AND EX.IsActive					= 1
+												AND T.DPCK						= EX.AdditionalData
 	WHERE 
 	T.DocumentId = @DocumentId
 	AND
@@ -81,17 +177,36 @@ AS
 	AND
 	CUR.FdpImportErrorId IS NULL
 	AND
+	CUR2.FdpImportErrorId IS NULL
+	AND
 	ISNULL(T.DPCK, '') <> ''
+	AND
+	EX.FdpImportErrorExclusionId IS NULL
+	GROUP BY
+	T.DPCK
+	ORDER BY
+	ErrorMessage
 
-	UNION
-
+	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
+	
+	INSERT INTO Fdp_ImportError
+	(
+		  FdpImportQueueId
+		, LineNumber
+		, ErrorOn
+		, FdpImportErrorTypeId
+		, ErrorMessage
+		, AdditionalData
+		, SubTypeId
+	)
 	SELECT 
 		  @FdpImportQueueId AS FdpImportQueueId
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId -- Missing Trim
-		, 'No OXO trim mapped for ''' + I.ImportTrim + '''' AS ErrorMessage
+		, 'No OXO trim matching historic trim ''' + I.ImportTrim + '''' AS ErrorMessage
 		, I.ImportTrim AS AdditionalData
+		, 403
 	FROM
 	(
 		SELECT DISTINCT I.ImportTrim FROM Fdp_Import_VW AS I
@@ -105,63 +220,35 @@ AS
 		T.DPCK IS NULL
 	)
 	AS I
-	LEFT JOIN Fdp_ImportError	AS CUR	ON	CUR.FdpImportQueueId = @FdpImportQueueId
-											AND	I.ImportTrim	= CUR.AdditionalData
-											AND CUR.FdpImportErrorTypeId = 4
-											AND CUR.IsExcluded = 0
+	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
+												AND	I.ImportTrim				= CUR.AdditionalData
+												AND CUR.FdpImportErrorTypeId	= 4
+												AND CUR.IsExcluded				= 0
+												AND CUR.SubTypeId				= 403
+	-- Don't add if there are any active missing DPCK or OXO errors
+	LEFT JOIN Fdp_ImportError			AS CUR2 ON	CUR2.FdpImportQueueId		= @FdpImportQueueId
+												AND	CUR2.FdpImportErrorTypeId	= 4
+												AND CUR2.SubTypeId				IN (401, 402)
+												AND CUR2.IsExcluded				= 0
+	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= @DocumentId
+												AND EX.FdpImportErrorTypeId		= 4
+												AND EX.SubTypeId				= 403
+												AND EX.IsActive					= 1
+												AND I.ImportTrim				= EX.AdditionalData
 	WHERE
 	CUR.FdpImportErrorId IS NULL
 	AND
+	CUR2.FdpImportErrorId IS NULL
+	AND
 	@FlagOrphanedImportData = 1
-
-	UNION
-
-	-- Where we have no DPCK code defined for a trim level
-
-	SELECT
-		  @FdpImportQueueId AS FdpImportQueueId
-		, 0 AS LineNumber
-		, GETDATE() AS ErrorOn
-		, 4 AS FdpImportErrorTypeId
-		, 'No DPCK code defined for ''' + T.Name + ' - ' + T.[Level] + '''' AS ErrorMessage
-		, T.Name + ' ' + T.[Level] AS AdditionalData
-
-	FROM OXO_Programme_Trim AS T
-	LEFT JOIN Fdp_ImportError	AS CUR	ON	CUR.FdpImportQueueId = @FdpImportQueueId
-											AND T.Name + ' ' + T.[Level] = CUR.AdditionalData
-											AND CUR.FdpImportErrorTypeId = 4
-											AND CUR.IsExcluded = 0
-	WHERE
-	T.Programme_Id = @ProgrammeId
 	AND
-	ISNULL(T.DPCK, '') = ''
+	EX.FdpImportErrorExclusionId IS NULL
 	GROUP BY
-	T.Name, T.[Level]
+	I.ImportTrim
+	ORDER BY
+	ErrorMessage
 
-	UNION
-
-	SELECT
-		  @FdpImportQueueId AS FdpImportQueueId
-		, 0 AS LineNumber
-		, GETDATE() AS ErrorOn
-		, 4 AS FdpImportErrorTypeId
-		, 'No DPCK code defined for ''' + T.Name + ' - ' + T.[Level] + '''' AS ErrorMessage
-		, T.Name + ' ' + T.[Level] AS AdditionalData
-
-	FROM OXO_Archived_Programme_Trim AS T
-	LEFT JOIN Fdp_ImportError	AS CUR	ON	CUR.FdpImportQueueId = @FdpImportQueueId
-											AND T.Name + ' ' + T.[Level] = CUR.AdditionalData
-											AND CUR.FdpImportErrorTypeId = 4
-											AND CUR.IsExcluded = 0
-	WHERE
-	T.Doc_Id = @DocumentId
-	AND
-	ISNULL(T.DPCK, '') = ''
-	GROUP BY
-	T.Name, T.[Level]
-	)
-	AS I
-	ORDER BY I.ErrorMessage
+	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
 	
-	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing trim errors added';
+	SET @Message = CAST(@ErrorCount AS NVARCHAR(10)) + ' trim errors added';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;

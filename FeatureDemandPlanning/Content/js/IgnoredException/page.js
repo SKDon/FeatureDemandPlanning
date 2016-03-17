@@ -150,17 +150,25 @@ page.IgnoredExceptionPage = function (models) {
                     "bSortable": true
                 }
                 , {
-                    "sTitle": "Programme",
-                    "sName": "PROGRAMME",
-                    "bSearchable": true,
-                    "bSortable": true
-                }
-                , {
-                    "sTitle": "Gateway",
-                    "sName": "GATEWAY",
+                    "sTitle": "Type",
+                    "sName": "TYPE",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center"
+                }
+                , {
+                    "sTitle": "Sub Type",
+                    "sName": "SUB_TYPE",
+                    "bSearchable": true,
+                    "bSortable": true,
+                    "sClass": "text-center"
+                }
+                
+                , {
+                    "sTitle": "Document",
+                    "sName": "Document",
+                    "bSearchable": true,
+                    "bSortable": true
                 }
                 , {
                     "sTitle": "Error Message",
