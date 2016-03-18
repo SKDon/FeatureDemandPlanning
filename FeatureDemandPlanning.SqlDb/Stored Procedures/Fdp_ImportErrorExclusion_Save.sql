@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_ImportErrorExclusion_Save]
 	  @ExceptionId	INT
 	, @IsExcluded	BIT = 1
+	, @Reprocess	BIT = 1
 	, @CDSId		NVARCHAR(16)
 AS
 BEGIN
@@ -11,13 +12,11 @@ BEGIN
 		-- Determine the worktray to which this error belongs so we can reprocess it
 		
 		DECLARE @FdpImportErrorTypeId	AS INT;
-		DECLARE @FdpImportQueueId		AS INT;
 		DECLARE @FdpImportId			AS INT;
 		
 		SELECT TOP 1 
 			  @FdpImportErrorTypeId = FdpImportErrorTypeId
 			, @FdpImportId			= FdpImportId
-			, @FdpImportQueueId		= FdpImportQueueId 
 		FROM 
 		Fdp_ImportError_VW 
 		WHERE 
@@ -66,23 +65,11 @@ BEGIN
 			FdpImportErrorId = @ExceptionId;
 			
 			-- Reprocess any open worktray items for that document, we can further refine it by looking at the error type
-		
-			IF @FdpImportErrorTypeId = 1
+			IF @Reprocess = 1
 			BEGIN
-				EXEC Fdp_ImportData_ProcessMissingMarkets @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
+				EXEC Fdp_ImportData_Process @FdpImportId = @FdpImportId;
 			END
-			ELSE IF @FdpImportErrorTypeId = 2
-			BEGIN
-				EXEC Fdp_ImportData_ProcessMissingFeatures @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
-			END
-			ELSE IF @FdpImportErrorTypeId = 3
-			BEGIN
-				EXEC Fdp_ImportData_ProcessMissingDerivatives @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
-			END
-			ELSE IF @FdpImportErrorTypeId = 4
-			BEGIN
-				EXEC Fdp_ImportData_ProcessMissingTrim @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
-			END
+	
 		END;
 	  
 		COMMIT TRANSACTION;

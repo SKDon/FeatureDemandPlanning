@@ -398,7 +398,22 @@ textarea {
     background-image: linear-gradient(to left, #061639, #152A55 66%, #4E638E);
 }
 
+.table-bordered.dataTable > tfoot {
+    color: #FFF;
+    background-color: #152a55;
+    background-image: linear-gradient(to left, #061639, #152A55 66%, #4E638E);
+}
+
 .table-bordered.dataTable > thead > tr > th {
+    border-right: 1px solid #7788aa;
+    border-top-color: #7788aa;
+    border-left: none;
+    border-bottom: none;
+    /*padding-right: 8px;*/
+    color: #fff0aa;
+}
+
+.table-bordered.dataTable > tfoot > tr > th {
     border-right: 1px solid #7788aa;
     border-top-color: #7788aa;
     border-left: none;
@@ -1588,4 +1603,9 @@ td.edited-market-review {
 .bmc-editable {
     width: 10%;
     height: 100%;
+}
+
+td.checkbox-column {
+    width: 50px !important;
+    text-align: center;
 }

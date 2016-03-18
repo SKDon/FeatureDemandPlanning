@@ -29,6 +29,8 @@ model.Trim = function (params) {
             case 7:
                 actionModel = new FeatureDemandPlanning.Import.MapTrimAction(me.getParameters());
                 break;
+            case 15:
+                actionModel = new FeatureDemandPlanning.Import.MapOxoTrimAction(me.getParameters());
             default:
                 break;
         }
@@ -44,8 +46,10 @@ model.Trim = function (params) {
                 title = "Add New Trim Level";
                 break;
             case 7:
-                title = "Map Trim Level to OXO";
+                title = "Map Historic Trim Level to OXO DPCK";
                 break;
+            case 15:
+                title = "Map OXO DPCK to Historic Trim Level";
             default:
                 break;
         }

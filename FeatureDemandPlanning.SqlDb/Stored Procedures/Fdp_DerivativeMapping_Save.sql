@@ -26,6 +26,7 @@ BEGIN
 			INSERT INTO Fdp_DerivativeMapping
 			(
 				  ImportDerivativeCode
+				, DocumentId
 				, ProgrammeId
 				, Gateway
 				, DerivativeCode
@@ -36,6 +37,7 @@ BEGIN
 			)
 			SELECT
 				  @ImportDerivativeCode
+				, D.Id
 				, D.Programme_Id
 				, D.Gateway
 				, @DerivativeCode

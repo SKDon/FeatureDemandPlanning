@@ -43,10 +43,6 @@ AS
 	AND
 	FdpImportStatusId IN (1, 4);
 	
-	-- Remove redundant data if for example we are re-importing data for a previous import that errored
-	
-	EXEC Fdp_ImportData_RemoveRedundantData @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
-	
 	-- Create exceptions of varying types based on the data that cannot be processed
 	
 	EXEC Fdp_ImportData_ProcessMissingMarkets @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
@@ -71,6 +67,10 @@ AS
 		EXEC Fdp_ImportQueue_UpdateStatus @ImportQueueId = @FdpImportQueueId, @ImportStatusId = 4
 		SET NOEXEC ON;
 	END
+	
+	-- Remove redundant data if for example we are re-importing data for a previous import that errored
+	
+	EXEC Fdp_ImportData_RemoveRedundantData @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
 	
 	-- From the import data, create an FDP_VolumeHeader entry for each distinct programme 
 	-- in the import. Note that if a volume header (take rate file) already exists

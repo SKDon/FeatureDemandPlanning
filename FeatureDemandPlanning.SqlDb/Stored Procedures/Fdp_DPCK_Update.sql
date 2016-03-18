@@ -7,6 +7,7 @@ AS
 
 	SET NOCOUNT ON;
 
+	DECLARE @FdpImportId AS INT;
 	DECLARE @IsArchived AS BIT;
 	SELECT TOP 1 @IsArchived = ISNULL(Archived, 0) FROM Oxo_Doc WHERE Id = @DocumentId;
 
@@ -60,3 +61,19 @@ AS
 		AND
 		T.Id = @TrimId
 	END
+	
+	-- If we have a worktray item for this document that is currently unprocessed and in an error state then 
+	-- reprocess the derivative errors
+	
+	SELECT TOP 1 @FdpImportId = Q.FdpImportId
+	FROM
+	Fdp_ImportQueue_VW AS Q
+	WHERE
+	Q.DocumentId = @DocumentId
+	AND
+	Q.FdpImportStatusId = 4;
+	
+	IF @FdpImportId IS NOT NULL
+	BEGIN
+		EXEC Fdp_ImportData_Process @FdpImportId = @FdpImportId
+	END;

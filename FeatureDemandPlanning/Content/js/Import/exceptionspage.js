@@ -12,6 +12,7 @@ page.ExceptionsPage = function (models) {
     privateStore[me.id].Models = models;
     privateStore[me.id].SelectedExceptionType = "";
     privateStore[me.id].SelectedExceptionTypeId = 0;
+    privateStore[me.id].ExceptionIds = [];
 
     me.displaySelectedExceptionType = function () {
         $("#" + me.getIdentifierPrefix() + "_SelectedExceptionType").html(me.getSelectedExceptionType());
@@ -115,42 +116,32 @@ page.ExceptionsPage = function (models) {
         return params;
     };
     me.configureDataTables = function (filter) {
-        $("#tblImportExceptions").DataTable({
+        var prefix = me.getIdentifierPrefix();
+        var table = $("#tblImportExceptions").DataTable({
             "serverSide": true,
             "pagingType": "full_numbers",
             "processing": true,
             "ajax": me.getData,
             "sDom": "ltp",
-            "aoColumns": [
-                {
-                    "sName": "IMPORT_EXCEPTION_ID",
-                    "bVisible": false
+            "columnDefs": [
+            {
+                "targets": 0,
+                "searchable": false,
+                "orderable": false,
+                "className": "checkbox-column",
+                "render": function(data, type, full, meta) {
+                    return '<input type="checkbox" class="selected-item" value="' + $('<div/>').text(data).html() + '">';
                 },
-                {
-                    "sName": "LINE_NUMBER",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-left",
-                    "bVisible": false
-                }
-                ,
-                {
-                    "sName": "ERROR_TYPE_DESCRIPTION",
-                    "bSearchable": true,
-                    "bSortable": true
-                },
-                {
-                    "sName": "ERROR_MESSAGE",
-                    "bSearchable": true,
-                    "bSortable": true
-                },
-                {
-                    "sName": "ERROR_ON",
-                    "bSearchable": false,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-            ],
+                "width": "10%"
+            },
+            {
+                "targets": 1,
+                "visible": false
+            },
+            {
+                "targets": 4,
+                "className": "text-center"
+            }],
             "fnCreatedRow": function (row, data, index) {
                 var importExceptionId = data[0];
                 $(row).attr("data-import-exception-id", importExceptionId);
@@ -160,6 +151,67 @@ page.ExceptionsPage = function (models) {
                 me.bindContextMenu();
                 $("#pnlImportExceptions").show();
             }
+        });
+
+        // Handle click on "Select all" control
+        $("#" + prefix + "_SelectAll").unbind("click").on("click", function () {
+            var rows = table.rows({ "search": "applied" }).nodes();
+            var checkboxes = $('input[type="checkbox"]', rows).prop("checked", this.checked);
+
+            privateStore[me.id].ExceptionIds = [];
+            if (this.checked) {
+                $(checkboxes).each(function() {
+                    privateStore[me.id].ExceptionIds.push($(this).val());
+                });
+            }
+
+            if (privateStore[me.id].ExceptionIds.length === 0) {
+                $("#" + prefix + "_IgnoreAll").html("Ignore Selected").attr("disabled", "disabled");
+            } else {
+                $("#" + prefix + "_IgnoreAll").html("Ignore " + privateStore[me.id].ExceptionIds.length + " Exception(s)").removeAttr("disabled");
+            }
+        });
+
+        // Handle click on checkbox to set state of "Select all" control
+        $("#tblImportExceptions tbody").on("change", 'input[type="checkbox"]', function () {
+            // If checkbox is not checked
+            if (!this.checked) {
+                var el = $("#" + prefix + "_SelectAll").get(0);
+                // If "Select all" control is checked and has 'indeterminate' property
+                if (el && el.checked && ('indeterminate' in el)) {
+                    // Set visual state of "Select all" control 
+                    // as 'indeterminate'
+                    el.indeterminate = true;
+                }
+            }
+
+            // Get all rows with search applied
+            var rows = table.rows({ "search": "applied" }).nodes();
+            // Check/uncheck checkboxes for all rows in the table
+            var checkboxes = $('input[type="checkbox"]', rows);
+            privateStore[me.id].ExceptionIds = [];
+            $(checkboxes).each(function () {
+                if (this.checked) {
+                    privateStore[me.id].ExceptionIds.push($(this).val());
+                }
+            });
+
+            if (privateStore[me.id].ExceptionIds.length === 0) {
+                $("#" + prefix + "_IgnoreAll").html("Ignore Selected").attr("disabled", "disabled");
+            } else {
+                $("#" + prefix + "_IgnoreAll").html("Ignore " + privateStore[me.id].ExceptionIds.length + " Exception(s)").removeAttr("disabled");
+            }
+        });
+
+        $("#" + prefix + "_IgnoreAll").unbind("click").on("click", function () {
+            var params = $.extend({}, me.getParameters(), {
+                "Action": 14,
+                "ExceptionId": 0,
+                "ExceptionIds": privateStore[me.id].ExceptionIds,
+                "ProgrammeId": 0,
+                "Gateway": "None"
+            });
+            $(document).trigger("Action", params);
         });
     };
     me.getExceptionId = function (cell) {
@@ -274,7 +326,14 @@ page.ExceptionsPage = function (models) {
         me.redrawDataTable();
     };
     me.redrawDataTable = function () {
+        var prefix = me.getIdentifierPrefix();
         $("#tblImportExceptions").DataTable().draw();
+        if (privateStore[me.id].ExceptionIds.length === 0) {
+            $("#" + prefix + "_IgnoreAll").html("Ignore Selected").attr("disabled", "disabled");
+        } else {
+            $("#" + prefix + "_IgnoreAll").html("Ignore " + privateStore[me.id].ExceptionIds.length + " Exception(s)").removeAttr("disabled");
+        }
+        $("#" + prefix + "_SelectAll").prop("checked", false);
     };
     
     // TO DO move this to the market.js file
@@ -356,6 +415,15 @@ page.ExceptionsPage = function (models) {
                 break;
             case 9:
                 model = getFeatureModel();
+                break;
+            case 13:
+                model = getDerivativeModel();
+                break;
+            case 14:
+                model = getIgnoreModel();
+                break;
+            case 15:
+                model = getTrimModel();
             default:
                 break;
         };

@@ -48,6 +48,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<ImportStatus> AvailableImportStatuses { get; set; }
         public IEnumerable<TrimLevel> AvailableTrimLevels { get; set; }
         public IEnumerable<ImportDerivative> AvailableImportDerivatives { get; set; }
+        public IEnumerable<ImportTrim> AvailableImportTrimLevels { get; set; }
 
         #endregion
 
@@ -276,6 +277,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 {
                     ImportQueueId = model.CurrentException.ImportQueueId
                 });
+            model.AvailableImportTrimLevels = await
+                context.Import.ListImportTrimLevels(new ImportQueueFilter()
+                {
+                    ImportQueueId = model.CurrentException.ImportQueueId
+                });
 
             derivativeFilter.Bmc = model.CurrentException.ImportDerivativeCode;
            
@@ -352,6 +358,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             AvailableFeatureGroups = Enumerable.Empty<FeatureGroup>();
             AvailableDerivatives = Enumerable.Empty<Derivative>();
             AvailableImportDerivatives = Enumerable.Empty<ImportDerivative>();
+            AvailableImportTrimLevels = Enumerable.Empty<ImportTrim>();
             AvailableExceptionTypes = Enumerable.Empty<ImportExceptionType>();
             AvailableImportStatuses = Enumerable.Empty<ImportStatus>();
             AvailableTrimLevels = Enumerable.Empty<TrimLevel>();

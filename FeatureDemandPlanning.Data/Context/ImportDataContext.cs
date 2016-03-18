@@ -64,7 +64,11 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<ImportError> IgnoreException(ImportQueueFilter filter)
         {
-            return await Task.FromResult(_importDataStore.ImportExceptionIgnore(filter));
+            return await IgnoreException(filter, true);
+        }
+        public async Task<ImportError> IgnoreException(ImportQueueFilter filter, bool reprocess)
+        {
+            return await Task.FromResult(_importDataStore.ImportExceptionIgnore(filter, reprocess));
         }
         public async Task<ImportError> MapMarket(ImportQueueFilter filter, FdpMarketMapping mapping)
         {
@@ -167,6 +171,10 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<IEnumerable<ImportDerivative>> ListImportDerivatives(ImportQueueFilter importQueueFilter)
         {
             return await Task.FromResult(_importDataStore.FdpImportDerivativesGetMany(importQueueFilter));
+        }
+        public async Task<IEnumerable<ImportTrim>> ListImportTrimLevels(ImportQueueFilter importQueueFilter)
+        {
+            return await Task.FromResult(_importDataStore.FdpImportTrimLevelsGetMany(importQueueFilter));
         }
 
         private static DataTable GetImportFileAsDataTable(ImportQueue queuedItem, ImportFileSettings settings)

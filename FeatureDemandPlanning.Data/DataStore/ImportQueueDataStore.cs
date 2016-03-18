@@ -427,7 +427,7 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
-        public ImportError ImportExceptionIgnore(ImportQueueFilter filter)
+        public ImportError ImportExceptionIgnore(ImportQueueFilter filter, bool reprocess)
         {
             ImportError retVal = new EmptyImportError();
 
@@ -435,10 +435,13 @@ namespace FeatureDemandPlanning.DataStore
             {
                 try
                 {
-                    var para = new DynamicParameters();
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     para.Add("@ExceptionId", filter.ExceptionId.Value, DbType.Int32);
                     para.Add("@IsExcluded", true, DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, DbType.String);
+                    if (!reprocess)
+                    {
+                        para.Add("@Reprocess", reprocess, DbType.Boolean);
+                    }
 
                     var results = connection.Query<ImportError>("dbo.Fdp_ImportErrorExclusion_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -682,6 +685,26 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpImportQueueId", filter.ImportQueueId, DbType.Int32);
                    
                     retVal = conn.Query<ImportDerivative>("Fdp_ImportDerivatives_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public IEnumerable<ImportTrim> FdpImportTrimLevelsGetMany(ImportQueueFilter filter)
+        {
+            var retVal = Enumerable.Empty<ImportTrim>();
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpImportQueueId", filter.ImportQueueId, DbType.Int32);
+
+                    retVal = conn.Query<ImportTrim>("Fdp_ImportTrimLevels_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
                 {

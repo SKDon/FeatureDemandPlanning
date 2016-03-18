@@ -2,7 +2,7 @@
 
 var model = namespace("FeatureDemandPlanning.Import");
 
-model.MapDerivativeAction = function (params) {
+model.IgnoreAllAction = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
@@ -10,46 +10,28 @@ model.MapDerivativeAction = function (params) {
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].ActionUri = params.ModalActionUri;
-    privateStore[me.id].SelectedDerivativeCode = "";
-    privateStore[me.id].SelectedDerivative = "";
+    privateStore[me.id].ErrorMessage = params.ErrorMessage;
     privateStore[me.id].Parameters = params;
 
     me.action = function () {
         $("#Modal_Notify").html("").hide();
-        $("#Modal_OK").html("Mapping...Wait").attr("disabled", true);
+        $("#Modal_OK").html("Updating...Wait").attr("disabled", true);
         sendData(me.getActionUri(), me.getActionParameters());
     };
-    me.displaySelectedDerivative = function () {
-        $("#" + me.getIdentifierPrefix() + "_SelectedDerivative").html(me.getSelectedDerivative());
-    };
     me.getActionParameters = function () {
-        return $.extend({}, getData(), {
-            "DerivativeCode": me.getSelectedDerivativeCode(),
-            "ImportDerivativeCode": me.getImportDerivativeCode()
-        });
+        return getData();
     };
     me.getIdentifierPrefix = function () {
         return $("#Action_IdentifierPrefix").val();
     };
-    me.getImportDerivativeCode = function () {
-        return $("#" + me.getIdentifierPrefix() + "_ImportDerivativeCode").val();
-    };
     me.getActionUri = function () {
         return privateStore[me.id].ActionUri;
     };
+    me.getErrorMessage = function () {
+        return getData().ErrorMessage;
+    };
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
-    };
-    me.getSelectedDerivative = function () {
-        return privateStore[me.id].SelectedDerivative;
-    };
-    me.getSelectedDerivativeCode = function () {
-        return privateStore[me.id].SelectedDerivativeCode;
-    };
-    me.derivativeSelectedEventHandler = function (sender) {
-        me.setSelectedDerivativeCode($(sender.target).attr("data-target"));
-        me.setSelectedDerivative($(sender.target).attr("data-content"));
-        me.displaySelectedDerivative();
     };
     me.initialise = function () {
         me.registerEvents();
@@ -61,10 +43,11 @@ model.MapDerivativeAction = function (params) {
             .removeClass("alert-danger")
             .removeClass("alert-warning")
             .addClass("alert-success")
-            .html("Import Brochure Model Code '" + me.getImportDerivativeCode() + "' mapped successfully to '" + me.getSelectedDerivative() + "'")
+            .html("Selected exceptions marked as ignored")
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");
+        $(document).trigger("Success", {});
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
         if (eventArgs.IsValidation) {
@@ -72,20 +55,17 @@ model.MapDerivativeAction = function (params) {
                 .removeClass("alert-danger")
                 .removeClass("alert-success")
                 .addClass("alert-warning").html(eventArgs.Message).show();
-            $("#Modal_OK").removeAttr("disabled").html("OK");
+            $("#Modal_OK").html("OK").removeAttr("disabled");
         } else {
             $("#Modal_Notify")
                 .removeClass("alert-warning")
                 .removeClass("alert-success")
                 .addClass("alert-danger").html(eventArgs.Message).show();
+            $("#Modal_OK").hide();
+            $("#Modal_Cancel").html("Close");
         }
     };
     me.registerEvents = function () {
-        var prefix = me.getIdentifierPrefix();
-        $("#" + prefix + "_DerivativeList").find("a.derivative-item").on("click", function (e) {
-            me.derivativeSelectedEventHandler(e);
-            e.preventDefault();
-        });
         $("#Modal_OK").unbind("click").on("click", me.action);
         $(document)
             .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
@@ -98,12 +78,6 @@ model.MapDerivativeAction = function (params) {
     };
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;
-    };
-    me.setSelectedDerivativeCode = function (derivativeCode) {
-        privateStore[me.id].SelectedDerivativeCode = derivativeCode;
-    };
-    me.setSelectedDerivative = function (derivative) {
-        privateStore[me.id].SelectedDerivative = derivative;
     };
     function getData() {
         var params = me.getParameters();

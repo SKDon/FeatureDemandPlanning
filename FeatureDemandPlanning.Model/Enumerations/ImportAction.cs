@@ -16,8 +16,10 @@
         ImportQueue = 11,
         ImportQueueItem = 12,
         MapOxoDerivative = 13,
+        IgnoreAll = 14,
+        MapOxoTrim = 15,
 
         Upload = 100,
-        Summary,
+        Summary
     }
 }

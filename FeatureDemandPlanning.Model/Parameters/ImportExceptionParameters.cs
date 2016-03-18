@@ -1,10 +1,13 @@
-﻿using enums = FeatureDemandPlanning.Model.Enumerations;
+﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using enums = FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.Parameters
 {
     public class ImportExceptionParameters : ImportParameters
     {
         public int? ExceptionId { get; set; }
+        public IEnumerable<int> ExceptionIds { get; set; }  
         public enums.ImportExceptionType ExceptionType { get; set; }
 
         public string ImportMarket { get; set; }
@@ -29,6 +32,8 @@ namespace FeatureDemandPlanning.Model.Parameters
         public int? BodyId { get; set; }
         public int? EngineId { get; set; }
         public int? TransmissionId { get; set; }
+        public IEnumerable<string> ImportDerivativeCodes { get; set; }
+        public IEnumerable<string> ImportTrimLevels { get; set; }
 
         public int? SpecialFeatureTypeId { get; set; }
         public bool IsGlobalMapping { get; set; }
@@ -51,11 +56,13 @@ namespace FeatureDemandPlanning.Model.Parameters
         {
             return ExceptionType != enums.ImportExceptionType.NotSet;
         }
+
         public object GetActionSpecificParameters()
         {
             if (Action == enums.ImportAction.MapMissingFeature)
             {
-                return new {
+                return new
+                {
                     ImportQueueId = ImportQueueId,
                     ExceptionId = ExceptionId,
                     ProgrammeId = ProgrammeId,
@@ -87,7 +94,8 @@ namespace FeatureDemandPlanning.Model.Parameters
 
             if (Action == enums.ImportAction.MapMissingDerivative)
             {
-                return new {
+                return new
+                {
                     ImportQueueId = ImportQueueId,
                     ExceptionId = ExceptionId,
                     ProgrammeId = ProgrammeId,
@@ -98,7 +106,30 @@ namespace FeatureDemandPlanning.Model.Parameters
                     DerivativeCode = DerivativeCode,
                     BodyId = BodyId,
                     EngineId = EngineId,
-                    TransmissionId = TransmissionId
+                    TransmissionId = TransmissionId,
+                    DocumentId
+                };
+            }
+            if (Action == enums.ImportAction.MapOxoDerivative)
+            {
+                return new
+                {
+                    ExceptionId,
+                    DerivativeCode,
+                    DocumentId,
+                    ProgrammeId,
+                    Gateway
+                };
+            }
+            if (Action == enums.ImportAction.MapOxoTrim)
+            {
+                return new
+                {
+                    ExceptionId,
+                    DPCK,
+                    DocumentId,
+                    ProgrammeId,
+                    Gateway
                 };
             }
             if (Action == enums.ImportAction.AddMissingDerivative)
@@ -120,7 +151,8 @@ namespace FeatureDemandPlanning.Model.Parameters
 
             if (Action == enums.ImportAction.MapMissingMarket)
             {
-                return new {
+                return new
+                {
                     ImportQueueId = ImportQueueId,
                     ExceptionId = ExceptionId,
                     ProgrammeId = ProgrammeId,
@@ -133,9 +165,10 @@ namespace FeatureDemandPlanning.Model.Parameters
                 };
             }
 
-            if (Action == enums.ImportAction.AddMissingTrim || Action == enums.ImportAction.MapMissingTrim) 
+            if (Action == enums.ImportAction.AddMissingTrim || Action == enums.ImportAction.MapMissingTrim)
             {
-                return new {
+                return new
+                {
                     ImportQueueId = ImportQueueId,
                     ExceptionId = ExceptionId,
                     ProgrammeId = ProgrammeId,
@@ -156,7 +189,8 @@ namespace FeatureDemandPlanning.Model.Parameters
 
             if (Action == enums.ImportAction.AddSpecialFeature)
             {
-                return new {
+                return new
+                {
                     ImportQueueId = ImportQueueId,
                     ExceptionId = ExceptionId,
                     ProgrammeId = ProgrammeId,
@@ -181,9 +215,16 @@ namespace FeatureDemandPlanning.Model.Parameters
                 };
             }
 
-            return new { };
-        }
+            if (Action == enums.ImportAction.IgnoreAll)
+            {
+                return new
+                {
+                    ExceptionIds,
+                    Action
+                };
+            }
 
-        
+            return new {};
+        }
     }
 }

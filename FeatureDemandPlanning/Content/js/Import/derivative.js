@@ -29,6 +29,8 @@ model.Derivative = function (params) {
             case 3:
                 actionModel = new FeatureDemandPlanning.Import.MapDerivativeAction(me.getParameters());
                 break;
+            case 13:
+                actionModel = new FeatureDemandPlanning.Import.MapOxoDerivativeAction(me.getParameters());
             default:
                 break;
         }
@@ -44,7 +46,10 @@ model.Derivative = function (params) {
                 title = "Add New Derivative";
                 break;
             case 3:
-                title = "Map Derivative to OXO";
+                title = "Map Historic Brochure Model Code to OXO";
+                break;
+            case 13:
+                title = "Map OXO Brochure Model Code to Historic";
                 break;
             default:
                 break;

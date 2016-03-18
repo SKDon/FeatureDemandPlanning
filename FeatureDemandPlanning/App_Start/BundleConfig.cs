@@ -27,6 +27,10 @@ namespace FeatureDemandPlanning
                     "~/Content/js/dataTables.responsive.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/bootstrapmultiselect").Include(
+                    "~/Content/js/bootstrap-multiselect.js"
+                ));
+
             bundles.Add(new ScriptBundle("~/bundles/js/admin").Include(
                     "~/Content/js/Admin/admin.js",
                     "~/Content/js/Admin/enginecodemapping.js",
@@ -85,12 +89,15 @@ namespace FeatureDemandPlanning
                     "~/Content/js/Import/feature.js",
                     "~/Content/js/Import/ignore.js",
                     "~/Content/js/Import/ignoreaction.js",
+                    "~/Content/js/Import/ignoreallaction.js",
                     "~/Content/js/Import/importqueue.js",
                     "~/Content/js/Import/importqueuepage.js",
+                    "~/Content/js/Import/mapoxoderivativeaction.js",
                     "~/Content/js/Import/mapderivativeaction.js",
                     "~/Content/js/Import/mapfeatureaction.js",
                     "~/Content/js/Import/mapmarketaction.js",
                     "~/Content/js/Import/maptrimaction.js",
+                    "~/Content/js/Import/mapoxotrimaction.js",
                     "~/Content/js/Import/market.js",
                     "~/Content/js/Import/specialfeatureaction.js",
                     "~/Content/js/Import/trim.js",
@@ -197,7 +204,8 @@ namespace FeatureDemandPlanning
                 .Include("~/Content/css/responsive.bootstrap.css", cssFixer)
                 .Include("~/Content/css/site.css", cssFixer)
                 .Include("~/Content/css/BrushedMetal.css", cssFixer)
-                .Include("~/Content/css/jquery.contextMenu.css", cssFixer));
+                .Include("~/Content/css/jquery.contextMenu.css", cssFixer)
+                .Include("~/Content/css/bootstrap-multiselect.css", cssFixer));
 
             bundles.Add(new StyleBundle("~/bundles/css/dataTables").Include(
                     "~/Content/css/dataTables.bootstrap.css",

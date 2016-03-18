@@ -162,9 +162,9 @@ page.ImportQueuePage = function (models) {
                     "sClass": "text-center",
                     "render": function (data, type, full, meta) {
                         var hasErrors = full[hasErrorsIndex];
-                        var errorCount = parseInt(full[errorCountIndex]);
-                        if (hasErrors == "NO") {
-                            return "-";
+                        var errorCount = 0; 
+                        if (hasErrors !== "NO") {
+                            errorCount = parseInt(full[errorCountIndex]);
                         }
                         var uri = exceptionsUri + "?importQueueId=" + full[importQueueIndex];
                         return "<a class='btn btn-default' href='" + uri + "'>" + errorCount + " Errors</a>";

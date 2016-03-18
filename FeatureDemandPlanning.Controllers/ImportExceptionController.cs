@@ -6,6 +6,7 @@ using FeatureDemandPlanning.Model.ViewModel;
 using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.Results;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -119,6 +120,19 @@ namespace FeatureDemandPlanning.Controllers
                 .ValidateImportExceptionParameters(parameters, ImportExceptionParametersValidator.ExceptionIdentifierWithActionProgrammeAndGateway);
             ImportExceptionParametersValidator
                 .ValidateImportExceptionParameters(parameters, Enum.GetName(parameters.Action.GetType(), parameters.Action));
+
+            if (parameters.Action == ImportAction.MapOxoDerivative)
+            {
+                TempData["MapOxoDerivative"] = parameters.ImportDerivativeCodes;
+            }
+            if (parameters.Action == ImportAction.IgnoreAll)
+            {
+                TempData["IgnoreAll"] = parameters.ExceptionIds;
+            }
+            if (parameters.Action == ImportAction.MapOxoTrim)
+            {
+                TempData["MapOxoTrim"] = parameters.ImportTrimLevels;
+            }
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
@@ -246,6 +260,65 @@ namespace FeatureDemandPlanning.Controllers
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
         [HandleErrorWithJson]
+        public async Task<ActionResult> MapOxoDerivative(ImportExceptionParameters parameters)
+        {
+            var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.GetValueOrDefault());
+
+            var derivative = Derivative.FromIdentifier(parameters.DerivativeCode);
+            var importView = await GetModelFromParameters(parameters);
+
+            var importDerivatives = (IEnumerable<string>) TempData["MapOxoDerivative"];
+            
+            foreach (var importDerivative in importDerivatives)
+            {
+                var derivativeMapping = new FdpDerivativeMapping()
+                {
+                    ImportDerivativeCode = importDerivative,
+                    DocumentId = parameters.DocumentId.GetValueOrDefault(),
+                    ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
+                    Gateway = parameters.Gateway,
+                    DerivativeCode = derivative.DerivativeCode,
+                    BodyId = derivative.BodyId.GetValueOrDefault(),
+                    EngineId = derivative.EngineId.GetValueOrDefault(),
+                    TransmissionId = derivative.TransmissionId.GetValueOrDefault()
+                };
+
+                await DataContext.Import.MapDerivative(filter, derivativeMapping);
+            }
+            await DeactivateException(importView.CurrentException);
+            await ReProcessException(importView.CurrentException);
+
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
+        }
+        [HandleErrorWithJson]
+        public async Task<ActionResult> MapOxoTrim(ImportExceptionParameters parameters)
+        {
+            var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.GetValueOrDefault());
+
+            var trim = ModelTrim.FromIdentifier(parameters.DPCK);
+            var importView = await GetModelFromParameters(parameters);
+
+            var importTrimLevels = (IEnumerable<string>)TempData["MapOxoTrim"];
+
+            foreach (var importTrimLevel in importTrimLevels)
+            {
+                var trimMapping = new FdpTrimMapping()
+                {
+                    ImportTrim = importTrimLevel,
+                    DocumentId = parameters.DocumentId.GetValueOrDefault(),
+                    ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
+                    Gateway = parameters.Gateway,
+                    DPCK = trim.DPCK
+                };
+
+                await DataContext.Import.MapTrim(filter, trimMapping);
+            }
+            await DeactivateException(importView.CurrentException);
+            await ReProcessException(importView.CurrentException);
+
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
+        }
+        [HandleErrorWithJson]
         public async Task<ActionResult> MapMissingFeature(ImportExceptionParameters parameters)
         {
             var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value);
@@ -322,8 +395,21 @@ namespace FeatureDemandPlanning.Controllers
             var importView = await GetModelFromParameters(parameters);
 
             importView.CurrentException = await DataContext.Import.IgnoreException(filter);
-            await DeactivateException(importView.CurrentException);
+            //await DeactivateException(importView.CurrentException);
 
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
+        }
+        [HandleErrorWithJson]
+        public async Task<ActionResult> IgnoreAll(ImportExceptionParameters parameters)
+        {
+            parameters.ExceptionIds = (IEnumerable<int>) TempData["IgnoreAll"];
+            var exceptionIds = parameters.ExceptionIds as IList<int> ?? parameters.ExceptionIds.ToList();
+            var lastExceptionId = exceptionIds.Last();
+            foreach (var exceptionId in exceptionIds)
+            {
+                var filter = ImportQueueFilter.FromExceptionId(exceptionId);
+                await DataContext.Import.IgnoreException(filter, exceptionId == lastExceptionId);
+            }
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
 

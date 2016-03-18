@@ -11,6 +11,18 @@ AS
 	DECLARE @Gateway AS NVARCHAR(100);
 	DECLARE @DocumentId AS INT;
 	DECLARE @FlagOrphanedImportData AS BIT = 0;
+	
+	IF EXISTS(
+		SELECT TOP 1 1 
+		FROM 
+		Fdp_ImportError 
+		WHERE 
+		FdpImportQueueId = @FdpImportQueueId
+		AND
+		FdpImportErrorTypeId IN (1, 3, 4))
+	BEGIN
+		RETURN;
+	END;
 
 	SELECT @ProgrammeId = ProgrammeId, @Gateway = Gateway
 	FROM Fdp_Import

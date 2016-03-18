@@ -8,15 +8,14 @@ AS
 		BEGIN TRANSACTION;
 	
 		DECLARE @FdpImportId AS INT;
-		DECLARE @FdpImportQueueId AS INT;
 		DECLARE @DocumentId AS INT;
 		DECLARE @FdpImportErrorTypeId AS INT;
 		
-		SELECT TOP 1 @DocumentId = DocumentId, @FdpImportErrorTypeId = FdpImportErrorTypeId
+		SELECT TOP 1 @DocumentId = DocumentId
 		FROM Fdp_ImportErrorExclusion 
 		WHERE FdpImportErrorExclusionId = @FdpImportErrorExclusionId;
 		
-		SELECT TOP 1 @FdpImportId = Q.FdpImportId, @FdpImportQueueId = Q.FdpImportQueueId
+		SELECT TOP 1 @FdpImportId = Q.FdpImportId
 		FROM
 		Fdp_ImportQueue_VW AS Q
 		WHERE
@@ -33,22 +32,7 @@ AS
 
 		-- Update any imports that have yet to complete processing and not cancelled re-enabling any of the same errors
 		
-		IF @FdpImportErrorTypeId = 1
-		BEGIN
-			EXEC Fdp_ImportData_ProcessMissingMarkets @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId
-		END
-		ELSE IF @FdpImportErrorTypeId = 2
-		BEGIN
-			EXEC Fdp_ImportData_ProcessMissingFeatures @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId
-		END
-		ELSE IF @FdpImportErrorTypeId = 3
-		BEGIN
-			EXEC Fdp_ImportData_ProcessMissingDerivatives @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId
-		END
-		ELSE IF @FdpImportErrorTypeId = 4
-		BEGIN
-			EXEC Fdp_ImportData_ProcessMissingTrim @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId
-		END
+		EXEC Fdp_ImportData_Process @FdpImportId = @FdpImportId;
 		
 		COMMIT TRANSACTION;
 	

@@ -10,26 +10,48 @@
 <div class="well">
 
     @if (Model.CurrentAction == enums.ImportAction.AddMissingDerivative ||
-                Model.CurrentAction == enums.ImportAction.MapMissingDerivative)
+                Model.CurrentAction == enums.ImportAction.MapMissingDerivative ||
+                Model.CurrentAction == enums.ImportAction.MapOxoDerivative
+        )
     {
         <div class="row">
-            <div class="col-xs-4 text-right"><strong>Import Derivative Code:</strong></div>
-            <div id="@(Model.IdentifierPrefix)_ImportDerivativeCode" data-target="@Model.CurrentException.ImportDerivativeCode" class="col-xs-8">
-                @Model.CurrentException.ImportDerivativeCode
+            <div class="col-xs-4 text-right"><strong>BMC:</strong></div>
+            <div class="col-xs-8">
+                @Model.CurrentException.AdditionalData
+            </div>
+        </div>
+    }
+
+    @if (Model.CurrentAction == enums.ImportAction.MapOxoDerivative)
+    {
+        var derivative = Model.AvailableDerivatives.FirstOrDefault(d => d.DerivativeCode == Model.CurrentException.AdditionalData);
+        <div class="vertical-spacer"></div>
+
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <strong>Body:</strong>
+            </div>
+            <div class="col-xs-8">
+                @derivative.Body.Name
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-4 text-right"><strong>Description:</strong></div> 
+            <div class="col-xs-4 text-right">
+                <strong>Engine:</strong>
+            </div>
             <div class="col-xs-8">
-                @Model.CurrentException.ImportDerivative
+                @derivative.Engine.Name
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-4 text-right"><strong>Import Market:</strong></div>
+            <div class="col-xs-4 text-right">
+                <strong>Transmission:</strong>
+            </div>
             <div class="col-xs-8">
-                @Model.CurrentException.ImportMarket
+                @derivative.Transmission.Name
             </div>
         </div>
+        <div class="vertical-spacer"></div>
     }
 
     @if (Model.CurrentAction == enums.ImportAction.AddMissingFeature ||
@@ -51,26 +73,40 @@
     }
 
     @if (Model.CurrentAction == enums.ImportAction.AddMissingTrim ||
-                Model.CurrentAction == enums.ImportAction.MapMissingTrim)
+                Model.CurrentAction == enums.ImportAction.MapMissingTrim ||
+        Model.CurrentAction == enums.ImportAction.MapOxoTrim)
     {
         <div class="row">
-            <div class="col-xs-4 text-right"><strong>Import Trim Level:</strong></div>
-            <div id="@(Model.IdentifierPrefix)_ImportTrim" class="col-xs-8" data-target="@Model.CurrentException.ImportTrim">
-                @Model.CurrentException.ImportTrim
+            <div class="col-xs-4 text-right"><strong>DPCK:</strong></div>
+            <div class="col-xs-8">
+                @Model.CurrentException.AdditionalData
             </div>
         </div>
-    <div class="row">
-        <div class="col-xs-4 text-right"><strong>Import Derivative:</strong></div>
-        <div id="@(Model.IdentifierPrefix)_ImportDerivative" class="col-xs-8" data-target="@Model.CurrentException.ImportDerivativeCode">
-            @Model.CurrentException.ImportDerivativeCode
+    }
+
+    @if (Model.CurrentAction == enums.ImportAction.MapOxoTrim)
+    {
+        var trimLevel = Model.AvailableTrim.FirstOrDefault(d => d.DPCK == Model.CurrentException.AdditionalData);
+        <div class="vertical-spacer"></div>
+
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <strong>Description:</strong>
+            </div>
+            <div class="col-xs-8">
+                @trimLevel.Name
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-4 text-right"><strong>Import Market:</strong></div>
-        <div class="col-xs-8">
-            @Model.CurrentException.ImportMarket
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <strong>Level:</strong>
+            </div>
+            <div class="col-xs-8">
+                @trimLevel.Level
+            </div>
         </div>
-    </div>
+       
+        <div class="vertical-spacer"></div>
     }
 
     @if (Model.CurrentAction == enums.ImportAction.MapMissingMarket)
@@ -86,43 +122,48 @@
     @if (Model.CurrentAction == enums.ImportAction.IgnoreException)
     {
         <div class="row">
-            <div class="col-xs-4 text-right"><strong>Error Type:</strong>
+            <div class="col-xs-4 text-right">
+                <strong>Error Type:</strong>
             </div>
             <div class="col-xs-8">
                 @Model.CurrentException.ErrorTypeDescription
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-4 text-right"><strong>Sub Type:</strong>
+            <div class="col-xs-4 text-right">
+                <strong>Sub Type:</strong>
             </div>
             <div class="col-xs-8">
                 @Model.CurrentException.SubTypeDescription
             </div>
         </div>
-    <div class="vertical-spacer">
+        <div class="vertical-spacer">
 
-    </div>
+        </div>
         <div class="row">
-            <div class="col-xs-4 text-right"><strong>Message:</strong>
+            <div class="col-xs-4 text-right">
+                <strong>Message:</strong>
             </div>
             <div id="@(Model.IdentifierPrefix)_ErrorMessage" class=" col-xs-8">
                 @Model.CurrentException.ErrorMessage
             </div>
         </div>
-    <div class="vertical-spacer">
-        
-    </div>
+        <div class="vertical-spacer">
+
+        </div>
     }
 
     <div class="row">
-        <div class="col-xs-4 text-right"><strong>Programme:</strong>
+        <div class="col-xs-4 text-right">
+            <strong>Programme:</strong>
         </div>
         <div class="col-xs-8">
             @Model.Programme.GetDisplayString()
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-4 text-right"><strong>Gateway:</strong>
+        <div class="col-xs-4 text-right">
+            <strong>Gateway:</strong>
         </div>
         <div class="col-xs-8">
             @Model.Gateway

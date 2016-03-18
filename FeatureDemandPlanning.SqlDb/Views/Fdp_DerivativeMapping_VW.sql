@@ -3,6 +3,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 
 	SELECT 
@@ -26,12 +27,17 @@ CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 		, D.Name
 		
 	FROM
-	OXO_Programme					AS P
-	JOIN Fdp_Derivative_VW			AS D	ON	P.Id				= D.ProgrammeId
+	OXO_Programme						AS P
+	JOIN Fdp_Derivative_VW				AS D	ON	P.Id				= D.ProgrammeId
+	LEFT JOIN Fdp_DerivativeMapping		AS M	ON	D.DocumentId		= M.DocumentId
+												AND	D.BodyId			= M.BodyId
+												AND D.EngineId			= M.EngineId
+												AND D.TransmissionId	= M.TransmissionId
+												AND M.IsActive			= 1
 	WHERE
 	P.Active = 1
-	--AND
-	--ISNULL(D.BMC, '') <> ''
+	AND
+	M.FdpDerivativeMappingId IS NULL
 
 	UNION
 	

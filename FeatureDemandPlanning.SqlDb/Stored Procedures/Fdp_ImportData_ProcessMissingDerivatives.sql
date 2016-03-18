@@ -9,6 +9,18 @@ AS
 	DECLARE @Message		AS NVARCHAR(400);
 	DECLARE @DocumentId		AS INT;
 	DECLARE @FlagOrphanedImportData AS BIT = 0;
+	
+	IF EXISTS(
+		SELECT TOP 1 1 
+		FROM 
+		Fdp_ImportError 
+		WHERE 
+		FdpImportQueueId = @FdpImportQueueId
+		AND
+		FdpImportErrorTypeId = 1)
+	BEGIN
+		RETURN;
+	END;
 
 	SELECT @DocumentId = DocumentId
 	FROM Fdp_Import
@@ -48,7 +60,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId
-		, 'No brochure model code defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
+		, 'No Brochure Model Code defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
 		, M.ExportRow1 + ' ' + M.ExportRow2 AS AdditionalData
 		, 301 AS SubTypeId
 
@@ -98,7 +110,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId
-		, 'No brochure model code defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
+		, 'No BMC defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
 		, M.ExportRow1 + ' ' + M.ExportRow2 AS AdditionalData
 		, 301 AS SubTypeId
 
@@ -146,7 +158,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, 'No historic data mapping to OXO derivative ''' + D.MappedDerivativeCode + ' - ' + REPLACE(D.Name, '#', '') + '''' AS ErrorMessage
+		, 'No historic data mapping to OXO BMC ''' + D.MappedDerivativeCode + ' - ' + REPLACE(D.Name, '#', '') + '''' AS ErrorMessage
 		, D.MappedDerivativeCode AS AdditionalData
 		, 302 AS SubTypeId
 	FROM Fdp_DerivativeMapping_VW AS D
@@ -208,7 +220,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, 'No OXO derivative matching historic derivative ''' + I.ImportDerivativeCode + '''' AS ErrorMessage
+		, 'No OXO BMC matching historic BMC ''' + I.ImportDerivativeCode + '''' AS ErrorMessage
 		, I.ImportDerivativeCode AS AdditionalData
 		, 303 AS SubTypeId
 	FROM

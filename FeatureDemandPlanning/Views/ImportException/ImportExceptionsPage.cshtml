@@ -71,15 +71,27 @@
         <div class="panel-body">
             <table id="tblImportExceptions" class="table table-bordered table-condensed table-striped dataTable">
                 <thead>
-                    <tr>
-                        <th></th>
-                        <th class="text-left col-lg-1">Line #</th>
-                        <th class="text-left col-lg-2">Error Type</th>
-                        <th class="col-lg-5">Message</th>
-                        <th class="text-center col-lg-2">Error On</th>
-                    </tr>
+                <tr>
+                    <th class="text-center"><input type="checkbox" id="@(Model.IdentifierPrefix)_SelectAll"/></th>
+                    <th class="text-left col-lg-1">Line #</th>
+                    <th class="text-left col-lg-2">Error Type</th>
+                    <th class="col-lg-5">Message</th>
+                    <th class="text-center col-lg-2">Error On</th>
+                </tr>
                 </thead>
                 <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <th class="text-center">
+                            <button id="@(Model.IdentifierPrefix)_IgnoreAll" class="btn btn-default btn-sm" disabled="disabled">Ignore Selected</button>
+                        </th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>

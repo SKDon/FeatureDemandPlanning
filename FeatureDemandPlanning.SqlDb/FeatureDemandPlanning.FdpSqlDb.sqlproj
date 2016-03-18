@@ -257,8 +257,14 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_ImportError_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_GetMany.sql" />
-    <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ImportErrorExclusion_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_ImportErrorType_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_ImportQueue_Get.sql">
       <AnsiNulls>Off</AnsiNulls>
@@ -1008,7 +1014,10 @@
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_ImportData_ProcessMissingMarkets.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportData_ProcessMissingMarkets.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_ImportData_ProcessMissingTrim.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
@@ -1018,6 +1027,11 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_DPCK_Update.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ImportDerivatives_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportData_RemoveRedundantData.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>

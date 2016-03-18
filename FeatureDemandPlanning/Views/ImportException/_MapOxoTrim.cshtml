@@ -3,7 +3,7 @@
 @model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
 
 @{
-    var derivative = Model.AvailableDerivatives.FirstOrDefault(d => d.DerivativeCode == Model.CurrentException.AdditionalData);
+    var trimLevel = Model.AvailableTrim.FirstOrDefault(t => t.DPCK == Model.CurrentException.AdditionalData);
 }
 
 <div class="alert alert-info">
@@ -12,7 +12,7 @@
             <span class="glyphicon glyphicon-info-sign"></span>
         </div>
         <div class="col-lg-11">
-            <p>Map OXO Brochure Model Code to historic data.</p>
+            <p>Map OXO DPCK Code to historic data.</p>
             <p>Click <strong>'OK'</strong> to continue.</p>
         </div>
     </div>
@@ -27,12 +27,12 @@
     <div class="panel-body">
         <form class="form-horizontal">
             <div class="form-group">
-                <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_SelectDerivative">Historic BMC:</label>
+                <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_SelectTrimLevel">Historic Trim:</label>
                 <div class="col-sm-8">
-                    <select class="form-control sm" id="@(Model.IdentifierPrefix)_DerivativeList" multiple="multiple">
-                        @foreach (var importDerivative in Model.AvailableImportDerivatives)
+                    <select class="form-control sm" id="@(Model.IdentifierPrefix)_TrimLevelList" multiple="multiple">
+                        @foreach (var importTrim in Model.AvailableImportTrimLevels)
                         {
-                            <option value="@importDerivative.Identifier">@importDerivative.Identifier</option>
+                            <option value="@importTrim.Identifier">@importTrim.Identifier</option>
                         }
                     </select>
 
@@ -43,6 +43,6 @@
 </div>
 
 <form>
-    <input type="hidden" id="@(Model.IdentifierPrefix)_DerivativeCode" value="@derivative.Identifier"/>
+    <input type="hidden" id="@(Model.IdentifierPrefix)_DPCK" value="@Model.CurrentException.AdditionalData"/>
 </form>
 

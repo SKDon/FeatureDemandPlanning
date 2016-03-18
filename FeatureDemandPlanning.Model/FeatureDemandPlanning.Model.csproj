@@ -323,7 +323,7 @@
     <Compile Include="OXOModelBody.cs" />
     <Compile Include="OXOModelEngine.cs" />
     <Compile Include="OXOModelTransmission.cs" />
-    <Compile Include="OXOModelTrim.cs" />
+    <Compile Include="ModelTrim.cs" />
     <Compile Include="OXOPack.cs" />
     <Compile Include="OXOPermission.cs" />
     <Compile Include="OXOProgrammeFile.cs" />

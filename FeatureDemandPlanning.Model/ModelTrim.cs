@@ -11,5 +11,26 @@ namespace FeatureDemandPlanning.Model
            
         // A blank constructor
         public ModelTrim() {;}
+
+        public virtual string Identifier
+        {
+            get { return DPCK; }
+        }
+
+        public static ModelTrim FromIdentifier(string dpck)
+        {
+            return new ModelTrim()
+            {
+                DPCK = dpck
+            };
+        }
+    }
+
+    public class ImportTrim : ModelTrim
+    {
+        public override string Identifier
+        {
+            get { return Name; }
+        }
     }
 }

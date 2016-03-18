@@ -21,13 +21,23 @@ model.Ignore = function (params) {
         return privateStore[me.id].ModalContentUri;
     };
     me.getActionModel = function (action) {
-        return new FeatureDemandPlanning.Import.IgnoreAction(me.getParameters());
+        switch (action) {
+            case 8:
+                return new FeatureDemandPlanning.Import.IgnoreAction(me.getParameters());
+            case 14:
+                return new FeatureDemandPlanning.Import.IgnoreAllAction(me.getParameters());
+        }
     };
     me.getActionUri = function (action) {
         return privateStore[me.id].ModalActionUri;
     };
     me.getActionTitle = function (action) {
-        return "Ignore Error";
+        switch (action) {
+            case 8 :
+                return "Ignore Error";
+            case 14:
+                return "Ignore All Errors";
+        }
     };
     me.getConfiguration = function () {
         return privateStore[me.id].Configuration;

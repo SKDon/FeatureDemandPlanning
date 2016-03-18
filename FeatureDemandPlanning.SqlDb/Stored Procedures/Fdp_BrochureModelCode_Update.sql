@@ -12,7 +12,6 @@ AS
 	DECLARE @IsArchived AS BIT;
 	DECLARE @OldBMC AS NVARCHAR(20);
 	DECLARE @FdpImportId AS INT;
-	DECLARE @FdpImportQueueId AS INT;
 	
 	SELECT TOP 1 @IsArchived = ISNULL(Archived, 0) FROM Oxo_Doc WHERE Id = @DocumentId;
 
@@ -119,7 +118,7 @@ AS
 	-- If we have a worktray item for this document that is currently unprocessed and in an error state then 
 	-- reprocess the derivative errors
 	
-	SELECT TOP 1 @FdpImportId = I.FdpImportId, @FdpImportQueueId = I.FdpImportQueueId
+	SELECT TOP 1 @FdpImportId = I.FdpImportId
 	FROM
 	Fdp_Import AS I
 	JOIN Fdp_ImportQueue AS Q ON I.FdpImportQueueId = Q.FdpImportQueueId
@@ -128,7 +127,7 @@ AS
 	AND
 	Q.FdpImportStatusId = 4
 	
-	IF @FdpImportId IS NOT NULL AND @FdpImportQueueId IS NOT NULL
+	IF @FdpImportId IS NOT NULL
 	BEGIN
-		EXEC Fdp_ImportData_ProcessMissingDerivatives @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
+		EXEC Fdp_ImportData_Process @FdpImportId = @FdpImportId
 	END;

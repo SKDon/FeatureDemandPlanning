@@ -23,6 +23,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<PagedResults<ImportError>> ListExceptions(ImportQueueFilter filter);
 
         Task<ImportError> IgnoreException(ImportQueueFilter filter);
+        Task<ImportError> IgnoreException(ImportQueueFilter filter, bool reprocess);
         
         Task<ImportError> MapMarket(ImportQueueFilter filter, FdpMarketMapping mapping);
 
@@ -48,5 +49,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<FdpImportErrorExclusion> DeleteFdpImportErrorExclusion(FdpImportErrorExclusion fdpImportErrorExclusion);
 
         Task<IEnumerable<ImportDerivative>> ListImportDerivatives(ImportQueueFilter importQueueFilter);
+
+        Task<IEnumerable<ImportTrim>> ListImportTrimLevels(ImportQueueFilter importQueueFilter);
     }
 }
