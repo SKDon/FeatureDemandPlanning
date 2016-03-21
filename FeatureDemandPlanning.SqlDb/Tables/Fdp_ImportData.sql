@@ -11,9 +11,11 @@
     [Bff Feature Code]                           NVARCHAR (10)  NULL,
     [Feature Description]                        NVARCHAR (255) NULL,
     [Count of Specific Order No]                 NVARCHAR (10)  NULL,
-    CONSTRAINT [PK_Fdp_ImportData] PRIMARY KEY CLUSTERED ([FdpImportDataId] ASC),
+    CONSTRAINT [PK_Fdp_ImportData] PRIMARY KEY CLUSTERED ([FdpImportDataId] ASC) WITH (FILLFACTOR = 90),
     CONSTRAINT [FK_Fdp_ImportData_Fdp_Import] FOREIGN KEY ([FdpImportId]) REFERENCES [dbo].[Fdp_Import] ([FdpImportId])
 );
+
+
 
 
 
@@ -63,4 +65,10 @@ GO
 CREATE NONCLUSTERED INDEX [Ix_NC_ImportData_Count]
     ON [dbo].[Fdp_ImportData]([FdpImportId] ASC, [Count of Specific Order No] ASC)
     INCLUDE([Derivative Code]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_ImportData_OrderNo]
+    ON [dbo].[Fdp_ImportData]([FdpImportId] ASC, [Count of Specific Order No] ASC)
+    INCLUDE([Bff Feature Code], [Feature Description]);
 

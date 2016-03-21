@@ -18,6 +18,7 @@
         MapOxoDerivative = 13,
         IgnoreAll = 14,
         MapOxoTrim = 15,
+        MapOxoFeature = 16,
 
         Upload = 100,
         Summary

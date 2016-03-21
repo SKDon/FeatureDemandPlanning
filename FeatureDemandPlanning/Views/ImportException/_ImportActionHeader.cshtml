@@ -73,11 +73,19 @@
     }
 
     @if (Model.CurrentAction == enums.ImportAction.AddMissingTrim ||
-                Model.CurrentAction == enums.ImportAction.MapMissingTrim ||
         Model.CurrentAction == enums.ImportAction.MapOxoTrim)
     {
         <div class="row">
             <div class="col-xs-4 text-right"><strong>DPCK:</strong></div>
+            <div class="col-xs-8">
+                @Model.CurrentException.AdditionalData
+            </div>
+        </div>
+    }
+    @if (Model.CurrentAction == enums.ImportAction.MapMissingTrim)
+    {
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Import Trim:</strong></div>
             <div class="col-xs-8">
                 @Model.CurrentException.AdditionalData
             </div>

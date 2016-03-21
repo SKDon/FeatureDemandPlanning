@@ -351,7 +351,7 @@ namespace FeatureDemandPlanning.Controllers
                 ImportTrim = parameters.ImportTrim,
                 ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
                 Gateway = parameters.Gateway,
-                BMC = parameters.DerivativeCode
+                DocumentId = parameters.DocumentId
             };
             if (!string.IsNullOrEmpty(parameters.TrimIdentifier))
             {

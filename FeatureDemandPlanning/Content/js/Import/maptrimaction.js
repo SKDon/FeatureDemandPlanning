@@ -10,10 +10,8 @@ model.MapTrimAction = function (params) {
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Config = params.Configuration;
     privateStore[me.id].ActionUri = params.ModalActionUri;
-    privateStore[me.id].SelectedTrimId = "";
+    privateStore[me.id].SelectedTrimIdentifier = "";
     privateStore[me.id].SelectedTrim = "";
-    privateStore[me.id].SelectedDerivativeCode = "";
-    privateStore[me.id].SelectedDerivative = "";
     privateStore[me.id].Parameters = params;
 
     me.action = function () {
@@ -24,13 +22,9 @@ model.MapTrimAction = function (params) {
     me.displaySelectedTrim = function () {
         $("#" + me.getIdentifierPrefix() + "_SelectedTrim").html(me.getSelectedTrim());
     };
-    me.displaySelectedDerivative = function () {
-        $("#" + me.getIdentifierPrefix() + "_SelectedDerivative").html(me.getSelectedDerivative());
-    };
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
-            "DerivativeCode": me.getSelectedDerivativeCode(),
-            "TrimIdentifier": me.getSelectedTrimId(),
+            "TrimIdentifier": me.getSelectedTrimIdentifier(),
             "ImportTrim": me.getImportTrim()
         });
     };
@@ -38,7 +32,7 @@ model.MapTrimAction = function (params) {
         return $("#Action_IdentifierPrefix").val();
     };
     me.getImportTrim = function () {
-        return $("#" + me.getIdentifierPrefix() + "_ImportTrim").attr("data-target");
+        return $("#" + me.getIdentifierPrefix() + "_ImportTrim").val();
     };
     me.getActionUri = function () {
         return privateStore[me.id].ActionUri;
@@ -46,32 +40,20 @@ model.MapTrimAction = function (params) {
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
     };
-    me.getSelectedDerivativeCode = function () {
-        return privateStore[me.id].SelectedDerivativeCode;
-    };
-    me.getSelectedDerivative = function () {
-        return privateStore[me.id].SelectedDerivative;
-    };
     me.getSelectedTrim = function () {
         return privateStore[me.id].SelectedTrim;
     };
-    me.getSelectedTrimId = function () {
-        return privateStore[me.id].SelectedTrimId;
-    };
-    me.derivativeSelectedEventHandler = function (sender) {
-        me.setSelectedDerivativeCode($(sender.target).attr("data-target"));
-        me.setSelectedDerivative($(sender.target).attr("data-content"));
-        me.displaySelectedDerivative();
+    me.getSelectedTrimIdentifier = function () {
+        return privateStore[me.id].SelectedTrimIdentifier;
     };
     me.trimSelectedEventHandler = function (sender) {
-        me.setSelectedTrimId($(sender.target).attr("data-target"));
+        me.setSelectedTrimIdentifier($(sender.target).attr("data-target"));
         me.setSelectedTrim($(sender.target).attr("data-content"));
         me.displaySelectedTrim();
     };
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
-        me.setSelectedDerivativeCode($("#" + me.getIdentifierPrefix() + "_InitialSelectedDerivative").val());
         $("#Modal_OK").removeAttr("disabled").html("OK");
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
@@ -120,17 +102,11 @@ model.MapTrimAction = function (params) {
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;
     };
-    me.setSelectedDerivativeCode = function (derivativeCode) {
-        privateStore[me.id].SelectedDerivativeCode = derivativeCode;
-    };
-    me.setSelectedDerivative = function (derivative) {
-        privateStore[me.id].SelectedDerivative = derivative;
-    };
     me.setSelectedTrim = function (trim) {
         privateStore[me.id].SelectedTrim = trim;
     };
-    me.setSelectedTrimId = function (trimId) {
-        privateStore[me.id].SelectedTrimId = trimId;
+    me.setSelectedTrimIdentifier = function (dpck) {
+        privateStore[me.id].SelectedTrimIdentifier = dpck;
     };
     function getData() {
         var params = me.getParameters();

@@ -43,21 +43,33 @@
 
 @if (Model.CurrentException.ErrorType == enums.ImportExceptionType.MissingFeature)
 {
-    @*<li>
-        <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int)enums.ImportAction.AddMissingFeature)" data-content="@Model.CurrentException.ErrorMessage">
-            <span class="glyphicon glyphicon-plus pull-left"></span> Add new feature '@Model.CurrentException.ImportFeatureCode'...
-        </a>
-    </li>*@
-    <li>
-        <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int)enums.ImportAction.MapMissingFeature)" data-content="@Model.CurrentException.ErrorMessage">
-            <span class="glyphicon glyphicon-link pull-left"></span> Map '@Model.CurrentException.ImportFeatureCode' to existing OXO feature...
-        </a>
-    </li>
-    <li>
-        <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int)enums.ImportAction.AddSpecialFeature)" data-content="@Model.CurrentException.ErrorMessage">
-            <span class="glyphicon glyphicon-asterisk pull-left"></span> Add Special Feature '@Model.CurrentException.ImportFeatureCode'...
-        </a>
-    </li>
+    if (Model.CurrentException.SubType == enums.ImportExceptionType.NoFeatureCode)
+    {
+        <li>
+            <a href="@Url.Action("FeatureCodePage", "FeatureMapping", new { DocumentId = Model.CurrentException.DocumentId })">
+                <span class="glyphicon glyphicon-pencil pull-left"></span> Edit DPCK Codes...
+            </a>
+        </li>
+    }
+
+    if (Model.CurrentException.SubType == enums.ImportExceptionType.NoHistoricFeature)
+    {
+        <li>
+            <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int) enums.ImportAction.MapOxoFeature)" data-content="@Model.CurrentException.ErrorMessage">
+                <span class="glyphicon glyphicon-link pull-left"></span> Map OXO Feature Code '@Model.CurrentException.AdditionalData' to historic Feature Code(s)...
+            </a>
+        </li>
+    }
+
+    if (Model.CurrentException.SubType == enums.ImportExceptionType.NoOxoFeature)
+    {
+        <li>
+            <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int)enums.ImportAction.MapMissingFeature)" data-content="@Model.CurrentException.ErrorMessage">
+                <span class="glyphicon glyphicon-link pull-left"></span> Map historic Feature Code '@Model.CurrentException.ImportFeatureCode' to existing OXO Feature Code...
+            </a>
+        </li>
+    }
+
 }
 
 @if (Model.CurrentException.ErrorType == enums.ImportExceptionType.MissingTrim)

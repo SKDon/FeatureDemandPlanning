@@ -19,6 +19,7 @@
 
                 //open menu
                 var $menu = $(settings.menuSelector)
+                    .html("<div style='padding-left:10px'>Loading Menu...</div>")
                     .data("invokedOn", $(e.target))
                     .show()
                     .css({

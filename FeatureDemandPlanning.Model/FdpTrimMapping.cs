@@ -98,15 +98,5 @@ namespace FeatureDemandPlanning.Model
                 DPCK = parameters.Dpck
             };
         }
-
-        public override string Identifier
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(DPCK)
-                    ? string.Format("{0}|{1}", DPCK, TrimId)
-                    : TrimId.ToString();
-            }
-        }
     }
 }

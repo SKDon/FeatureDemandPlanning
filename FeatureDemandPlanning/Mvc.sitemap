@@ -45,12 +45,14 @@
       <mvcSiteMapNode title="FDP Derivatives" controller="Derivative" action="Index"/>
       <mvcSiteMapNode title="FDP Derivatives" controller="Derivative" action="DerivativePage"/>
       <mvcSiteMapNode title="Derivative Mapping" controller="DerivativeMapping" action="Index"/>
+      <mvcSiteMapNode title="Brochure Model Codes" controller="DerivativeMapping" action="BMCPage"/>
       <mvcSiteMapNode title="Derivative Mapping" controller="DerivativeMapping" action="DerivativeMappingPage"/>
     </mvcSiteMapNode>
     <mvcSiteMapNode title="Features" controller="Admin" action="Feature">
       <mvcSiteMapNode title="FDP Features" controller="Feature" action="Index"/>
       <mvcSiteMapNode title="FDP Features" controller="Feature" action="FeaturePage"/>
       <mvcSiteMapNode title="Feature Mapping" controller="FeatureMapping" action="Index"/>
+      <mvcSiteMapNode title="Feature Codes" controller="FeatureMapping" action="FeatureCodePage"/>
       <mvcSiteMapNode title="Feature Mapping" controller="FeatureMapping" action="FeatureMappingPage"/>
       <mvcSiteMapNode title="Special Feature Mapping" controller="SpecialFeatureMapping" action="Index"/>
       <mvcSiteMapNode title="Special Feature Mapping" controller="SpecialFeatureMapping" action="SpecialFeatureMappingPage"/>
@@ -59,6 +61,7 @@
       <mvcSiteMapNode title="FDP Trim" controller="Trim" action="Index"/>
       <mvcSiteMapNode title="FDP Trim" controller="Trim" action="TrimPage"/>
       <mvcSiteMapNode title="Trim Mapping" controller="TrimMapping" action="Index"/>
+      <mvcSiteMapNode title="DPCK Codes" controller="TrimMapping" action="DPCKPage"/>
       <mvcSiteMapNode title="Trim Mapping" controller="TrimMapping" action="TrimMappingPage"/>
     </mvcSiteMapNode>
   </mvcSiteMapNode>

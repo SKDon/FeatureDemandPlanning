@@ -26,7 +26,7 @@ AS
 		, V.VehicleAKA
 		, V.ModelYear
 		, I.Gateway
-		, CAST(CASE WHEN Q.ErrorOn IS NOT NULL THEN 1 ELSE 0 END AS BIT) AS HasErrors
+		, CAST(CASE WHEN dbo.fn_Fdp_ImportErrorCount_Get(I.FdpImportId) > 0 THEN 1 ELSE 0 END AS BIT) AS HasErrors
 		, I.DocumentId
 		
 	FROM Fdp_ImportQueue_VW AS Q

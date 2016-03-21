@@ -101,7 +101,20 @@ namespace FeatureDemandPlanning.Model.Parameters
                     TrimIdentifier,
                     DocumentId,
                     ProgrammeId,
-                    Gateway
+                    Gateway,
+                    ImportTrim
+                };
+            }
+            if (Action == enums.ImportAction.MapMissingTrim)
+            {
+                return new
+                {
+                    ExceptionId,
+                    DocumentId,
+                    ProgrammeId,
+                    Gateway,
+                    TrimIdentifier,
+                    ImportTrim
                 };
             }
             if (Action == enums.ImportAction.AddMissingDerivative)
@@ -121,7 +134,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                 };
             }
 
-            if (Action == enums.ImportAction.AddMissingTrim || Action == enums.ImportAction.MapMissingTrim)
+            if (Action == enums.ImportAction.AddMissingTrim)
             {
                 return new
                 {

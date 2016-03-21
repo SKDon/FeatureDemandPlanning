@@ -110,7 +110,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId
-		, 'No BMC defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
+		, 'No Brochure Model Code defined for ''' + REPLACE(M.ExportRow1, '#', '') + ' - ' + REPLACE(M.ExportRow2, '#', '') + '''' AS ErrorMessage
 		, M.ExportRow1 + ' ' + M.ExportRow2 AS AdditionalData
 		, 301 AS SubTypeId
 
