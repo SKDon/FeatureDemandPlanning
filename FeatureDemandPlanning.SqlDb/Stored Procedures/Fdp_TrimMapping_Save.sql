@@ -1,8 +1,8 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TrimMapping_Save]
 	  @ImportTrim		NVARCHAR(200)
+	, @DocumentId		INT
 	, @ProgrammeId		INT
 	, @Gateway			NVARCHAR(100)
-	, @DerivativeCode	NVARCHAR(20)
 	, @TrimId			INT = NULL
 	, @FdpTrimId		INT = NULL
 	, @CDSId			NVARCHAR(16)
@@ -19,11 +19,7 @@ BEGIN
 				  WHERE 
 				  ImportTrim = @ImportTrim
 				  AND
-				  ProgrammeId = @ProgrammeId
-				  AND
-				  Gateway = @Gateway
-				  AND
-				  BMC = @DerivativeCode
+				  DocumentId = @DocumentId
 				  AND
 				  (@TrimId IS NULL OR TrimId = @TrimId)
 				  AND
@@ -34,9 +30,9 @@ BEGIN
 		INSERT INTO Fdp_TrimMapping
 		(
 			  ImportTrim
+			, DocumentId
 			, ProgrammeId
 			, Gateway
-			, BMC
 			, TrimId
 			, FdpTrimId
 			, CreatedBy
@@ -44,9 +40,9 @@ BEGIN
 		VALUES
 		(
 			  @ImportTrim
+			, @DocumentId
 			, @ProgrammeId
 			, @Gateway
-			, @DerivativeCode
 			, @TrimId
 			, @FdpTrimId
 			, @CDSId

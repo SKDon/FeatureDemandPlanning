@@ -10,6 +10,15 @@ AS
 	DECLARE @DocumentId		AS INT;
 	DECLARE @FlagOrphanedImportData AS BIT = 0;
 	
+	SET @Message = 'Removing old errors...'
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+
+	DELETE FROM Fdp_ImportError 
+	WHERE 
+	FdpImportQueueId = @FdpImportQueueId
+	AND
+	FdpImportErrorTypeId = 3
+	
 	IF EXISTS(
 		SELECT TOP 1 1 
 		FROM 
@@ -30,15 +39,6 @@ AS
 	FdpImportId = @FdpImportId;
 
 	SELECT TOP 1 @FlagOrphanedImportData = CAST(Value AS BIT) FROM Fdp_Configuration WHERE ConfigurationKey = 'FlagOrphanedImportDataAsError';
-
-	SET @Message = 'Removing old errors...'
-	RAISERROR(@Message, 0, 1) WITH NOWAIT;
-
-	DELETE FROM Fdp_ImportError 
-	WHERE 
-	FdpImportQueueId = @FdpImportQueueId
-	AND
-	FdpImportErrorTypeId = 3
 
 	SET @Message = 'Adding missing derivatives...';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;

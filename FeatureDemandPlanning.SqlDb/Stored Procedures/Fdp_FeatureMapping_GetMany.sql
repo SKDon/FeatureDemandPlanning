@@ -3,6 +3,7 @@
 	, @ModelYear				NVARCHAR(10)	= NULL
 	, @Gateway					NVARCHAR(16)	= NULL
 	, @IncludeAllFeatures		BIT = 0
+	, @OxoFeaturesOnly			BIT = 0
 	, @CDSId					NVARCHAR(16)
 	, @FilterMessage			NVARCHAR(50)	= NULL
 	, @PageIndex				INT				= NULL
@@ -23,10 +24,56 @@ AS
 	DECLARE @PageRecords AS TABLE
 	(
 		  RowIndex INT IDENTITY(1, 1)
-		, FeatureCode NVARCHAR(20)
+		, CreatedOn		DATETIME
+		, CreatedBy		NVARCHAR(16)
+		, ImportFeatureCode NVARCHAR(20) NULL
+		, MappedFeatureCode NVARCHAR(20) NULL
+		, DocumentId INT
+		, ProgrammeId INT
+		, Gateway NVARCHAR(200)
+		, [Description]	NVARCHAR(2000)
+		, IsMappedFeature BIT
+		, UpdatedOn DATETIME NULL
+		, UpdatedBy NVARCHAR(16) NULL
+		, FdpFeatureMappingId INT NULL
+		, IsPack BIT
+		, FeatureId INT NULL
+		, FeaturePackId INT NULL
 	);
-	INSERT INTO @PageRecords (FeatureCode)
-	SELECT F.ImportFeatureCode
+	INSERT INTO @PageRecords 
+	(
+		  CreatedOn
+		, CreatedBy
+		, ImportFeatureCode
+		, MappedFeatureCode
+		, DocumentId
+		, ProgrammeId
+		, Gateway
+		, [Description]
+		, IsMappedFeature
+		, UpdatedOn
+		, UpdatedBy
+		, FdpFeatureMappingId
+		, IsPack
+		, FeatureId
+		, FeaturePackId
+	)
+	SELECT
+		  F.CreatedOn
+		, F.CreatedBy
+		, F.ImportFeatureCode
+		, F.MappedFeatureCode
+		, F.DocumentId
+		, F.ProgrammeId
+		, F.Gateway
+		, ISNULL(F.BrandDescription, F.[Description])
+		, F.IsMappedFeature
+		, F.UpdatedOn
+		, F.UpdatedBy
+		, F.FdpFeatureMappingId
+		, CAST(CASE WHEN F.FeaturePackId IS NOT NULL AND F.FeatureId IS NULL THEN 1 ELSE 0 END AS BIT) AS IsPack
+		, F.FeatureId
+		, F.FeaturePackId
 	FROM
 	Fdp_FeatureMapping_VW AS F
 	JOIN OXO_Programme_VW	 AS P ON F.ProgrammeId = P.Id
@@ -40,10 +87,15 @@ AS
 	(
 		(@IncludeAllFeatures = 0 AND F.IsMappedFeature = 1)
 		OR
-		(@IncludeAllFeatures = 1 AND F.IsMappedFeature = 0)
+		(@IncludeAllFeatures = 1)
 	)
 	AND
-	F.IsMappedFeature = 1;
+	(
+		(@OxoFeaturesOnly = 0)
+		OR
+		(@OxoFeaturesOnly = 1 AND F.IsMappedFeature = 0)
+	)
+	ORDER BY MappedFeatureCode
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
 	SELECT @TotalDisplayRecords = @TotalRecords;
@@ -61,13 +113,16 @@ AS
 		, F.FdpFeatureMappingId
 		, F.ImportFeatureCode
 		, F.MappedFeatureCode AS FeatureCode
+		, F.DocumentId
 		, F.ProgrammeId
 		, F.Gateway
 		, F.[Description]
 		, F.IsMappedFeature
 		, F.UpdatedOn
 		, F.UpdatedBy
+		, F.IsPack
+		, F.FeatureId
+		, F.FeaturePackId
 
-	FROM @PageRecords				AS P
-	JOIN Fdp_FeatureMapping_VW		AS F	ON	P.FeatureCode = F.ImportFeatureCode
-											AND P.RowIndex BETWEEN @MinIndex AND @MaxIndex;
+	FROM @PageRecords				AS F
+	WHERE F.RowIndex BETWEEN @MinIndex AND @MaxIndex;

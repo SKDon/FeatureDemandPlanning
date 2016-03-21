@@ -283,7 +283,7 @@ page.FeatureCodePage = function (models) {
     me.configureCellEditing = function () {
         $(".feature-code-editable").editable(me.cellEditCallback,
         {
-            tooltip: "Click to edit brochure feature code",
+            tooltip: "Click to edit feature code",
             cssclass: "editable-cell",
             data: me.parseInputData,
             select: true,
@@ -462,7 +462,7 @@ page.FeatureCodePage = function (models) {
         var info = $(".dataTable").DataTable().page.info();
         var prefix = me.getIdentifierPrefix();
         var total = info.recordsTotal;
-        $(".results-total").html(total + " Derivatives");
+        $(".results-total").html(total + " Features");
     }
     function getModal() {
         return getModel("Modal");

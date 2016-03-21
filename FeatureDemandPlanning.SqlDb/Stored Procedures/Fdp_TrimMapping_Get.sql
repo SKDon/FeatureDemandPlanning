@@ -6,21 +6,56 @@ AS
 	SELECT 
 		  T.FdpTrimMappingId
 		, T.ImportTrim
+		, T.DocumentId
 		, T.ProgrammeId
 		, T.Gateway
-		, T.BMC
 		, T.TrimId
 		, T.FdpTrimId
-		, T.MappedTrim AS Name
-		, T.[Level]
-		, T.Abbreviation
-		, T.DPCK
+		, TR.Name
+		, TR.[Level]
+		, TR.Abbreviation
+		, TR.DPCK
 		, T.CreatedOn
 		, T.CreatedBy
 		, T.UpdatedOn
 		, T.UpdatedBy
 		, T.IsActive
 		
-	  FROM Fdp_TrimMapping_VW AS T
+	  FROM 
+	  OXO_Doc AS D
+	  JOIN Fdp_TrimMapping AS T ON D.Programme_Id = T.ProgrammeId
+	  JOIN OXO_Programme_Trim AS TR ON T.TrimId = TR.Id
 	  WHERE 
-	  FdpTrimMappingId = @FdpTrimMappingId;
+	  T.FdpTrimMappingId = @FdpTrimMappingId
+	  AND
+	  ISNULL(D.Archived, 0) = 0
+	  
+	  UNION
+	  
+	  SELECT 
+		  T.FdpTrimMappingId
+		, T.ImportTrim
+		, T.DocumentId
+		, T.ProgrammeId
+		, T.Gateway
+		, T.TrimId
+		, T.FdpTrimId
+		, TR.Name
+		, TR.[Level]
+		, TR.Abbreviation
+		, TR.DPCK
+		, T.CreatedOn
+		, T.CreatedBy
+		, T.UpdatedOn
+		, T.UpdatedBy
+		, T.IsActive
+		
+	  FROM 
+	  OXO_Doc							AS D
+	  JOIN Fdp_TrimMapping				AS T	ON	D.Programme_Id	= T.ProgrammeId
+	  JOIN OXO_Archived_Programme_Trim	AS TR	ON	D.Id			= TR.Doc_Id
+												AND T.TrimId		= TR.Id
+	  WHERE 
+	  T.FdpTrimMappingId = @FdpTrimMappingId
+	  AND
+	  D.Archived = 1

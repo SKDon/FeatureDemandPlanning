@@ -1,19 +1,19 @@
 ﻿
 
 
+
 CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 
 	SELECT
-		  T.DocumentId 
-		, T.CreatedOn
+		  T.CreatedOn
 		, T.CreatedBy
+		, T.DocumentId
 		, T.ProgrammeId
 		, T.Gateway
 		, T.Name			AS ImportTrim
 		, T.Name			AS MappedTrim
 		, T.Abbreviation
 		, T.[Level]
-		, T.BMC
 		, T.DPCK
 		, CAST(0 AS BIT)	AS IsMappedTrim
 		, T.IsFdpTrim
@@ -26,21 +26,28 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 		, T.IsArchived
 		
 	FROM
-	Fdp_Trim_VW	AS T
+	OXO_Programme				AS P
+	JOIN Fdp_Trim_VW			AS T	ON	P.Id			= T.ProgrammeId
+	LEFT JOIN Fdp_TrimMapping	AS M	ON	T.DocumentId	= M.DocumentId
+										AND	T.TrimId		= M.TrimId
+										AND M.IsActive		= 1
+	WHERE
+	P.Active = 1
+	AND
+	M.FdpTrimMappingId IS NULL
 											
 	UNION
 	
 	SELECT 
-		  T.DocumentId
-		, M.CreatedOn
+		  M.CreatedOn
 		, M.CreatedBy
+		, T.DocumentId
 		, T.ProgrammeId
 		, T.Gateway
 		, M.ImportTrim			AS ImportTrim
 		, T.Name				AS MappedTrim
 		, T.Abbreviation
 		, T.[Level]
-		, M.BMC
 		, T.DPCK		
 		, CAST(1 AS BIT)		AS IsMappedTrim
 		, T.IsFdpTrim
@@ -53,8 +60,10 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 		, T.IsArchived
 		
 	FROM
-	Fdp_Trim_VW				AS T
-	JOIN Fdp_TrimMapping	AS M	ON	T.TrimId			= M.TrimId
-									AND	T.ProgrammeId		= M.ProgrammeId
-									AND T.Gateway			= M.Gateway
-									AND M.IsActive			= 1
+	OXO_Programme			AS P
+	JOIN Fdp_Trim_VW		AS T	ON	P.Id			= T.ProgrammeId
+	JOIN Fdp_TrimMapping	AS M	ON	T.DocumentId	= M.DocumentId
+									AND	T.TrimId		= M.TrimId
+									AND M.IsActive		= 1
+	WHERE
+	P.Active = 1
