@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using enums = FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model.Parameters
@@ -38,7 +37,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public int? SpecialFeatureTypeId { get; set; }
         public bool IsGlobalMapping { get; set; }
 
-        public ImportExceptionParameters() : base()
+        public ImportExceptionParameters()
         {
             ExceptionType = enums.ImportExceptionType.NotSet;
             Action = enums.ImportAction.NotSet;
@@ -63,15 +62,7 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    ImportQueueId = ImportQueueId,
-                    ExceptionId = ExceptionId,
-                    ProgrammeId = ProgrammeId,
-                    Gateway = Gateway,
-                    ExceptionType = ExceptionType,
-                    Action = Action,
-                    ImportFeatureCode = ImportFeatureCode,
-                    FeatureCode = FeatureCode,
-                    FeatureDescription = FeatureDescription
+                    ImportQueueId, ExceptionId, ProgrammeId, Gateway, ExceptionType, Action, ImportFeatureCode, FeatureCode, FeatureDescription
                 };
             }
 
@@ -79,16 +70,7 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    ImportQueueId = ImportQueueId,
-                    ExceptionId = ExceptionId,
-                    ProgrammeId = ProgrammeId,
-                    Gateway = Gateway,
-                    ExceptionType = ExceptionType,
-                    Action = Action,
-                    ImportFeatureCode = ImportFeatureCode,
-                    FeatureCode = FeatureCode,
-                    FeatureDescription = FeatureDescription,
-                    FeatureGroupId = FeatureGroupId
+                    ImportQueueId, ExceptionId, ProgrammeId, Gateway, ExceptionType, Action, ImportFeatureCode, FeatureCode, FeatureDescription, FeatureGroupId
                 };
             }
 
@@ -96,17 +78,7 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    ImportQueueId = ImportQueueId,
-                    ExceptionId = ExceptionId,
-                    ProgrammeId = ProgrammeId,
-                    Gateway = Gateway,
-                    ExceptionType = ExceptionType,
-                    Action = Action,
-                    ImportDerivativeCode = ImportDerivativeCode,
-                    DerivativeCode = DerivativeCode,
-                    BodyId = BodyId,
-                    EngineId = EngineId,
-                    TransmissionId = TransmissionId,
+                    ImportQueueId, ExceptionId, ProgrammeId, Gateway, ExceptionType, Action, ImportDerivativeCode, DerivativeCode, BodyId, EngineId, TransmissionId,
                     DocumentId
                 };
             }
@@ -126,7 +98,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                 return new
                 {
                     ExceptionId,
-                    DPCK,
+                    TrimIdentifier,
                     DocumentId,
                     ProgrammeId,
                     Gateway
@@ -136,16 +108,8 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    ImportQueueId = ImportQueueId,
-                    ExceptionId = ExceptionId,
-                    ProgrammeId = ProgrammeId,
-                    Gateway = Gateway,
-                    ExceptionType = ExceptionType,
-                    Action = Action,
-                    DerivativeCode = ImportDerivativeCode,
-                    BodyId = BodyId,
-                    EngineId = EngineId,
-                    TransmissionId = TransmissionId
+                    ImportQueueId, ExceptionId, ProgrammeId, Gateway, ExceptionType, Action,
+                    DerivativeCode = ImportDerivativeCode, BodyId, EngineId, TransmissionId
                 };
             }
 
@@ -153,15 +117,7 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    ImportQueueId = ImportQueueId,
-                    ExceptionId = ExceptionId,
-                    ProgrammeId = ProgrammeId,
-                    Gateway = Gateway,
-                    ExceptionType = ExceptionType,
-                    Action = Action,
-                    ImportMarket = ImportMarket,
-                    MarketId = MarketId,
-                    IsGlobalMapping = IsGlobalMapping
+                    ImportQueueId, ExceptionId, ProgrammeId, Gateway, ExceptionType, Action, ImportMarket, MarketId, IsGlobalMapping
                 };
             }
 
@@ -169,21 +125,7 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    ImportQueueId = ImportQueueId,
-                    ExceptionId = ExceptionId,
-                    ProgrammeId = ProgrammeId,
-                    Gateway = Gateway,
-                    ExceptionType = ExceptionType,
-                    Action = Action,
-                    ImportTrim = ImportTrim,
-                    TrimId = TrimId,
-                    FdpTrimId = FdpTrimId,
-                    TrimName = TrimName,
-                    TrimAbbreviation = TrimAbbreviation,
-                    TrimLevel = TrimLevel,
-                    DPCK = DPCK,
-                    DerivativeCode = DerivativeCode,
-                    TrimIdentifier = TrimIdentifier
+                    ImportQueueId, ExceptionId, ProgrammeId, Gateway, ExceptionType, Action, ImportTrim, TrimId, FdpTrimId, TrimName, TrimAbbreviation, TrimLevel, DPCK, DerivativeCode, TrimIdentifier
                 };
             }
 
@@ -191,14 +133,7 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    ImportQueueId = ImportQueueId,
-                    ExceptionId = ExceptionId,
-                    ProgrammeId = ProgrammeId,
-                    Gateway = Gateway,
-                    ExceptionType = ExceptionType,
-                    Action = Action,
-                    ImportFeatureCode = ImportFeatureCode,
-                    SpecialFeatureTypeId = SpecialFeatureTypeId,
+                    ImportQueueId, ExceptionId, ProgrammeId, Gateway, ExceptionType, Action, ImportFeatureCode, SpecialFeatureTypeId
                 };
             }
 
@@ -206,12 +141,7 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    ImportQueueId = ImportQueueId,
-                    ExceptionId = ExceptionId,
-                    ProgrammeId = ProgrammeId,
-                    Gateway = Gateway,
-                    ExceptionType = ExceptionType,
-                    Action = Action
+                    ImportQueueId, ExceptionId, ProgrammeId, Gateway, ExceptionType, Action
                 };
             }
 

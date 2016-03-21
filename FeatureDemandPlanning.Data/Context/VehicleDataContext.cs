@@ -323,6 +323,12 @@ namespace FeatureDemandPlanning.DataStore
         {
             throw new NotImplementedException();
         }
+        public async Task<PagedResults<OxoFeature>> ListOxoFeatures(FeatureMappingFilter filter)
+        {
+            filter.IncludeAllFeatures = true;
+            filter.OxoFeaturesOnly = true;
+            return await Task.FromResult(_featureDataStore.FdpOxoFeatureGetMany(filter));
+        }
 
         // Trim and mappings
 
@@ -387,6 +393,14 @@ namespace FeatureDemandPlanning.DataStore
             filter.OxoTrimOnly = true;
             return await Task.FromResult(_trimDataStore.FdpOxoTrimGetMany(filter));
         }
+        public async Task<OxoTrim> UpdateDpckCode(OxoTrim trim)
+        {
+            return await Task.FromResult(_trimDataStore.DpckUpdate(trim));
+        }
+        public async Task<OxoFeature> UpdateFeatureCode(OxoFeature fdpFeature)
+        {
+            return await Task.FromResult(_featureDataStore.FeatureCodeUpdate(fdpFeature));
+        }
 
         #region "Private Methods"
 
@@ -438,10 +452,5 @@ namespace FeatureDemandPlanning.DataStore
 
         #endregion
 
-
-        public async Task<OxoTrim> UpdateDpckCode(OxoTrim trim)
-        {
-            return await Task.FromResult(_trimDataStore.DpckUpdate(trim));
-        }
     }
 }

@@ -26,11 +26,21 @@
     </div>
     <div class="col-md-4 col-sm-6 text-center inverse home-button">
         <a href="@Url.Action("Index", "SpecialFeatureMapping")">
+            <img src="~/Content/Images/Icons/mapping64.png" style="opacity: 0.9; border: 0" />
+        </a>
+        <h2 style="height: 66px">Special Features</h2>
+        <p style="height: 40px">Special Features added containing summary information for take rate data</p>
+        <p>
+            <a class="btn btn-default col-xs-10 col-xs-offset-1" href="@Url.Action("Index", "SpecialFeatureMapping")" role="button">Special Features</a>
+        </p>
+    </div>
+    <div class="col-md-4 col-sm-6 text-center inverse home-button">
+        <a href="@Url.Action("FeatureCodePage", "FeatureMapping")">
             <img src="~/Content/Images/Icons/mapping64.png" style="opacity:0.9;border:0" />
         </a>
-        <h2 style="height:66px">Special Features</h2>
-        <p style="height:40px">Special Features added containing summary information for take rate data</p>
-        <p><a class="btn btn-default col-xs-10 col-xs-offset-1" href="@Url.Action("Index", "SpecialFeatureMapping")" role="button">Special Features</a></p>
+        <h2 style="height:66px">Feature Codes</h2>
+        <p style="height:40px">Update features with missing feature codes</p>
+        <p><a class="btn btn-default col-xs-10 col-xs-offset-1" href="@Url.Action("FeatureCodePage", "FeatureMapping")" role="button">Feature Codes</a></p>
     </div>
 }
 

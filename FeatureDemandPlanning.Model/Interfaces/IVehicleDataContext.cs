@@ -29,8 +29,6 @@ namespace FeatureDemandPlanning.Model.Interfaces
         IEnumerable<FeatureGroup> ListFeatureGroups(ProgrammeFilter filter);
         IEnumerable<TrimLevel> ListTrimLevels(ProgrammeFilter programmeFilter);
 
-        Task<PagedResults<OxoTrim>> ListOxoTrim(TrimMappingFilter filter); 
-
         // Derivatives and mappings
 
         Task<FdpDerivative> DeleteFdpDerivative(FdpDerivative derivativeToDelete);
@@ -68,6 +66,10 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<FdpSpecialFeatureMapping> CopyFdpSpecialFeatureMappingToDocument(FdpSpecialFeatureMapping fdpSpecialFeatureMapping, int targetDocumentId);
         Task<IEnumerable<FdpSpecialFeatureMapping>> CopyFdpSpecialFeatureMappingsToDocument(int sourceDocumentId, int targetDocumentId);
+
+        Task<PagedResults<OxoTrim>> ListOxoTrim(TrimMappingFilter filter);
+        Task<PagedResults<OxoFeature>> ListOxoFeatures(FeatureMappingFilter filter);
+        Task<OxoFeature> UpdateFeatureCode(OxoFeature oxoFeature);
 
         // Trim and mappings
 

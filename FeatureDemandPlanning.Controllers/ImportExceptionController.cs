@@ -53,7 +53,7 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> ImportSummary(ImportExceptionParameters parameters)
         {
             var importView = await ImportViewModel.GetModel(DataContext,
-                                    new ImportQueueFilter(parameters.ImportQueueId.Value)
+                                    new ImportQueueFilter(parameters.ImportQueueId.GetValueOrDefault())
                                     {
                                         Action = ImportAction.Summary
                                     });
@@ -295,7 +295,7 @@ namespace FeatureDemandPlanning.Controllers
         {
             var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.GetValueOrDefault());
 
-            var trim = ModelTrim.FromIdentifier(parameters.DPCK);
+            var trim = ModelTrim.FromIdentifier(parameters.TrimIdentifier);
             var importView = await GetModelFromParameters(parameters);
 
             var importTrimLevels = (IEnumerable<string>)TempData["MapOxoTrim"];
@@ -308,7 +308,8 @@ namespace FeatureDemandPlanning.Controllers
                     DocumentId = parameters.DocumentId.GetValueOrDefault(),
                     ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
                     Gateway = parameters.Gateway,
-                    DPCK = trim.DPCK
+                    DPCK = trim.DPCK,
+                    TrimId = trim.Id
                 };
 
                 await DataContext.Import.MapTrim(filter, trimMapping);

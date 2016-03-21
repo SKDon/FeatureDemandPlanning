@@ -7,6 +7,7 @@ namespace FeatureDemandPlanning.Model
     {
         public int? FeatureId { get; set; }
         public int? FeaturePackId { get; set; }
+        public int? DocumentId { get; set; }
         public int? ProgrammeId { get; set; }
         public Programme Programme { get; set; }
         public string Gateway { get; set; }

@@ -159,10 +159,10 @@ namespace FeatureDemandPlanning.Controllers
             }
 
             derivativeMappingView.TrimMapping = await DataContext.Vehicle.DeleteFdpTrimMapping(FdpTrimMapping.FromParameters(parameters));
-            if (derivativeMappingView.TrimMapping is EmptyFdpTrimMapping)
-            {
-                return JsonGetFailure(string.Format("TrimMapping '{0}' could not be deleted", derivativeMappingView.TrimMapping.ImportTrim));
-            }
+            //if (derivativeMappingView.TrimMapping is EmptyFdpTrimMapping)
+            //{
+            //    return JsonGetFailure(string.Format("TrimMapping '{0}' could not be deleted", derivativeMappingView.TrimMapping.ImportTrim));
+            //}
 
             return JsonGetSuccess();
         }

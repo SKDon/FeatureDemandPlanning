@@ -14,14 +14,28 @@ namespace FeatureDemandPlanning.Model
 
         public virtual string Identifier
         {
-            get { return DPCK; }
+            get
+            {
+                return !string.IsNullOrEmpty(DPCK)
+                    ? string.Format("{0}|{1}", DPCK, Id)
+                    : Id.ToString();
+            }
         }
 
-        public static ModelTrim FromIdentifier(string dpck)
+        public static ModelTrim FromIdentifier(string identifier)
         {
+            var elements = identifier.Split('|');
+            if (elements.Length == 2)
+            {
+                return new ModelTrim()
+                {
+                    DPCK = elements[0],
+                    Id = int.Parse(elements[1])
+                };
+            }
             return new ModelTrim()
             {
-                DPCK = dpck
+                Id = int.Parse(elements[0])
             };
         }
     }

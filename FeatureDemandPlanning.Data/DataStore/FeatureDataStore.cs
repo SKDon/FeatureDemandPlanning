@@ -555,7 +555,7 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                    var results = conn.Query<FdpFeature>("dbo.Fdp_Feature_GetMany", para, commandType: CommandType.StoredProcedure);
+                    var results = conn.Query<FdpFeature>("dbo.Fdp_FeatureMapping_GetMany", para, commandType: CommandType.StoredProcedure);
 
                     if (results.Any())
                     {
@@ -585,6 +585,22 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
             return retVal;
+        }
+        public PagedResults<OxoFeature> FdpOxoFeatureGetMany(FeatureMappingFilter filter)
+        {
+            var results = FdpFeatureMappingGetMany(filter);
+            var page = results.CurrentPage.Select(result => new OxoFeature(result)).ToList();
+            return new PagedResults<OxoFeature>
+            {
+                PageIndex = results.PageIndex,
+                PageSize = results.PageSize,
+                TotalDisplayRecords = results.TotalDisplayRecords,
+                TotalFail = results.TotalFail,
+                TotalRecords = results.TotalRecords,
+                TotalSuccess = results.TotalSuccess,
+                CurrentPage = page
+            };
+
         }
         public FdpFeature FdpFeatureSave(FdpFeature feature)
         {
@@ -787,6 +803,14 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    if (filter.IncludeAllFeatures)
+                    {
+                        para.Add("@IncludeAllFeatures", true, DbType.Boolean);
+                    }
+                    if (filter.OxoFeaturesOnly)
+                    {
+                        para.Add("@OxoFeaturesOnly", filter.OxoFeaturesOnly, DbType.Boolean);
+                    }
 
                     var results = conn.Query<FdpFeatureMapping>("dbo.Fdp_FeatureMapping_GetMany", para, commandType: CommandType.StoredProcedure);
 
@@ -999,6 +1023,36 @@ namespace FeatureDemandPlanning.DataStore
         public IEnumerable<FdpFeatureMapping> FdpFeatureMappingsCopy(int sourceDocumentId, int targetDocumentId)
         {
             throw new NotImplementedException();
+        }
+
+        public OxoFeature FeatureCodeUpdate(OxoFeature feature)
+        {
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+
+                    para.Add("@DocumentId", feature.DocumentId, DbType.Int32);
+                    para.Add("@FeatureId", feature.FeatureId, DbType.Int32);
+                    para.Add("@FeaturePackId", feature.FeaturePackId, DbType.Int32);
+                    para.Add("@FeatureCode", feature.FeatureCode, DbType.String);
+
+
+                    var results = conn.Query<OxoFeature>("Fdp_FeatureCode_Update", para, commandType: CommandType.StoredProcedure);
+                    var features = results as IList<OxoFeature> ?? results.ToList();
+                    if (results != null && features.Any())
+                    {
+                        feature = features.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return feature;
         }
     }
 }

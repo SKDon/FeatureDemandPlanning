@@ -21,7 +21,7 @@ model.MapOxoTrimAction = function (params) {
     };
     me.getActionParameters = function () {
         return $.extend({}, getData(), {
-            "DPCK": me.getDPCK(),
+            "TrimIdentifier": me.getTrimIdentifier(),
             "ImportTrimLevels": me.getSelectedTrimLevels()
         });
     };
@@ -44,7 +44,7 @@ model.MapOxoTrimAction = function (params) {
             }
         });
     };
-    me.getDPCK = function() {
+    me.getTrimIdentifier = function () {
         return $("#" + me.getIdentifierPrefix() + "_DPCK").val();
     };
     me.getSelectedTrimLevels = function() {

@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data;
-using FeatureDemandPlanning.Model.Dapper;
+using System.Linq;
 using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Helpers;
-using FeatureDemandPlanning.Model.Empty;
-using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Context;
+using FeatureDemandPlanning.Model.Dapper;
+using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Extensions;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -16,7 +17,7 @@ namespace FeatureDemandPlanning.DataStore
     {
         public ModelTrimDataStore(string cdsid)
         {
-            this.CurrentCDSID = cdsid;
+            CurrentCDSID = cdsid;
         }
 
         public Programme Programme(ModelTrim trim)
@@ -64,7 +65,7 @@ namespace FeatureDemandPlanning.DataStore
 				try
 				{
 					var para = new DynamicParameters();
-					para.Add("@p_Id", id, dbType: DbType.Int32);
+					para.Add("@p_Id", id, DbType.Int32);
 					retVal = conn.Query<ModelTrim>("dbo.OXO_ModelTrim_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
 				}
 				catch (Exception ex)
@@ -86,24 +87,24 @@ namespace FeatureDemandPlanning.DataStore
             {
 				try
 				{
-                    obj.Save(this.CurrentCDSID);
+                    obj.Save(CurrentCDSID);
 
 					var para = new DynamicParameters();
 
-					para.Add("@p_Programme_Id", obj.ProgrammeId, dbType: DbType.Int32);
-					para.Add("@p_Name", obj.Name, dbType: DbType.String, size: 500);
-                    para.Add("@p_Abbreviation", obj.Abbreviation, dbType: DbType.String, size: 50);
-					para.Add("@p_Level", obj.Level, dbType: DbType.String, size: 500);
-                    para.Add("@p_DPCK", obj.DPCK, dbType: DbType.String, size: 10);
-					para.Add("@p_Active", obj.Active, dbType: DbType.Boolean);
+					para.Add("@p_Programme_Id", obj.ProgrammeId, DbType.Int32);
+					para.Add("@p_Name", obj.Name, DbType.String, size: 500);
+                    para.Add("@p_Abbreviation", obj.Abbreviation, DbType.String, size: 50);
+					para.Add("@p_Level", obj.Level, DbType.String, size: 500);
+                    para.Add("@p_DPCK", obj.DPCK, DbType.String, size: 10);
+					para.Add("@p_Active", obj.Active, DbType.Boolean);
                     if (obj.IsNew)
                     {
-                        para.Add("@p_Created_By", obj.CreatedBy, dbType: DbType.String, size: 8);
-                        para.Add("@p_Created_On", obj.CreatedOn, dbType: DbType.DateTime);
+                        para.Add("@p_Created_By", obj.CreatedBy, DbType.String, size: 8);
+                        para.Add("@p_Created_On", obj.CreatedOn, DbType.DateTime);
                     }
-                    para.Add("@p_Updated_By", obj.UpdatedBy, dbType: DbType.String, size: 8);
-                    para.Add("@p_Last_Updated", obj.LastUpdated, dbType: DbType.DateTime);
-                    para.Add("@p_Id", obj.Id, dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+                    para.Add("@p_Updated_By", obj.UpdatedBy, DbType.String, size: 8);
+                    para.Add("@p_Last_Updated", obj.LastUpdated, DbType.DateTime);
+                    para.Add("@p_Id", obj.Id, DbType.Int32, ParameterDirection.InputOutput);
    
 					conn.Execute(procName, para, commandType: CommandType.StoredProcedure);
 
@@ -134,7 +135,7 @@ namespace FeatureDemandPlanning.DataStore
 				try
 				{
 					var para = new DynamicParameters();
-					para.Add("@p_Id", id, dbType: DbType.Int32);
+					para.Add("@p_Id", id, DbType.Int32);
 					conn.Execute("dbo.OXO_ModelTrim_Delete", para, commandType: CommandType.StoredProcedure);                   
 				}
 				catch (Exception ex)
@@ -154,8 +155,8 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpTrimMappingId", trimMapping.FdpTrimMappingId, dbType: DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@FdpTrimMappingId", trimMapping.FdpTrimMappingId, DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Delete", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -179,7 +180,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpTrimMappingId", trimMapping.FdpTrimMappingId, dbType: DbType.Int32);
+                    para.Add("@FdpTrimMappingId", trimMapping.FdpTrimMappingId, DbType.Int32);
 
                     var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -198,18 +199,18 @@ namespace FeatureDemandPlanning.DataStore
         public FdpTrimMapping TrimMappingSave(FdpTrimMapping trimMapping)
         {
             FdpTrimMapping retVal = new EmptyFdpTrimMapping();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@ImportTrim", trimMapping.ImportTrim, dbType: DbType.String);
-                    para.Add("@ProgrammeId", trimMapping.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@DerivativeCode", trimMapping.BMC, DbType.String);
-                    para.Add("@Gateway", trimMapping.Gateway, dbType: DbType.String);
+                    para.Add("@ImportTrim", trimMapping.ImportTrim, DbType.String);
+                    para.Add("@DocumentId", trimMapping.DocumentId, DbType.Int32);
+                    para.Add("@ProgrammeId", trimMapping.ProgrammeId, DbType.Int32);
+                    para.Add("@Gateway", trimMapping.Gateway, DbType.String);
                     if (trimMapping.TrimId.HasValue)
                     {
-                        para.Add("@TrimId", trimMapping.TrimId.Value, dbType: DbType.Int32);
+                        para.Add("@TrimId", trimMapping.TrimId.Value, DbType.Int32);
                     }
                     if (trimMapping.FdpTrimId.HasValue)
                     {
@@ -238,7 +239,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@FdpTrimId", fdpTrimId, dbType: DbType.Int32);
+                    para.Add("@FdpTrimId", fdpTrimId, DbType.Int32);
 
                     retVal = conn.Query<FdpTrim>("dbo.Fdp_Trim_Delete", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -258,7 +259,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpTrimId", fdpTrimId, dbType: DbType.Int32);
+                    para.Add("@FdpTrimId", fdpTrimId, DbType.Int32);
                     retVal = conn.Query<FdpTrim>("dbo.Fdp_Trim_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
@@ -277,8 +278,8 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
+                    para.Add("@Gateway", filter.Gateway, DbType.String);
 
                     retVal = conn.Query<FdpTrim>("dbo.Fdp_Trim_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
@@ -298,13 +299,13 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@ProgrammeId", trim.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@Gateway", trim.Gateway, dbType: DbType.String);
+                    para.Add("@ProgrammeId", trim.ProgrammeId, DbType.Int32);
+                    para.Add("@Gateway", trim.Gateway, DbType.String);
                     para.Add("@DerivativeCode", trim.BMC, DbType.String);
-                    para.Add("@TrimName", trim.Name, dbType: DbType.String);
-                    para.Add("@TrimAbbreviation", trim.Abbreviation, dbType: DbType.String);
-                    para.Add("@TrimLevel", trim.Level, dbType: DbType.String);
-                    para.Add("@DPCK", trim.DPCK, dbType: DbType.String);
+                    para.Add("@TrimName", trim.Name, DbType.String);
+                    para.Add("@TrimAbbreviation", trim.Abbreviation, DbType.String);
+                    para.Add("@TrimLevel", trim.Level, DbType.String);
+                    para.Add("@DPCK", trim.DPCK, DbType.String);
 
                     retVal = conn.Query<FdpTrim>("dbo.Fdp_Trim_Save", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -325,7 +326,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@FdpTrimId", trimToDelete.FdpTrimId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpTrimId", trimToDelete.FdpTrimId.GetValueOrDefault(), DbType.Int32);
 
                     retVal = conn.Query<FdpTrim>("dbo.Fdp_Trim_Delete", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -346,7 +347,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpTrimId", filter.TrimId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpTrimId", filter.TrimId.GetValueOrDefault(), DbType.Int32);
                     retVal = conn.Query<FdpTrim>("dbo.Fdp_Trim_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
@@ -372,40 +373,40 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (!string.IsNullOrEmpty(filter.CarLine))
                     {
-                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                        para.Add("@CarLine", filter.CarLine, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.ModelYear))
                     {
-                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                        para.Add("@ModelYear", filter.ModelYear, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    if (filter.SortDirection != SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        var direction = filter.SortDirection == SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
                     if (filter.ProgrammeId.HasValue)
                     {
-                        para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
+                        para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -418,7 +419,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<FdpTrim>()
+                    retVal = new PagedResults<FdpTrim>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -451,8 +452,8 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpTrimMappingId", trimMappingToDelete.FdpTrimMappingId, dbType: DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@FdpTrimMappingId", trimMappingToDelete.FdpTrimMappingId, DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Delete", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -477,7 +478,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpTrimMappingId", filter.TrimMappingId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpTrimMappingId", filter.TrimMappingId.GetValueOrDefault(), DbType.Int32);
 
                     var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -507,15 +508,15 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (!string.IsNullOrEmpty(filter.CarLine))
                     {
-                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                        para.Add("@CarLine", filter.CarLine, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.ModelYear))
                     {
-                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                        para.Add("@ModelYear", filter.ModelYear, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.Dpck))
                     {
@@ -531,20 +532,20 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    if (filter.SortDirection != SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        var direction = filter.SortDirection == SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -557,7 +558,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<FdpTrimMapping>()
+                    retVal = new PagedResults<FdpTrimMapping>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -588,11 +589,11 @@ namespace FeatureDemandPlanning.DataStore
 
                     para.Add("@FdpTrimMappingId", trimMappingToCopy.FdpTrimMappingId, DbType.Int32);
                     para.Add("@Gateways", gateways.ToCommaSeperatedList(), DbType.String);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var rows = conn.Execute("Fdp_TrimMapping_Copy", para, commandType: CommandType.StoredProcedure);
 
-                    retVal = FdpTrimMappingGet(new TrimMappingFilter() { TrimMappingId = trimMappingToCopy.FdpTrimMappingId });
+                    retVal = FdpTrimMappingGet(new TrimMappingFilter { TrimMappingId = trimMappingToCopy.FdpTrimMappingId });
                 }
                 catch (Exception ex)
                 {

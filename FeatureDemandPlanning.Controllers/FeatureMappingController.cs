@@ -38,6 +38,16 @@ namespace FeatureDemandPlanning.Controllers
             };
             return View(await FeatureMappingViewModel.GetModel(DataContext, filter));
         }
+        [HttpGet]
+        public async Task<ActionResult> FeatureCodePage(FeatureMappingParameters parameters)
+        {
+            var filter = new FeatureMappingFilter()
+            {
+                PageIndex = PageIndex,
+                PageSize = PageSize
+            };
+            return View(await FeatureMappingViewModel.GetModel(DataContext, filter));
+        }
         [HttpPost]
         [HandleErrorWithJson]
         public async Task<ActionResult> ListFeatureMappings(FeatureMappingParameters parameters)
@@ -63,6 +73,46 @@ namespace FeatureDemandPlanning.Controllers
             }
 
             return Json(jQueryResult);
+        }
+        [HttpPost]
+        [HandleErrorWithJson]
+        public async Task<ActionResult> ListFeatureCodes(FeatureMappingParameters parameters)
+        {
+            ValidateFeatureMappingParameters(parameters, FeatureMappingParametersValidator.NoValidation);
+
+            var filter = new FeatureMappingFilter()
+            {
+                FilterMessage = parameters.FilterMessage,
+                CarLine = parameters.CarLine,
+                ModelYear = parameters.ModelYear,
+                Gateway = parameters.Gateway,
+                Action = FeatureMappingAction.FeatureCodes
+            };
+            filter.InitialiseFromJson(parameters);
+
+            var results = await FeatureMappingViewModel.GetModel(DataContext, filter);
+            var jQueryResult = new JQueryDataTableResultModel(results);
+
+            foreach (var result in results.OxoFeatures.CurrentPage)
+            {
+                try
+                {
+                    jQueryResult.aaData.Add(result.ToJQueryDataTableResult());
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
+
+            }
+            return Json(jQueryResult);
+        }
+        [HttpPost]
+        public async Task<ActionResult> UpdateFeatureCode(FeatureMappingParameters parameters)
+        {
+            await DataContext.Vehicle.UpdateFeatureCode(OxoFeature.FromParameters(parameters));
+
+            return JsonGetSuccess();
         }
         [HttpPost]
         public async Task<ActionResult> ContextMenu(FeatureMappingParameters parameters)

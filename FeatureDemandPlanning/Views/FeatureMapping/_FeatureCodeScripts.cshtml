@@ -1,0 +1,25 @@
+﻿@model FeatureDemandPlanning.Model.ViewModel.FeatureMappingViewModel
+
+<script language="javascript">
+
+    var featureCode, page, modal;
+    var params = {
+        ActionsUri: "@Url.Action("ContextMenu")",
+        FeatureCodeUri: "@Url.Action("ListFeatureCodes")",
+        UpdateFeatureCodeUri: "@Url.Action("UpdateFeatureCode")",
+        ModalContentUri: "@Url.Action("ModalContent")",
+        ModalActionUri: "@Url.Action("ModalAction")",
+        ModalDialogId: "modal",
+        ModalContentId: "modalBody",
+        Configuration: {},
+        PageSize: @Model.PageSize,
+        PageIndex: @Model.PageIndex,
+        _lastParam: null
+    };
+    params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
+
+</script>
+
+@Scripts.Render("~/bundles/js/shared")
+@Scripts.Render("~/bundles/js/featuremapping")
+<script language="javascript" src="@Url.Content("~/Content/js/FeatureMapping/featurecodeinit.js")?v=@Model.CurrentVersion"></script>

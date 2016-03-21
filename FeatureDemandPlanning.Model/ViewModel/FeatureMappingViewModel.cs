@@ -16,12 +16,14 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public FeatureMappingAction CurrentAction { get; set; }
         public FdpFeatureMapping FeatureMapping { get; set; }
         public PagedResults<FdpFeatureMapping> FeatureMappings { get; set; }
+        public IEnumerable<OXODoc> Documents { get; set; } 
         public IEnumerable<Programme> Programmes { get; set; }
         public IEnumerable<CarLine> CarLines { get; set; }
         public IEnumerable<Gateway> Gateways { get; set; }
         public IEnumerable<ModelYear> ModelYears { get; set;}
+        public PagedResults<OxoFeature> OxoFeatures { get; set; } 
        
-        public FeatureMappingViewModel() : base()
+        public FeatureMappingViewModel()
         {
             InitialiseMembers();
         }
@@ -44,6 +46,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 filter.Action == FeatureMappingAction.CopyAll)
             {
                 model = await GetFullAndPartialViewModelForFeatureMappings(context, filter);
+            }
+            else if (filter.Action == FeatureMappingAction.FeatureCodes)
+            {
+                model = await GetFullAndPartialViewModelForFeatureCodes(context, filter);
             }
             else
             {
@@ -139,6 +145,42 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return model;
         }
+        private static async Task<FeatureMappingViewModel> GetFullAndPartialViewModelForFeatureCodes
+        (
+            IDataContext context,
+            FeatureMappingFilter filter
+        )
+        {
+            var baseModel = GetBaseModel(context);
+            var model = new FeatureMappingViewModel(baseModel)
+            {
+                PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : int.MaxValue,
+                Configuration = context.ConfigurationSettings,
+                CurrentUser = baseModel.CurrentUser,
+                CurrentVersion = baseModel.CurrentVersion
+            };
+
+            var programmeFilter = new ProgrammeFilter()
+            {
+                ProgrammeId = filter.ProgrammeId,
+                Gateway = filter.Gateway
+            };
+            HydrateModelWithCommonProperties(model, context, programmeFilter);
+
+            model.OxoFeatures = await context.Vehicle.ListOxoFeatures(filter);
+            model.TotalPages = model.OxoFeatures.TotalPages;
+            model.TotalRecords = model.OxoFeatures.TotalRecords;
+            model.TotalDisplayRecords = model.OxoFeatures.TotalDisplayRecords;
+
+            foreach (var oxoFeature in model.OxoFeatures.CurrentPage)
+            {
+                oxoFeature.Programme = model.Programmes.FirstOrDefault(p => p.Id == oxoFeature.ProgrammeId.GetValueOrDefault());
+                oxoFeature.Document = oxoFeature.Document = model.Documents.FirstOrDefault(d => d.Id == oxoFeature.DocumentId);
+            }
+
+            return model;
+        }
         private static void HydrateModelWithCommonProperties(FeatureMappingViewModel model, IDataContext context)
         {
             HydrateModelWithCommonProperties(model, context, new ProgrammeFilter());
@@ -149,6 +191,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             model.Gateways = model.Programmes.ListGateways();
             model.CarLines = model.Programmes.ListCarLines();
             model.ModelYears = model.Programmes.ListModelYears();
+            model.Documents = context.Vehicle.ListPublishedDocuments(programmeFilter);
         }
         private void InitialiseMembers()
         {

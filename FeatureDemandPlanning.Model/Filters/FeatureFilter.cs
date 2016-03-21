@@ -43,5 +43,8 @@ namespace FeatureDemandPlanning.Model.Filters
                 Action = parameters.Action
             };
         }
+
+        public bool IncludeAllFeatures { get; set; }
+        public bool OxoFeaturesOnly { get; set; }
     }
 }

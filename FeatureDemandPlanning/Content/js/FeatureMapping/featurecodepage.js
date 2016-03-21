@@ -1,8 +1,8 @@
 ﻿"use strict";
 
-var page = namespace("FeatureDemandPlanning.Trim");
+var page = namespace("FeatureDemandPlanning.FeatureCode");
 
-page.TrimMappingsPage = function (models) {
+page.FeatureCodePage = function (models) {
     var uid = 0;
     var privateStore = {};
     var me = this;
@@ -14,6 +14,10 @@ page.TrimMappingsPage = function (models) {
     privateStore[me.id].SelectedCarLineDescription = "";
     privateStore[me.id].SelectedModelYear = "";
     privateStore[me.id].SelectedGateway = "";
+    privateStore[me.id].SelectedDocument = "";
+    privateStore[me.id].SelectedDocument = null;
+    privateStore[me.id].SelectedDocumentDescription = "";
+    privateStore[me.id].SaveData = null;
 
     me.carLineSelectedEventHandler = function (sender) {
         me.setSelectedCarLine($(sender.target).attr("data-target"));
@@ -21,10 +25,23 @@ page.TrimMappingsPage = function (models) {
         me.displaySelectedCarLine();
         me.filterModelYears();
         me.filterGateways();
+        me.filterDocuments();
         me.redrawDataTable();
     };
-    me.displaySelectedCarLine = function () {
+    me.documentSelectedEventHandler = function (sender) {
+        me.setSelectedDocument($(sender.target).attr("data-target"));
+        me.setSelectedDocumentDescription($(sender.target).attr("data-content"));
+        me.displaySelectedCarLine();
+        me.filterModelYears();
+        me.filterGateways();
+        me.filterDocuments();
+        me.redrawDataTable();
+    };
+    me.displaySelectedCarLine = function() {
         $("#" + me.getIdentifierPrefix() + "_SelectedCarLine").html(me.getSelectedCarLineDescription());
+    };
+    me.displaySelectedDocument = function () {
+        $("#" + me.getIdentifierPrefix() + "_SelectedDocument").html(me.getSelectedDocumentDescription());
     }
     me.displaySelectedModelYear = function () {
         var selectedModelYear = me.getSelectedModelYear();
@@ -62,14 +79,14 @@ page.TrimMappingsPage = function (models) {
     };
     me.filterGateways = function () {
         var selectedGateway = $("#" + me.getIdentifierPrefix() + "_SelectedGateway");
-        var gatewayList = $("#" + me.getIdentifierPrefix() + "_GatewayList")
+        var gatewayList = $("#" + me.getIdentifierPrefix() + "_GatewayList");
         var gateways = gatewayList
             .find("a.gateway-item")
             .hide()
             .filter("[data-filter='" + me.getSelectedCarLine() + "']")
             .show();
 
-        if (gateways.length == 0) {
+        if (gateways.length === 0) {
             me.setSelectedGateway("N/A");
             me.displaySelectedGateway();
             selectedGateway.attr("disabled", "disabled");
@@ -80,36 +97,53 @@ page.TrimMappingsPage = function (models) {
             selectedGateway.removeAttr("disabled");
         }
     };
+    me.filterDocuments = function () {
+        var selectedDocument = $("#" + me.getIdentifierPrefix() + "_SelectedDocument");
+        var documentList = $("#" + me.getIdentifierPrefix() + "_DocumentList");
+        var documents = documentList
+            .find("a.document-item")
+            .hide()
+            .filter("[data-filter='" + me.getSelectedCarLine() + "|" + me.getSelectedModelYear() + "|" + me.getSelectedGateway() + "']")
+            .show();
+
+        if (documents.length === 0) {
+            me.setSelectedDocument("N/A");
+            me.displaySelectedDocument();
+            selectedDocument.attr("disabled", "disabled");
+        }
+        else {
+            me.setSelectedDocument("");
+            me.displaySelectedDocument();
+            selectedDocument.removeAttr("disabled");
+        }
+    };
     me.gatewaySelectedEventHandler = function (sender) {
         me.setSelectedGateway($(sender.target).attr("data-target"));
         me.displaySelectedGateway();
         me.redrawDataTable();
     };
     me.getSelectedCarLine = function () {
-        if (privateStore[me.id].SelectedCarLine === "N/A") {
-            return null;
-        }
         return privateStore[me.id].SelectedCarLine;
     };
     me.getSelectedCarLineDescription = function () {
         return privateStore[me.id].SelectedCarLineDescription;
     };
+    me.getSelectedDocument = function() {
+        return privateStore[me.id].SelectedDocument;
+    };
+    me.getSelectedDocumentDescription = function() {
+        return privateStore[me.id].SelectedDocumentDescription;
+    };
     me.getSelectedModelYear = function () {
-        if (privateStore[me.id].SelectedModelYear === "N/A") {
-            return null;
-        }
         return privateStore[me.id].SelectedModelYear;
     };
     me.getSelectedGateway = function () {
-        if (privateStore[me.id].SelectedGateway === "N/A") {
-            return null;
-        }
         return privateStore[me.id].SelectedGateway;
     };
     me.actionTriggered = function (invokedOn, action) {
         var eventArgs = {
-            TrimMappingId: $(this).attr("data-target"),
-            TrimCode: $(this).attr("data-content"),
+            DerivativeMappingId: $(this).attr("data-target"),
+            DerivativeCode: $(this).attr("data-content"),
             Action: parseInt($(this).attr("data-role"))
         };
         $(document).trigger("Action", eventArgs);
@@ -118,15 +152,13 @@ page.TrimMappingsPage = function (models) {
         $(".dataTable td").contextMenu({
             menuSelector: "#contextMenu",
             dynamicContent: me.getContextMenu,
-            contentIdentifier: me.getTrimMappingId,
+            contentIdentifier: me.getDerivativeMappingId,
             menuSelected: me.actionTriggered
         });
     };
     me.configureDataTables = function () {
 
-        var trimsUri = getTrimMappingModel().getTrimMappingsUri();
-        var trimIndex = 0;
-        var trimCodeIndex = 5;
+        var featureCodeIdentifierIndex = 0;
 
         $(".dataTable").DataTable({
             "serverSide": true,
@@ -135,101 +167,49 @@ page.TrimMappingsPage = function (models) {
             "processing": true,
             "sDom": "ltip",
             "aoColumns": [
-                {
-                    "sTitle": "",
-                    "sName": "DERIVATIVE_ID",
-                    "bSearchable": false,
-                    "bSortable": false,
-                    "bVisible": false
-                }
-                , {
-                    "sTitle": "Created On",
-                    "sName": "CREATED_ON",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Created By",
-                    "sName": "CREATED_BY",
-                    "bSearchable": true,
-                    "bSortable": true
-                }
-                , {
-                    "sTitle": "Programme",
-                    "sName": "PROGRAMME",
-                    "bSearchable": true,
-                    "bSortable": true
-                }
-                , {
-                    "sTitle": "Gateway",
-                    "sName": "GATEWAY",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "BMC",
-                    "sName": "BMC",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Import Trim",
-                    "sName": "DERIVATIVE",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Mapping",
-                    "sName": "DERIVATIVE",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "Level",
-                    "sName": "LEVEL",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-                , {
-                    "sTitle": "DPCK",
-                    "sName": "DPCK",
-                    "bSearchable": true,
-                    "bSortable": true,
-                    "sClass": "text-center"
-                }
-            ],
+            {
+                "sTitle": "FeatureCodeIdentifier",
+                "sName": "FEATURE_CODE_IDENTIFIER",
+                "bSearchable": false,
+                "bVisible": false
+            },
+            {
+                "sTitle": "Programme",
+                "sName": "PROGRAMME",
+                "bSearchable": true,
+                "bSortable": true
+            }, {
+                "sTitle": "Gateway",
+                "sName": "GATEWAY",
+                "bSearchable": true,
+                "bSortable": true,
+                "sClass": "text-center"
+            }, {
+                "sTitle": "Document",
+                "sName": "DOCUMENT",
+                "bSearchable": true,
+                "bSortable": true
+            }, {
+                "sTitle": "Feature Code",
+                "sName": "FEATURE_CODE",
+                "bSearchable": true,
+                "bSortable": true,
+                "sClass": "text-center feature-code-editable",
+                "sWidth": "10%"
+            }, {
+                "sTitle": "Description",
+                "sName": "DESCRIPTION",
+                "bSearchable": true,
+                "bSortable": true
+            }],
             "fnCreatedRow": function (row, data, index) {
-                var trimMappingId = data[trimIndex];
-                var trimCode = data[trimCodeIndex];
-                $(row).attr("data-target", trimMappingId);
-                $(row).attr("data-content", trimCode);
+                var featureCodeIdentifier = data[featureCodeIdentifierIndex];
+                $(row).attr("data-target", featureCodeIdentifier);
             },
             "fnDrawCallback": function (oSettings) {
                 //$(document).trigger("Results", me.getSummary());
-                me.bindContextMenu();
-            }
-        });
-    };
-    me.getContextMenu = function (trimMappingId) {
-        var params = { TrimMappingId: trimMappingId };
-        $("#contextMenu").html("");
-        $.ajax({
-            "dataType": "html",
-            "async": true,
-            "type": "POST",
-            "url": getTrimMappingModel().getActionsUri(),
-            "data": params,
-            "success": function (response) {
-                $("#contextMenu").html(response);
-            },
-            "error": function (jqXHR, textStatus, errorThrown) {
-                alert(errorThrown);
+                //me.bindContextMenu();
+                me.configureCellEditing();
             }
         });
     };
@@ -241,8 +221,8 @@ page.TrimMappingsPage = function (models) {
     };
     me.getData = function (data, callback, settings) {
         var params = me.getParameters(data);
-        var model = getTrimMappingModel();
-        var uri = model.getTrimMappingsUri();
+        var model = getFeatureCodeModel();
+        var uri = model.getFeatureCodeUri();
         settings.jqXHR = $.ajax({
             "dataType": "json",
             "type": "POST",
@@ -263,19 +243,27 @@ page.TrimMappingsPage = function (models) {
     };
     me.getParameters = function (data) {
         var filter = getFilter();
+        var modelYear = me.getSelectedModelYear();
+        if (modelYear === "N/A") {
+            modelYear = "";
+        }
+        var gateway = me.getSelectedGateway();
+        if (gateway === "N/A") {
+            gateway = "";
+        }
         var params = $.extend({}, data, {
-            "TrimMappingId": me.getTrimMappingId(),
+            "DerivativeMappingId": me.getDerivativeMappingId(),
             "CarLine": me.getSelectedCarLine(),
-            "ModelYear": me.getSelectedModelYear(),
-            "Gateway": me.getSelectedGateway(),
+            "ModelYear": modelYear,
+            "Gateway": gateway,
             "FilterMessage": me.getFilterMessage()
         });
         return params;
     };
-    me.getTrimMappingId = function (cell) {
+    me.getDerivativeMappingId = function (cell) {
         return $(cell).closest("tr").attr("data-target");
     };
-    me.getTrimCode = function (cell) {
+    me.getFeatureCode = function (cell) {
         return $(cell).closest("tr").attr("data-content");
     };
     me.initialise = function () {
@@ -292,6 +280,60 @@ page.TrimMappingsPage = function (models) {
     me.loadData = function () {
         me.configureDataTables(getFilter());
     };
+    me.configureCellEditing = function () {
+        $(".feature-code-editable").editable(me.cellEditCallback,
+        {
+            tooltip: "Click to edit brochure feature code",
+            cssclass: "editable-cell",
+            data: me.parseInputData,
+            select: true,
+            onblur: "submit",
+            maxlength: 5
+        });
+    };
+    me.cellEditCallback = function (value) {
+
+        var target = $(this).closest("tr").attr("data-target");
+        var identifiers = target.split("|");
+
+        var formattedValue = me.parseCellValue(value);
+
+        var data;
+        if (identifiers[1].indexOf("P") !== -1) {
+
+            var packId = parseInt(identifiers[1].substring(1));
+            data = {
+                DocumentId: parseInt(identifiers[0]),
+                FeaturePackId: packId,
+                FeatureCode: formattedValue
+            };
+
+        } else {
+            
+            var featureId = parseInt(identifiers[1].substring(1));
+            data = {
+                DocumentId: parseInt(identifiers[0]),
+                FeatureId: featureId,
+                FeatureCode: formattedValue
+            };
+        }
+      
+        $(document).trigger("EditCell", data);
+
+        return formattedValue;
+    };
+    me.parseInputData = function (value) {
+        var parsedValue = value.replace("%", "");
+        parsedValue = parsedValue.replace("-", "");
+        var trimmedValue = $.trim(parsedValue);
+        return trimmedValue.toUpperCase();
+    };
+    me.parseCellValue = function (value) {
+        if (value === null || value === "")
+            return "";
+
+        return $.trim(value).toUpperCase();
+    };
     me.modelYearSelectedEventHandler = function (sender) {
         me.setSelectedModelYear($(sender.target).attr("data-target"));
         me.displaySelectedModelYear();
@@ -305,7 +347,7 @@ page.TrimMappingsPage = function (models) {
 
         if (actionModel.isModalAction()) {
             getModal().showModal({
-                Title: model.getActionTitle(action, eventArgs.TrimCode),
+                Title: model.getActionTitle(action, eventArgs.DerivativeCode),
                 Uri: model.getActionContentUri(action),
                 Data: JSON.stringify(eventArgs),
                 Model: model,
@@ -340,6 +382,7 @@ page.TrimMappingsPage = function (models) {
             .unbind("Action").on("Action", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnActionDelegate", [eventArgs]); })
             .unbind("ModalLoaded").on("ModalLoaded", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalLoadedDelegate", [eventArgs]); })
             .unbind("ModalOk").on("ModalOk", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnModalOkDelegate", [eventArgs]); })
+            .unbind("EditCell").on("EditCell", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnEditCellDelegate", [eventArgs]); })
 
         $("#" + prefix + "_CarLineList").find("a.car-line-item").on("click", function (e) {
             me.carLineSelectedEventHandler(e);
@@ -364,18 +407,42 @@ page.TrimMappingsPage = function (models) {
             .unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
             .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
             .unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
+            .unbind("OnEditCellDelegate").on("OnEditCellDelegate", me.onEditCellEventHandler)
             .unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler);
 
         $("#" + prefix + "_FilterMessage").on("keyup", me.onFilterChangedEventHandler);
     };
+    me.onEditCellEventHandler = function(sender, eventArgs) {
+        me.setDataToSave(eventArgs);
+        me.saveData(me.saveCallback);
+    };
+    me.saveData = function(callback) {
+        var data = me.getDataToSave();
+        getFeatureCodeModel().saveData(data, callback);
+    };
+    me.saveCallback = function() {
+        me.setDataToSave(null);
+    };
+    me.getDataToSave = function() {
+        return privateStore[me.id].SaveData;
+    }
+    me.setDataToSave = function(data) {
+        privateStore[me.id].SaveData = data;
+    };
     me.setDataTable = function (dataTable) {
-        privateStore[me.id].DataTable = dataTable
+        privateStore[me.id].DataTable = dataTable;
     };
     me.setSelectedCarLine = function (carLine) {
         privateStore[me.id].SelectedCarLine = carLine;
     };
     me.setSelectedCarLineDescription = function (carLine) {
         privateStore[me.id].SelectedCarLineDescription = carLine;
+    };
+    me.setSelectedDocument = function(document) {
+        privateStore[me.id].SelectedDocument = document;
+    };
+    me.setSelectedDocumentDescription = function(documentDescription) {
+        privateStore[me.id].SelectedDocumentDescription = documentDescription;
     };
     me.setSelectedModelYear = function (modelYear) {
         privateStore[me.id].SelectedModelYear = modelYear;
@@ -395,13 +462,13 @@ page.TrimMappingsPage = function (models) {
         var info = $(".dataTable").DataTable().page.info();
         var prefix = me.getIdentifierPrefix();
         var total = info.recordsTotal;
-        $(".results-total").html(total + " Mapped Trim Levels");
+        $(".results-total").html(total + " Derivatives");
     }
     function getModal() {
         return getModel("Modal");
     };
     function getModelForAction(actionId) {
-        return getTrimMappingModel();
+        return getDerivativeMappingModel();
     }
     function getModels() {
         return privateStore[me.id].Models;
@@ -416,14 +483,14 @@ page.TrimMappingsPage = function (models) {
         });
         return model;
     };
-    function getTrimMappingModel() {
-        return getModel("TrimMapping");
+    function getFeatureCodeModel() {
+        return getModel("FeatureCode");
     };
-    function getFilter(pageSize, pageIndex) {
-        var model = getTrimMappingModel();
+    function getFilter() {
+        var model = getFeatureCodeModel();
         var pageSize = model.getPageSize();
         var pageIndex = model.getPageIndex();
-        var filter = new FeatureDemandPlanning.Trim.TrimMappingFilter();
+        var filter = new FeatureDemandPlanning.FeatureCode.FeatureCodeFilter();
 
         filter.PageIndex = pageIndex;
         filter.PageSize = pageSize;

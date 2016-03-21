@@ -7,6 +7,7 @@
         Mappings = 2,
         Mapping = 3,
         Copy = 4,
-        CopyAll = 5
+        CopyAll = 5,
+        FeatureCodes = 6
     }
 }

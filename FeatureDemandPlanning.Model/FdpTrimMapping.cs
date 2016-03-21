@@ -59,6 +59,7 @@ namespace FeatureDemandPlanning.Model
 
         public OxoTrim(FdpTrim fromTrim)
         {
+            Id = fromTrim.Id;
             DocumentId = fromTrim.DocumentId;
             ProgrammeId = fromTrim.ProgrammeId;
             Gateway = fromTrim.Gateway;
@@ -96,6 +97,16 @@ namespace FeatureDemandPlanning.Model
                 DocumentId = parameters.DocumentId,
                 DPCK = parameters.Dpck
             };
+        }
+
+        public override string Identifier
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(DPCK)
+                    ? string.Format("{0}|{1}", DPCK, TrimId)
+                    : TrimId.ToString();
+            }
         }
     }
 }

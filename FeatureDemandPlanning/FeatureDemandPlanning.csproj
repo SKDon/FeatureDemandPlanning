@@ -271,6 +271,9 @@
     <Content Include="Content\js\DerivativeMapping\bmcinit.js" />
     <Content Include="Content\js\DerivativeMapping\bmc.js" />
     <Content Include="Content\js\DerivativeMapping\bmcpage.js" />
+    <Content Include="Content\js\FeatureMapping\featurecode.js" />
+    <Content Include="Content\js\FeatureMapping\featurecodeinit.js" />
+    <Content Include="Content\js\FeatureMapping\featurecodepage.js" />
     <Content Include="Content\js\Import\ignoreallaction.js" />
     <Content Include="Content\js\Import\mapoxotrimaction.js" />
     <Content Include="Content\js\Import\mapoxoderivativeaction.js" />
@@ -1136,6 +1139,9 @@
     <Content Include="Views\ImportException\_MapOxoDerivative.cshtml" />
     <Content Include="Views\ImportException\_IgnoreAll.cshtml" />
     <Content Include="Views\ImportException\_MapOxoTrim.cshtml" />
+    <Content Include="Views\FeatureMapping\FeatureCodePage.cshtml" />
+    <Content Include="Views\FeatureMapping\_FeatureCode.cshtml" />
+    <Content Include="Views\FeatureMapping\_FeatureCodeScripts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

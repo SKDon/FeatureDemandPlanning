@@ -205,7 +205,7 @@ page.ExceptionsPage = function (models) {
 
         $("#" + prefix + "_IgnoreAll").unbind("click").on("click", function () {
             var params = $.extend({}, me.getParameters(), {
-                "Action": 14,
+                "Action": 14, // Ignore all
                 "ExceptionId": 0,
                 "ExceptionIds": privateStore[me.id].ExceptionIds,
                 "ProgrammeId": 0,
@@ -328,11 +328,7 @@ page.ExceptionsPage = function (models) {
     me.redrawDataTable = function () {
         var prefix = me.getIdentifierPrefix();
         $("#tblImportExceptions").DataTable().draw();
-        if (privateStore[me.id].ExceptionIds.length === 0) {
-            $("#" + prefix + "_IgnoreAll").html("Ignore Selected").attr("disabled", "disabled");
-        } else {
-            $("#" + prefix + "_IgnoreAll").html("Ignore " + privateStore[me.id].ExceptionIds.length + " Exception(s)").removeAttr("disabled");
-        }
+        $("#" + prefix + "_IgnoreAll").html("Ignore Selected").attr("disabled", "disabled");
         $("#" + prefix + "_SelectAll").prop("checked", false);
     };
     
@@ -346,10 +342,8 @@ page.ExceptionsPage = function (models) {
     };
     me.updatePaging = function () {
         var info = $("#tblImportExceptions").DataTable().page.info();
-        var prefix = me.getIdentifierPrefix();
         var pageIndex = info.page + 1;
         var totalPages = info.pages;
-        var total = info.recordsTotal;
         $(".results-paging").html("Page " + pageIndex + " of " + totalPages);
     };
     me.updateTotals = function () {

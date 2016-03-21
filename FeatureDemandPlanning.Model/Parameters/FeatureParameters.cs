@@ -5,6 +5,7 @@ namespace FeatureDemandPlanning.Model.Parameters
     public class FeatureParameters : JQueryDataTableParameters
     {
         public int? FeatureId { get; set; }
+        public int? FeaturePackId { get; set; }
         public string FeatureCode { get; set; }
 
         public int? ProgrammeId { get; set; }

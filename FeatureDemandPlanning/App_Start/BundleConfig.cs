@@ -68,7 +68,9 @@ namespace FeatureDemandPlanning
                     "~/Content/js/FeatureMapping/copy.js",
                     "~/Content/js/FeatureMapping/delete.js",
                     "~/Content/js/FeatureMapping/model.js",
-                    "~/Content/js/FeatureMapping/page.js"
+                    "~/Content/js/FeatureMapping/page.js",
+                     "~/Content/js/FeatureMapping/featurecode.js",
+                    "~/Content/js/FeatureMapping/featurecodepage.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/ignoredexception").Include(
