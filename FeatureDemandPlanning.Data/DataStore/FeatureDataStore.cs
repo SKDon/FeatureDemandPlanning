@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data;
-using System.Reflection;
-using System.Web.UI.WebControls;
-using FeatureDemandPlanning.Model.Dapper;
+using System.Linq;
 using FeatureDemandPlanning.Model;
-using FeatureDemandPlanning.Model.Helpers;
-using FeatureDemandPlanning.Model.Empty;
-using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Context;
-using FeatureDemandPlanning.Model.Extensions;
-using log4net;
+using FeatureDemandPlanning.Model.Dapper;
+using FeatureDemandPlanning.Model.Empty;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Filters;
+using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.DataStore
 {
@@ -20,7 +17,7 @@ namespace FeatureDemandPlanning.DataStore
         
         public FeatureDataStore(string cdsid)
         {
-            this.CurrentCDSID = cdsid;
+            CurrentCDSID = cdsid;
         }
 
         public IEnumerable<FdpFeature> FeatureGetManyByDocumentId(FeatureFilter filter)
@@ -32,7 +29,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@DocumentId", filter.DocumentId.Value, dbType: DbType.Int32);
+                    para.Add("@DocumentId", filter.DocumentId.Value, DbType.Int32);
 
                     retVal = conn.Query<FdpFeature>("Fdp_ProgrammeFeature_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
@@ -61,35 +58,35 @@ namespace FeatureDemandPlanning.DataStore
                             break;
                         case "vehicle":
                             sp_name = "dbo.OXO_VehicleFeature_GetMany";
-                            para.Add("@p_vehicle_id", paramId, dbType: DbType.Int32);
-                            para.Add("@p_group", group, dbType: DbType.String, size: 500);
-                            para.Add("@p_exclude_progid", excludeObjId, dbType: DbType.Int32);
-                            para.Add("@p_exclude_docid", excludeDocId, dbType: DbType.Int32);
-                            para.Add("@p_use_OA_code", useOACode, dbType: DbType.Boolean);
+                            para.Add("@p_vehicle_id", paramId, DbType.Int32);
+                            para.Add("@p_group", group, DbType.String, size: 500);
+                            para.Add("@p_exclude_progid", excludeObjId, DbType.Int32);
+                            para.Add("@p_exclude_docid", excludeDocId, DbType.Int32);
+                            para.Add("@p_use_OA_code", useOACode, DbType.Boolean);
                             break;
                         case "programme":
                             sp_name = "dbo.OXO_ProgrammeFeature_GetMany";
-                            para.Add("@p_prog_id", paramId, dbType: DbType.Int32);
-                            para.Add("@p_doc_id", docid, dbType: DbType.Int32);
-                            para.Add("@p_group", group, dbType: DbType.String, size: 500);
-                            para.Add("@p_exclude_packid", excludeObjId, dbType: DbType.Int32);
+                            para.Add("@p_prog_id", paramId, DbType.Int32);
+                            para.Add("@p_doc_id", docid, DbType.Int32);
+                            para.Add("@p_group", group, DbType.String, size: 500);
+                            para.Add("@p_exclude_packid", excludeObjId, DbType.Int32);
                             break;
                         case "gsf":
                             sp_name = "dbo.OXO_Vehicle_GSF_GetMany";
-                            para.Add("@p_vehicle_id", paramId, dbType: DbType.Int32);
-                            para.Add("@p_group", group, dbType: DbType.String, size: 500);
-                            para.Add("@p_exclude_progid", excludeObjId, dbType: DbType.Int32);
-                            para.Add("@p_exclude_docid", excludeDocId, dbType: DbType.Int32);
-                            para.Add("@p_use_OA_code", useOACode, dbType: DbType.Boolean);
+                            para.Add("@p_vehicle_id", paramId, DbType.Int32);
+                            para.Add("@p_group", group, DbType.String, size: 500);
+                            para.Add("@p_exclude_progid", excludeObjId, DbType.Int32);
+                            para.Add("@p_exclude_docid", excludeDocId, DbType.Int32);
+                            para.Add("@p_use_OA_code", useOACode, DbType.Boolean);
                             break;
                         case "fdp":
                             sp_name = "dbo.OXO_Feature_GetMany";
-                            para.Add("@p_vehicle_id", paramId, dbType: DbType.Int32);
+                            para.Add("@p_vehicle_id", paramId, DbType.Int32);
                             lookup = "@@@";
                             break;
                     }
 
-                    para.Add("@p_lookup", lookup, dbType: DbType.String, size: 50);
+                    para.Add("@p_lookup", lookup, DbType.String, size: 50);
                     retVal = conn.Query<Feature>(sp_name, para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
@@ -131,7 +128,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_Id", id, dbType: DbType.Int32);
+                    para.Add("@p_Id", id, DbType.Int32);
                     retVal = conn.Query<Feature>("dbo.OXO_Feature_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
@@ -152,9 +149,9 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progid, dbType: DbType.Int32);
-                    para.Add("@p_doc_id", docid, dbType: DbType.Int32);
-                    para.Add("@p_feature_id", featureid, dbType: DbType.Int32);
+                    para.Add("@p_prog_id", progid, DbType.Int32);
+                    para.Add("@p_doc_id", docid, DbType.Int32);
+                    para.Add("@p_feature_id", featureid, DbType.Int32);
                     retVal = conn.Query<Feature>("dbo.OXO_ProgrammeFeature_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
@@ -175,9 +172,9 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progid, dbType: DbType.Int32);
-                    para.Add("@p_doc_id", docid, dbType: DbType.Int32);
-                    para.Add("@p_feature_id", featureid, dbType: DbType.Int32);
+                    para.Add("@p_prog_id", progid, DbType.Int32);
+                    para.Add("@p_doc_id", docid, DbType.Int32);
+                    para.Add("@p_feature_id", featureid, DbType.Int32);
                     retVal = conn.Query<Feature>("dbo.OXO_ProgrammeGSF_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
@@ -197,9 +194,9 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_prog_id", progId, dbType: DbType.Int16);
-                    para.Add("@p_doc_id", docId, dbType: DbType.Int16);
-                    para.Add("@p_feature_id", featureId, dbType: DbType.Int16);
+                    para.Add("@p_prog_id", progId, DbType.Int16);
+                    para.Add("@p_doc_id", docId, DbType.Int16);
+                    para.Add("@p_feature_id", featureId, DbType.Int16);
                     retVal = conn.Query<string>("dbo.OXO_Feature_GetRuleText", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
@@ -224,11 +221,11 @@ namespace FeatureDemandPlanning.DataStore
                     if(!string.IsNullOrEmpty(comment))
                         thisComment = comment.Trim();
                     var para = new DynamicParameters();
-                    para.Add("@p_progid", progid, dbType: DbType.Int32);
-                    para.Add("@p_docid", docid, dbType: DbType.Int32);
-                    para.Add("@p_featureid", featureid, dbType: DbType.Int32);
-                    para.Add("@p_comment", thisComment, dbType: DbType.String, size: 2000);
-                    para.Add("@p_CDSID", CurrentCDSID, dbType: DbType.String, size: 10);
+                    para.Add("@p_progid", progid, DbType.Int32);
+                    para.Add("@p_docid", docid, DbType.Int32);
+                    para.Add("@p_featureid", featureid, DbType.Int32);
+                    para.Add("@p_comment", thisComment, DbType.String, size: 2000);
+                    para.Add("@p_CDSID", CurrentCDSID, DbType.String, size: 10);
                     conn.Execute("dbo.OXO_ProgrammeFeatureComment_Save", para, commandType: CommandType.StoredProcedure);                
                 }
                 catch (Exception ex)
@@ -252,11 +249,11 @@ namespace FeatureDemandPlanning.DataStore
                     if (!string.IsNullOrEmpty(ruleText))
                         thisRuleText = ruleText.Trim();
                     var para = new DynamicParameters();
-                    para.Add("@p_progid", progid, dbType: DbType.Int32);
-                    para.Add("@p_docid", docid, dbType: DbType.Int32);
-                    para.Add("@p_featureid", featureid, dbType: DbType.Int32);
-                    para.Add("@p_ruletext", thisRuleText, dbType: DbType.String, size: 2000);
-                    para.Add("@p_CDSID", CurrentCDSID, dbType: DbType.String, size: 10);
+                    para.Add("@p_progid", progid, DbType.Int32);
+                    para.Add("@p_docid", docid, DbType.Int32);
+                    para.Add("@p_featureid", featureid, DbType.Int32);
+                    para.Add("@p_ruletext", thisRuleText, DbType.String, size: 2000);
+                    para.Add("@p_CDSID", CurrentCDSID, DbType.String, size: 10);
                     conn.Execute("dbo.OXO_ProgrammeFeatureRuleText_Save", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
@@ -280,11 +277,11 @@ namespace FeatureDemandPlanning.DataStore
                     if (!string.IsNullOrEmpty(comment))
                         thisComment = comment.Trim();
                     var para = new DynamicParameters();
-                    para.Add("@p_progid", progid, dbType: DbType.Int32);
-                    para.Add("@p_docid", docid, dbType: DbType.Int32);
-                    para.Add("@p_featureid", featureid, dbType: DbType.Int32);
-                    para.Add("@p_comment", thisComment, dbType: DbType.String, size: 2000);
-                    para.Add("@p_CDSID", CurrentCDSID, dbType: DbType.String, size: 10);
+                    para.Add("@p_progid", progid, DbType.Int32);
+                    para.Add("@p_docid", docid, DbType.Int32);
+                    para.Add("@p_featureid", featureid, DbType.Int32);
+                    para.Add("@p_comment", thisComment, DbType.String, size: 2000);
+                    para.Add("@p_CDSID", CurrentCDSID, DbType.String, size: 10);
                     conn.Execute("dbo.OXO_ProgrammeGSFComment_Save", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
@@ -308,11 +305,11 @@ namespace FeatureDemandPlanning.DataStore
                     if (!string.IsNullOrEmpty(comment))
                         thisComment = comment.Trim();
                     var para = new DynamicParameters();
-                    para.Add("@p_progid", progid, dbType: DbType.Int32);
-                    para.Add("@p_docid", docid, dbType: DbType.Int32);
-                    para.Add("@p_featureid", featureid, dbType: DbType.Int32);
-                    para.Add("@p_ruletext", thisComment, dbType: DbType.String, size: 2000);
-                    para.Add("@p_CDSID", CurrentCDSID, dbType: DbType.String, size: 10);
+                    para.Add("@p_progid", progid, DbType.Int32);
+                    para.Add("@p_docid", docid, DbType.Int32);
+                    para.Add("@p_featureid", featureid, DbType.Int32);
+                    para.Add("@p_ruletext", thisComment, DbType.String, size: 2000);
+                    para.Add("@p_CDSID", CurrentCDSID, DbType.String, size: 10);
                     conn.Execute("dbo.OXO_ProgrammeGSFRuleText_Save", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
@@ -332,7 +329,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_section", section, dbType: DbType.Int32);
+                    para.Add("@p_section", section, DbType.Int32);
                     retVal = conn.Query<MFD>("dbo.OXO_MFD_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
@@ -353,8 +350,8 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_vehicle", vehName, dbType: DbType.String, size:50);
-                    para.Add("@p_group", groupName, dbType: DbType.String, size: 100);
+                    para.Add("@p_vehicle", vehName, DbType.String, size:50);
+                    para.Add("@p_group", groupName, DbType.String, size: 100);
                     retVal = conn.Query<JMFD>("dbo.OXO_JMFD_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
@@ -375,7 +372,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@p_all", all, dbType: DbType.Boolean);
+                    para.Add("@p_all", all, DbType.Boolean);
                     retVal = conn.Query<FeatureGroup>("dbo.OXO_FeatureGroup_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)
@@ -396,7 +393,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@FdpFeatureMappingId", featureMapping.FdpFeatureMappingId, dbType: DbType.Int32);
+                    para.Add("@FdpFeatureMappingId", featureMapping.FdpFeatureMappingId, DbType.Int32);
                     
                     var results = conn.Query<FdpFeatureMapping>("Fdp_FeatureMapping_Delete", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -420,7 +417,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpFeatureMappingId", featureMapping.FdpFeatureMappingId, dbType: DbType.Int32);
+                    para.Add("@FdpFeatureMappingId", featureMapping.FdpFeatureMappingId, DbType.Int32);
 
                     var results = conn.Query<FdpFeatureMapping>("Fdp_FeatureMapping_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -444,10 +441,9 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@ImportFeatureCode", featureMapping.ImportFeatureCode, dbType: DbType.String);
-                    para.Add("@ProgrammeId", featureMapping.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@Gateway", featureMapping.Gateway, dbType: DbType.String);
-                    para.Add("@FeatureId", featureMapping.FeatureId, dbType: DbType.Int32);
+                    para.Add("@ImportFeatureCode", featureMapping.ImportFeatureCode, DbType.String);
+                    para.Add("@DocumentId", featureMapping.DocumentId, DbType.Int32);
+                    para.Add("@FeatureId", featureMapping.FeatureId, DbType.Int32);
                     para.Add("@FeaturePackId", featureMapping.FeaturePackId, DbType.Int32);
 
                     var results = conn.Query<FdpFeatureMapping>("Fdp_FeatureMapping_Save", para, commandType: CommandType.StoredProcedure);
@@ -472,7 +468,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@FdpFeatureId", featureToDelete.FdpFeatureId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpFeatureId", featureToDelete.FdpFeatureId.GetValueOrDefault(), DbType.Int32);
                     
                     retVal = conn.Query<FdpFeature>("dbo.Fdp_Feature_Delete", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -492,7 +488,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpFeatureId", filter.FeatureId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpFeatureId", filter.FeatureId.GetValueOrDefault(), DbType.Int32);
                     retVal = conn.Query<FdpFeature>("dbo.Fdp_Feature_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
@@ -517,44 +513,44 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (!string.IsNullOrEmpty(filter.CarLine))
                     {
-                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                        para.Add("@CarLine", filter.CarLine, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.ModelYear))
                     {
-                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                        para.Add("@ModelYear", filter.ModelYear, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    if (filter.SortDirection != SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        var direction = filter.SortDirection == SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
                     if (filter.ProgrammeId.HasValue)
                     {
-                        para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
+                        para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.FilterMessage))
                     {
-                        para.Add("@Filter", filter.FilterMessage, dbType: DbType.String);
+                        para.Add("@Filter", filter.FilterMessage, DbType.String);
                     }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -567,7 +563,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<FdpFeature>()
+                    retVal = new PagedResults<FdpFeature>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -615,11 +611,11 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@ProgrammeId", feature.ProgrammeId.GetValueOrDefault(), dbType: DbType.Int32);
-                    para.Add("@Gateway", feature.Gateway, dbType: DbType.String);
-                    para.Add("@FeatureCode", feature.FeatureCode, dbType: DbType.String);
-                    para.Add("@FeatureGroupId", feature.FeatureGroupId, dbType: DbType.Int32);
-                    para.Add("@FeatureDescription", feature.BrandDescription, dbType: DbType.String);
+                    para.Add("@ProgrammeId", feature.ProgrammeId.GetValueOrDefault(), DbType.Int32);
+                    para.Add("@Gateway", feature.Gateway, DbType.String);
+                    para.Add("@FeatureCode", feature.FeatureCode, DbType.String);
+                    para.Add("@FeatureGroupId", feature.FeatureGroupId, DbType.Int32);
+                    para.Add("@FeatureDescription", feature.BrandDescription, DbType.String);
                     
                     retVal = conn.Query<FdpFeature>("dbo.Fdp_Feature_Save", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -639,7 +635,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@FdpSpecialFeatureId", fdpFeatureId, dbType: DbType.Int32);
+                    para.Add("@FdpSpecialFeatureId", fdpFeatureId, DbType.Int32);
 
                     retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeatureMapping_Delete", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -659,7 +655,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpSpecialFeatureId", fdpFeatureId, dbType: DbType.Int32);
+                    para.Add("@FdpSpecialFeatureId", fdpFeatureId, DbType.Int32);
                     retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeatureMapping_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
                 catch (Exception ex)
@@ -678,8 +674,8 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@ProgrammeId", filter.ProgrammeId, dbType: DbType.Int32);
-                    para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                    para.Add("@ProgrammeId", filter.ProgrammeId, DbType.Int32);
+                    para.Add("@Gateway", filter.Gateway, DbType.String);
 
                     retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeatureMapping_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
@@ -699,10 +695,10 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
-                    para.Add("@FeatureCode", specialFeature.FeatureCode, dbType: DbType.String);
-                    para.Add("@FdpSpecialFeatureTypeId", specialFeature.SpecialFeatureType.FdpSpecialFeatureTypeId, dbType: DbType.Int32);
-                    para.Add("@ProgrammeId", specialFeature.ProgrammeId.GetValueOrDefault(), dbType: DbType.Int32);
-                    para.Add("@Gateway", specialFeature.Gateway, dbType: DbType.String);
+                    para.Add("@FeatureCode", specialFeature.FeatureCode, DbType.String);
+                    para.Add("@FdpSpecialFeatureTypeId", specialFeature.SpecialFeatureType.FdpSpecialFeatureTypeId, DbType.Int32);
+                    para.Add("@ProgrammeId", specialFeature.ProgrammeId.GetValueOrDefault(), DbType.Int32);
+                    para.Add("@Gateway", specialFeature.Gateway, DbType.String);
 
                     retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeatureMapping_Save", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 }
@@ -723,8 +719,8 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpFeatureMappingId", featureMappingToDelete.FdpFeatureMappingId, dbType: DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@FdpFeatureMappingId", featureMappingToDelete.FdpFeatureMappingId, DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<FdpFeatureMapping>("Fdp_FeatureMapping_Delete", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -748,7 +744,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpFeatureMappingId", filter.FeatureMappingId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpFeatureMappingId", filter.FeatureMappingId.GetValueOrDefault(), DbType.Int32);
 
                     var results = conn.Query<FdpFeatureMapping>("Fdp_FeatureMapping_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -778,32 +774,32 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (!string.IsNullOrEmpty(filter.CarLine))
                     {
-                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                        para.Add("@CarLine", filter.CarLine, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.ModelYear))
                     {
-                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                        para.Add("@ModelYear", filter.ModelYear, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    if (filter.SortDirection != SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        var direction = filter.SortDirection == SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -828,7 +824,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<FdpFeatureMapping>()
+                    retVal = new PagedResults<FdpFeatureMapping>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -863,11 +859,11 @@ namespace FeatureDemandPlanning.DataStore
 
                     para.Add("@FdpFeatureMappingId", featureMappingToCopy.FdpFeatureMappingId, DbType.Int32);
                     para.Add("@TargetDocumentId", targetDocumentId, DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var rows = conn.Execute("Fdp_FeatureMapping_Copy", para, commandType: CommandType.StoredProcedure);
 
-                    retVal = FdpFeatureMappingGet(new FeatureMappingFilter() { FeatureMappingId = featureMappingToCopy.FdpFeatureMappingId });
+                    retVal = FdpFeatureMappingGet(new FeatureMappingFilter { FeatureMappingId = featureMappingToCopy.FdpFeatureMappingId });
                 }
                 catch (Exception ex)
                 {
@@ -885,7 +881,7 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpSpecialFeatureMappingId", filter.SpecialFeatureMappingId.GetValueOrDefault(), dbType: DbType.Int32);
+                    para.Add("@FdpSpecialFeatureMappingId", filter.SpecialFeatureMappingId.GetValueOrDefault(), DbType.Int32);
 
                     var results = conn.Query<FdpSpecialFeatureMapping>("Fdp_SpecialFeatureMapping_Get", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -909,8 +905,8 @@ namespace FeatureDemandPlanning.DataStore
                 try
                 {
                     var para = new DynamicParameters();
-                    para.Add("@FdpSpecialFeatureMappingId", featureMappingToDelete.FdpSpecialFeatureMappingId, dbType: DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@FdpSpecialFeatureMappingId", featureMappingToDelete.FdpSpecialFeatureMappingId, DbType.Int32);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var results = conn.Query<FdpSpecialFeatureMapping>("Fdp_SpecialFeatureMapping_Delete", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
@@ -940,32 +936,32 @@ namespace FeatureDemandPlanning.DataStore
 
                     if (!string.IsNullOrEmpty(filter.CarLine))
                     {
-                        para.Add("@CarLine", filter.CarLine, dbType: DbType.String);
+                        para.Add("@CarLine", filter.CarLine, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.ModelYear))
                     {
-                        para.Add("@ModelYear", filter.ModelYear, dbType: DbType.String);
+                        para.Add("@ModelYear", filter.ModelYear, DbType.String);
                     }
                     if (!string.IsNullOrEmpty(filter.Gateway))
                     {
-                        para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
                     if (filter.PageIndex.HasValue)
                     {
-                        para.Add("@PageIndex", filter.PageIndex.Value, dbType: DbType.Int32);
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, dbType: DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
                     }
                     if (filter.SortIndex.HasValue)
                     {
-                        para.Add("@SortIndex", filter.SortIndex.Value, dbType: DbType.Int32);
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
                     }
-                    if (filter.SortDirection != Model.Enumerations.SortDirection.NotSet)
+                    if (filter.SortDirection != SortDirection.NotSet)
                     {
-                        var direction = filter.SortDirection == Model.Enumerations.SortDirection.Descending ? "DESC" : "ASC";
-                        para.Add("@SortDirection", direction, dbType: DbType.String);
+                        var direction = filter.SortDirection == SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
                     }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -978,7 +974,7 @@ namespace FeatureDemandPlanning.DataStore
                         totalRecords = para.Get<int>("@TotalRecords");
                         totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
                     }
-                    retVal = new PagedResults<FdpSpecialFeatureMapping>()
+                    retVal = new PagedResults<FdpSpecialFeatureMapping>
                     {
                         PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
                         TotalRecords = totalRecords,
@@ -1014,11 +1010,11 @@ namespace FeatureDemandPlanning.DataStore
 
                     para.Add("@FdpSpecialFeatureMappingId", featureMappingToCopy.FdpSpecialFeatureMappingId, DbType.Int32);
                     para.Add("@TargetDocumentId", targetDocumentId, DbType.Int32);
-                    para.Add("@CDSId", CurrentCDSID, dbType: DbType.String);
+                    para.Add("@CDSId", CurrentCDSID, DbType.String);
 
                     var rows = conn.Execute("Fdp_SpecialFeatureMapping_Copy", para, commandType: CommandType.StoredProcedure);
 
-                    retVal = FdpSpecialFeatureMappingGet(new SpecialFeatureMappingFilter() { SpecialFeatureMappingId = featureMappingToCopy.FdpSpecialFeatureMappingId });
+                    retVal = FdpSpecialFeatureMappingGet(new SpecialFeatureMappingFilter { SpecialFeatureMappingId = featureMappingToCopy.FdpSpecialFeatureMappingId });
                 }
                 catch (Exception ex)
                 {

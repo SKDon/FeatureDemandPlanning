@@ -133,6 +133,10 @@ namespace FeatureDemandPlanning.Controllers
             {
                 TempData["MapOxoTrim"] = parameters.ImportTrimLevels;
             }
+            if (parameters.Action == ImportAction.MapOxoFeature)
+            {
+                TempData["MapOxoFeature"] = parameters.ImportFeatureCodes;
+            }
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
@@ -313,6 +317,42 @@ namespace FeatureDemandPlanning.Controllers
                 };
 
                 await DataContext.Import.MapTrim(filter, trimMapping);
+            }
+            await DeactivateException(importView.CurrentException);
+            await ReProcessException(importView.CurrentException);
+
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
+        }
+        [HandleErrorWithJson]
+        public async Task<ActionResult> MapOxoFeature(ImportExceptionParameters parameters)
+        {
+            var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.GetValueOrDefault());
+
+            var feature = FdpFeature.FromIdentifier(parameters.FeatureIdentifier);
+            var importView = await GetModelFromParameters(parameters);
+
+            var importFeatures = (IEnumerable<string>)TempData["MapOxoFeature"];
+
+            foreach (var importFeature in importFeatures)
+            {
+                var featureMapping = new FdpFeatureMapping()
+                {
+                    ImportFeatureCode = importFeature,
+                    DocumentId = parameters.DocumentId.GetValueOrDefault(),
+                    ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
+                    Gateway = parameters.Gateway,
+                    FeatureCode = feature.FeatureCode
+                };
+                if (feature.FeaturePackId.HasValue)
+                {
+                    featureMapping.FeaturePackId = feature.FeaturePackId;
+                }
+                else
+                {
+                    featureMapping.FeatureId = feature.FeatureId;
+                }
+
+                await DataContext.Import.MapFeature(filter, featureMapping);
             }
             await DeactivateException(importView.CurrentException);
             await ReProcessException(importView.CurrentException);

@@ -21,7 +21,9 @@ BEGIN
 					  AND
 					  DocumentId = @DocumentId
 					  AND
-					  (@DerivativeCode IS NULL OR DerivativeCode = @DerivativeCode))
+					  (@DerivativeCode IS NULL OR DerivativeCode = @DerivativeCode)
+					  AND
+					  IsActive = 1)
 					  
 			INSERT INTO Fdp_DerivativeMapping
 			(

@@ -35,6 +35,8 @@ model.Feature = function (params) {
             case 9:
                 actionModel = new FeatureDemandPlanning.Import.SpecialFeatureAction(me.getParameters());
                 break;
+            case 16:
+                actionModel = new FeatureDemandPlanning.Import.MapOxoFeatureAction(me.getParameters());
             default:
                 break;
         }
@@ -55,6 +57,8 @@ model.Feature = function (params) {
             case 9:
                 title = "Add New Special Feature";
                 break;
+            case 16:
+                title = "Map OXO Feature Code to Historic";
             default:
                 break;
         }

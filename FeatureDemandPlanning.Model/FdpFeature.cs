@@ -38,6 +38,52 @@ namespace FeatureDemandPlanning.Model
             };
         }
 
+        public virtual string Identifier
+        {
+            get
+            {
+                if (!FeatureId.HasValue && FeaturePackId.HasValue)
+                {
+                    return !string.IsNullOrEmpty(FeatureCode)
+                    ? string.Format("{0}|P{1}", FeatureCode, FeaturePackId)
+                    : FeaturePackId.ToString();
+                }
+                return !string.IsNullOrEmpty(FeatureCode)
+                    ? string.Format("{0}|O{1}", FeatureCode, FeatureId)
+                    : FeatureId.ToString();
+            }
+        }
+
+        public static FdpFeature FromIdentifier(string identifier)
+        {
+            var elements = identifier.Split('|');
+            var feature = new FdpFeature();
+            if (elements.Length == 2)
+            {
+                feature.FeatureCode = elements[0];
+                if (elements[1].StartsWith("P"))
+                {
+                    feature.FeaturePackId = int.Parse(elements[1].Substring(1));
+                }
+                else
+                {
+                    feature.FeatureId = int.Parse(elements[1].Substring(1));
+                }
+            }
+            else
+            {
+                if (elements[0].StartsWith("P"))
+                {
+                    feature.FeaturePackId = int.Parse(elements[0].Substring(1));
+                }
+                else
+                {
+                    feature.FeatureId = int.Parse(elements[0].Substring(1));
+                }
+            }
+            return feature;
+        }
+
         public static FdpFeature FromParameters(Parameters.FeatureParameters parameters)
         {
             throw new NotImplementedException();

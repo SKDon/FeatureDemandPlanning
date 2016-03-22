@@ -176,6 +176,10 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_importDataStore.FdpImportTrimLevelsGetMany(importQueueFilter));
         }
+        public async Task<IEnumerable<ImportFeature>> ListImportFeatures(ImportQueueFilter importQueueFilter)
+        {
+            return await Task.FromResult(_importDataStore.FdpImportFeaturesGetMany(importQueueFilter));
+        }
 
         private static DataTable GetImportFileAsDataTable(ImportQueue queuedItem, ImportFileSettings settings)
         {
@@ -209,5 +213,8 @@ namespace FeatureDemandPlanning.DataStore
         private DerivativeDataStore _derivativeDataStore;
         private FeatureDataStore _featureDataStore;
         private ModelTrimDataStore _trimDataStore;
+
+
+        
     }
 }

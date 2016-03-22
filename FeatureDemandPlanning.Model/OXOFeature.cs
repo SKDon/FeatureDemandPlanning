@@ -59,4 +59,8 @@ namespace FeatureDemandPlanning.Model
         public string Code { get; set; }
         public string Descr { get; set; }
     }
+
+    public class ImportFeature : FdpFeature
+    {
+    }
 }

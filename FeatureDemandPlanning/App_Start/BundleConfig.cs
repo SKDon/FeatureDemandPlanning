@@ -97,6 +97,7 @@ namespace FeatureDemandPlanning
                     "~/Content/js/Import/mapoxoderivativeaction.js",
                     "~/Content/js/Import/mapderivativeaction.js",
                     "~/Content/js/Import/mapfeatureaction.js",
+                    "~/Content/js/Import/mapoxofeatureaction.js",
                     "~/Content/js/Import/mapmarketaction.js",
                     "~/Content/js/Import/maptrimaction.js",
                     "~/Content/js/Import/mapoxotrimaction.js",

@@ -49,6 +49,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public IEnumerable<TrimLevel> AvailableTrimLevels { get; set; }
         public IEnumerable<ImportDerivative> AvailableImportDerivatives { get; set; }
         public IEnumerable<ImportTrim> AvailableImportTrimLevels { get; set; }
+        public IEnumerable<ImportFeature> AvailableImportFeatures { get; set; } 
 
         #endregion
 
@@ -279,6 +280,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 });
             model.AvailableImportTrimLevels = await
                 context.Import.ListImportTrimLevels(new ImportQueueFilter()
+                {
+                    ImportQueueId = model.CurrentException.ImportQueueId
+                });
+            model.AvailableImportFeatures = await
+                context.Import.ListImportFeatures(new ImportQueueFilter()
                 {
                     ImportQueueId = model.CurrentException.ImportQueueId
                 });

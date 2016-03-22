@@ -13,6 +13,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public int? MarketId { get; set; }
 
         public string ImportFeatureCode { get; set; }
+        public string FeatureIdentifier { get; set; }
         public string FeatureCode { get; set; }
         public string FeatureDescription { get; set; }
         public int? FeatureGroupId { get; set; }
@@ -33,6 +34,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         public int? TransmissionId { get; set; }
         public IEnumerable<string> ImportDerivativeCodes { get; set; }
         public IEnumerable<string> ImportTrimLevels { get; set; }
+        public IEnumerable<string> ImportFeatureCodes { get; set; } 
 
         public int? SpecialFeatureTypeId { get; set; }
         public bool IsGlobalMapping { get; set; }
@@ -103,6 +105,18 @@ namespace FeatureDemandPlanning.Model.Parameters
                     ProgrammeId,
                     Gateway,
                     ImportTrim
+                };
+            }
+            if (Action == enums.ImportAction.MapOxoFeature)
+            {
+                return new
+                {
+                    ExceptionId,
+                    FeatureIdentifier,
+                    DocumentId,
+                    ProgrammeId,
+                    Gateway,
+                    ImportFeatureCode
                 };
             }
             if (Action == enums.ImportAction.MapMissingTrim)

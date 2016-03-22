@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_FeatureMapping_Save]
 	  @ImportFeatureCode	NVARCHAR(20)
-	, @ProgrammeId			INT
-	, @Gateway				NVARCHAR(100)
+	, @DocumentId			INT
 	, @FeatureId			INT = NULL
 	, @FeaturePackId		INT = NULL
 	, @CDSId				NVARCHAR(16)
@@ -18,9 +17,7 @@ BEGIN
 				  WHERE 
 				  ImportFeatureCode = @ImportFeatureCode
 				  AND
-				  ProgrammeId = @ProgrammeId
-				  AND
-				  Gateway = @Gateway
+				  DocumentId = @DocumentId
 				  AND
 				  (@FeatureId IS NULL OR FeatureId = @FeatureId)
 				  AND
@@ -31,21 +28,25 @@ BEGIN
 		INSERT INTO Fdp_FeatureMapping
 		(
 			  ImportFeatureCode
+			, DocumentId
 			, ProgrammeId
 			, Gateway
 			, FeatureId
 			, FeaturePackId
 			, CreatedBy
 		)
-		VALUES
-		(
-			  @ImportFeatureCode
-			, @ProgrammeId
-			, @Gateway
+		SELECT
+				@ImportFeatureCode
+			, D.Id
+			, D.Programme_Id
+			, D.Gateway
 			, @FeatureId
 			, @FeaturePackId
 			, @CDSId
-		);
+		FROM
+		OXO_Doc AS D
+		WHERE
+		Id = @DocumentId;
 		
 		SET @FdpFeatureMappingId = SCOPE_IDENTITY();
 	  

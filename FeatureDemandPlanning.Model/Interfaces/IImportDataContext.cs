@@ -51,5 +51,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<IEnumerable<ImportDerivative>> ListImportDerivatives(ImportQueueFilter importQueueFilter);
 
         Task<IEnumerable<ImportTrim>> ListImportTrimLevels(ImportQueueFilter importQueueFilter);
+
+        Task<IEnumerable<ImportFeature>> ListImportFeatures(ImportQueueFilter importQueueFilter);
     }
 }

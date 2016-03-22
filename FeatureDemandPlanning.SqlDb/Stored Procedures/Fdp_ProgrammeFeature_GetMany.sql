@@ -30,6 +30,7 @@ AS
 		, F.FdpFeatureMappingId
 		, F.UpdatedOn
 		, F.UpdatedBy
+		, F.FeatureId
 	FROM Fdp_FeatureMapping_VW	AS F 
 	JOIN OXO_Doc				AS D	ON	F.ProgrammeId	= D.Programme_Id
 										AND F.Gateway		= D.Gateway

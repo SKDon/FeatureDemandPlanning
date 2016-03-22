@@ -6,9 +6,11 @@ AS
 	SELECT 
 		  MAP.FdpFeatureMappingId
 		, MAP.ImportFeatureCode
+		, MAP.DocumentId
 		, MAP.ProgrammeId
 		, MAP.Gateway
 		, MAP.FeatureId
+		, MAP.FeaturePackId
 		, F.Feat_Code AS FeatureCode
 		, ISNULL(B.Brand_Desc, F.[Description]) AS [Description]
 		, MAP.CreatedOn
@@ -28,9 +30,11 @@ AS
 	SELECT 
 		  MAP.FdpFeatureMappingId
 		, MAP.ImportFeatureCode
+		, MAP.DocumentId
 		, MAP.ProgrammeId
 		, MAP.Gateway
 		, MAP.FeatureId
+		, MAP.FeaturePackId
 		, P.Feature_Code AS FeatureCode
 		, P.Pack_Name AS [Description]
 		, MAP.CreatedOn

@@ -117,6 +117,32 @@
         <div class="vertical-spacer"></div>
     }
 
+    @if (Model.CurrentAction == enums.ImportAction.MapOxoFeature)
+    {
+        var feature = Model.AvailableFeatures.FirstOrDefault(f => f.FeatureCode == Model.CurrentException.AdditionalData);
+
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <strong>Feature Code:</strong>
+            </div>
+            <div class="col-xs-8">
+                @feature.FeatureCode
+            </div>
+        </div>
+
+        <div class="vertical-spacer"></div>
+
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <strong>Description:</strong>
+            </div>
+            <div class="col-xs-8">
+                @feature.Description
+            </div>
+        </div>
+    <div class="vertical-spacer"></div>
+    }
+
     @if (Model.CurrentAction == enums.ImportAction.MapMissingMarket)
     {
         <div class="row">

@@ -418,6 +418,10 @@ page.ExceptionsPage = function (models) {
                 break;
             case 15:
                 model = getTrimModel();
+                break;
+            case 16:
+                model = getFeatureModel();
+                break;
             default:
                 break;
         };

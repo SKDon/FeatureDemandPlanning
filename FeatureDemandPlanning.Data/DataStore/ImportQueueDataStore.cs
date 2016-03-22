@@ -714,6 +714,26 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
+        public IEnumerable<ImportFeature> FdpImportFeaturesGetMany(ImportQueueFilter filter)
+        {
+            var retVal = Enumerable.Empty<ImportFeature>();
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpImportQueueId", filter.ImportQueueId, DbType.Int32);
+
+                    retVal = conn.Query<ImportFeature>("Fdp_ImportFeatures_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
     }
     internal class ImportStatusDataItem : ImportStatus
     {
