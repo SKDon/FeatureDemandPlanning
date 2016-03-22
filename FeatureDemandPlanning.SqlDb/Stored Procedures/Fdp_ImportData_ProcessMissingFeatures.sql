@@ -114,14 +114,14 @@ AS
 	JOIN Fdp_FeatureMapping_VW	AS F	ON D.Id = F.DocumentId
 	LEFT JOIN 
 	(
-		SELECT FdpImportQueueId, ImportFeatureCode
+		SELECT ImportFeatureCode
 		FROM Fdp_Import_VW AS I
 		WHERE 
 		I.FdpImportId = @FdpImportId
 		AND 
 		I.FdpImportQueueId = @FdpImportQueueId
 		GROUP BY 
-		FdpImportQueueId, ImportFeatureCode
+		ImportFeatureCode
 	)
 	AS I1 ON F.ImportFeatureCode = I1.ImportFeatureCode
 	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
@@ -147,7 +147,11 @@ AS
 	AND
 	CUR2.FdpImportErrorId IS NULL
 	AND
-	F.MappedFeatureCode IS NOT NULL
+	ISNULL(F.MappedFeatureCode, '') <> ''
+	AND
+	EX.FdpImportErrorExclusionId IS NULL
+	ORDER BY 
+	ErrorMessage
 	
 	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
 	
@@ -214,6 +218,8 @@ AS
 	CUR2.FdpImportErrorId IS NULL
 	AND
 	@FlagOrphanedImportData = 1
+	AND
+	EX.FdpImportErrorExclusionId IS NULL
 	GROUP BY
 	I.ImportFeatureCode, I.ImportFeature
 	ORDER BY
