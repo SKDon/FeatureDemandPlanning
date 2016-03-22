@@ -151,7 +151,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId -- Missing Trim
-		, 'No historic data mapping to OXO trim ''' + T.DPCK + '''' AS ErrorMessage
+		, 'No historic data mapping to OXO DPCK ''' + T.DPCK + '''' AS ErrorMessage
 		, T.DPCK AS AdditionalData
 		, 402
 	FROM Fdp_TrimMapping_VW AS T
@@ -216,7 +216,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId -- Missing Trim
-		, 'No OXO trim matching historic trim ''' + I.ImportTrim + '''' AS ErrorMessage
+		, 'No OXO DPCK matching historic trim ''' + I.ImportTrim + '''' AS ErrorMessage
 		, I.ImportTrim AS AdditionalData
 		, 403
 	FROM
