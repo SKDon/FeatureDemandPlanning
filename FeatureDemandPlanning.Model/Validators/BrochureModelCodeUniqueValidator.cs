@@ -33,6 +33,7 @@ namespace FeatureDemandPlanning.Model.Validators
         private bool IsExistingBmc(OxoDerivative derivative)
         {
             return derivative.DocumentId == Parameters.DocumentId &&
+                    !string.IsNullOrEmpty(derivative.DerivativeCode) &&
                    derivative.DerivativeCode.Equals(Parameters.DerivativeCode, StringComparison.OrdinalIgnoreCase);
         }
 

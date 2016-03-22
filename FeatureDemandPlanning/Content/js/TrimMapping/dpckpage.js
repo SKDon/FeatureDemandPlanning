@@ -18,6 +18,8 @@ page.DpckPage = function (models) {
     privateStore[me.id].SelectedDocument = null;
     privateStore[me.id].SelectedDocumentDescription = "";
     privateStore[me.id].SaveData = null;
+    privateStore[me.id].EditedCell = null;
+    privateStore[me.id].OriginalValue = null;
 
     me.carLineSelectedEventHandler = function (sender) {
         me.setSelectedCarLine($(sender.target).attr("data-target"));
@@ -143,6 +145,7 @@ page.DpckPage = function (models) {
     me.configureDataTables = function () {
 
         var trimIdentifierIndex = 0;
+        var dpckCodeIndex = 4;
 
         $(".dataTable").DataTable({
             "serverSide": true,
@@ -204,6 +207,9 @@ page.DpckPage = function (models) {
             "fnCreatedRow": function (row, data, index) {
                 var trimIdentifier = data[trimIdentifierIndex];
                 $(row).attr("data-target", trimIdentifier);
+
+                var originalValue = data[dpckCodeIndex];
+                $(row).attr("data-original-value", originalValue);
             },
             "fnDrawCallback": function (oSettings) {
                 me.configureCellEditing();
@@ -291,7 +297,11 @@ page.DpckPage = function (models) {
     me.cellEditCallback = function (value) {
 
         var target = $(this).closest("tr").attr("data-target");
+        var originalValue = $(this).closest("tr").attr("data-original-value");
         var identifiers = target.split("|");
+
+        privateStore[me.id].OriginalValue = originalValue;
+        privateStore[me.id].EditedCell = this;
 
         var formattedValue = me.parseCellValue(value);
 
@@ -341,6 +351,39 @@ page.DpckPage = function (models) {
             actionModel.actionImmediate(eventArgs);
         }
     };
+    me.onErrorEventHandler = function (sender, eventArgs) {
+        var html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.Message + "</div>";
+        me.scrollToNotify();
+        me.fadeInNotify(html);
+
+        var revert = privateStore[me.id].EditedCell;
+        var originalValue = privateStore[me.id].OriginalValue;
+        if (revert !== null) {
+
+            if (originalValue === undefined || originalValue === "") {
+                originalValue = "Click to edit";
+            }
+            $(revert).html(originalValue);
+            privateStore[me.id].EditedCell = null;
+            privateStore[me.id].OriginalValue = null;
+        }
+    };
+    me.fadeInNotify = function (displayHtml) {
+        var control = $("#notifier");
+        if (control.is(":visible")) {
+            control.fadeOut("slow", function () {
+                control.html(displayHtml);
+                if (displayHtml !== "") control.fadeIn("slow");
+            });
+        } else {
+            if (displayHtml !== "") control.fadeIn("slow");
+        }
+    };
+    me.scrollToNotify = function () {
+        $("html, body").animate({
+            scrollTop: $("#notifier").offset().top - 80
+        }, 500);
+    };
     me.onFilterChangedEventHandler = function (sender, eventArgs) {
         var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
         var filterLength = filter.length;
@@ -349,6 +392,7 @@ page.DpckPage = function (models) {
         }
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
+        $("#notifier").hide();
         me.redrawDataTable();
     };
     me.redrawDataTable = function () {
@@ -403,7 +447,8 @@ page.DpckPage = function (models) {
         var data = me.getDataToSave();
         getDpckModel().saveData(data, callback);
     };
-    me.saveCallback = function() {
+    me.saveCallback = function () {
+        $("#notifier").hide();
         me.setDataToSave(null);
     };
     me.getDataToSave = function() {

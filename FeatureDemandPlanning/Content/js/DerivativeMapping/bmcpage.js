@@ -488,6 +488,7 @@ page.BmcPage = function (models) {
         getBmcModel().saveData(data, callback);
     };
     me.saveCallback = function() {
+        $("#notifier").hide();
         me.setDataToSave(null);
     };
     me.getDataToSave = function() {

@@ -72,7 +72,10 @@ model.Dpck = function (params) {
             "data": params,
             "success": function (json) {
                 callback(json);
-            }
+            },
+            "error": function (jqXhr) {
+            $(document).trigger("Error", JSON.parse(jqXhr.responseText));
+        }
         });
     };
 };

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Validators;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -109,6 +110,8 @@ namespace FeatureDemandPlanning.Controllers
         [HttpPost]
         public async Task<ActionResult> UpdateDpckCode(TrimMappingParameters parameters)
         {
+            ValidateTrimMappingParameters(parameters, TrimMappingParametersValidator.UpdateDpckCode);
+
             await DataContext.Vehicle.UpdateDpckCode(OxoTrim.FromParameters(parameters));
 
             return JsonGetSuccess();
@@ -211,7 +214,7 @@ namespace FeatureDemandPlanning.Controllers
         }
         private void ValidateTrimMappingParameters(TrimMappingParameters parameters, string ruleSetName)
         {
-            var validator = new TrimMappingParametersValidator();
+            var validator = new TrimMappingParametersValidator(DataContext);
             var result = validator.Validate(parameters, ruleSet: ruleSetName);
             if (!result.IsValid)
             {
@@ -226,8 +229,9 @@ namespace FeatureDemandPlanning.Controllers
         public const string NoValidation = "NO_VALIDATION";
         public const string Action = "ACTION";
         public const string TrimIdentifierWithAction = "TRIM_ID_WITH_ACTION";
+        public const string UpdateDpckCode = "UPDATE_DPCK";
 
-        public TrimMappingParametersValidator()
+        public TrimMappingParametersValidator(IDataContext context)
         {
             RuleSet(NoValidation, () =>
             {
@@ -249,6 +253,11 @@ namespace FeatureDemandPlanning.Controllers
             RuleSet(Enum.GetName(typeof(TrimMappingAction), TrimMappingAction.Delete), () =>
             {
                 RuleFor(p => p.TrimMappingId).NotNull().WithMessage("'TrimMappingId' not specified");
+            });
+            RuleSet(UpdateDpckCode, () =>
+            {
+                RuleFor(p => p.TrimId).NotNull().WithMessage("'TrimId' not specified");
+                RuleFor(p => p).SetValidator(new DpckUniqueValidator(context));
             });
         }
     }
