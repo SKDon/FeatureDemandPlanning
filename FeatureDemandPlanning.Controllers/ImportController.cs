@@ -146,10 +146,10 @@ namespace FeatureDemandPlanning.Controllers
         private void SetUploadFilePath()
         {
             var extension = Path.GetExtension(Parameters.UploadFile.FileName);
-            var uploadPath = Path.Combine(DataContext.Configuration.Configuration.GetString("FdpUploadFilePath"),
+            var uploadPath = Path.Combine(ConfigurationSettings.GetString("FdpUploadFilePath"),
                                           string.Format("{0}{1}", Guid.NewGuid(), extension));
 
-            Log.Debug(DataContext.Configuration.Configuration.GetString("FdpUploadFilePath"));
+            Log.Debug(ConfigurationSettings.GetString("FdpUploadFilePath"));
             Log.Debug(string.Format("Upload Path: {0}", uploadPath));
             Parameters.UploadFilePath = uploadPath;
         }

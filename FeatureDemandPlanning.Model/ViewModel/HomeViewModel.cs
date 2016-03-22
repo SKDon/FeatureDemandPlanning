@@ -1,7 +1,9 @@
-﻿using FeatureDemandPlanning.Model.Interfaces;
+﻿using System;
+using FeatureDemandPlanning.Model.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace FeatureDemandPlanning.Model.ViewModel
 {
@@ -36,15 +38,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
             var modelBase = GetBaseModel(context);
             var model = new HomeViewModel(modelBase)
             {
-                Configuration = context.ConfigurationSettings
+                Configuration = context.ConfigurationSettings,
+                LatestNews = await GetLatestNews(context),
+                LatestTakeRateData = await GetLatestTakeRateData(context)
             };
-
-            //var latestForecasts = await context.Forecast.ListLatestForecasts();
-            var latestTakeRateDocuments = await context.TakeRate.ListLatestTakeRateDocuments();
-            
-            model.LatestNews = await context.News.ListLatestNews();
             //model.LatestForecasts = latestForecasts.CurrentPage;
-            model.LatestTakeRateData = latestTakeRateDocuments.CurrentPage;
 
             return model;
         }
@@ -60,6 +58,45 @@ namespace FeatureDemandPlanning.Model.ViewModel
             LatestTakeRateData = Enumerable.Empty<TakeRateSummary>();
 
             IdentifierPrefix = "Page";
+        }
+
+        private static async Task<IEnumerable<TakeRateSummary>> GetLatestTakeRateData(IDataContext context)
+        {
+            var latest = (IEnumerable<TakeRateSummary>)HttpContext.Current.Cache.Get("LatestTakeRateData");
+            if (latest != null)
+                return latest;
+
+            var results = await context.TakeRate.ListLatestTakeRateDocuments();
+            if (results != null && results.CurrentPage.Any())
+            {
+                latest = results.CurrentPage;
+                HttpContext.Current.Cache.Insert("LatestTakeRateData", latest, null, DateTime.Now.AddMinutes(10),
+                    System.Web.Caching.Cache.NoSlidingExpiration);
+            }
+            else
+            {
+                latest = Enumerable.Empty<TakeRateSummary>();
+            }
+            return latest;
+        }
+
+        private static async Task<IEnumerable<News>> GetLatestNews(IDataContext context)
+        {
+            var latest = (IEnumerable<News>)HttpContext.Current.Cache.Get("LatestNews");
+            if (latest != null)
+                return latest;
+
+            latest = await context.News.ListLatestNews();
+            if (latest != null && latest.Any())
+            {
+                HttpContext.Current.Cache.Insert("LatestNews", latest, null, DateTime.Now.AddMinutes(10),
+                    System.Web.Caching.Cache.NoSlidingExpiration);
+            }
+            else
+            {
+                latest = Enumerable.Empty<News>();
+            }
+            return latest;
         }
 
         #endregion

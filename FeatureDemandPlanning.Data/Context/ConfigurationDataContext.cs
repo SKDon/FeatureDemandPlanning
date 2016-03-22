@@ -13,6 +13,12 @@ namespace FeatureDemandPlanning.DataStore
         {
             try
             {
+                var settings = (ConfigurationSettings)System.Web.HttpContext.Current.Cache.Get("ConfigurationSettings");
+                if (settings != null)
+                {
+                    Configuration = settings;
+                    return;
+                }
                 LoadConfigurationData();
                 BuildConfiguration();
             }
@@ -50,6 +56,8 @@ namespace FeatureDemandPlanning.DataStore
                         break;
                 }
             }
+            System.Web.HttpContext.Current.Cache.Insert("ConfigurationSettings", Configuration, null, DateTime.Now.AddMinutes(30),
+                    System.Web.Caching.Cache.NoSlidingExpiration);
         }
 
         #region "Private members"

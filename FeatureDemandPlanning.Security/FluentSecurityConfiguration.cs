@@ -124,6 +124,10 @@ namespace FeatureDemandPlanning.Security
                 configuration.For<SpecialFeatureMappingController>()
                     .RemovePolicy<DefaultSecurityPolicy>()
                     .RequireAnyRole("Administrator", "Importer");
+
+                configuration.For<NewsController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .RequireAnyRole("User");
             });
             GlobalFilters.Filters.Add(new HandleSecurityAttribute(), 0);
         }

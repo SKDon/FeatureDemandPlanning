@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web.Caching;
 using System.Web.Mvc;
 using FeatureDemandPlanning.Helpers;
 using FeatureDemandPlanning.Model;
@@ -11,7 +12,21 @@ namespace FeatureDemandPlanning.Controllers
 {
     public class ControllerBase : Controller
     {
-        public ConfigurationSettings ConfigurationSettings { get { return DataContext.ConfigurationSettings; } }
+        public ConfigurationSettings ConfigurationSettings
+        {
+            get
+            {
+                var settings = (ConfigurationSettings)System.Web.HttpContext.Current.Cache.Get("ConfigurationSettings");
+                if (settings != null) return settings; 
+
+                settings = DataContext.ConfigurationSettings;
+                System.Web.HttpContext.Current.Cache.Insert("ConfigurationSettings", settings, null, DateTime.Now.AddMinutes(30),
+                    Cache.NoSlidingExpiration);
+
+                return settings;
+            }
+        }
+
         public ControllerType ControllerType { get { return _controllerType; } set { _controllerType = value; } }
         public IDataContext DataContext { get; private set; }
 

@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Web;
+using System.Web.Caching;
+using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Helpers;
 
 namespace FeatureDemandPlanning.Model
@@ -66,31 +69,6 @@ namespace FeatureDemandPlanning.Model
         {
             _processStates = new List<ProcessState>() { new ProcessState(ex) };
         }
-
-        //protected IVehicle InitialiseVehicle(IVehicle vehicle)
-        //{
-        //    var cacheKey = string.Format("Vehicle_{0}", vehicle.GetHashCode());
-        //    IVehicle returnValue = (IVehicle)HttpContext.Current.Cache.Get(cacheKey);
-        //    if (returnValue != null)
-        //    {
-        //        returnValue.TrimMappings = vehicle.TrimMappings;
-        //        return returnValue;
-        //    }
-
-        //    returnValue = this.DataContext.Vehicle.GetVehicle(VehicleFilter.FromVehicle(vehicle));
-        //    returnValue.TrimMappings = vehicle.TrimMappings;
-
-        //    HttpContext.Current.Cache.Add(
-        //        cacheKey, 
-        //        returnValue, 
-        //        null,
-        //        DateTime.Now.AddMinutes(60), 
-        //        Cache.NoSlidingExpiration, 
-        //        CacheItemPriority.Default, null);
-
-        //    return returnValue;
-        //}
-
         public SharedModelBase()
         {
 
@@ -104,9 +82,46 @@ namespace FeatureDemandPlanning.Model
         {
             return new SharedModelBase()
             {
-                CurrentUser = context.User.GetUser(),
+                CurrentUser = GetUser(context),
                 CurrentVersion =  Assembly.GetExecutingAssembly().GetName().Version.ToString()
             };
+        }
+        private static User GetUser(IDataContext context)
+        {
+            User retVal;
+            var cdsId = GetAuthenticatedUser();
+            var cachedUser = HttpContext.Current.Cache.Get(cdsId);
+            if (cachedUser != null)
+            {
+                retVal = (User)cachedUser;
+            }
+            else
+            {
+                retVal = context.User.GetUser();
+                HttpContext.Current.Cache.Insert(cdsId, retVal, null, DateTime.Now.AddMinutes(30), Cache.NoSlidingExpiration);
+            }
+            return retVal;
+        }
+        private static string GetAuthenticatedUser()
+        {
+            try
+            {
+                return ParseUserName(HttpContext.Current.User.Identity.Name);
+            }
+            catch (Exception)
+            {
+                //Logger.Instance.Error(ex);
+                return string.Empty;
+            }
+        }
+        private static string ParseUserName(string userName)
+        {
+            var retVal = userName;
+            if (userName.Contains(@"\"))
+            {
+                retVal = userName.Substring(userName.LastIndexOf(@"\", StringComparison.OrdinalIgnoreCase) + 1);
+            }
+            return retVal;
         }
 
         private IList<ProcessState> _processStates = new List<ProcessState>();
