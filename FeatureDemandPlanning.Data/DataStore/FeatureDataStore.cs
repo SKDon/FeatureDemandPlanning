@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Reflection;
+using System.Web.UI.WebControls;
 using FeatureDemandPlanning.Model.Dapper;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Helpers;
@@ -551,6 +552,10 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@Gateway", filter.Gateway, dbType: DbType.String);
                     }
+                    if (!string.IsNullOrEmpty(filter.FilterMessage))
+                    {
+                        para.Add("@Filter", filter.FilterMessage, dbType: DbType.String);
+                    }
                     para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -810,6 +815,10 @@ namespace FeatureDemandPlanning.DataStore
                     if (filter.OxoFeaturesOnly)
                     {
                         para.Add("@OxoFeaturesOnly", filter.OxoFeaturesOnly, DbType.Boolean);
+                    }
+                    if (!string.IsNullOrEmpty(filter.FilterMessage))
+                    {
+                        para.Add("@Filter", filter.FilterMessage, DbType.String);
                     }
 
                     var results = conn.Query<FdpFeatureMapping>("dbo.Fdp_FeatureMapping_GetMany", para, commandType: CommandType.StoredProcedure);

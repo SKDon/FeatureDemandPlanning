@@ -13,6 +13,7 @@ namespace FeatureDemandPlanning.Model.Filters
         public string Gateway { get; set; }
 
         public string FeatureCode { get; set; }
+        public string FilterMessage { get; set; }
 
         public FeatureAction Action { get; set; }
 

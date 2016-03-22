@@ -246,7 +246,6 @@ page.FeatureCodePage = function (models) {
         return $("#Page_IdentifierPrefix").val();
     };
     me.getParameters = function (data) {
-        var filter = getFilter();
         var modelYear = me.getSelectedModelYear();
         if (modelYear === "N/A") {
             modelYear = "";
@@ -256,16 +255,12 @@ page.FeatureCodePage = function (models) {
             gateway = "";
         }
         var params = $.extend({}, data, {
-            "DerivativeMappingId": me.getDerivativeMappingId(),
             "CarLine": me.getSelectedCarLine(),
             "ModelYear": modelYear,
             "Gateway": gateway,
             "FilterMessage": me.getFilterMessage()
         });
         return params;
-    };
-    me.getDerivativeMappingId = function (cell) {
-        return $(cell).closest("tr").attr("data-target");
     };
     me.getFeatureCode = function (cell) {
         return $(cell).closest("tr").attr("data-content");

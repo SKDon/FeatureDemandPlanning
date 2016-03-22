@@ -40,7 +40,7 @@
             </div>
         </div>
         <div class="col-xs-12 col-sm-6 col-lg-5 inverse pull-right" style="padding-top: 20px">
-            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
+            <div class="panel panel-primary" style="height:200px;background-color: rgba(18, 7, 59, 0.75);">
 
                 <div class="panel-body" style="background:none !important">
                     <div class="form-group-sm" style="margin-bottom:15px;">
@@ -91,6 +91,13 @@
                         </div>
 
                     </div>
+                    <div class="form-group-sm" style="margin-bottom: 15px;">
+                        <label for="@(Model.IdentifierPrefix)_FilterMessage" class="col-lg-3 control-label">Filter:</label>
+                        <div class="col-lg-9" style="margin-bottom: 15px;">
+                            <input id="@(Model.IdentifierPrefix)_FilterMessage" type="text" class="form-control" placeholder="Filter features"/>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,7 +109,7 @@
 
 @section PageBody
 {
-    <div id="notifier" class="subscribers-notify col-xs-8 col-xs-offset-2"></div>
+    <div id="notifier" class="subscribers-notify col-xs-8"></div>
     <ul id="contextMenu" class="dropdown-menu context-menu" role="menu" style="display:none"></ul>
 
     @Html.Partial("_Modal", Model)
