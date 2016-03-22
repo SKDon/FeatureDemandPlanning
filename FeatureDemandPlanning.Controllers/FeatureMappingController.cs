@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Validators;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -110,6 +111,8 @@ namespace FeatureDemandPlanning.Controllers
         [HttpPost]
         public async Task<ActionResult> UpdateFeatureCode(FeatureMappingParameters parameters)
         {
+            ValidateFeatureMappingParameters(parameters, FeatureMappingParametersValidator.UpdateFeatureCode);
+
             await DataContext.Vehicle.UpdateFeatureCode(OxoFeature.FromParameters(parameters));
 
             return JsonGetSuccess();
@@ -213,7 +216,7 @@ namespace FeatureDemandPlanning.Controllers
         }
         private void ValidateFeatureMappingParameters(FeatureMappingParameters parameters, string ruleSetName)
         {
-            var validator = new FeatureMappingParametersValidator();
+            var validator = new FeatureMappingParametersValidator(DataContext);
             var result = validator.Validate(parameters, ruleSet: ruleSetName);
             if (!result.IsValid)
             {
@@ -228,8 +231,9 @@ namespace FeatureDemandPlanning.Controllers
         public const string NoValidation = "NO_VALIDATION";
         public const string Action = "ACTION";
         public const string FeatureIdentifierWithAction = "FEATURE_ID_WITH_ACTION";
+        public const string UpdateFeatureCode = "UPDATE_FEATURE_CODE";
 
-        public FeatureMappingParametersValidator()
+        public FeatureMappingParametersValidator(IDataContext context)
         {
             RuleSet(NoValidation, () =>
             {
@@ -251,6 +255,12 @@ namespace FeatureDemandPlanning.Controllers
             RuleSet(Enum.GetName(typeof(FeatureMappingAction), FeatureMappingAction.Delete), () =>
             {
                 RuleFor(p => p.FeatureMappingId).NotNull().WithMessage("'FeatureMappingId' not specified");
+            });
+            RuleSet(UpdateFeatureCode, () =>
+            {
+                RuleFor(p => p.DocumentId).NotNull().WithMessage("'Document Id' not defined");
+                RuleFor(p => p.FeatureId).NotNull().WithMessage("'Feature Id' not defined");
+                RuleFor(p => p).SetValidator(new FeatureCodeUniqueValidator(context));
             });
         }
     }

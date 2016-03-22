@@ -338,6 +338,7 @@
     <Compile Include="ProgrammeByGatewayView.cs" />
     <Compile Include="Filters\ProgrammeFilter.cs" />
     <Compile Include="ForecastTrimMapping.cs" />
+    <Compile Include="Validators\FeatureCodeUniqueValidator.cs" />
     <Compile Include="Validators\DpckCodeUniqueValidator.cs" />
     <Compile Include="Validators\BrochureModelCodeUniqueValidator.cs" />
     <Compile Include="Validators\ComparisonVehicleValidator.cs" />
