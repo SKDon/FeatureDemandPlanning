@@ -18,6 +18,8 @@ page.BmcPage = function (models) {
     privateStore[me.id].SelectedDocument = null;
     privateStore[me.id].SelectedDocumentDescription = "";
     privateStore[me.id].SaveData = null;
+    privateStore[me.id].OriginalValue = null;
+    privateStore[me.id].EditedCell = null;
 
     me.carLineSelectedEventHandler = function (sender) {
         me.setSelectedCarLine($(sender.target).attr("data-target"));
@@ -159,6 +161,7 @@ page.BmcPage = function (models) {
     me.configureDataTables = function () {
 
         var derivativeIdentifierIndex = 0;
+        var derivativeCodeIndex = 4;
 
         $(".dataTable").DataTable({
             "serverSide": true,
@@ -224,7 +227,9 @@ page.BmcPage = function (models) {
             ],
             "fnCreatedRow": function (row, data, index) {
                 var derivativeIdentifier = data[derivativeIdentifierIndex];
+                var originalValue = data[derivativeCodeIndex];
                 $(row).attr("data-target", derivativeIdentifier);
+                $(row).attr("data-original-value", originalValue);
             },
             "fnDrawCallback": function (oSettings) {
                 //$(document).trigger("Results", me.getSummary());
@@ -331,7 +336,11 @@ page.BmcPage = function (models) {
     me.cellEditCallback = function (value) {
 
         var target = $(this).closest("tr").attr("data-target");
+        var originalValue = $(this).closest("tr").attr("data-original-value");
         var identifiers = target.split("|");
+        
+        privateStore[me.id].OriginalValue = originalValue;
+        privateStore[me.id].EditedCell = this;
 
         var formattedValue = me.parseCellValue(value);
 
@@ -382,6 +391,39 @@ page.BmcPage = function (models) {
         else {
             actionModel.actionImmediate(eventArgs);
         }
+    };
+    me.onErrorEventHandler = function (sender, eventArgs) {
+        var html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.Message + "</div>";
+        me.scrollToNotify();
+        me.fadeInNotify(html);
+
+        var revert = privateStore[me.id].EditedCell;
+        var originalValue = privateStore[me.id].OriginalValue;
+        if (revert !== null) {
+
+            if (originalValue === "") {
+                originalValue = "Click to edit";
+            }
+            $(revert).html(originalValue);
+            privateStore[me.id].EditedCell = null;
+            privateStore[me.id].OriginalValue = null;
+        }
+    };
+    me.fadeInNotify = function (displayHtml) {
+        var control = $("#notifier");
+        if (control.is(":visible")) {
+            control.fadeOut("slow", function () {
+                control.html(displayHtml);
+                if (displayHtml !== "") control.fadeIn("slow");
+            });
+        } else {
+            if (displayHtml !== "") control.fadeIn("slow");
+        }
+    };
+    me.scrollToNotify = function () {
+        $("html, body").animate({
+            scrollTop: $("#notifier").offset().top - 80
+        }, 500);
     };
     me.onFilterChangedEventHandler = function (sender, eventArgs) {
         var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();

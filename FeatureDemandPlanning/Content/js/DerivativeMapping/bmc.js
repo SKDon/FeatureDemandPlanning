@@ -108,13 +108,6 @@ model.BrochureModelCode = function (params) {
     me.saveData = function(data, callback) {
         sendData(me.getUpdateBrochureModelCodeUri(), data, callback);
     };
-    function getData() {
-        var params = me.getParameters();
-        if (params.Data != undefined)
-            return JSON.parse(me.getParameters().Data);
-
-        return {};
-    };
     function sendData(uri, params, callback) {
         $.ajax({
             "dataType": "json",
@@ -124,6 +117,9 @@ model.BrochureModelCode = function (params) {
             "data": params,
             "success": function (json) {
                 callback(json);
+            },
+            "error": function (jqXhr) {
+                $(document).trigger("Error", JSON.parse(jqXhr.responseText));
             }
         });
     };

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Validators;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -110,6 +111,8 @@ namespace FeatureDemandPlanning.Controllers
         [HttpPost]
         public async Task<ActionResult> UpdateBrochureModelCode(DerivativeMappingParameters parameters)
         {
+            ValidateDerivativeMappingParameters(parameters, DerivativeMappingParametersValidator.UpdateBrochureModelCode);
+
             await DataContext.Vehicle.UpdateBrochureModelCode(OxoDerivative.FromParameters(parameters));
 
             return JsonGetSuccess();
@@ -215,7 +218,7 @@ namespace FeatureDemandPlanning.Controllers
         }
         private void ValidateDerivativeMappingParameters(DerivativeMappingParameters parameters, string ruleSetName)
         {
-            var validator = new DerivativeMappingParametersValidator();
+            var validator = new DerivativeMappingParametersValidator(DataContext);
             var result = validator.Validate(parameters, ruleSet: ruleSetName);
             if (!result.IsValid)
             {
@@ -230,8 +233,9 @@ namespace FeatureDemandPlanning.Controllers
         public const string NoValidation = "NO_VALIDATION";
         public const string Action = "ACTION";
         public const string DerivativeIdentifierWithAction = "DERIVATIVE_ID_WITH_ACTION";
+        public const string UpdateBrochureModelCode = "UPDATE_BMC";
 
-        public DerivativeMappingParametersValidator()
+        public DerivativeMappingParametersValidator(IDataContext context)
         {
             RuleSet(NoValidation, () =>
             {
@@ -253,6 +257,14 @@ namespace FeatureDemandPlanning.Controllers
             RuleSet(Enum.GetName(typeof(DerivativeMappingAction), DerivativeMappingAction.Delete), () =>
             {
                 RuleFor(p => p.DerivativeMappingId).NotNull().WithMessage("'DerivativeMappingId' not specified");
+            });
+            RuleSet(UpdateBrochureModelCode, () =>
+            {
+                RuleFor(p => p.DocumentId).NotNull().WithMessage("'Document Id' not defined");
+                RuleFor(p => p.BodyId).NotNull().WithMessage("'Body Id' not defined");
+                RuleFor(p => p.EngineId).NotNull().WithMessage("'Engine Id' not defined");
+                RuleFor(p => p.TransmissionId).NotNull().WithMessage("'Transmission Id' not defined");
+                RuleFor(p => p).SetValidator(new BrochureModelCodeUniqueValidator(context));
             });
         }
     }

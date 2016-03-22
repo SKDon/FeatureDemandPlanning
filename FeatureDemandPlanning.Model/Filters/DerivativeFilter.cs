@@ -12,6 +12,7 @@ namespace FeatureDemandPlanning.Model.Filters
         public string Gateway { get; set; }
         public string Bmc { get; set; }
 
+        public int? DocumentId { get; set; }
         public int? EngineId { get; set; }
         public int? BodyId { get; set; }
         public int? TransmissionId { get; set; }

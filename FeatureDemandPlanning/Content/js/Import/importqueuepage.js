@@ -215,7 +215,7 @@ page.ImportQueuePage = function (models) {
             .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
             //.unbind("OnUpdatedDelegate").on("OnUpdatedDelegate", me.onUpdatedEventHandler)
             //.unbind("OnFilterCompleteDelegate").on("OnFilterCompleteDelegate", me.onFilterCompleteEventHandler)
-            .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
+            .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler);
             //.unbind("OnModalLoadedDelegate").on("OnModalLoadedDelegate", me.onModalLoadedEventHandler)
             //.unbind("OnModalOkDelegate").on("OnModalOkDelegate", me.onModalOKEventHandler);
 

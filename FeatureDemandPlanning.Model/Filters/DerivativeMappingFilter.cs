@@ -24,6 +24,10 @@ namespace FeatureDemandPlanning.Model.Filters
             return new DerivativeMappingFilter()
             {
                 DerivativeMappingId = parameters.DerivativeMappingId,
+                DocumentId = parameters.DocumentId,
+                BodyId = parameters.BodyId,
+                EngineId = parameters.EngineId,
+                TransmissionId = parameters.TransmissionId,
                 Action = parameters.Action
             };
         }
