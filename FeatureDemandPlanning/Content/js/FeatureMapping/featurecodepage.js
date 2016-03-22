@@ -159,6 +159,7 @@ page.FeatureCodePage = function (models) {
     me.configureDataTables = function () {
 
         var featureCodeIdentifierIndex = 0;
+        var featureCodeIndex = 4;
 
         $(".dataTable").DataTable({
             "serverSide": true,
@@ -205,6 +206,9 @@ page.FeatureCodePage = function (models) {
             "fnCreatedRow": function (row, data, index) {
                 var featureCodeIdentifier = data[featureCodeIdentifierIndex];
                 $(row).attr("data-target", featureCodeIdentifier);
+
+                var originalValue = data[featureCodeIndex];
+                $(row).attr("data-original-value", originalValue);
             },
             "fnDrawCallback": function (oSettings) {
                 //$(document).trigger("Results", me.getSummary());
@@ -295,6 +299,10 @@ page.FeatureCodePage = function (models) {
 
         var target = $(this).closest("tr").attr("data-target");
         var identifiers = target.split("|");
+        var originalValue = $(this).closest("tr").attr("data-original-value");
+
+        privateStore[me.id].OriginalValue = originalValue;
+        privateStore[me.id].EditedCell = this;
 
         var formattedValue = me.parseCellValue(value);
 
@@ -357,6 +365,39 @@ page.FeatureCodePage = function (models) {
         else {
             actionModel.actionImmediate(eventArgs);
         }
+    };
+    me.onErrorEventHandler = function (sender, eventArgs) {
+        var html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.Message + "</div>";
+        me.scrollToNotify();
+        me.fadeInNotify(html);
+
+        var revert = privateStore[me.id].EditedCell;
+        var originalValue = privateStore[me.id].OriginalValue;
+        if (revert !== null) {
+
+            if (originalValue === undefined || originalValue === "") {
+                originalValue = "Click to edit";
+            }
+            $(revert).html(originalValue);
+            privateStore[me.id].EditedCell = null;
+            privateStore[me.id].OriginalValue = null;
+        }
+    };
+    me.fadeInNotify = function (displayHtml) {
+        var control = $("#notifier");
+        if (control.is(":visible")) {
+            control.fadeOut("slow", function () {
+                control.html(displayHtml);
+                if (displayHtml !== "") control.fadeIn("slow");
+            });
+        } else {
+            if (displayHtml !== "") control.fadeIn("slow");
+        }
+    };
+    me.scrollToNotify = function () {
+        $("html, body").animate({
+            scrollTop: $("#notifier").offset().top - 80
+        }, 500);
     };
     me.onFilterChangedEventHandler = function (sender, eventArgs) {
         var filter = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
@@ -421,6 +462,7 @@ page.FeatureCodePage = function (models) {
         getFeatureCodeModel().saveData(data, callback);
     };
     me.saveCallback = function() {
+        $("#notifier").hide();
         me.setDataToSave(null);
     };
     me.getDataToSave = function() {

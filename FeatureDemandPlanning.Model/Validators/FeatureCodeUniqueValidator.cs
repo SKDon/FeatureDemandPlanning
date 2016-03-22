@@ -8,6 +8,20 @@ using FluentValidation.Validators;
 
 namespace FeatureDemandPlanning.Model.Validators
 {
+    public class FeatureOrPackSpecifiedValidator : PropertyValidator
+    {
+        public FeatureOrPackSpecifiedValidator()
+            : base("Feature Id or Feature Pack Id not specified")
+        {
+        }
+        protected FeatureMappingParameters Parameters { get; set; }
+        protected override bool IsValid(PropertyValidatorContext context)
+        {
+            Parameters = context.ParentContext.InstanceToValidate as FeatureMappingParameters;
+
+            return Parameters.FeatureId.HasValue || Parameters.FeaturePackId.HasValue;
+        }
+    }
     public class FeatureCodeUniqueValidator : PropertyValidator
     {
         public FeatureCodeUniqueValidator(IDataContext context)

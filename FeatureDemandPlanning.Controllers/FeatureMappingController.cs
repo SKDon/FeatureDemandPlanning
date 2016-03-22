@@ -259,7 +259,7 @@ namespace FeatureDemandPlanning.Controllers
             RuleSet(UpdateFeatureCode, () =>
             {
                 RuleFor(p => p.DocumentId).NotNull().WithMessage("'Document Id' not defined");
-                RuleFor(p => p.FeatureId).NotNull().WithMessage("'Feature Id' not defined");
+                RuleFor(p => p).SetValidator(new FeatureOrPackSpecifiedValidator());
                 RuleFor(p => p).SetValidator(new FeatureCodeUniqueValidator(context));
             });
         }

@@ -297,8 +297,8 @@ page.DpckPage = function (models) {
     me.cellEditCallback = function (value) {
 
         var target = $(this).closest("tr").attr("data-target");
-        var originalValue = $(this).closest("tr").attr("data-original-value");
         var identifiers = target.split("|");
+        var originalValue = $(this).closest("tr").attr("data-original-value");
 
         privateStore[me.id].OriginalValue = originalValue;
         privateStore[me.id].EditedCell = this;
