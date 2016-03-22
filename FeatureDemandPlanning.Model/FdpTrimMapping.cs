@@ -59,7 +59,7 @@ namespace FeatureDemandPlanning.Model
 
         public OxoTrim(FdpTrim fromTrim)
         {
-            Id = fromTrim.Id;
+            Id = fromTrim.TrimId.GetValueOrDefault();
             DocumentId = fromTrim.DocumentId;
             ProgrammeId = fromTrim.ProgrammeId;
             Gateway = fromTrim.Gateway;
