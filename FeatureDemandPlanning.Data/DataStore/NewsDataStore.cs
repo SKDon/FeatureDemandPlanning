@@ -23,7 +23,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             var results = Enumerable.Empty<News>();
 
-            using (IDbConnection connection = DbHelper.GetDBConnection())
+            using (var connection = DbHelper.GetDBConnection())
             {
                 try
                 {

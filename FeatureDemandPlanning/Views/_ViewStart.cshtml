@@ -5,19 +5,27 @@
     
     var path = "~/Views/Shared/_{0}.cshtml";
     var controller = ViewContext.Controller as FeatureDemandPlanning.Controllers.ControllerBase;
-    
-    switch (controller.ControllerType)
+
+    if (controller == null)
     {
-        case ControllerType.SectionChild:
-            Layout = String.Format(path, "Child");
-            break;
-        case ControllerType.SectionParent:
-            Layout = String.Format(path, "Parent");
-            break;
-        case ControllerType.Default:
-            Layout = String.Format(path, "Layout");
-            break;
+        Layout = null;
     }
+    else
+    {
+        switch (controller.ControllerType)
+        {
+            case ControllerType.SectionChild:
+                Layout = String.Format(path, "Child");
+                break;
+            case ControllerType.SectionParent:
+                Layout = String.Format(path, "Parent");
+                break;
+            case ControllerType.Default:
+                Layout = String.Format(path, "Layout");
+                break;
+        }
+        Layout = Request.IsAjaxRequest() || ViewContext.IsChildAction ? null : Layout;
+    }
+
     
-    Layout = Request.IsAjaxRequest() || ViewContext.IsChildAction ? null : Layout;
 }

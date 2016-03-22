@@ -1,4 +1,5 @@
-﻿using FeatureDemandPlanning.Model.ViewModel;
+﻿using System;
+using FeatureDemandPlanning.Model.ViewModel;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using FeatureDemandPlanning.Model.Interfaces;
@@ -9,7 +10,6 @@ namespace FeatureDemandPlanning.Controllers
     {
         public HomeController(IDataContext context) : base(context)
         {
-            
         }
         public async Task<ActionResult> Index()
         {

@@ -167,7 +167,7 @@ page.ImportQueuePage = function (models) {
                             errorCount = parseInt(full[errorCountIndex]);
                         }
                         var uri = exceptionsUri + "?importQueueId=" + full[importQueueIndex];
-                        return "<a class='btn btn-default' href='" + uri + "'>" + errorCount + " Errors</a>";
+                        return "<a class='btn btn-default btn-sm' href='" + uri + "'>" + errorCount + " Errors</a>";
                     }
                 }
             ],
