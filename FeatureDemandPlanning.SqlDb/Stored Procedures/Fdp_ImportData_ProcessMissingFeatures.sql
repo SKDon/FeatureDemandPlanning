@@ -192,6 +192,8 @@ AS
 		FdpImportQueueId = @FdpImportQueueId
 		AND
 		F.MappedFeatureCode IS NULL
+		AND
+		I.IsSpecialFeatureCode = 0 -- Ignore special features as they have their own meaning and are mapped elsewhere
 		GROUP BY
 		  I.DocumentId
 		, I.ImportFeatureCode
