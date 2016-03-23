@@ -278,11 +278,12 @@ page.ExceptionsPage = function (models) {
         });
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
-        me.redrawDataTable();
+        //me.redrawDataTable();
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
     };
     me.onUpdatedEventHandler = function (sender, eventArgs) {
+        me.redrawDataTable();
     };
     me.onResultsEventHandler = function (sender, eventArgs) {
     };

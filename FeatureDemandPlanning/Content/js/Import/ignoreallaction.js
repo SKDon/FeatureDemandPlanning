@@ -47,7 +47,7 @@ model.IgnoreAllAction = function (params) {
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");
-        $(document).trigger("Success", {});
+        $(document).trigger("Updated", {});
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
         if (eventArgs.IsValidation) {
