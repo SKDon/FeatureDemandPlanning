@@ -160,7 +160,7 @@ namespace FeatureDemandPlanning.Model.Parameters
             {
                 return new
                 {
-                    ImportQueueId, ExceptionId, ProgrammeId, Gateway, ExceptionType, Action, ImportFeatureCode, SpecialFeatureTypeId
+                    ImportQueueId, ExceptionId, DocumentId, ProgrammeId, Gateway, ExceptionType, Action, ImportFeatureCode, SpecialFeatureTypeId
                 };
             }
 

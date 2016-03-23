@@ -772,7 +772,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public static ImportQueue ToImportQueue(ImportQueueDataItem dataItem)
         {
-            return new ImportQueue
+            var queue = new ImportQueue
             {
                 ImportQueueId = dataItem.FdpImportQueueId,
                 ImportId = dataItem.FdpImportId,
@@ -793,8 +793,11 @@ namespace FeatureDemandPlanning.DataStore
                 HasErrors = dataItem.HasErrors,
                 ErrorCount = dataItem.ErrorCount,
                 Error = dataItem.Error,
-                DocumentId = dataItem.DocumentId
+                DocumentId = dataItem.DocumentId,
+                ErrorType = dataItem.ErrorType,
+                ErrorSubType = dataItem.ErrorSubType
             };
+            return queue;
         }
     }
 }

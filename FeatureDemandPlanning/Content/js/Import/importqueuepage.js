@@ -112,6 +112,8 @@ page.ImportQueuePage = function (models) {
         var importQueueIndex = 5;
         var hasErrorsIndex = 6;
         var errorCountIndex = 7;
+        var errorTypeIndex = 8;
+        var errorSubTypeIndex = 9;
 
         $(".dataTable").DataTable({
             "serverSide": true,
@@ -121,6 +123,15 @@ page.ImportQueuePage = function (models) {
             "processing": true,
             "dom": "ltp",
             "order": [["0", "desc"]],
+            //"columnDefs": [
+            //{
+            //    "targets": 6,
+            //    "visible": false
+            //},
+            //{
+            //    "targets": 7,
+            //    "visible": false
+            //}],
             "aoColumns": [
                 {
                     "sTitle": "Uploaded On",
@@ -154,22 +165,35 @@ page.ImportQueuePage = function (models) {
                     "bSortable": true,
                     "sClass": "text-center",
                 }
-                ,{
+                , {
                     "sTitle": "Data Errors",
                     "sName": "ERRORS",
                     "bSearchable": false,
                     "bSortable": false,
                     "sClass": "text-center",
-                    "render": function (data, type, full, meta) {
+                    "render": function(data, type, full, meta) {
                         var hasErrors = full[hasErrorsIndex];
-                        var errorCount = 0; 
+                        var errorCount = 0;
+                        var errorType = "";
+                        var errorSubType = "";
                         if (hasErrors !== "NO") {
                             errorCount = parseInt(full[errorCountIndex]);
+                            errorType = full[errorTypeIndex];
+                            errorSubType = full[errorSubTypeIndex];
                         }
                         var uri = exceptionsUri + "?importQueueId=" + full[importQueueIndex];
-                        return "<a class='btn btn-default btn-sm' href='" + uri + "'>" + errorCount + " Errors</a>";
+                        return "<a class='btn btn-default btn-sm' href='" + uri + "'>" + errorCount + " " + errorType + " Errors</a>";
                     }
                 }
+                //},
+                //{
+                //    "sTitle": "Error Type",
+                //    "sName": "ERROR_TYPE"
+                //},
+                //{
+                //    "sTitle": "Sub Type",
+                //    "sName": "ERROR_SUB_TYPE"
+                //}
             ],
             "fnCreatedRow": function (row, data, index) {
                 // Don't like hard-coding indexes in this way. Must be a better way

@@ -56,6 +56,7 @@ USING (VALUES
 	, (201, N'No Feature Code', N'No feature code is defined for OXO feature', 1)
 	, (202, N'No Historic Feature', N'No historic feature maps to OXO feature', 2)
 	, (203, N'No OXO Feature', N'No OXO feature maps to historic feature', 3)
+	, (204, N'No Special Feature', N'No special feature mapping for Brochure Model Code', 0)
 	, (301, N'No Brochure Model Code', N'No Brochure Model Code is defined for OXO Brochure Model Code', 1)
 	, (302, N'No Historic Brochure Model Code', N'No historic Brochure Model Code maps to OXO Brochure Model Code', 2)
 	, (303, N'No OXO Brochure Model Code', N'No OXO Brochure Model Code maps to historic Brochure Model Code', 3)

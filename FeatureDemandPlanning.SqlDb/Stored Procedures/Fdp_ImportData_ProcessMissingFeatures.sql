@@ -137,7 +137,7 @@ AS
 												AND EX.FdpImportErrorTypeId		= 2
 												AND EX.SubTypeId				= 202
 												AND EX.IsActive					= 1
-												AND ISNULL(F.BrandDescription, F.Description)	= EX.AdditionalData
+												AND F.MappedFeatureCode			= EX.AdditionalData
 	WHERE 
 	D.Id = @DocumentId
 	AND
@@ -218,8 +218,8 @@ AS
 	CUR.FdpImportErrorId IS NULL
 	AND
 	CUR2.FdpImportErrorId IS NULL
-	AND
-	@FlagOrphanedImportData = 1
+	--AND
+	--@FlagOrphanedImportData = 1 -- Can't check the orphaned data flag here, as we need to map special features at this point
 	AND
 	EX.FdpImportErrorExclusionId IS NULL
 	GROUP BY

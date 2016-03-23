@@ -221,6 +221,7 @@ namespace FeatureDemandPlanning.Controllers
             var importView = await GetModelFromParameters(parameters);
             var specialFeature = new FdpSpecialFeature()
             {
+                DocumentId = parameters.DocumentId.GetValueOrDefault(),
                 ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
                 Gateway = parameters.Gateway,
                 FeatureCode = parameters.ImportFeatureCode,

@@ -34,6 +34,8 @@ namespace FeatureDemandPlanning.Model
         public int? CurrentLineNumber { get; set; }
 
         public string Error { get; set; }
+        public enums.ImportExceptionType ErrorType { get; set; }
+        public enums.ImportExceptionType ErrorSubType { get; set; }
 
         public string VehicleDescription
         {
@@ -88,8 +90,62 @@ namespace FeatureDemandPlanning.Model
                 ImportStatus.Status,
                 ImportQueueId.ToString(),
                 HasErrors ? "YES" : "NO",
-                ErrorCount.ToString()
+                ErrorCount.ToString(),
+                GetErrorTypeAbbreviation(ErrorType),
+                GetErrorTypeAbbreviation(ErrorSubType)
             };
+        }
+
+        private string GetErrorTypeAbbreviation(enums.ImportExceptionType errorType)
+        {
+            var retVal = string.Empty;
+            switch (errorType)
+            {
+                case enums.ImportExceptionType.NotSet:
+                    break;
+                case enums.ImportExceptionType.MissingMarket:
+                    retVal = "Market";
+                    break;
+                case enums.ImportExceptionType.MissingFeature:
+                    retVal = "Feature";
+                    break;
+                case enums.ImportExceptionType.MissingDerivative:
+                    retVal = "BMC";
+                    break;
+                case enums.ImportExceptionType.MissingTrim:
+                    retVal = "Trim";
+                    break;
+                case enums.ImportExceptionType.NoFeatureCode:
+                    retVal = "No Feature";
+                    break;
+                case enums.ImportExceptionType.NoHistoricFeature:
+                    retVal = "Historic";
+                    break;
+                case enums.ImportExceptionType.NoOxoFeature:
+                    retVal = "OXO";
+                    break;
+                case enums.ImportExceptionType.NoBmc:
+                    retVal = "No BMC";
+                    break;
+                case enums.ImportExceptionType.NoHistoricDerivative:
+                    retVal = "Historic";
+                    break;
+                case enums.ImportExceptionType.NoOxoDerivative:
+                    retVal = "OXO";
+                    break;
+                case enums.ImportExceptionType.NoDpck:
+                    retVal = "No Trim";
+                    break;
+                case enums.ImportExceptionType.NoHistoricTrim:
+                    retVal = "Historic";
+                    break;
+                case enums.ImportExceptionType.NoOxoTrim:
+                    retVal = "OXO";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("errorType", errorType, null);
+            }
+            return retVal;
         }
     }
 }

@@ -11,6 +11,7 @@
         NoFeatureCode = 201,
         NoHistoricFeature = 202,
         NoOxoFeature = 203,
+        NoSpecialFeature = 204,
 
         NoBmc = 301,
         NoHistoricDerivative = 302,
