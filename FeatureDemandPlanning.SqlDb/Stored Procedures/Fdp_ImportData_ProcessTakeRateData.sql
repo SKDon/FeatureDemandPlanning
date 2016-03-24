@@ -19,6 +19,13 @@ AS
 	)
 	DECLARE @TotalVolume AS INT;
 	
+	SELECT 
+		  @OxoDocId = DocumentId
+		, @FdpImportQueueId = FdpImportQueueId
+	FROM Fdp_Import
+	WHERE
+	FdpImportId = @FdpImportId;
+	
 	-- Remove redundant data if for example we are re-importing data for a previous import that errored
 	
 	EXEC Fdp_ImportData_RemoveRedundantData @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;
@@ -62,13 +69,29 @@ AS
 		I.DocumentId = @OxoDocId
 		
 		SELECT @FdpVolumeHeaderId = SCOPE_IDENTITY();
+		
 		SELECT @CDSId = CreatedBy
 		FROM Fdp_VolumeHeader
 		WHERE
 		FdpVolumeHeaderId = @FdpVolumeHeaderId;
-		
+	
 		SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' take rate file added';
 		RAISERROR(@Message, 0, 1) WITH NOWAIT;
+		
+		INSERT INTO Fdp_TakeRateVersion
+		(
+			  FdpTakeRateHeaderId
+			, MajorVersion
+			, MinorVersion
+			, Revision
+		)
+		VALUES
+		(
+			  @FdpVolumeHeaderId
+			, 1
+			, 0
+			, 0
+		);
 		
 	END
 	ELSE
