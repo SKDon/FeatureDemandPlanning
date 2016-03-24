@@ -185,6 +185,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                     model = await GetFullAndPartialViewModelForException(context, filter);
                     break;
                 case enums.ImportAction.ImportQueueItem:
+                case enums.ImportAction.ProcessTakeRateData:
                     model = await GetFullAndPartialViewModelForImportQueueItem(context, filter);
                     break;
                 case enums.ImportAction.Summary:

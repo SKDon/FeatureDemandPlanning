@@ -274,10 +274,12 @@
     <Content Include="Content\js\FeatureMapping\featurecode.js" />
     <Content Include="Content\js\FeatureMapping\featurecodeinit.js" />
     <Content Include="Content\js\FeatureMapping\featurecodepage.js" />
+    <Content Include="Content\js\Import\process.js" />
     <Content Include="Content\js\Import\ignoreallaction.js" />
     <Content Include="Content\js\Import\mapoxofeatureaction.js" />
     <Content Include="Content\js\Import\mapoxotrimaction.js" />
     <Content Include="Content\js\Import\mapoxoderivativeaction.js" />
+    <Content Include="Content\js\Import\processdataaction.js" />
     <Content Include="Content\js\jquery.contextMenu.js" />
     <Content Include="Content\js\jquery.ui.position.js" />
     <Content Include="Content\js\MarketReview\init.js" />
@@ -1143,6 +1145,7 @@
     <Content Include="Views\FeatureMapping\_FeatureCode.cshtml" />
     <Content Include="Views\FeatureMapping\_FeatureCodeScripts.cshtml" />
     <Content Include="Views\ImportException\_MapOxoFeature.cshtml" />
+    <Content Include="Views\ImportException\_ProcessTakeRateData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -32,10 +32,21 @@
                                     <p class="page-description">View exception information for the selected import</p>
                                 </div>
                                 <div class="col-xs-6 vertical-align">
-                                    <a href="@Url.Action("RefreshWorktray", new {ImportId = Model.CurrentImport.ImportId, ImportQueueId = Model.CurrentImport.ImportQueueId})" class="btn btn-primary center-block">
-                                        <span class="glyphicon glyphicon-refresh"></span>
-                                        Refresh Worktray
-                                    </a>
+                                    @if (Model.CurrentImport.HasErrors)
+                                    {
+                                        <a href="@Url.Action("RefreshWorktray", new {ImportId = Model.CurrentImport.ImportId, ImportQueueId = Model.CurrentImport.ImportQueueId})" class="btn btn-primary center-block">
+                                            <span class="glyphicon glyphicon-refresh"></span>
+                                            Refresh Worktray
+                                        </a>
+                                    }
+                                    else
+                                    {
+
+                                        <button id="@(Model.IdentifierPrefix)_ProcessTakeRate" class="btn btn-primary center-block">
+                                            <span class="glyphicon glyphicon-import"></span>
+                                            Process Take Rates
+                                        </button>
+                                    }
                                 </div>
                             </div>
                         </div>

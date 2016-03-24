@@ -442,6 +442,15 @@ namespace FeatureDemandPlanning.Controllers
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
         [HandleErrorWithJson]
+        public async Task<ActionResult> ProcessTakeRateData(ImportExceptionParameters parameters)
+        {
+            var filter = new ImportQueueFilter(parameters.ImportQueueId.GetValueOrDefault());
+            var queuedItem = await DataContext.Import.GetImportQueue(filter);
+            await DataContext.Import.ProcessTakeRateData(queuedItem);
+
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
+        }
+        [HandleErrorWithJson]
         public async Task<ActionResult> IgnoreException(ImportExceptionParameters parameters)
         {
             var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value);
@@ -470,9 +479,16 @@ namespace FeatureDemandPlanning.Controllers
 
         private async Task<ImportViewModel> GetModelFromParameters(ImportExceptionParameters parameters)
         {
+            if (parameters.Action == ImportAction.ProcessTakeRateData)
+            {
+                return await ImportViewModel.GetModel(
+                DataContext,
+                new ImportQueueFilter(parameters.ImportQueueId.GetValueOrDefault()) { Action = parameters.Action },
+                parameters.Action);
+            }
             return await ImportViewModel.GetModel(
                 DataContext,
-                ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value),
+                ImportQueueFilter.FromExceptionId(parameters.ExceptionId.GetValueOrDefault()),
                 parameters.Action);
         }
         private async Task<ImportError> DeactivateException(ImportError exception)

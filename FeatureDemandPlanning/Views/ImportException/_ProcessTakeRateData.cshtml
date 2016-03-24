@@ -1,0 +1,23 @@
+﻿@using FeatureDemandPlanning.Model
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
+
+<div class="alert alert-info">
+    <div class="row">
+        <div class="col-lg-1 text-center">
+            <span class="glyphicon glyphicon-info-sign"></span>
+        </div>
+        <div class="col-lg-11">
+            <p>Process Take Rate Data.</p>
+            <p>Process the imported data to create a take rate file.</p>
+            <p>Click <strong>'OK'</strong> to continue.</p>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_ImportActionHeader", Model)
+
+
+
+

@@ -8,6 +8,7 @@ $(document).ready(function () {
     feature = new FeatureDemandPlanning.Import.Feature(params);
     trim = new FeatureDemandPlanning.Import.Trim(params);
     ignore = new FeatureDemandPlanning.Import.Ignore(params);
+    process = new FeatureDemandPlanning.Import.Process(params);
    
     page = new FeatureDemandPlanning.Import.ExceptionsPage(
         [
@@ -17,7 +18,8 @@ $(document).ready(function () {
             derivative,
             trim,
             feature,
-            ignore
+            ignore,
+            process
         ]);
 
     page.initialise();

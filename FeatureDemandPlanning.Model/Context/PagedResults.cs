@@ -18,6 +18,10 @@ namespace FeatureDemandPlanning.Model.Context
         {
             get
             {
+                if (PageSize == 0 || TotalRecords == 0)
+                {
+                    return 0;
+                }
                 return (int)Math.Ceiling((decimal)TotalRecords / PageSize);
             }
         }

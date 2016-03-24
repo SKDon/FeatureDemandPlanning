@@ -256,6 +256,11 @@ page.ExceptionsPage = function (models) {
             me.exceptionTypeSelectedEventHandler(e);
             e.preventDefault();
         });
+        $("#" + prefix + "_ProcessTakeRate").unbind("click").on("click", function (e) {
+            //$(this).attr("disabled", "disabled").html("Processing...Wait");
+           
+            me.processTakeRates();
+        });
     };
     me.registerSubscribers = function () {
         var prefix = me.getIdentifierPrefix();
@@ -347,12 +352,21 @@ page.ExceptionsPage = function (models) {
         var totalPages = info.pages;
         $(".results-paging").html("Page " + pageIndex + " of " + totalPages);
     };
-    me.updateTotals = function () {
+    me.updateTotals = function() {
         var info = $("#tblImportExceptions").DataTable().page.info();
         var prefix = me.getIdentifierPrefix();
         var total = info.recordsTotal;
         $(".results-total").html(total + " Exceptions");
-    }
+    };
+    me.processTakeRates = function() {
+        var params = $.extend({}, me.getParameters(), {
+            "ExceptionId": 0,
+            "ProgrammeId": 0,
+            "Gateway": "None",
+            "Action": 17 // Process Data
+        });
+        $(document).trigger("Action", params);
+    };
     function getModal() {
         return getModel("Modal");
     };
@@ -386,6 +400,9 @@ page.ExceptionsPage = function (models) {
     }
     function getIgnoreModel() {
         return getModel("Ignore");
+    }
+    function getProcessModel() {
+        return getModel("Process");
     }
     function getModelForExceptionTypeAndAction(actionId) {
         var model = null;
@@ -422,6 +439,9 @@ page.ExceptionsPage = function (models) {
                 break;
             case 16:
                 model = getFeatureModel();
+                break;
+            case 17:
+                model = getProcessModel();
                 break;
             default:
                 break;

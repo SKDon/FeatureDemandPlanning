@@ -102,6 +102,8 @@ namespace FeatureDemandPlanning
                     "~/Content/js/Import/maptrimaction.js",
                     "~/Content/js/Import/mapoxotrimaction.js",
                     "~/Content/js/Import/market.js",
+                    "~/Content/js/Import/process.js",
+                    "~/Content/js/Import/processdataaction.js",
                     "~/Content/js/Import/specialfeatureaction.js",
                     "~/Content/js/Import/trim.js",
                     "~/Content/js/Import/upload.js",

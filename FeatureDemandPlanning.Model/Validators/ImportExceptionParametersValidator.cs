@@ -82,6 +82,10 @@ namespace FeatureDemandPlanning.Model.Validators
                 RuleFor(p => p.ImportMarket).NotEmpty().WithMessage("'Import Market' not specified");
                 RuleFor(p => p.MarketId).NotNull().WithMessage("'Mapped Market Id' not specified");
             });
+            RuleSet(Enum.GetName(typeof(ImportAction), ImportAction.ProcessTakeRateData), () =>
+            {
+                RuleFor(p => p.ImportQueueId).NotNull().WithMessage("'Import Queue Id' not specified");
+            });
         }
         public static ImportExceptionParametersValidator ValidateImportExceptionParameters(ImportExceptionParameters parameters, string ruleSetName)
         {

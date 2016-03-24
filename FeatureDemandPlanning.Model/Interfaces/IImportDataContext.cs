@@ -53,5 +53,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<IEnumerable<ImportTrim>> ListImportTrimLevels(ImportQueueFilter importQueueFilter);
 
         Task<IEnumerable<ImportFeature>> ListImportFeatures(ImportQueueFilter importQueueFilter);
+
+        Task<ImportResult> ProcessTakeRateData(ImportQueue queuedItem);
     }
 }

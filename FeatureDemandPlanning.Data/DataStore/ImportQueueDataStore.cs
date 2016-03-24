@@ -734,6 +734,35 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
+
+        public ImportQueue ProcessTakeRateData(ImportQueue importQueue)
+        {
+            TakeRateSummary takeRateFile = new EmptyTakeRateSummary();
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpImportId", importQueue.ImportId, DbType.Int32);
+                    
+                    var results = conn.Query<TakeRateSummary>("dbo.Fdp_ImportData_ProcessTakeRateData", para, commandType: CommandType.StoredProcedure, commandTimeout: 600);
+                    var takeRateSummaries = results as IList<TakeRateSummary> ?? results.ToList();
+                    if (results != null && takeRateSummaries.Any())
+                    {
+                        takeRateFile = takeRateSummaries.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            var retVal = ImportQueueGet(importQueue.ImportQueueId.GetValueOrDefault());
+            retVal.TakeRateId = takeRateFile.TakeRateId;
+            return retVal;
+        }
     }
     internal class ImportStatusDataItem : ImportStatus
     {

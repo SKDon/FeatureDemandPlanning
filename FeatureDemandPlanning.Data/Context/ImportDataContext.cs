@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
@@ -133,6 +134,15 @@ namespace FeatureDemandPlanning.DataStore
             
             return result;
         }
+        public async Task<ImportResult> ProcessTakeRateData(ImportQueue queuedItem)
+        {
+            var result = new ImportResult();
+
+            queuedItem = await Task.FromResult(_importDataStore.ProcessTakeRateData(queuedItem));
+            result.Status = queuedItem.ImportStatus;
+
+            return result;
+        }
         public async Task<ImportError> GetException(ImportQueueFilter filter)
         {
             return await Task.FromResult(_importDataStore.ImportErrorGet(filter));
@@ -213,8 +223,5 @@ namespace FeatureDemandPlanning.DataStore
         private DerivativeDataStore _derivativeDataStore;
         private FeatureDataStore _featureDataStore;
         private ModelTrimDataStore _trimDataStore;
-
-
-        
     }
 }

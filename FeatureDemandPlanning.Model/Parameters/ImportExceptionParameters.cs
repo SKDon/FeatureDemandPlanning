@@ -181,6 +181,15 @@ namespace FeatureDemandPlanning.Model.Parameters
                 };
             }
 
+            if (Action == enums.ImportAction.ProcessTakeRateData)
+            {
+                return new
+                {
+                    ImportQueueId,
+                    Action
+                };
+            }
+
             return new {};
         }
     }

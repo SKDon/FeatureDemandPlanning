@@ -19,6 +19,7 @@
         IgnoreAll = 14,
         MapOxoTrim = 15,
         MapOxoFeature = 16,
+        ProcessTakeRateData = 17,
 
         Upload = 100,
         Summary

@@ -182,7 +182,12 @@ page.ImportQueuePage = function (models) {
                             errorSubType = full[errorSubTypeIndex];
                         }
                         var uri = exceptionsUri + "?importQueueId=" + full[importQueueIndex];
-                        return "<a class='btn btn-default btn-sm' href='" + uri + "'>" + errorCount + " " + errorType + " Errors</a>";
+
+                        if (errorCount !== 0) {
+                            return "<a class='btn btn-default btn-sm' href='" + uri + "'>" + errorCount + " " + errorType + " Errors</a>";
+                        } else {
+                            return "<a class='btn btn-default btn-sm' href='" + uri + "'>Ready to Process</a>";
+                        }
                     }
                 }
                 //},
