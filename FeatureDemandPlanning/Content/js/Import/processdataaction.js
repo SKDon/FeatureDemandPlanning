@@ -16,7 +16,7 @@ model.ProcessDataAction = function (params) {
 
     me.action = function () {
         $("#Modal_Notify").html("").hide();
-        $("#Modal_OK").html("Adding...Wait").attr("disabled", true);
+        $("#Modal_OK").html("Processing...Wait").attr("disabled", true);
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.getActionParameters = function () {
