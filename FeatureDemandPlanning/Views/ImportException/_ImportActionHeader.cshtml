@@ -55,8 +55,7 @@
     }
 
     @if (Model.CurrentAction == enums.ImportAction.AddMissingFeature ||
-                Model.CurrentAction == enums.ImportAction.MapMissingFeature ||
-                Model.CurrentAction == enums.ImportAction.AddSpecialFeature)
+                Model.CurrentAction == enums.ImportAction.MapMissingFeature)
     {
         <div class="row">
             <div class="col-xs-4 text-right"><strong>Import Feature Code:</strong></div>
@@ -72,7 +71,29 @@
         </div>
     }
 
-    @if (Model.CurrentAction == enums.ImportAction.AddMissingTrim ||
+    @if (Model.CurrentAction == enums.ImportAction.AddSpecialFeature)
+    {
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Special Feature:</strong>
+            </div>
+            <div class="col-xs-8">
+                @{
+                    switch (Model.CurrentException.ImportFeatureCode)
+                    {
+                        case "FULLYEAR" :
+                            <span>Volume For Derivative (Full Year)</span>
+                            break;
+                        case "HALFYEAR":
+                            <span>Volume For Derivative (Half Year)</span>
+                            break;
+                    }
+                }
+            </div>
+        </div>
+        <div class="vertical-spacer"></div>
+    }
+
+@if (Model.CurrentAction == enums.ImportAction.AddMissingTrim ||
         Model.CurrentAction == enums.ImportAction.MapOxoTrim)
     {
         <div class="row">

@@ -3,14 +3,14 @@
 	, @BodyId			AS INT
 	, @TransmissionId	AS INT
 	, @EngineId			AS INT
-	, @DerivativeCode	AS NVARCHAR(5) = NULL
+	, @DerivativeCode	AS NVARCHAR(20) = NULL
 	, @CDSID			AS NVARCHAR(16)
 AS
 
 	SET NOCOUNT ON;
 
 	DECLARE @IsArchived AS BIT;
-	DECLARE @OldBMC AS NVARCHAR(5);
+	DECLARE @OldBMC AS NVARCHAR(20);
 	DECLARE @FdpImportId AS INT;
 	
 	SELECT TOP 1 @IsArchived = ISNULL(Archived, 0) FROM Oxo_Doc WHERE Id = @DocumentId;
@@ -73,7 +73,7 @@ AS
 		Transmission_Id = @TransmissionId;
 
 		UPDATE M SET BMC = @DerivativeCode,
-			--Updated_By = @CDSID,
+			Updated_By = @CDSID,
 			Last_Updated = GETDATE()
 		FROM
 		OXO_Doc AS D

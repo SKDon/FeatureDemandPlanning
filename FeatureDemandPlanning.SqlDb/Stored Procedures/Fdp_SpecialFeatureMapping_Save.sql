@@ -39,7 +39,7 @@ BEGIN
 			FROM
 			OXO_Doc AS D
 			WHERE
-			D.Id = @DocumentId;
+			Id = @DocumentId;
 			
 		SET @FdpSpecialFeatureId = SCOPE_IDENTITY();
 	  

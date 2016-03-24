@@ -43,6 +43,15 @@
 
 @if (Model.CurrentException.ErrorType == enums.ImportExceptionType.MissingFeature)
 {
+    if (Model.CurrentException.SubType == enums.ImportExceptionType.NoSpecialFeature)
+    {
+        <li>
+            <a tabindex="-1" href="#" data-target="@Model.CurrentException.FdpImportErrorId" data-role="@((int)enums.ImportAction.AddSpecialFeature)" data-content="@Model.CurrentException.ErrorMessage">
+                <span class="glyphicon glyphicon-plus pull-left"></span> Add Special Feature...
+            </a>
+        </li>
+    }
+
     if (Model.CurrentException.SubType == enums.ImportExceptionType.NoFeatureCode)
     {
         <li>

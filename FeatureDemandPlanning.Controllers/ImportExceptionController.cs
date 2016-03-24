@@ -137,6 +137,10 @@ namespace FeatureDemandPlanning.Controllers
             {
                 TempData["MapOxoFeature"] = parameters.ImportFeatureCodes;
             }
+            if (parameters.Action == ImportAction.AddSpecialFeature)
+            {
+                TempData["AddSpecialFeature"] = parameters.ImportFeatureCodes;
+            }
 
             return RedirectToAction(Enum.GetName(parameters.Action.GetType(), parameters.Action), parameters.GetActionSpecificParameters());
         }
@@ -219,18 +223,25 @@ namespace FeatureDemandPlanning.Controllers
         {
             var filter = ImportQueueFilter.FromExceptionId(parameters.ExceptionId.Value);
             var importView = await GetModelFromParameters(parameters);
-            var specialFeature = new FdpSpecialFeature()
+
+            var importFeatures = (IEnumerable<string>)TempData["AddSpecialFeature"];
+
+            foreach (var importFeature in importFeatures)
             {
-                DocumentId = parameters.DocumentId.GetValueOrDefault(),
-                ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
-                Gateway = parameters.Gateway,
-                FeatureCode = parameters.ImportFeatureCode,
-                SpecialFeatureType = new FdpSpecialFeatureType()
+                var specialFeature = new FdpSpecialFeature()
                 {
-                    FdpSpecialFeatureTypeId = parameters.SpecialFeatureTypeId
-                }
-            };
-            importView.CurrentException = await DataContext.Import.AddSpecialFeature(filter, specialFeature);
+                    DocumentId = parameters.DocumentId.GetValueOrDefault(),
+                    ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
+                    Gateway = parameters.Gateway,
+                    FeatureCode = importFeature,
+                    Type = new FdpSpecialFeatureType()
+                    {
+                        FdpSpecialFeatureTypeId = parameters.SpecialFeatureTypeId
+                    }
+                };
+
+                await DataContext.Import.AddSpecialFeature(filter, specialFeature);
+            }
             await DeactivateException(importView.CurrentException);
             await ReProcessException(importView.CurrentException);
 

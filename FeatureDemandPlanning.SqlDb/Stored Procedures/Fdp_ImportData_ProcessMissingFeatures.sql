@@ -44,6 +44,98 @@ AS
 	SET @Message = 'Adding feature errors...';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 	
+	-- Special features
+	
+	INSERT INTO Fdp_ImportError
+	(
+		  FdpImportQueueId
+		, LineNumber
+		, ErrorOn
+		, FdpImportErrorTypeId
+		, ErrorMessage
+		, AdditionalData
+		, SubTypeId
+	)
+	SELECT
+		  FdpImportQueueId
+		, LineNumber
+		, ErrorOn
+		, FdpImportErrorTypeId
+		, ErrorMessage
+		, AdditionalData
+		, SubTypeId
+	FROM
+	(
+		SELECT 
+			  @FdpImportQueueId AS FdpImportQueueId
+			, 0 AS LineNumber
+			, GETDATE() AS ErrorOn
+			, 2 AS FdpImportErrorTypeId -- Feature
+			, 'No special feature code for full year volume by derivative' AS ErrorMessage
+			, 'FULLYEAR' AS AdditionalData
+			, 204 AS SubTypeId -- No special feature
+		FROM
+		OXO_Doc									AS D
+		LEFT JOIN Fdp_SpecialFeatureMapping_VW	AS S	ON	D.Id						= S.DocumentId
+														AND S.FdpSpecialFeatureTypeId	= 1
+														AND S.IsActive					= 1
+		LEFT JOIN Fdp_ImportError				AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
+														AND CUR.AdditionalData			= 'FULLYEAR'
+														AND CUR.FdpImportErrorTypeId	= 2
+														AND CUR.IsExcluded				= 0
+		LEFT JOIN Fdp_ImportErrorExclusion		AS EX	ON	EX.DocumentId				= @DocumentId
+														AND EX.FdpImportErrorTypeId		= 2
+														AND EX.SubTypeId				= 204
+														AND EX.IsActive					= 1
+														AND EX.AdditionalData			= 'FULLYEAR'
+		WHERE
+		D.Id = @DocumentId
+		AND
+		S.FdpSpecialFeatureMappingId IS NULL
+		AND
+		CUR.FdpImportErrorId IS NULL
+		AND
+		EX.FdpImportErrorExclusionId IS NULL
+		
+		UNION
+		
+		SELECT 
+			  @FdpImportQueueId AS FdpImportQueueId
+			, 0 AS LineNumber
+			, GETDATE() AS ErrorOn
+			, 2 AS FdpImportErrorTypeId -- Feature
+			, 'No special feature code for half year volume by derivative' AS ErrorMessage
+			, 'HALFYEAR' AS AdditionalData
+			, 204 AS SubTypeId -- No special feature
+		FROM
+		OXO_Doc									AS D
+		LEFT JOIN Fdp_SpecialFeatureMapping_VW	AS S	ON	D.Id						= S.DocumentId
+														AND S.FdpSpecialFeatureTypeId	= 2
+														AND S.IsActive					= 1
+		LEFT JOIN Fdp_ImportError				AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
+														AND CUR.AdditionalData			= 'HALFYEAR'
+														AND CUR.FdpImportErrorTypeId	= 2
+														AND CUR.IsExcluded				= 0
+		LEFT JOIN Fdp_ImportErrorExclusion		AS EX	ON	EX.DocumentId				= @DocumentId
+														AND EX.FdpImportErrorTypeId		= 2
+														AND EX.SubTypeId				= 204
+														AND EX.IsActive					= 1
+														AND EX.AdditionalData			= 'HALFYEAR'
+		WHERE
+		D.Id = @DocumentId
+		AND
+		S.FdpSpecialFeatureMappingId IS NULL
+		AND
+		CUR.FdpImportErrorId IS NULL
+		AND
+		EX.FdpImportErrorExclusionId IS NULL
+	)
+	AS E
+	ORDER BY
+	ErrorMessage;
+
+	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
+	
 	-- Uncoded features
 		
 	INSERT INTO Fdp_ImportError
@@ -71,6 +163,11 @@ AS
 												AND ISNULL(F.BrandDescription, F.Description)	= CUR.AdditionalData
 												AND CUR.FdpImportErrorTypeId	= 2
 												AND CUR.IsExcluded				= 0
+	-- Don't add if there are any active missing Feature Code errors
+	LEFT JOIN Fdp_ImportError			AS CUR2 ON	CUR2.FdpImportQueueId = @FdpImportQueueId
+												AND	CUR2.FdpImportErrorTypeId	= 2
+												AND CUR2.SubTypeId				= 204
+												AND CUR2.IsExcluded				= 0
 	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= @DocumentId
 												AND EX.FdpImportErrorTypeId		= 2
 												AND EX.SubTypeId				= 201
@@ -80,6 +177,10 @@ AS
 	D.Id = @DocumentId
 	AND
 	F.MappedFeatureCode IS NULL
+	AND
+	CUR.FdpImportErrorId IS NULL
+	AND
+	CUR2.FdpImportErrorId IS NULL
 	AND
 	EX.FdpImportErrorExclusionId IS NULL
 	GROUP BY
@@ -114,26 +215,26 @@ AS
 	JOIN Fdp_FeatureMapping_VW	AS F	ON D.Id = F.DocumentId
 	LEFT JOIN 
 	(
-		SELECT ImportFeatureCode
+		SELECT FdpImportQueueId, ImportFeatureCode
 		FROM Fdp_Import_VW AS I
 		WHERE 
 		I.FdpImportId = @FdpImportId
 		AND 
 		I.FdpImportQueueId = @FdpImportQueueId
 		GROUP BY 
-		ImportFeatureCode
+		FdpImportQueueId, ImportFeatureCode
 	)
 	AS I1 ON F.ImportFeatureCode = I1.ImportFeatureCode
 	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
 												AND F.MappedFeatureCode			= CUR.AdditionalData
 												AND CUR.FdpImportErrorTypeId	= 2
 												AND CUR.IsExcluded				= 0
-	-- Don't add if there are any active missing Feature Code errors
+	-- Don't add if there are any active missing Feature Code / Special Feature Code errors
 	LEFT JOIN Fdp_ImportError			AS CUR2 ON	CUR2.FdpImportQueueId = @FdpImportQueueId
 												AND	CUR2.FdpImportErrorTypeId	= 2
-												AND CUR2.SubTypeId				= 201
+												AND CUR2.SubTypeId				IN (201, 204)
 												AND CUR2.IsExcluded				= 0
-	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= @DocumentId
+	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= F.DocumentId
 												AND EX.FdpImportErrorTypeId		= 2
 												AND EX.SubTypeId				= 202
 												AND EX.IsActive					= 1
@@ -147,11 +248,9 @@ AS
 	AND
 	CUR2.FdpImportErrorId IS NULL
 	AND
-	ISNULL(F.MappedFeatureCode, '') <> ''
+	F.MappedFeatureCode IS NOT NULL
 	AND
 	EX.FdpImportErrorExclusionId IS NULL
-	ORDER BY 
-	ErrorMessage
 	
 	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
 	
@@ -192,8 +291,6 @@ AS
 		FdpImportQueueId = @FdpImportQueueId
 		AND
 		F.MappedFeatureCode IS NULL
-		AND
-		I.IsSpecialFeatureCode = 0 -- Ignore special features as they have their own meaning and are mapped elsewhere
 		GROUP BY
 		  I.DocumentId
 		, I.ImportFeatureCode
@@ -207,7 +304,7 @@ AS
 	-- Don't add if there are any active missing Feature Code or OXO Feature errors
 	LEFT JOIN Fdp_ImportError			AS CUR2 ON	CUR2.FdpImportQueueId = @FdpImportQueueId
 												AND	CUR2.FdpImportErrorTypeId	= 2
-												AND CUR2.SubTypeId				IN (201, 202)
+												AND CUR2.SubTypeId				IN (201, 202, 204)
 												AND CUR2.IsExcluded				= 0
 	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= @DocumentId
 												AND EX.FdpImportErrorTypeId		= 2
@@ -218,10 +315,10 @@ AS
 	CUR.FdpImportErrorId IS NULL
 	AND
 	CUR2.FdpImportErrorId IS NULL
-	--AND
-	--@FlagOrphanedImportData = 1 -- Can't check the orphaned data flag here, as we need to map special features at this point
 	AND
 	EX.FdpImportErrorExclusionId IS NULL
+	AND
+	@FlagOrphanedImportData = 1
 	GROUP BY
 	I.ImportFeatureCode, I.ImportFeature
 	ORDER BY

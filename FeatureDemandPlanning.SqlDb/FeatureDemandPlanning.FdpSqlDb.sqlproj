@@ -234,12 +234,18 @@
     <Build Include="Stored Procedures\Fdp_Feature_Get.sql" />
     <Build Include="Stored Procedures\Fdp_Feature_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_Feature_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_FeatureMapping_Get.sql" />
+    <Build Include="Stored Procedures\Fdp_FeatureMapping_Get.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_FeatureMapping_GetMany.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_FeatureMapping_Save.sql" />
+    <Build Include="Stored Procedures\Fdp_FeatureMapping_Save.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_Forecast_Get.sql" />
     <Build Include="Stored Procedures\Fdp_Forecast_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_Forecast_Save.sql" />
@@ -1050,6 +1056,14 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_ImportFeatures_GetMany.sql" />
+    <Build Include="Functions\fn_Fdp_ParsedVolume_Get.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_ImportData_ProcessTakeRateData.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">

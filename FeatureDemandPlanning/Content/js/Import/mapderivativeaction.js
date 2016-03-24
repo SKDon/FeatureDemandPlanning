@@ -94,7 +94,7 @@ model.MapDerivativeAction = function (params) {
     me.registerSubscribers = function () {
         $("#Modal_Notify")
             .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
-            .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
+            .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler);
     };
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;
@@ -108,7 +108,7 @@ model.MapDerivativeAction = function (params) {
     function getData() {
         var params = me.getParameters();
         if (params.Data != undefined)
-            return JSON.parse(params.Data)
+            return JSON.parse(params.Data);
 
         return {};
     };

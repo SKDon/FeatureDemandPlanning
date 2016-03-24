@@ -44,7 +44,8 @@ model.MapOxoFeatureAction = function (params) {
         $("#" + me.getIdentifierPrefix() + "_FeatureList").multiselect({
             onChange: function(option, checked) {
                 me.setSelectedFeatures();
-            }
+            },
+            maxHeight: 200
         });
     };
     me.getFeatureCode = function() {
@@ -69,6 +70,7 @@ model.MapOxoFeatureAction = function (params) {
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");
+        $(document).trigger("Updated", {});
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
         if (eventArgs.IsValidation) {

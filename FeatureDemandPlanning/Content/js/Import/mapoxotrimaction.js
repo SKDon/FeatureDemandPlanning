@@ -66,6 +66,7 @@ model.MapOxoTrimAction = function (params) {
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");
+        $(document).trigger("Updated", {});
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
         if (eventArgs.IsValidation) {

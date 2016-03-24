@@ -1,6 +1,20 @@
-﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+﻿@using FeatureDemandPlanning.Model
+@using enums = FeatureDemandPlanning.Model.Enumerations
 
 @model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
+
+@{
+    var specialFeatureTypeId = 0;
+    switch (Model.CurrentException.AdditionalData)
+    {
+        case "FULLYEAR":
+            specialFeatureTypeId = 1;
+            break;
+        case "HALFYEAR":
+            specialFeatureTypeId = 2;
+            break;
+    }
+}
 
 <div class="alert alert-info">
     <div class="row">
@@ -8,7 +22,7 @@
             <span class="glyphicon glyphicon-info-sign"></span>
         </div>
         <div class="col-lg-11">
-            <p>Map the imported feature code to a special feature.</p>
+            <p>Map a special feature to import Feature Code(s).</p>
             <p>Special features typically contain additional volume information for derivatives.</p>
             <p>Click <strong>'OK'</strong> to continue.</p>
         </div>
@@ -19,27 +33,29 @@
 
 <div class="panel panel-primary">
     <div class="panel-heading">
-        <div class="panel-title">Special Feature</div>
+        <div class="panel-title">Historic Feature</div>
     </div>
     <div class="panel-body">
         <form class="form-horizontal">
             <div class="form-group">
-                <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_SelectSpecialFeature">Special Feature:</label>
+                <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_FeatureList">Historic Feature:</label>
                 <div class="col-sm-8">
-                    <button id="@(Model.IdentifierPrefix)_SelectSpecialFeature" type="button" class="btn btn-sm btn-default dropdown-toggle col-sm-12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span id="@(Model.IdentifierPrefix)_SelectedSpecialFeature">Select Special Feature</span>
-                        <span class="caret"></span>
-                    </button>
-                    <ul id="@(Model.IdentifierPrefix)_SpecialFeatureList" class="dropdown-menu">
-                        @foreach (var specialFeature in Model.AvailableSpecialFeatures)
+                    <select id="@(Model.IdentifierPrefix)_FeatureList" class="form-control sm" multiple="multiple">
+                        @foreach (var importFeature in Model.AvailableImportFeatures.OrderBy(f => f.FeatureCode))
                         {
-                            <li><a class="special-feature-item" href="#" data-target="@specialFeature.FdpSpecialFeatureTypeId" data-content="@specialFeature.Description">@specialFeature.Description</a></li>
+                            <option value="@importFeature.FeatureCode">@importFeature.FeatureCode - @importFeature.SystemDescription</option>
                         }
-                    </ul>
+                    </select>
                 </div>
             </div>
-            
+
         </form>
     </div>
 </div>
+
+<form>
+    <input type="hidden" id="@(Model.IdentifierPrefix)_SpecialFeatureTypeId" value="@specialFeatureTypeId" />
+</form>
+
+
 

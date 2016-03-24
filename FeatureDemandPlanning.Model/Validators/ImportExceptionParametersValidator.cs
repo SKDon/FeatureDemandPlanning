@@ -61,7 +61,7 @@ namespace FeatureDemandPlanning.Model.Validators
             });
             RuleSet(Enum.GetName(typeof(ImportAction), ImportAction.AddSpecialFeature), () =>
             {
-                RuleFor(p => p.ImportFeatureCode).NotEmpty().WithMessage("'Import Feature Code' not specified");
+                //RuleFor(p => p.ImportFeatureCode).NotEmpty().WithMessage("'Import Feature Code' not specified");
                 RuleFor(p => p.SpecialFeatureTypeId).NotEmpty().WithMessage("'Special Feature' not specified");
             });
             RuleSet(Enum.GetName(typeof(ImportAction), ImportAction.IgnoreException), () =>

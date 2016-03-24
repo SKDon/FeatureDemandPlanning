@@ -5,11 +5,12 @@ namespace FeatureDemandPlanning.Model
     public class FdpSpecialFeature : FdpFeature
     {
         public int FdpSpecialFeatureTypeId { get; set; }
-        public FdpSpecialFeatureType SpecialFeatureType { get; set; }
+        public string SpecialFeatureType { get; set; }
+        public FdpSpecialFeatureType Type { get; set; }
 
         public FdpSpecialFeature()
         {
-            SpecialFeatureType = new EmptySpecialFeatureType();
+            Type = new EmptySpecialFeatureType();
         }
     }
 }

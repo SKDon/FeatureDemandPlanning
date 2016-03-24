@@ -4,12 +4,14 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_SpecialFeatureMapping_VW] AS
 
 	SELECT
 		  S.FdpSpecialFeatureId AS FdpSpecialFeatureMappingId
 		, S.CreatedOn
 		, S.CreatedBy
+		, S.DocumentId
 		, S.ProgrammeId
 		, S.Gateway				AS Gateway
 		, S.FdpSpecialFeatureId	AS FeatureId
@@ -23,9 +25,7 @@ CREATE VIEW [dbo].[Fdp_SpecialFeatureMapping_VW] AS
 		, S.UpdatedOn
 		, S.UpdatedBy
 	FROM
-	OXO_Programme_VW		AS P 
-	JOIN Fdp_Gateways_VW	AS G		ON	P.Id		= G.ProgrammeId
-	JOIN Fdp_SpecialFeature	AS S		ON	P.Id		= S.ProgrammeId
-										AND G.Gateway	= S.Gateway
+	OXO_Doc					AS D
+	JOIN Fdp_SpecialFeature	AS S		ON	D.Id		= S.DocumentId
 	JOIN Fdp_SpecialFeatureType AS T	ON	S.FdpSpecialFeatureTypeId 
 														= T.FdpSpecialFeatureTypeId

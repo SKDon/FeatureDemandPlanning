@@ -4,7 +4,7 @@
     {
         public EmptyFdpSpecialFeature()
         {
-            SpecialFeatureType = new EmptySpecialFeatureType();
+            Type = new EmptySpecialFeatureType();
         }
     }
 }

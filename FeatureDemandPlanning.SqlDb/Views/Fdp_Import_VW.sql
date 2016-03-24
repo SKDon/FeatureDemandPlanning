@@ -1,4 +1,5 @@
 ﻿
+
 CREATE VIEW [dbo].[Fdp_Import_VW] AS
 
 	WITH TakeRateFiles AS
@@ -25,7 +26,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 		, I.[Trim Pack Description]							AS ImportTrim
 		, I.[Bff Feature Code]								AS ImportFeatureCode
 		, I.[Feature Description]							AS ImportFeature
-		, I.[Count of Specific Order No]					AS ImportVolume
+		, dbo.fn_Fdp_ParsedVolume_Get(I.[Count of Specific Order No]) AS ImportVolume
 		, IH.ProgrammeId
 		, IH.Gateway
 		, IH.DocumentId
@@ -165,8 +166,8 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 	-- Mapping of derivative details (non-archived)
 	
 	LEFT JOIN Fdp_DerivativeMapping_VW		AS DMAP		ON	LTRIM(RTRIM(I.[Derivative Code])) = DMAP.ImportDerivativeCode
-														AND IH.ProgrammeId				= DMAP.ProgrammeId
-														AND IH.Gateway					= DMAP.Gateway
+														AND IH.DocumentId				= DMAP.DocumentId
+
 	LEFT JOIN OXO_Programme_Body			AS B1		ON	DMAP.BodyId					= B1.Id
 														AND DMAP.IsArchived				= 0												
 	LEFT JOIN OXO_Programme_Engine			AS E1		ON	DMAP.EngineId				= E1.Id
@@ -190,11 +191,9 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 	-- Mapping of features		
 													
 	LEFT JOIN Fdp_FeatureMapping_VW			AS FMAP		ON	I.[Bff Feature Code]		= FMAP.ImportFeatureCode
-														AND IH.ProgrammeId				= FMAP.ProgrammeId
-														AND IH.Gateway					= FMAP.Gateway
+														AND IH.DocumentId				= FMAP.DocumentId
 	LEFT JOIN Fdp_SpecialFeatureMapping_VW	AS SMAP		ON	I.[Bff Feature Code]		= SMAP.ImportFeatureCode
-														AND IH.ProgrammeId				= SMAP.ProgrammeId
-														AND IH.Gateway					= SMAP.Gateway
+														AND IH.DocumentId				= SMAP.DocumentId
 														AND SMAP.IsActive				= 1
 														
 	-- The combination of body, engine, transmission and trim gives us the model
@@ -260,24 +259,24 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 		, FeatureId
 		, FdpFeatureId
 		, FeaturePackId
-	)										AS CUR		ON	CUR1.FdpVolumeHeaderId		= CUR.FdpVolumeHeaderId
-														AND MMAP.Market_Id				= CUR.MarketId
-														AND 
-														(
-															M1.Id						= CUR.ModelId
-															OR
-															M2.FdpModelId				= CUR.FdpModelId
-														)
-														AND	
-														(
-															FMAP.FeatureId				= CUR.FeatureId
-															OR
-															FMAP.FdpFeatureId			= CUR.FdpFeatureId
-															OR
-															(FMAP.FeatureId IS NULL AND CUR.FeatureId IS NULL AND FMAP.FeaturePackId = CUR.FeaturePackId)
-														)
-														AND CAST(I.[Count of Specific Order No] AS INT)
-																						= CUR.Volume
+	)										
+	AS CUR		ON	CUR1.FdpVolumeHeaderId		= CUR.FdpVolumeHeaderId
+				AND MMAP.Market_Id				= CUR.MarketId
+				AND 
+				(
+					M1.Id						= CUR.ModelId
+					OR
+					M2.FdpModelId				= CUR.FdpModelId
+				)
+				AND	
+				(
+					FMAP.FeatureId				= CUR.FeatureId
+					OR
+					FMAP.FdpFeatureId			= CUR.FdpFeatureId
+					OR
+					(FMAP.FeatureId IS NULL AND CUR.FeatureId IS NULL AND FMAP.FeaturePackId = CUR.FeaturePackId)
+				)
+				AND dbo.fn_Fdp_ParsedVolume_Get(I.[Count of Specific Order No]) = CUR.Volume
 
 
 

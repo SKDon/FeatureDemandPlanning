@@ -696,7 +696,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     para.Add("@FeatureCode", specialFeature.FeatureCode, DbType.String);
-                    para.Add("@FdpSpecialFeatureTypeId", specialFeature.SpecialFeatureType.FdpSpecialFeatureTypeId, DbType.Int32);
+                    para.Add("@FdpSpecialFeatureTypeId", specialFeature.Type.FdpSpecialFeatureTypeId, DbType.Int32);
                     para.Add("@DocumentId", specialFeature.DocumentId, DbType.Int32);
 
                     retVal = conn.Query<FdpSpecialFeature>("dbo.Fdp_SpecialFeatureMapping_Save", para, commandType: CommandType.StoredProcedure).FirstOrDefault();

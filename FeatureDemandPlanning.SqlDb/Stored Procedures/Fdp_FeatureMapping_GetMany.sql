@@ -10,7 +10,6 @@
 	, @PageSize					INT				= 10
 	, @SortIndex				INT				= 1
 	, @SortDirection			VARCHAR(5)		= 'ASC'
-	, @Filter					NVARCHAR(MAX)	= NULL
 	, @TotalPages				INT OUTPUT
 	, @TotalRecords				INT OUTPUT
 	, @TotalDisplayRecords		INT OUTPUT
@@ -96,8 +95,6 @@ AS
 		OR
 		(@OxoFeaturesOnly = 1 AND F.IsMappedFeature = 0)
 	)
-	AND
-	(@Filter IS NULL OR F.MappedFeatureCode LIKE '%' + @Filter + '%' OR ISNULL(F.BrandDescription, F.[Description]) LIKE '%' + @Filter + '%')
 	ORDER BY MappedFeatureCode
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
