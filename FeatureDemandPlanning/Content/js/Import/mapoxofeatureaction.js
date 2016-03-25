@@ -45,7 +45,8 @@ model.MapOxoFeatureAction = function (params) {
             onChange: function(option, checked) {
                 me.setSelectedFeatures();
             },
-            maxHeight: 200
+            maxHeight: 200,
+            enableCaseInsensitiveFiltering: true
         });
     };
     me.getFeatureCode = function() {

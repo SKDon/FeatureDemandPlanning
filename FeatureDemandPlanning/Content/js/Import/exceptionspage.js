@@ -137,11 +137,11 @@ page.ExceptionsPage = function (models) {
             {
                 "targets": 1,
                 "visible": false
-            },
-            {
-                "targets": 4,
-                "className": "text-center"
             }],
+            //{
+            //    "targets": 4,
+            //    "className": "text-center"
+            //}],
             "fnCreatedRow": function (row, data, index) {
                 var importExceptionId = data[0];
                 $(row).attr("data-import-exception-id", importExceptionId);

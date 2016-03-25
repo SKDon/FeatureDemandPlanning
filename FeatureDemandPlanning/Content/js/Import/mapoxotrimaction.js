@@ -41,7 +41,8 @@ model.MapOxoTrimAction = function (params) {
         $("#" + me.getIdentifierPrefix() + "_TrimLevelList").multiselect({
             onChange: function(option, checked) {
                 me.setSelectedTrimLevels();
-            }
+            },
+            enableCaseInsensitiveFiltering: true
         });
     };
     me.getTrimIdentifier = function () {

@@ -51,13 +51,12 @@ namespace FeatureDemandPlanning.Model
 
         public string[] ToJQueryDataTableResult()
         {
-            return new string[] 
+            return new [] 
             { 
                 FdpImportErrorId.ToString(),
                 LineNumber.TrimStart('0'), 
                 ErrorTypeDescription,
-                ErrorMessage,
-                ErrorOn.ToString("dd/MM/yyyy HH:mm")
+                ErrorMessage
             };
         }
 

@@ -68,7 +68,7 @@ namespace FeatureDemandPlanning.DataStore
 
 
                         var results = conn.Query<TakeRateSummary>("dbo.Fdp_ImportData_Process", para,
-                            commandType: CommandType.StoredProcedure, commandTimeout: 600);
+                            commandType: CommandType.StoredProcedure, commandTimeout: 600, transaction: tran);
                         var takeRateSummaries = results as IList<TakeRateSummary> ?? results.ToList();
                         if (results != null && takeRateSummaries.Any())
                         {
@@ -757,7 +757,7 @@ namespace FeatureDemandPlanning.DataStore
                         para.Add("@FdpImportId", importQueue.ImportId, DbType.Int32);
 
                         var results = conn.Query<TakeRateSummary>("dbo.Fdp_ImportData_ProcessTakeRateData", para,
-                            commandType: CommandType.StoredProcedure, commandTimeout: 600);
+                            commandType: CommandType.StoredProcedure, commandTimeout: 600, transaction: tran);
                         var takeRateSummaries = results as IList<TakeRateSummary> ?? results.ToList();
                         if (results != null && takeRateSummaries.Any())
                         {

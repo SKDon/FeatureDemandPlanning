@@ -45,7 +45,8 @@ model.SpecialFeatureAction = function (params) {
             onChange: function (option, checked) {
                 me.setSelectedFeatures();
             },
-            maxHeight: 200
+            maxHeight: 200,
+            enableCaseInsensitiveFiltering: true
         });
     };
     me.getSelectedFeatures = function () {

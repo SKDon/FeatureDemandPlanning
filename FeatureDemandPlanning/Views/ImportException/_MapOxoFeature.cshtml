@@ -30,9 +30,9 @@
                 <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_SelectFeature">Historic Feature:</label>
                 <div class="col-sm-8">
                     <select class="form-control sm" id="@(Model.IdentifierPrefix)_FeatureList" multiple="multiple" size="10">
-                        @foreach (var importFeature in Model.AvailableImportFeatures)
+                        @foreach (var importFeature in Model.AvailableImportFeatures.OrderBy(f => f.FeatureCode))
                         {
-                            <option value="@importFeature.FeatureCode">@importFeature.FeatureCode - @importFeature.Description</option>
+                            <option value="@importFeature.FeatureCode">@importFeature.FeatureCode - @importFeature.SystemDescription</option>
                         }
                     </select>
 

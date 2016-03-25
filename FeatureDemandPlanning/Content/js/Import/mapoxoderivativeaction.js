@@ -41,7 +41,9 @@ model.MapOxoDerivativeAction = function (params) {
         $("#" + me.getIdentifierPrefix() + "_DerivativeList").multiselect({
             onChange: function(option, checked) {
                 me.setSelectedDerivatives();
-            }
+            },
+            maxHeight: 300,
+            enableCaseInsensitiveFiltering: true
         });
     };
     me.getDerivativeCode = function() {

@@ -138,6 +138,13 @@ namespace FeatureDemandPlanning.DataStore
         {
             var result = new ImportResult();
 
+            // Redo any worktray errors first
+            queuedItem = ProcessImportData(queuedItem);
+            if (queuedItem.HasErrors)
+            {
+                return result;
+            }
+
             queuedItem = await Task.FromResult(_importDataStore.ProcessTakeRateData(queuedItem));
             result.Status = queuedItem.ImportStatus;
 
