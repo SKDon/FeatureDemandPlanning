@@ -49,8 +49,8 @@ namespace FeatureDemandPlanning.Model
                     : FeaturePackId.ToString();
                 }
                 return !string.IsNullOrEmpty(FeatureCode)
-                    ? string.Format("{0}|O{1}", FeatureCode, FeatureId)
-                    : FeatureId.ToString();
+                    ? string.Format("{0}|O{1}", FeatureCode, FeatureId ?? Id)
+                    : (FeatureId ?? Id).ToString();
             }
         }
 
@@ -68,6 +68,7 @@ namespace FeatureDemandPlanning.Model
                 else
                 {
                     feature.FeatureId = int.Parse(elements[1].Substring(1));
+                    feature.Id = feature.FeatureId.GetValueOrDefault();
                 }
             }
             else
@@ -79,6 +80,7 @@ namespace FeatureDemandPlanning.Model
                 else
                 {
                     feature.FeatureId = int.Parse(elements[0].Substring(1));
+                    feature.Id = feature.FeatureId.GetValueOrDefault();
                 }
             }
             return feature;

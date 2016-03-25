@@ -202,7 +202,7 @@ AS
 		, AdditionalData
 		, SubTypeId
 	)
-	SELECT
+	SELECT  
 		  @FdpImportQueueId AS FdpImportQueueId
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
@@ -210,21 +210,33 @@ AS
 		, 'No historic Feature Code matching OXO feature ''' + F.MappedFeatureCode + ' - ' + ISNULL(F.BrandDescription, F.[Description]) + '''' AS ErrorMessage
 		, F.MappedFeatureCode AS AdditionalData
 		, 202
-	FROM 
+	FROM
 	OXO_Doc						AS D
-	JOIN Fdp_FeatureMapping_VW	AS F	ON D.Id = F.DocumentId
-	LEFT JOIN 
+	JOIN Fdp_FeatureMapping_VW	AS F ON D.Id = F.DocumentId
+	LEFT JOIN
 	(
-		SELECT FdpImportQueueId, ImportFeatureCode
-		FROM Fdp_Import_VW AS I
-		WHERE 
-		I.FdpImportId = @FdpImportId
-		AND 
+		SELECT I.ImportFeatureCode
+		FROM
+		Fdp_Import_VW AS I
+		WHERE
 		I.FdpImportQueueId = @FdpImportQueueId
 		GROUP BY 
-		FdpImportQueueId, ImportFeatureCode
+		I.ImportFeatureCode
 	)
-	AS I1 ON F.ImportFeatureCode = I1.ImportFeatureCode
+	AS I ON F.ImportFeatureCode = I.ImportFeatureCode
+	LEFT JOIN
+	(
+		SELECT ImportFeatureCode, MappedFeatureCode
+		FROM
+		Fdp_FeatureMapping_VW
+		WHERE
+		DocumentId = @DocumentId
+		AND
+		IsMappedFeature = 1
+		GROUP BY 
+		ImportFeatureCode, MappedFeatureCode
+	)
+	AS M ON F.MappedFeatureCode = M.MappedFeatureCode
 	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
 												AND F.MappedFeatureCode			= CUR.AdditionalData
 												AND CUR.FdpImportErrorTypeId	= 2
@@ -239,18 +251,22 @@ AS
 												AND EX.SubTypeId				= 202
 												AND EX.IsActive					= 1
 												AND F.MappedFeatureCode			= EX.AdditionalData
-	WHERE 
+	WHERE
 	D.Id = @DocumentId
 	AND
-	I1.ImportFeatureCode IS NULL
+	F.IsMappedFeature = 0
+	AND
+	I.ImportFeatureCode IS NULL -- There is no 1-1 match between OXO feature code and the import data feature codes
+	AND
+	M.MappedFeatureCode IS NULL -- There is no mapping between OXO feature codes and the import feature codes
 	AND
 	CUR.FdpImportErrorId IS NULL
 	AND
 	CUR2.FdpImportErrorId IS NULL
 	AND
-	F.MappedFeatureCode IS NOT NULL
-	AND
 	EX.FdpImportErrorExclusionId IS NULL
+	ORDER BY
+	ErrorMessage
 	
 	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
 	
