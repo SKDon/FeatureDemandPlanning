@@ -17,7 +17,6 @@ model.Page = function (models) {
         $(privateStore[me.id].Models).each(function () {
             this.initialise();
         });
-        me.checkCompletion();
         me.setResultsMode($("#" + me.getIdentifierPrefix() + "_Mode").val());
         me.loadData();
         me.registerEvents();
@@ -527,16 +526,6 @@ model.Page = function (models) {
         if (validationData.ValidationResults.length !== 0) {
             
             mainIndicator.fadeIn();
-        }
-    };
-    me.checkCompletion = function() {
-        var model = getTakeRateDataModel();
-        var isImportCompleted = model.isImportCompleted();
-        if (!isImportCompleted)
-        {
-            getModal().showAlert("Incomplete Data",
-                "The import process for this take rate file has not been completed and still contains errors.<br/><br/>" +
-                "The dataset will be incomplete and should be edited with caution.", 2);
         }
     };
     me.confirmLoadChangeset = function(changesetData) {

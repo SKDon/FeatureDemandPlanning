@@ -53,29 +53,35 @@ namespace FeatureDemandPlanning.DataStore
 
             using (var conn = DbHelper.GetDBConnection())
             {
-                try
+                using (var tran = conn.BeginTransaction())
                 {
-                    var para = new DynamicParameters();
-                    para.Add("@FdpImportId", importQueue.ImportId, DbType.Int32);
-                    //para.Add("@FdpVolumeHeaderId", null, DbType.Int32, ParameterDirection.Output);
-
-                    if (importQueue.LineNumber.HasValue)
+                    try
                     {
-                        para.Add("@LineNumber", importQueue.LineNumber, DbType.Int32);
-                    }
+                        var para = new DynamicParameters();
+                        para.Add("@FdpImportId", importQueue.ImportId, DbType.Int32);
+                        //para.Add("@FdpVolumeHeaderId", null, DbType.Int32, ParameterDirection.Output);
 
-                   
-                    var results = conn.Query<TakeRateSummary>("dbo.Fdp_ImportData_Process", para, commandType: CommandType.StoredProcedure, commandTimeout:600);
-                    var takeRateSummaries = results as IList<TakeRateSummary> ?? results.ToList();
-                    if (results != null && takeRateSummaries.Any())
-                    {
-                        takeRateFile = takeRateSummaries.First();
+                        if (importQueue.LineNumber.HasValue)
+                        {
+                            para.Add("@LineNumber", importQueue.LineNumber, DbType.Int32);
+                        }
+
+
+                        var results = conn.Query<TakeRateSummary>("dbo.Fdp_ImportData_Process", para,
+                            commandType: CommandType.StoredProcedure, commandTimeout: 600);
+                        var takeRateSummaries = results as IList<TakeRateSummary> ?? results.ToList();
+                        if (results != null && takeRateSummaries.Any())
+                        {
+                            takeRateFile = takeRateSummaries.First();
+                        }
+
+                        tran.Commit();
                     }
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex);
-                    throw;
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex);
+                        throw;
+                    }
                 }
             }
             var retVal = ImportQueueGet(importQueue.ImportQueueId.GetValueOrDefault());
@@ -101,7 +107,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     if (filter.PageSize.HasValue)
                     {
-                        para.Add("@PageSize", filter.PageSize.HasValue ? filter.PageSize.Value : 10, DbType.Int32);
+                        para.Add("@PageSize", filter.PageSize.Value, DbType.Int32);
                     }
                     if (filter.ImportStatus != enums.ImportStatus.NotSet)
                     {
@@ -138,10 +144,10 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     retVal = new PagedResults<ImportQueue>
                     {
-                        PageIndex = filter.PageIndex.HasValue ? filter.PageIndex.Value : 1,
+                        PageIndex = filter.PageIndex ?? 1,
                         TotalRecords = totalRecords,
                         TotalDisplayRecords = totalDisplayRecords,
-                        PageSize = filter.PageSize.HasValue ? filter.PageSize.Value : totalRecords
+                        PageSize = filter.PageSize ?? totalRecords
                     };
 
                     var currentPage = new List<ImportQueue>();
@@ -179,12 +185,14 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpImportQueueId", importQueueId, DbType.Int32);
                     
                     var result = conn.Query<ImportQueueDataItem>("dbo.Fdp_ImportQueue_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    if (result != null)
+                    {
+                        result.ImportType = ImportTypeDataItem.ToImportType(result);
+                        result.ImportStatus = ImportStatusDataItem.ToImportStatus(result);
+                        //HydrateImportErrors(result, conn);
 
-                    result.ImportType = ImportTypeDataItem.ToImportType(result);
-                    result.ImportStatus = ImportStatusDataItem.ToImportStatus(result);
-                    //HydrateImportErrors(result, conn);
-
-                    retVal = ImportQueueDataItem.ToImportQueue(result);
+                        retVal = ImportQueueDataItem.ToImportQueue(result);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -741,22 +749,28 @@ namespace FeatureDemandPlanning.DataStore
 
             using (var conn = DbHelper.GetDBConnection())
             {
-                try
+                using (var tran = conn.BeginTransaction())
                 {
-                    var para = new DynamicParameters();
-                    para.Add("@FdpImportId", importQueue.ImportId, DbType.Int32);
-                    
-                    var results = conn.Query<TakeRateSummary>("dbo.Fdp_ImportData_ProcessTakeRateData", para, commandType: CommandType.StoredProcedure, commandTimeout: 600);
-                    var takeRateSummaries = results as IList<TakeRateSummary> ?? results.ToList();
-                    if (results != null && takeRateSummaries.Any())
+                    try
                     {
-                        takeRateFile = takeRateSummaries.First();
+                        var para = new DynamicParameters();
+                        para.Add("@FdpImportId", importQueue.ImportId, DbType.Int32);
+
+                        var results = conn.Query<TakeRateSummary>("dbo.Fdp_ImportData_ProcessTakeRateData", para,
+                            commandType: CommandType.StoredProcedure, commandTimeout: 600);
+                        var takeRateSummaries = results as IList<TakeRateSummary> ?? results.ToList();
+                        if (results != null && takeRateSummaries.Any())
+                        {
+                            takeRateFile = takeRateSummaries.First();
+                        }
+
+                        tran.Commit();
                     }
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex);
-                    throw;
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex);
+                        throw;
+                    }
                 }
             }
             var retVal = ImportQueueGet(importQueue.ImportQueueId.GetValueOrDefault());
