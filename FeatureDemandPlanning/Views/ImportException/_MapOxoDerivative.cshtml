@@ -3,7 +3,7 @@
 @model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
 
 @{
-    var derivative = Model.AvailableDerivatives.FirstOrDefault(d => d.DerivativeCode == Model.CurrentException.AdditionalData);
+    var derivative = Model.AvailableDerivatives.FirstOrDefault(d => d.IsMappedDerivative == false && d.DerivativeCode == Model.CurrentException.AdditionalData);
 }
 
 <div class="alert alert-info">

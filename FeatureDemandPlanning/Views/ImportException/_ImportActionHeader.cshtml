@@ -24,7 +24,7 @@
 
     @if (Model.CurrentAction == enums.ImportAction.MapOxoDerivative)
     {
-        var derivative = Model.AvailableDerivatives.FirstOrDefault(d => d.DerivativeCode == Model.CurrentException.AdditionalData);
+        var derivative = Model.AvailableDerivatives.FirstOrDefault(d => d.IsMappedDerivative == false && d.DerivativeCode == Model.CurrentException.AdditionalData);
         <div class="vertical-spacer"></div>
 
         <div class="row">
@@ -93,8 +93,7 @@
         <div class="vertical-spacer"></div>
     }
 
-@if (Model.CurrentAction == enums.ImportAction.AddMissingTrim ||
-        Model.CurrentAction == enums.ImportAction.MapOxoTrim)
+@if (Model.CurrentAction == enums.ImportAction.AddMissingTrim)
     {
         <div class="row">
             <div class="col-xs-4 text-right"><strong>DPCK:</strong></div>
@@ -115,12 +114,59 @@
 
     @if (Model.CurrentAction == enums.ImportAction.MapOxoTrim)
     {
-        var trimLevel = Model.AvailableTrim.FirstOrDefault(d => d.DPCK == Model.CurrentException.AdditionalData);
+        var additionalData = Model.CurrentException.AdditionalData;
+        var modelElements = additionalData.Split('|');
+        var bmc = modelElements[0];
+        var dpck = modelElements[1];
+        var derivative = Model.AvailableDerivatives.FirstOrDefault(d => d.DerivativeCode == bmc);
+        var trimLevel = Model.AvailableTrim.FirstOrDefault(d => d.BMC == bmc && d.DPCK == dpck);
+
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <strong>BMC:</strong>
+            </div>
+            <div class="col-xs-8">
+                @bmc
+            </div>
+        </div>
+    <div class="row">
+        <div class="col-xs-4 text-right"><strong>DPCK:</strong></div>
+        <div class="col-xs-8">
+            @dpck
+        </div>
+    </div>
+
+    <div class="vertical-spacer"></div>
+
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <strong>Body:</strong>
+            </div>
+            <div class="col-xs-8">
+                @derivative.Body.Name
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <strong>Engine:</strong>
+            </div>
+            <div class="col-xs-8">
+                @derivative.Engine.Name
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <strong>Transmission:</strong>
+            </div>
+            <div class="col-xs-8">
+                @derivative.Transmission.Name
+            </div>
+        </div>
         <div class="vertical-spacer"></div>
 
         <div class="row">
             <div class="col-xs-4 text-right">
-                <strong>Description:</strong>
+                <strong>Trim:</strong>
             </div>
             <div class="col-xs-8">
                 @trimLevel.Name

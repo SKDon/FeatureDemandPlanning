@@ -63,7 +63,7 @@ model.MapOxoTrimAction = function (params) {
             .removeClass("alert-danger")
             .removeClass("alert-warning")
             .addClass("alert-success")
-            .html("OXO DPCK Code mapped successfully to historic trim levels.")
+            .html("OXO Model mapped successfully to historic data.")
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");

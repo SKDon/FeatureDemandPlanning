@@ -178,6 +178,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public IEnumerable<FdpTrimMapping> ListOxoTrim(TrimFilter filter)
         {
+            filter.PageSize = 0;
             return _trimDataStore.ModelTrimOxoTrimGetMany(filter);
         }
         public async Task<IEnumerable<Feature>> ListFeatures(ProgrammeFilter filter)
@@ -391,6 +392,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             filter.IncludeAllTrim = true;
             filter.OxoTrimOnly = true;
+            filter.PageSize = 0;
             return await Task.FromResult(_trimDataStore.FdpOxoTrimGetMany(filter));
         }
         public async Task<OxoTrim> UpdateDpckCode(OxoTrim trim)

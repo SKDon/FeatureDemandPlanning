@@ -49,7 +49,7 @@ model.Trim = function (params) {
                 title = "Map Historic Trim Level to OXO DPCK";
                 break;
             case 15:
-                title = "Map OXO DPCK to Historic Trim Level";
+                title = "Map OXO Model to Historic Trim Level";
             default:
                 break;
         }

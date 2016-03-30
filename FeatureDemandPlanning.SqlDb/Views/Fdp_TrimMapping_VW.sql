@@ -2,6 +2,9 @@
 
 
 
+
+
+
 CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 
 	SELECT
@@ -14,6 +17,8 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 		, T.Name			AS MappedTrim
 		, T.Abbreviation
 		, T.[Level]
+		, T.ModelId
+		, T.BMC
 		, T.DPCK
 		, CAST(0 AS BIT)	AS IsMappedTrim
 		, T.IsFdpTrim
@@ -29,6 +34,7 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 	OXO_Programme				AS P
 	JOIN Fdp_Trim_VW			AS T	ON	P.Id			= T.ProgrammeId
 	LEFT JOIN Fdp_TrimMapping	AS M	ON	T.DocumentId	= M.DocumentId
+										AND T.BMC			= M.BMC
 										AND	T.TrimId		= M.TrimId
 										AND M.IsActive		= 1
 	WHERE
@@ -48,6 +54,8 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 		, T.Name				AS MappedTrim
 		, T.Abbreviation
 		, T.[Level]
+		, T.ModelId
+		, T.BMC
 		, T.DPCK		
 		, CAST(1 AS BIT)		AS IsMappedTrim
 		, T.IsFdpTrim
@@ -63,6 +71,7 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 	OXO_Programme			AS P
 	JOIN Fdp_Trim_VW		AS T	ON	P.Id			= T.ProgrammeId
 	JOIN Fdp_TrimMapping	AS M	ON	T.DocumentId	= M.DocumentId
+									AND T.BMC			= M.BMC
 									AND	T.TrimId		= M.TrimId
 									AND M.IsActive		= 1
 	WHERE

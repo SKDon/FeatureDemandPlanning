@@ -3,7 +3,11 @@
 @model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
 
 @{
-    var trimLevel = Model.AvailableTrim.FirstOrDefault(t => t.DPCK == Model.CurrentException.AdditionalData);
+    var additionalData = Model.CurrentException.AdditionalData;
+    var modelElements = additionalData.Split('|');
+    var bmc = modelElements[0];
+    var dpck = modelElements[1];
+    var trimLevel = Model.AvailableTrim.FirstOrDefault(d => d.BMC == bmc && d.DPCK == dpck);
 }
 
 <div class="alert alert-info">
@@ -12,7 +16,7 @@
             <span class="glyphicon glyphicon-info-sign"></span>
         </div>
         <div class="col-lg-11">
-            <p>Map OXO DPCK Code to historic data.</p>
+            <p>Map OXO model to historic data.</p>
             <p>Click <strong>'OK'</strong> to continue.</p>
         </div>
     </div>
@@ -30,7 +34,7 @@
                 <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_SelectTrimLevel">Historic Trim:</label>
                 <div class="col-sm-8">
                     <select class="form-control sm" id="@(Model.IdentifierPrefix)_TrimLevelList" multiple="multiple">
-                        @foreach (var importTrim in Model.AvailableImportTrimLevels)
+                        @foreach (var importTrim in Model.AvailableImportTrimLevels.Where(i => i.BMC == bmc))
                         {
                             <option value="@importTrim.Identifier">@importTrim.Identifier</option>
                         }
@@ -43,6 +47,6 @@
 </div>
 
 <form>
-    <input type="hidden" id="@(Model.IdentifierPrefix)_DPCK" value="@trimLevel.Identifier"/>
+    <input type="hidden" id="@(Model.IdentifierPrefix)_DPCK" value="@bmc|@dpck|@trimLevel.Id"/>
 </form>
 

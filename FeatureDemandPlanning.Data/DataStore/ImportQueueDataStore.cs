@@ -711,7 +711,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = new DynamicParameters();
                     para.Add("@FdpImportQueueId", filter.ImportQueueId, DbType.Int32);
-
+                
                     retVal = conn.Query<ImportTrim>("Fdp_ImportTrimLevels_GetMany", para, commandType: CommandType.StoredProcedure);
                 }
                 catch (Exception ex)

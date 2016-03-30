@@ -3,6 +3,7 @@
 	, @DocumentId		INT
 	, @ProgrammeId		INT
 	, @Gateway			NVARCHAR(100)
+	, @DerivativeCode	NVARCHAR(40)
 	, @TrimId			INT = NULL
 	, @FdpTrimId		INT = NULL
 	, @CDSId			NVARCHAR(16)
@@ -21,6 +22,8 @@ BEGIN
 				  AND
 				  DocumentId = @DocumentId
 				  AND
+				  BMC = @DerivativeCode
+				  AND
 				  (@TrimId IS NULL OR TrimId = @TrimId)
 				  AND
 				  (@FdpTrimId IS NULL OR FdpTrimId = @FdpTrimId)
@@ -33,6 +36,7 @@ BEGIN
 			, DocumentId
 			, ProgrammeId
 			, Gateway
+			, BMC
 			, TrimId
 			, FdpTrimId
 			, CreatedBy
@@ -43,6 +47,7 @@ BEGIN
 			, @DocumentId
 			, @ProgrammeId
 			, @Gateway
+			, @DerivativeCode
 			, @TrimId
 			, @FdpTrimId
 			, @CDSId

@@ -45,7 +45,7 @@ namespace FeatureDemandPlanning.DataStore
 
         public IEnumerable<FdpTrimMapping> ModelTrimOxoTrimGetMany(TrimFilter filter)
         {
-            filter.PageSize = 1000;
+            filter.PageSize = 0;
             
             var trim = FdpTrimMappingGetMany(filter);
             if (trim == null || trim.CurrentPage == null || !trim.CurrentPage.Any())
@@ -216,6 +216,7 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@FdpTrimId", trimMapping.FdpTrimId, DbType.Int32);
                     }
+                    para.Add("@DerivativeCode", trimMapping.BMC, DbType.String);
 
                     var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())

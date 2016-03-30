@@ -73,6 +73,7 @@ namespace FeatureDemandPlanning.Model
             Level = fromTrim.Level;
             Abbreviation = fromTrim.Abbreviation;
             TrimId = fromTrim.TrimId;
+            BMC = fromTrim.BMC;
         }
 
         public new string[] ToJQueryDataTableResult()
@@ -95,7 +96,8 @@ namespace FeatureDemandPlanning.Model
             {
                 TrimId = parameters.TrimId,
                 DocumentId = parameters.DocumentId,
-                DPCK = parameters.Dpck
+                DPCK = parameters.Dpck,
+                BMC = parameters.DerivativeCode
             };
         }
     }

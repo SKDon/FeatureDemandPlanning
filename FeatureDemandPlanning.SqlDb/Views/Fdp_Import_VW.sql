@@ -1,5 +1,6 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_Import_VW] AS
 
 	WITH TakeRateFiles AS
@@ -122,17 +123,17 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 					ELSE 0
 				END AS BIT)									AS IsMarketMissing
 		, CAST( CASE 
-					WHEN DMAP.ProgrammeId IS NULL AND SMAP.FdpSpecialFeatureMappingId IS NULL
+					WHEN DMAP.DocumentId IS NULL AND SMAP.FdpSpecialFeatureMappingId IS NULL
 					THEN 1 
 					ELSE 0
 				END AS BIT)									AS IsDerivativeMissing
 		, CAST( CASE 
-					WHEN TMAP.ProgrammeId IS NULL AND SMAP.FdpSpecialFeatureMappingId IS NULL
+					WHEN TMAP.DocumentId IS NULL AND SMAP.FdpSpecialFeatureMappingId IS NULL
 					THEN 1 
 					ELSE 0
 				END AS BIT)									AS IsTrimMissing
 		, CAST( CASE
-					WHEN FMAP.ProgrammeId IS NULL AND SMAP.FdpSpecialFeatureMappingId IS NULL
+					WHEN FMAP.DocumentId IS NULL AND SMAP.FdpSpecialFeatureMappingId IS NULL
 					THEN 1
 					ELSE 0
 				END AS BIT)									AS IsFeatureMissing
@@ -187,7 +188,8 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 	-- Mapping of trim details	
 																										
 	LEFT JOIN Fdp_TrimMapping_VW			AS TMAP		ON	I.[Trim Pack Description]	= TMAP.ImportTrim
-														AND IH.DocumentId				= TMAP.DocumentId															
+														AND IH.DocumentId				= TMAP.DocumentId	
+														AND DMAP.MappedDerivativeCode	= TMAP.BMC														
 	-- Mapping of features		
 													
 	LEFT JOIN Fdp_FeatureMapping_VW			AS FMAP		ON	I.[Bff Feature Code]		= FMAP.ImportFeatureCode

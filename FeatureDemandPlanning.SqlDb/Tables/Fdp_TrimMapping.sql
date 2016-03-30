@@ -6,7 +6,7 @@
     [DocumentId]       INT            NOT NULL,
     [ProgrammeId]      INT            NOT NULL,
     [Gateway]          NVARCHAR (100) NOT NULL,
-    [BMC]              NVARCHAR (20)  NULL,
+    [BMC]              NVARCHAR (20)  NOT NULL,
     [TrimId]           INT            NULL,
     [FdpTrimId]        INT            NULL,
     [IsActive]         BIT            CONSTRAINT [DF_Fdp_TrimMapping_IsActive] DEFAULT ((1)) NOT NULL,
@@ -15,6 +15,8 @@
     CONSTRAINT [PK_Fdp_TrimMapping] PRIMARY KEY CLUSTERED ([FdpTrimMappingId] ASC) WITH (FILLFACTOR = 90),
     CONSTRAINT [FK_Fdp_TrimMapping_OXO_Doc] FOREIGN KEY ([DocumentId]) REFERENCES [dbo].[OXO_Doc] ([Id])
 );
+
+
 
 
 

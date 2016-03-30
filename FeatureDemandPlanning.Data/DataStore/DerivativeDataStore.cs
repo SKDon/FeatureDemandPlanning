@@ -35,7 +35,7 @@ namespace FeatureDemandPlanning.DataStore
                 return Enumerable.Empty<Derivative>();
             }
 
-            return derivatives.CurrentPage.Where(d => d.IsMappedDerivative == false);
+            return derivatives.CurrentPage;
         }
         public FdpDerivativeMapping FdpDerivativeMappingDelete(FdpDerivativeMapping derivativeMapping)
         {

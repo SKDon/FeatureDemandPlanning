@@ -2,6 +2,7 @@
 	  @CarLine					NVARCHAR(10)	= NULL
 	, @ModelYear				NVARCHAR(10)	= NULL
 	, @Gateway					NVARCHAR(16)	= NULL
+	, @DerivativeCode			NVARCHAR(40)	= NULL
 	, @DPCK						NVARCHAR(20)	= NULL
 	, @IncludeAllTrim			BIT = 0
 	, @OxoTrimOnly				BIT = 0
@@ -29,6 +30,7 @@ AS
 		, CreatedBy			NVARCHAR(16)
 		, DocumentId		INT
 		, ImportTrim		NVARCHAR(1000) NULL
+		, BMC				NVARCHAR(40)   NULL
 		, DPCK				NVARCHAR(1000) NULL
 		, ProgrammeId		INT
 		, Gateway			NVARCHAR(200)
@@ -45,7 +47,8 @@ AS
 		  CreatedOn			
 		, CreatedBy			
 		, DocumentId		
-		, ImportTrim		
+		, ImportTrim
+		, BMC		
 		, DPCK		
 		, ProgrammeId		
 		, Gateway			
@@ -62,6 +65,7 @@ AS
 		, T.CreatedBy
 		, T.DocumentId 
 		, T.ImportTrim
+		, T.BMC
 		, T.DPCK
 		, T.ProgrammeId
 		, T.Gateway
@@ -94,6 +98,8 @@ AS
 		(@OxoTrimOnly = 1 AND T.IsMappedTrim = 0)
 	)
 	AND
+	(@DerivativeCode IS NULL OR T.BMC = @DerivativeCode)
+	AND
 	(@DPCK IS NULL OR (T.DPCK = @DPCK OR T.DPCK IS NULL))
 	AND
 	T.IsActive = 1;
@@ -113,6 +119,7 @@ AS
 		, T.CreatedBy
 		, T.FdpTrimMappingId
 		, T.ImportTrim
+		, T.BMC
 		, T.DPCK
 		, T.DocumentId
 		, T.ProgrammeId

@@ -14,6 +14,7 @@ AS
 		, TR.Name
 		, TR.[Level]
 		, TR.Abbreviation
+		, T.BMC
 		, TR.DPCK
 		, T.CreatedOn
 		, T.CreatedBy
@@ -43,6 +44,7 @@ AS
 		, TR.Name
 		, TR.[Level]
 		, TR.Abbreviation
+		, T.BMC
 		, TR.DPCK
 		, T.CreatedOn
 		, T.CreatedBy

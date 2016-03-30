@@ -220,7 +220,10 @@
     <Build Include="Stored Procedures\Fdp_Derivative_Get.sql" />
     <Build Include="Stored Procedures\Fdp_Derivative_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_Derivative_Save.sql" />
-    <Build Include="Stored Procedures\Fdp_DerivativeMapping_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_DerivativeMapping_Delete.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_DerivativeMapping_Get.sql" />
     <Build Include="Stored Procedures\Fdp_DerivativeMapping_GetMany.sql">
       <AnsiNulls>Off</AnsiNulls>
@@ -317,7 +320,10 @@
     <Build Include="Stored Procedures\Fdp_Trim_GetMany.sql" />
     <Build Include="Stored Procedures\Fdp_Trim_Save.sql" />
     <Build Include="Stored Procedures\Fdp_TrimLevels_Get.sql" />
-    <Build Include="Stored Procedures\Fdp_TrimMapping_Delete.sql" />
+    <Build Include="Stored Procedures\Fdp_TrimMapping_Delete.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_TrimMapping_Get.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
@@ -1050,7 +1056,10 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="Stored Procedures\Fdp_ImportTrimLevels_GetMany.sql" />
+    <Build Include="Stored Procedures\Fdp_ImportTrimLevels_GetMany.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="Stored Procedures\Fdp_FeatureCode_Update.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
@@ -1064,6 +1073,7 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Stored Procedures\Fdp_ImportData_ProcessMissingTrim_Old.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\100\SqlSchemas\msdb.dacpac">

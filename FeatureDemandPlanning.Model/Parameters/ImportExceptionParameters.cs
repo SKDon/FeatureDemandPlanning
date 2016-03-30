@@ -100,6 +100,7 @@ namespace FeatureDemandPlanning.Model.Parameters
                 return new
                 {
                     ExceptionId,
+                    DerivativeCode,
                     TrimIdentifier,
                     DocumentId,
                     ProgrammeId,

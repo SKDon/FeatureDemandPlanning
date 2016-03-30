@@ -1,19 +1,17 @@
 ﻿
-
-
-
 CREATE VIEW [dbo].[Fdp_Trim_VW] AS
 
 	SELECT 
 		  D.Id				AS DocumentId
-		, T.Programme_Id	AS ProgrammeId
-		, G.Gateway
+		, D.Programme_Id	AS ProgrammeId
+		, D.Gateway
 		, ISNULL(T.Created_On, D.Created_On) AS CreatedOn
 		, T.Created_By		AS CreatedBy
 		, T.Name
 		, T.Abbreviation
 		, T.[Level]
-		, NULL				AS BMC
+		, M.Id				AS ModelId
+		, M.BMC
 		, T.DPCK
 		, T.Display_Order	AS DisplayOrder
 		, T.Last_Updated	AS UpdatedOn
@@ -25,9 +23,10 @@ CREATE VIEW [dbo].[Fdp_Trim_VW] AS
 		, CAST(0 AS BIT)    AS IsArchived
 	FROM
 	OXO_Doc						AS D
-	JOIN OXO_Programme_Trim		AS T	ON D.Programme_Id	= T.Programme_Id
-	JOIN Fdp_Gateways_VW		AS G	ON T.Programme_Id	= G.ProgrammeId
-										AND G.IsArchived	= 0
+	JOIN OXO_Programme_Model	AS M	ON D.Programme_Id	= M.Programme_Id
+										AND M.Active		= 1
+	JOIN OXO_Programme_Trim		AS T	ON M.Trim_Id		= T.Id
+										AND T.Active		= 1
 	WHERE
 	ISNULL(D.Archived, 0) = 0
 
@@ -35,14 +34,15 @@ CREATE VIEW [dbo].[Fdp_Trim_VW] AS
 
 	SELECT 
 		  D.Id				AS DocumentId
-		, T.Programme_Id	AS ProgrammeId
-		, G.Gateway
+		, D.Programme_Id	AS ProgrammeId
+		, D.Gateway
 		, T.Created_On		AS CreatedOn
 		, T.Created_By		AS CreatedBy
 		, T.Name
 		, T.Abbreviation
 		, T.[Level]
-		, NULL				AS BMC
+		, M.Id				AS ModelId
+		, M.BMC
 		, T.DPCK
 		, T.Display_Order	AS DisplayOrder
 		, T.Last_Updated	AS UpdatedOn
@@ -54,12 +54,12 @@ CREATE VIEW [dbo].[Fdp_Trim_VW] AS
 		, CAST(1 AS BIT)	AS IsArchived
 	FROM
 	OXO_Doc									AS D
-	JOIN OXO_Archived_Programme_Trim		AS T	ON D.Id				= T.Doc_Id
-	JOIN Fdp_Gateways_VW					AS G	ON T.Programme_Id	= G.ProgrammeId
-													AND G.IsArchived	= 1
+	JOIN OXO_Archived_Programme_Model		AS M	ON	D.Programme_Id	= M.Programme_Id
+													AND M.Active		= 1
+	JOIN OXO_Archived_Programme_Trim		AS T	ON	D.Id			= T.Doc_Id
+													AND M.Trim_Id		= T.Id
 	WHERE
 	ISNULL(D.Archived, 0) = 1
-	
 	
 	UNION
 	
@@ -72,6 +72,7 @@ CREATE VIEW [dbo].[Fdp_Trim_VW] AS
 		, T.TrimName			AS Name
 		, T.TrimAbbreviation	AS Abbreviation
 		, T.TrimLevel			AS [Level]
+		, CAST(NULL AS INT)		AS ModelId
 		, T.BMC
 		, T.DPCK
 		, L.[Level]				AS DisplayOrder

@@ -30,7 +30,7 @@
                         <span class="caret"></span>
                     </button>
                     <ul id="@(Model.IdentifierPrefix)_DerivativeList" class="dropdown-menu">
-                        @foreach (var derivative in Model.AvailableDerivatives)
+                        @foreach (var derivative in Model.AvailableDerivatives.Where(d => d.IsMappedDerivative == false))
                         {
                             <li><a class="derivative-item" href="#" data-target="@derivative.Identifier" data-content="@derivative.Name">@derivative.Name</a></li>
                         }

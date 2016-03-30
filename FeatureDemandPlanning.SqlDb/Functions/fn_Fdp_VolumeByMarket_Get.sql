@@ -42,6 +42,6 @@ BEGIN
 
 	END
 		
-	RETURN @VolumeByMarket;
+	RETURN ISNULL(@VolumeByMarket, 0);
 
 END
