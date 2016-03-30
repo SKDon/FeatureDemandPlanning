@@ -7,6 +7,7 @@
     [NSC or Importer Description (Vista Market)] NVARCHAR (100) NULL,
     [Country Description]                        NVARCHAR (100) NULL,
     [Derivative Code]                            NVARCHAR (10)  NULL,
+    [Derivative Description]                     NVARCHAR (MAX) NULL,
     [Trim Pack Description]                      NVARCHAR (100) NULL,
     [Bff Feature Code]                           NVARCHAR (10)  NULL,
     [Feature Description]                        NVARCHAR (255) NULL,
@@ -14,6 +15,8 @@
     CONSTRAINT [PK_Fdp_ImportData] PRIMARY KEY CLUSTERED ([FdpImportDataId] ASC),
     CONSTRAINT [FK_Fdp_ImportData_Fdp_Import] FOREIGN KEY ([FdpImportId]) REFERENCES [dbo].[Fdp_Import] ([FdpImportId])
 );
+
+
 
 
 

@@ -32,7 +32,7 @@
                     <select class="form-control sm" id="@(Model.IdentifierPrefix)_DerivativeList" multiple="multiple">
                         @foreach (var importDerivative in Model.AvailableImportDerivatives)
                         {
-                            <option value="@importDerivative.Identifier">@importDerivative.Identifier</option>
+                            <option value="@importDerivative.Identifier">@importDerivative.Identifier - @importDerivative.Description</option>
                         }
                     </select>
 

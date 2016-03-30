@@ -36,6 +36,7 @@ namespace FeatureDemandPlanning.DataStore
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(4, "NSC or Importer Description (Vista Market)"));
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(5, "Country Description"));
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(6, "Derivative Code"));
+                    bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(7, "Derivative Description"));
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(7, "Trim Pack Description"));
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(8, "Bff Feature Code"));
                     bulk.ColumnMappings.Add(new SqlBulkCopyColumnMapping(9, "Feature Description"));
@@ -103,7 +104,6 @@ namespace FeatureDemandPlanning.DataStore
                     if (filter.PageIndex.HasValue)
                     {
                         para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
-                        
                     }
                     if (filter.PageSize.HasValue)
                     {

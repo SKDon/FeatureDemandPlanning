@@ -1,6 +1,7 @@
 ﻿
 
 
+
 CREATE VIEW [dbo].[Fdp_Import_VW] AS
 
 	WITH TakeRateFiles AS
@@ -24,6 +25,7 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 		, I.[NSC or Importer Description (Vista Market)]	AS ImportMarket
 		, I.[Country Description]							AS ImportCountry
 		, I.[Derivative Code]								AS ImportDerivativeCode
+		, I.[Derivative Description]						AS ImportDerivative
 		, I.[Trim Pack Description]							AS ImportTrim
 		, I.[Bff Feature Code]								AS ImportFeatureCode
 		, I.[Feature Description]							AS ImportFeature

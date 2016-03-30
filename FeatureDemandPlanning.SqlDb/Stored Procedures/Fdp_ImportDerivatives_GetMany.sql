@@ -11,6 +11,7 @@ AS
 		, I.CreatedBy
 		, I.DocumentId 
 		, I.ImportDerivativeCode AS DerivativeCode
+		, MAX(I.ImportDerivative) AS [Description]
 		, I.ProgrammeId
 		, I.Gateway
 		, CAST(NULL AS INT) AS BodyId
@@ -29,4 +30,4 @@ AS
 	GROUP BY
 	I.DocumentId, I.CreatedOn, I.CreatedBy, I.DocumentId, I.ProgrammeId, I.Gateway, I.ImportDerivativeCode
 	ORDER BY
-	DerivativeCode
+	DerivativeCode, [Description]

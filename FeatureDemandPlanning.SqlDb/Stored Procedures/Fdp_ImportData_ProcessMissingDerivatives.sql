@@ -220,12 +220,13 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, 'No OXO BMC matching historic BMC ''' + I.ImportDerivativeCode + '''' AS ErrorMessage
+		, 'No OXO BMC matching historic BMC ''' + I.ImportDerivativeCode + ' - ' + I.ImportDerivative + '''' AS ErrorMessage
 		, I.ImportDerivativeCode AS AdditionalData
 		, 303 AS SubTypeId
 	FROM
 	(
-		SELECT DISTINCT I.ImportDerivativeCode FROM Fdp_Import_VW AS I
+		SELECT DISTINCT I.ImportDerivativeCode, I.ImportDerivative 
+		FROM Fdp_Import_VW AS I
 		LEFT JOIN Fdp_DerivativeMapping_VW AS D ON I.DocumentId = D.DocumentId
 												AND I.ImportDerivativeCode	= D.ImportDerivativeCode
 												AND ISNULL(D.MappedDerivativeCode, '') <> ''
