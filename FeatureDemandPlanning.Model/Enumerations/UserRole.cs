@@ -12,6 +12,7 @@
         AllMarkets = 7,
         AllProgrammes = 8,
         Approver = 9,
-        Cloner = 10
+        Cloner = 10,
+        CanDelete = 11
     }
 }

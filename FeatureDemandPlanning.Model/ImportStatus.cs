@@ -12,7 +12,7 @@ namespace FeatureDemandPlanning.Model
 
         public ImportStatus()
         {
-            ImportStatusCode = enums.ImportStatus.Success;
+            ImportStatusCode = enums.ImportStatus.NotSet;
         }
     }
 }

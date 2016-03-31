@@ -14,6 +14,7 @@ using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.Attributes;
 using FluentValidation;
 using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Results;
 using FeatureDemandPlanning.Model.Validators;
 
 namespace FeatureDemandPlanning.Controllers
@@ -67,12 +68,29 @@ namespace FeatureDemandPlanning.Controllers
             }
             return Json(jQueryResult);
         }
+
+        [HttpPost]
+        public async Task<ActionResult> ContextMenu(ImportParameters parameters)
+        {
+            ImportParametersValidator.ValidateImportParameters(parameters, ImportParametersValidator.ImportQueueIdentifier, DataContext);
+
+            var importView = await ImportViewModel.GetModel(
+                DataContext,
+                new ImportQueueFilter(parameters.ImportQueueId.Value)
+                {
+                    Action = ImportAction.ImportQueueItem
+                });
+
+            return PartialView("_ContextMenu", importView);
+        }
         [HttpPost]
         [HandleError(View = "_ModalError")]
         public async Task<ActionResult> ModalContent(ImportParameters parameters)
         {
-            Parameters = parameters;
-            var importView = await GetModelFromParameters();
+            ImportParametersValidator
+                .ValidateImportParameters(parameters, ImportParametersValidator.ImportQueueIdentifier, DataContext);
+
+            var importView = await GetModelFromParameters(parameters);
 
             return PartialView(GetContentPartialViewName(parameters.Action), importView);
         }
@@ -117,6 +135,17 @@ namespace FeatureDemandPlanning.Controllers
                 JsonGetFailure(CurrentQueuedItem.Error) : 
                 JsonGetSuccess();
         }
+        [HandleErrorWithJson]
+        public async Task<ActionResult> DeleteImport(ImportParameters parameters)
+        {
+            var filter = new ImportQueueFilter(parameters.ImportQueueId.GetValueOrDefault());
+            var importView = await GetModelFromParameters(parameters);
+
+            filter.ImportStatus = enums.ImportStatus.Cancelled;
+            importView.CurrentImport = await DataContext.Import.UpdateStatus(filter);
+            
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
+        }
      
         #region "Private Methods"
 
@@ -130,6 +159,17 @@ namespace FeatureDemandPlanning.Controllers
                 DataContext,
                 new ImportQueueFilter(),
                 Parameters.Action);
+        }
+        private async Task<ImportViewModel> GetModelFromParameters(ImportParameters parameters)
+        {
+            if (parameters.Action == ImportAction.DeleteImport)
+            {
+                return await ImportViewModel.GetModel(
+                DataContext,
+                new ImportQueueFilter(parameters.ImportQueueId.GetValueOrDefault()) { Action = parameters.Action },
+                parameters.Action);
+            }
+            return await GetModelFromParameters();
         }
         private void SaveImportFileToFileSystem()
         {
@@ -244,6 +284,7 @@ namespace FeatureDemandPlanning.Controllers
     {
         public const string Upload = "UPLOAD";
         public const string NoValidation = "NO_VALIDATION";
+        public const string ImportQueueIdentifier = "IMPORT_QUEUE_IDENTIFIER";
 
         public IDataContext DataContext { get; set; }
         public IEnumerable<Programme> AvailableProgrammes { get; set; }
@@ -281,13 +322,30 @@ namespace FeatureDemandPlanning.Controllers
                     .WithMessage("Gateway not valid for the selected car line / model year or you do not have permissions to upload data to it");
 
             });
+            RuleSet(ImportQueueIdentifier, () =>
+            {
+                RuleFor(p => p.ImportQueueId)
+                    .Cascade(CascadeMode.StopOnFirstFailure)
+                    .NotNull()
+                    .WithMessage("'Import Queue Id' not specified");
+            });
+        }
+        public static ImportParametersValidator ValidateImportParameters(ImportParameters parameters, string ruleSetName, IDataContext context)
+        {
+            var validator = new ImportParametersValidator(context);
+            var result = validator.Validate(parameters, ruleSet: ruleSetName);
+            if (!result.IsValid)
+            {
+                throw new ValidationException(result.Errors);
+            }
+            return validator;
         }
 
         private bool BeAValidGateway(ImportParameters parameters)
         {
-            return AvailableProgrammes.Where(p => p.VehicleName.Equals(parameters.CarLine, StringComparison.InvariantCultureIgnoreCase) &&
+            return AvailableProgrammes.Any(p => p.VehicleName.Equals(parameters.CarLine, StringComparison.InvariantCultureIgnoreCase) &&
                                                   p.ModelYear.Equals(parameters.ModelYear, StringComparison.InvariantCultureIgnoreCase) &&
-                                                  p.Gateway.Equals(parameters.Gateway, StringComparison.InvariantCultureIgnoreCase)).Any();
+                                                  p.Gateway.Equals(parameters.Gateway, StringComparison.InvariantCultureIgnoreCase));
         }
         private bool BeAValidModelYear(ImportParameters parameters)
         {

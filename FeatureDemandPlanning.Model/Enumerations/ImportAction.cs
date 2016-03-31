@@ -20,8 +20,10 @@
         MapOxoTrim = 15,
         MapOxoFeature = 16,
         ProcessTakeRateData = 17,
+        DeleteImport = 18,
 
         Upload = 100,
         Summary
+        
     }
 }

@@ -106,7 +106,7 @@ page.ImportQueuePage = function (models) {
         });
         return params;
     };
-    me.configureDataTables = function () {
+    me.configureDataTables = function() {
 
         var exceptionsUri = getExceptionsModel().getExceptionsUri();
         var importQueueIndex = 5;
@@ -123,15 +123,6 @@ page.ImportQueuePage = function (models) {
             "processing": true,
             "dom": "ltp",
             "order": [["0", "desc"]],
-            //"columnDefs": [
-            //{
-            //    "targets": 6,
-            //    "visible": false
-            //},
-            //{
-            //    "targets": 7,
-            //    "visible": false
-            //}],
             "aoColumns": [
                 {
                     "sTitle": "Uploaded On",
@@ -139,33 +130,28 @@ page.ImportQueuePage = function (models) {
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center"
-                }
-                ,{
+                }, {
                     "sTitle": "Uploaded By",
                     "sName": "UPLOADED_BY",
                     "bSearchable": true,
                     "bSortable": true
-                }
-                ,{
+                }, {
                     "sTitle": "Vehicle / OXO Document Version",
                     "sName": "VEHICLE_DESCRIPTION",
                     "bSearchable": true,
                     "bSortable": true
-                }
-                ,{
+                }, {
                     "sTitle": "File Name",
                     "sName": "FILE_PATH",
                     "bSearchable": true,
                     "bSortable": true
-                }
-                ,{
+                }, {
                     "sTitle": "Status",
                     "sName": "STATUS",
                     "bSearchable": true,
                     "bSortable": true,
                     "sClass": "text-center",
-                }
-                , {
+                }, {
                     "sTitle": "Data Errors",
                     "sName": "ERRORS",
                     "bSearchable": false,
@@ -190,30 +176,55 @@ page.ImportQueuePage = function (models) {
                         }
                     }
                 }
-                //},
-                //{
-                //    "sTitle": "Error Type",
-                //    "sName": "ERROR_TYPE"
-                //},
-                //{
-                //    "sTitle": "Sub Type",
-                //    "sName": "ERROR_SUB_TYPE"
-                //}
             ],
-            "fnCreatedRow": function (row, data, index) {
+            "fnCreatedRow": function(row, data, index) {
                 // Don't like hard-coding indexes in this way. Must be a better way
-                var importQueueId = data[0];
+                var importQueueId = data[importQueueIndex];
 
-                $(row).attr("data-importQueueId", importQueueId);
+                $(row).attr("data-importqueue-id", importQueueId);
             },
-            "fnDrawCallback": function (oSettings) {
+            "fnDrawCallback": function(oSettings) {
                 //$(document).trigger("Results", me.getSummary());
-                //me.bindContextMenu();
+                me.bindContextMenu();
             }
         });
 
         //me.setDataTable(dt);
-    }
+    };
+    me.bindContextMenu = function () {
+        $("#tblImportQueue td").contextMenu({
+            menuSelector: "#contextMenu",
+            dynamicContent: me.getContextMenu,
+            contentIdentifier: me.getImportQueueId,
+            menuSelected: me.actionTriggered
+        });
+    };
+    me.getImportQueueId = function (cell) {
+        return $(cell).closest("tr").attr("data-importqueue-id");
+    };
+    me.getContextMenu = function (importQueueId) {
+        var params = { ImportQueueId: importQueueId };
+        $.ajax({
+            "dataType": "html",
+            "async": true,
+            "type": "POST",
+            "url": getImportQueueModel().getActionsUri(),
+            "data": params,
+            "success": function (response) {
+                $("#contextMenu").html(response);
+            },
+            "error": function (jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    };
+    me.actionTriggered = function (invokedOn, action) {
+        var eventArgs = {
+            ImportQueueId: parseInt($(this).attr("data-target")),
+            Action: parseInt($(this).attr("data-role"))
+        };
+        $(document).trigger("Action", eventArgs);
+    };
     me.registerEvents = function () {
         var prefix = me.getIdentifierPrefix();
         $(document)
@@ -306,6 +317,8 @@ page.ImportQueuePage = function (models) {
             case 100:
                 model = getUploadModel();
                 break;
+            case 18:
+                model = getImportQueueModel();
             default:
                 break;
         }

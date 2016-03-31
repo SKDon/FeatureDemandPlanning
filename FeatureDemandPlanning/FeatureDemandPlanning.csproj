@@ -274,6 +274,7 @@
     <Content Include="Content\js\FeatureMapping\featurecode.js" />
     <Content Include="Content\js\FeatureMapping\featurecodeinit.js" />
     <Content Include="Content\js\FeatureMapping\featurecodepage.js" />
+    <Content Include="Content\js\Import\deleteimportaction.js" />
     <Content Include="Content\js\Import\process.js" />
     <Content Include="Content\js\Import\ignoreallaction.js" />
     <Content Include="Content\js\Import\mapoxofeatureaction.js" />
@@ -1146,6 +1147,9 @@
     <Content Include="Views\FeatureMapping\_FeatureCodeScripts.cshtml" />
     <Content Include="Views\ImportException\_MapOxoFeature.cshtml" />
     <Content Include="Views\ImportException\_ProcessTakeRateData.cshtml" />
+    <Content Include="Views\Import\_ContextMenu.cshtml" />
+    <Content Include="Views\Import\_DeleteImport.cshtml" />
+    <Content Include="Views\Import\_ImportActionHeader.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -7,7 +7,6 @@
         Processing = 2,
         Processed = 3,
         Error = 4,
-        Success = 5,
-        Imported = 6
+        Cancelled = 5
     }
 }

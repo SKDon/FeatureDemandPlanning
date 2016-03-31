@@ -89,6 +89,8 @@ namespace FeatureDemandPlanning.Model
         {
             get { return DerivativeCode; }
         }
+
+        public string Description { get; set; }
     }
 
     public class DerivativeComparer : IEqualityComparer<Model>

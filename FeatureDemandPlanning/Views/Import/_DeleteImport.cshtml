@@ -1,0 +1,23 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
+
+<div class="alert alert-warning">
+    <div class="row">
+        <div class="col-lg-1 text-center">
+            <span class="glyphicon glyphicon-alert"></span>
+        </div>
+        <div class="col-lg-11">
+            <p>Delete Import. Please note that this process cannot be undone.</p>
+            <p>Click <strong>'OK'</strong> to continue.</p>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_ImportActionHeader", Model)
+
+<form>
+    <input type="hidden" id="@(Model.IdentifierPrefix)_ImportQueueId" value="@Model.CurrentImport.ImportQueueId"/>
+</form>
+
+

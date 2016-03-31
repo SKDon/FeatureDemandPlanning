@@ -1,0 +1,38 @@
+﻿@using FeatureDemandPlanning.Model.Extensions
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
+
+<form>
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+</form>
+
+<div class="well">
+
+    @if (Model.CurrentAction == enums.ImportAction.DeleteImport)
+    {
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <strong>Uploaded On:</strong>
+            </div>
+            <div class="col-xs-8">
+                @Model.CurrentImport.CreatedOn.ToString("dd/MM/yyyy")
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <strong>Uploaded By:</strong>
+            </div>
+            <div class="col-xs-8">
+                @Model.CurrentImport.CreatedBy
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 text-right"><strong>Document:</strong></div>
+            <div class="col-xs-8">
+                @Model.Documents.First().Name
+            </div>
+        </div>
+    }
+
+</div>

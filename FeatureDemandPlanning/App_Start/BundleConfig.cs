@@ -86,6 +86,7 @@ namespace FeatureDemandPlanning
                     "~/Content/js/Import/addtrimaction.js",
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Import/derivative.js",
+                    "~/Content/js/Import/deleteimportaction.js",
                     "~/Content/js/Import/exceptions.js",
                     "~/Content/js/Import/exceptionspage.js",
                     "~/Content/js/Import/feature.js",

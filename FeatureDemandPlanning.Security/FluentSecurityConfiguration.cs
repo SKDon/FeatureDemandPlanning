@@ -44,6 +44,9 @@ namespace FeatureDemandPlanning.Security
                     .RemovePolicy<DefaultSecurityPolicy>()
                     .RequireAnyRole("Administrator", "Importer");
 
+                configuration.For<ImportController>(i => i.DeleteImport(new ImportParameters()))
+                    .RequireAnyRole("CanDelete");
+
                 configuration.For<ImportExceptionController>()
                     .RemovePolicy<DefaultSecurityPolicy>()
                     .RequireAnyRole("Administrator", "Importer");

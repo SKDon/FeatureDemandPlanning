@@ -1,0 +1,10 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.ImportViewModel
+
+<li>
+    <a tabindex="-1" href="#" data-target="@Model.CurrentImport.ImportQueueId" data-role="@((int)enums.ImportAction.DeleteImport)">
+        <span class="glyphicon glyphicon-trash pull-left"></span> Delete Import...
+    </a>
+</li>
+

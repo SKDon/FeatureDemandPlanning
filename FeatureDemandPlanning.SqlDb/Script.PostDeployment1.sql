@@ -352,6 +352,7 @@ USING (VALUES
 	, (8, N'AllProgrammes', N'User has access to all programmes without having to explicitly grant access on a per programme basis')
 	, (9, N'Approver', N'User can approve market review changes')
 	, (10, N'Cloner', N'User can clone take rate data into other take rate documents')
+	, (11, N'CanDelete', N'User can delete imported take rate files')
 )
 AS SOURCE (FdpUserRoleId, [Role], [Description]) ON TARGET.FdpUserRoleId = SOURCE.FdpUserRoleId
 WHEN MATCHED THEN

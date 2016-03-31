@@ -15,6 +15,7 @@ DELETE FROM Fdp_TakeRateFeatureMix
 DELETE FROM Fdp_TakeRateSummaryAudit
 DELETE FROM Fdp_TakeRateSummary
 DELETE FROM Fdp_PowertrainDataItem
+DELETE FROM Fdp_TakeRateVersion
 DELETE FROM Fdp_VolumeHeader
 
 -- Imports
