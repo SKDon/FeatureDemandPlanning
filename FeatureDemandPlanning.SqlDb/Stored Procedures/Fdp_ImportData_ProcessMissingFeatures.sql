@@ -110,7 +110,7 @@ AS
 		FROM
 		OXO_Doc									AS D
 		LEFT JOIN Fdp_SpecialFeatureMapping_VW	AS S	ON	D.Id						= S.DocumentId
-														AND S.FdpSpecialFeatureTypeId	= 2
+														AND S.FdpSpecialFeatureTypeId	= 3
 														AND S.IsActive					= 1
 		LEFT JOIN Fdp_ImportError				AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
 														AND CUR.AdditionalData			= 'HALFYEAR'

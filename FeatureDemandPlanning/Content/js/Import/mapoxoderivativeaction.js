@@ -43,7 +43,8 @@ model.MapOxoDerivativeAction = function (params) {
                 me.setSelectedDerivatives();
             },
             maxHeight: 300,
-            enableCaseInsensitiveFiltering: true
+            enableCaseInsensitiveFiltering: true,
+            buttonWidth: 340
         });
     };
     me.getDerivativeCode = function() {
@@ -67,7 +68,7 @@ model.MapOxoDerivativeAction = function (params) {
             .html("OXO Brochure Model Code mapped successfully to historic data.")
             .show();
         $("#Modal_OK").hide();
-        $("#Modal_Cancel").html("Close");
+        $("#Modal_Cancel").html("Close").removeAttr("disabled");
         $(document).trigger("Updated", {});
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
@@ -83,7 +84,7 @@ model.MapOxoDerivativeAction = function (params) {
                 .addClass("alert-danger").html(eventArgs.Message).show();
         }
         $("#Modal_OK").hide();
-        $("#Modal_Cancel").html("Close");
+        $("#Modal_Cancel").html("Close").removeAttr("disabled");
     };
     me.registerEvents = function () {
         var prefix = me.getIdentifierPrefix();

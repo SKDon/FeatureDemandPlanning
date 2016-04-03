@@ -98,7 +98,10 @@ model.Modal = function (params) {
             .unbind("shown.bs.modal").on("shown.bs.modal", function () {
                 me.getModelContent(parameters.Title, parameters.Uri, parameters.Data);
             })
-            .modal();
+            .modal({
+                backdrop: "static",
+                keyboard: false
+            });
 
         $("#Modal_OK").show();
         $("#Modal_Cancel").html("Cancel");
@@ -109,7 +112,10 @@ model.Modal = function (params) {
             .unbind("shown.bs.modal").on("shown.bs.modal", function () {
                 me.getConfirmContent(title, message, confirmCallback);
             })
-            .modal();
+            .modal({
+                backdrop: "static",
+                keyboard: false
+            });
 
         $("#Modal_OK").show();
         $("#Modal_Cancel").html("Cancel");
@@ -120,7 +126,10 @@ model.Modal = function (params) {
             .unbind("shown.bs.modal").on("shown.bs.modal", function () {
                 me.getAlertContent(title, message, type);
             })
-            .modal();
+            .modal({
+                backdrop: "static",
+                keyboard: false
+            });
 
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("OK");

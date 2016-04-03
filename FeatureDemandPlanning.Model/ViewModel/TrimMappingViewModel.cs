@@ -85,6 +85,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             HydrateModelWithCommonProperties(model, context, programmeFilter);
 
             filter.IncludeAllTrim = false;
+            filter.IgnoreBMC = true;
 
             model.OxoTrim = await context.Vehicle.ListOxoTrim(filter);
             model.TotalPages = model.OxoTrim.TotalPages;

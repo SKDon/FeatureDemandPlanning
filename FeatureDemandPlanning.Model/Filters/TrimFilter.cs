@@ -20,6 +20,7 @@ namespace FeatureDemandPlanning.Model.Filters
 
         public bool IncludeAllTrim { get; set; }
         public bool OxoTrimOnly { get; set; }
+        public bool IgnoreBMC { get; set; }
         public string Dpck { get; set; }
 
         public TrimFilter()

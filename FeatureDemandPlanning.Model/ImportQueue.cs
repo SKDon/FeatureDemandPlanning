@@ -142,6 +142,9 @@ namespace FeatureDemandPlanning.Model
                 case enums.ImportExceptionType.NoOxoTrim:
                     retVal = "OXO";
                     break;
+                case enums.ImportExceptionType.NoSpecialFeature:
+                    retVal = "Spec. Feature";
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("errorType", errorType, null);
             }

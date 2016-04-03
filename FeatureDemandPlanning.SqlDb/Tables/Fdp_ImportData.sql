@@ -7,7 +7,7 @@
     [NSC or Importer Description (Vista Market)] NVARCHAR (100) NULL,
     [Country Description]                        NVARCHAR (100) NULL,
     [Derivative Code]                            NVARCHAR (10)  NULL,
-    [Derivative Description]                     NVARCHAR (MAX) NULL,
+    [Derivative Description]                     NVARCHAR (255) NULL,
     [Trim Pack Description]                      NVARCHAR (100) NULL,
     [Bff Feature Code]                           NVARCHAR (10)  NULL,
     [Feature Description]                        NVARCHAR (255) NULL,
@@ -31,21 +31,31 @@
 
 
 
+
+
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_Import_DerivativeAndTrim]
-    ON [dbo].[Fdp_ImportData]([Derivative Code] ASC, [Trim Pack Description] ASC)
-    INCLUDE([FdpImportId], [Country Description], [Bff Feature Code], [Count of Specific Order No]);
+    ON [dbo].[Fdp_ImportData]([Derivative Code] ASC, [Derivative Description] ASC, [Trim Pack Description] ASC)
+    INCLUDE([Bff Feature Code], [Count of Specific Order No], [Country Description], [FdpImportId]);
+
+
 
 
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_Import_FeatureCode]
-    ON [dbo].[Fdp_ImportData]([Bff Feature Code] ASC);
+    ON [dbo].[Fdp_ImportData]([Bff Feature Code] ASC, [Feature Description] ASC);
+
+
 
 
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_ImportData_Derivative Code]
-    ON [dbo].[Fdp_ImportData]([Derivative Code] ASC)
-    INCLUDE([FdpImportId], [NSC or Importer Description (Vista Market)], [Trim Pack Description], [Bff Feature Code], [Count of Specific Order No]);
+    ON [dbo].[Fdp_ImportData]([Derivative Code] ASC, [Derivative Description] ASC)
+    INCLUDE([Bff Feature Code], [Count of Specific Order No], [FdpImportId], [NSC or Importer Description (Vista Market)], [Trim Pack Description]);
+
+
 
 
 GO
@@ -63,7 +73,9 @@ CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_ImportData_FdpImportId]
 
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_ImportData_DerivativeCode]
-    ON [dbo].[Fdp_ImportData]([FdpImportId] ASC, [Derivative Code] ASC, [Count of Specific Order No] ASC);
+    ON [dbo].[Fdp_ImportData]([FdpImportId] ASC, [Derivative Code] ASC, [Count of Specific Order No] ASC, [Derivative Description] ASC) WITH (FILLFACTOR = 90);
+
+
 
 
 GO

@@ -113,7 +113,6 @@ page.ImportQueuePage = function (models) {
         var hasErrorsIndex = 6;
         var errorCountIndex = 7;
         var errorTypeIndex = 8;
-        var errorSubTypeIndex = 9;
 
         $(".dataTable").DataTable({
             "serverSide": true,
@@ -161,16 +160,15 @@ page.ImportQueuePage = function (models) {
                         var hasErrors = full[hasErrorsIndex];
                         var errorCount = 0;
                         var errorType = "";
-                        var errorSubType = "";
+                        
                         if (hasErrors !== "NO") {
                             errorCount = parseInt(full[errorCountIndex]);
                             errorType = full[errorTypeIndex];
-                            errorSubType = full[errorSubTypeIndex];
                         }
                         var uri = exceptionsUri + "?importQueueId=" + full[importQueueIndex];
 
                         if (errorCount !== 0) {
-                            return "<a class='btn btn-default btn-sm' href='" + uri + "'>" + errorCount + " " + errorType + " Errors</a>";
+                            return "<a class='btn btn-default btn-sm' href='" + uri + "'>" + errorCount + " " + errorType + " Error(s)</a>";
                         } else {
                             return "<a class='btn btn-default btn-sm' href='" + uri + "'>Ready to Process</a>";
                         }

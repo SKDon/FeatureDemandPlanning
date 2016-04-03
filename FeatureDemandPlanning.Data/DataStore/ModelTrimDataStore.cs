@@ -531,6 +531,10 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@OxoTrimOnly", filter.OxoTrimOnly, DbType.Boolean);
                     }
+                    if (filter.IgnoreBMC)
+                    {
+                        para.Add("@IgnoreBMC", filter.IgnoreBMC, DbType.Boolean);
+                    }
                     if (filter.PageIndex.HasValue)
                     {
                         para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);

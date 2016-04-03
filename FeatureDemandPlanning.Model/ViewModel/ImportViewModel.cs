@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Caching;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Extensions;
@@ -275,21 +277,9 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
 
             model.AvailableDerivatives = context.Vehicle.ListDerivatives(derivativeFilter);
-            model.AvailableImportDerivatives = await
-                context.Import.ListImportDerivatives(new ImportQueueFilter()
-                {
-                    ImportQueueId = model.CurrentException.ImportQueueId
-                });
-            model.AvailableImportTrimLevels = await
-                context.Import.ListImportTrimLevels(new ImportQueueFilter()
-                {
-                    ImportQueueId = model.CurrentException.ImportQueueId
-                });
-            model.AvailableImportFeatures = await
-                context.Import.ListImportFeatures(new ImportQueueFilter()
-                {
-                    ImportQueueId = model.CurrentException.ImportQueueId
-                });
+            model.AvailableImportDerivatives = await ListImportDerivatives(model.CurrentException.ImportQueueId, context);
+            model.AvailableImportTrimLevels = await ListImportTrimLevels(model.CurrentException.ImportQueueId, context);
+            model.AvailableImportFeatures = await ListImportFeatures(model.CurrentException.ImportQueueId, context);
 
             derivativeFilter.Bmc = model.CurrentException.ImportDerivativeCode;
            
@@ -334,7 +324,54 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             return model;
         }
+        private static async Task<IEnumerable<ImportDerivative>> ListImportDerivatives(int importQueueId, IDataContext context)
+        {
+            var cacheKey = string.Format("ImportDerivatives_{0}", importQueueId);
+            var derivatives = (IEnumerable<ImportDerivative>)HttpContext.Current.Cache.Get(cacheKey);
+            if (derivatives != null)
+            {
+                return derivatives;
+            }
 
+            derivatives = await context.Import.ListImportDerivatives(new ImportQueueFilter(importQueueId));
+            if (derivatives != null)
+            {
+                HttpContext.Current.Cache.Insert(cacheKey, derivatives, null, DateTime.Now.AddMinutes(10), Cache.NoSlidingExpiration);
+            }
+            return derivatives;
+        }
+        private static async Task<IEnumerable<ImportTrim>> ListImportTrimLevels(int importQueueId, IDataContext context)
+        {
+            var cacheKey = string.Format("ImportTrimLevels_{0}", importQueueId);
+            var trimLevels = (IEnumerable<ImportTrim>) HttpContext.Current.Cache.Get(cacheKey);
+            if (trimLevels != null)
+            {
+                return trimLevels;
+            }
+
+            trimLevels = await context.Import.ListImportTrimLevels(new ImportQueueFilter(importQueueId));
+            if (trimLevels != null)
+            {
+                HttpContext.Current.Cache.Insert(cacheKey, trimLevels, null, DateTime.Now.AddMinutes(10), Cache.NoSlidingExpiration);
+            }
+            return trimLevels;
+        }
+        private static async Task<IEnumerable<ImportFeature>> ListImportFeatures(int importQueueId, IDataContext context)
+        {
+            var cacheKey = string.Format("ImportFeatures_{0}", importQueueId);
+            var features = (IEnumerable<ImportFeature>)HttpContext.Current.Cache.Get(cacheKey);
+            if (features != null)
+            {
+                return features;
+            }
+
+            features = await context.Import.ListImportFeatures(new ImportQueueFilter(importQueueId));
+            if (features != null)
+            {
+                HttpContext.Current.Cache.Insert(cacheKey, features, null, DateTime.Now.AddMinutes(10), Cache.NoSlidingExpiration);
+            }
+            return features;
+        }
         private static async Task<ImportViewModel> GetFullAndPartialViewModelForSummary(IDataContext context, ImportQueueFilter filter)
         {
             var model = new ImportViewModel(GetBaseModel(context))

@@ -42,7 +42,8 @@ model.MapOxoTrimAction = function (params) {
             onChange: function(option, checked) {
                 me.setSelectedTrimLevels();
             },
-            enableCaseInsensitiveFiltering: true
+            enableCaseInsensitiveFiltering: true,
+            buttonWidth: 340
         });
     };
     me.getTrimIdentifier = function () {

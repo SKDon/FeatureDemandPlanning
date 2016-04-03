@@ -96,6 +96,8 @@ AS
 		, D.Version_Id AS Document
 		, CAST(CASE WHEN E.ErrorCount > 0 THEN 1 ELSE 0 END AS BIT) AS HasErrors
 		, ISNULL(E.ErrorCount, 0) AS ErrorCount
+		, E.ErrorType
+		, E.ErrorSubType
 		
 	FROM @PageRecords			AS P
 	JOIN Fdp_ImportQueue_VW		AS Q	ON	P.FdpImportQueueId	= Q.FdpImportQueueId

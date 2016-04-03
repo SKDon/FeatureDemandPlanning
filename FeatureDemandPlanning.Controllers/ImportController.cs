@@ -87,10 +87,13 @@ namespace FeatureDemandPlanning.Controllers
         [HandleError(View = "_ModalError")]
         public async Task<ActionResult> ModalContent(ImportParameters parameters)
         {
-            ImportParametersValidator
-                .ValidateImportParameters(parameters, ImportParametersValidator.ImportQueueIdentifier, DataContext);
+            if (parameters.Action != ImportAction.Upload)
+            {
+                ImportParametersValidator
+                    .ValidateImportParameters(parameters, ImportParametersValidator.ImportQueueIdentifier, DataContext);
+            }
 
-            var importView = await GetModelFromParameters(parameters);
+            var importView = GetModelFromParameters(parameters).Result;
 
             return PartialView(GetContentPartialViewName(parameters.Action), importView);
         }
@@ -155,10 +158,10 @@ namespace FeatureDemandPlanning.Controllers
         }
         private async Task<ImportViewModel> GetModelFromParameters()
         {
-            return await ImportViewModel.GetModel(
+            return ImportViewModel.GetModel(
                 DataContext,
                 new ImportQueueFilter(),
-                Parameters.Action);
+                Parameters.Action).Result;
         }
         private async Task<ImportViewModel> GetModelFromParameters(ImportParameters parameters)
         {
@@ -169,7 +172,14 @@ namespace FeatureDemandPlanning.Controllers
                 new ImportQueueFilter(parameters.ImportQueueId.GetValueOrDefault()) { Action = parameters.Action },
                 parameters.Action);
             }
-            return await GetModelFromParameters();
+            if (parameters.Action == ImportAction.Upload)
+            {
+                return await ImportViewModel.GetModel(
+                DataContext,
+                new ImportQueueFilter() { Action = parameters.Action },
+                parameters.Action);
+            }
+            return GetModelFromParameters().Result;
         }
         private void SaveImportFileToFileSystem()
         {
