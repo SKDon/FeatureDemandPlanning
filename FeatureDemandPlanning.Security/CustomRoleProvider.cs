@@ -24,7 +24,8 @@ namespace FeatureDemandPlanning.Security
 
             Log.Debug(string.Format("Roles:{0}", authenticatedUser.Roles.Select(r => Enum.GetName(r.GetType(), r)).ToCommaSeperatedList()));
 
-            return authenticatedUser.Roles.Select(r => Enum.GetName(r.GetType(), r)).ToArray();
+            var retVal = authenticatedUser.Roles.Select(r => Enum.GetName(r.GetType(), r)).ToArray();
+            return retVal;
         }
 
         public override void CreateRole(string roleName)

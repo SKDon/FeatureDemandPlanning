@@ -1,8 +1,4 @@
-﻿
-
-
-
-CREATE VIEW [dbo].[Fdp_Import_VW] AS
+﻿CREATE VIEW [dbo].[Fdp_Import_VW] AS
 
 	WITH TakeRateFiles AS
 	(
@@ -168,9 +164,8 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 	
 	-- Mapping of derivative details (non-archived)
 	
-	LEFT JOIN Fdp_DerivativeMapping_VW		AS DMAP		ON	LTRIM(RTRIM(I.[Derivative Code])) = DMAP.ImportDerivativeCode
-														AND IH.DocumentId				= DMAP.DocumentId
-
+	LEFT JOIN Fdp_DerivativeMapping_VW		AS DMAP		ON	IH.DocumentId				= DMAP.DocumentId
+														AND I.[Derivative Code]			= DMAP.ImportDerivativeCode 
 	LEFT JOIN OXO_Programme_Body			AS B1		ON	DMAP.BodyId					= B1.Id
 														AND DMAP.IsArchived				= 0												
 	LEFT JOIN OXO_Programme_Engine			AS E1		ON	DMAP.EngineId				= E1.Id
@@ -189,21 +184,22 @@ CREATE VIEW [dbo].[Fdp_Import_VW] AS
 														
 	-- Mapping of trim details	
 																										
-	LEFT JOIN Fdp_TrimMapping_VW			AS TMAP		ON	I.[Trim Pack Description]	= TMAP.ImportTrim
-														AND IH.DocumentId				= TMAP.DocumentId	
+	LEFT JOIN Fdp_TrimMapping_VW			AS TMAP		ON IH.DocumentId				= TMAP.DocumentId
+														AND I.[Trim Pack Description]	= TMAP.ImportTrim	
 														AND DMAP.MappedDerivativeCode	= TMAP.BMC														
 	-- Mapping of features		
 													
-	LEFT JOIN Fdp_FeatureMapping_VW			AS FMAP		ON	I.[Bff Feature Code]		= FMAP.ImportFeatureCode
-														AND IH.DocumentId				= FMAP.DocumentId
-	LEFT JOIN Fdp_SpecialFeatureMapping_VW	AS SMAP		ON	I.[Bff Feature Code]		= SMAP.ImportFeatureCode
-														AND IH.DocumentId				= SMAP.DocumentId
+	LEFT JOIN Fdp_FeatureMapping_VW			AS FMAP		ON	IH.DocumentId				= FMAP.DocumentId
+														AND I.[Bff Feature Code]		= FMAP.ImportFeatureCode
+	LEFT JOIN Fdp_SpecialFeatureMapping_VW	AS SMAP		ON	IH.DocumentId				= SMAP.DocumentId
+														AND I.[Bff Feature Code]		= SMAP.ImportFeatureCode
 														AND SMAP.IsActive				= 1
 														
 	-- The combination of body, engine, transmission and trim gives us the model
 	-- This will either be an existing OXO model, or an FDP model (FDP derivative, trim or both)
 	
-	LEFT JOIN OXO_Programme_Model			AS M1		ON	IH.ProgrammeId				= M1.Programme_Id
+	LEFT JOIN OXO_Programme_Model			AS M1		WITH (INDEX(Ix_NC_OXO_Programme_Model_Cover))
+														ON	IH.ProgrammeId				= M1.Programme_Id
 														AND DMAP.BodyId					= M1.Body_Id
 														AND DMAP.EngineId				= M1.Engine_Id
 														AND DMAP.TransmissionId			= M1.Transmission_Id

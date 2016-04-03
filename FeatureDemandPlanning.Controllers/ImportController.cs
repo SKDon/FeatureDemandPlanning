@@ -134,9 +134,16 @@ namespace FeatureDemandPlanning.Controllers
             ValidateProcessedItem();
             RefreshQueuedItem();
 
-            return CurrentQueuedItem.HasErrors ? 
-                JsonGetFailure(CurrentQueuedItem.Error) : 
-                JsonGetSuccess();
+            var retVal = JsonGetSuccess();
+            if (CurrentQueuedItem.HasErrors)
+            {
+                
+                retVal = JsonGetFailure(string.Format("Import Completed with {0} {1} error(s)", 
+                    CurrentQueuedItem.ErrorCount, 
+                    ImportQueue.GetErrorTypeAbbreviation(CurrentQueuedItem.ErrorType)));
+            }
+
+            return retVal;
         }
         [HandleErrorWithJson]
         public async Task<ActionResult> DeleteImport(ImportParameters parameters)

@@ -96,7 +96,7 @@ namespace FeatureDemandPlanning.Model
             };
         }
 
-        private string GetErrorTypeAbbreviation(enums.ImportExceptionType errorType)
+        public static string GetErrorTypeAbbreviation(enums.ImportExceptionType errorType)
         {
             var retVal = string.Empty;
             switch (errorType)

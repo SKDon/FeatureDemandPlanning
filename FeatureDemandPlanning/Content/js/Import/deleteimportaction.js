@@ -14,7 +14,7 @@ model.DeleteImportAction = function (params) {
 
     me.action = function () {
         $("#Modal_Notify").html("").hide();
-        $("#Modal_OK").html("Adding...Wait").attr("disabled", true);
+        $("#Modal_OK").html("Deleting...Wait").attr("disabled", true);
         sendData(me.getActionUri(), me.getActionParameters());
     };
     me.getActionParameters = function () {
@@ -66,8 +66,8 @@ model.DeleteImportAction = function (params) {
     me.registerEvents = function () {
         $("#Modal_OK").unbind("click").on("click", me.action);
         $(document)
-            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
-            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
+            .unbind("Success").on("Success", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
+            .unbind("Error").on("Error", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); });
     };
     me.registerSubscribers = function () {
         $("#Modal_Notify")
@@ -80,7 +80,7 @@ model.DeleteImportAction = function (params) {
     function getData() {
         var params = me.getParameters();
         if (params.Data != undefined)
-            return JSON.parse(params.Data)
+            return JSON.parse(params.Data);
 
         return {};
     };
