@@ -26,11 +26,17 @@ AS
 		, V.VehicleAKA
 		, V.ModelYear
 		, I.Gateway
-		, CAST(CASE WHEN dbo.fn_Fdp_ImportErrorCount_Get(I.FdpImportId) > 0 THEN 1 ELSE 0 END AS BIT) AS HasErrors
-		, I.DocumentId
+		, D.Version_Id AS Document
+		, CAST(CASE WHEN E.ErrorCount > 0 THEN 1 ELSE 0 END AS BIT) AS HasErrors
+		, ISNULL(E.ErrorCount, 0) AS ErrorCount
+		, E.ErrorType
+		, E.ErrorSubType
+		, D.Id AS DocumentId
 		
 	FROM Fdp_ImportQueue_VW AS Q
 	JOIN Fdp_Import			AS I	ON Q.FdpImportQueueId	= I.FdpImportQueueId
 	JOIN OXO_Programme_VW	AS V	ON	I.ProgrammeId		= V.Id
+	JOIN OXO_Doc				AS D	ON	I.DocumentId		= D.Id
+	OUTER APPLY dbo.fn_Fdp_ImportErrorCount_GetMany(I.FdpImportId) AS E
 	WHERE
 	(@FdpImportQueueId IS NULL OR Q.FdpImportQueueId = @FdpImportQueueId);
