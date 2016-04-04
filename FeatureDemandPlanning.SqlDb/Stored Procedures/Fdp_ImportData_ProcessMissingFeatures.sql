@@ -207,7 +207,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 2 AS FdpImportErrorTypeId -- Missing Feature
-		, 'No historic Feature Code matching OXO feature ''' + F.MappedFeatureCode + ' - ' + ISNULL(F.BrandDescription, F.[Description]) + '''' AS ErrorMessage
+		, 'No historic Feature Code matching OXO feature ''' + ISNULL(F.MappedFeatureCode, 'NONE') + ' - ' + ISNULL(F.BrandDescription, F.[Description]) + '''' AS ErrorMessage
 		, F.MappedFeatureCode AS AdditionalData
 		, 202
 	FROM
@@ -265,6 +265,8 @@ AS
 	CUR2.FdpImportErrorId IS NULL
 	AND
 	EX.FdpImportErrorExclusionId IS NULL
+	AND
+	F.MappedFeatureCode IS NOT NULL
 	ORDER BY
 	ErrorMessage
 	

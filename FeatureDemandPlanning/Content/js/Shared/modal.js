@@ -85,6 +85,8 @@ model.Modal = function (params) {
         var content = dialog.find("#Modal_Content");
         var title = dialog.find("#Modal_Title");
         var notifier = dialog.find("#Modal_Notify");
+        var ok = dialog.find("#Modal_OK");
+        var cancel = dialog.find("#Modal_Cancel");
 
         content.html("");
         title.html("");
@@ -103,8 +105,8 @@ model.Modal = function (params) {
                 keyboard: false
             });
 
-        $("#Modal_OK").show();
-        $("#Modal_Cancel").html("Cancel");
+        ok.html("OK").show();
+        cancel.html("Cancel");
     };
     me.showConfirm = function(title, message, confirmCallback) {
         var dialog = $("#" + me.getModalDialogId());

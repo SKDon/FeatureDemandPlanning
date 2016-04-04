@@ -204,87 +204,87 @@ AS
 	GROUP BY
 	T.DocumentId, T.ModelId
 	
-	;WITH ModelDetails AS 
-	(
-		SELECT
-			  D.Id AS DocumentId
-			, V.Display_Format
-			, M.Id AS ModelId
-			, M.BMC
-			, TR.DPCK
-			, TR.[Level]
-			, dbo.OXO_GetVariantName(
-				  V.Display_Format
-				, B.Shape
-				, B.Doors
-				, B.Wheelbase
-				, E.Size
-				, E.Fuel_Type
-				, E.Cylinder
-				, E.Turbo
-				, E.[Power]
-				, T.Drivetrain
-				, T.[Type]
-				, TR.Name
-				, TR.[Level]
-				, M.KD
-				, 0
-			) AS ModelDescription
-		FROM
-		OXO_Doc AS D
-		JOIN OXO_Programme_VW			AS P	ON	D.Programme_Id		= P.Id
-		JOIN OXO_Vehicle				AS V	ON	P.VehicleId			= V.Id
-		JOIN OXO_Programme_Model		AS M	ON	D.Programme_Id		= M.Programme_Id
-		JOIN OXO_Programme_Body			AS B	ON	M.Body_Id			= B.Id
-		JOIN OXO_Programme_Engine		AS E	ON	M.Engine_Id			= E.Id
-		JOIN OXO_Programme_Transmission AS T	ON	M.Transmission_Id	= T.Id
-		JOIN OXO_Programme_Trim			AS TR	ON	M.Trim_Id			= TR.Id
-		WHERE
-		ISNULL(D.Archived, 0) = 0
+	--;WITH ModelDetails AS 
+	--(
+	--	SELECT
+	--		  D.Id AS DocumentId
+	--		, V.Display_Format
+	--		, M.Id AS ModelId
+	--		, M.BMC
+	--		, TR.DPCK
+	--		, TR.[Level]
+	--		, dbo.OXO_GetVariantName(
+	--			  V.Display_Format
+	--			, B.Shape
+	--			, B.Doors
+	--			, B.Wheelbase
+	--			, E.Size
+	--			, E.Fuel_Type
+	--			, E.Cylinder
+	--			, E.Turbo
+	--			, E.[Power]
+	--			, T.Drivetrain
+	--			, T.[Type]
+	--			, TR.Name
+	--			, TR.[Level]
+	--			, M.KD
+	--			, 0
+	--		) AS ModelDescription
+	--	FROM
+	--	OXO_Doc AS D
+	--	JOIN OXO_Programme_VW			AS P	ON	D.Programme_Id		= P.Id
+	--	JOIN OXO_Vehicle				AS V	ON	P.VehicleId			= V.Id
+	--	JOIN OXO_Programme_Model		AS M	ON	D.Programme_Id		= M.Programme_Id
+	--	JOIN OXO_Programme_Body			AS B	ON	M.Body_Id			= B.Id
+	--	JOIN OXO_Programme_Engine		AS E	ON	M.Engine_Id			= E.Id
+	--	JOIN OXO_Programme_Transmission AS T	ON	M.Transmission_Id	= T.Id
+	--	JOIN OXO_Programme_Trim			AS TR	ON	M.Trim_Id			= TR.Id
+	--	WHERE
+	--	ISNULL(D.Archived, 0) = 0
 		
-		UNION
+	--	UNION
 		
-		SELECT
-			  D.Id AS DocumentId
-			, V.Display_Format
-			, M.Id AS ModelId
-			, M.BMC
-			, TR.DPCK
-			, TR.[Level]
-			, dbo.OXO_GetVariantName(
-				  V.Display_Format
-				, B.Shape
-				, B.Doors
-				, B.Wheelbase
-				, E.Size
-				, E.Fuel_Type
-				, E.Cylinder
-				, E.Turbo
-				, E.[Power]
-				, T.Drivetrain
-				, T.[Type]
-				, TR.Name
-				, TR.[Level]
-				, M.KD
-				, 0
-			) AS ModelDescription
-		FROM
-		OXO_Doc AS D
-		JOIN OXO_Programme_VW						AS P	ON	D.Programme_Id		= P.Id
-		JOIN OXO_Vehicle							AS V	ON	P.VehicleId			= V.Id
-		JOIN OXO_Archived_Programme_Model			AS M	ON	D.Programme_Id		= M.Programme_Id
-															AND D.Id				= M.Doc_Id
-		JOIN OXO_Archived_Programme_Body			AS B	ON	M.Body_Id			= B.Id
-															AND D.Id				= B.Doc_Id
-		JOIN OXO_Archived_Programme_Engine			AS E	ON	M.Engine_Id			= E.Id
-															AND D.Id				= E.Doc_Id
-		JOIN OXO_Archived_Programme_Transmission	AS T	ON	M.Transmission_Id	= T.Id
-															AND D.Id				= T.Doc_Id
-		JOIN OXO_Archived_Programme_Trim			AS TR	ON	M.Trim_Id			= TR.Id
-															AND D.Id				= TR.Doc_Id
-		WHERE
-		ISNULL(D.Archived, 0) = 1
-	)
+	--	SELECT
+	--		  D.Id AS DocumentId
+	--		, V.Display_Format
+	--		, M.Id AS ModelId
+	--		, M.BMC
+	--		, TR.DPCK
+	--		, TR.[Level]
+	--		, dbo.OXO_GetVariantName(
+	--			  V.Display_Format
+	--			, B.Shape
+	--			, B.Doors
+	--			, B.Wheelbase
+	--			, E.Size
+	--			, E.Fuel_Type
+	--			, E.Cylinder
+	--			, E.Turbo
+	--			, E.[Power]
+	--			, T.Drivetrain
+	--			, T.[Type]
+	--			, TR.Name
+	--			, TR.[Level]
+	--			, M.KD
+	--			, 0
+	--		) AS ModelDescription
+	--	FROM
+	--	OXO_Doc AS D
+	--	JOIN OXO_Programme_VW						AS P	ON	D.Programme_Id		= P.Id
+	--	JOIN OXO_Vehicle							AS V	ON	P.VehicleId			= V.Id
+	--	JOIN OXO_Archived_Programme_Model			AS M	ON	D.Programme_Id		= M.Programme_Id
+	--														AND D.Id				= M.Doc_Id
+	--	JOIN OXO_Archived_Programme_Body			AS B	ON	M.Body_Id			= B.Id
+	--														AND D.Id				= B.Doc_Id
+	--	JOIN OXO_Archived_Programme_Engine			AS E	ON	M.Engine_Id			= E.Id
+	--														AND D.Id				= E.Doc_Id
+	--	JOIN OXO_Archived_Programme_Transmission	AS T	ON	M.Transmission_Id	= T.Id
+	--														AND D.Id				= T.Doc_Id
+	--	JOIN OXO_Archived_Programme_Trim			AS TR	ON	M.Trim_Id			= TR.Id
+	--														AND D.Id				= TR.Doc_Id
+	--	WHERE
+	--	ISNULL(D.Archived, 0) = 1
+	--)
 	INSERT INTO Fdp_ImportError
 	(
 		  FdpImportQueueId
@@ -300,14 +300,16 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId -- Missing Trim
-		, 'No historic data mapping to OXO model ''' + D.ModelDescription + '''' AS ErrorMessage
-		, D.BMC + '|' + D.DPCK AS AdditionalData
+		--, 'No historic data mapping to OXO model ''' + D.ModelDescription + '''' AS ErrorMessage
+		, 'No historic data mapping to OXO model' AS ErrorMessage
+		--, D.BMC + '|' + D.DPCK AS AdditionalData
+		, '' AS AdditionalData
 		, 402 AS SubTypeId
 	FROM @TrimError AS E
-	JOIN ModelDetails AS D ON E.DocumentId = D.DocumentId
-							AND E.ModelId = D.ModelId
-	ORDER BY
-	D.BMC, D.[Level]
+	--JOIN ModelDetails AS D ON E.DocumentId = D.DocumentId
+	--						AND E.ModelId = D.ModelId
+	--ORDER BY
+	--D.BMC, D.[Level]
 
 	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
 	

@@ -42,7 +42,7 @@ AS
 		AND
 		Transmission_Id = @TransmissionId;
 
-		SELECT
+		SELECT TOP 1
 			  D.Id AS DocumentId
 			, M.BMC AS DerivativeCode
 			, M.Body_Id AS BodyId
@@ -87,7 +87,7 @@ AS
 		AND
 		Transmission_Id = @TransmissionId;
 
-		SELECT
+		SELECT TOP 1
 			  D.Id AS DocumentId
 			, M.BMC AS DerivativeCode
 			, M.Body_Id AS BodyId

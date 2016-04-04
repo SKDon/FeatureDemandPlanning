@@ -6,6 +6,7 @@
 	, @DPCK						NVARCHAR(20)	= NULL
 	, @IncludeAllTrim			BIT = 0
 	, @OxoTrimOnly				BIT = 0
+	, @IgnoreBMC				BIT = 0
 	, @CDSId					NVARCHAR(16)
 	, @FilterMessage			NVARCHAR(50)	= NULL
 	, @PageIndex				INT				= NULL
@@ -42,67 +43,137 @@ AS
 		, UpdatedBy			NVARCHAR(16) NULL
 		, FdpTrimMappingId	INT NULL
 	);
-	INSERT INTO @PageRecords 
-	(
-		  CreatedOn			
-		, CreatedBy			
-		, DocumentId		
-		, ImportTrim
-		, BMC		
-		, DPCK		
-		, ProgrammeId		
-		, Gateway			
-		, TrimId
-		, Name
-		, [Level]
-		, IsMappedTrim		
-		, UpdatedOn			
-		, UpdatedBy			
-		, FdpTrimMappingId	
-	)
-	SELECT
-		  T.CreatedOn
-		, T.CreatedBy
-		, T.DocumentId 
-		, T.ImportTrim
-		, T.BMC
-		, T.DPCK
-		, T.ProgrammeId
-		, T.Gateway
-		, T.TrimId
-		, T.MappedTrim
-		, T.[Level]
-		, T.IsMappedTrim
-		, T.UpdatedOn
-		, T.UpdatedBy
-		, T.FdpTrimMappingId
-	FROM
-	Fdp_TrimMapping_VW			AS T
-	JOIN OXO_Programme_VW		AS P ON T.ProgrammeId = P.Id
-	WHERE
-	(@CarLine IS NULL OR P.VehicleName = @CarLine)
-	AND
-	(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
-	AND
-	(@Gateway IS NULL OR T.Gateway = @Gateway)
-	AND
-	(
-		(@IncludeAllTrim = 0 AND T.IsMappedTrim = 1)
-		OR
-		(@IncludeAllTrim = 1)
-	)
-	AND
-	(
-		(@OxoTrimOnly = 0)
-		OR
-		(@OxoTrimOnly = 1 AND T.IsMappedTrim = 0)
-	)
-	AND
-	(@DerivativeCode IS NULL OR T.BMC = @DerivativeCode)
-	AND
-	(@DPCK IS NULL OR (T.DPCK = @DPCK OR T.DPCK IS NULL))
-	AND
-	T.IsActive = 1;
+	
+	IF @IgnoreBMC = 0
+	BEGIN
+		INSERT INTO @PageRecords 
+		(
+			  CreatedOn			
+			, CreatedBy			
+			, DocumentId		
+			, ImportTrim
+			, BMC		
+			, DPCK		
+			, ProgrammeId		
+			, Gateway			
+			, TrimId
+			, Name
+			, [Level]
+			, IsMappedTrim		
+			, UpdatedOn			
+			, UpdatedBy			
+			, FdpTrimMappingId	
+		)
+		SELECT
+			  T.CreatedOn
+			, T.CreatedBy
+			, T.DocumentId 
+			, T.ImportTrim
+			, T.BMC
+			, T.DPCK
+			, T.ProgrammeId
+			, T.Gateway
+			, T.TrimId
+			, T.MappedTrim
+			, T.[Level]
+			, T.IsMappedTrim
+			, T.UpdatedOn
+			, T.UpdatedBy
+			, T.FdpTrimMappingId
+		FROM
+		Fdp_TrimMapping_VW			AS T
+		JOIN OXO_Programme_VW		AS P ON T.ProgrammeId = P.Id
+		WHERE
+		(@CarLine IS NULL OR P.VehicleName = @CarLine)
+		AND
+		(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
+		AND
+		(@Gateway IS NULL OR T.Gateway = @Gateway)
+		AND
+		(
+			(@IncludeAllTrim = 0 AND T.IsMappedTrim = 1)
+			OR
+			(@IncludeAllTrim = 1)
+		)
+		AND
+		(
+			(@OxoTrimOnly = 0)
+			OR
+			(@OxoTrimOnly = 1 AND T.IsMappedTrim = 0)
+		)
+		AND
+		(@DerivativeCode IS NULL OR T.BMC = @DerivativeCode)
+		AND
+		(@DPCK IS NULL OR (T.DPCK = @DPCK OR T.DPCK IS NULL))
+		AND
+		T.IsActive = 1;
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @PageRecords 
+		(
+			  CreatedOn			
+			, CreatedBy			
+			, DocumentId		
+			, ImportTrim
+			, BMC		
+			, DPCK		
+			, ProgrammeId		
+			, Gateway			
+			, TrimId
+			, Name
+			, [Level]
+			, IsMappedTrim		
+			, UpdatedOn			
+			, UpdatedBy			
+			, FdpTrimMappingId	
+		)
+		SELECT
+			  MAX(T.CreatedOn)
+			, MAX(T.CreatedBy)
+			, T.DocumentId 
+			, T.ImportTrim
+			, NULL
+			, T.DPCK
+			, T.ProgrammeId
+			, T.Gateway
+			, T.TrimId
+			, T.MappedTrim
+			, T.[Level]
+			, T.IsMappedTrim
+			, MAX(T.UpdatedOn)
+			, MAX(T.UpdatedBy)
+			, T.FdpTrimMappingId
+		FROM
+		Fdp_TrimMapping_VW			AS T
+		JOIN OXO_Programme_VW		AS P ON T.ProgrammeId = P.Id
+		WHERE
+		(@CarLine IS NULL OR P.VehicleName = @CarLine)
+		AND
+		(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
+		AND
+		(@Gateway IS NULL OR T.Gateway = @Gateway)
+		AND
+		(
+			(@IncludeAllTrim = 0 AND T.IsMappedTrim = 1)
+			OR
+			(@IncludeAllTrim = 1)
+		)
+		AND
+		(
+			(@OxoTrimOnly = 0)
+			OR
+			(@OxoTrimOnly = 1 AND T.IsMappedTrim = 0)
+		)
+		AND
+		(@DerivativeCode IS NULL OR T.BMC = @DerivativeCode)
+		AND
+		(@DPCK IS NULL OR (T.DPCK = @DPCK OR T.DPCK IS NULL))
+		AND
+		T.IsActive = 1
+		GROUP BY
+		T.DocumentId, T.ImportTrim, T.DPCK, T.ProgrammeId, T.Gateway, T.TrimId, T.MappedTrim, T.[Level], T.IsMappedTrim, T.FdpTrimMappingId
+	END
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
 	SELECT @TotalDisplayRecords = @TotalRecords;

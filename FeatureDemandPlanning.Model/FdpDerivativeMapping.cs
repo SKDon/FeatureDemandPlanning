@@ -7,7 +7,6 @@ namespace FeatureDemandPlanning.Model
     {
         public int? FdpDerivativeMappingId { get; set; }
         public string ImportDerivativeCode { get; set; }
-        public bool? IsMappedDerivative { get; set; }
 
         public new string[] ToJQueryDataTableResult()
         {
