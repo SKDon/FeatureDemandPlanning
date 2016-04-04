@@ -178,30 +178,30 @@ page.FeatureCodePage = function (models) {
                 "sTitle": "Programme",
                 "sName": "PROGRAMME",
                 "bSearchable": true,
-                "bSortable": true
+                "bSortable": false
             }, {
                 "sTitle": "Gateway",
                 "sName": "GATEWAY",
                 "bSearchable": true,
-                "bSortable": true,
+                "bSortable": false,
                 "sClass": "text-center"
             }, {
                 "sTitle": "Document",
                 "sName": "DOCUMENT",
                 "bSearchable": true,
-                "bSortable": true
+                "bSortable": false
             }, {
                 "sTitle": "Feature Code",
                 "sName": "FEATURE_CODE",
                 "bSearchable": true,
-                "bSortable": true,
+                "bSortable": false,
                 "sClass": "text-center feature-code-editable",
                 "sWidth": "10%"
             }, {
                 "sTitle": "Description",
                 "sName": "DESCRIPTION",
                 "bSearchable": true,
-                "bSortable": true
+                "bSortable": false
             }],
             "fnCreatedRow": function (row, data, index) {
                 var featureCodeIdentifier = data[featureCodeIdentifierIndex];
