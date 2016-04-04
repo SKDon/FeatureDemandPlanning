@@ -25,7 +25,7 @@ namespace FeatureDemandPlanning.DataStore
             {
                 using (var bulk = new SqlBulkCopy((SqlConnection)conn)
                 {
-                    BulkCopyTimeout = 60
+                    BulkCopyTimeout = 600
                 })
                 {
                     var columnIndex = 0;
@@ -839,7 +839,8 @@ namespace FeatureDemandPlanning.DataStore
                 Error = dataItem.Error,
                 DocumentId = dataItem.DocumentId,
                 ErrorType = dataItem.ErrorType,
-                ErrorSubType = dataItem.ErrorSubType
+                ErrorSubType = dataItem.ErrorSubType,
+                Uploaded = dataItem.Uploaded
             };
             return queue;
         }

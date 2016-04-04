@@ -232,6 +232,7 @@ namespace FeatureDemandPlanning.Controllers
             catch (Exception ex)
             {
                 errorState = ex;
+                throw ex;
             }
             finally
             {

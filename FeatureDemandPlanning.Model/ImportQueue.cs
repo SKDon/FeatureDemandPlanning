@@ -55,6 +55,7 @@ namespace FeatureDemandPlanning.Model
         public int? TotalRecords { get; set; }
 
         public DataTable ImportData { get; set; }
+        public bool Uploaded { get; set; }
 
         public ImportQueue()
         {
@@ -82,7 +83,7 @@ namespace FeatureDemandPlanning.Model
 
         public string[] ToJQueryDataTableResult()
         {
-            return new string[] {
+            return new [] {
                 CreatedOn.ToString("g"), 
                 CreatedBy,
                 VehicleDescription,
@@ -92,7 +93,8 @@ namespace FeatureDemandPlanning.Model
                 HasErrors ? "YES" : "NO",
                 ErrorCount.ToString(),
                 GetErrorTypeAbbreviation(ErrorType),
-                GetErrorTypeAbbreviation(ErrorSubType)
+                GetErrorTypeAbbreviation(ErrorSubType),
+                Uploaded ? "YES" : "NO"
             };
         }
 

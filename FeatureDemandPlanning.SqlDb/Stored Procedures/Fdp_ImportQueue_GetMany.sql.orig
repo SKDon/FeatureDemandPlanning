@@ -98,8 +98,11 @@ AS
 		, ISNULL(E.ErrorCount, 0) AS ErrorCount
 		, E.ErrorType
 		, E.ErrorSubType
+<<<<<<< HEAD
 		, D.Id AS DocumentId
-		, Q.Uploaded
+=======
+		, I.DocumentId
+>>>>>>> 56e6617b791b0c17c305b2ef428d97aa95c03c14
 		
 	FROM @PageRecords			AS P
 	JOIN Fdp_ImportQueue_VW		AS Q	ON	P.FdpImportQueueId	= Q.FdpImportQueueId

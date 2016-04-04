@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace FeatureDemandPlanning.Model.Results
 {
@@ -44,12 +46,38 @@ namespace FeatureDemandPlanning.Model.Results
                 Success = false,
                 Message = exception.Message
             };
-            if (exception is ValidationException)
+            if (!(exception is ValidationException)) return result;
+            
+            var errors = new List<string>();
+            foreach (var err in ((ValidationException) exception).Errors)
             {
-                var errors = ((ValidationException)exception).Errors.Select(e => e.ErrorMessage);
-                result.IsValidation = true;
-                result.ValidationErrors = errors;
+                if (err.CustomState != null && err.CustomState.ToString().StartsWith("LINE:"))
+                {
+                    var lineNumber = int.Parse(err.CustomState.ToString().Replace("LINE:", string.Empty));
+                    errors.Add(string.Format("{0} (line {1})", err.ErrorMessage, lineNumber));
+                }
+                else
+                {
+                    errors.Add(err.ErrorMessage);
+                }
             }
+                
+            result.IsValidation = true;
+            result.ValidationErrors = errors;
+
+            var sb = new StringBuilder();
+            sb.Append("Validation Failed:<br/><br/>");
+            sb.Append("<ul>");
+            foreach (var err in result.ValidationErrors)
+            {
+                sb.Append("<li>");
+                sb.Append(err);
+                sb.Append("</li>");
+            }
+            sb.Append("</ul>");
+
+            result.Message = sb.ToString();
+
             return result;
         }
     }

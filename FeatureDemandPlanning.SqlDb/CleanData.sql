@@ -31,6 +31,8 @@ DELETE FROM Fdp_ImportQueue
 DELETE FROM Fdp_DerivativeMapping
 DELETE FROM Fdp_TrimMapping
 DELETE FROM Fdp_FeatureMapping
+DELETE FROM Fdp_SpecialFeature
 DELETE FROM Fdp_Derivative
 DELETE FROM Fdp_Trim
 DELETE FROM Fdp_Feature
+DELETE FROM Fdp_ImportErrorExclusion

@@ -33,6 +33,8 @@ AS
 	AND
 	FdpImportStatusId IN (1, 4);
 	
+	UPDATE Fdp_Import SET Uploaded = 1 WHERE FdpImportQueueId = @FdpImportQueueId;
+	
 	-- Create exceptions of varying types based on the data that cannot be processed
 	
 	EXEC Fdp_ImportData_ProcessMissingMarkets @FdpImportId = @FdpImportId, @FdpImportQueueId = @FdpImportQueueId;

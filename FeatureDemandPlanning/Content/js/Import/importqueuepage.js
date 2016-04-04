@@ -113,6 +113,7 @@ page.ImportQueuePage = function (models) {
         var hasErrorsIndex = 6;
         var errorCountIndex = 7;
         var errorTypeIndex = 8;
+        var uploadedIndex = 10;
 
         $(".dataTable").DataTable({
             "serverSide": true,
@@ -158,8 +159,12 @@ page.ImportQueuePage = function (models) {
                     "sClass": "text-center",
                     "render": function(data, type, full, meta) {
                         var hasErrors = full[hasErrorsIndex];
+                        var uploaded = full[uploadedIndex];
                         var errorCount = 0;
                         var errorType = "";
+
+                        if (uploaded === "NO")
+                            return "";
                         
                         if (hasErrors !== "NO") {
                             errorCount = parseInt(full[errorCountIndex]);

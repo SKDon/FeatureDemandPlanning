@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Helpers;
 using FeatureDemandPlanning.Model.Interfaces;
+using FeatureDemandPlanning.Model.Validators;
+using FluentValidation;
 using enums = FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.DataStore
@@ -93,7 +93,7 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<ImportError> AddSpecialFeature(ImportQueueFilter filter, FdpSpecialFeature specialFeature)
         {
-            var task = await Task.FromResult(_featureDataStore.FdpSpecialFeatureSave(specialFeature));
+            await Task.FromResult(_featureDataStore.FdpSpecialFeatureSave(specialFeature));
             return await Task.FromResult(_importDataStore.ImportErrorGet(filter));
         }
         public async Task<ImportError> MapFeature(ImportQueueFilter filter, FdpFeatureMapping featureMapping)
@@ -116,6 +116,16 @@ namespace FeatureDemandPlanning.DataStore
             var result = new ImportResult();
 
             queuedItem.ImportData = GetImportFileAsDataTable(queuedItem, fileSettings);
+            
+            // Validate the import data with some quick sanity checks
+
+            var validator = new ImportDataValidator();
+            var validationResult = validator.Validate(queuedItem);
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors);
+            }
+
             queuedItem = BulkImportDataTableToDataStore(queuedItem);
             queuedItem = ProcessImportData(queuedItem);
 

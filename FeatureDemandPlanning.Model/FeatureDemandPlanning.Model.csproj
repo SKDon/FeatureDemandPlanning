@@ -343,6 +343,7 @@
     <Compile Include="Validators\BrochureModelCodeUniqueValidator.cs" />
     <Compile Include="Validators\ComparisonVehicleValidator.cs" />
     <Compile Include="Validators\ForecastVehicleValidator.cs" />
+    <Compile Include="Validators\ImportDataValidator.cs" />
     <Compile Include="Validators\ImportExceptionParametersValidator.cs" />
     <Compile Include="Validators\NonCodedFeatureTakeRateValidator.cs" />
     <Compile Include="Validators\TakeRateForFeaturePackValidator.cs" />

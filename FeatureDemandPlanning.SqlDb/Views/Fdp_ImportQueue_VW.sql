@@ -5,6 +5,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_ImportQueue_VW] AS
 
 	SELECT 
@@ -22,6 +23,7 @@ CREATE VIEW [dbo].[Fdp_ImportQueue_VW] AS
 		, E1.ErrorOn
 		, I.FdpImportId
 		, I.DocumentId
+		, I.Uploaded
 		
 	FROM Fdp_ImportQueue			AS Q
 	JOIN Fdp_ImportType				AS T	ON	Q.FdpImportTypeId	= T.FdpImportTypeId

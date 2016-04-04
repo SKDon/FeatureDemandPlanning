@@ -6,11 +6,14 @@
     [ProgrammeId]      INT            NOT NULL,
     [Gateway]          NVARCHAR (100) NOT NULL,
     [DocumentId]       INT            NOT NULL,
-    CONSTRAINT [PK_Fdp_Import] PRIMARY KEY CLUSTERED ([FdpImportId] ASC),
+    [Uploaded]         BIT            CONSTRAINT [DF_Fdp_Import_Uploaded] DEFAULT ((0)) NOT NULL,
+    CONSTRAINT [PK_Fdp_Import] PRIMARY KEY CLUSTERED ([FdpImportId] ASC) WITH (FILLFACTOR = 90),
     CONSTRAINT [FK_Fdp_Import_ImportQueue] FOREIGN KEY ([FdpImportQueueId]) REFERENCES [dbo].[Fdp_ImportQueue] ([FdpImportQueueId]),
     CONSTRAINT [FK_Fdp_Import_OXO_Doc] FOREIGN KEY ([DocumentId]) REFERENCES [dbo].[OXO_Doc] ([Id]),
     CONSTRAINT [FK_Fdp_Import_OXO_Programme] FOREIGN KEY ([ProgrammeId]) REFERENCES [dbo].[OXO_Programme] ([Id])
 );
+
+
 
 
 
