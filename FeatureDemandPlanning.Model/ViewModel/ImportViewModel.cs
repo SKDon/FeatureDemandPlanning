@@ -288,7 +288,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 CarLine = model.Programme.VehicleName,
                 ModelYear = model.Programme.ModelYear,
                 Gateway = model.Gateway,
-                DocumentId = model.CurrentException.DocumentId,
+                DocumentId = model.CurrentException is EmptyOxoDocument ? (int?) null : model.CurrentException.DocumentId,
                 IncludeAllTrim = false
             };
             model.AvailableTrim = (await context.Vehicle.ListOxoTrim(trimFilter)).CurrentPage;

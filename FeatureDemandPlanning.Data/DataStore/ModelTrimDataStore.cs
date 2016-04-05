@@ -519,6 +519,7 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     if (!string.IsNullOrEmpty(filter.Dpck))
                     {
                         para.Add("@DPCK", filter.Dpck, DbType.String);

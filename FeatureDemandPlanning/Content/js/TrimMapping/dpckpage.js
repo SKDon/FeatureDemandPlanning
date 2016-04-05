@@ -124,6 +124,13 @@ page.DpckPage = function (models) {
         me.displaySelectedGateway();
         me.redrawDataTable();
     };
+    me.getDocumentId = function () {
+        var documentId = $("#" + me.getIdentifierPrefix() + "_DocumentId").val();
+        if (documentId !== "") {
+            return parseInt(documentId);
+        }
+        return null;
+    }
     me.getSelectedCarLine = function () {
         return privateStore[me.id].SelectedCarLine;
     };
@@ -259,7 +266,8 @@ page.DpckPage = function (models) {
             "CarLine": me.getSelectedCarLine(),
             "ModelYear": modelYear,
             "Gateway": gateway,
-            "FilterMessage": me.getFilterMessage()
+            "FilterMessage": me.getFilterMessage(),
+            "DocumentId": me.getDocumentId()
         });
         return params;
     };

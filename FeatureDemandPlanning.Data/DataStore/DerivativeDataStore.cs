@@ -135,6 +135,7 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@OxoDerivativesOnly", filter.OxoDerivativesOnly, DbType.Boolean);
                     }
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     para.Add("@TotalPages", DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalRecords", DbType.Int32, direction: ParameterDirection.Output);
                     para.Add("@TotalDisplayRecords", DbType.Int32, direction: ParameterDirection.Output);

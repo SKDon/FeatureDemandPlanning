@@ -2,6 +2,7 @@
 	  @CarLine					NVARCHAR(10)	= NULL
 	, @ModelYear				NVARCHAR(10)	= NULL
 	, @Gateway					NVARCHAR(16)	= NULL
+	, @DocumentId				INT				= NULL
 	, @DerivativeCode			NVARCHAR(40)	= NULL
 	, @DPCK						NVARCHAR(20)	= NULL
 	, @IncludeAllTrim			BIT = 0
@@ -90,6 +91,8 @@ AS
 		AND
 		(@Gateway IS NULL OR T.Gateway = @Gateway)
 		AND
+		(ISNULL(@DocumentId, 0) = 0 OR T.DocumentId = @DocumentId)
+		AND
 		(
 			(@IncludeAllTrim = 0 AND T.IsMappedTrim = 1)
 			OR
@@ -153,6 +156,8 @@ AS
 		(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
 		AND
 		(@Gateway IS NULL OR T.Gateway = @Gateway)
+		AND
+		(@DocumentId IS NULL OR T.DocumentId = @DocumentId)
 		AND
 		(
 			(@IncludeAllTrim = 0 AND T.IsMappedTrim = 1)

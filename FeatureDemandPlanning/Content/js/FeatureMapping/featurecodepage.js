@@ -239,6 +239,13 @@ page.FeatureCodePage = function (models) {
             }
         });
     };
+    me.getDocumentId = function () {
+        var documentId = $("#" + me.getIdentifierPrefix() + "_DocumentId").val();
+        if (documentId !== "") {
+            return parseInt(documentId);
+        }
+        return null;
+    }
     me.getFilterMessage = function () {
         return $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
     };
@@ -258,7 +265,8 @@ page.FeatureCodePage = function (models) {
             "CarLine": me.getSelectedCarLine(),
             "ModelYear": modelYear,
             "Gateway": gateway,
-            "FilterMessage": me.getFilterMessage()
+            "FilterMessage": me.getFilterMessage(),
+            "DocumentId": me.getDocumentId()
         });
         return params;
     };

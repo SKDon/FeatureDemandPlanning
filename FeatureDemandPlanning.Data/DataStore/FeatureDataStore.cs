@@ -523,6 +523,7 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     if (filter.PageIndex.HasValue)
                     {
                         para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
@@ -783,6 +784,7 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@Gateway", filter.Gateway, DbType.String);
                     }
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
                     if (filter.PageIndex.HasValue)
                     {
                         para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
@@ -813,7 +815,7 @@ namespace FeatureDemandPlanning.DataStore
                     }
                     if (!string.IsNullOrEmpty(filter.FilterMessage))
                     {
-                        para.Add("@Filter", filter.FilterMessage, DbType.String);
+                        para.Add("@FilterMessage", filter.FilterMessage, DbType.String);
                     }
 
                     var results = conn.Query<FdpFeatureMapping>("dbo.Fdp_FeatureMapping_GetMany", para, commandType: CommandType.StoredProcedure);

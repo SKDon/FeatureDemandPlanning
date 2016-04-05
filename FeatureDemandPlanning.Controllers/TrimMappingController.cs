@@ -86,7 +86,8 @@ namespace FeatureDemandPlanning.Controllers
                 CarLine = parameters.CarLine,
                 ModelYear = parameters.ModelYear,
                 Gateway = parameters.Gateway,
-                Action = TrimMappingAction.DPCKCodes
+                Action = TrimMappingAction.DPCKCodes,
+                DocumentId = parameters.DocumentId
             };
             filter.InitialiseFromJson(parameters);
 

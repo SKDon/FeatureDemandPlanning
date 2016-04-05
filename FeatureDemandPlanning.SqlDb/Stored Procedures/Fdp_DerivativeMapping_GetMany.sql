@@ -2,6 +2,7 @@
 	  @CarLine					NVARCHAR(10)	= NULL
 	, @ModelYear				NVARCHAR(10)	= NULL
 	, @Gateway					NVARCHAR(16)	= NULL
+	, @DocumentId				INT				= NULL
 	, @IncludeAllDerivatives	BIT = 0
 	, @OxoDerivativesOnly		BIT = 0
 	, @CDSId					NVARCHAR(16)
@@ -80,6 +81,8 @@ AS
 	(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
 	AND
 	(@Gateway IS NULL OR D.Gateway = @Gateway)
+	AND
+	(@DocumentId IS NULL OR D.DocumentId = @DocumentId)
 	AND
 	(
 		(@IncludeAllDerivatives = 0 AND D.IsMappedDerivative = 1)

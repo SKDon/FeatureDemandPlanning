@@ -87,7 +87,8 @@ namespace FeatureDemandPlanning.Controllers
                 CarLine = parameters.CarLine,
                 ModelYear = parameters.ModelYear,
                 Gateway = parameters.Gateway,
-                Action = FeatureMappingAction.FeatureCodes
+                Action = FeatureMappingAction.FeatureCodes,
+                DocumentId = parameters.DocumentId
             };
             filter.InitialiseFromJson(parameters);
 

@@ -2,6 +2,7 @@
 	  @CarLine					NVARCHAR(10)	= NULL
 	, @ModelYear				NVARCHAR(10)	= NULL
 	, @Gateway					NVARCHAR(16)	= NULL
+	, @DocumentId				INT				= NULL
 	, @IncludeAllFeatures		BIT = 0
 	, @OxoFeaturesOnly			BIT = 0
 	, @CDSId					NVARCHAR(16)
@@ -39,6 +40,7 @@ AS
 		, IsPack BIT
 		, FeatureId INT NULL
 		, FeaturePackId INT NULL
+		, IsFeatureCodeMissing BIT NULL
 	);
 	INSERT INTO @PageRecords 
 	(
@@ -57,6 +59,7 @@ AS
 		, IsPack
 		, FeatureId
 		, FeaturePackId
+		, IsFeatureCodeMissing
 	)
 	SELECT
 		  F.CreatedOn
@@ -74,6 +77,7 @@ AS
 		, CAST(CASE WHEN F.FeaturePackId IS NOT NULL AND F.FeatureId IS NULL THEN 1 ELSE 0 END AS BIT) AS IsPack
 		, F.FeatureId
 		, F.FeaturePackId
+		, CAST(CASE WHEN F.MappedFeatureCode IS NULL THEN 1 ELSE 0 END AS BIT) AS IsFeatureCodeMissing
 	FROM
 	Fdp_FeatureMapping_VW AS F
 	JOIN OXO_Programme_VW	 AS P ON F.ProgrammeId = P.Id
@@ -83,6 +87,8 @@ AS
 	(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
 	AND
 	(@Gateway IS NULL OR F.Gateway = @Gateway)
+	AND
+	(@DocumentId IS NULL OR F.DocumentId = @DocumentId)
 	AND
 	(
 		(@IncludeAllFeatures = 0 AND F.IsMappedFeature = 1)
@@ -95,7 +101,9 @@ AS
 		OR
 		(@OxoFeaturesOnly = 1 AND F.IsMappedFeature = 0)
 	)
-	ORDER BY MappedFeatureCode
+	AND
+	(@FilterMessage IS NULL OR F.MappedFeatureCode LIKE '%' + @FilterMessage + '%' OR F.BrandDescription LIKE '%' + @FilterMessage + '%')
+	ORDER BY IsFeatureCodeMissing DESC, MappedFeatureCode, [Description]
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
 	SELECT @TotalDisplayRecords = @TotalRecords;
@@ -108,7 +116,8 @@ AS
 	SET @MaxIndex = @MinIndex + (@PageSize - 1);
 
 	SELECT DISTINCT
-		  F.CreatedOn
+		  F.RowIndex	
+		, F.CreatedOn
 		, F.CreatedBy
 		, F.FdpFeatureMappingId
 		, F.ImportFeatureCode
@@ -123,6 +132,9 @@ AS
 		, F.IsPack
 		, F.FeatureId
 		, F.FeaturePackId
+		, F.IsFeatureCodeMissing
 
 	FROM @PageRecords				AS F
-	WHERE F.RowIndex BETWEEN @MinIndex AND @MaxIndex;
+	WHERE F.RowIndex BETWEEN @MinIndex AND @MaxIndex
+	ORDER BY
+	RowIndex;

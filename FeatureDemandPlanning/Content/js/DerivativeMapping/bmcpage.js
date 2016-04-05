@@ -142,6 +142,13 @@ page.BmcPage = function (models) {
     me.getSelectedGateway = function () {
         return privateStore[me.id].SelectedGateway;
     };
+    me.getDocumentId = function() {
+        var documentId = $("#" + me.getIdentifierPrefix() + "_DocumentId").val();
+        if (documentId !== "") {
+            return parseInt(documentId);
+        }
+        return null;
+    }
     me.actionTriggered = function (invokedOn, action) {
         var eventArgs = {
             DerivativeMappingId: $(this).attr("data-target"),
@@ -298,7 +305,8 @@ page.BmcPage = function (models) {
             "CarLine": me.getSelectedCarLine(),
             "ModelYear": modelYear,
             "Gateway": gateway,
-            "FilterMessage": me.getFilterMessage()
+            "FilterMessage": me.getFilterMessage(),
+            "DocumentId": me.getDocumentId()
         });
         return params;
     };

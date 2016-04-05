@@ -10,20 +10,21 @@
 @section PageContentHeader
 {
     <form>
-        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix"/>
+        <input type="hidden" id="@(Model.IdentifierPrefix)_DocumentId" value="@Request["DocumentId"]" />
     </form>
     <div class="row">
         <div class="col-xs-12 col-sm-6 inverse" style="padding-top: 20px">
-            <div class="panel panel-primary" style="height:160px;background-color: rgba(18, 7, 59, 0.75);">
-                <div class="panel-body" style="background:none !important">
+            <div class="panel panel-primary" style="height: 160px; background-color: rgba(18, 7, 59, 0.75);">
+                <div class="panel-body" style="background: none !important">
                     <div class="row">
                         <div class="col-xs-2 text-center">
-                            <img src="~/Content/Images/Icons/mapping64.png" style="margin-top:15px" />
+                            <img src="~/Content/Images/Icons/mapping64.png" style="margin-top: 15px"/>
                         </div>
                         <div class="col-xs-10">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <h3 style="margin-top:5px">Feature Code Management</h3>
+                                    <h3 style="margin-top: 5px">Feature Code Management</h3>
                                     <h4 id="lblVehicleDescription">&nbsp;</h4>
                                 </div>
                             </div>
@@ -39,11 +40,20 @@
                 </div>
             </div>
         </div>
+        @{
+            var display = "block";
+            var height = "200px";
+            if (Request["DocumentId"] != null)
+            {
+                display = "none";
+                height = "60px";
+            }
+        }
         <div class="col-xs-12 col-sm-6 col-lg-5 inverse pull-right" style="padding-top: 20px">
-            <div class="panel panel-primary" style="height:200px;background-color: rgba(18, 7, 59, 0.75);">
+            <div class="panel panel-primary" style="height:@height;background-color: rgba(18, 7, 59, 0.75);">
 
-                <div class="panel-body" style="background:none !important">
-                    <div class="form-group-sm" style="margin-bottom:15px;">
+                <div class="panel-body" style="background: none !important">
+                    <div class="form-group-sm" style="margin-bottom:15px;display:@display">
                         <label for="@(Model.IdentifierPrefix)_SelectCarLine" class="col-lg-3 control-label">Car Line:</label>
                         <div class="col-lg-9" style="margin-bottom:15px;">
                             <button id="@(Model.IdentifierPrefix)_SelectCarLine" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
@@ -58,7 +68,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="form-group-sm" style="margin-bottom:15px;">
+                    <div class="form-group-sm" style="margin-bottom:15px;display:@display">
                         <label for="@(Model.IdentifierPrefix)_SelectModelYear" class="col-lg-3 control-label">Model Year:</label>
                         <div class="col-lg-9" style="margin-bottom:15px;">
                             <button id="@(Model.IdentifierPrefix)_SelectModelYear" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">
@@ -73,7 +83,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="form-group-sm" style="margin-bottom: 15px;">
+                    <div class="form-group-sm" style="margin-bottom: 15px;display:@display">
                         <label for="@(Model.IdentifierPrefix)_SelectGateway" class="col-lg-3 control-label">Gateway:</label>
                         <div class="col-lg-9" style="margin-bottom: 15px;">
                             <button id="@(Model.IdentifierPrefix)_SelectGateway" class="btn btn-sm btn-default dropdown-toggle form-control col-lg-9" data-toggle="dropdown">

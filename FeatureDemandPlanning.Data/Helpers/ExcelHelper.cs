@@ -64,6 +64,22 @@ namespace FeatureDemandPlanning.Model.Helpers
                     break;
             }
 
+            if (retVal == null) return retVal;
+
+            // Remove blank rows imported from the end of the file. Check the first two columns
+
+            //for (var i = retVal.Rows.Count - 1; i >= 0; i--)
+            //{
+            //    if (retVal.Rows[i][0] == DBNull.Value && retVal.Rows[i][0] == DBNull.Value)
+            //    {
+            //        retVal.Rows[i].Delete();
+            //    }
+            //    else
+            //    {
+            //        break;
+            //    }
+            //}
+
             return retVal;
         }
         public static DataTable ReadCsv(string filePath, ImportFileSettings settings)
@@ -112,10 +128,11 @@ namespace FeatureDemandPlanning.Model.Helpers
         private static DataTable ReadExcel(string filePath, ImportFileSettings settings)
         {
             var result = new DataTable();
+            var firstRow = true;
+            var rowCount = 0;
+
             using (var workBook = new XLWorkbook(filePath))
             {
-                var firstRow = true;
-
                 foreach (var row in workBook.Worksheets
                     .SelectMany(workSheet => workSheet.Rows())
                     .Skip(settings.SkipFirstXRows.GetValueOrDefault()))
@@ -132,15 +149,23 @@ namespace FeatureDemandPlanning.Model.Helpers
                     else
                     {
                         result.Rows.Add();
+                        rowCount++;
                         var i = 0;
                         foreach (var cell in row.Cells())
                         {
-                            result.Rows[result.Rows.Count - 1][i] = cell.Value.ToString();
+                            result.Rows[rowCount - 1][i] = cell.Value.ToString();
                             i++;
                         }
                     }
                 }
             }
+
+            rowCount = result.Rows.Count;
+            if (rowCount > 0 && string.IsNullOrEmpty(result.Rows[rowCount - 1][0].ToString()))
+            {
+                result.Rows.RemoveAt(rowCount - 1);
+            }
+
             return result;
         }
     }
