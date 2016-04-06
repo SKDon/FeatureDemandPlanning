@@ -36,3 +36,4 @@ DELETE FROM Fdp_Derivative
 DELETE FROM Fdp_Trim
 DELETE FROM Fdp_Feature
 DELETE FROM Fdp_ImportErrorExclusion
+DELETE FROM Fdp_MarketMapping

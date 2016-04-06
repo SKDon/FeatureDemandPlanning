@@ -302,7 +302,7 @@ AS
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 4 AS FdpImportErrorTypeId -- Missing Trim
-		, 'No historic data mapping to OXO model ''' + D.ModelDescription + '''' AS ErrorMessage
+		, 'No historic data mapping to OXO model ''' + D.BMC + ' - ' + D.ModelDescription + '''' AS ErrorMessage
 		, D.BMC + '|' + D.DPCK AS AdditionalData
 		, 402 AS SubTypeId
 	FROM @TrimError AS E
