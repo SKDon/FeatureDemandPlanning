@@ -5,6 +5,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 	
 	SELECT
@@ -12,9 +13,9 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, F.FdpFeatureId
 		, F.CreatedOn
 		, F.CreatedBy
-		, F.DocumentId
-		, F.ProgrammeId
-		, F.Gateway				AS Gateway
+		, D.Id AS DocumentId
+		, D.Programme_Id		AS ProgrammeId
+		, D.Gateway
 		, F.FeatureCode			AS ImportFeatureCode
 		, F.FeatureCode			AS MappedFeatureCode
 		, F.BrandDescription
@@ -36,8 +37,9 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, F.UpdatedBy 
 		, F.ExclusiveFeatureGroup
 	FROM
-	OXO_Programme			AS P
-	JOIN Fdp_Feature_VW		AS F	ON	P.Id = F.ProgrammeId
+	OXO_Doc					AS D
+	JOIN OXO_Programme		AS P	ON	D.Programme_Id	= P.Id
+	JOIN Fdp_Feature_VW		AS F	ON	D.Id			= F.DocumentId
 							
 	UNION
 	
@@ -46,9 +48,9 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, NULL					AS FdpFeatureId
 		, M.CreatedOn
 		, M.CreatedBy
-		, F.DocumentId
-		, F.ProgrammeId
-		, M.Gateway				AS Gateway
+		, D.Id					AS DocumentId
+		, D.Programme_Id		AS ProgrammeId
+		, D.Gateway
 		, M.ImportFeatureCode	AS ImportFeatureCode
 		, F.FeatureCode			AS MappedFeatureCode
 		, F.BrandDescription
@@ -70,8 +72,9 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, M.UpdatedBy
 		, F.ExclusiveFeatureGroup
 	FROM
-	OXO_Programme					AS P 
-	JOIN Fdp_Feature_VW				AS F	ON	P.Id			= F.ProgrammeId
+	OXO_Doc							AS D
+	JOIN OXO_Programme				AS P	ON	D.Programme_Id	= P.Id 
+	JOIN Fdp_Feature_VW				AS F	ON	D.Id			= F.DocumentId
 	JOIN Fdp_FeatureMapping			AS M	ON	F.DocumentId	= M.DocumentId
 											AND F.FeatureId		= M.FeatureId
 											AND M.IsActive		= 1
@@ -108,9 +111,10 @@ CREATE VIEW [dbo].[Fdp_FeatureMapping_VW] AS
 		, M.UpdatedBy
 		, F.ExclusiveFeatureGroup
 	FROM
-	OXO_Programme					AS P 
-	JOIN Fdp_Feature_VW				AS F	ON	P.Id			= F.ProgrammeId
-	JOIN Fdp_FeatureMapping			AS M	ON	F.DocumentId	= M.DocumentId
+	OXO_Doc							AS D
+	JOIN OXO_Programme				AS P	ON D.Programme_Id	= P.Id 
+	JOIN Fdp_Feature_VW				AS F	ON	D.Id			= F.DocumentId
+	JOIN Fdp_FeatureMapping			AS M	ON	D.Id			= M.DocumentId
 											AND F.FeaturePackId	= M.FeaturePackId
 											AND M.IsActive		= 1
 											AND F.FeatureId		IS NULL

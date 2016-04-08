@@ -5,6 +5,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 
 	SELECT
@@ -19,6 +20,7 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 		, T.[Level]
 		, T.ModelId
 		, T.BMC
+		, T.MarketId
 		, T.DPCK
 		, CAST(0 AS BIT)	AS IsMappedTrim
 		, T.IsFdpTrim
@@ -56,6 +58,7 @@ CREATE VIEW [dbo].[Fdp_TrimMapping_VW] AS
 		, T.[Level]
 		, T.ModelId
 		, T.BMC
+		, T.MarketId
 		, T.DPCK		
 		, CAST(1 AS BIT)		AS IsMappedTrim
 		, T.IsFdpTrim

@@ -33,6 +33,7 @@ AS
 		, DocumentId		INT
 		, ImportTrim		NVARCHAR(1000) NULL
 		, BMC				NVARCHAR(40)   NULL
+		, MarketId			INT			   NULL
 		, DPCK				NVARCHAR(1000) NULL
 		, ProgrammeId		INT
 		, Gateway			NVARCHAR(200)
@@ -53,7 +54,8 @@ AS
 			, CreatedBy			
 			, DocumentId		
 			, ImportTrim
-			, BMC		
+			, BMC
+			, MarketId		
 			, DPCK		
 			, ProgrammeId		
 			, Gateway			
@@ -71,6 +73,7 @@ AS
 			, T.DocumentId 
 			, T.ImportTrim
 			, T.BMC
+			, T.MarketId
 			, T.DPCK
 			, T.ProgrammeId
 			, T.Gateway
@@ -119,7 +122,8 @@ AS
 			, CreatedBy			
 			, DocumentId		
 			, ImportTrim
-			, BMC		
+			, BMC
+			, MarketId		
 			, DPCK		
 			, ProgrammeId		
 			, Gateway			
@@ -137,6 +141,7 @@ AS
 			, T.DocumentId 
 			, T.ImportTrim
 			, NULL
+			, T.MarketId
 			, T.DPCK
 			, T.ProgrammeId
 			, T.Gateway
@@ -177,7 +182,7 @@ AS
 		AND
 		T.IsActive = 1
 		GROUP BY
-		T.DocumentId, T.ImportTrim, T.DPCK, T.ProgrammeId, T.Gateway, T.TrimId, T.MappedTrim, T.[Level], T.IsMappedTrim, T.FdpTrimMappingId
+		T.DocumentId, T.ImportTrim, T.MarketId, T.DPCK, T.ProgrammeId, T.Gateway, T.TrimId, T.MappedTrim, T.[Level], T.IsMappedTrim, T.FdpTrimMappingId
 	END
 	
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
@@ -185,6 +190,9 @@ AS
 	
 	IF ISNULL(@PageSize, 0) = 0
 		SET @PageSize = @TotalRecords;
+		
+	IF @PageSize = 0
+		SET @PageSize = 100; -- In case we have no records
 	
 	SET @TotalPages = CEILING(@TotalRecords / CAST(@PageSize AS DECIMAL));
 	SET @MinIndex = ((@PageIndex - 1) * @PageSize) + 1;
@@ -196,6 +204,7 @@ AS
 		, T.FdpTrimMappingId
 		, T.ImportTrim
 		, T.BMC
+		, T.MarketId
 		, T.DPCK
 		, T.DocumentId
 		, T.ProgrammeId

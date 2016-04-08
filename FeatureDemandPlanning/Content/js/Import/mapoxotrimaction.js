@@ -43,11 +43,12 @@ model.MapOxoTrimAction = function (params) {
                 me.setSelectedTrimLevels();
             },
             enableCaseInsensitiveFiltering: true,
-            buttonWidth: 340
+            buttonWidth: 340,
+            maxHeight: 300
         });
     };
     me.getTrimIdentifier = function () {
-        return $("#" + me.getIdentifierPrefix() + "_DPCK").val();
+        return parseInt($("#" + me.getIdentifierPrefix() + "_TrimId").val());
     };
     me.getSelectedTrimLevels = function() {
         return privateStore[me.id].SelectedTrimLevels;

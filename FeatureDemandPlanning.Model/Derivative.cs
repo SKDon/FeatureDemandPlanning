@@ -15,6 +15,7 @@ namespace FeatureDemandPlanning.Model
         public ModelTransmission Transmission { get; set; }
 
         public bool IsMappedDerivative { get; set; }
+        public bool IsArchived { get; set; }
 
         public string Name
         {

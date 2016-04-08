@@ -1,4 +1,5 @@
 ﻿
+
 CREATE VIEW [dbo].[Fdp_Trim_VW] AS
 
 	SELECT 
@@ -12,7 +13,13 @@ CREATE VIEW [dbo].[Fdp_Trim_VW] AS
 		, T.[Level]
 		, M.Id				AS ModelId
 		, M.BMC
-		, T.DPCK
+		, CASE
+			WHEN DPCK.Market_Id = -1 THEN NULL
+			WHEN DPCK.Market_Id = 0 THEN NULL
+			ELSE DPCK.Market_Id
+		  END
+		  AS MarketId
+		, ISNULL(DPCK.DPACK, T.DPCK) AS DPCK
 		, T.Display_Order	AS DisplayOrder
 		, T.Last_Updated	AS UpdatedOn
 		, T.Updated_By		AS UpdatedBy
@@ -27,6 +34,8 @@ CREATE VIEW [dbo].[Fdp_Trim_VW] AS
 										AND M.Active		= 1
 	JOIN OXO_Programme_Trim		AS T	ON M.Trim_Id		= T.Id
 										AND T.Active		= 1
+	LEFT JOIN OXO_Item_Data_DPK AS DPCK	ON M.Id				= DPCK.Model_Id
+										AND D.Id			= DPCK.OXO_Doc_Id
 	WHERE
 	ISNULL(D.Archived, 0) = 0
 
@@ -43,6 +52,12 @@ CREATE VIEW [dbo].[Fdp_Trim_VW] AS
 		, T.[Level]
 		, M.Id				AS ModelId
 		, M.BMC
+		, CASE
+			WHEN DPCK.Market_Id = -1 THEN NULL
+			WHEN DPCK.Market_Id = 0 THEN NULL
+			ELSE DPCK.Market_Id
+		  END
+		  AS MarketId
 		, T.DPCK
 		, T.Display_Order	AS DisplayOrder
 		, T.Last_Updated	AS UpdatedOn
@@ -58,6 +73,8 @@ CREATE VIEW [dbo].[Fdp_Trim_VW] AS
 													AND M.Active		= 1
 	JOIN OXO_Archived_Programme_Trim		AS T	ON	D.Id			= T.Doc_Id
 													AND M.Trim_Id		= T.Id
+	LEFT JOIN OXO_Item_Data_DPK				AS DPCK	ON	M.Id			= DPCK.Model_Id
+													AND D.Id			= DPCK.OXO_Doc_Id
 	WHERE
 	ISNULL(D.Archived, 0) = 1
 	
@@ -74,6 +91,7 @@ CREATE VIEW [dbo].[Fdp_Trim_VW] AS
 		, T.TrimLevel			AS [Level]
 		, CAST(NULL AS INT)		AS ModelId
 		, T.BMC
+		, CAST(NULL AS INT)		AS MarketId
 		, T.DPCK
 		, L.[Level]				AS DisplayOrder
 		, T.UpdatedOn

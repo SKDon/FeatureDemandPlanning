@@ -145,14 +145,17 @@ namespace FeatureDemandPlanning.DataStore
             }
             foreach (var derivative in listDerivatives)
             {
-                if (derivative.BodyId.HasValue)
-                    derivative.Body = _bodyDataStore.ModelBodyGet(derivative.BodyId.Value);
+                
+                    if (derivative.BodyId.HasValue)
+                        derivative.Body = _bodyDataStore.ModelBodyGet(derivative.BodyId.Value, filter.DocumentId);
 
-                if (derivative.EngineId.HasValue)
-                    derivative.Engine = _engineDataStore.ModelEngineGet(derivative.EngineId.Value);
+                    if (derivative.EngineId.HasValue)
+                        derivative.Engine = _engineDataStore.ModelEngineGet(derivative.EngineId.Value, filter.DocumentId);
 
-                if (derivative.TransmissionId.HasValue)
-                    derivative.Transmission = _transmissionDataStore.ModelTransmissionGet(derivative.TransmissionId.Value);
+                    if (derivative.TransmissionId.HasValue)
+                        derivative.Transmission =
+                            _transmissionDataStore.ModelTransmissionGet(derivative.TransmissionId.Value, filter.DocumentId);
+                
             }
             return listDerivatives;
         }
@@ -253,8 +256,6 @@ namespace FeatureDemandPlanning.DataStore
         }
         public async Task<PagedResults<OxoDerivative>> ListOxoDerivatives(DerivativeMappingFilter filter)
         {
-            filter.IncludeAllDerivatives = true;
-            filter.OxoDerivativesOnly = true;
             return await Task.FromResult(_derivativeDataStore.FdpOxoDerivativeGetMany(filter));
         }
         public async Task<FdpDerivativeMapping> CopyFdpDerivativeMappingToDocument(FdpDerivativeMapping fdpDerivativeMapping, int targetDocumentId)

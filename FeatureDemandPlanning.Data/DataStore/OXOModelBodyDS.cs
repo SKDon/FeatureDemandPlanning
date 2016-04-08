@@ -82,6 +82,28 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
+        public ModelBody ModelBodyGet(int bodyId, int? documentId)
+        {
+            ModelBody retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@BodyId", bodyId, dbType: DbType.Int32);
+                    para.Add("@DocumentId", documentId, DbType.Int32);
+                    retVal = conn.Query<ModelBody>("dbo.Fdp_ModelBody_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
 
         public bool ModelBodySave(ModelBody obj)
         {

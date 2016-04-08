@@ -149,5 +149,28 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
+
+        public ModelTransmission ModelTransmissionGet(int transmissionId, int? documentId)
+        {
+            ModelTransmission retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@TransmissionId", transmissionId, DbType.Int32);
+                    para.Add("@DocumentId", documentId, DbType.Int32);
+                    retVal = conn.Query<ModelTransmission>("dbo.Fdp_ModelTransmission_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
     }
 }

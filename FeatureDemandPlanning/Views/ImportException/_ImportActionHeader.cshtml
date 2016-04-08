@@ -115,54 +115,9 @@
     @if (Model.CurrentAction == enums.ImportAction.MapOxoTrim)
     {
         var additionalData = Model.CurrentException.AdditionalData;
-        var modelElements = additionalData.Split('|');
-        var bmc = modelElements[0];
-        var dpck = modelElements[1];
-        var derivative = Model.AvailableDerivatives.FirstOrDefault(d => d.DerivativeCode == bmc);
-        var trimLevel = Model.AvailableTrim.FirstOrDefault(d => d.BMC == bmc && d.DPCK == dpck);
-
-        <div class="row">
-            <div class="col-xs-4 text-right">
-                <strong>BMC:</strong>
-            </div>
-            <div class="col-xs-8">
-                @bmc
-            </div>
-        </div>
-    <div class="row">
-        <div class="col-xs-4 text-right"><strong>DPCK:</strong></div>
-        <div class="col-xs-8">
-            @dpck
-        </div>
-    </div>
-
-    <div class="vertical-spacer"></div>
-
-        <div class="row">
-            <div class="col-xs-4 text-right">
-                <strong>Body:</strong>
-            </div>
-            <div class="col-xs-8">
-                @derivative.Body.Name
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-4 text-right">
-                <strong>Engine:</strong>
-            </div>
-            <div class="col-xs-8">
-                @derivative.Engine.Name
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-4 text-right">
-                <strong>Transmission:</strong>
-            </div>
-            <div class="col-xs-8">
-                @derivative.Transmission.Name
-            </div>
-        </div>
-        <div class="vertical-spacer"></div>
+        var trimId = int.Parse(additionalData);
+        
+        var trimLevel = Model.AvailableTrim.FirstOrDefault(t => t.TrimId == trimId);
 
         <div class="row">
             <div class="col-xs-4 text-right">
@@ -180,7 +135,15 @@
                 @trimLevel.Level
             </div>
         </div>
-       
+    <div class="row">
+        <div class="col-xs-4 text-right">
+            <strong>DPCK:</strong>
+        </div>
+        <div class="col-xs-8">
+            @(string.IsNullOrEmpty(trimLevel.DPCK) ? "-" : trimLevel.DPCK)
+        </div>
+    </div>
+
         <div class="vertical-spacer"></div>
     }
 

@@ -97,14 +97,13 @@ AS
 	-- If we have a worktray item for this document that is currently unprocessed and in an error state then 
 	-- reprocess the feature errors
 	
-	SELECT TOP 1 @FdpImportId = I.FdpImportId
+	SELECT TOP 1 @FdpImportId = Q.FdpImportId
 	FROM
-	Fdp_Import AS I
-	JOIN Fdp_ImportQueue AS Q ON I.FdpImportQueueId = Q.FdpImportQueueId
+	Fdp_ImportQueue_VW AS Q
 	WHERE
-	I.DocumentId = @DocumentId
+	Q.DocumentId = @DocumentId
 	AND
-	Q.FdpImportStatusId = 4
+	Q.FdpImportStatusId = 4;
 	
 	IF @FdpImportId IS NOT NULL
 	BEGIN

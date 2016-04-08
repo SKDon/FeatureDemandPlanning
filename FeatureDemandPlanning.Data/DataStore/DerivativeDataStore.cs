@@ -413,19 +413,96 @@ namespace FeatureDemandPlanning.DataStore
 
         public PagedResults<OxoDerivative> FdpOxoDerivativeGetMany(DerivativeMappingFilter filter)
         {
-            var results = FdpDerivativeMappingGetMany(filter);
-            var page = results.CurrentPage.Select(result => new OxoDerivative(result)).ToList();
+            PagedResults<FdpDerivativeMapping> interimResults;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    var totalRecords = 0;
+                    var totalDisplayRecords = 0;
+
+                    if (!string.IsNullOrEmpty(filter.CarLine))
+                    {
+                        para.Add("@CarLine", filter.CarLine, DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.ModelYear))
+                    {
+                        para.Add("@ModelYear", filter.ModelYear, DbType.String);
+                    }
+                    if (!string.IsNullOrEmpty(filter.Gateway))
+                    {
+                        para.Add("@Gateway", filter.Gateway, DbType.String);
+                    }
+                    if (filter.PageIndex.HasValue)
+                    {
+                        para.Add("@PageIndex", filter.PageIndex.Value, DbType.Int32);
+                    }
+                    if (filter.PageSize.HasValue)
+                    {
+                        para.Add("@PageSize", filter.PageSize.Value, DbType.Int32);
+                    }
+                    if (filter.SortIndex.HasValue)
+                    {
+                        para.Add("@SortIndex", filter.SortIndex.Value, DbType.Int32);
+                    }
+                    if (filter.SortDirection != SortDirection.NotSet)
+                    {
+                        var direction = filter.SortDirection == SortDirection.Descending ? "DESC" : "ASC";
+                        para.Add("@SortDirection", direction, DbType.String);
+                    }
+                    if (filter.IncludeAllDerivatives)
+                    {
+                        para.Add("@IncludeAllDerivatives", true, DbType.Boolean);
+                    }
+                    if (filter.OxoDerivativesOnly)
+                    {
+                        para.Add("@OxoDerivativesOnly", filter.OxoDerivativesOnly, DbType.Boolean);
+                    }
+                    para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
+                    para.Add("@TotalPages", DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", DbType.Int32, direction: ParameterDirection.Output);
+
+                    var dbResults = conn.Query<FdpDerivativeMapping>("dbo.Fdp_OxoDerivative_GetMany", para, commandType: CommandType.StoredProcedure);
+
+                    var fdpDerivativeMappings = dbResults as IList<FdpDerivativeMapping> ?? dbResults.ToList();
+                    if (fdpDerivativeMappings.Any())
+                    {
+                        totalRecords = para.Get<int>("@TotalRecords");
+                        totalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                    }
+                    interimResults = new PagedResults<FdpDerivativeMapping>
+                    {
+                        PageIndex = filter.PageIndex ?? 1,
+                        TotalRecords = totalRecords,
+                        TotalDisplayRecords = totalDisplayRecords,
+                        PageSize = filter.PageSize ?? totalRecords
+                    };
+
+                    var currentPage = fdpDerivativeMappings.ToList();
+
+                    interimResults.CurrentPage = currentPage;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            
+            var page = interimResults.CurrentPage.Select(result => new OxoDerivative(result)).ToList();
             return new PagedResults<OxoDerivative>
             {
-                PageIndex = results.PageIndex,
-                PageSize = results.PageSize,
-                TotalDisplayRecords = results.TotalDisplayRecords,
-                TotalFail = results.TotalFail,
-                TotalRecords = results.TotalRecords,
-                TotalSuccess = results.TotalSuccess,
+                PageIndex = interimResults.PageIndex,
+                PageSize = interimResults.PageSize,
+                TotalDisplayRecords = interimResults.TotalDisplayRecords,
+                TotalFail = interimResults.TotalFail,
+                TotalRecords = interimResults.TotalRecords,
+                TotalSuccess = interimResults.TotalSuccess,
                 CurrentPage = page
             };
-
         }
 
         public OxoDerivative BrochureModelCodeUpdate(OxoDerivative derivative)

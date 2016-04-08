@@ -324,8 +324,6 @@ namespace FeatureDemandPlanning.Controllers
                     DocumentId = parameters.DocumentId.GetValueOrDefault(),
                     ProgrammeId = parameters.ProgrammeId.GetValueOrDefault(),
                     Gateway = parameters.Gateway,
-                    BMC = trim.BMC,
-                    DPCK = trim.DPCK,
                     TrimId = trim.Id
                 };
 

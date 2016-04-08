@@ -36,6 +36,7 @@ AS
 		, EngineId	INT
 		, TransmissionId INT
 		, IsMappedDerivative BIT
+		, IsArchived BIT
 		, UpdatedOn DATETIME NULL
 		, UpdatedBy NVARCHAR(16) NULL
 		, FdpDerivativeMappingId INT NULL
@@ -53,6 +54,7 @@ AS
 		, EngineId
 		, TransmissionId
 		, IsMappedDerivative
+		, IsArchived
 		, UpdatedOn
 		, UpdatedBy
 		, FdpDerivativeMappingId
@@ -69,6 +71,7 @@ AS
 		, D.EngineId
 		, D.TransmissionId
 		, D.IsMappedDerivative
+		, D.IsArchived
 		, D.UpdatedOn
 		, D.UpdatedBy
 		, D.FdpDerivativeMappingId
@@ -76,6 +79,8 @@ AS
 	Fdp_DerivativeMapping_VW AS D
 	JOIN OXO_Programme_VW	 AS P ON D.ProgrammeId = P.Id
 	WHERE
+	--D.ImportDerivativeCode <> D.MappedDerivativeCode
+	--AND
 	(@CarLine IS NULL OR P.VehicleName = @CarLine)
 	AND
 	(@ModelYear IS NULL OR P.ModelYear = @ModelYear)
@@ -97,12 +102,15 @@ AS
 	)
 	ORDER BY
 	P.VehicleName, P.ModelYear, D.Gateway
-	
+
 	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
 	SELECT @TotalDisplayRecords = @TotalRecords;
 	
 	IF ISNULL(@PageSize, 0) = 0
 		SET @PageSize = @TotalRecords;
+		
+	IF @PageSize = 0
+		SET @PageSize = 100;
 	
 	SET @TotalPages = CEILING(@TotalRecords / CAST(@PageSize AS DECIMAL));
 	SET @MinIndex = ((@PageIndex - 1) * @PageSize) + 1;
@@ -121,6 +129,7 @@ AS
 		, D.EngineId
 		, D.TransmissionId
 		, D.IsMappedDerivative
+		, D.IsArchived
 		, D.UpdatedOn
 		, D.UpdatedBy
 

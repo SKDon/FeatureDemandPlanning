@@ -67,6 +67,7 @@ AS
 	FROM 
 	OXO_Doc								AS D
 	JOIN OXO_Models_VW					AS M	ON	D.Programme_Id				= M.Programme_Id
+												AND M.Active					= 1
 	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
 												AND M.ExportRow1 + ' ' + M.ExportRow2 
 																				= CUR.AdditionalData
@@ -117,6 +118,7 @@ AS
 	FROM 
 	OXO_Doc								AS D
 	JOIN OXO_Archived_Models_VW			AS M	ON	D.Id						= M.Doc_Id
+												AND M.Active					= 1
 	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
 												AND M.ExportRow1 + ' ' + M.ExportRow2 
 																				= CUR.AdditionalData
@@ -190,6 +192,8 @@ AS
 												AND D.MappedDerivativeCode		= EX.AdditionalData
 	WHERE 
 	D.DocumentId = @DocumentId
+	AND
+	D.ImportDerivativeCode <> D.MappedDerivativeCode -- Exclude the default (non-mapped items)
 	AND
 	I1.ImportDerivativeCode IS NULL
 	AND

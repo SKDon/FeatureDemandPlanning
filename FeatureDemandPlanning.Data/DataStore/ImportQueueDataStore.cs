@@ -561,7 +561,10 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpImportErrorExclusionId", fdpImportErrorExclusion.FdpImportErrorExclusionId.GetValueOrDefault(), DbType.Int32);
                     para.Add("@CDSId", CurrentCDSID, DbType.String);
 
-                    var results = conn.Query<FdpImportErrorExclusion>("Fdp_ImportErrorExclusion_Delete", para, commandType: CommandType.StoredProcedure);
+                    // Skip the first dataset which is the import queue from a child sproc
+                    var multiple = conn.QueryMultiple("Fdp_ImportErrorExclusion_Delete", para, commandType: CommandType.StoredProcedure);
+                    multiple.Read();
+                    var results = multiple.Read<FdpImportErrorExclusion>();
                     if (results.Any())
                     {
                         retVal = results.First();

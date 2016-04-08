@@ -4,10 +4,7 @@
 
 @{
     var additionalData = Model.CurrentException.AdditionalData;
-    var modelElements = additionalData.Split('|');
-    var bmc = modelElements[0];
-    var dpck = modelElements[1];
-    var trimLevel = Model.AvailableTrim.FirstOrDefault(d => d.BMC == bmc && d.DPCK == dpck);
+    var trimId = int.Parse(additionalData);
 }
 
 <div class="alert alert-info">
@@ -34,7 +31,7 @@
                 <label class="control-label col-sm-4" for="@(Model.IdentifierPrefix)_SelectTrimLevel">Historic Trim:</label>
                 <div class="col-sm-8">
                     <select class="form-control sm" id="@(Model.IdentifierPrefix)_TrimLevelList" multiple="multiple">
-                        @foreach (var importTrim in Model.AvailableImportTrimLevels.Where(i => i.BMC == bmc))
+                        @foreach (var importTrim in Model.AvailableImportTrimLevels)
                         {
                             <option value="@importTrim.Identifier">@importTrim.Identifier</option>
                         }
@@ -47,6 +44,6 @@
 </div>
 
 <form>
-    <input type="hidden" id="@(Model.IdentifierPrefix)_DPCK" value="@bmc|@dpck|@trimLevel.Id"/>
+    <input type="hidden" id="@(Model.IdentifierPrefix)_TrimId" value="@trimId"/>
 </form>
 

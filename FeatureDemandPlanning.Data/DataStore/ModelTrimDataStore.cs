@@ -216,8 +216,7 @@ namespace FeatureDemandPlanning.DataStore
                     {
                         para.Add("@FdpTrimId", trimMapping.FdpTrimId, DbType.Int32);
                     }
-                    para.Add("@DerivativeCode", trimMapping.BMC, DbType.String);
-
+                    
                     var results = conn.Query<FdpTrimMapping>("Fdp_TrimMapping_Save", para, commandType: CommandType.StoredProcedure);
                     if (results.Any())
                     {

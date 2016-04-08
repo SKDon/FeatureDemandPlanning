@@ -162,5 +162,29 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
+
+        public ModelEngine ModelEngineGet(int engineId, int? documentId)
+        {
+            ModelEngine retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@EngineId", engineId, DbType.Int32);
+                    para.Add("@DocumentId", documentId, DbType.Int32);
+                    
+                    retVal = conn.Query<ModelEngine>("dbo.Fdp_ModelEngine_Get", para, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+
+            return retVal;
+        }
     }
 }

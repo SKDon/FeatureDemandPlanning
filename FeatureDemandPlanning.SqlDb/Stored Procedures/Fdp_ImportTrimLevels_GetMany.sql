@@ -17,17 +17,15 @@ AS
 		, CAST(NULL AS DATETIME) AS UpdatedOn
 		, CAST(NULL AS NVARCHAR(16)) AS UpdatedBy
 		, CAST(NULL AS INT) AS FdpTrimMappingId
-		, I.BMC
-		, I.DPCK
+		, NULL AS BMC
+		, NULL AS DPCK
 	FROM
 	Fdp_Import_VW AS I 
 	WHERE
 	I.FdpImportQueueId = @FdpImportQueueId
 	AND
 	I.FdpImportId = @FdpImportId
-	AND
-	ISNULL(I.BMC, '') <> '' 
 	GROUP BY
-	I.DocumentId, I.CreatedOn, I.CreatedBy, I.DocumentId, I.ProgrammeId, I.Gateway, I.ImportTrim, I.BMC, I.DPCK
+	I.DocumentId, I.CreatedOn, I.CreatedBy, I.DocumentId, I.ProgrammeId, I.Gateway, I.ImportTrim
 	ORDER BY
 	Name
