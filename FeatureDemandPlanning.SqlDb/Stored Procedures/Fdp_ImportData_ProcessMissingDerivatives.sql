@@ -145,6 +145,17 @@ AS
 	
 	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;
 	
+	;WITH ImportDerivatives AS
+	(
+		SELECT ImportDerivativeCode
+		FROM Fdp_Import_VW AS I
+		WHERE 
+		I.FdpImportId = @FdpImportId
+		AND 
+		I.FdpImportQueueId = @FdpImportQueueId
+		GROUP BY 
+		ImportDerivativeCode
+	)
 	INSERT INTO Fdp_ImportError
 	(
 		  FdpImportQueueId
@@ -155,56 +166,57 @@ AS
 		, AdditionalData
 		, SubTypeId
 	)
-	SELECT
+	SELECT   
 		  @FdpImportQueueId AS FdpImportQueueId
 		, 0 AS LineNumber
 		, GETDATE() AS ErrorOn
 		, 3 AS FdpImportErrorTypeId -- Missing Derivative
-		, 'No historic data mapping to OXO BMC ''' + D.MappedDerivativeCode + ' - ' + REPLACE(D.Name, '#', '') + '''' AS ErrorMessage
-		, D.MappedDerivativeCode AS AdditionalData
+		, 'No historic data mapping to OXO BMC ''' + D.BMC + ' - ' + REPLACE(D.Name, '#', '') + '''' AS ErrorMessage
+		, D.BMC AS AdditionalData
 		, 302 AS SubTypeId
-	FROM Fdp_DerivativeMapping_VW AS D
-	LEFT JOIN 
-	(
-		SELECT FdpImportQueueId, ImportDerivativeCode
-		FROM Fdp_Import_VW AS I
-		WHERE 
-		I.FdpImportId = @FdpImportId
-		AND 
-		I.FdpImportQueueId = @FdpImportQueueId
-		GROUP BY 
-		FdpImportQueueId, ImportDerivativeCode
-	)
-	AS I1 ON D.ImportDerivativeCode = I1.ImportDerivativeCode
-	LEFT JOIN Fdp_ImportError	AS CUR	ON	CUR.FdpImportQueueId = @FdpImportQueueId
-											AND	D.MappedDerivativeCode	= CUR.AdditionalData
-											AND CUR.FdpImportErrorTypeId = 3
-											AND CUR.IsExcluded = 0
+	FROM 
+	Fdp_Derivative_VW					AS D
+	-- Where there is a mapping between the import BMC and the OXO BMC
+	LEFT JOIN Fdp_DerivativeMapping_VW	AS M	ON	D.DocumentId				= M.DocumentId
+												AND D.BMC						= M.MappedDerivativeCode
+												AND M.IsMappedDerivative		= 1
+	-- Where there is a direct mapping between the import BMC and the OXO BMC
+	LEFT JOIN ImportDerivatives			AS I	ON	D.BMC						= I.ImportDerivativeCode
+	-- The error doesn't already exist
+	LEFT JOIN Fdp_ImportError			AS CUR	ON	CUR.FdpImportQueueId		= @FdpImportQueueId
+												AND	D.BMC						= CUR.AdditionalData
+												AND CUR.FdpImportErrorTypeId	= 3
+												AND CUR.IsExcluded				= 0
 	-- Don't add if there are any active missing BMC errors
-	LEFT JOIN Fdp_ImportError   AS CUR2 ON	CUR2.FdpImportQueueId = @FdpImportQueueId
-										AND	CUR2.FdpImportErrorTypeId = 3
-										AND CUR2.SubTypeId = 301
-										AND CUR2.IsExcluded = 0
+	LEFT JOIN Fdp_ImportError			AS CUR2 ON	CUR2.FdpImportQueueId		= @FdpImportQueueId
+												AND	CUR2.FdpImportErrorTypeId	= 3
+												AND CUR2.SubTypeId				= 301
+												AND CUR2.IsExcluded				= 0
+	-- Don't add if there is an exclusion
 	LEFT JOIN Fdp_ImportErrorExclusion	AS EX	ON	EX.DocumentId				= @DocumentId
 												AND EX.FdpImportErrorTypeId		= 3
 												AND EX.SubTypeId				= 302
 												AND EX.IsActive					= 1
-												AND D.MappedDerivativeCode		= EX.AdditionalData
-	WHERE 
+												AND D.BMC						= EX.AdditionalData
+	WHERE
 	D.DocumentId = @DocumentId
 	AND
-	D.ImportDerivativeCode <> D.MappedDerivativeCode -- Exclude the default (non-mapped items)
+	-- There is no mapping for the OXO derivative
+	M.FdpDerivativeMappingId IS NULL
 	AND
-	I1.ImportDerivativeCode IS NULL
+	-- And there is no direct relationship between the import data and the derivative
+	I.ImportDerivativeCode IS NULL
 	AND
 	CUR.FdpImportErrorId IS NULL
 	AND
-	ISNULL(D.MappedDerivativeCode, '') <> ''
+	ISNULL(D.BMC, '') <> ''
 	AND
 	CUR2.FdpImportErrorId IS NULL 
 	AND
 	EX.FdpImportErrorExclusionId IS NULL
-	ORDER BY 
+	GROUP BY
+	D.BMC, D.Name
+	ORDER BY
 	ErrorMessage;
 	
 	SET @ErrorCount = @ErrorCount + @@ROWCOUNT;

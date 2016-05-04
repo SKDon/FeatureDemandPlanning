@@ -4,24 +4,54 @@
   , @MarketGroupId		INT
   , @ModelIds			NVARCHAR(MAX)
 )
-RETURNS TABLE
-AS
-RETURN
+RETURNS @TakeRateData TABLE 
 (
+	  FeatureId INT NULL
+	, FdpFeatureId INT NULL
+	, FeaturePackId INT NULL
+	, ModelId INT NULL
+	, FdpModelId INT NULL
+	, Volume INT
+	, PercentageTakeRate DECIMAL(5,4)
+	, IsOrphanedData BIT
+)
+AS
+BEGIN
 	-- We still need all features in the list regardless as to whether we have take rate information
 	-- We still need all models in the list regardless as to whether we have take rate information
 	-- This is why we need to cross join on the models list and use all features that may be available
 	
 	-- Feature take rates
 
-	WITH Models AS
+	DECLARE @Models AS TABLE
 	(
-		SELECT 
+		  ModelId INT NULL
+		, StringIdentifier NVARCHAR(20) NULL
+		, IsFdpModel BIT
+	)
+	INSERT INTO @Models
+	(
+		  ModelId
+		, StringIdentifier
+		, IsFdpModel
+	)
+	SELECT 
 		  ModelId
 		, StringIdentifier
 		, IsFdpModel
 		FROM 
-		dbo.fn_Fdp_SplitModelIds(@ModelIds)
+		dbo.fn_Fdp_SplitModelIds(@ModelIds);
+		
+	INSERT INTO @TakeRateData
+	(
+		  FeatureId
+		, FdpFeatureId
+		, FeaturePackId
+		, ModelId
+		, FdpModelId
+		, Volume
+		, PercentageTakeRate
+		, IsOrphanedData
 	)
 	SELECT 
 		  AF.FeatureId
@@ -36,39 +66,19 @@ RETURN
 	Fdp_VolumeHeader_VW						AS H
 	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	H.ProgrammeId		= MK.Programme_Id
 	JOIN Fdp_AllFeatures_VW					AS AF	ON	H.FdpVolumeHeaderId	= AF.FdpVolumeHeaderId
-	CROSS APPLY Models						AS M 
+	CROSS APPLY @Models						AS M 
 	LEFT JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
 		    										AND MK.Market_Id		= D.MarketId
-													AND 
-													(
-														(M.IsFdpModel = 0 AND M.ModelId = D.ModelId)
-														OR
-														(M.IsFdpModel = 1 AND M.ModelId = D.FdpModelId)
-													)
-													AND
-													(
-														(AF.FeatureId IS NOT NULL AND AF.FeatureId = D.FeatureId)
-														OR
-														(AF.FdpFeatureId IS NOT NULL AND AF.FdpFeatureId = D.FdpFeatureId)
-													)
-	LEFT JOIN Fdp_Feature_VW				AS F	ON	H.ProgrammeId		= F.ProgrammeId
-													AND H.Gateway			= F.Gateway
-													AND 
-													(
-														(AF.FeatureId = F.FeatureId)
-														OR
-														(AF.FdpFeatureId = F.FdpFeatureId)
-													)																				
+													AND M.ModelId			= D.ModelId
+													AND AF.FeatureId		= D.FeatureId
+	LEFT JOIN Fdp_Feature_VW				AS F	ON	H.DocumentId		= F.DocumentId
+													AND AF.FeatureId		= F.FeatureId																			
 	WHERE 
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	(@MarketGroupId IS NULL OR MK.Market_Group_Id = @MarketGroupId)
 	AND
-	(
-		AF.FeatureId IS NOT NULL
-		OR
-		AF.FdpFeatureId IS NOT NULL
-	)
+	AF.FeatureId IS NOT NULL
 	GROUP BY
 	  M.ModelId
 	, M.IsFdpModel
@@ -124,4 +134,5 @@ RETURN
 	--, AF.FeaturePackId
 	--, P.Id
 	
-)
+	RETURN
+END

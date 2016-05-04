@@ -68,7 +68,6 @@ namespace FeatureDemandPlanning.DataStore
                             para.Add("@LineNumber", importQueue.LineNumber, DbType.Int32);
                         }
 
-
                         var results = conn.Query<TakeRateSummary>("dbo.Fdp_ImportData_Process", para,
                             commandType: CommandType.StoredProcedure, commandTimeout: 600, transaction: tran);
                         var takeRateSummaries = results as IList<TakeRateSummary> ?? results.ToList();
@@ -553,7 +552,7 @@ namespace FeatureDemandPlanning.DataStore
         public FdpImportErrorExclusion FdpImportErrorExclusionDelete(FdpImportErrorExclusion fdpImportErrorExclusion)
         {
             FdpImportErrorExclusion retVal = new EmptyFdpImportErrorExclusion();
-            using (IDbConnection conn = DbHelper.GetDBConnection())
+            using (var conn = DbHelper.GetDBConnection())
             {
                 try
                 {
@@ -563,7 +562,7 @@ namespace FeatureDemandPlanning.DataStore
 
                     // Skip the first dataset which is the import queue from a child sproc
                     var multiple = conn.QueryMultiple("Fdp_ImportErrorExclusion_Delete", para, commandType: CommandType.StoredProcedure);
-                    multiple.Read();
+                    //multiple.Read();
                     var results = multiple.Read<FdpImportErrorExclusion>();
                     if (results.Any())
                     {

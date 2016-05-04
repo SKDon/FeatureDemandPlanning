@@ -7,6 +7,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 
 	SELECT 
@@ -20,7 +21,7 @@ CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 		, DV.TransmissionId 
 		, DV.BMC				AS ImportDerivativeCode
 		, DV.BMC				AS MappedDerivativeCode
-		, CAST(CASE WHEN M.FdpDerivativeMappingId IS NOT NULL THEN 1 ELSE 0 END AS BIT)	AS IsMappedDerivative
+		, CAST(0 AS BIT)	AS IsMappedDerivative
 		, DV.IsFdpDerivative
 		, DV.FdpDerivativeId
 		, CAST(NULL AS INT)	AS FdpDerivativeMappingId
@@ -28,16 +29,17 @@ CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 		, DV.UpdatedBy
 		, DV.IsArchived
 		, DV.Name
+		, 0 AS Section
 		
 	FROM
 	OXO_Doc								AS D
 	JOIN OXO_Programme					AS P	ON	D.Programme_Id		= P.Id
 	JOIN Fdp_Derivative_VW				AS DV	ON	D.Id				= DV.DocumentId
-	LEFT JOIN Fdp_DerivativeMapping		AS M	ON	D.Id				= M.DocumentId
-												AND	DV.BodyId			= M.BodyId
-												AND DV.EngineId			= M.EngineId
-												AND DV.TransmissionId	= M.TransmissionId
-												AND M.IsActive			= 1
+	--LEFT JOIN Fdp_DerivativeMapping		AS M	ON	D.Id				= M.DocumentId
+	--											AND	DV.BodyId			= M.BodyId
+	--											AND DV.EngineId			= M.EngineId
+	--											AND DV.TransmissionId	= M.TransmissionId
+	--											AND M.IsActive			= 1
 	WHERE
 	P.Active = 1
 	--AND
@@ -68,6 +70,7 @@ CREATE VIEW [dbo].[Fdp_DerivativeMapping_VW] AS
 		, M.UpdatedBy
 		, DV.IsArchived
 		, DV.Name
+		, 1 AS Section
 		
 	FROM
 	OXO_Doc							AS D

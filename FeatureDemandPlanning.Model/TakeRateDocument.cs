@@ -17,6 +17,11 @@ namespace FeatureDemandPlanning.Model
         public TakeRateResultMode Mode { get; set; }
         public int TotalDerivatives { get; set; }
         public IEnumerable<TakeRateSummary> TakeRateSummary { get; set; }
+        public int? PageIndex { get; set; }
+        public int? PageSize { get; set; }
+        public int TotalPages { get; set; }
+        public int TotalRecords { get; set; }
+        public int TotalDisplayRecords { get; set; }
 
         public TakeRateDocument()
         {

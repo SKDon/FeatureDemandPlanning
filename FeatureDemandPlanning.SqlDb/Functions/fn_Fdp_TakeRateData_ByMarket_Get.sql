@@ -71,36 +71,17 @@ BEGIN
 	
 	LEFT JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
 		    										AND MK.Market_Id		= D.MarketId
-													AND 
-													(
-														(M.IsFdpModel = 0 AND M.ModelId = D.ModelId)
-														OR
-														(M.IsFdpModel = 1 AND M.ModelId = D.FdpModelId)
-													)
-													AND
-													(
-														(AF.FeatureId IS NOT NULL AND AF.FeatureId = D.FeatureId)
-														OR
-														(AF.FdpFeatureId IS NOT NULL AND AF.FdpFeatureId = D.FdpFeatureId)
-													)
+													AND M.ModelId			= D.ModelId
+													AND AF.FeatureId IS NOT NULL AND AF.FeatureId = D.FeatureId
 	LEFT JOIN Fdp_Feature_VW				AS F	ON	H.ProgrammeId		= F.ProgrammeId
 													AND H.Gateway			= F.Gateway
-													AND 
-													(
-														(AF.FeatureId = F.FeatureId)
-														OR
-														(AF.FdpFeatureId = F.FdpFeatureId)
-													)																				
+													AND AF.FeatureId		= F.FeatureId											
 	WHERE 
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	(@MarketId IS NULL OR MK.Market_Id = @MarketId)
 	AND
-	(
-		AF.FeatureId IS NOT NULL
-		OR
-		AF.FdpFeatureId IS NOT NULL
-	)
+	AF.FeatureId IS NOT NULL
 	GROUP BY
 	  M.ModelId
 	, M.IsFdpModel
@@ -130,12 +111,7 @@ BEGIN
 	
 	LEFT JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
 		    										AND MK.Market_Id		= D.MarketId
-													AND 
-													(
-														(M.IsFdpModel = 0 AND M.ModelId = D.ModelId)
-														OR
-														(M.IsFdpModel = 1 AND M.ModelId = D.FdpModelId)
-													)
+													AND M.ModelId			= D.ModelId
 													AND AF.FeaturePackId	= D.FeaturePackId
 													AND D.FeatureId			IS NULL
 	LEFT JOIN OXO_Programme_Pack			AS P	ON	H.ProgrammeId		= P.Programme_Id

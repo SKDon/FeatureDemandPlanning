@@ -1,7 +1,9 @@
-﻿CREATE FUNCTION [dbo].[fn_Fdp_AvailableModelByMarket_GetMany]
+﻿CREATE FUNCTION [dbo].[fn_Fdp_AvailableModelByMarketWithPaging_GetMany]
 (
 	  @FdpVolumeHeaderId	INT
 	, @MarketId				INT
+	, @PageIndex			INT
+	, @PageSize				INT
 )
 RETURNS 
 @AvailableModel TABLE 
@@ -33,10 +35,27 @@ RETURNS
 	, LastUpdated		DATETIME		NULL
 	, Shape				NVARCHAR(100)	NULL
 	, KD				BIT				NULL
-	, Available			BIT
+	, Available				BIT
+	, TotalRecords			INT
+	, TotalDisplayRecords	INT
+	, TotalPages			INT
 )
 AS
 BEGIN
+	IF @PageIndex IS NULL 
+		SET @PageIndex = 1;
+	
+	DECLARE @MinIndex				AS INT;
+	DECLARE @MaxIndex				AS INT;
+	DECLARE @TotalRecords			AS INT = 0;
+	DECLARE @TotalPages				AS INT = 0;
+	DECLARE @TotalDisplayRecords	AS INT = 0;
+	DECLARE @PageRecords			AS TABLE
+	(
+		  RowIndex INT IDENTITY(1, 1)
+		, StringIdentifier NVARCHAR(20)
+	);
+
 	;WITH OxoData AS
 	(
 		SELECT OD.Model_Id 
@@ -50,6 +69,69 @@ BEGIN
 		AND Active = 1
 	)
 	, FdpData AS
+	(
+		SELECT DISTINCT FdpModelId
+		FROM Fdp_TakeRateSummaryByModelAndMarket_VW
+		WHERE
+		FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		(@MarketId IS NULL OR MarketId = @MarketId)
+		AND
+		FdpModelId IS NOT NULL
+	)
+	INSERT INTO @PageRecords(StringIdentifier)
+	SELECT 
+		  MODELS.StringIdentifier 
+	FROM
+	(	
+		SELECT DISTINCT 
+			 'O' + CAST(M.Id AS NVARCHAR(10)) AS StringIdentifier
+			, M.DisplayOrder
+			, CAST(
+				CASE 
+					WHEN A.Model_Id IS NOT NULL THEN 1 
+					WHEN @MarketId IS NULL THEN 1
+					ELSE 0 
+				END AS BIT) AS IsAvailable
+   		FROM 
+		Fdp_VolumeHeader_VW AS H
+		CROSS APPLY dbo.FN_Programme_Models_Get(H.ProgrammeId, H.DocumentId)  M
+		LEFT JOIN OxoData A ON M.ID = A.Model_Id
+		WHERE
+		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	    
+		UNION
+	    
+		SELECT 
+			   'F' + CAST(M.FdpModelId AS NVARCHAR(10)) AS StringIdentifier
+			  , M.DisplayOrder
+			  , CAST(1 AS BIT) AS Available
+		FROM
+		Fdp_VolumeHeader_VW		AS H
+		JOIN Fdp_Model_VW		AS M	ON	H.ProgrammeId	= M.ProgrammeId
+										AND H.Gateway		= M.Gateway
+		JOIN FdpData			AS D	ON	M.FdpModelId	= D.FdpModelId
+		WHERE
+		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+    )
+    AS MODELS
+    WHERE
+    IsAvailable = 1
+    ORDER BY
+	MODELS.DisplayOrder;
+	
+	SELECT @TotalRecords = COUNT(1) FROM @PageRecords;
+
+	IF ISNULL(@PageSize, 0) = 0
+		SET @PageSize = @TotalRecords;
+	
+	SET @TotalPages = CEILING(@TotalRecords / CAST(@PageSize AS DECIMAL));
+	SET @MinIndex = ((@PageIndex - 1) * @PageSize) + 1;
+	SET @MaxIndex = @MinIndex + (@PageSize - 1);
+	
+	SELECT @TotalDisplayRecords = COUNT(1) FROM @PageRecords WHERE RowIndex BETWEEN @MinIndex AND @MaxIndex;
+	
+	WITH FdpData AS
 	(
 		SELECT DISTINCT FdpModelId
 		FROM Fdp_TakeRateSummaryByModelAndMarket_VW
@@ -89,7 +171,10 @@ BEGIN
 		, LastUpdated		
 		, Shape				
 		, KD				
-		, Available			
+		, Available
+		, TotalRecords
+		, TotalDisplayRecords
+		, TotalPages			
 	)
 	SELECT 
 		  MODELS.StringIdentifier 
@@ -120,7 +205,12 @@ BEGIN
 		, MODELS.Shape
 		, MODELS.KD
 		, CAST(CASE WHEN @MarketId IS NULL THEN 1 ELSE MODELS.Available END AS BIT) AS Available
+		, @TotalRecords
+		, @TotalDisplayRecords
+		, @TotalPages
 	FROM
+	@PageRecords AS P
+	JOIN 
 	(	
 		SELECT DISTINCT 
 		'O' + CAST(M.Id AS NVARCHAR(10)) AS StringIdentifier,
@@ -150,15 +240,10 @@ BEGIN
 		M.Last_Updated  AS LastUpdated,
 		Shape,
 		M.KD,
-		CASE 
-			WHEN A.Model_Id IS NOT NULL THEN 1
-			WHEN @MarketId IS NULL THEN 1
-			ELSE 1
-		END AS Available         
+		CAST(1 AS BIT) AS Available         
 		FROM 
 		Fdp_VolumeHeader_VW AS H
 		CROSS APPLY dbo.FN_Programme_Models_Get(H.ProgrammeId, H.DocumentId)  M
-		LEFT JOIN OxoData A ON M.ID = A.Model_Id
 		WHERE
 		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	    
@@ -201,7 +286,9 @@ BEGIN
 		WHERE
 		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
     )
-    AS MODELS
+    AS MODELS ON P.StringIdentifier = MODELS.StringIdentifier
+    WHERE
+	P.RowIndex BETWEEN @MinIndex AND @MaxIndex
     ORDER BY
 	MODELS.DisplayOrder;
 	

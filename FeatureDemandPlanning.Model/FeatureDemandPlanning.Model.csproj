@@ -124,6 +124,7 @@
     <Compile Include="Empty\EmptyRawTakeRateData.cs" />
     <Compile Include="Enumerations\EmailEvent.cs" />
     <Compile Include="Enumerations\MarketReviewStatus.cs" />
+    <Compile Include="Enumerations\PageAction.cs" />
     <Compile Include="Enumerations\TakeRateStatus.cs" />
     <Compile Include="Enumerations\UserAdminAction.cs" />
     <Compile Include="Enumerations\ValidationRule.cs" />

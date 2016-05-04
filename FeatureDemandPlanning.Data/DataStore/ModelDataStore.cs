@@ -30,8 +30,20 @@ namespace FeatureDemandPlanning.DataStore
 
                     para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    para.Add("@PageIndex", filter.PageIndex, DbType.Int32);
+                    para.Add("@PageSize", filter.PageSize, DbType.Int32);
+
+                    para.Add("@TotalPages", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    para.Add("@TotalDisplayRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                     retVal = conn.Query<FdpModel>("dbo.Fdp_AvailableModelByMarket_GetMany", para, commandType: CommandType.StoredProcedure);
+                    if (retVal != null && retVal.Any())
+                    {
+                        filter.TotalRecords = para.Get<int>("@TotalRecords");
+                        filter.TotalDisplayRecords = para.Get<int>("@TotalDisplayRecords");
+                        filter.TotalPages = para.Get<int>("@TotalPages");
+                    }
                 }
                 catch (Exception ex)
                 {

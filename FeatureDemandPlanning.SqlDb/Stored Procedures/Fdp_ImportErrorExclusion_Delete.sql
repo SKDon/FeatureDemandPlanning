@@ -5,21 +5,22 @@ AS
 	SET NOCOUNT ON;
 	
 	BEGIN TRY
-		BEGIN TRANSACTION;
-	
 		DECLARE @FdpImportId AS INT;
+		DECLARE @FdpImportQueueId AS INT;
 		DECLARE @DocumentId AS INT;
 		DECLARE @FdpImportErrorTypeId AS INT;
+	
+		BEGIN TRANSACTION;
 		
 		SELECT TOP 1 @DocumentId = DocumentId
 		FROM Fdp_ImportErrorExclusion 
 		WHERE FdpImportErrorExclusionId = @FdpImportErrorExclusionId;
 		
-		SELECT TOP 1 @FdpImportId = Q.FdpImportId
+		SELECT TOP 1 @FdpImportId = Q.FdpImportId, @FdpImportQueueId = Q.FdpImportQueueId
 		FROM
 		Fdp_ImportQueue_VW AS Q
 		WHERE
-		Q.FdpImportStatusId = 4
+		Q.FdpImportStatusId IN (2, 4)
 		AND
 		Q.DocumentId = @DocumentId;
 		
@@ -29,14 +30,14 @@ AS
 			  UpdatedBy = @CDSId
 		WHERE
 		FdpImportErrorExclusionId = @FdpImportErrorExclusionId;
-
+		
+		EXEC Fdp_ImportErrorExclusion_Get @FdpImportErrorExclusionId;
+		
 		-- Update any imports that have yet to complete processing and not cancelled re-enabling any of the same errors
 		
 		EXEC Fdp_ImportData_Process @FdpImportId = @FdpImportId;
 		
 		COMMIT TRANSACTION;
-	
-		EXEC Fdp_ImportErrorExclusion_Get @FdpImportErrorExclusionId;
 	
 	END TRY
 	BEGIN CATCH

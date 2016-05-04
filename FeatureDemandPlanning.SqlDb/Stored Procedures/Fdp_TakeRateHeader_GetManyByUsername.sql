@@ -96,7 +96,7 @@ AS
 										AND D.Programme_Id		= I.ProgrammeId
 										AND D.Gateway			= I.Gateway
 		JOIN Fdp_ImportQueue	AS Q	ON I.FdpImportQueueId	= Q.FdpImportQueueId
-		JOIN Fdp_ImportError	AS E	ON Q.FdpImportQueueId	= E.FdpImportQueueId
+		LEFT JOIN Fdp_ImportError	AS E	ON Q.FdpImportQueueId	= E.FdpImportQueueId
 										AND E.IsExcluded		= 0
 		GROUP BY
 		H.FdpVolumeHeaderId
@@ -119,7 +119,7 @@ AS
 		, S.[Status]
 		, S.[Description] AS StatusDescription
 		, V.VersionString AS [Version]
-		, CAST(CASE WHEN E.NumberOfErrors = 0 THEN 1 ELSE 0 END AS BIT) AS IsComplete
+		, CAST(CASE WHEN E.NumberOfErrors = 0 THEN 1 ELSE 0 END AS BIT) AS IsCompleted
 		
 	FROM @PageRecords			AS PA
 	JOIN Fdp_VolumeHeader		AS T	ON	PA.TakeRateId			= T.FdpVolumeHeaderId

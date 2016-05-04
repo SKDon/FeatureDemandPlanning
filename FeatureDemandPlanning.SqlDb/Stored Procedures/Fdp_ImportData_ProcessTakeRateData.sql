@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE Fdp_ImportData_ProcessTakeRateData
+﻿CREATE PROCEDURE [dbo].[Fdp_ImportData_ProcessTakeRateData]
 	@FdpImportId AS INT
 AS
 	SET NOCOUNT ON;
@@ -525,7 +525,7 @@ AS
 
 	-- % Take at market level	
 	
-	UPDATE S SET PercentageTakeRate = Volume / CAST(@TotalVolume AS DECIMAL(10, 4))
+	UPDATE S SET PercentageTakeRate = CASE WHEN @TotalVolume = 0 THEN 0 ELSE Volume / CAST(@TotalVolume AS DECIMAL(10, 4)) END
 	FROM
 	Fdp_TakeRateSummary AS S
 	WHERE

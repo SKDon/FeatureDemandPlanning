@@ -58,3 +58,5 @@ AS
 	BEGIN
 		EXEC Fdp_ImportQueue_UpdateStatus @ImportQueueId = @FdpImportQueueId, @ImportStatusId = 4
 	END
+	
+	EXEC Fdp_ImportQueue_Get @FdpImportQueueId = @FdpImportQueueId;

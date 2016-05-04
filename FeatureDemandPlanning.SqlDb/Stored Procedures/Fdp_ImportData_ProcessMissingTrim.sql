@@ -76,18 +76,19 @@ AS
 		T.IsActive = 1															
 		GROUP BY
 		T.DocumentId, T.TrimId, T.Name, T.Abbreviation, T.[Level], T.DisplayOrder
-	),
-	ImportTrimLevels AS
-	(
-		SELECT @DocumentId AS DocumentId, ImportTrim
-		FROM Fdp_Import_VW AS I
-		WHERE 
-		I.FdpImportId = @FdpImportId
-		AND 
-		I.FdpImportQueueId = @FdpImportQueueId
-		GROUP BY 
-		ImportTrim
 	)
+	--,
+	--ImportTrimLevels AS
+	--(
+	--	SELECT @DocumentId AS DocumentId, ImportTrim
+	--	FROM Fdp_Import_VW AS I
+	--	WHERE 
+	--	I.FdpImportId = @FdpImportId
+	--	AND 
+	--	I.FdpImportQueueId = @FdpImportQueueId
+	--	GROUP BY 
+	--	ImportTrim
+	--)
 	INSERT INTO Fdp_ImportError
 	(
 		  FdpImportQueueId

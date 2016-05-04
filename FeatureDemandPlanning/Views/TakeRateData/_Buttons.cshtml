@@ -1,4 +1,5 @@
-﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+﻿@using FeatureDemandPlanning.Model.Empty
+@using enums = FeatureDemandPlanning.Model.Enumerations
 
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
@@ -28,3 +29,100 @@
     }
 </div>
 
+<div class="btn-group pull-right">
+    <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_FirstPage" href="@RenderUrlForPage(enums.PageAction.FirstPage)" @RenderDisabled(enums.PageAction.FirstPage) data-content="Go to the first page of model information" data-toggle="popover"><i class="glyphicon glyphicon-step-backward"></i></a>
+    <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_PrevPage" href="@RenderUrlForPage(enums.PageAction.PreviousPage)" @RenderDisabled(enums.PageAction.PreviousPage) data-content="Go to the previous page of model information" data-toggle="popover"><i class="glyphicon glyphicon-backward"></i></a>
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Page @Model.Document.PageIndex of @Model.Document.TotalPages
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 5)">5 Models per Page</a></li>
+            <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 10)">10 Models per Page</a></li>
+            <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 20)">20 Models per Page</a></li>
+            <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 50)">50 Models per Page</a></li>
+        </ul>
+    </div>
+    <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_NextPage" href="@RenderUrlForPage(enums.PageAction.NextPage)" @RenderDisabled(enums.PageAction.NextPage) data-content="Go to the next page of model information" data-toggle="popover"><i class="glyphicon glyphicon-forward"></i></a>
+    <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_LastPage" href="@RenderUrlForPage(enums.PageAction.LastPage)" @RenderDisabled(enums.PageAction.LastPage) data-content="Go to the last page of model information" data-toggle="popover"><i class="glyphicon glyphicon-step-forward"></i></a>
+</div>
+
+@helper RenderDisabled(enums.PageAction action)
+{
+    if (action == enums.PageAction.FirstPage && Model.Document.PageIndex == 1)
+    {
+        @:disabled="disabled"
+    }
+    else if (action == enums.PageAction.PreviousPage && Model.Document.PageIndex == 1)
+    {
+        @:disabled="disabled"
+    }
+    else if (action == enums.PageAction.NextPage && Model.Document.PageIndex == Model.Document.TotalPages)
+    {
+        @:disabled="disabled"
+    }
+    else if (action == enums.PageAction.LastPage && Model.Document.PageIndex == Model.Document.TotalPages)
+    {
+        @:disabled="disabled"
+    }
+    else
+    {
+        @:""
+    }
+}
+
+@helper RenderUrlForPage(enums.PageAction action, int pageSize)
+{
+    var pageIndex = Model.Document.PageIndex.GetValueOrDefault();
+   
+    switch (action)
+    {
+        case enums.PageAction.FirstPage:
+            pageIndex = 1;
+            break;
+        case enums.PageAction.PreviousPage:
+            pageIndex = pageIndex - 1;
+            break;
+        case enums.PageAction.NextPage:
+            pageIndex = pageIndex + 1;
+            break;
+        case enums.PageAction.LastPage:
+            pageIndex = Model.Document.TotalPages;
+            break;
+        default:
+            throw new ArgumentOutOfRangeException("action", action, null);
+    }
+    if (pageIndex < 1)
+    {
+        pageIndex = 1;
+    }
+
+    if (Model.Document.Mode == enums.TakeRateResultMode.Raw)
+    {
+        if (!(Model.Document.Market is EmptyMarket))
+        {
+            @Url.RouteUrl("TakeRateDataByMarketRaw", new { takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id, pageIndex, pageSize })
+        }
+        else
+        {
+            @Url.RouteUrl("TakeRateDataRaw", new { takeRateId = Model.Document.TakeRateId, pageIndex, pageSize })
+        }
+    }
+    else
+    {
+        if (!(Model.Document.Market is EmptyMarket))
+        {
+            @Url.RouteUrl("TakeRateDataByMarket", new { takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id, pageIndex, pageSize })
+        }
+        else
+        {
+            @Url.RouteUrl("TakeRateData", new { takeRateId = Model.Document.TakeRateId, pageIndex, pageSize })
+        }
+    }
+}
+
+@helper RenderUrlForPage(enums.PageAction action)
+{
+    @RenderUrlForPage(action, Model.Document.PageSize.GetValueOrDefault())
+}

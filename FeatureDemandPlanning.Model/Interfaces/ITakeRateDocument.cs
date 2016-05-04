@@ -17,5 +17,8 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         IEnumerable<TakeRateSummary> TakeRateSummary { get; set; }
         TakeRateData TakeRateData { get; set; }
+
+        int? PageIndex { get; set; }
+        int? PageSize { get; set; }
     }
 }

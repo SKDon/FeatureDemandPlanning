@@ -1,5 +1,7 @@
 ﻿@using System.Data
 @using System.Text
+@using FeatureDemandPlanning.Helpers
+@using FeatureDemandPlanning.Model.Empty
 @using enums = FeatureDemandPlanning.Model.Enumerations
 
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
@@ -110,7 +112,7 @@
             modelClassName = "";
         }
         <td class="text-center cross-tab-data-item  @modelClassName @RenderDataClass(modelIdentifier, featureRow)" data-feature="@featureIdentifier" data-model="@modelIdentifier">
-            <div class="@RenderEditableClass()" data-target="@marketIdentifier|@modelIdentifier|@featureIdentifier">
+            <div class="@RenderEditableClass(modelIdentifier, featureRow)" data-target="@marketIdentifier|@modelIdentifier|@featureIdentifier">
                 @RenderDataItem(availableModel.StringIdentifier, featureRow)
             </div>
 
@@ -141,13 +143,7 @@
         .FirstOrDefault();
 
 
-    var parsedFeatureApplicability = featureApplicability
-        .Replace("*", string.Empty)
-        .Replace("(", string.Empty)
-        .Replace(")", string.Empty)
-        .Replace("1-", string.Empty)
-        .Replace("2-", string.Empty)
-        .Replace("3-", string.Empty);
+    var parsedFeatureApplicability = OxoHelper.ParseFeatureApplicability(featureApplicability);
         
     // If volume
     // 1. If no value and optional or standard (-)
@@ -191,9 +187,18 @@
     @dataText
 }
 
-@helper RenderEditableClass()
+@helper RenderEditableClass(string modelIdentifier, DataRow dataItem)
 {
-    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket) && Model.AllowEdit)
+    var rowIdentity = dataItem.Field<long?>("Id");
+    var featureApplicability =
+        Model.Document.TakeRateData.FeatureApplicabilityData.Where(fa => fa.Field<long?>("Id") == rowIdentity)
+        .Select(fa => fa.IsNull(modelIdentifier) ? string.Empty : fa.Field<string>(modelIdentifier))
+        .FirstOrDefault();
+
+    var parsedFeatureApplicability = OxoHelper.ParseFeatureApplicability(featureApplicability);
+
+    // Standard and non-applicable features cannot be edited. They are either zero or set to 100% or set as a combination of options in an exclusive feature group.
+    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket) && Model.AllowEdit && parsedFeatureApplicability != "NA" && parsedFeatureApplicability != "S")
     {
         @("editable")
     }
@@ -294,6 +299,13 @@
 
 @helper RenderDataClass(string modelIdentifier, DataRow dataItem)
 {
+    // If we are viewing all markets, the feature applicability does not apply
+    // Therefore do not colour code the cells
+    if (Model.Document.Market is EmptyMarket)
+    {
+        @("");
+        return;
+    }
     var rowIdentity = dataItem.Field<long?>("Id");
     var featureApplicability =
         Model.Document.TakeRateData.FeatureApplicabilityData.Where(fa => fa.Field<long?>("Id") == rowIdentity)

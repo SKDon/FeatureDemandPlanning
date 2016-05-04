@@ -49,7 +49,6 @@ model.Page = function (models) {
         me.configureChangeset();
         me.loadChangeset();
         me.configureDataTables();
-        me.configureCellEditing();
         me.configureRowHighlight();
     };
     me.persistData = function () {
@@ -562,6 +561,8 @@ model.Page = function (models) {
                 selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
             }
         }
+
+        me.configureCellEditing();
     };
     me.revertData = function(revertedData) {
         for (var i = 0; i < revertedData.Reverted.length; i++) {
@@ -604,16 +605,13 @@ model.Page = function (models) {
 
         $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", true);
         $("#" + me.getIdentifierPrefix() + "_Undo").prop("disabled", true);
-        //$("#" + me.getIdentifierPrefix() + "_MarketReview").prop("disabled", true);
-        //$("#" + me.getIdentifierPrefix() + "_SubmitMarketReview").prop("disabled", true);
-        //$("#" + me.getIdentifierPrefix() + "_ApproveMarketReview").prop("disabled", true);
-        //$("#" + me.getIdentifierPrefix() + "_RejectMarketReview").prop("disabled", true);
 
         me.loadValidation();
 
-        if (changesetData.Changes.length === 0)
+        if (changesetData.Changes.length === 0) {
+            me.configureCellEditing();
             return;
-
+        }
         me.confirmLoadChangeset(changesetData);
     };
     me.revertChangeset = function () {
@@ -950,6 +948,11 @@ model.Page = function (models) {
         $("#" + prefix + "_SubmitMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
         $("#" + prefix + "_ApproveMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
         $("#" + prefix + "_RejectMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
+
+        $("#" + prefix + "_FirstPage").popover({ trigger: "hover", title: "First Page", placement: "auto bottom" });
+        $("#" + prefix + "_PrevPage").popover({ trigger: "hover", title: "Previous Page", placement: "auto bottom" });
+        $("#" + prefix + "_NextPage").popover({ trigger: "hover", title: "Next Page", placement: "auto bottom" });
+        $("#" + prefix + "_LastPage").popover({ trigger: "hover", title: "Last Page", placement: "auto bottom" });
     };
     me.configureDataTables = function () {
 

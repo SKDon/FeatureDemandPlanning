@@ -31,6 +31,11 @@ namespace FeatureDemandPlanning.Model.Filters
         // When updating comments for items
         public string Comment { get; set; }
 
+        // Additional paging support for take rate files
+        public int TotalPages { get; set; }
+        public int TotalRecords { get; set; }
+        public int TotalDisplayRecords { get; set; }
+
         public TakeRateFilter()
         {
             Mode = TakeRateResultMode.PercentageTakeRate;
@@ -86,6 +91,8 @@ namespace FeatureDemandPlanning.Model.Filters
                 Comment = parameters.Comment,
                 MarketReviewStatus = parameters.MarketReviewStatus,
                 Filter = parameters.Filter,
+                PageSize = parameters.PageSize,
+                PageIndex = parameters.PageIndex
             };
 
             if (!string.IsNullOrEmpty(parameters.ModelIdentifier))

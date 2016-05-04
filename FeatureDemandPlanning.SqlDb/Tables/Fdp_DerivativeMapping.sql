@@ -12,14 +12,13 @@
     [IsActive]               BIT            CONSTRAINT [DF_Fdp_DerivativeMapping_IsActive] DEFAULT ((1)) NOT NULL,
     [UpdatedOn]              DATETIME       NULL,
     [UpdatedBy]              NVARCHAR (16)  NULL,
-    [DocumentId] INT NOT NULL, 
-    CONSTRAINT [PK_FdpDerivativeMapping] PRIMARY KEY CLUSTERED ([FdpDerivativeMappingId] ASC),
-    CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Programme] FOREIGN KEY ([ProgrammeId]) REFERENCES [dbo].[OXO_Programme] ([Id]),
-    CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Programme_Body] FOREIGN KEY ([BodyId]) REFERENCES [dbo].[OXO_Programme_Body] ([Id]),
-    CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Programme_Engine] FOREIGN KEY ([EngineId]) REFERENCES [dbo].[OXO_Programme_Engine] ([Id]), 
-    CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Doc] FOREIGN KEY ([DocumentId]) REFERENCES [dbo].[OXO_Doc]([Id]),
-    --CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Programme_Transmission] FOREIGN KEY ([TransmissionId]) REFERENCES [dbo].[OXO_Programme_Transmission] ([Id])
+    [DocumentId]             INT            NOT NULL,
+    CONSTRAINT [PK_FdpDerivativeMapping] PRIMARY KEY CLUSTERED ([FdpDerivativeMappingId] ASC) WITH (FILLFACTOR = 90),
+    CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Doc] FOREIGN KEY ([DocumentId]) REFERENCES [dbo].[OXO_Doc] ([Id]),
+    CONSTRAINT [FK_Fdp_DerivativeMapping_OXO_Programme] FOREIGN KEY ([ProgrammeId]) REFERENCES [dbo].[OXO_Programme] ([Id])
 );
+
+
 
 
 

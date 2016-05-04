@@ -82,6 +82,7 @@ page.ExceptionsPage = function (models) {
                 callback(json);
                 me.updatePaging();
                 me.updateTotals();
+                me.updateButtons();
             },
             "error": function (jqXHR, textStatus, errorThrown) {
                 alert(errorThrown);
@@ -150,6 +151,7 @@ page.ExceptionsPage = function (models) {
                 $(document).trigger("Results", me.getSummary());
                 me.bindContextMenu();
                 $("#pnlImportExceptions").show();
+
             }
         });
 
@@ -256,7 +258,7 @@ page.ExceptionsPage = function (models) {
             me.exceptionTypeSelectedEventHandler(e);
             e.preventDefault();
         });
-        $("#" + prefix + "_ProcessTakeRate").unbind("click").on("click", function (e) {
+        $("#" + prefix + "_ProcessTakeRates").unbind("click").on("click", function (e) {
             //$(this).attr("disabled", "disabled").html("Processing...Wait");
            
             me.processTakeRates();
@@ -358,6 +360,17 @@ page.ExceptionsPage = function (models) {
         var total = info.recordsTotal;
         $(".results-total").html(total + " Exceptions");
     };
+    me.updateButtons = function() {
+        var info = $("#tblImportExceptions").DataTable().page.info();
+        var prefix = me.getIdentifierPrefix();
+        if (info.recordsTotal === 0) {
+            $("#" + prefix + "_RefreshWorktray").hide();
+            $("#" + prefix + "_ProcessTakeRates").show();
+        } else {
+            $("#" + prefix + "_RefreshWorktray").show();
+            $("#" + prefix + "_ProcessTakeRates").hide();
+        }
+    }
     me.processTakeRates = function() {
         var params = $.extend({}, me.getParameters(), {
             "ExceptionId": 0,

@@ -447,7 +447,11 @@ namespace FeatureDemandPlanning.Controllers
             var queuedItem = await DataContext.Import.GetImportQueue(filter);
             await DataContext.Import.ProcessTakeRateData(queuedItem);
 
-            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
+            queuedItem = await DataContext.Import.GetImportQueue(filter);
+
+            return Json(queuedItem.HasErrors ? 
+                JsonActionResult.GetFailure("Import file still contains errors, unable to process take rate data") : 
+                JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
         [HandleErrorWithJson]
         public async Task<ActionResult> IgnoreException(ImportExceptionParameters parameters)

@@ -208,6 +208,17 @@ namespace FeatureDemandPlanning.Model.ViewModel
             {
                 Document = (TakeRateDocument) TakeRateDocument.FromFilter(filter), Configuration = context.ConfigurationSettings
             };
+            takeRateModel.Document.PageIndex = filter.PageIndex;
+            takeRateModel.Document.PageSize = filter.PageSize;
+
+            if (!takeRateModel.Document.PageIndex.HasValue)
+            {
+                takeRateModel.Document.PageIndex = 1;
+            }
+            if (!takeRateModel.Document.PageSize.HasValue)
+            {
+                takeRateModel.Document.PageSize = context.ConfigurationSettings.GetInteger("TakeRateDataPageSize");
+            }
 
             await HydrateOxoDocument(context, takeRateModel);
             await HydrateFdpVolumeHeader(context, takeRateModel);
@@ -702,23 +713,36 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 TakeRateId = forVolume.TakeRateId, 
                 ProgrammeId = forVolume.UnderlyingOxoDocument.ProgrammeId,
                 Gateway = forVolume.UnderlyingOxoDocument.Gateway, 
-                DocumentId = forVolume.UnderlyingOxoDocument.Id
+                DocumentId = forVolume.UnderlyingOxoDocument.Id,
+                PageSize = forVolume.PageSize,
+                PageIndex = forVolume.PageIndex
             };
 
             if (!(forVolume.Market is EmptyMarket))
             {
                 filter.MarketId = forVolume.Market.Id;
-                filteredModels = (await context.Market.ListAvailableModelsByMarket(filter)).Where(m => m.Available);
             }
-            else if (!(forVolume.MarketGroup is EmptyMarketGroup))
-            {
-                filter.MarketGroupId = forVolume.MarketGroup.Id;
-                filteredModels = (await context.Market.ListAvailableModelsByMarketGroup(filter)).Where(m => m.Available);
-            }
-            else
-            {
-                filteredModels = forVolume.Vehicle.AvailableModels;
-            }
+            filteredModels = (await context.Market.ListAvailableModelsByMarket(filter));
+            //if (!(forVolume.Market is EmptyMarket))
+            //{
+            //    filter.MarketId = forVolume.Market.Id;
+            //    filteredModels = (await context.Market.ListAvailableModelsByMarket(filter)).Where(m => m.Available);
+            //}
+            //else if (!(forVolume.MarketGroup is EmptyMarketGroup))
+            //{
+            //    filter.MarketGroupId = forVolume.MarketGroup.Id;
+            //    filteredModels = (await context.Market.ListAvailableModelsByMarketGroup(filter)).Where(m => m.Available);
+            //}
+            //else
+            //{
+            //    filteredModels = forVolume.Vehicle.AvailableModels;
+            //}
+
+            // Bit of a hack here. We have introduced model level paging and the easiest way to return the page values is in the original filter object
+
+            forVolume.TotalRecords = filter.TotalRecords;
+            forVolume.TotalDisplayRecords = filter.TotalDisplayRecords;
+            forVolume.TotalPages = filter.TotalPages;
 
             return filteredModels;
         }

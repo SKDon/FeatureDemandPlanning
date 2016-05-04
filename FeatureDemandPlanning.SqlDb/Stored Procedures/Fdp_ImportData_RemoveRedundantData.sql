@@ -51,8 +51,6 @@ AS
 	
 	SET @NoOfImportsCancelled = @@ROWCOUNT;
 	
-	SELECT * FROM @ImportItems
-	
 	UPDATE Q 
 		SET FdpImportStatusId = 5 -- Cancelled
 	FROM Fdp_ImportQueue	AS Q
@@ -81,15 +79,6 @@ AS
 		SELECT FdpImportId FROM @ImportItems
 	)
 	
-	-- Remove from the queue
-	
-	DELETE FROM Fdp_ImportQueue
-	WHERE
-	FdpImportQueueId IN 
-	(
-		SELECT FdpImportQueueId FROM @ImportItems
-	);
-	
 	-- Remove the import header
 	
 	DELETE FROM Fdp_Import
@@ -97,6 +86,15 @@ AS
 	FdpImportId IN 
 	(
 		SELECT FdpImportId FROM @ImportItems
+	);
+	
+	-- Remove from the queue
+	
+	DELETE FROM Fdp_ImportQueue
+	WHERE
+	FdpImportQueueId IN 
+	(
+		SELECT FdpImportQueueId FROM @ImportItems
 	);
 	
 	SET @Message = CAST(@NoOfImportsCancelled AS NVARCHAR(10)) + ' imports cancelled';

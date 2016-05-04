@@ -23,6 +23,9 @@ namespace FeatureDemandPlanning.Model.Parameters
 
         public FdpChangeset Changeset { get; set; }
 
+        public int? PageSize { get; set; }
+        public int? PageIndex { get; set; }
+
         public TakeRateParameters()
         {
             Action = TakeRateDataItemAction.NotSet;
@@ -80,6 +83,8 @@ namespace FeatureDemandPlanning.Model.Parameters
                         DocumentId,
                         Comment
                     };
+                case TakeRateDataItemAction.Powertrain:
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

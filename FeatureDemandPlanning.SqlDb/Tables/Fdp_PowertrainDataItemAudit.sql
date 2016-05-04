@@ -5,9 +5,11 @@
     [FdpPowertrainDataItemId]      INT            NOT NULL,
     [Volume]                       INT            NOT NULL,
     [PercentageTakeRate]           DECIMAL (5, 4) NOT NULL,
-    CONSTRAINT [PK_Fdp_PowertrainDataItemAudit] PRIMARY KEY CLUSTERED ([FdpPowertrainDataItemId] ASC),
+    CONSTRAINT [PK_Fdp_PowertrainDataItemAudit_1] PRIMARY KEY CLUSTERED ([FdpPowertrainDataItemAuditId] ASC),
     CONSTRAINT [FK_Fdp_PowertrainDataItemAudit_Fdp_PowertrainDataItem] FOREIGN KEY ([FdpPowertrainDataItemId]) REFERENCES [dbo].[Fdp_PowertrainDataItem] ([FdpPowertrainDataItemId])
 );
+
+
 
 
 GO
