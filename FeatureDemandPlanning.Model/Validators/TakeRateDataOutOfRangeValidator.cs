@@ -21,6 +21,7 @@ namespace FeatureDemandPlanning.Model.Validators
                     d => d.PercentageTakeRate,
                     d => d.FeatureDescription,
                     d => d.Model)
+                .WithState(d => new ValidationState(ValidationRule.TakeRateOutOfRange, d))
                 .LessThanOrEqualTo(1)
                 .WithMessage(
                     UpperLimitMessage,

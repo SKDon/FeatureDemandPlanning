@@ -89,8 +89,8 @@ namespace FeatureDemandPlanning.Model.Validators
             RuleForEach(d => d.EfgGroupings)
                 .SetValidator(new EfgNonStandardFeatureValidator());
 
-            RuleForEach(d => d.EfgGroupings)
-                .SetValidator(new EfgOnlyOneValidator());
+            //RuleForEach(d => d.EfgGroupings)
+            //    .SetValidator(new EfgOnlyOneValidator());
         }
     }
 }

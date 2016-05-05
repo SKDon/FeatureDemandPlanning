@@ -6,6 +6,7 @@
         public int MarketId { get; set; }
         public string Market { get; set; }
         public int ModelId { get; set; }
+        public int? FeatureId { get; set; }
         public string Model { get; set; }
         public string ExclusiveFeatureGroup { get; set; }
         public decimal TotalPercentageTakeRate { get; set; }

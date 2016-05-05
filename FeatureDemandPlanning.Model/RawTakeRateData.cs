@@ -109,7 +109,8 @@ namespace FeatureDemandPlanning.Model
                     ExclusiveFeatureGroup = g.Key.ExclusiveFeatureGroup,
                     TotalPercentageTakeRate = g.Sum(p => p.PercentageTakeRate),
                     HasStandardFeatureInGroup = g.Any(d => d.IsStandardFeatureInGroup),
-                    NumberOfItemsWithTakeRate = g.Count(d => d.PercentageTakeRate > 0)
+                    NumberOfItemsWithTakeRate = g.Count(d => d.PercentageTakeRate > 0),
+                    FeatureId = GetFirstFeatureIdentifierInGroup(g)
                 };
 
             _grouping = grouping;
@@ -117,6 +118,21 @@ namespace FeatureDemandPlanning.Model
             return _grouping;
         }
 
+        private static int? GetFirstFeatureIdentifierInGroup(IEnumerable<RawTakeRateDataItem> groupItems)
+        {
+            var standardFeature = groupItems.FirstOrDefault(d => d.IsStandardFeatureInGroup);
+
+            if (standardFeature != null)
+                return standardFeature.FeatureId;
+
+            var optionalFeature = groupItems.OrderBy(d => d.FeatureCode).FirstOrDefault();
+            if (optionalFeature != null)
+            {
+                return optionalFeature.FeatureId;
+            }
+
+            return null;
+        }
         private IEnumerable<FeaturePack> CalculateFeaturePacks()
         {
             if (!DataItems.Any())

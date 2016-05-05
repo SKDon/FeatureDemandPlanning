@@ -21,14 +21,14 @@ AS
 	DECLARE @ModelTotals		NVARCHAR(MAX) = N'';
 	DECLARE @OxoModelIds		NVARCHAR(MAX) = N'';
 
-	CREATE TABLE #FeatureApplicability
-	(
-		  FeatureId			INT				NULL
-		, FeaturePackId		INT				NULL
-		, ModelId			INT				NULL
-		, OxoCode			NVARCHAR(100)	NULL
-		, StringIdentifier	NVARCHAR(10)	NULL
-	);
+	--CREATE TABLE #FeatureApplicability
+	--(
+	--	  FeatureId			INT				NULL
+	--	, FeaturePackId		INT				NULL
+	--	, ModelId			INT				NULL
+	--	, OxoCode			NVARCHAR(100)	NULL
+	--	, StringIdentifier	NVARCHAR(10)	NULL
+	--);
 	CREATE TABLE #RawTakeRateData
 	(
 		  FeatureId		INT NULL
@@ -159,23 +159,23 @@ AS
 		FROM 
 		dbo.fn_Fdp_TakeRateData_ByMarketGroup_Get(@FdpVolumeHeaderId, @MarketGroupId, @ModelIds) AS TR;
 		
-		INSERT INTO #FeatureApplicability
-		(
-			  FeatureId		
-			, FeaturePackId		
-			, ModelId		
-			, OxoCode		
-			, StringIdentifier
-		) 
-		SELECT 
-			  Feature_Id
-			, NULL
-			, Model_Id
-			, MAX(OXO_Code)
-			, 'O' + CAST(Model_Id AS NVARCHAR(10))
-		FROM dbo.FN_OXO_Data_Get_FBM_MarketGroup(@DocumentId, @MarketGroupId, @OxoModelIds)
-		GROUP BY
-		Model_Id, Feature_Id
+		--INSERT INTO #FeatureApplicability
+		--(
+		--	  FeatureId		
+		--	, FeaturePackId		
+		--	, ModelId		
+		--	, OxoCode		
+		--	, StringIdentifier
+		--) 
+		--SELECT 
+		--	  Feature_Id
+		--	, NULL
+		--	, Model_Id
+		--	, MAX(OXO_Code)
+		--	, 'O' + CAST(Model_Id AS NVARCHAR(10))
+		--FROM dbo.FN_OXO_Data_Get_FBM_MarketGroup(@DocumentId, @MarketGroupId, @OxoModelIds)
+		--GROUP BY
+		--Model_Id, Feature_Id
 	END
 	ELSE
 	BEGIN
@@ -204,34 +204,34 @@ AS
 		FROM 
 		dbo.fn_Fdp_TakeRateData_ByMarket_Get(@FdpVolumeHeaderId, @ObjectId, @ModelIds) AS TR;
 		
-		INSERT INTO #FeatureApplicability
-		(
-			  FeatureId		
-			, FeaturePackId		
-			, ModelId		
-			, OxoCode		
-			, StringIdentifier
-		) 
-		SELECT 
-			  Feature_Id
-			, NULL
-			, Model_Id
-			, MAX(OXO_Code)
-			, 'O' + CAST(Model_Id AS NVARCHAR(10))
-		FROM 
-		dbo.FN_OXO_Data_Get_FBM_Market(@DocumentId, @MarketGroupId, @ObjectId, @OxoModelIds)
-		GROUP BY
-		Feature_Id, Model_Id
+		--INSERT INTO #FeatureApplicability
+		--(
+		--	  FeatureId		
+		--	, FeaturePackId		
+		--	, ModelId		
+		--	, OxoCode		
+		--	, StringIdentifier
+		--) 
+		--SELECT 
+		--	  Feature_Id
+		--	, NULL
+		--	, Model_Id
+		--	, MAX(OXO_Code)
+		--	, 'O' + CAST(Model_Id AS NVARCHAR(10))
+		--FROM 
+		--dbo.FN_OXO_Data_Get_FBM_Market(@DocumentId, @MarketGroupId, @ObjectId, @OxoModelIds)
+		--GROUP BY
+		--Feature_Id, Model_Id
 	END
 	
 	CREATE NONCLUSTERED INDEX Ix_TmpRawTakeRateData_Code ON #RawTakeRateData
 	(
 		FeatureId, FdpFeatureId, FeaturePackId, Volume, PercentageTakeRate
 	);
-	CREATE CLUSTERED INDEX Ix_TmpFeatureApplicability ON #FeatureApplicability
-	(
-		FeatureId, ModelId
-	);
+	--CREATE CLUSTERED INDEX Ix_TmpFeatureApplicability ON #FeatureApplicability
+	--(
+	--	FeatureId, ModelId
+	--);
 
 	WITH TakeRateDataByFeature AS
 	(		
@@ -286,7 +286,7 @@ AS
 			, ISNULL(D.Volume, 0)									AS Volume
 			, D.PercentageTakeRate
 			, CASE 
-				WHEN D.FeatureId IS NOT NULL THEN O.OxoCode
+				WHEN D.FeatureId IS NOT NULL THEN FA.Applicability
 				WHEN D.FdpFeatureId IS NOT NULL THEN 'NA'
 				WHEN D.FeatureId IS NULL AND D.FeaturePackId IS NOT NULL THEN 'P'
 			  END													AS OxoCode
@@ -303,12 +303,8 @@ AS
 		Fdp_VolumeHeader_VW						AS H
 		JOIN OXO_Programme_VW					AS P		ON	H.ProgrammeId		= P.Id
 		JOIN #RawTakeRateData					AS D		ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-		JOIN #Model								AS M		ON	
-															(
-																(M.IsFdpModel = 0 AND D.ModelId = M.ModelId)
-																OR
-																(M.IsFdpModel = 1 AND D.FdpModelId = M.ModelId)
-															)
+		JOIN #Model								AS M		ON	D.ModelId = M.ModelId
+															
 		-- Join on the feature tables without reference to the programme information as we may have data for uncoded features
 		-- and need to at least return basic feature information
 		LEFT JOIN OXO_Feature_Ext				AS OXOF		ON	D.FeatureId		= OXOF.Id
@@ -338,8 +334,15 @@ AS
 															AND D.FeaturePackId	= FP.PackId													
 															
 		-- Feature applicability only applies to OXO models and features
-		LEFT JOIN #FeatureApplicability			AS O		ON	D.FeatureId		= O.FeatureId
-															AND	D.ModelId		= O.ModelId
+		LEFT JOIN Fdp_FeatureApplicability		AS FA		ON	H.DocumentId	= FA.DocumentId
+															AND 
+															(
+																(@Mode = 'MG' AND FA.MarketId IS NULL)
+																OR
+																(@Mode = 'M' AND FA.MarketId = @ObjectId)
+															)
+															AND D.FeatureId		= FA.FeatureId
+															AND	D.ModelId		= FA.ModelId
 		WHERE
 		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND 
@@ -745,5 +748,5 @@ AS
 	
 	DROP TABLE #TakeRateDataByFeature;
 	DROP TABLE #RawTakeRateData;
-	DROP TABLE #FeatureApplicability;
+	--DROP TABLE #FeatureApplicability;
 	DROP TABLE #Model;

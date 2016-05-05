@@ -9,15 +9,15 @@ namespace FeatureDemandPlanning.Model.Validators
             RuleFor(d => d.DataItems)
                 .SetCollectionValidator(new TakeRateDataOutOfRangeValidator());
             RuleFor(d => d.DataItems)
-                .SetCollectionValidator(new StandardFeature100PercentValidator())
-                .Where(d => d.IsStandardFeatureInGroup);
-            RuleFor(d => d.DataItems)
                 .SetCollectionValidator(new NonApplicableFeature0PercentValidator())
                 .Where(d => d.IsNonApplicableFeatureInGroup);
             RuleFor(d => d)
-                .SetValidator(new VolumeForFeatureGreaterThanModelValidator());
-            RuleFor(d => d)
                 .SetValidator(new TakeRateForEfgValidator());
+            RuleFor(d => d.DataItems)
+                .SetCollectionValidator(new StandardFeature100PercentValidator())
+                .Where(d => d.IsStandardFeatureInGroup);
+            RuleFor(d => d)
+                .SetValidator(new VolumeForFeatureGreaterThanModelValidator());
             RuleFor(d => d)
                 .SetValidator(new TakeRateForFeaturePackValidator());
             RuleFor(d => d.DataItems)

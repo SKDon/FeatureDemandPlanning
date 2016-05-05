@@ -142,35 +142,40 @@ namespace FeatureDemandPlanning.Controllers
         // The feature mix will then need to be recalculated
 	    private async void CalculateFeatureChange(TakeRateParameters parameters)
 	    {
-            var changeset = parameters.Changeset;
-            var dataChange = parameters.Changeset.Changes.First();
-            
-            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            var rawData = await DataContext.TakeRate.GetRawData(filter);
-           
-            var modelId = dataChange.GetModelId();
-            var modelVolumes = rawData.SummaryItems.Where(s => s.ModelId.HasValue || s.FdpModelId.HasValue).Sum(s => s.Volume);
+	        var changeset = parameters.Changeset;
+	        var dataChange = parameters.Changeset.Changes.First();
 
-            // Get the original values from raw data
+	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+	        var rawData = await DataContext.TakeRate.GetRawData(filter);
 
-            var modelVolume = dataChange.IsFdpModel ? rawData.GetFdpModelVolume(modelId) : rawData.GetModelVolume(modelId);
-            var existingFeature = rawData.DataItems.FirstOrDefault(d => IsMatchingModel(dataChange, d) && IsMatchingFeature(dataChange, d));
-            var existingFeatureVolumes = rawData.DataItems.Where(d => !IsMatchingModel(dataChange, d) && IsMatchingFeature(dataChange, d)).Sum(d => d.Volume);
-            var existingFeatureMix = rawData.FeatureMixItems.FirstOrDefault(f => IsMatchingFeatureMix(dataChange, f));
+	        var modelId = dataChange.GetModelId();
+	        var modelVolumes =
+	            rawData.SummaryItems.Where(s => s.ModelId.HasValue || s.FdpModelId.HasValue).Sum(s => s.Volume);
 
-            switch (dataChange.Mode)
-            {
-                case TakeRateResultMode.PercentageTakeRate:
-                    dataChange.Volume = (int)(modelVolume * decimal.Divide(dataChange.PercentageTakeRate.GetValueOrDefault(), 100));
-                    break;
-                case TakeRateResultMode.Raw:
-                    dataChange.PercentageTakeRate = (dataChange.Volume / (decimal)modelVolume) * 100;
-                    break;
-                case TakeRateResultMode.NotSet:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+	        // Get the original values from raw data
+
+	        var modelVolume = dataChange.IsFdpModel ? rawData.GetFdpModelVolume(modelId) : rawData.GetModelVolume(modelId);
+	        var existingFeature =
+	            rawData.DataItems.FirstOrDefault(d => IsMatchingModel(dataChange, d) && IsMatchingFeature(dataChange, d));
+	        var existingFeatureVolumes =
+	            rawData.DataItems.Where(d => !IsMatchingModel(dataChange, d) && IsMatchingFeature(dataChange, d))
+	                .Sum(d => d.Volume);
+	        var existingFeatureMix = rawData.FeatureMixItems.FirstOrDefault(f => IsMatchingFeatureMix(dataChange, f));
+
+	        switch (dataChange.Mode)
+	        {
+	            case TakeRateResultMode.PercentageTakeRate:
+	                dataChange.Volume =
+	                    (int) (modelVolume*decimal.Divide(dataChange.PercentageTakeRate.GetValueOrDefault(), 100));
+	                break;
+	            case TakeRateResultMode.Raw:
+	                dataChange.PercentageTakeRate = (dataChange.Volume/(decimal) modelVolume)*100;
+	                break;
+	            case TakeRateResultMode.NotSet:
+	                break;
+	            default:
+	                throw new ArgumentOutOfRangeException();
+	        }
 
 	        // Get the original values
 
@@ -185,7 +190,9 @@ namespace FeatureDemandPlanning.Controllers
 
 	        var featureMixDataChange = new DataChange(dataChange)
 	        {
-	            PercentageTakeRate = ((existingFeatureVolumes + dataChange.Volume)/(decimal) modelVolumes)*100, Volume = existingFeatureVolumes + dataChange.Volume, ModelIdentifier = string.Empty
+	            PercentageTakeRate = ((existingFeatureVolumes + dataChange.Volume)/(decimal) modelVolumes)*100,
+	            Volume = existingFeatureVolumes + dataChange.Volume,
+	            ModelIdentifier = string.Empty
 	        };
 	        if (existingFeatureMix != null)
 	        {
@@ -194,6 +201,43 @@ namespace FeatureDemandPlanning.Controllers
 	            featureMixDataChange.FdpTakeRateFeatureMixId = existingFeatureMix.FdpTakeRateFeatureMixId;
 	        }
 	        changeset.Changes.Add(featureMixDataChange);
+
+	        // If this is a feature within an exclusive feature group and not the standard feature, recalculate the percentage take and volume
+	        // standard feature as the model volume less the volume of any options in the group
+
+	        if (existingFeature == null) return;
+            var efgItems = rawData.DataItems.Where(g => IsMatchingModel(dataChange, g) && g.ExclusiveFeatureGroup == existingFeature.ExclusiveFeatureGroup).ToList();
+            var optionalFeatures = efgItems.Where(g => !g.IsStandardFeatureInGroup).ToList();
+	        var standardFeature = efgItems.FirstOrDefault(g => g.IsStandardFeatureInGroup);
+	        
+	        if (standardFeature != null && optionalFeatures.Any() && standardFeature.FeatureId != existingFeature.FeatureId)
+	        {
+	            var optionalFeatureVolume =
+	                optionalFeatures.Where(o => o.FeatureIdentifier != dataChange.FeatureIdentifier).Sum(o => o.Volume) + dataChange.Volume.GetValueOrDefault();
+                var optionalFeaturePercentageTakeRate =
+                    optionalFeatures.Where(o => o.FeatureIdentifier != dataChange.FeatureIdentifier).Sum(o => o.PercentageTakeRate) + dataChange.PercentageTakeRateAsFraction.GetValueOrDefault();
+                
+                var standardFeatureDataChange = new DataChange(dataChange)
+	            {
+	                FeatureIdentifier = "O" + standardFeature.FeatureId,
+                    Volume = modelVolume - optionalFeatureVolume,
+                    PercentageTakeRate = (1 - optionalFeaturePercentageTakeRate) * 100,
+    
+	            };
+                changeset.Changes.Add(standardFeatureDataChange);
+
+                var existingStandardFeatureVolumes =
+                rawData.DataItems.Where(d => !IsMatchingModel(standardFeatureDataChange, d) && IsMatchingFeature(standardFeatureDataChange, d))
+                    .Sum(d => d.Volume);
+
+                var standardFeatureMixDataChange = new DataChange(standardFeatureDataChange)
+                {
+                    PercentageTakeRate = ((existingStandardFeatureVolumes + standardFeatureDataChange.Volume) / (decimal)modelVolumes) * 100,
+                    Volume = existingStandardFeatureVolumes + standardFeatureDataChange.Volume,
+                    ModelIdentifier = string.Empty
+                };
+                changeset.Changes.Add(standardFeatureMixDataChange);
+	        }
 	    }
 
         // For a feature change, we simply re-compute the % take if the volume has been altered and vice versa

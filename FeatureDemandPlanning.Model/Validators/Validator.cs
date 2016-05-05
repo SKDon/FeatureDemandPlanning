@@ -122,6 +122,7 @@ namespace FeatureDemandPlanning.Model.Validators
             TakeRateId = group.TakeRateId;
             MarketId = group.MarketId;
             ModelId = group.ModelId;
+            FeatureId = group.FeatureId;
             ExclusiveFeatureGroup = group.ExclusiveFeatureGroup;
         }
         public ValidationState(ValidationRule rule, FeaturePack pack) : this(rule)

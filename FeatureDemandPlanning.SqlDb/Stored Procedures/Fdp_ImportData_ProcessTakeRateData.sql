@@ -110,6 +110,14 @@ AS
 		WHERE
 		FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	END
+	
+	-- Add feature applicability information for the OXO document, we can flatten this information to improve performance, as it is only ever 
+	-- considered to be read only
+	
+	SET @Message = 'Calculating feature applicability...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+	
+	EXEC Fdp_FeatureApplicability_Calculate @FdpVolumeHeaderId = @FdpVolumeHeaderId;
 
 	-- If there are no active errors for the import...
 	-- For every entry in the import, create an entry in FDP_VolumeDataItem
@@ -572,6 +580,20 @@ AS
 										AND F.FdpVolumeHeaderId = M.FdpVolumeHeaderId
 	WHERE
 	F.FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	
+	-- Non-applicable features should be 0% - Override any take rate information where this is not the case
+	
+	SET @Message = 'Resetting non-applicable features'
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
+	
+	EXEC Fdp_TakeRateData_ResetNonApplicableFeatures @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSId = @CDSId
+	
+	-- Standard features should be 100% - Override any take rate information where this is not the case
+	
+	SET @Message = 'Setting standard features'
+	RAISERROR(@Message, 0, 1) WITH NOWAIT
+	
+	EXEC Fdp_TakeRateData_SetStandardFeatures @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSId = @CDSId
 	
 	-- Calculate and persist the feature mix for each feature / for each market
 

@@ -587,7 +587,8 @@ model.Page = function (models) {
                 if (revertedChange.IsWholeMarketChange) {
                     selector.removeClass(me.getEditedDataClass(revertedChange)).val(displayValue);
                 } else {
-                    selector.removeClass("edited-market-review").removeClass(me.getEditedDataClass(revertedChange)).html(displayValue);
+                    //selector.removeClass("edited-market-review").removeClass(me.getEditedDataClass(revertedChange)).html(displayValue);
+                    selector.removeClass("edited").removeClass(me.getEditedDataClass(revertedChange)).html(displayValue);
                 }
             }
             else {

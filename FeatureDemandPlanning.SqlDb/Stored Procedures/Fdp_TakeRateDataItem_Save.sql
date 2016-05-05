@@ -71,8 +71,6 @@ AS
 		FdpModelId = @FdpModelId;
 	END
 
-	SELECT * FROM Fdp_TakeRateSummaryByModelAndMarket_VW
-
 	-- If updating the volume, we calculate the percentage take rate
 	-- If updating the percentage take rate, we calculate the volume
 	IF @Volume IS NOT NULL

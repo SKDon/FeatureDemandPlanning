@@ -187,6 +187,7 @@ namespace FeatureDemandPlanning.DataStore
 
                         Message = validationError.ErrorMessage
                     };
+
                     validationData = await Task.FromResult(_takeRateDataStore.FdpValidationPersist(validationData));
                     results.Add(validationData);
 

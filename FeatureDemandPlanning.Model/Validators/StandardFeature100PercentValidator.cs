@@ -10,14 +10,25 @@ namespace FeatureDemandPlanning.Model.Validators
 
         public StandardFeature100PercentValidator()
         {
-            RuleFor(d => d.PercentageTakeRate)
-                .Must(d => d == 1)
+            // If the feature is in an EFG (with more than 1 item), then the take rate is determined by the options in the group
+            // Otherwise it should have 100% take
+            RuleFor(d => d)
+                .Must(d => BeInExclusiveFeatureGroup(d) || Have100PercentTake(d))
                 .WithMessage(
                     Message,
                     d => d.PercentageTakeRate,
                     d => d.FeatureDescription,
                     d => d.Model)
                 .WithState(d => new ValidationState(ValidationRule.StandardFeaturesShouldBe100Percent, d));
+        }
+
+        public bool BeInExclusiveFeatureGroup(RawTakeRateDataItem dataItem)
+        {
+            return !string.IsNullOrEmpty(dataItem.ExclusiveFeatureGroup) && dataItem.FeaturesInExclusiveFeatureGroup > 1;
+        }
+        public bool Have100PercentTake(RawTakeRateDataItem dataItem)
+        {
+            return dataItem.PercentageTakeRate == 1;
         }
     }
 }

@@ -59,6 +59,9 @@ AS
 	END
 	ELSE IF @IsFeatureUpdate = 1
 	BEGIN
+		PRINT 'Calculating take rates for exclusive feature group'
+		EXEC Fdp_ChangesetDataItem_CalculateExclusiveFeatureGroupMix @FdpChangesetDataItemId = @FdpChangesetDataItemId;
+		
 		PRINT 'Calculating feature mix for feature'
 		EXEC Fdp_ChangesetDataItem_CalculateFeatureMixForSingleFeature @FdpChangesetDataItemId = @FdpChangesetDataItemId;
 	END

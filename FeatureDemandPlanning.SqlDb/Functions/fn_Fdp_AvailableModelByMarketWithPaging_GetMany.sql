@@ -125,7 +125,15 @@ BEGIN
 	IF ISNULL(@PageSize, 0) = 0
 		SET @PageSize = @TotalRecords;
 	
-	SET @TotalPages = CEILING(@TotalRecords / CAST(@PageSize AS DECIMAL));
+	IF @PageSize = 0
+	BEGIN
+		SET @TotalPages = 1;
+	END
+	ELSE
+	BEGIN
+		SET @TotalPages = CEILING(@TotalRecords / CAST(@PageSize AS DECIMAL));
+	END
+	
 	SET @MinIndex = ((@PageIndex - 1) * @PageSize) + 1;
 	SET @MaxIndex = @MinIndex + (@PageSize - 1);
 	

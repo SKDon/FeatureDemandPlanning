@@ -26,6 +26,7 @@ USING (VALUES
 	, (N'SkipFirstXRowsInImportFile', N'3', N'Specifies the number of rows to skip for FDP import files. Eliminates header information', N'System.Int32')
 	, (N'ReprocessImportAfterHandleError', N'1', N'Whether to reprocess the entire dataset each time an error is handled in the worktray', N'System.Boolean')
 	, (N'FlagOrphanedImportDataAsError', N'0', N'Whether to flag import data that cannot be mapped to an OXO derivative / trim level or feature as an error', N'System.Boolean')
+	, (N'TakeRateDataPageSize', N'10', N'The page size to use for models when showing take rate files', N'System.Int32')
 )
 AS SOURCE (ConfigurationKey, Value, [Description], DataType) ON TARGET.ConfigurationKey = SOURCE.ConfigurationKey
 WHEN MATCHED THEN
