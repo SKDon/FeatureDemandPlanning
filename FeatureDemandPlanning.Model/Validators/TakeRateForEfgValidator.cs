@@ -1,4 +1,5 @@
-﻿using FeatureDemandPlanning.Model.Enumerations;
+﻿using System;
+using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
 
@@ -27,6 +28,7 @@ namespace FeatureDemandPlanning.Model.Validators
         {
             RuleFor(d => d)
                 .Must(Have100PercentTakeForExclusiveFeatureGroup)
+                .When(g => !g.ExclusiveFeatureGroup.Equals("UNCODED", StringComparison.OrdinalIgnoreCase))
                 .WithMessage(Message,
                     GetPercentageTakeRate,
                     GetModel,
@@ -47,6 +49,7 @@ namespace FeatureDemandPlanning.Model.Validators
         {
             RuleFor(d => d)
                 .Must(HaveLessThanOrEqualTo100PercentTakeForExclusiveFeatureGroup)
+                .When(g => !g.ExclusiveFeatureGroup.Equals("UNCODED", StringComparison.OrdinalIgnoreCase))
                 .WithMessage(Message,
                     GetPercentageTakeRate,
                     GetModel,

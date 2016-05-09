@@ -183,7 +183,7 @@ namespace FeatureDemandPlanning.Controllers
 	        {
 	            dataChange.OriginalPercentageTakeRate = existingFeature.PercentageTakeRate;
 	            dataChange.OriginalVolume = existingFeature.Volume;
-	            dataChange.FdpVolumeDataItemId = existingFeature.FdpVolumeDataItemId;
+	            dataChange.FdpVolumeDataItemId = existingFeature.FdpVolumeDataItemId == 0 ? (int?)null : existingFeature.FdpVolumeDataItemId;
 	        }
 
 	        // Update the feature mix for the feature in question
@@ -198,7 +198,8 @@ namespace FeatureDemandPlanning.Controllers
 	        {
 	            featureMixDataChange.OriginalPercentageTakeRate = existingFeatureMix.PercentageTakeRate;
 	            featureMixDataChange.OriginalVolume = existingFeatureMix.Volume;
-	            featureMixDataChange.FdpTakeRateFeatureMixId = existingFeatureMix.FdpTakeRateFeatureMixId;
+	            featureMixDataChange.FdpVolumeDataItemId = null;
+	            featureMixDataChange.FdpTakeRateFeatureMixId = existingFeatureMix.FdpTakeRateFeatureMixId == 0 ? (int?)null : existingFeatureMix.FdpTakeRateFeatureMixId;
 	        }
 	        changeset.Changes.Add(featureMixDataChange);
 
@@ -212,17 +213,43 @@ namespace FeatureDemandPlanning.Controllers
 	        
 	        if (standardFeature != null && optionalFeatures.Any() && standardFeature.FeatureId != existingFeature.FeatureId)
 	        {
-	            var optionalFeatureVolume =
-	                optionalFeatures.Where(o => o.FeatureIdentifier != dataChange.FeatureIdentifier).Sum(o => o.Volume) + dataChange.Volume.GetValueOrDefault();
+                //var optionalFeatureVolume =
+                //    optionalFeatures.Where(o => o.FeatureIdentifier != dataChange.FeatureIdentifier).Sum(o => o.Volume) + dataChange.Volume.GetValueOrDefault();
                 var optionalFeaturePercentageTakeRate =
                     optionalFeatures.Where(o => o.FeatureIdentifier != dataChange.FeatureIdentifier).Sum(o => o.PercentageTakeRate) + dataChange.PercentageTakeRateAsFraction.GetValueOrDefault();
-                
-                var standardFeatureDataChange = new DataChange(dataChange)
+
+
+	            var standardFeaturePercentageTakeRate = (1 - optionalFeaturePercentageTakeRate);
+                var standardFeatureVolume = 0;
+
+                // We cannot allow a standard feature take rate of greater than 100%
+	            if (standardFeaturePercentageTakeRate > 1)
+	            {
+	                standardFeaturePercentageTakeRate = 1;
+	            }
+	            // We cannot allow a standard feature take rate of less than 0%
+                if (standardFeaturePercentageTakeRate < 0)
+	            {
+	                standardFeaturePercentageTakeRate = 0;
+	            }
+
+	            if (standardFeaturePercentageTakeRate >= 1)
+	            {
+	                // If 100% take, simply use the model volume, instead of trying to calculate as a combination of optional feature volumes
+	                // This to do do with the fact we round fractional vehicle volumes down
+	                standardFeatureVolume = modelVolume;
+	            }
+	            else if (standardFeaturePercentageTakeRate > 0)
+	            {
+	                standardFeatureVolume = (int) (modelVolume*standardFeaturePercentageTakeRate);
+	            }
+	            var standardFeatureDataChange = new DataChange(dataChange)
 	            {
 	                FeatureIdentifier = "O" + standardFeature.FeatureId,
-                    Volume = modelVolume - optionalFeatureVolume,
-                    PercentageTakeRate = (1 - optionalFeaturePercentageTakeRate) * 100,
-    
+                    Volume = standardFeatureVolume,
+                    PercentageTakeRate = standardFeaturePercentageTakeRate * 100,
+                    // Make sure we use the id of the standard feature item, not the original data change item
+                    FdpVolumeDataItemId = standardFeature.FdpVolumeDataItemId == 0 ? (int?)null : standardFeature.FdpVolumeDataItemId
 	            };
                 changeset.Changes.Add(standardFeatureDataChange);
 
@@ -230,11 +257,35 @@ namespace FeatureDemandPlanning.Controllers
                 rawData.DataItems.Where(d => !IsMatchingModel(standardFeatureDataChange, d) && IsMatchingFeature(standardFeatureDataChange, d))
                     .Sum(d => d.Volume);
 
+                var standardFeatureMixPercentageTakeRate = (existingStandardFeatureVolumes + standardFeatureDataChange.Volume.GetValueOrDefault())/
+                                                        (decimal) modelVolumes;
+                var standardFeatureMixVolume = 0;
+                var existingStandardFeatureMix = rawData.FeatureMixItems.FirstOrDefault(f => IsMatchingFeatureMix(dataChange, f));
+
+	            if (standardFeatureMixPercentageTakeRate > 1)
+	            {
+	                standardFeatureMixPercentageTakeRate = 1;
+	            }
+	            if (standardFeatureMixPercentageTakeRate < 0)
+	            {
+	                standardFeatureMixPercentageTakeRate = 0;
+	            }
+
+	            if (standardFeaturePercentageTakeRate >= 1)
+	            {
+	                standardFeatureMixVolume = modelVolumes;
+	            }
+                else if (standardFeatureMixPercentageTakeRate > 0) 
+                {
+	                standardFeatureMixVolume = (int) (modelVolumes*standardFeatureMixPercentageTakeRate);
+                }
                 var standardFeatureMixDataChange = new DataChange(standardFeatureDataChange)
                 {
-                    PercentageTakeRate = ((existingStandardFeatureVolumes + standardFeatureDataChange.Volume) / (decimal)modelVolumes) * 100,
-                    Volume = existingStandardFeatureVolumes + standardFeatureDataChange.Volume,
-                    ModelIdentifier = string.Empty
+                    PercentageTakeRate = standardFeatureMixPercentageTakeRate * 100,
+                    Volume = standardFeatureMixVolume,
+                    ModelIdentifier = string.Empty,
+                    FdpVolumeDataItemId = null,
+                    FdpTakeRateFeatureMixId = existingStandardFeatureMix == null ? (int?)null : existingStandardFeatureMix.FdpTakeRateFeatureMixId
                 };
                 changeset.Changes.Add(standardFeatureMixDataChange);
 	        }

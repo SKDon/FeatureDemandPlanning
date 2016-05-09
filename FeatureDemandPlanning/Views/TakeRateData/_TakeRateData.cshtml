@@ -46,15 +46,15 @@
                         <form class="form-horizontal">
                             <div class="form-group-sm">
                                 <div class="col-xs-4">
-                                    <label for="@(Model.IdentifierPrefix)_FilteredVolume" class="control-label text-right" style="font-size:11px">Filtered Volume:</label>
+                                    <label for="@(Model.IdentifierPrefix)_FilteredVolume" class="control-label text-right" style="font-size:11px">Volume:</label>
                                 </div>
                                 <div class="input-group col-xs-8">
-                                    <input type="text" id="@(Model.IdentifierPrefix)_FilteredTotalVolume" class="form-control input-filtered-volume col-xs-3" value="@Model.Document.TakeRateData.FilteredVolume" data-target="@Model.Document.Market.Id" />
+                                    <input type="text" id="@(Model.IdentifierPrefix)_FilteredTotalVolume" class="form-control input-filtered-volume col-xs-2" value="@Model.Document.TakeRateData.FilteredVolume" data-target="@Model.Document.Market.Id" />
                                     @if (Model.AllowEdit)
                                     {
                                         <span class="input-group-btn">
                                             <button type="button" id="@(Model.IdentifierPrefix)_UpdateFilteredVolume" class="btn btn-sm btn-default update-filtered-volume">
-                                                <span class="glyphicon glyphicon-refresh"></span> Update
+                                                <span class="glyphicon glyphicon-refresh"></span>
                                             </button>
                                         </span>
                                     }

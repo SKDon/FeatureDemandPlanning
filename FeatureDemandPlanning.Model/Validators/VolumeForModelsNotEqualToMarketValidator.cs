@@ -7,7 +7,7 @@ namespace FeatureDemandPlanning.Model.Validators
     public class VolumeForModelsNotEqualToMarketValidator : AbstractValidator<RawTakeRateData>
     {
         private const string Message =
-            "Total volume for models of {0} is greater than the volume for market '{1}' of {2}.";
+            "Total volume for models of {0} is not equal to the volume for market '{1}' of {2}.";
 
         public VolumeForModelsNotEqualToMarketValidator()
         {
@@ -43,7 +43,7 @@ namespace FeatureDemandPlanning.Model.Validators
         }
         private static bool BeEqualToMarketVolume(RawTakeRateData rawData)
         {
-            return ((int)GetMarketVolume(rawData)) <= ((int)GetModelVolume(rawData));
+            return ((int)GetMarketVolume(rawData)) == ((int)GetModelVolume(rawData));
         }
     }
 }

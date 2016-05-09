@@ -189,7 +189,7 @@ model.OxoVolume = function (params) {
         var params = getFilter();
         $.ajax({
             "dataType": "json",
-            "async": false,
+            "async": true,
             "type": "POST",
             "url": me.getChangesetUri(),
             "data": params,
@@ -205,7 +205,7 @@ model.OxoVolume = function (params) {
         var params = getFilter();
         $.ajax({
             "dataType": "json",
-            "async": false,
+            "async": true,
             "type": "POST",
             "url": me.getValidationUri(),
             "data": params,

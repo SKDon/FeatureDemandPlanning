@@ -2,6 +2,23 @@
 
 var model = namespace("FeatureDemandPlanning.Volume");
 
+// Create a stopwatch "class." 
+model.StopWatch = function () {
+    this.StartMilliseconds = 0;
+    this.ElapsedMilliseconds = 0;
+    var me = this;
+    
+    me.Start = function () {
+        me.StartMilliseconds = new Date().getTime();
+    }
+
+    me.Stop = function () {
+        me.ElapsedMilliseconds = new Date().getTime() - me.StartMilliseconds;
+    }
+}
+
+
+
 model.Page = function (models) {
     var uid = 0, privateStore = {}, me = this;
 
@@ -27,7 +44,7 @@ model.Page = function (models) {
     };
     me.calcDataTableHeight = function () {
         var panelHeight = $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel").height();
-        return (panelHeight - 160) + "px";
+        return (panelHeight - 190) + "px";
     };
     me.configureChangeset = function () {
         privateStore[me.id].Changeset = new FeatureDemandPlanning.Volume.Changeset();
@@ -46,10 +63,10 @@ model.Page = function (models) {
     };
     me.loadData = function () {
         me.initialiseControls();
-        me.configureChangeset();
-        me.loadChangeset();
         me.configureDataTables();
         me.configureRowHighlight();
+        me.configureChangeset();
+        me.loadChangeset();
     };
     me.persistData = function () {
         var model = getTakeRateDataModel();
@@ -239,6 +256,7 @@ model.Page = function (models) {
         $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);
 
         $(window).resize(function () {
+            console.log("resize");
             var panel = $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel");
             var table = me.getDataTable();
             //var settings = table.settings();
@@ -957,22 +975,30 @@ model.Page = function (models) {
     };
     me.configureDataTables = function () {
 
+        console.log("in configure dt");
+        var sw = new model.StopWatch();
+        sw.Start();
+
         var prefix = me.getIdentifierPrefix();
         var filterModel = getFilterModel();
+        var height = me.calcDataTableHeight();
+        var leftFixedColumns = 4;
         
         var table = $("#" + prefix + "_TakeRateData").DataTable({
             serverSide: false,
             paging: false,
             ordering: false,
-            processing: true,
+            processing: false,
             dom: "t",
             scrollX: true,
-            scrollY: me.calcDataTableHeight(),
+            scrollY: height,
             scrollCollapse: true
         });
-        var oFixedColumns = new $.fn.dataTable.FixedColumns(table, {
-            leftColumns: 4,
+        new $.fn.dataTable.FixedColumns(table, {
+            leftColumns: leftFixedColumns,
             drawCallback: function (left) {
+                sw.Stop();
+                console.log("Milliseconds to configure rows: " + sw.ElapsedMilliseconds);
                 //// If we are filtering, remove the row groupings, as they aren't necessary and mess up the resizing
                 //// upon filter
                 if (filterModel.getCurrentFilter() === null || filterModel.getCurrentFilter() === "") {
@@ -988,18 +1014,19 @@ model.Page = function (models) {
         var settings = table.settings();
 
         var displayedRecords = settings.page.info().recordsDisplay;
+        //var displayedRecords = settings.aoData.length;
         if (displayedRecords === 0) {
             $(".dataTables_empty").html("No data");
             return;
         }
 
-        var nGroup, nSubGroup, nCell, index, groupName, subGroupName;
+        var nGroup, nSubGroup, nCell, groupName, subGroupName;
         var lastGroupName = "", lastSubGroupName = "", corrector = 0;
         var nTrs = $("#" + me.getIdentifierPrefix() + "_TakeRateData tbody tr");
         var rightColumns = nTrs.first().children().length;
 
         for (var i = 0; i < nTrs.length; i++) {
-            index = settings.page.info().start + i;
+            //index = settings.page.info().start + i;
             groupName = $(nTrs[i]).attr("data-group");
             subGroupName = $(nTrs[i]).attr("data-subgroup");
 
@@ -1327,6 +1354,7 @@ model.Page = function (models) {
         $(document).trigger("Filtered", { Filter: searchFilter });
     };
     me.onFilterChangedEventHandler = function (sender, eventArgs) {
+        console.log("filter changed");
         var filter = eventArgs.Filter;
         getFilterModel().setCurrentFilter(filter);
         me.getDataTable().search(filter).draw();
@@ -1335,6 +1363,7 @@ model.Page = function (models) {
         $("#notifier").html("<div class=\"alert alert-dismissible alert-success\">" + eventArgs.StatusMessage + "</div>");
     };
     me.redrawDataTable = function () {
+        console.log("in redraw");
         me.getDataTable().draw();
     };
     me.getExpandedState = function() {
