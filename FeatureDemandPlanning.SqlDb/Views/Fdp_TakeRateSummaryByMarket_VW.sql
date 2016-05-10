@@ -4,6 +4,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_TakeRateSummaryByMarket_VW] AS
 
 	WITH TotalsByMarket AS
@@ -11,17 +12,15 @@ CREATE VIEW [dbo].[Fdp_TakeRateSummaryByMarket_VW] AS
 		SELECT
 			  H.FdpVolumeHeaderId 
 			, H.DocumentId
-			, D.Programme_Id AS ProgrammeId
-			, D.Gateway
+			, H.ProgrammeId
+			, H.Gateway
 			, S.MarketId
 			, S.Volume AS TotalVolume
 			, S.PercentageTakeRate
 		FROM
-		Fdp_VolumeHeader			AS H
-		JOIN OXO_Doc				AS D	ON H.DocumentId			= D.Id
+		Fdp_VolumeHeader_VW			AS H
 		JOIN Fdp_TakeRateSummary	AS S	ON H.FdpVolumeHeaderId	= S.FdpVolumeHeaderId
 											AND S.ModelId			IS NULL
-											AND S.FdpModelId		IS NULL
 	)
 	SELECT
 		  T.FdpVolumeHeaderId

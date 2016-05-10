@@ -36,6 +36,7 @@ RETURNS
 	, Shape				NVARCHAR(100)	NULL
 	, KD				BIT				NULL
 	, Available				BIT
+	, MarketId			INT				NULL
 	, TotalRecords			INT
 	, TotalDisplayRecords	INT
 	, TotalPages			INT
@@ -180,6 +181,7 @@ BEGIN
 		, Shape				
 		, KD				
 		, Available
+		, MarketId
 		, TotalRecords
 		, TotalDisplayRecords
 		, TotalPages			
@@ -213,6 +215,7 @@ BEGIN
 		, MODELS.Shape
 		, MODELS.KD
 		, CAST(CASE WHEN @MarketId IS NULL THEN 1 ELSE MODELS.Available END AS BIT) AS Available
+		, @MarketId
 		, @TotalRecords
 		, @TotalDisplayRecords
 		, @TotalPages

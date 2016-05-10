@@ -27,19 +27,17 @@ namespace FeatureDemandPlanning.Model.Validators
         }
         private static object GetMarketVolume(RawTakeRateData rawData)
         {
-            var market = rawData.SummaryItems.First(s => !s.ModelId.HasValue && !s.FdpModelId.HasValue);
-
-            return market != null ? market.Volume : 0;
+            return GetModelVolume(rawData);
         }
         private static object GetMarketPercentageTake(RawTakeRateData rawData)
         {
-            var market = rawData.SummaryItems.First(s => !s.ModelId.HasValue && !s.FdpModelId.HasValue);
+            var market = rawData.SummaryItems.First(s => s.ModelId.HasValue && s.FdpModelId.HasValue);
 
             return market != null ? market.PercentageTakeRate : 0;
         }
         private static object GetModelVolume(RawTakeRateData rawData)
         {
-            return rawData.SummaryItems.Where(s => s.ModelId.HasValue || s.FdpModelId.HasValue).Sum(s => s.Volume);
+            return rawData.SummaryItems.Where(s => s.ModelId.HasValue).Sum(s => s.Volume);
         }
         private static bool BeEqualToMarketVolume(RawTakeRateData rawData)
         {

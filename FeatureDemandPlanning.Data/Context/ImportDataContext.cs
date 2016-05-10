@@ -155,8 +155,9 @@ namespace FeatureDemandPlanning.DataStore
                 return result;
             }
 
-            queuedItem = await Task.FromResult(_importDataStore.ProcessTakeRateData(queuedItem));
+            queuedItem = _importDataStore.ProcessTakeRateData(queuedItem);
             result.Status = queuedItem.ImportStatus;
+            result.TakeRateId = queuedItem.TakeRateId;
 
             return result;
         }

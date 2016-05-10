@@ -24,89 +24,86 @@ BEGIN
 			, IsNonApplicableFeatureInGroup
 			, ApplicableFeaturesInExclusiveFeatureGroup
 			, OxoCode
-		FROM dbo.fn_Fdp_FeatureApplicability_GetMany(@FdpVolumeHeaderId, @MarketId)
+		FROM
+		dbo.fn_Fdp_FeatureApplicability_GetMany(@FdpVolumeHeaderId, @MarketId)
+	)
+	, Models AS 
+	(
+		SELECT
+			  @FdpVolumeHeaderId	AS FdpVolumeHeaderId
+			, M.Id					AS ModelId
+			, M.FdpModelId			AS FdpModelId
+			, M.Name
+		FROM
+		dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(@FdpVolumeHeaderId, @MarketId, NULL, NULL) AS M
 	)
 	SELECT
 		  H.FdpVolumeHeaderId
 		, D.FdpVolumeDataItemId
-		, D.MarketId
-		, M.Market_Name AS Market
-		, D.MarketGroupId
-		, M.Market_Group_Name AS MarketGroup
-		, D.FeatureId
-		, D.FdpFeatureId
-		, D.FeaturePackId
+		, MK.Market_Id AS MarketId
+		, MK.Market_Name AS Market
+		, MK.Market_Group_Id AS MarketGroupId
+		, MK.Market_Group_Name AS MarketGroup
+		, F.FeatureId
+		, F.FdpFeatureId
+		, F.FeaturePackId
 		, CASE
-			WHEN F1.ID IS NOT NULL THEN F1.FeatureCode
-			WHEN F2.FdpFeatureId IS NOT NULL THEN F2.FeatureCode
-			WHEN F3.Id IS NOT NULL THEN F3.Feature_Code
+			WHEN F.FeatureId IS NOT NULL THEN F.FeatureCode
+			WHEN F.FeaturePackId IS NOT NULL THEN F.FeaturePackCode
 		  END
 		  AS FeatureCode
 		, CASE
-			WHEN F1.ID IS NOT NULL THEN ISNULL(F1.BrandDescription, F1.SystemDescription)
-			WHEN F2.FdpFeatureId IS NOT NULL THEN ISNULL(F2.BrandDescription, F2.SystemDescription)
-			WHEN F3.Id IS NOT NULL THEN F3.Pack_Name
+			WHEN F.FeatureId IS NOT NULL THEN ISNULL(F.BrandDescription, F.SystemDescription)
+			WHEN F.FeaturePackId IS NOT NULL THEN F.FeaturePackName
 		  END
 		  AS FeatureDescription
-		, F1.EFGName AS ExclusiveFeatureGroup
-		, PK.Pack_Name AS PackName
-		, D.ModelId
-		, D.FdpModelId
-		, CASE
-			WHEN MD1.Id IS NOT NULL THEN MD1.Name
-			WHEN MD2.FdpModelId IS NOT NULL THEN MD2.Name
-		  END
-		  AS Model
+		, F.ExclusiveFeatureGroup
+		, F.FeaturePackName AS PackName
+		, M.ModelId
+		, M.FdpModelId
+		, M.Name AS Model
 		, FA.OxoCode
 		, FA.IsStandardFeatureInGroup
 		, FA.IsOptionalFeatureInGroup
 		, FA.IsNonApplicableFeatureInGroup
 		, FA.FeaturesInExclusiveFeatureGroup
 		, FA.ApplicableFeaturesInExclusiveFeatureGroup
-		, ISNULL(C.TotalVolume, D.Volume) AS Volume
-		, ISNULL(C.PercentageTakeRate, D.PercentageTakeRate) AS PercentageTakeRate
+		, ISNULL(ISNULL(C.TotalVolume, D.Volume), 0) AS Volume
+		, ISNULL(ISNULL(C.PercentageTakeRate, D.PercentageTakeRate), CASE WHEN FA.OxoCode LIKE '%S%' THEN 1 ELSE 0 END) AS PercentageTakeRate
 		, C.FdpChangesetDataItemId
-		, CAST(CASE WHEN D.FeatureId IS NOT NULL AND (F1.Id IS NULL OR F1.[Status] = 'REMOVED') THEN 1 ELSE 0 END AS BIT) AS IsOrphanedData
+		, CAST(0 AS BIT) AS IsOrphanedData
     FROM
     Fdp_VolumeHeader_VW						AS H
-    JOIN Fdp_VolumeDataItem_VW				AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-    JOIN OXO_Programme_MarketGroupMarket_VW AS M	ON	D.MarketId			= M.Market_Id
-													AND H.ProgrammeId		= M.Programme_Id
-	-- Features
-	LEFT JOIN OXO_Programme_Feature_VW		AS F1	ON	D.FeatureId			= F1.ID
-													AND H.ProgrammeId		= F1.ProgrammeId
-	-- Fdp Features
-	LEFT JOIN Fdp_Feature_VW				AS F2	ON	D.FdpFeatureId		= F2.FdpFeatureId
-													AND H.ProgrammeId		= F2.ProgrammeId
-													AND H.Gateway			= F2.Gateway
-	-- Feature Packs
-	LEFT JOIN OXO_Programme_Pack			AS F3	ON	D.FeaturePackId		= F3.Id
-													AND H.ProgrammeId		= F3.Programme_Id
-													AND D.FeatureId			IS NULL
-													AND D.FdpFeatureId		IS NULL
-	LEFT JOIN OXO_Programme_Pack			AS PK	ON D.FeaturePackId		= PK.Id
-													AND H.ProgrammeId		= PK.Programme_Id
+    JOIN Models								AS M	ON	H.FdpVolumeHeaderId	= M.FdpVolumeHeaderId
+    JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	H.ProgrammeId		= MK.Programme_Id
 	
-	-- Model
-	LEFT JOIN OXO_Models_VW					AS MD1	ON	D.ModelId			= MD1.Id
-													AND H.ProgrammeId		= MD1.Programme_Id
-													
-	LEFT JOIN Fdp_Model_VW					AS MD2	ON	D.FdpModelId		= MD2.FdpModelId
-													AND H.ProgrammeId		= MD2.ProgrammeId
-													AND H.Gateway			= MD2.Gateway
+	-- Features
+	JOIN Fdp_Feature_VW						AS F	ON	H.DocumentId		= F.DocumentId
+	
+	-- Feature Packs
+	LEFT JOIN OXO_Programme_Pack			AS PK1	ON	F.FeaturePackId		= PK1.Id
+													AND H.ProgrammeId		= PK1.Programme_Id
+													AND F.FeatureId			IS NULL
 													
 	-- Feature Applicability
 	
-	LEFT JOIN FeatureApplicability			AS FA	ON	D.FeatureId			= FA.FeatureId
-													AND D.ModelId			= FA.ModelId
+	LEFT JOIN FeatureApplicability			AS FA	ON	F.FeatureId			= FA.FeatureId
+													AND M.ModelId			= FA.ModelId
+	-- Any existing data
+	LEFT JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+													AND MK.Market_Id		= D.MarketId
+													AND M.ModelId			= D.ModelId
+													AND F.FeatureId			= D.FeatureId
 													
 	-- Any changeset information
-	LEFT JOIN Fdp_ChangesetDataItem_VW		AS C	ON	D.FdpVolumeDataItemId	= C.FdpVolumeDataItemId
-													AND C.FdpChangesetId		= @FdpChangesetId
+	LEFT JOIN Fdp_ChangesetDataItem_VW		AS C	ON	C.FdpChangesetId		= @FdpChangesetId
+													AND MK.Market_Id			= C.MarketId
+													AND M.ModelId				= C.ModelId
+													AND F.FeatureId				= C.FeatureId
 	
     WHERE
     H.FdpVolumeHeaderId = @FdpVolumeHeaderId
     AND
-    (@MarketId IS NULL OR D.MarketId = @MarketId);
+    (@MarketId IS NULL OR MK.Market_Id = @MarketId)
     
 END

@@ -1307,6 +1307,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
 
                     conn.Execute("dbo.Fdp_Validation_Clear", para, commandType: CommandType.StoredProcedure);
                 }

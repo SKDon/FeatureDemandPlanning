@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_Validation_Clear]
 	    @FdpVolumeHeaderId INT
+	  , @MarketId INT = NULL
 	  , @CDSId NVARCHAR(16)
 AS
 
@@ -13,3 +14,5 @@ AND
 	ISNULL(ValidationBy, '') = '' 
 	OR ValidationBy = @CDSId
 )
+AND
+(@MarketId IS NULL OR MarketId = @MarketId);

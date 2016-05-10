@@ -9,39 +9,38 @@ BEGIN
 	DECLARE @FdpChangesetId INT;
 	SET @FdpChangesetId = dbo.fn_Fdp_Changeset_GetLatestByUser(@FdpVolumeHeaderId, @MarketId, @CDSId);
 
+	WITH Models AS 
+	(
+		SELECT
+			  @FdpVolumeHeaderId	AS FdpVolumeHeaderId
+			, M.Id					AS ModelId
+			, M.FdpModelId			AS FdpModelId
+			, M.Name
+		FROM
+		dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(@FdpVolumeHeaderId, @MarketId, NULL, NULL) AS M
+	)
 	SELECT
 		  H.FdpVolumeHeaderId
 		, S.FdpTakeRateSummaryId
 		, S.MarketId
-		, M.Market_Name AS Market
-		, M.Market_Group_Id AS MarketGroupId
-		, M.Market_Group_Name AS MarketGroup
+		, MK.Market_Name AS Market
+		, MK.Market_Group_Id AS MarketGroupId
+		, MK.Market_Group_Name AS MarketGroup
 		, S.ModelId
 		, S.FdpModelId
-		, CASE
-			WHEN MD1.Id IS NOT NULL THEN MD1.Name
-			WHEN MD2.FdpModelId IS NOT NULL THEN MD2.Name
-		  END
-		  AS Model
-		, CASE
-			WHEN MD1.Id IS NOT NULL THEN MD1.BMC
-			WHEN MD2.FdpModelId IS NOT NULL THEN MD2.BMC
-		  END
-		  AS DerivativeCode
+		, M.Name AS Model
+		, M.BMC AS DerivativeCode
 		, ISNULL(C.TotalVolume, S.Volume) AS Volume
 		, ISNULL(C.PercentageTakeRate, S.PercentageTakeRate) AS PercentageTakeRate
     FROM
     Fdp_VolumeHeader_VW						AS H
     JOIN Fdp_TakeRateSummary				AS S	ON	H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
-    JOIN OXO_Programme_MarketGroupMarket_VW AS M	ON	S.MarketId			= M.Market_Id
-													AND H.ProgrammeId		= M.Programme_Id
+    JOIN Models								AS A	ON	S.ModelId			= A.ModelId	
+    JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	S.MarketId			= MK.Market_Id
+													AND H.ProgrammeId		= MK.Programme_Id
 	-- Model
-	LEFT JOIN OXO_Models_VW					AS MD1	ON	S.ModelId			= MD1.Id
-													AND H.ProgrammeId		= MD1.Programme_Id
-													
-	LEFT JOIN Fdp_Model_VW					AS MD2	ON	S.FdpModelId		= MD2.FdpModelId
-													AND H.ProgrammeId		= MD2.ProgrammeId
-													AND H.Gateway			= MD2.Gateway									
+	LEFT JOIN OXO_Models_VW					AS M	ON	S.ModelId			= M.Id
+													AND H.ProgrammeId		= M.Programme_Id								
 					
 	-- Any changeset information
 	LEFT JOIN Fdp_ChangesetDataItem_VW		AS C	ON	S.FdpTakeRateSummaryId	= C.FdpTakeRateSummaryId

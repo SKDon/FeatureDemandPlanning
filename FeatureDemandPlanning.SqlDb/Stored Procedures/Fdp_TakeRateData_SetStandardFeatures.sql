@@ -32,9 +32,17 @@ AS
 			, COUNT(F.ID) AS NumberOfFeaturesInGroup
 			, MAX(CASE WHEN FA.Applicability LIKE '%S%' THEN F.ID ELSE NULL END) AS StandardFeatureId
 			, SUM(CASE WHEN FA.Applicability LIKE '%O%' THEN ISNULL(D.Volume, 0) ELSE 0 END) AS OptionalFeatureVolumes
-			, SUM(CASE WHEN FA.Applicability LIKE '%O%' THEN ISNULL(D.PercentageTakeRate, 0) ELSE 0 END) AS OptionalFeatureTakeRates
-			, 1 - SUM(CASE WHEN FA.Applicability LIKE '%O%' THEN ISNULL(D.PercentageTakeRate, 0) ELSE 0 END) AS StandardFeatureTakeRate
-			
+			, CASE
+				WHEN SUM(CASE WHEN FA.Applicability LIKE '%O%' THEN ISNULL(D.PercentageTakeRate, 0) ELSE 0 END) > 1 THEN 1
+				ELSE SUM(CASE WHEN FA.Applicability LIKE '%O%' THEN ISNULL(D.PercentageTakeRate, 0) ELSE 0 END)
+			  END 
+			  AS OptionalFeatureTakeRates
+			, 1 - 
+			  CASE
+				WHEN SUM(CASE WHEN FA.Applicability LIKE '%O%' THEN ISNULL(D.PercentageTakeRate, 0) ELSE 0 END) > 1 THEN 1
+				ELSE SUM(CASE WHEN FA.Applicability LIKE '%O%' THEN ISNULL(D.PercentageTakeRate, 0) ELSE 0 END)
+			  END  
+			  AS StandardFeatureTakeRate
 		FROM
 		Fdp_VolumeHeader_VW				AS H
 		JOIN Fdp_FeatureApplicability	AS FA	ON	H.DocumentId		= FA.DocumentId

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Validators;
+using FluentValidation;
 using MvcSiteMapProvider.Web.Mvc.Filters;
 
 namespace FeatureDemandPlanning.Controllers
@@ -444,14 +445,53 @@ namespace FeatureDemandPlanning.Controllers
         public async Task<ActionResult> ProcessTakeRateData(ImportExceptionParameters parameters)
         {
             var filter = new ImportQueueFilter(parameters.ImportQueueId.GetValueOrDefault());
-            var queuedItem = await DataContext.Import.GetImportQueue(filter);
-            await DataContext.Import.ProcessTakeRateData(queuedItem);
+            var queuedItem = DataContext.Import.GetImportQueue(filter).Result;
+            var results = DataContext.Import.ProcessTakeRateData(queuedItem).Result;
 
-            queuedItem = await DataContext.Import.GetImportQueue(filter);
+            if (queuedItem.HasErrors)
+            {
+                return Json(JsonActionResult.GetFailure("Import file still contains errors, unable to process take rate data"));
+            }
 
-            return Json(queuedItem.HasErrors ? 
-                JsonActionResult.GetFailure("Import file still contains errors, unable to process take rate data") : 
-                JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
+            if (results == null || !results.TakeRateId.HasValue)
+            {
+                return Json(JsonActionResult.GetFailure("Take Rate file not created"), JsonRequestBehavior.AllowGet);
+            }
+            
+            // Validate the data for each market
+
+            var takeRateParameters = new TakeRateParameters()
+            {
+                TakeRateId = results.TakeRateId
+            };
+            var takeRateFilter = TakeRateFilter.FromTakeRateParameters(takeRateParameters);
+
+            // Get the markets and iterate through them, validating in turn
+
+            var availableMarkets = DataContext.Market.ListMarkets(takeRateFilter).Result;
+            foreach (var market in availableMarkets)
+            {
+                takeRateFilter.Action = TakeRateDataItemAction.Validate;
+                takeRateFilter.MarketId = market.Id;
+                var takeRateView = await TakeRateViewModel.GetModel(DataContext, takeRateFilter);
+
+                try
+                {
+                    var interimResults = Validator.Validate(takeRateView.RawData);
+                    await Validator.Persist(DataContext, takeRateFilter, interimResults);
+                }
+                catch (ValidationException vex)
+                {
+                    // Just in case someone has thrown an exception from the validation, which we don't actually want
+                    Log.Warning(vex);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
+            }
+
+            return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }
         [HandleErrorWithJson]
         public async Task<ActionResult> IgnoreException(ImportExceptionParameters parameters)
