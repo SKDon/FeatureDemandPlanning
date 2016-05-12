@@ -1318,7 +1318,7 @@ namespace FeatureDemandPlanning.DataStore
                 }
             }
         }
-        public ValidationResult FdpValidationPersist(ValidationResult validationData)
+        public ValidationResult FdpValidationPersist(ValidationResult validationData, bool global = false)
         {
             ValidationResult retVal = null;
 
@@ -1326,7 +1326,18 @@ namespace FeatureDemandPlanning.DataStore
             {
                 try
                 {
-                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    // Most validation is performed on a per user basis, except when perfomed on initial data process
+                    // If this is the case, we want all users to see the validation
+                    DynamicParameters para;
+                    if (!global)
+                    {
+                        para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    }
+                    else
+                    {
+                        para = new DynamicParameters();
+                        para.Add("@CDSId", "", DbType.String);
+                    }
                     para.Add("@FdpVolumeHeaderId", validationData.TakeRateId, DbType.Int32);
 
                     para.Add("@FdpValidationRuleId", (int)validationData.ValidationRule, DbType.Int32);

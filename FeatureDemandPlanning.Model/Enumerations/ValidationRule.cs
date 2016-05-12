@@ -26,6 +26,8 @@ namespace FeatureDemandPlanning.Model.Enumerations
         [Description("Only one feature in exclusive feature group can have a take rate")]
         OnlyOneFeatureInEfg = 10,
         [Description("Non coded feature cannot have a take rate")]
-        NonCodedFeatureHasTakeRate = 11
+        NonCodedFeatureHasTakeRate = 11,
+        [Description("Take rate for optional pack features should be greater than or equal to pack take rate")]
+        OptionalPackFeaturesGreaterThanOrEqualToPack = 12
     }
 }

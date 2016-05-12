@@ -478,7 +478,7 @@ namespace FeatureDemandPlanning.Controllers
                 try
                 {
                     var interimResults = Validator.Validate(takeRateView.RawData);
-                    await Validator.Persist(DataContext, takeRateFilter, interimResults);
+                    await Validator.Persist(DataContext, takeRateFilter, interimResults, true);
                 }
                 catch (ValidationException vex)
                 {

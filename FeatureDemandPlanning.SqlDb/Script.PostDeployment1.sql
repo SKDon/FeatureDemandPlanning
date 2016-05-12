@@ -314,6 +314,7 @@ USING (VALUES
 	, (9, N'TakeRateForEfgShouldbeLessThanOrEqualTo100Percent', N'For exclusive feature groups not containing a standard feature, the take rate for features should be 100 % or less', 1, 9, N'')
 	, (10, N'OnlyOneFeatureInEfg', N'Only one feature in an exclusive feature group can have a take rate', 1, 10, N'')
 	, (11, N'NonCodedFeatureShouldNotHaveTakeRate', N'An uncoded feature should not have take rate data', 1, 11, N'')
+	, (12, N'OptionalPackFeaturesShouldBeGreaterThanOrEqualToPack', N'Take rate for optional pack features should be greater than or equal to pack take rate', 1, 12, N'')
 )
 AS SOURCE (FdpValidationRuleId, [Rule], [Description], IsActive, ValidationOrder, StoredProcedureName) ON TARGET.FdpValidationRuleId = SOURCE.FdpValidationRuleId
 WHEN MATCHED THEN

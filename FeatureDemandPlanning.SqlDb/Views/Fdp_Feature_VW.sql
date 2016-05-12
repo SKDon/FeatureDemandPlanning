@@ -4,6 +4,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_Feature_VW]
 AS
 
@@ -88,7 +89,7 @@ SELECT
 FROM 
 OXO_Doc							AS O
 JOIN OXO_Programme_Feature_VW	AS F	ON O.Programme_Id	= F.ProgrammeId  
-JOIN OXO_Feature_Ext			AS E	ON F.FeatureCode	= E.Feat_Code
+JOIN OXO_Feature_Ext			AS E	WITH (INDEX(Ix_NC_OXO_Feature_Ext_Cover)) ON F.FeatureCode	= E.Feat_Code
 JOIN Fdp_Gateways_VW			AS G	ON F.ProgrammeId	= G.ProgrammeId
 LEFT JOIN OXO_Feature_Group		AS GR	ON F.FeatureGroup	= GR.Group_Name
 										AND 
@@ -100,50 +101,10 @@ LEFT JOIN OXO_Feature_Group		AS GR	ON F.FeatureGroup	= GR.Group_Name
 LEFT JOIN Packs					AS P1	ON	F.ProgrammeId	= P1.ProgrammeId
 										AND F.FeatureCode	= P1.FeatureCode
 LEFT JOIN OXO_Pack_Feature_VW	AS P	ON	P1.PackId		= P.PackId
+										AND O.Programme_Id	= P.ProgrammeId
+										AND P1.FeatureCode	= P.FeatureCode
 
-UNION
-
-SELECT
-	  CAST(NULL AS INT) AS FeatureId 
-	, F.CreatedOn
-	, F.CreatedBy
-	, F.FdpFeatureId
-	, P.VehicleName			AS Name
-	, P.VehicleAKA			AS AKA
-	, P.ModelYear
-	, O.Id					AS DocumentId
-	, F.ProgrammeId
-	, F.Gateway
-	, P.VehicleMake			AS Make
-	, F.FeatureCode
-	, F.FeatureCode			AS OACode
-	, F.FeatureDescription	AS SystemDescription
-	, F.FeatureDescription	AS BrandDescription
-	, G.Id					AS FeatureGroupId
-	, G.Group_Name			AS FeatureGroup
-	, G.Sub_Group_Name		AS FeatureSubGroup
-	, NULL					AS FeaturePackId
-	, NULL					AS FeaturePackName
-	, NULL					AS FeaturePackCode
-	, G.Display_Order		AS DisplayOrder
-	, '' AS FeatureComment
-	, '' AS FeatureRuleText
-	, ISNULL(F.FeatureDescription, '') AS LongDescription
-	, 'Unknown'				AS EFGName
-	, CAST(1 AS BIT)		AS IsFdpFeature
-	, F.UpdatedOn
-	, F.UpdatedBy
-	, CAST(NULL AS NVARCHAR(100)) AS ExclusiveFeatureGroup
-	, F.IsActive
-						
-FROM 
-OXO_Doc						AS O
-JOIN Fdp_Feature			AS F ON	O.Programme_Id		= F.ProgrammeId
-								 AND O.Gateway			= F.Gateway
-JOIN OXO_Programme_VW		AS P ON F.ProgrammeId		= P.Id
-LEFT JOIN OXO_Feature_Group AS G ON F.FeatureGroupId	= G.Id
-
-UNION
+UNION ALL
 
 SELECT 
 	  CAST(NULL AS INT)		AS FeatureId 
@@ -155,7 +116,7 @@ SELECT
 	, P1.ModelYear
 	, O.Id					AS DocumentId
 	, P1.Id					AS ProgrammeId
-	, G.Gateway
+	, O.Gateway
 	, P1.VehicleMake		AS Make
 	, P.Feature_Code		AS FeatureCode
 	, P.Feature_Code		AS OACode
@@ -167,7 +128,7 @@ SELECT
 	, P.Id					AS FeaturePackId
 	, P.Pack_Name			AS FeaturePackName
 	, P.Feature_Code		AS FeaturePackCode
-	, RANK() OVER(PARTITION BY P1.Id, G.Gateway ORDER BY P.Pack_Name) 
+	, RANK() OVER(PARTITION BY P1.Id, O.Gateway ORDER BY P.Pack_Name) 
 							AS DisplayOrder
 	, P.Extra_Info			AS FeatureComment
 	, P.Rule_Text			AS FeatureRuleText
@@ -181,8 +142,7 @@ SELECT
 	
 FROM 
 OXO_Doc					AS O
-JOIN OXO_Programme_Pack AS P	ON O.Programme_Id	= P.Programme_Id
-JOIN Fdp_Gateways_VW	AS G	ON P.Programme_Id	= G.ProgrammeId
-JOIN OXO_Programme_VW	AS P1	ON P.Programme_Id	= P1.Id
+JOIN OXO_Programme_VW	AS P1	ON O.Programme_Id	= P1.Id
+JOIN OXO_Programme_Pack AS P	ON P1.Id			= P.Programme_Id
 )
 AS F

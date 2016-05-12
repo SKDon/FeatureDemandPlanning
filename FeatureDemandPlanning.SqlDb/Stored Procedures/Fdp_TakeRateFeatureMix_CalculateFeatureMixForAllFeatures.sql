@@ -11,6 +11,7 @@ AS
 		  Id							INT PRIMARY KEY IDENTITY(1,1)
 		, FdpVolumeHeaderId				INT
 		, MarketId						INT
+		, ModelId						INT
 		, FeatureId						INT NULL
 		, FdpFeatureId					INT NULL
 		, FeaturePackId					INT NULL
@@ -51,6 +52,7 @@ AS
 	(
 		  FdpVolumeHeaderId
 		, MarketId
+		, ModelId
 		, FeatureId
 		, FdpFeatureId
 		, FeaturePackId
@@ -61,6 +63,7 @@ AS
 	SELECT
 		  F.FdpVolumeHeaderId
 		, M.MarketId
+		, D.ModelId
 		, F.FeatureId
 		, F.FdpFeatureId
 		, NULL
@@ -69,16 +72,13 @@ AS
 		, D.FdpVolumeDataItemId
 	FROM
 	Fdp_AllFeatures_VW		AS F
-	CROSS APPLY @Market		AS M
-	LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON M.MarketId = D.MarketId
+	CROSS APPLY @Market		AS MK
+	CROSS APPLY dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(F.FdpVolumeHeaderId, MK.MarketId, NULL, NULL) AS M
+	LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON MK.MarketId = D.MarketId
 										 AND F.FdpVolumeHeaderId = D.FdpVolumeHeaderId
 										 AND D.IsFeatureData = 1
-										 AND 
-										 (
-											F.FeatureId = D.FeatureId
-											OR
-											F.FdpFeatureId = D.FdpFeatureId
-										)
+										 AND M.Id = D.ModelId
+										 AND F.FeatureId = D.FeatureId
 	WHERE
 	F.FdpVolumeHeaderId = @FdpVolumeHeaderId
 
@@ -87,6 +87,7 @@ AS
 	SELECT
 		  F.FdpVolumeHeaderId
 		, M.MarketId
+		, D.ModelId
 		, NULL
 		, NULL
 		, F.FeaturePackId
@@ -95,10 +96,12 @@ AS
 		, D.FdpVolumeDataItemId
 	FROM
 	Fdp_AllFeatures_VW		AS F
-	CROSS APPLY @Market		AS M
-	LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON M.MarketId = D.MarketId
+	CROSS APPLY @Market		AS MK
+	CROSS APPLY dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(F.FdpVolumeHeaderId, MK.MarketId, NULL, NULL) AS M
+	LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON MK.MarketId = D.MarketId
 										 AND F.FdpVolumeHeaderId = D.FdpVolumeHeaderId
 										 AND D.IsFeatureData = 1
+										 AND M.Id = D.ModelId
 										 AND F.FeaturePackId = D.FeaturePackId
 										 AND D.FeatureId IS NULL
 	WHERE
@@ -141,31 +144,6 @@ AS
 	, D.FeatureId
 
 	UNION
-
-	SELECT 
-		  D.FdpVolumeHeaderId
-		, D.MarketId
-		, CAST(NULL AS INT) AS FeatureId
-		, D.FdpFeatureId
-		, CAST(NULL AS INT) AS FeaturePackId
-		, SUM(ISNULL(D.TotalVolume, 0)) AS TotalVolume
-		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(ISNULL(D.TotalVolume, 0)), 
-		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
-		, MAX(CUR.FdpTakeRateFeatureMixId) AS FdpTakeRateFeatureMixId
-	FROM 
-	@DataForFeature AS D
-	JOIN @Market	AS M ON D.MarketId = M.MarketId
-	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON	D.FdpFeatureId = CUR.FdpFeatureId
-											AND D.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
-											AND D.MarketId = CUR.MarketId
-	WHERE
-	D.FdpFeatureId IS NOT NULL
-	GROUP BY
-	  D.FdpVolumeHeaderId
-	, D.MarketId
-	, D.FdpFeatureId
-	
-	UNION
 	
 	SELECT 
 		  D.FdpVolumeHeaderId
@@ -193,6 +171,25 @@ AS
 	, D.MarketId
 	, D.FeaturePackId
 
+	-- Sanity checks, ensure we don't end up with silly feature mix entries
+
+	UPDATE @FeatureMix SET PercentageTakeRate = 1
+	WHERE
+	PercentageTakeRate > 1;
+
+	UPDATE @FeatureMix SET PercentageTakeRate = 0
+	WHERE
+	PercentageTakeRate < 0
+
+	UPDATE F SET TotalVolume = M.Volume
+	FROM @FeatureMix	AS F
+	JOIN @Market		AS MK ON F.MarketId = MK.MarketId
+	CROSS APPLY dbo.fn_Fdp_VolumeByMarket_GetMany(@FdpVolumeHeaderId, @CDSID) AS M
+	WHERE
+	MK.MarketId = M.MarketId
+	AND
+	F.TotalVolume > M.Volume
+
 	-- Update existing feature mix entries
 
 	UPDATE F1 SET 
@@ -201,14 +198,15 @@ AS
 		, UpdatedBy				= @CDSId
 		, UpdatedOn				= GETDATE()
 	FROM
-	@FeatureMix					AS F
-	JOIN Fdp_TakeRateFeatureMix AS F1	ON  F.FdpTakeRateFeatureMixId = F1.FdpTakeRateFeatureMixId
-										AND 
-										(
-											F.PercentageTakeRate <> F1.PercentageTakeRate
-											OR
-											F.TotalVolume <> F1.Volume
-										)
+	Fdp_TakeRateFeatureMix	AS F1
+	JOIN @FeatureMix		AS F ON  F.FdpTakeRateFeatureMixId = F1.FdpTakeRateFeatureMixId 	
+	WHERE
+	F.PercentageTakeRate <> F1.PercentageTakeRate
+	OR
+	F.TotalVolume <> F1.Volume
+
+	PRINT CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' feature mix entries updated'
+
 	-- Add new ones
 
 	INSERT INTO Fdp_TakeRateFeatureMix
@@ -235,3 +233,5 @@ AS
 	@FeatureMix AS F
 	WHERE
 	F.FdpTakeRateFeatureMixId IS NULL
+
+	PRINT CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' feature mix entries added'

@@ -18,13 +18,15 @@
     [UpdatedOn]                   DATETIME       NULL,
     [UpdatedBy]                   NVARCHAR (16)  NULL,
     [OriginalFdpVolumeDataItemId] INT            NULL,
-    CONSTRAINT [PK_Fdp_VolumeDataItem] PRIMARY KEY CLUSTERED ([FdpVolumeDataItemId] ASC),
+    CONSTRAINT [PK_Fdp_VolumeDataItem] PRIMARY KEY CLUSTERED ([FdpVolumeDataItemId] ASC) WITH (FILLFACTOR = 90),
     CONSTRAINT [FK_Fdp_VolumeDataItem_Fdp_VolumeHeader] FOREIGN KEY ([FdpVolumeHeaderId]) REFERENCES [dbo].[Fdp_VolumeHeader] ([FdpVolumeHeaderId]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Feature_Ext] FOREIGN KEY ([FeatureId]) REFERENCES [dbo].[OXO_Feature_Ext] ([Id]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Master_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[OXO_Master_Market] ([Id]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Model] FOREIGN KEY ([ModelId]) REFERENCES [dbo].[OXO_Programme_Model] ([Id]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id])
 );
+
+
 
 
 
@@ -103,3 +105,20 @@ AS
 		, D.PercentageTakeRate
 		
 	FROM deleted	AS D
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_VolumeDataItem_Cover3]
+    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC, [FeatureId] ASC)
+    INCLUDE([FdpFeatureId], [FeaturePackId]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_VolumeDataItem_Cover2]
+    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC, [FeatureId] ASC)
+    INCLUDE([FdpVolumeDataItemId], [MarketId], [ModelId], [FeaturePackId], [Volume], [PercentageTakeRate]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_VolumeDataItem_Cover]
+    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC)
+    INCLUDE([FdpVolumeDataItemId], [MarketId], [ModelId], [FeatureId], [Volume], [PercentageTakeRate]);
+

@@ -40,26 +40,21 @@ BEGIN
 	WITH ApplicabilityForMarket AS
 	(
 		SELECT
-			  M.Market_Id	AS MarketId
-			, FA.Model_Id	AS ModelId
-			, FA.Feature_Id AS FeatureId
+			  FA.MarketId
+			, FA.ModelId
+			, FA.FeatureId
 			, F.EFGName
-			, MAX(P.Pack_Id)		AS FeaturePackId
-			, MAX(FA.OXO_Code)	AS OxoCode
+			, FA.FeaturePackId
+			, FA.Applicability AS OxoCode
 		FROM
-		Fdp_VolumeHeader_VW						AS H 
-		JOIN OXO_Programme_MarketGroupMarket_VW AS M	ON	H.ProgrammeId	= M.Programme_Id
-		CROSS APPLY dbo.FN_OXO_Data_Get_FBM_Market(H.DocumentId, M.Market_Group_Id, M.Market_Id, @ModelIdentifiers) AS FA
-		JOIN OXO_Programme_Feature_VW			AS F	ON	H.ProgrammeId	= F.ProgrammeId
-													AND FA.Feature_Id	= F.ID
-		LEFT JOIN OXO_Pack_Feature_Link			AS P	ON	H.ProgrammeId	= P.Programme_Id
-													AND F.ID			= P.Feature_Id
+		Fdp_VolumeHeader_VW AS H
+		JOIN Fdp_FeatureApplicability		AS FA	ON	H.DocumentId	= FA.DocumentId
+		LEFT JOIN OXO_Programme_Feature_VW	AS F	ON	H.ProgrammeId	= F.ProgrammeId
+													AND FA.FeatureId	= F.ID
 		WHERE
 		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND
-		(@MarketId IS NULL OR M.Market_Id = @MarketId)
-		GROUP BY
-		M.Market_Id, FA.Model_Id, FA.Feature_Id, F.EFGName
+		FA.MarketId = @MarketId
 	)
 	INSERT INTO @FeatureApplicability
 	(

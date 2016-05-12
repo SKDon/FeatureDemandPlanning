@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace FeatureDemandPlanning.Model
@@ -15,12 +16,40 @@ namespace FeatureDemandPlanning.Model
 
         public IEnumerable<RawTakeRateDataItem> PackItems { get; set; }
 
+        public int PackVolume
+        {
+            get
+            {
+                var parentPack = PackItems.FirstOrDefault(d => !d.FeatureId.HasValue && d.FeaturePackId.HasValue);
+                return parentPack == null ? 0 : parentPack.Volume;
+            }
+        }
+
+        public decimal PackPercentageTakeRate
+        {
+            get
+            {
+                var parentPack = PackItems.FirstOrDefault(d => !d.FeatureId.HasValue && d.FeaturePackId.HasValue);
+                return parentPack == null ? 0 : parentPack.PercentageTakeRate;
+            }
+        }
+
+        public int DistinctTakeRates()
+        {
+            var takeRates = PackItems.Where(p => !p.IsStandardFeatureInGroup && !p.IsNonApplicableFeatureInGroup && !p.IsOptionalFeatureInGroup)
+                .Select(p => p.PercentageTakeRate);
+            
+            return takeRates.Distinct().Count();
+        }
+        
         public bool HasMultipleTakeRates()
         {
             if (PackItems == null || !PackItems.Any())
                 return false;
 
-            return PackItems.Select(p => p.PercentageTakeRate).Distinct().Count() > 1;
+            var distinctTakeRates =  DistinctTakeRates();
+
+            return distinctTakeRates > 1;
         }
     }
 }

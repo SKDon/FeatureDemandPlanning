@@ -153,74 +153,64 @@ namespace FeatureDemandPlanning.DataStore
             return await Task.FromResult(_takeRateDataStore.FdpChangesetPersist(filter, changeset));
         }
 
-        public async Task<IEnumerable<ValidationResult>> PersistValidationErrors(TakeRateFilter filter, FluentValidation.Results.ValidationResult validationResult)
+        public async Task<IEnumerable<ValidationResult>> PersistValidationErrors(TakeRateFilter filter, FluentValidation.Results.ValidationResult validationResult, bool global = false)
         {
             var results = new List<ValidationResult>();
-
             
             _takeRateDataStore.FdpValidationClear(filter);
 
             foreach (var validationError in validationResult.Errors)
             {
-                try
+                var state = (ValidationState)validationError.CustomState;
+                var validationData = new ValidationResult
                 {
+                    TakeRateId = state.TakeRateId,
 
-                    var state = (ValidationState) validationError.CustomState;
-                    var validationData = new ValidationResult
+                    ValidationRule = state.ValidationRule,
+
+                    FdpVolumeDataItemId = state.FdpVolumeDataItemId,
+                    FdpTakeRateSummaryId = state.FdpTakeRateSummaryId,
+                    FdpTakeRateFeatureMixId = state.FdpTakeRateFeatureMixId,
+                    FdpChangesetDataItemId = state.FdpChangesetDataItemId,
+
+                    MarketId = state.MarketId,
+                    ModelId = state.ModelId,
+                    FdpModelId = state.FdpModelId,
+                    FeatureId = state.FeatureId,
+                    FdpFeatureId = state.FdpFeatureId,
+                    FeaturePackId = state.FeaturePackId,
+                    ExclusiveFeatureGroup = state.ExclusiveFeatureGroup,
+
+                    Message = validationError.ErrorMessage
+                };
+
+                validationData = await Task.FromResult(_takeRateDataStore.FdpValidationPersist(validationData, global));
+                results.Add(validationData);
+
+                foreach (var childState in state.ChildStates)
+                {
+                    validationData = new ValidationResult
                     {
-                        TakeRateId = state.TakeRateId,
+                        TakeRateId = childState.TakeRateId,
+
+                        FdpVolumeDataItemId = childState.FdpVolumeDataItemId,
+                        FdpTakeRateSummaryId = childState.FdpTakeRateSummaryId,
+                        FdpTakeRateFeatureMixId = childState.FdpTakeRateFeatureMixId,
+                        FdpChangesetDataItemId = childState.FdpChangesetDataItemId,
 
                         ValidationRule = state.ValidationRule,
 
-                        FdpVolumeDataItemId = state.FdpVolumeDataItemId,
-                        FdpTakeRateSummaryId = state.FdpTakeRateSummaryId,
-                        FdpTakeRateFeatureMixId = state.FdpTakeRateFeatureMixId,
-                        FdpChangesetDataItemId = state.FdpChangesetDataItemId,
-
-                        MarketId = state.MarketId,
-                        ModelId = state.ModelId,
-                        FdpModelId = state.FdpModelId,
-                        FeatureId = state.FeatureId,
-                        FdpFeatureId = state.FdpFeatureId,
-                        FeaturePackId = state.FeaturePackId,
-                        ExclusiveFeatureGroup = state.ExclusiveFeatureGroup,
+                        MarketId = childState.MarketId,
+                        ModelId = childState.ModelId,
+                        FdpModelId = childState.FdpModelId,
+                        FeatureId = childState.FdpFeatureId,
+                        FdpFeatureId = childState.FdpFeatureId,
+                        FeaturePackId = childState.FeaturePackId,
 
                         Message = validationError.ErrorMessage
                     };
-
-                    validationData = await Task.FromResult(_takeRateDataStore.FdpValidationPersist(validationData));
+                    validationData = await Task.FromResult(_takeRateDataStore.FdpValidationPersist(validationData, global));
                     results.Add(validationData);
-
-                    foreach (var childState in state.ChildStates)
-                    {
-                        validationData = new ValidationResult
-                        {
-                            TakeRateId = childState.TakeRateId,
-
-                            FdpVolumeDataItemId = childState.FdpVolumeDataItemId,
-                            FdpTakeRateSummaryId = childState.FdpTakeRateSummaryId,
-                            FdpTakeRateFeatureMixId = childState.FdpTakeRateFeatureMixId,
-                            FdpChangesetDataItemId = childState.FdpChangesetDataItemId,
-
-                            ValidationRule = state.ValidationRule,
-
-                            MarketId = childState.MarketId,
-                            ModelId = childState.ModelId,
-                            FdpModelId = childState.FdpModelId,
-                            FeatureId = childState.FdpFeatureId,
-                            FdpFeatureId = childState.FdpFeatureId,
-                            FeaturePackId = childState.FeaturePackId,
-
-                            Message = validationError.ErrorMessage
-                        };
-                        validationData = await Task.FromResult(_takeRateDataStore.FdpValidationPersist(validationData));
-                        results.Add(validationData);
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    throw;
                 }
             }
             

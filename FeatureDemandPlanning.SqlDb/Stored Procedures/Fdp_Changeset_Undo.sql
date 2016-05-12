@@ -116,7 +116,8 @@ AS
 			WHEN FdpModelId IS NOT NULL THEN 'F' + CAST(FdpModelId AS NVARCHAR(10))
 			ELSE NULL
 		  END AS ModelIdentifier								
-		, CASE 
+		, CASE
+			WHEN FeaturePackId IS NOT NULL AND FeatureId IS NULL THEN 'P' + CAST(FeaturePackId AS NVARCHAR(10)) 
 			WHEN FeatureId IS NOT NULL THEN 'O' + CAST(FeatureId AS NVARCHAR(10))
 			WHEN FdpFeatureId IS NOT NULL THEN 'F' + CAST(FdpFeatureId AS NVARCHAR(10))
 			ELSE NULL

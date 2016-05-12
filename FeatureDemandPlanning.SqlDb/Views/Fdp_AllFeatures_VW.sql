@@ -1,4 +1,5 @@
-﻿CREATE VIEW [dbo].[Fdp_AllFeatures_VW]
+﻿
+CREATE VIEW [dbo].[Fdp_AllFeatures_VW]
 AS
 
 	-- Features where we have data
@@ -11,14 +12,10 @@ AS
 	FROM
 	Fdp_VolumeDataItem_VW 
 	WHERE
-	(
-		FeatureId IS NOT NULL
-		OR
-		FdpFeatureId IS NOT NULL
-	)
+	FeatureId IS NOT NULL
 	GROUP BY
 	FdpVolumeHeaderId, FeatureId, FdpFeatureId, FeaturePackId
-	
+
 	UNION
 	
 	-- Feature packs where we have data
@@ -32,6 +29,8 @@ AS
 	Fdp_VolumeDataItem_VW
 	WHERE
 	FeaturePackId IS NOT NULL
+	AND 
+	FeatureId IS NULL
 	GROUP BY 
 	FdpVolumeHeaderId, FeaturePackId
 	

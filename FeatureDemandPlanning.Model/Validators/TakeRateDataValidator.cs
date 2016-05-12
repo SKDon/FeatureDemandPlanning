@@ -18,10 +18,10 @@ namespace FeatureDemandPlanning.Model.Validators
                 .Where(d => d.IsStandardFeatureInGroup);
             RuleFor(d => d)
                 .SetValidator(new VolumeForFeatureGreaterThanModelValidator());
-            RuleFor(d => d)
-                .SetValidator(new TakeRateForFeaturePackValidator());
             RuleFor(d => d.DataItems)
                 .SetCollectionValidator(new NonCodedFeatureTakeRateValidator());
+            RuleFor(d => d)
+                .SetValidator(new TakeRateForFeaturePackValidator());
         }
         
         public static FluentValidation.Results.ValidationResult ValidateData(RawTakeRateData data)

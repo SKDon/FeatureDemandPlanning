@@ -43,6 +43,14 @@ namespace FeatureDemandPlanning.Model.Validators
         {
             return await context.TakeRate.PersistValidationErrors(filter, results);
         }
+
+        public static async Task<IEnumerable<ValidationResult>> Persist(IDataContext context,
+            TakeRateFilter filter,
+            FluentValidation.Results.ValidationResult results,
+            bool global)
+        {
+            return await context.TakeRate.PersistValidationErrors(filter, results, global);
+        }
     }
     // Stores state information for validation such that it can be stored in the database and the appropriate objects
     // can be referenced

@@ -162,7 +162,7 @@
     if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
     {
         var value = dataItem.Field<decimal?>(modelIdentifier);
-        if (value.GetValueOrDefault() == 0 && (parsedFeatureApplicability == "NA" || string.IsNullOrEmpty(parsedFeatureApplicability)) && featureIdentifier.StartsWith("O"))
+        if (value.GetValueOrDefault() == 0 && (parsedFeatureApplicability == "NA" || string.IsNullOrEmpty(parsedFeatureApplicability)) && (featureIdentifier.StartsWith("O") || featureIdentifier.StartsWith("P")))
         {
             dataText = "-";
         }
@@ -174,7 +174,7 @@
     else
     {
         var value = dataItem.Field<int?>(modelIdentifier);
-        if (value.GetValueOrDefault() == 0 && (parsedFeatureApplicability == "NA" || string.IsNullOrEmpty(parsedFeatureApplicability)) && featureIdentifier.StartsWith("O"))
+        if (value.GetValueOrDefault() == 0 && (parsedFeatureApplicability == "NA" || string.IsNullOrEmpty(parsedFeatureApplicability)) && (featureIdentifier.StartsWith("O") || featureIdentifier.StartsWith("P")))
         {
             dataText = "-";
         }

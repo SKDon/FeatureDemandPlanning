@@ -1,4 +1,8 @@
-﻿using FeatureDemandPlanning.Model.Enumerations;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using FeatureDemandPlanning.Model.Enumerations;
+using FeatureDemandPlanning.Model.Extensions;
 using FluentValidation;
 
 namespace FeatureDemandPlanning.Model.Validators
@@ -10,15 +14,43 @@ namespace FeatureDemandPlanning.Model.Validators
         public FeaturePackEquivalentTakeRateValidator()
         {
             RuleFor(p => p)
-                .Must(HaveEquivalentTakeRate)
+                .Must(p => p.DistinctTakeRates() <= 1)
                 .WithMessage(Message,
                     p => p.PackName,
                     p => p.Model)
                 .WithState(p => new ValidationState(ValidationRule.TakeRateForPackFeaturesShouldBeEquivalent, p));
         }
-        private static bool HaveEquivalentTakeRate(FeaturePack pack)
+    }
+    public class OptionItemGreaterThanOrEqualToPackValidator : AbstractValidator<FeaturePack>
+    {
+        private const string Message = "Optional feature(s) '{0}' for model '{1}' is in pack '{2}' are invalid. Take rates for options available in a feature pack cannot be less than the take rate for the feature pack.";
+        private IList<string> _invalidOptions = new List<string>(); 
+
+        public OptionItemGreaterThanOrEqualToPackValidator()
         {
-            return !pack.HasMultipleTakeRates(); ;
+            RuleFor(p => p)
+                .Must(AllOptionalFeaturesTakeRateGreaterThanOrEqualToPack)
+                .WithMessage(Message,
+                    p => _invalidOptions.ToCommaSeperatedList(),
+                    p => p.Model,
+                    p => p.PackName)
+                .WithState(p => new ValidationState(ValidationRule.OptionalPackFeaturesGreaterThanOrEqualToPack, p));
+        }
+
+        public bool AllOptionalFeaturesTakeRateGreaterThanOrEqualToPack(FeaturePack pack)
+        {
+            _invalidOptions = new List<string>();
+            var optionalFeatures = pack.PackItems.Where(d => d.IsOptionalFeatureInGroup && d.FeatureId.HasValue);
+            foreach (var optionalFeature in optionalFeatures)
+            {
+                if (optionalFeature.PercentageTakeRate >= pack.PackPercentageTakeRate &&
+                    optionalFeature.Volume >= pack.PackVolume) continue;
+                
+                _invalidOptions.Add(optionalFeature.FeatureDescription);
+
+                return false;
+            }
+            return true;
         }
     }
     public class TakeRateForFeaturePackValidator : AbstractValidator<RawTakeRateData>
@@ -27,6 +59,8 @@ namespace FeatureDemandPlanning.Model.Validators
         {
             RuleForEach(d => d.FeaturePacks)
                 .SetValidator(new FeaturePackEquivalentTakeRateValidator());
+            RuleForEach(d => d.FeaturePacks)
+                .SetValidator(new OptionItemGreaterThanOrEqualToPackValidator());
         }
         
     }

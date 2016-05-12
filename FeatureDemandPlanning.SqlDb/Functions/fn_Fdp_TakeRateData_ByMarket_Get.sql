@@ -56,81 +56,59 @@ BEGIN
 	
 	SELECT 
 		  AF.FeatureId
-		, AF.FdpFeatureId
+		, CAST(NULL AS INT) AS FdpFeatureId
 		, AF.FeaturePackId
-		, CASE WHEN M.IsFdpModel = 0 THEN M.ModelId ELSE NULL END AS ModelId
-		, CASE WHEN M.IsFdpModel = 1 THEN M.ModelId ELSE NULL END AS FdpModelId
-		, SUM(ISNULL(D.Volume, 0))				AS Volume
-		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate
-		, CAST(CASE WHEN ISNULL(F.IsActive, 0) = 0 THEN 1 ELSE 0 END AS BIT) AS IsOrphanedData	
+		, M.ModelId
+		, CAST(NULL AS INT) AS FdpModelId
+		, ISNULL(D.Volume, 0)				AS Volume
+		, ISNULL(D.PercentageTakeRate, 0)	AS PercentageTakeRate
+		, CAST(0 AS BIT)					AS IsOrphanedData
+		--, CAST(CASE WHEN ISNULL(F.IsActive, 0) = 0 THEN 1 ELSE 0 END AS BIT) AS IsOrphanedData	
     FROM 
 	Fdp_VolumeHeader_VW						AS H
-	CROSS APPLY @Models						AS M 
-	JOIN Fdp_AllFeatures_VW					AS AF	ON H.FdpVolumeHeaderId	= AF.FdpVolumeHeaderId
 	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	H.ProgrammeId		= MK.Programme_Id
-	
+	CROSS APPLY @Models						AS M 
+	JOIN Fdp_Feature_VW						AS AF	ON	H.DocumentId		= AF.DocumentId
+													AND AF.FeatureId		IS NOT NULL
 	LEFT JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
 		    										AND MK.Market_Id		= D.MarketId
 													AND M.ModelId			= D.ModelId
-													AND AF.FeatureId IS NOT NULL AND AF.FeatureId = D.FeatureId
-	LEFT JOIN Fdp_Feature_VW				AS F	ON	H.ProgrammeId		= F.ProgrammeId
-													AND H.Gateway			= F.Gateway
-													AND AF.FeatureId		= F.FeatureId											
+													AND AF.FeatureId		= D.FeatureId										
 	WHERE 
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	(@MarketId IS NULL OR MK.Market_Id = @MarketId)
-	AND
-	AF.FeatureId IS NOT NULL
-	GROUP BY
-	  M.ModelId
-	, M.IsFdpModel
-	, AF.FeatureId
-	, AF.FdpFeatureId
-	, AF.FeaturePackId
-	, F.IsActive
 	
 	UNION
 	
 	-- Feature pack take rates
-	
+
 	SELECT 
 		  AF.FeatureId
-		, AF.FdpFeatureId
+		, CAST(NULL AS INT) AS FdpFeatureId
 		, AF.FeaturePackId
-		, CASE WHEN M.IsFdpModel = 0 THEN M.ModelId ELSE NULL END AS ModelId
-		, CASE WHEN M.IsFdpModel = 1 THEN M.ModelId ELSE NULL END AS FdpModelId
-		, SUM(ISNULL(D.Volume, 0))				AS Volume
-		, MAX(ISNULL(D.PercentageTakeRate, 0))	AS PercentageTakeRate
-		, CAST(CASE WHEN P.Id IS NULL THEN 1 ELSE 0 END AS BIT) AS IsOrphanedData -- Pack not associated with the programme
+		, M.ModelId
+		, CAST(NULL AS INT) AS FdpModelId
+		, ISNULL(D.Volume, 0)				AS Volume
+		, ISNULL(D.PercentageTakeRate, 0)	AS PercentageTakeRate
+		, CAST(0 AS BIT)					AS IsOrphanedData
+		--, CAST(CASE WHEN ISNULL(F.IsActive, 0) = 0 THEN 1 ELSE 0 END AS BIT) AS IsOrphanedData	
     FROM 
 	Fdp_VolumeHeader_VW						AS H
-	CROSS APPLY @Models						AS M 
-	JOIN Fdp_AllFeatures_VW					AS AF	ON H.FdpVolumeHeaderId	= AF.FdpVolumeHeaderId
 	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	H.ProgrammeId		= MK.Programme_Id
-	
+	CROSS APPLY @Models						AS M 
+	JOIN Fdp_Feature_VW						AS AF	ON	H.DocumentId		= AF.DocumentId
+													AND AF.FeatureId		IS NULL
+													AND	AF.FeaturePackId	IS NOT NULL
 	LEFT JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
 		    										AND MK.Market_Id		= D.MarketId
 													AND M.ModelId			= D.ModelId
 													AND AF.FeaturePackId	= D.FeaturePackId
-													AND D.FeatureId			IS NULL
-	LEFT JOIN OXO_Programme_Pack			AS P	ON	H.ProgrammeId		= P.Programme_Id
-													AND AF.FeaturePackId	= P.Id													
+													AND D.FeatureId			IS NULL										
 	WHERE 
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	(@MarketId IS NULL OR MK.Market_Id = @MarketId)
-	AND
-	AF.FeatureId IS NULL
-	AND
-	AF.FeaturePackId IS NOT NULL
-	GROUP BY
-	  M.ModelId
-	, M.IsFdpModel
-	, AF.FeatureId
-	, AF.FdpFeatureId
-	, AF.FeaturePackId
-	, P.Id
 	
 	RETURN; 
 END

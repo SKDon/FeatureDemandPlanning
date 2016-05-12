@@ -293,6 +293,14 @@ AS
 
 	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' duplicate data items removed';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+
+	-- Add any missing feature data if none has been provided by the import
+	-- This ensures that the changeset functionality works properly and we have baseline data to work with
+	
+	SET @Message = 'Adding missing data items...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+
+	EXEC Fdp_TakeRateData_AddMissingData @FdpVolumeHeaderId = @FdpVolumeHeaderId
 	
 	-- Increment the revision version if any new rows have been added
 	-- This will either end up as 1 if there is no prior data, or up the minor version
