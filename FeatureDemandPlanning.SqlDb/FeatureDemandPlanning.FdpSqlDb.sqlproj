@@ -168,8 +168,8 @@
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
     <Build Include="Tables\Fdp_VolumeDataItem.sql">
-      <AnsiNulls>Off</AnsiNulls>
-      <QuotedIdentifier>Off</QuotedIdentifier>
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Tables\Fdp_VolumeHeader.sql" />
     <Build Include="Views\Fdp_Derivative_VW.sql">
@@ -1088,7 +1088,6 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_OxoDerivative_GetMany.sql" />
-    <Build Include="Security\RoleMemberships_3.sql" />
     <Build Include="Functions\fn_Fdp_TakeRateData_ByMarketGroup_Get.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
@@ -1114,6 +1113,10 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="Stored Procedures\Fdp_ChangesetDataItem_CalculateExclusiveFeatureGroupMix.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\Fdp_TakeRateData_AddMissingData.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
