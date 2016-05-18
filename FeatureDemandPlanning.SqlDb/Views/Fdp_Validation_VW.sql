@@ -1,6 +1,8 @@
 ﻿
 
 
+
+
 CREATE VIEW [dbo].[Fdp_Validation_VW] AS
 
 	SELECT 
@@ -35,6 +37,7 @@ CREATE VIEW [dbo].[Fdp_Validation_VW] AS
 		, V.FdpTakeRateFeatureMixId
 		, V.FdpPowertrainDataItemId
 		, V.FdpValidationRuleId AS ValidationRule
+		, I.IsActive
 	FROM
 	Fdp_VolumeHeader_VW			AS H
 	JOIN Fdp_Validation			AS V	ON	H.FdpVolumeHeaderId		= V.FdpVolumeHeaderId
@@ -43,3 +46,8 @@ CREATE VIEW [dbo].[Fdp_Validation_VW] AS
 	JOIN OXO_Programme_MarketGroupMarket_VW AS M 
 										ON V.MarketId					= M.Market_Id
 										AND M.Programme_Id				= H.ProgrammeId
+	LEFT JOIN Fdp_ValidationIgnore AS I ON H.FdpVolumeHeaderId = I.FdpVolumeHeaderId
+										AND V.MarketId			= I.MarketId
+										AND V.[Message]			= I.[Message]
+	WHERE
+	ISNULL(I.IsActive, 0) = 0

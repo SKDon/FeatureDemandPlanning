@@ -7,6 +7,7 @@ AS
 	DECLARE @Models AS NVARCHAR(MAX) = N'';
 	DECLARE @MarketId AS INT;
 	DECLARE @MarketGroupId AS INT;
+	DECLARE @Message AS NVARCHAR(MAX);
 	
 	SELECT @DocumentId = DocumentId FROM Fdp_VolumeHeader_VW WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
 
@@ -46,7 +47,8 @@ AS
 		FROM 
 		dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(@FdpVolumeHeaderId, @MarketId, NULL, NULL) AS MODEL
 
-		PRINT CAST(ISNULL(@MarketId, 0) AS NVARCHAR(10)) + ': ' + ISNULL(@Models, 'None')
+		SET @Message = CAST(ISNULL(@MarketId, 0) AS NVARCHAR(10)) + ': ' + ISNULL(@Models, 'None')
+		RAISERROR(@Message, 0, 1) WITH NOWAIT;
 
 		IF @Models IS NOT NULL
 		BEGIN

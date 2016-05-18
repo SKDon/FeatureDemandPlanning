@@ -49,6 +49,36 @@ BEGIN
     WHERE
     H.FdpVolumeHeaderId = @FdpVolumeHeaderId
     AND
-    S.MarketId = @MarketId;
+    S.MarketId = @MarketId
+
+	UNION
+
+	SELECT
+		  H.FdpVolumeHeaderId
+		, S.FdpTakeRateSummaryId
+		, S.MarketId
+		, MK.Market_Name AS Market
+		, MK.Market_Group_Id AS MarketGroupId
+		, MK.Market_Group_Name AS MarketGroup
+		, S.ModelId
+		, S.FdpModelId
+		, NULL AS Model
+		, NULL AS DerivativeCode
+		, ISNULL(C.TotalVolume, S.Volume) AS Volume
+		, ISNULL(C.PercentageTakeRate, S.PercentageTakeRate) AS PercentageTakeRate
+    FROM
+    Fdp_VolumeHeader_VW						AS H
+    JOIN Fdp_TakeRateSummary				AS S	ON	H.FdpVolumeHeaderId = S.FdpVolumeHeaderId
+    JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	S.MarketId			= MK.Market_Id
+													AND H.ProgrammeId		= MK.Programme_Id					
+	-- Any changeset information
+	LEFT JOIN Fdp_ChangesetDataItem_VW		AS C	ON	S.FdpTakeRateSummaryId	= C.FdpTakeRateSummaryId
+													AND C.FdpChangesetId		= @FdpChangesetId
+	WHERE
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	S.MarketId = @MarketId
+	AND
+	S.ModelId IS NULL;
     
 END

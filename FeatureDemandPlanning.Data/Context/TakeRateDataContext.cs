@@ -233,6 +233,10 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_takeRateDataStore.FdpVolumeByMarketGet(filter));
         }
+        public async Task<int> GetVolumeForAllOtherMarkets(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpAllOtherMarketVolumesGet(filter));
+        }
         public async Task<TakeRateDataItemNote> AddDataItemNote(TakeRateFilter filter)
         {
             return await Task.FromResult(_takeRateDataStore.TakeRateDataItemNoteSave(filter));
@@ -280,7 +284,8 @@ namespace FeatureDemandPlanning.DataStore
                 DataItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateDataGetRaw(filter)),
                 SummaryItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateSummaryGetRaw(filter)),
                 FeatureMixItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateFeatureMixGetRaw(filter)),
-                PowertrainDataItems = await ListPowertrainData(filter)
+                PowertrainDataItems = await ListPowertrainData(filter),
+                TotalVolume = await GetVolumeForAllOtherMarkets(filter)
             };
             return rawData;
         }

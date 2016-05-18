@@ -27,6 +27,7 @@ namespace FeatureDemandPlanning.Model
         public decimal OriginalPercentageTakeRate { get; set; }
 
         public bool IsMarketReview { get; set; }
+        public bool IsReverted { get; set; }
 
         public DataChange()
         {
@@ -127,6 +128,17 @@ namespace FeatureDemandPlanning.Model
             get
             {
                 return MarketId.HasValue &&
+                       string.IsNullOrEmpty(ModelIdentifier) &&
+                       string.IsNullOrEmpty(FeatureIdentifier) &&
+                       !IsPowertrainChange;
+            }
+        }
+
+        public bool IsAllMarketChange
+        {
+            get
+            {
+                return !MarketId.HasValue &&
                        string.IsNullOrEmpty(ModelIdentifier) &&
                        string.IsNullOrEmpty(FeatureIdentifier) &&
                        !IsPowertrainChange;

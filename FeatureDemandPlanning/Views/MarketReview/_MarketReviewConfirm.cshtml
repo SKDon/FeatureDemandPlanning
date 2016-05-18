@@ -21,13 +21,13 @@
                 break;
             case enums.MarketReviewStatus.AwaitingReview:
                 <div class="col-lg-11">
-                    <p>Are you sure you wish to send take rate data for market review?</p>
+                    <p>Are you sure you wish to submit take rate data for approval?</p>
                     <p>Click <strong>'OK'</strong> to continue.</p>
                 </div>
                 break;
             case enums.MarketReviewStatus.AwaitingApproval:
                 <div class="col-lg-11">
-                    <p>Are you sure you wish to submit take rate data for approval?</p>
+                    <p>Accept or reject market changes</p>
                     <p>Click <strong>'OK'</strong> to continue.</p>
                 </div>
                 break;
@@ -41,6 +41,12 @@
                 <div class="col-lg-11">
                     <p>Are you sure you wish to approve the submitted take rate data?</p>
                     <p>Changes will be combined with the current take rate file</p>
+                    <p>Click <strong>'OK'</strong> to continue.</p>
+                </div>
+                break;
+            case enums.MarketReviewStatus.Recalled:
+                <div class="col-lg-11">
+                    <p>Are you sure you wish to recall the take rate file from review?</p>
                     <p>Click <strong>'OK'</strong> to continue.</p>
                 </div>
                 break;
@@ -61,13 +67,16 @@
                 <div class="panel-title">Comment for Reviewers</div>
                 break;
             case enums.MarketReviewStatus.AwaitingApproval:
-                <div class="panel-title">Comment for Approvers</div>
+                <div class="panel-title">Comment for Reviewers</div>
                 break;
             case enums.MarketReviewStatus.Rejected:
                 <div class="panel-title">Rejection Reason</div>
                 break;
             case enums.MarketReviewStatus.Approved:
                 <div class="panel-title">Approval Comment</div>
+                break;
+            case enums.MarketReviewStatus.Recalled:
+            <div class="panel-title">Recall Comment</div>
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

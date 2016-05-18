@@ -5,22 +5,22 @@ AS
 	
 	-- First dataset yields the header details
 
-	DECLARE @IsMarketReview AS BIT = 1;
+	DECLARE @IsMarketReview AS BIT = 0;
 	IF EXISTS(
 		SELECT TOP 1 1
 		FROM
 		Fdp_Changeset					AS C
-		LEFT JOIN Fdp_MarketReview_VW	AS M	ON	C.FdpVolumeHeaderId = M.FdpVolumeHeaderId
-												AND M.FdpMarketReviewStatusId <> 4
+		JOIN Fdp_MarketReview_VW	AS M	ON	C.FdpVolumeHeaderId = M.FdpVolumeHeaderId
+												AND M.FdpMarketReviewStatusId <> 4 -- 
 												AND C.MarketId = M.MarketId
 												AND C.CreatedOn >= M.CreatedOn
+												AND M.FdpMarketReviewStatusId <> 5 -- Recalled
 		WHERE
 		C.FdpChangesetId = @FdpChangesetId
 	)
 	BEGIN
 		SET @IsMarketReview = 1
 	END
-
 	
 	SELECT TOP 1 
 		    C.FdpChangesetId
@@ -32,10 +32,6 @@ AS
 		  , @IsMarketReview AS IsMarketReview
 	FROM
 	Fdp_Changeset					AS C
-	LEFT JOIN Fdp_MarketReview_VW	AS M	ON	C.FdpVolumeHeaderId = M.FdpVolumeHeaderId
-											AND M.FdpMarketReviewStatusId <> 4
-											AND C.MarketId = M.MarketId
-											AND C.CreatedOn >= M.CreatedOn
 	WHERE
 	C.FdpChangesetId = @FdpChangesetId
 	

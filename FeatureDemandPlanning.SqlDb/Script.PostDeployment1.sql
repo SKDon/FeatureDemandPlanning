@@ -413,6 +413,7 @@ USING (VALUES
 	, (2, N'Awaiting Approval', N'The take rate data for the market has been examined by the markets, any changes made and submitted for approval', 1)
 	, (3, N'Rejected', N'The modifications from the market have been rejected', 1)
 	, (4, N'Approved', N'The modifications from the market have been approved', 1)
+	, (5, N'Recalled', N'The review has been recalled by the planning team', 1)
 )
 AS SOURCE (FdpMarketReviewStatusId, [Status], [Description], IsActive) ON TARGET.FdpMarketReviewStatusId = SOURCE.FdpMarketReviewStatusId
 WHEN MATCHED THEN

@@ -24,6 +24,27 @@ AS
 	
 	IF @FdpMarketReviewId IS NULL
 	BEGIN
+		-- Tidy up any changesets that may have been created (shouldn't happen, but could)
+		DELETE FROM Fdp_Validation WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId AND MarketId = @MarketId
+		DELETE FROM Fdp_ChangesetDataItem WHERE FdpChangesetId IN
+		(
+			SELECT FdpChangesetId FROM
+			Fdp_Changeset 
+			WHERE
+			FdpVolumeHeaderId = @FdpVolumeHeaderId
+			AND
+			MarketId = @MarketId
+			AND
+			IsSaved = 0
+		)
+		DELETE FROM Fdp_Changeset
+		WHERE
+		FdpVolumeHeaderId = @FdpVolumeHeaderId
+			AND
+			MarketId = @MarketId
+			AND
+			IsSaved = 0;
+
 		INSERT INTO Fdp_MarketReview
 		(
 			  CreatedBy

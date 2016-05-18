@@ -131,7 +131,7 @@ namespace FeatureDemandPlanning.Controllers
 
             if (CurrentDataChange.IsFeatureChange)
 		    {
-		        InitialiseDataForFeatureChange(parameters);
+		        InitialiseDataForChange();
                 CalculateFeatureChange();
                 CalculateStandardFeatureChange();
                 CalculatePackFeatureChange();
@@ -142,7 +142,9 @@ namespace FeatureDemandPlanning.Controllers
             }
             else if (CurrentDataChange.IsWholeMarketChange)
             {
-                CalculateMarketChange(parameters);
+                InitialiseDataForChange();
+                CalculateMarketChange();
+                CalculateModelsForMarket();
             }
             else if (CurrentDataChange.IsPowertrainChange)
             {
@@ -159,11 +161,11 @@ namespace FeatureDemandPlanning.Controllers
 			return Json(savedChangeset);
 		}
 
-        private void InitialiseDataForFeatureChange(TakeRateParameters parameters)
+        private void InitialiseDataForChange()
         {
             CurrentDataChange = CurrentChangeSet.Changes.First();
             CurrentModelId = CurrentDataChange.GetModelId().GetValueOrDefault();
-            CurrentModelVolumes = CurrentData.SummaryItems.Where(s => s.ModelId.HasValue || s.FdpModelId.HasValue).Sum(s => s.Volume);
+            CurrentModelVolumes = CurrentData.SummaryItems.Where(s => s.ModelId.HasValue).Sum(s => s.Volume);
             CurrentModelVolume = GetModelVolume(CurrentModelId);
 
             ExistingFeature =
@@ -220,7 +222,10 @@ namespace FeatureDemandPlanning.Controllers
 	            Volume = standardFeatureVolume,
 	            PercentageTakeRate = standardFeaturePercentageTakeRate * 100,
 	            // Make sure we use the id of the standard feature item, not the original data change item
-	            FdpVolumeDataItemId = standardFeature.FdpVolumeDataItemId == 0 ? (int?)null : standardFeature.FdpVolumeDataItemId
+	            FdpVolumeDataItemId = standardFeature.FdpVolumeDataItemId == 0 ? (int?)null : standardFeature.FdpVolumeDataItemId,
+                Mode = CurrentDataChange.Mode,
+                OriginalPercentageTakeRate = standardFeature.PercentageTakeRate,
+                OriginalVolume = standardFeature.Volume
 	        };
 	        CurrentChangeSet.Changes.Add(standardFeatureDataChange);
 
@@ -231,7 +236,7 @@ namespace FeatureDemandPlanning.Controllers
 	        var standardFeatureMixPercentageTakeRate = (existingStandardFeatureVolumes + standardFeatureDataChange.Volume.GetValueOrDefault()) /
 	                                                   (decimal)CurrentModelVolumes;
 	        var standardFeatureMixVolume = 0;
-	        var existingStandardFeatureMix = CurrentData.FeatureMixItems.FirstOrDefault(f => IsMatchingFeatureMix(CurrentDataChange, f));
+	        var existingStandardFeatureMix = CurrentData.FeatureMixItems.First(f => IsMatchingFeatureMix(standardFeatureDataChange, f));
 
 	        if (standardFeatureMixPercentageTakeRate > 1)
 	        {
@@ -256,7 +261,10 @@ namespace FeatureDemandPlanning.Controllers
 	            Volume = standardFeatureMixVolume,
 	            ModelIdentifier = string.Empty,
 	            FdpVolumeDataItemId = null,
-	            FdpTakeRateFeatureMixId = existingStandardFeatureMix == null ? (int?)null : existingStandardFeatureMix.FdpTakeRateFeatureMixId
+	            FdpTakeRateFeatureMixId = existingStandardFeatureMix == null ? (int?)null : existingStandardFeatureMix.FdpTakeRateFeatureMixId,
+                Mode = CurrentDataChange.Mode,
+                OriginalPercentageTakeRate = existingStandardFeatureMix.PercentageTakeRate,
+                OriginalVolume = existingStandardFeatureMix.Volume
 	        };
 	        CurrentChangeSet.Changes.Add(standardFeatureMixDataChange);
 	    }
@@ -406,7 +414,8 @@ namespace FeatureDemandPlanning.Controllers
 	        {
                 PercentageTakeRate = ((ExistingFeatureVolumes + CurrentDataChange.Volume) / (decimal)CurrentModelVolumes) * 100,
                 Volume = ExistingFeatureVolumes + CurrentDataChange.Volume,
-	            ModelIdentifier = string.Empty
+	            ModelIdentifier = string.Empty,
+                Mode = CurrentDataChange.Mode
 	        };
 	        if (ExistingFeatureMix != null)
 	        {
@@ -434,7 +443,7 @@ namespace FeatureDemandPlanning.Controllers
             // Get the original values from raw data
             var existingDerivative = rawData.PowertrainDataItems.FirstOrDefault(p => p.DerivativeCode == dataChange.DerivativeCode);
             var affectedModels = rawData.SummaryItems.Where(s => s.DerivativeCode == dataChange.DerivativeCode).ToList();
-            var unaffectedModels = rawData.SummaryItems.Where(s => s.DerivativeCode != dataChange.DerivativeCode && !string.IsNullOrEmpty(s.DerivativeCode)).ToList();
+            var unaffectedModels = rawData.SummaryItems.Where(s => !string.IsNullOrEmpty(s.ModelIdentifier) && s.DerivativeCode != dataChange.DerivativeCode && !string.IsNullOrEmpty(s.DerivativeCode)).ToList();
             
             dataChange.Volume = (int)(marketVolume * decimal.Divide(dataChange.PercentageTakeRate.GetValueOrDefault(), 100));
 
@@ -537,10 +546,11 @@ namespace FeatureDemandPlanning.Controllers
 	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
 	        var rawData = await DataContext.TakeRate.GetRawData(filter);
 
-	        var marketVolume = rawData.GetMarketVolume();
-	        var existingModelVolumes = rawData.SummaryItems.Where(s => (s.ModelId.HasValue || s.FdpModelId.HasValue) && IsMatchingModel(dataChange, s)).Sum(s => s.Volume);
+            var marketVolume = CurrentData.SummaryItems.First(s => !s.ModelId.HasValue).Volume;
 	        var existingModel = rawData.SummaryItems.FirstOrDefault(s => IsMatchingModel(dataChange, s));
-	        var affectedFeatures = rawData.DataItems.Where(f => IsMatchingModel(dataChange, f));
+	        var affectedFeatures =
+	            rawData.DataItems.Where(f => IsMatchingModel(dataChange, f) && !f.IsNonApplicableFeatureInGroup);
+            var existingModelVolumes = rawData.SummaryItems.Where(m => m.ModelId != dataChange.GetModelId() && m.ModelId.HasValue).Sum(m => m.Volume);
 
 	        switch (dataChange.Mode)
 	        {
@@ -563,50 +573,172 @@ namespace FeatureDemandPlanning.Controllers
 	            dataChange.FdpTakeRateSummaryId = existingModel.FdpTakeRateSummaryId;
 	        }
 
-	        // Re-compute all affected features
+	        // Re-compute all affected features and feature mix
 
-	        foreach (var featureDataChange in affectedFeatures.Select(affectedFeature => new DataChange(dataChange)
+	        foreach (var affectedFeature in affectedFeatures)
 	        {
-	            Volume = (int) (dataChange.Volume*affectedFeature.PercentageTakeRate), PercentageTakeRate = affectedFeature.PercentageTakeRate*100, FdpVolumeDataItemId = affectedFeature.FdpVolumeDataItemId, OriginalVolume = affectedFeature.Volume, OriginalPercentageTakeRate = affectedFeature.PercentageTakeRate, FeatureIdentifier = affectedFeature.FeatureIdentifier
-	        }))
-	        {
-	            changeset.Changes.Add(featureDataChange);
-	        }
+	            var volume = (int) (dataChange.Volume*affectedFeature.PercentageTakeRate);
+                if (volume == affectedFeature.Volume) continue;
 
-	        // Re-compute the feature mix across the board
+	            var featureDataChange = new DataChange(dataChange)
+	            {
+	                Volume = (int) (dataChange.Volume*affectedFeature.PercentageTakeRate),
+	                PercentageTakeRate = affectedFeature.PercentageTakeRate*100,
+	                FdpVolumeDataItemId = affectedFeature.FdpVolumeDataItemId,
+	                OriginalVolume = affectedFeature.Volume,
+	                OriginalPercentageTakeRate = affectedFeature.PercentageTakeRate,
+	                FeatureIdentifier = affectedFeature.FeatureIdentifier,
+	                FdpTakeRateSummaryId = null,
+                    Mode = dataChange.Mode
+	            };
 
-	        foreach (var featureMixDataChange in rawData.FeatureMixItems.Select(featureMixItem => new DataChange(dataChange)
-	        {
-	            PercentageTakeRate = featureMixItem.PercentageTakeRate*100, Volume = (int) ((existingModelVolumes + dataChange.Volume)*featureMixItem.PercentageTakeRate), ModelIdentifier = string.Empty, OriginalPercentageTakeRate = featureMixItem.PercentageTakeRate, OriginalVolume = featureMixItem.Volume, FdpTakeRateFeatureMixId = featureMixItem.FdpTakeRateFeatureMixId, FeatureIdentifier = featureMixItem.FeatureIdentifier
-	        }))
-	        {
-	            changeset.Changes.Add(featureMixDataChange);
+                changeset.Changes.Add(featureDataChange);
+
+	            var existingFeatureMix =
+	                rawData.FeatureMixItems.First(f => f.FeatureIdentifier == affectedFeature.FeatureIdentifier);
+	            var featureMixVolume =
+	                rawData.DataItems.Where(d => d.FeatureId == dataChange.GetFeatureId() && 
+                        d.ModelId != dataChange.GetModelId()).Sum(d => d.Volume) + featureDataChange.Volume;
+                var updatedMarketVolume = existingModelVolumes + dataChange.Volume;
+	            var featureMixPercentageTakeRate = featureMixVolume/(decimal) updatedMarketVolume;
+
+	            if (existingFeatureMix.Volume == featureMixVolume &&
+	                existingFeatureMix.PercentageTakeRate == featureMixPercentageTakeRate) continue;
+
+	            var featureMixDataChange = new DataChange(dataChange)
+	            {
+	                FeatureIdentifier = existingFeatureMix.FeatureIdentifier,
+	                ModelIdentifier = string.Empty,
+	                FdpTakeRateFeatureMixId = existingFeatureMix.FdpTakeRateFeatureMixId,
+	                OriginalVolume = existingFeatureMix.Volume,
+	                OriginalPercentageTakeRate = existingFeatureMix.PercentageTakeRate,
+	                Mode = dataChange.Mode,
+	                FdpTakeRateSummaryId = null,
+	                Volume = featureMixVolume,
+	                PercentageTakeRate = featureMixPercentageTakeRate*100
+	            };
+
+                changeset.Changes.Add(featureMixDataChange);
 	        }
 	    }
-
-	    private async void CalculateMarketChange(TakeRateParameters parameters)
+	    private void CalculateModelsForMarket()
 	    {
-	        var changeset = parameters.Changeset;
-	        var dataChange = parameters.Changeset.Changes.First();
+	        var models = CurrentData.SummaryItems.Where(s => s.ModelId.HasValue && s.PercentageTakeRate != 0);
+	        foreach (var model in models)
+	        {
+	            var modelVolume = (int) (CurrentDataChange.Volume.GetValueOrDefault()*model.PercentageTakeRate);
+	            var modelDataChange = new DataChange(CurrentDataChange)
+	            {
+	                ModelIdentifier = model.ModelIdentifier,
+	                FdpTakeRateSummaryId = model.FdpTakeRateSummaryId,
+	                OriginalVolume = model.Volume,
+	                OriginalPercentageTakeRate = model.PercentageTakeRate,
+	                Volume = modelVolume,
+                    PercentageTakeRate = model.PercentageTakeRate * 100,
+                    Mode = CurrentDataChange.Mode
+	            };
+                // If nothing has changed, don't update
+	            if (modelDataChange.Volume == model.Volume) continue;
 
-	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-	        var rawData = await DataContext.TakeRate.GetRawData(filter);
+	            CurrentChangeSet.Changes.Add(modelDataChange);
 
-            var marketVolume = rawData.GetAllMarketVolume();
+	            CalculateFeaturesForMarketAndModel(model);
+	            CalculateFeatureMixesForMarketAndModel(model);
+	        }
+	    }
+	    private void CalculateFeaturesForMarketAndModel(RawTakeRateSummaryItem model)
+	    {
+	        var modelId = model.ModelId;
+            var modelVolume = (int)(CurrentDataChange.Volume.GetValueOrDefault() * model.PercentageTakeRate);
+            var features = CurrentData.DataItems.Where(f => f.ModelId == modelId && !f.IsNonApplicableFeatureInGroup && f.PercentageTakeRate != 0);
             
-            switch (dataChange.Mode)
+            foreach (var feature in features)
             {
-                case TakeRateResultMode.PercentageTakeRate:
-                    dataChange.Volume = (int)(marketVolume * decimal.Divide(dataChange.PercentageTakeRate.GetValueOrDefault(), 100));
-                    break;
-                case TakeRateResultMode.Raw:
-                    dataChange.PercentageTakeRate = (dataChange.Volume / (decimal)marketVolume) * 100;
-                    break;
-                case TakeRateResultMode.NotSet:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                var featureDataChange = new DataChange(CurrentDataChange)
+                {
+                    ModelIdentifier = model.ModelIdentifier,
+                    FeatureIdentifier = feature.FeatureIdentifier,
+                    FdpTakeRateSummaryId = null,
+                    FdpVolumeDataItemId = feature.FdpVolumeDataItemId,
+                    OriginalVolume = feature.Volume,
+                    OriginalPercentageTakeRate = feature.PercentageTakeRate,
+                    Volume = (int)(modelVolume * feature.PercentageTakeRate),
+                    PercentageTakeRate = feature.PercentageTakeRate * 100,
+                    Mode = CurrentDataChange.Mode
+                };
+                if (featureDataChange.Volume == feature.Volume) continue;
+                CurrentChangeSet.Changes.Add(featureDataChange);
             }
+	    }
+	    private void CalculateFeatureMixesForMarketAndModel(RawTakeRateSummaryItem model)
+	    {
+            var modelVolume = (int)(CurrentDataChange.Volume.GetValueOrDefault() * model.PercentageTakeRate);
+            var featureMixes = CurrentData.FeatureMixItems.Where(f => f.PercentageTakeRate != 0 && f.MarketId == model.MarketId);
+
+            foreach (var featureMix in featureMixes)
+            {
+                var featureMixDataChange = new DataChange(CurrentDataChange)
+                {
+                    ModelIdentifier = null,
+                    FeatureIdentifier = featureMix.FeatureIdentifier,
+                    FdpTakeRateSummaryId = null,
+                    FdpTakeRateFeatureMixId = featureMix.FdpTakeRateFeatureMixId,
+                    OriginalVolume = featureMix.Volume,
+                    OriginalPercentageTakeRate = featureMix.PercentageTakeRate,
+                    Volume = (int)(modelVolume * featureMix.PercentageTakeRate),
+                    PercentageTakeRate = featureMix.PercentageTakeRate * 100,
+                    Mode = CurrentDataChange.Mode
+                };
+                if (featureMixDataChange.Volume == featureMix.Volume) continue;
+                CurrentChangeSet.Changes.Add(featureMixDataChange);
+            }
+	    }
+        private void CalculateFeatureMixesForModel(RawTakeRateSummaryItem model)
+        {
+            var modelVolume = (int)(CurrentDataChange.Volume.GetValueOrDefault() * model.PercentageTakeRate);
+            var featureMixes = CurrentData.FeatureMixItems;
+
+            foreach (var featureMix in featureMixes)
+            {
+                var featureMixDataChange = new DataChange(CurrentDataChange)
+                {
+                    ModelIdentifier = null,
+                    FeatureIdentifier = featureMix.FeatureIdentifier,
+                    FdpTakeRateSummaryId = null,
+                    FdpTakeRateFeatureMixId = featureMix.FdpTakeRateFeatureMixId,
+                    OriginalVolume = featureMix.Volume,
+                    OriginalPercentageTakeRate = featureMix.PercentageTakeRate,
+                    Volume = (int)(modelVolume * featureMix.PercentageTakeRate),
+                    PercentageTakeRate = featureMix.PercentageTakeRate * 100
+                };
+                if (featureMixDataChange.Volume == featureMix.Volume) continue;
+                CurrentChangeSet.Changes.Add(featureMixDataChange);
+            }
+        }
+	    private void CalculateMarketChange()
+	    {
+	        var allOtherMarketVolume = CurrentData.TotalVolume;
+	        var allMarketVolume = CurrentDataChange.Volume.GetValueOrDefault() + allOtherMarketVolume;
+	        var originalVolumeItem = CurrentData.SummaryItems.First(s => !s.ModelId.HasValue);
+            
+            CurrentDataChange.PercentageTakeRate = (CurrentDataChange.Volume / (decimal)allMarketVolume) * 100;
+	        CurrentDataChange.OriginalVolume = originalVolumeItem.Volume;
+	        CurrentDataChange.OriginalPercentageTakeRate = originalVolumeItem.Volume/(decimal) (originalVolumeItem.Volume + allOtherMarketVolume);
+	        CurrentDataChange.FdpTakeRateSummaryId = originalVolumeItem.FdpTakeRateSummaryId;
+
+            // Need to recompute the total volume for all markets and represent this as a datachange
+
+	        var allMarketsDataChange = new DataChange(CurrentDataChange)
+	        {
+	            MarketId = null,
+	            OriginalVolume = CurrentDataChange.OriginalVolume + allOtherMarketVolume,
+	            OriginalPercentageTakeRate = 1,
+	            PercentageTakeRate = 100,
+	            Volume = allMarketVolume,
+                Mode = CurrentDataChange.Mode
+	        };
+
+            CurrentChangeSet.Changes.Add(allMarketsDataChange);
 	    }
 
 	    [HandleErrorWithJson]

@@ -96,7 +96,8 @@ AS
 		-- Otherwise the volume is equal to the model volume less the volume of any optional features
 		, CASE
 			WHEN EX.StandardFeatureId IS NULL THEN S.TotalVolume
-			ELSE S.TotalVolume - EX.OptionalFeatureVolumes
+			WHEN S.TotalVolume - EX.OptionalFeatureVolumes > 0 THEN S.TotalVolume - EX.OptionalFeatureVolumes
+			ELSE 0
 		  END
 		  AS Volume
 		, ISNULL(F.BrandDescription, F.[SystemDescription]) AS FeatureDescription
@@ -129,6 +130,8 @@ AS
 	JOIN @UpdateFeatures AS U ON D.FdpVolumeDataItemId = U.FdpVolumeDataItemId;
 	
 	SET @UpdateCount = @UpdateCount + @@ROWCOUNT;
+
+	SELECT * FROM @UpdateFeatures WHERE Volume < 0
 	
 	-- Add any data items that we do not have any volume data for. It may have a volume of zero, but we still need a take rate of 100%
 	

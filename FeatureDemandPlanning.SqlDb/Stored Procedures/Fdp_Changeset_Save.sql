@@ -13,8 +13,8 @@ AS
 	FROM Fdp_Changeset AS C
 	WHERE
 	C.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	AND
-	C.CreatedBy = @CDSID
+	--AND
+	--C.CreatedBy = @CDSID -- Changsets are now global and not per user. The data items themselves record who made the change
 	AND
 	C.IsDeleted = 0
 	AND

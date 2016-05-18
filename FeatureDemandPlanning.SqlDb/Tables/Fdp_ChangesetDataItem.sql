@@ -2,7 +2,7 @@
     [FdpChangesetDataItemId]       INT            IDENTITY (1, 1) NOT NULL,
     [CreatedOn]                    DATETIME       CONSTRAINT [DF_Fdp_ChangesetDataItem_CreatedOn] DEFAULT (getdate()) NOT NULL,
     [FdpChangesetId]               INT            NOT NULL,
-    [MarketId]                     INT            NOT NULL,
+    [MarketId]                     INT            NULL,
     [ModelId]                      INT            NULL,
     [FdpModelId]                   INT            NULL,
     [FeatureId]                    INT            NULL,
@@ -21,7 +21,9 @@
     [FdpTakeRateFeatureMixId]      INT            NULL,
     [FdpPowertrainDataItemId]      INT            NULL,
     [ParentFdpChangesetDataItemId] INT            NULL,
-    CONSTRAINT [PK_Fdp_ChangesetDataItem] PRIMARY KEY CLUSTERED ([FdpChangesetDataItemId] ASC),
+    [CreatedBy]                    NVARCHAR (16)  NULL,
+    [FdpVolumeHeaderId]            INT            NULL,
+    CONSTRAINT [PK_Fdp_ChangesetDataItem] PRIMARY KEY CLUSTERED ([FdpChangesetDataItemId] ASC) WITH (FILLFACTOR = 90),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_ChangesetDataItem] FOREIGN KEY ([ParentFdpChangesetDataItemId]) REFERENCES [dbo].[Fdp_ChangesetDataItem] ([FdpChangesetDataItemId]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_Feature] FOREIGN KEY ([FdpFeatureId]) REFERENCES [dbo].[Fdp_Feature] ([FdpFeatureId]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_Model] FOREIGN KEY ([FdpModelId]) REFERENCES [dbo].[Fdp_Model] ([FdpModelId]),
@@ -34,6 +36,8 @@
     CONSTRAINT [FK_Fdp_ChangesetDataItem_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id]),
     CONSTRAINT [FK_FdpChangesetDataItem_Fdp_Changeset] FOREIGN KEY ([FdpChangesetId]) REFERENCES [dbo].[Fdp_Changeset] ([FdpChangesetId])
 );
+
+
 
 
 

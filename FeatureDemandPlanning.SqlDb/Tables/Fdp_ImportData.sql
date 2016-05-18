@@ -37,6 +37,8 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_Import_DerivativeAndTrim]
     ON [dbo].[Fdp_ImportData]([Derivative Code] ASC, [Derivative Description] ASC, [Trim Pack Description] ASC)
@@ -96,4 +98,10 @@ GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_ImportData_ModelAndTrim]
     ON [dbo].[Fdp_ImportData]([FdpImportId] ASC, [Trim Pack Description] ASC, [Count of Specific Order No] ASC)
     INCLUDE([Derivative Code]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_ImportData_Cover]
+    ON [dbo].[Fdp_ImportData]([FdpImportId] ASC, [Count of Specific Order No] ASC)
+    INCLUDE([Country Description]);
 

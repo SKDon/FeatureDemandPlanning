@@ -408,91 +408,93 @@ AS
 		, FeatureIdentifier
 		, FeatureCode
 	) 
-	
-	INSERT INTO #AggregatedVolumeByFeature
-	(
-		  AggregatedFeatureIdentifier
-		, AggregatedVolume
-		, AggregatedPercentageTakeRate
-	)
-	SELECT 'O' + CAST(M.FeatureId AS NVARCHAR(10)), M.Volume, M.PercentageTakeRate 
-	FROM 
-	Fdp_TakeRateFeatureMix AS M
-	WHERE
-	M.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	AND
-	(
-		@Mode = 'MG'
-		OR
-		(
-			@Mode <> 'MG'
-			AND
-			M.MarketId = @ObjectId
-		)
-	)
-	AND
-	M.FeatureId IS NOT NULL
 
-	UNION
-
-	SELECT 'P' + CAST(M.FeaturePackId AS NVARCHAR(10)), M.Volume, M.PercentageTakeRate 
-	FROM 
-	Fdp_TakeRateFeatureMix AS M
-	WHERE
-	M.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	AND
-	(
-		(
-			@Mode = 'MG'
-			AND
-			M.MarketId IS NULL
-		)
-		OR
-		(
-			@Mode <> 'MG'
-			AND
-			M.MarketId = @ObjectId
-		)
-	)
-	AND
-	M.FeatureId IS NULL
-	AND
-	M.FeaturePackId IS NOT NULL
-	
 	-- Work out total volumes so we can calculate percentage take from the feature mix
 	
-	SELECT @TotalVolume = SUM(S.TotalVolume)
+	SELECT @TotalVolume = SUM(Volume)
 	FROM
-	Fdp_TakeRateSummaryByMarket_VW AS S
-	WHERE
-	FdpVolumeHeaderId = @FdpVolumeHeaderId
+	dbo.fn_Fdp_VolumeByMarket_GetMany(@FdpVolumeHeaderId, NULL);
 
-	IF @Mode = 'MG'
+	SELECT @FilteredVolume = @TotalVolume;
+	SET @FilteredPercentage = 1;
+
+	IF @ObjectId IS NOT NULL 
 	BEGIN
-		SELECT @FilteredVolume = SUM(TotalVolume)
-		FROM Fdp_TakeRateSummaryByMarket_VW
+		SELECT @FilteredVolume = dbo.fn_Fdp_VolumeByMarket_Get(@FdpVolumeHeaderId, @ObjectId, NULL)
+		SET @FilteredPercentage = @FilteredVolume / CAST(@TotalVolume AS DECIMAL(10,4));
+	END;
+	
+	IF @ObjectId IS NULL
+	BEGIN
+		-- All markets
+		INSERT INTO #AggregatedVolumeByFeature
+		(
+			  AggregatedFeatureIdentifier
+			, AggregatedVolume
+			, AggregatedPercentageTakeRate
+		)
+		SELECT 
+			  'O' + CAST(M.FeatureId AS NVARCHAR(10)) AS FeatureIdentifier
+			, Volume
+			, PercentageTakeRate
+		FROM 
+		Fdp_TakeRateFeatureMix AS M
 		WHERE
-		FdpVolumeHeaderId = @FdpVolumeHeaderId
+		M.FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND
-		(@MarketGroupId IS NULL OR MarketGroupId = @MarketGroupId);
+		M.FeatureId IS NOT NULL
+		AND
+		M.MarketId IS NULL
 
-		IF ISNULL(@TotalVolume, 0) = 0
-		BEGIN
-			SELECT @FilteredPercentage = 0
-		END
-		ELSE
-		BEGIN
-			SELECT @FilteredPercentage = @FilteredVolume / CAST(@TotalVolume AS DECIMAL(10,4));
-		END
+		UNION
+
+		SELECT 
+			  'P' + CAST(M.FeaturePackId AS NVARCHAR(10)) AS FeatureIdentifier
+			, Volume
+			, PercentageTakeRate
+		FROM
+		Fdp_TakeRateFeatureMix AS M
+		WHERE
+		M.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		M.FeatureId IS NULL
+		AND
+		M.FeaturePackId IS NOT NULL
+		AND
+		M.MarketId IS NULL
 	END
 	ELSE
 	BEGIN
-		SELECT @FilteredVolume = TotalVolume, @FilteredPercentage = PercentageTakeRate
-		FROM Fdp_TakeRateSummaryByMarket_VW
+		-- Specific market
+		INSERT INTO #AggregatedVolumeByFeature
+		(
+			  AggregatedFeatureIdentifier
+			, AggregatedVolume
+			, AggregatedPercentageTakeRate
+		)
+		SELECT 'O' + CAST(M.FeatureId AS NVARCHAR(10)), M.Volume, M.PercentageTakeRate
+		FROM 
+		Fdp_TakeRateFeatureMix AS M
 		WHERE
-		FdpVolumeHeaderId = @FdpVolumeHeaderId
+		M.FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND
-		MarketId = @ObjectId;
+		M.MarketId = @ObjectId
+		AND
+		M.FeatureId IS NOT NULL
+
+		UNION
+
+		SELECT 'P' + CAST(M.FeaturePackId AS NVARCHAR(10)), M.Volume, M.PercentageTakeRate
+		FROM 
+		Fdp_TakeRateFeatureMix AS M
+		WHERE
+		M.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		M.MarketId = @ObjectId
+		AND
+		M.FeatureId IS NULL
+		AND
+		M.FeaturePackId IS NOT NULL
 	END
 	
 	IF @ShowPercentage = 0
@@ -510,7 +512,6 @@ AS
 	END
 	ELSE
 	BEGIN
-		--SET @Sql =		  'SELECT DATASET.*, dbo.fn_Fdp_PercentageTakeRate_Get(AggregatedVolume, ' + CAST(ISNULL(@FilteredVolume, 0) AS NVARCHAR(10)) + ') AS TotalPercentageTakeRate '
 		SET @Sql =		  'SELECT DATASET.*, AggregatedPercentageTakeRate AS TotalPercentageTakeRate '
 		SET @Sql = @Sql + 'FROM ( '
 		SET @Sql = @Sql + '  SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, ExclusiveFeatureGroup, StringIdentifier, '

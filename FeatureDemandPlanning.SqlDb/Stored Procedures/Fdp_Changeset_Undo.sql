@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_Changeset_Undo]
+﻿
+CREATE PROCEDURE [dbo].[Fdp_Changeset_Undo]
 	@FdpChangesetId INT
 AS
 	SET NOCOUNT ON;
@@ -34,15 +35,16 @@ AS
 		, FdpPowertrainDataItemId		INT NULL
 		, ParentFdpChangesetDataItemId	INT NULL
 		, IsMarketReview				BIT
+		, FdpVolumeHeaderId				INT NULL
 	)
 
-	DECLARE @IsMarketReview AS BIT = 1;
+	DECLARE @IsMarketReview AS BIT = 0;
 	IF EXISTS(
 		SELECT TOP 1 1
 		FROM
 		Fdp_Changeset					AS C
-		LEFT JOIN Fdp_MarketReview_VW	AS M	ON	C.FdpVolumeHeaderId = M.FdpVolumeHeaderId
-												AND M.FdpMarketReviewStatusId <> 4
+		JOIN Fdp_MarketReview_VW	AS M	ON	C.FdpVolumeHeaderId = M.FdpVolumeHeaderId
+												AND M.FdpMarketReviewStatusId NOT IN (4, 5)
 												AND C.MarketId = M.MarketId
 												AND C.CreatedOn >= M.CreatedOn
 		WHERE
@@ -105,6 +107,7 @@ AS
 		, FdpPowertrainDataItemId			
 		, ParentFdpChangesetDataItemId
 		, IsMarketReview
+		, FdpVolumeHeaderId
 	)
 	SELECT 
 		  FdpChangesetDataItemId		
@@ -140,6 +143,7 @@ AS
 		, FdpPowertrainDataItemId			
 		, ParentFdpChangesetDataItemId
 		, @IsMarketReview
+		, FdpVolumeHeaderId
 
 	FROM Fdp_ChangesetDataItem
 	WHERE
@@ -192,26 +196,48 @@ AS
 		, U.PercentageTakeRate								
 		, U.IsVolumeUpdate				
 		, U.IsPercentageUpdate			
-		, V.Volume AS OriginalVolume				
-		, V.PercentageTakeRate AS OriginalPercentageTakeRate	
+		, ISNULL(V.Volume, U.OriginalVolume) AS OriginalVolume				
+		, ISNULL(V.PercentageTakeRate, U.OriginalPercentageTakeRate) AS OriginalPercentageTakeRate	
 		, U.FdpVolumeDataItemId			
 		, U.FdpTakeRateSummaryId
 		, U.FdpTakeRateFeatureMixId	
 		, U.FdpPowertrainDataItemId				
 		, U.ParentFdpChangesetDataItemId 
 		, U.IsMarketReview
+		, CAST(CASE WHEN V.Volume = U.OriginalVolume AND V.PercentageTakeRate = U.OriginalPercentageTakeRate THEN 1 ELSE 0 END AS BIT) AS IsReverted
+		, 1 AS Part
 	FROM
 	@UndoneChanges						AS U
-	LEFT JOIN Fdp_VolumeDataItem_VW			AS V	ON	U.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
-	--LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId		= D.FdpChangesetId
-	--											AND U.FdpVolumeDataItemId	= D.FdpVolumeDataItemId
-	WHERE
-	--D.FdpChangesetDataItemId IS NULL
-	--AND
-	U.FeatureIdentifier IS NOT NULL
-	AND 
-	U.ModelIdentifier IS NOT NULL
+	JOIN Fdp_VolumeDataItem_VW			AS V	ON	U.FdpVolumeDataItemId	= V.FdpVolumeDataItemId
 
+	UNION
+
+	SELECT 
+		  U.FdpChangesetDataItemId		
+		, U.CreatedOn						
+		, U.FdpChangesetId				
+		, U.MarketId						
+		, U.ModelIdentifier									
+		, U.FeatureIdentifier
+		, U.DerivativeIdentifier											
+		, U.TotalVolume					
+		, U.PercentageTakeRate								
+		, U.IsVolumeUpdate				
+		, U.IsPercentageUpdate			
+		, ISNULL(H.TotalVolume, U.OriginalVolume) AS OriginalVolume				
+		, 1 AS OriginalPercentageTakeRate	
+		, U.FdpVolumeDataItemId			
+		, U.FdpTakeRateSummaryId
+		, U.FdpTakeRateFeatureMixId	
+		, U.FdpPowertrainDataItemId				
+		, U.ParentFdpChangesetDataItemId 
+		, U.IsMarketReview
+		, CAST(CASE WHEN H.TotalVolume = U.OriginalVolume THEN 1 ELSE 0 END AS BIT) AS IsReverted
+		, 2 AS Part
+	FROM
+	@UndoneChanges						AS U
+	JOIN Fdp_VolumeHeader_VW			AS H	ON	U.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
+	
 	UNION
 
 	SELECT 
@@ -234,17 +260,11 @@ AS
 		, U.FdpPowertrainDataItemId				
 		, U.ParentFdpChangesetDataItemId 
 		, U.IsMarketReview
+		, CAST(CASE WHEN S.Volume = U.OriginalVolume AND S.PercentageTakeRate = U.OriginalPercentageTakeRate THEN 1 ELSE 0 END AS BIT) AS IsReverted
+		, 3 AS Part
 	FROM
 	@UndoneChanges						AS U
-	LEFT JOIN Fdp_TakeRateSummary			AS S	ON	U.FdpTakeRateSummaryId	= S.FdpTakeRateSummaryId
-	--LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId		= D.FdpChangesetId
-	--											AND U.FdpTakeRateSummaryId	= D.FdpTakeRateSummaryId
-	WHERE
-	--D.FdpChangesetDataItemId IS NULL
-	--AND
-	U.FeatureIdentifier IS NULL
-	AND 
-	U.ModelIdentifier IS NOT NULL
+	JOIN Fdp_TakeRateSummary			AS S	ON	U.FdpTakeRateSummaryId	= S.FdpTakeRateSummaryId
 
 	UNION
 
@@ -268,17 +288,11 @@ AS
 		, U.FdpPowertrainDataItemId
 		, U.ParentFdpChangesetDataItemId 
 		, U.IsMarketReview
+		, CAST(CASE WHEN M.Volume = U.OriginalVolume AND M.PercentageTakeRate = U.OriginalPercentageTakeRate THEN 1 ELSE 0 END AS BIT) AS IsReverted
+		, 4 AS Part
 	FROM
 	@UndoneChanges						AS U
-	LEFT JOIN Fdp_TakeRateFeatureMix			AS M	ON	U.FdpTakeRateFeatureMixId	= M.FdpTakeRateFeatureMixId
-	--LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId			= D.FdpChangesetId
-	--											AND U.FdpTakeRateFeatureMixId	= D.FdpTakeRateFeatureMixId
-	WHERE
-	--D.FdpChangesetDataItemId IS NULL
-	--AND
-	U.FeatureIdentifier IS NOT NULL
-	AND 
-	U.ModelIdentifier IS NULL
+	JOIN Fdp_TakeRateFeatureMix			AS M	ON	U.FdpTakeRateFeatureMixId	= M.FdpTakeRateFeatureMixId
 	
 	UNION
 	
@@ -302,12 +316,8 @@ AS
 		, U.FdpPowertrainDataItemId		
 		, U.ParentFdpChangesetDataItemId 
 		, U.IsMarketReview
+		, CAST(CASE WHEN P.Volume = U.OriginalVolume AND P.PercentageTakeRate = U.OriginalPercentageTakeRate THEN 1 ELSE 0 END AS BIT) AS IsReverted
+		, 5 AS Part
 	FROM
 	@UndoneChanges						AS U
-	LEFT JOIN Fdp_PowertrainDataItem			AS P	ON	U.FdpPowertrainDataItemId	= P.FdpPowertrainDataItemId
-	--LEFT JOIN Fdp_ChangesetDataItem_VW	AS D	ON	U.FdpChangesetId			= D.FdpChangesetId
-	--											AND U.FdpPowertrainDataItemId	= D.FdpPowertrainDataItemId
-	WHERE
-	--D.FdpChangesetDataItemId IS NULL
-	--AND
-	U.DerivativeIdentifier IS NOT NULL
+	JOIN Fdp_PowertrainDataItem			AS P	ON	U.FdpPowertrainDataItemId	= P.FdpPowertrainDataItemId

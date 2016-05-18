@@ -18,133 +18,87 @@
 	, @FdpPowertrainDataItemId		AS INT = NULL
 	, @IsVolumeUpdate				AS BIT = 0
 	, @IsPercentageUpdate			AS BIT = 0
+	, @CDSId						AS NVARCHAR(16) = NULL
 AS
 	SET NOCOUNT ON;
 	
 	DECLARE @FdpChangesetDataItemId AS INT;
-	
+	DECLARE @FdpVolumeHeaderId AS INT;
+	DECLARE @ItemsToDelete AS TABLE
+	(
+		FdpChangesetDataItemId INT
+	)
+
+	SELECT TOP 1 @FdpVolumeHeaderId = FdpVolumeHeaderId FROM Fdp_Changeset WHERE FdpChangesetId = @FdpChangesetId AND @MarketId IS NULL;
+
 	-- If an item already exists we must delete it, rather than update
 	-- Any changes need to be applied from the changeset sequentially, so that any calculations are 
 	-- performed in the correct order. New changes are appended to the changeset
 
-	UPDATE D SET IsDeleted = 1
-	FROM Fdp_ChangesetDataItem AS D
+	INSERT INTO @ItemsToDelete (FdpChangesetDataItemId)
+	
+	SELECT FdpChangesetDataItemId
+	FROM
+	Fdp_ChangesetDataItem AS D
 	WHERE
 	D.FdpChangesetId = @FdpChangesetId
 	AND
-	D.MarketId = @MarketId
+	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	ModelId = @ModelId
-	AND
-	FeatureId = @FeatureId
-	AND
-	(
-		@ParentFdpChangesetDataItemId IS NULL OR 
-		D.ParentFdpChangesetDataItemId IS NULL OR
-		(D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
-	)
+	@FdpVolumeHeaderId IS NOT NULL
 
-	UPDATE D SET IsDeleted = 1
-	FROM Fdp_ChangesetDataItem AS D
+	UNION
+
+	SELECT FdpChangesetDataItemId
+	FROM
+	Fdp_ChangesetDataItem AS D
 	WHERE
 	D.FdpChangesetId = @FdpChangesetId
 	AND
-	D.MarketId = @MarketId
+	D.FdpVolumeDataItemId = @FdpVolumeDataItemId
 	AND
-	ModelId = @ModelId
-	AND
-	FeatureId IS NULL
-	AND
-	FeaturePackId = @FeaturePackId
-	AND
-	(
-		@ParentFdpChangesetDataItemId IS NULL OR 
-		D.ParentFdpChangesetDataItemId IS NULL OR
-		(D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
-	)
+	@FdpVolumeDataItemId IS NOT NULL
 
-	PRINT CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' Rows deleted'
-	-- Clear model summary
+	UNION
 
-	UPDATE D SET IsDeleted = 1
-	FROM Fdp_ChangesetDataItem AS D
+	SELECT FdpChangesetDataItemId
+	FROM
+	Fdp_ChangesetDataItem AS D
 	WHERE
 	D.FdpChangesetId = @FdpChangesetId
 	AND
-	D.MarketId = @MarketId
+	D.FdpTakeRateSummaryId = @FdpTakeRateSummaryId
 	AND
-	ModelId = @ModelId
-	AND
-	FeatureId IS NULL
-	AND
-	FdpFeatureId IS NULL
-	AND
-	FeaturePackId IS NULL
-	AND
-	(
-		@ParentFdpChangesetDataItemId IS NULL OR 
-		D.ParentFdpChangesetDataItemId IS NULL OR
-		(D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
-	)
+	@FdpTakeRateSummaryId IS NOT NULL
 
-	-- Always clear any feature mix entries
+	UNION
 
-	UPDATE D SET IsDeleted = 1
-	FROM Fdp_ChangesetDataItem AS D
+	SELECT FdpChangesetDataItemId
+	FROM
+	Fdp_ChangesetDataItem AS D
 	WHERE
 	D.FdpChangesetId = @FdpChangesetId
 	AND
-	D.MarketId = @MarketId
+	D.FdpTakeRateFeatureMixId = @FdpTakeRateFeatureMixId
 	AND
-	ModelId IS NULL
-	AND
-	FdpModelId IS NULL
-	AND
-	FeatureId = @FeatureId
-	AND
-	(
-		@ParentFdpChangesetDataItemId IS NULL OR 
-		D.ParentFdpChangesetDataItemId IS NULL OR
-		(D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
-	)
+	@FdpTakeRateFeatureMixId IS NOT NULL
 
-	UPDATE D SET IsDeleted = 1
-	FROM Fdp_ChangesetDataItem AS D
+	UNION
+
+	SELECT FdpChangesetDataItemId
+	FROM
+	Fdp_ChangesetDataItem AS D
 	WHERE
 	D.FdpChangesetId = @FdpChangesetId
 	AND
-	D.MarketId = @MarketId
+	D.FdpPowertrainDataItemId = @FdpPowertrainDataItemId
 	AND
-	ModelId IS NULL
-	AND
-	FdpModelId IS NULL
-	AND
-	FeatureId IS NULL
-	AND
-	FeaturePackId = @FeaturePackId
-	AND
-	(
-		@ParentFdpChangesetDataItemId IS NULL OR 
-		D.ParentFdpChangesetDataItemId IS NULL OR
-		(D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
-	)
-
-	-- Clear any powertrain level changes
+	@FdpTakeRateFeatureMixId IS NOT NULL;
 
 	UPDATE D SET IsDeleted = 1
 	FROM Fdp_ChangesetDataItem AS D
-	WHERE
-	D.FdpChangesetId = @FdpChangesetId
-	AND
-	D.MarketId = @MarketId
-	AND
-	D.DerivativeCode IS NOT NULL
-	AND
-	(
-		@ParentFdpChangesetDataItemId IS NULL OR 
-		D.ParentFdpChangesetDataItemId IS NULL OR
-		(D.ParentFdpChangesetDataItemId <> @ParentFdpChangesetDataItemId AND D.FdpChangesetDataItemId <> @ParentFdpChangesetDataItemId)
-	)
+	JOIN
+	@ItemsToDelete AS D1 ON D.FdpChangesetDataItemId = D1.FdpChangesetDataItemId;
 
 	INSERT INTO Fdp_ChangesetDataItem
 	(
@@ -167,6 +121,8 @@ AS
 		, FdpTakeRateFeatureMixId
 		, FdpPowertrainDataItemId
 		, ParentFdpChangesetDataItemId
+		, CreatedBy
+		, FdpVolumeHeaderId
 	)
 	VALUES
 	(
@@ -189,6 +145,8 @@ AS
 		, @FdpTakeRateFeatureMixId
 		, @FdpPowertrainDataItemId
 		, @ParentFdpChangesetDataItemId
+		, @CDSId
+		, CASE WHEN @MarketId IS NULL THEN @FdpVolumeHeaderId ELSE NULL END
 	);
 	
 	SET @FdpChangesetDataItemId = SCOPE_IDENTITY();

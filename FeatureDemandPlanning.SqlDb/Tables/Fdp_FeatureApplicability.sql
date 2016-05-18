@@ -17,6 +17,8 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_FeatureApplicability_Cover]
     ON [dbo].[Fdp_FeatureApplicability]([DocumentId] ASC, [ModelId] ASC, [FeatureId] ASC, [ModelIdentifier] ASC, [MarketId] ASC, [FeaturePackId] ASC)
@@ -29,4 +31,10 @@ GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_FeatureApplicability_Cover2]
     ON [dbo].[Fdp_FeatureApplicability]([MarketId] ASC)
     INCLUDE([DocumentId], [ModelId], [FeatureId], [Applicability], [FeaturePackId]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_FeatureApplicability_Cover3]
+    ON [dbo].[Fdp_FeatureApplicability]([DocumentId] ASC, [FeatureId] ASC, [MarketId] ASC)
+    INCLUDE([ModelId], [Applicability]);
 

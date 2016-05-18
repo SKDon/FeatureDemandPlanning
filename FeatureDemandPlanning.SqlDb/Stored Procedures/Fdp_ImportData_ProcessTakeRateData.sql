@@ -300,13 +300,13 @@ AS
 	SET @Message = 'Adding missing data items...';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 
-	EXEC Fdp_TakeRateData_AddMissingData @FdpVolumeHeaderId = @FdpVolumeHeaderId
+	EXEC Fdp_TakeRateData_AddMissingData @FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	
 	-- Increment the revision version if any new rows have been added
 	-- This will either end up as 1 if there is no prior data, or up the minor version
 	IF @@ROWCOUNT > 0
 	BEGIN
-		EXEC Fdp_TakeRateHeader_IncrementRevision @FdpVolumeHeaderId = @FdpVolumeHeaderId
+		EXEC Fdp_TakeRateHeader_IncrementRevision @FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	END
 	
 	DROP TABLE #NewData;
@@ -316,185 +316,28 @@ AS
 	-- Add zero-valued data is a model exists but we have no take rate information for it
 	
 	SET @Message = 'Adding summary information...';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 
-	-- Need to remove all the old summary items, as they could potentially be invalid
-
-	DELETE FROM Fdp_TakeRateSummaryAudit WHERE FdpTakeRateSummaryId IN (SELECT FdpTakeRateSummaryId FROM Fdp_TakeRateSummary WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId);
-	DELETE FROM Fdp_TakeRateSummary WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
-			
-	;WITH Markets AS 
-	(
-		SELECT FdpVolumeHeaderId, MarketId
-		FROM
-		Fdp_Import_VW AS I
-		WHERE
-		FdpVolumeHeaderId = @FdpVolumeHeaderId
-		AND
-		FdpImportId = @FdpImportId
-		GROUP BY
-		FdpVolumeHeaderId, MarketId
-	)
-	, Summary AS
-	(
-		SELECT
-			  H.FdpVolumeHeaderId
-			, MAX(ISNULL(I.CreatedBy, H.CreatedBy))			AS CreatedBy
-			, MAX(I.FdpSpecialFeatureMappingId)				AS FdpSpecialFeatureMappingId
-			, MK.MarketId
-			, M.Id											AS ModelId 
-			, CAST(NULL AS INT)								AS FdpModelId
-			, SUM(ISNULL(CAST(I.ImportVolume AS INT), 0))	AS ImportVolume
-			, 0 AS PercentageTakeRate
-		FROM
-		Fdp_VolumeHeader_VW		AS H
-		JOIN Markets			AS MK ON H.FdpVolumeHeaderId = MK.FdpVolumeHeaderId
-		CROSS APPLY dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(H.FdpVolumeHeaderId, MK.MarketId, NULL, NULL) 
-								AS M
-		LEFT JOIN Fdp_Import_VW AS I	ON	H.FdpVolumeHeaderId		= I.FdpVolumeHeaderId
-										AND I.FdpImportId			= @FdpImportId
-										AND I.ModelId				= M.Id
-										AND MK.MarketId				= I.MarketId
-										AND I.IsSpecialFeatureCode	= 1
-										AND I.IsMarketMissing		= 0
-										AND I.IsDerivativeMissing	= 0
-										AND I.IsTrimMissing			= 0
-		WHERE
-		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
-		AND
-		M.Available = 1
-		GROUP BY
-		  H.FdpVolumeHeaderId
-		, MK.MarketId
-		, M.Id
-	)
-	INSERT INTO Fdp_TakeRateSummary
-	(
-		  FdpVolumeHeaderId
-		, CreatedBy
-		, FdpSpecialFeatureMappingId
-		, MarketId
-		, ModelId
-		, Volume
-		, PercentageTakeRate
-	)
-	SELECT
-		  S.FdpVolumeHeaderId
-		, S.CreatedBy
-		, S.FdpSpecialFeatureMappingId
-		, S.MarketId
-		, S.ModelId
-		, S.ImportVolume
-		, 0 AS PercentageTakeRate
-	FROM
-	Summary AS S
-	
-	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' summary items added';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT
-
-	-- Add new summary entries at market level
-
-	INSERT INTO Fdp_TakeRateSummary
-	(
-		  CreatedBy
-		, FdpVolumeHeaderId
-		, MarketId
-		, Volume
-		, PercentageTakeRate
-	)
-	SELECT
-		  MAX(S.CreatedBy)
-		, S.FdpVolumeHeaderId
-		, S.MarketId
-		, SUM(S.Volume)
-		, 0
-	FROM
-	Fdp_TakeRateSummary				AS S
-	WHERE
-	S.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	GROUP BY
-	  S.FdpVolumeHeaderId
-	, S.MarketId
-
-	-- Update the percentage take rates for each market
-	-- We need to do this afterwards as the import may only contain partial data
-	-- any % take needs to be computed on the whole dataset
-
-	-- Total volume for all markets
-	
-	SELECT @TotalVolume = SUM(VOL.Volume)
-	FROM
-	Fdp_VolumeHeader AS H
-	CROSS APPLY dbo.fn_Fdp_VolumeByMarket_GetMany(H.FdpVolumeHeaderId, NULL) AS VOL
-	WHERE
-	H.FdpVolumeHeaderId = @FdpVolumeHeaderId;
-	
-	UPDATE Fdp_VolumeHeader SET TotalVolume = @TotalVolume
-	WHERE
-	FdpVolumeHeaderId = @FdpVolumeHeaderId
-	AND
-	TotalVolume <> @TotalVolume;
-
-	-- % Take at market level	
-	
-	UPDATE S SET PercentageTakeRate = CASE WHEN @TotalVolume = 0 THEN 0 ELSE Volume / CAST(@TotalVolume AS DECIMAL(10, 4)) END
-	FROM
-	Fdp_TakeRateSummary AS S
-	WHERE
-	S.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	AND
-	S.ModelId IS NULL;
-
-	-- % Take at model level
-	
-	UPDATE M SET PercentageTakeRate = 
-		CASE 
-			WHEN ISNULL(MK.Volume, 0) <> 0 THEN M.Volume / CAST(MK.Volume AS DECIMAL(10,4))
-			ELSE 0
-		END
-	FROM
-	Fdp_TakeRateSummary			AS M
-	JOIN Fdp_TakeRateSummary	AS MK	ON	M.MarketId			= MK.MarketId
-										AND MK.ModelId			IS NULL
-										AND M.FdpVolumeHeaderId = MK.FdpVolumeHeaderId
-	WHERE
-	M.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	AND
-	M.ModelId IS NOT NULL
-	
-	-- % Take at feature level
-	
-	UPDATE F SET PercentageTakeRate = 
-		CASE 
-			WHEN ISNULL(M.Volume, 0) <> 0 THEN F.Volume / CAST(M.Volume AS DECIMAL(10,4))
-			ELSE 0
-		END
-	FROM
-	Fdp_VolumeDataItem			AS F
-	JOIN Fdp_TakeRateSummary	AS M	ON	F.MarketId			= M.MarketId
-										AND F.ModelId			= M.ModelId
-										AND F.FdpVolumeHeaderId = M.FdpVolumeHeaderId
-	WHERE
-	F.FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	EXEC Fdp_TakeRateData_CalculateSummary @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSId = @CDSId;
 	
 	-- Non-applicable features should be 0% - Override any take rate information where this is not the case
 	
 	SET @Message = 'Resetting non-applicable features'
-	RAISERROR(@Message, 0, 1) WITH NOWAIT
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 	
-	EXEC Fdp_TakeRateData_ResetNonApplicableFeatures @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSId = @CDSId
+	EXEC Fdp_TakeRateData_ResetNonApplicableFeatures @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSId = @CDSId;
 	
 	-- Standard features should be 100% - Override any take rate information where this is not the case
 	
 	SET @Message = 'Setting standard features'
-	RAISERROR(@Message, 0, 1) WITH NOWAIT
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 	
-	EXEC Fdp_TakeRateData_SetStandardFeatures @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSId = @CDSId
+	EXEC Fdp_TakeRateData_SetStandardFeatures @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSId = @CDSId;
 	
 	-- Calculate and persist the feature mix for each feature / for each market
 
 	SET @Message = 'Calculating feature mix...';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 
 	EXEC Fdp_TakeRateFeatureMix_CalculateFeatureMixForAllFeatures @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSID = @CDSId;
 

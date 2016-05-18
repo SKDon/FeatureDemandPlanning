@@ -218,6 +218,7 @@ model.Page = function (models) {
         $("#" + prefix + "_SubmitMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate",[{ MarketReviewStatus: 2 }]); });
         $("#" + prefix + "_ApproveMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate", [{ MarketReviewStatus: 4 }]); });
         $("#" + prefix + "_RejectMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate", [{ MarketReviewStatus: 3 }]); });
+        $("#" + prefix + "_RecallMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate", [{ MarketReviewStatus: 5 }]); });
 
         $("#" + prefix + "_Toggle").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnToggleDelegate", [eventArgs]); });
         $("#" + prefix + "_Filter").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnFilterDelegate", [eventArgs]); });
@@ -266,6 +267,7 @@ model.Page = function (models) {
         });       
     };
     me.configureCellEditing = function () {
+        var prefix = me.getIdentifierPrefix();
         $(".editable").editable(me.cellEditCallback,
         {
             tooltip: "Click to edit percentage take / volume",
@@ -279,6 +281,15 @@ model.Page = function (models) {
         {
             tooltip: "Click to edit percentage take / volume for model",
             cssclass: "editable-cell",
+            data: me.parseInputData,
+            select: true,
+            onblur: "submit"
+        });
+
+        $("#" + prefix + "_MarketVolume").editable(me.cellEditCallback,
+        {
+            tooltip: "Click to edit volume for market",
+            cssclass: "editable-cell-large",
             data: me.parseInputData,
             select: true,
             onblur: "submit"
@@ -339,7 +350,7 @@ model.Page = function (models) {
         var change = new FeatureDemandPlanning.Volume.Change(marketIdentifier, modelIdentifier, featureIdentifier);
         change.Mode = me.getResultsMode();
         var formattedValue = "";
-        if (change.Mode === "PercentageTakeRate") {
+        if (change.Mode === "PercentageTakeRate" && modelIdentifier !== null) {
 
             change.setOriginalTakeRate(me.parseCellValue(this.revert));
             change.setChangedTakeRate(me.parseCellValue(value));
@@ -352,6 +363,7 @@ model.Page = function (models) {
 
         } else {
 
+            change.setMode("Raw");
             change.setOriginalVolume(me.parseCellValue(this.revert));
             change.setChangedVolume(me.parseCellValue(value));
 
@@ -370,12 +382,14 @@ model.Page = function (models) {
         var parsedValue;
         if (me.getResultsMode() === "PercentageTakeRate") {
             parsedValue = $.trim(value.replace("%", ""));
+            parsedValue = parsedValue.replace(",", "");
             if (parsedValue !== "-" && parsedValue !== "") {
                 retVal = parseFloat(parsedValue);
             }
         }
         else {
             parsedValue = $.trim(value);
+            parsedValue = parsedValue.replace(",", "");
             if (parsedValue !== "-" && parsedValue !== "") {
                 retVal = parseInt(parsedValue);
             }
@@ -404,8 +418,21 @@ model.Page = function (models) {
         if (volume !== null)
             formattedValue = volume;
 
+        formattedValue = me.addCommas(formattedValue);
+
         return formattedValue;
     };
+    me.addCommas = function(nStr) {
+        nStr += "";
+        var x = nStr.split(".");
+        var x1 = x[0];
+        var x2 = x.length > 1 ? "." + x[1] : "";
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, "$1" + "," + "$2");
+        }
+        return x1 + x2;
+    }
     me.onEditCellEventHandler = function (sender, eventArgs) {
         var marketIdentifier = eventArgs.getMarketIdentifier();
         var modelIdentifier = eventArgs.getModelIdentifier();
@@ -435,7 +462,7 @@ model.Page = function (models) {
                 (eventArgs.Mode === "Raw" && eventArgs.getChangedVolume() === priorChanges[0].getOriginalVolume())))
         {
             changeSet.removeChanges(marketIdentifier, modelIdentifier, featureIdentifier, derivativeCode);
-            editedCell.removeClass("edited");
+            //editedCell.removeClass("edited");
 
             // If there are no other changes to the feature, lower the feature changed indicator
             //var otherFeatureChanges = changeSet.getChangesForFeature(featureIdentifier);
@@ -443,23 +470,23 @@ model.Page = function (models) {
             //    editedRow.find(".changed-indicator").hide();
             //}
         }
-        else if (eventArgs.isChanged())
-        {
+        //else if (eventArgs.isChanged())
+        //{
             changeSet.addChange(eventArgs);
-            editedCell.addClass("edited");
+            //editedCell.addClass("edited");
             //editedRow.find(".changed-indicator").show();
 
             // Now we have added to the client changeset, raise the save event to store the changeset on the database and perform any
             // recalculation necessary
 
             $(document).trigger("Save");
-        }
+        //}
     };
     me.onSaveEventHandler = function () {
         me.saveData(me.saveCallback);
     };
     me.onSavedEventHandler = function() {
-        window.location.reload();
+        window.location.reload(true);
     };
     me.onToggleEventHandler = function() {
         me.toggleGroups();
@@ -473,7 +500,7 @@ model.Page = function (models) {
     me.saveCallback = function () {
         me.setInitial(false);
         me.loadChangeset();
-        //me.loadValidation();
+        me.loadValidation();
     };
     me.loadChangeset = function () {
         getTakeRateDataModel().loadChangeset(me.loadChangesetCallback);
@@ -481,28 +508,67 @@ model.Page = function (models) {
     me.loadValidation = function() {
         getTakeRateDataModel().loadValidation(me.loadValidationCallback);
     };
+    me.toggleButtonState = function () {
+
+        var prefix = me.getIdentifierPrefix();
+        var model = getTakeRateDataModel();
+
+        if (model.HasValidationErrors())
+        {
+            $("#" + prefix + "_Validation").prop("disabled", false).addClass("validation-error");
+            $("#" + prefix + "_Save").prop("disabled", true);
+            $("#" + prefix + "_MarketReview").prop("disabled", true);
+            $("#" + prefix + "_SubmitMarketReview").prop("disabled", true);
+            $("#" + prefix + "_ApproveMarketReview").prop("disabled", true);
+
+            if (model.HasChanges())
+            {
+                $("#" + prefix + "_Undo").prop("disabled", false);
+                $("#" + prefix + "_RecallMarketReview").prop("disabled", true);
+            }
+
+            if (!model.HasChanges())
+            {
+                $("#" + prefix + "_Undo").prop("disabled", true);
+            }
+
+            return;
+        }
+
+        if (!model.HasValidationErrors()) {
+            $("#" + prefix + "_Validation").prop("disabled", true).removeClass("validation-error");
+        }
+
+        if (model.HasChanges())
+        {
+            $("#" + prefix + "_Save").prop("disabled", false);
+            $("#" + prefix + "_Undo").prop("disabled", false);
+            $("#" + prefix + "_MarketReview").prop("disabled", true);
+            $("#" + prefix + "_RecallMarketReview").prop("disabled", true);
+        }
+
+        if (!model.HasChanges())
+        {
+            $("#" + prefix + "_Undo").prop("disabled", true);
+        }
+    }
     me.loadValidationCallback = function(validationData) {
         
         var model = getTakeRateDataModel();
         var markets = [];
         var mainIndicator = $(".primary-validation-error");
-        //var marketIndicators = $(".market-validation-error");
         var modelIndicators = $(".model-validation-error");
         var featureIndicators = $(".feature-validation-error");
 
-        model.setHasValidationErrors(validationData !== null && validationData.ValidationResults.length > 0);
-        if (model.HasValidationErrors()) {
-            $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", true);
-            //$("#" + me.getIdentifierPrefix() + "_MarketReview").prop("disabled", true);
-            //$("#" + me.getIdentifierPrefix() + "_SubmitMarketReview").prop("disabled", true);
-            //$("#" + me.getIdentifierPrefix() + "_ApproveMarketReview").prop("disabled", true);
-            //$("#" + me.getIdentifierPrefix() + "_RejectMarketReview").prop("disabled", true);
-        }
-
         mainIndicator.hide();
-        //marketIndicators.hide();
         featureIndicators.hide();
         modelIndicators.hide();
+
+        model.setHasValidationErrors(validationData !== null && validationData !== undefined && validationData.ValidationResults.length > 0);
+
+        me.toggleButtonState();
+
+        if (validationData === null || validationData === undefined) return;
 
         for (var i = 0; i < validationData.ValidationResults.length; i++) {
             var currentResult = validationData.ValidationResults[i];
@@ -546,74 +612,122 @@ model.Page = function (models) {
         }
     };
     me.confirmLoadChangeset = function(changesetData) {
+
         var model = getTakeRateDataModel();
-        $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", changesetData === null || changesetData.Changes.length === 0 || model.HasValidationErrors());
-        $("#" + me.getIdentifierPrefix() + "_Undo").prop("disabled", changesetData === null || changesetData.Changes.length === 0);
-        //$("#" + me.getIdentifierPrefix() + "_MarketReview").prop("disabled", changesetData !== null || changesetData.Changes.length !== 0 || model.HasValidationErrors());
-        //$("#" + me.getIdentifierPrefix() + "_SubmitMarketReview").prop("disabled", changesetData === null || changesetData.Changes.length === 0 || model.HasValidationErrors());
-        //$("#" + me.getIdentifierPrefix() + "_ApproveMarketReview").prop("disabled", changesetData === null || changesetData.Changes.length === 0 || model.HasValidationErrors());
-        //$("#" + me.getIdentifierPrefix() + "_RejectMarketReview").prop("disabled", changesetData === null || changesetData.Changes.length === 0 || model.HasValidationErrors());
+        if (changesetData.Changes.length !== 0) {
+            model.setHasChanges(true);
+        } else {
+            model.setHasChanges(false);
+        }
 
-        for (var i = 0; i < changesetData.Changes.length; i++) {
+        for (var i = 0; i < changesetData.Changes.length; i++)
+        {
             var currentChange = changesetData.Changes[i];
-            var displayValue;
-            if (me.getResultsMode() === "PercentageTakeRate") {
-                displayValue = me.formatPercentageTakeRate(currentChange.PercentageTakeRate);
-            } else {
+            var displayValue, displayValue2;
+            var selector, selector2;
+
+            if (currentChange.IsWholeMarketChange)
+            {
                 displayValue = me.formatVolume(currentChange.Volume);
+                displayValue2 = me.formatPercentageTakeRate(currentChange.PercentageTakeRate);
+                selector = $("#" + me.getIdentifierPrefix() + "_MarketVolume");
+                selector2 = $("#" + me.getIdentifierPrefix() + "_MarketPercentageTakeRate");
             }
-            var selector;
-            if (currentChange.IsFeatureSummary) {
-                selector = $("tbody span[data-target='FS|" + currentChange.DataTarget + "']");
-            } else if (currentChange.IsModelSummary) {
-                selector = $(".editable-header[data-target='MS|" + currentChange.DataTarget + "']").first();
-            } else if (currentChange.IsWholeMarketChange) {
-                selector = $(".input-filtered-volume");
-            } else {
-                selector = $("tbody div[data-target='" + currentChange.DataTarget + "']");
+            else if (currentChange.IsAllMarketChange)
+            {
+                displayValue = me.formatVolume(currentChange.Volume);
+                selector = $("#" + me.getIdentifierPrefix() + "_AllMarketVolume");
+            }
+            else
+            {
+                if (me.getResultsMode() === "PercentageTakeRate")
+                {
+                    displayValue = me.formatPercentageTakeRate(currentChange.PercentageTakeRate);
+                }
+                else
+                {
+                    displayValue = me.formatVolume(currentChange.Volume);
+                }
+
+                if (currentChange.IsFeatureSummary)
+                {
+                    selector = $("tbody span[data-target='FS|" + currentChange.DataTarget + "']");
+                }
+                else if (currentChange.IsModelSummary)
+                {
+                    selector = $(".editable-header[data-target='MS|" + currentChange.DataTarget + "']").first();
+                }
+                else
+                {
+                    selector = $("tbody div[data-target='" + currentChange.DataTarget + "']");
+                }
             }
 
-            if (currentChange.IsWholeMarketChange) {
-                selector.addClass(me.getEditedDataClass(currentChange)).val(displayValue);
-            } else {
-                selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
+            selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
+            if (selector2 != null && displayValue2 != null)
+            {
+                selector2.addClass(me.getEditedDataClass(currentChange)).html(displayValue2);
             }
         }
 
         me.configureCellEditing();
+        me.loadValidation();
     };
     me.revertData = function(revertedData) {
         for (var i = 0; i < revertedData.Reverted.length; i++) {
             var revertedChange = revertedData.Reverted[i];
-            var displayValue;
-            if (me.getResultsMode() === "PercentageTakeRate") {
+            var displayValue, displayValue2;
+            if (me.getResultsMode() === "PercentageTakeRate" && !revertedChange.IsWholeMarketChange)
+            {
                 displayValue = me.formatFractionalPercentageTakeRate(revertedChange.OriginalPercentageTakeRate);
-            } else {
+            }
+            else
+            {
+                displayValue = me.formatVolume(revertedChange.OriginalVolume);
+                displayValue2 = me.formatFractionalPercentageTakeRate(revertedChange.OriginalPercentageTakeRate);
+            }
+            var selector, selector2;
+            if (revertedChange.IsFeatureSummary)
+            {
+                selector = $("tbody span[data-target='FS|" + revertedChange.DataTarget + "']");
+            }
+            else if (revertedChange.IsModelSummary)
+            {
+                selector = $("thead th[data-target='MS|" + revertedChange.DataTarget + "']").first();
+            }
+            else if (revertedChange.IsWholeMarketChange)
+            {
+                selector = $("#" + me.getIdentifierPrefix() + "_MarketVolume");
+                selector2 = $("#" + me.getIdentifierPrefix() + "_MarketPercentageTakeRate");
+            }
+            else if (revertedChange.IsAllMarketChange)
+            {
+                selector = $("#" + me.getIdentifierPrefix() + "_AllMarketVolume");
                 displayValue = me.formatVolume(revertedChange.OriginalVolume);
             }
-            var selector;
-            if (revertedChange.IsFeatureSummary) {
-                selector = $("tbody span[data-target='FS|" + revertedChange.DataTarget + "']");
-            } else if (revertedChange.IsModelSummary) {
-                selector = $("thead th[data-target='MS|" + revertedChange.DataTarget + "']").first();
-            } else if (revertedChange.IsWholeMarketChange) {
-                selector = $(".input-filtered-volume");
-            } else {
+            else
+            {
                 selector = $("tbody div[data-target='" + revertedChange.DataTarget + "']");
             }
-            if (revertedChange.IsMarketReview) {
-                if (revertedChange.IsWholeMarketChange) {
-                    selector.removeClass(me.getEditedDataClass(revertedChange)).val(displayValue);
-                } else {
-                    //selector.removeClass("edited-market-review").removeClass(me.getEditedDataClass(revertedChange)).html(displayValue);
-                    selector.removeClass("edited").removeClass(me.getEditedDataClass(revertedChange)).html(displayValue);
-                }
+
+            selector.html(displayValue);
+            if (selector2 != null && displayValue2 != null) {
+                selector2.html(displayValue2);
             }
-            else {
-                if (revertedChange.IsWholeMarketChange) {
-                    selector.removeClass(me.getEditedDataClass(revertedChange)).val(displayValue);
-                } else {
-                    selector.removeClass("edited").removeClass(me.getEditedDataClass(revertedChange)).html(displayValue);
+
+            // If the data has been reverted back in to the original committed change
+            // Remove any classes indicated that it has been edited
+
+            var editedDataClass = me.getEditedDataClass(revertedChange);
+            if (revertedChange.IsReverted) {
+                selector.removeClass(editedDataClass);
+                if (selector2 != null) {
+                    selector2.removeClass(editedDataClass);
+                }
+            } else {
+                selector.addClass(editedDataClass);
+                if (selector2 != null) {
+                    selector2.addClass(editedDataClass);
                 }
             }
         }
@@ -621,16 +735,6 @@ model.Page = function (models) {
     me.loadChangesetCallback = function (changesetData) {
         var changeset = getChangeset();
         changeset.clear();
-
-        $("#" + me.getIdentifierPrefix() + "_Save").prop("disabled", true);
-        $("#" + me.getIdentifierPrefix() + "_Undo").prop("disabled", true);
-
-        me.loadValidation();
-
-        if (changesetData.Changes.length === 0) {
-            me.configureCellEditing();
-            return;
-        }
         me.confirmLoadChangeset(changesetData);
     };
     me.revertChangeset = function () {
@@ -652,6 +756,12 @@ model.Page = function (models) {
                 else if (currentChange.IsModelSummary) {
                     selector = $("thead th[data-target='" + currentChange.DataTarget + "']");
                 }
+                else if (currentChange.IsWholeMarketChange) {
+                    selector = $("#" + me.getIdentifierPrefix() + "_MarketVolume");
+                }
+                else if (currentChange.IsAllMarketChange) {
+                    selector = $("#" + me.getIdentifierPrefix() + "_AllMarketVolume");
+                }
                 else {
                     selector = $("tbody td[data-target='" + currentChange.DataTarget + "']");
                 }
@@ -666,6 +776,9 @@ model.Page = function (models) {
         }
         else if (changesetChange.IsModelSummary) {
             className = me.getEditedDataClassForModelSummary(changesetChange);
+        }
+        else if (changesetChange.IsWholeMarketChange || changesetChange.IsAllMarketChange) {
+            className = me.getEditedDataClassForMarket(changesetChange);
         }
         else {
             className = me.getEditedDataClassForDataItem(changesetChange);
@@ -705,10 +818,17 @@ model.Page = function (models) {
         }
         return className;
     };
+    me.getEditedDataClassForMarket = function (changesetChange) {
+        var className = "edited";
+        if (changesetChange.IsMarketReview) {
+            className = className + "-market-review";
+        }
+        return className;
+    };
     me.getEditedDataClassForDataItem = function (changesetChange) {
         var className = "edited";
         if (changesetChange.FeatureIdentifier !== null && changesetChange.FeatureIdentifier.charAt(0) === "F") {
-            className = "edited-fdp-data";
+            className = "edited";
         }
         if (changesetChange.IsMarketReview) {
             className = className + "-market-review";
@@ -776,7 +896,7 @@ model.Page = function (models) {
     };
     me.marketReview = function(marketReviewStatus) {
         var model = getMarketReviewModel();
-        model.setMarketReviewStatus(marketReviewStatus)
+        model.setMarketReviewStatus(marketReviewStatus);
         var action = model.getMarketReviewAction();
         var actionModel = model.getActionModel(action);
         var filter = getFilter("");
@@ -793,7 +913,7 @@ model.Page = function (models) {
     };
     me.submitMarketReview = function(marketReviewStatus) {
         var model = getMarketReviewModel();
-        model.setMarketReviewStatus(marketReviewStatus)
+        model.setMarketReviewStatus(marketReviewStatus);
         var action = model.getMarketReviewAction();
         var actionModel = model.getActionModel(action);
         var filter = getFilter("");
@@ -967,6 +1087,7 @@ model.Page = function (models) {
         $("#" + prefix + "_SubmitMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
         $("#" + prefix + "_ApproveMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
         $("#" + prefix + "_RejectMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
+        $("#" + prefix + "_RecallMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
 
         $("#" + prefix + "_FirstPage").popover({ trigger: "hover", title: "First Page", placement: "auto bottom" });
         $("#" + prefix + "_PrevPage").popover({ trigger: "hover", title: "Previous Page", placement: "auto bottom" });
@@ -994,7 +1115,7 @@ model.Page = function (models) {
             scrollY: height,
             scrollCollapse: true
         });
-        new $.fn.dataTable.FixedColumns(table, {
+        var fixedColumns = new $.fn.dataTable.FixedColumns(table, {
             leftColumns: leftFixedColumns,
             drawCallback: function (left) {
                 sw.Stop();
@@ -1272,6 +1393,7 @@ model.Page = function (models) {
     me.parseInputData = function (value) {
         var parsedValue = value.replace("%", "");
         parsedValue = parsedValue.replace("-", "");
+        parsedValue = parsedValue.replace(",", "");
         var trimmedValue = $.trim(parsedValue);
         return trimmedValue;
     };

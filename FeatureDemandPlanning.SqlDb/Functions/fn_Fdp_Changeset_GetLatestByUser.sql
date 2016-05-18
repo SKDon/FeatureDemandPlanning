@@ -19,7 +19,7 @@ BEGIN
 	AND
 	MarketId = @MarketId
 	AND
-	FdpMarketReviewStatusId <> 4 -- If the review has been approved, we are no longer in market review
+	FdpMarketReviewStatusId NOT IN (4, 5) -- If the review has been approved or recalled, we are no longer in market review
 								 -- and any changes will have been merged into the data and saved
 
 	IF @MarketReviewOn IS NULL
@@ -31,8 +31,8 @@ BEGIN
 		JOIN Fdp_Changeset	AS C	ON H.FdpVolumeHeaderId = C.FdpVolumeHeaderId
 		WHERE
 		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
-		AND
-		C.CreatedBy = @CDSID
+		--AND
+		--C.CreatedBy = @CDSID -- All c/s are now global and not per user
 		AND
 		C.IsDeleted = 0
 		AND

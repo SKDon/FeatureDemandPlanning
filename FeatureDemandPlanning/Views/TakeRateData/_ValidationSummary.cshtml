@@ -9,13 +9,13 @@
 
 @if (Model.Validation == null || !Model.Validation.ValidationResults.Any())
 {
-    <div class="alert alert-warning">
+    <div class="alert alert-success">
         <div class="row">
             <div class="col-lg-1 text-center">
-                <span class="glyphicon glyphicon-warning-sign"></span>
+                <span class="glyphicon glyphicon-check"></span>
             </div>
             <div class="col-lg-11">
-                <p>No changes have been saved for this market</p>
+                <p>No issues have been identified with the data for this market</p>
             </div>
         </div>
     </div>

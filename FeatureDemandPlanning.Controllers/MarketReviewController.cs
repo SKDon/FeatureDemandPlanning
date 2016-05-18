@@ -70,7 +70,7 @@ namespace FeatureDemandPlanning.Controllers
         }
         [HandleErrorWithJson]
         [HttpPost]
-        [OutputCacheComplex(typeof(TakeRateParameters))]
+        //[OutputCacheComplex(typeof(TakeRateParameters))]
         public async Task<ActionResult> MarketReviewConfirm(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
@@ -81,6 +81,11 @@ namespace FeatureDemandPlanning.Controllers
             var takeRateView = await TakeRateViewModel.GetModel(
                 DataContext,
                 filter);
+
+            if (parameters.MarketReviewStatus == MarketReviewStatus.Recalled)
+            {
+                takeRateView.MarketReviewStatus = MarketReviewStatus.Recalled;
+            }
 
             takeRateView.Changes = await DataContext.TakeRate.GetUnsavedChangesForUser(filter);
 

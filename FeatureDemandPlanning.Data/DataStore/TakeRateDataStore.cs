@@ -889,7 +889,7 @@ namespace FeatureDemandPlanning.DataStore
             
                     try
                     {
-                        var para = new DynamicParameters();
+                        var para = DynamicParameters.FromCDSId(CurrentCDSID);
                         para.Add("@FdpChangesetId", dataItemToSave.FdpChangesetId.GetValueOrDefault(), DbType.Int32);
                         para.Add("@ParentFdpChangesetDataItemId", dataItemToSave.ParentFdpChangesetDataItemId, DbType.Int32);
                         para.Add("@MarketId", dataItemToSave.MarketId, DbType.Int32);
@@ -1021,6 +1021,32 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
 
                     var results = conn.Query<int>("dbo.Fdp_VolumeByMarket_Get", para, commandType: CommandType.StoredProcedure);
+                    var enumerable = results as IList<int> ?? results.ToList();
+                    if (results != null && enumerable.Any())
+                    {
+                        retVal = enumerable.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public int FdpAllOtherMarketVolumesGet(TakeRateFilter filter)
+        {
+            var retVal = 0;
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    
+                    var results = conn.Query<int>("dbo.Fdp_AllOtherMarketVolumes_Get", para, commandType: CommandType.StoredProcedure);
                     var enumerable = results as IList<int> ?? results.ToList();
                     if (results != null && enumerable.Any())
                     {

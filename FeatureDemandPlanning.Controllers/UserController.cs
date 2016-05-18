@@ -67,6 +67,8 @@ namespace FeatureDemandPlanning.Controllers
 
             await DataContext.User.AddProgramme(filter);
 
+            FlushCache(parameters.CDSId);
+
             return RedirectToAction("Programmes", new { CDSID = parameters.CDSId });
         }
         [HttpGet]
@@ -77,6 +79,8 @@ namespace FeatureDemandPlanning.Controllers
             filter.RoleAction = parameters.RoleAction;
 
             await DataContext.User.RemoveProgramme(filter);
+
+            FlushCache(parameters.CDSId);
 
             return RedirectToAction("Programmes", new { CDSID = parameters.CDSId });
         }
@@ -89,6 +93,8 @@ namespace FeatureDemandPlanning.Controllers
 
             await DataContext.User.AddMarket(filter);
 
+            FlushCache(parameters.CDSId);
+
             return RedirectToAction("Markets", new { CDSID = parameters.CDSId });
         }
         [HttpGet]
@@ -99,6 +105,8 @@ namespace FeatureDemandPlanning.Controllers
             filter.RoleAction = parameters.RoleAction;
 
             await DataContext.User.RemoveMarket(filter);
+
+            FlushCache(parameters.CDSId);
 
             return RedirectToAction("Markets", new { CDSID = parameters.CDSId });
         }
@@ -111,6 +119,8 @@ namespace FeatureDemandPlanning.Controllers
 
             await DataContext.User.AddRole(filter);
 
+            FlushCache(parameters.CDSId);
+
             return RedirectToAction("Roles", new {CDSID = parameters.CDSId});
         }
 
@@ -121,6 +131,8 @@ namespace FeatureDemandPlanning.Controllers
             filter.Role = parameters.Role;
             
             await DataContext.User.RemoveRole(filter);
+
+            FlushCache(parameters.CDSId);
 
             return RedirectToAction("Roles", new { CDSID = parameters.CDSId });
         }
@@ -194,6 +206,8 @@ namespace FeatureDemandPlanning.Controllers
                 return JsonGetFailure(string.Format("User '{0}' could not be created", parameters.CDSId));
             }
 
+            FlushCache(parameters.CDSId);
+
             return JsonGetSuccess();
         }
         [HandleErrorWithJson]
@@ -210,6 +224,8 @@ namespace FeatureDemandPlanning.Controllers
             {
                 return JsonGetFailure(string.Format("User '{0}' could not be enabled", parameters.CDSId));
             }
+
+            FlushCache(parameters.CDSId);
 
             return JsonGetSuccess();
         }
@@ -228,6 +244,8 @@ namespace FeatureDemandPlanning.Controllers
                 return JsonGetFailure(string.Format("User '{0}' could not be disabled", parameters.CDSId));
             }
 
+            FlushCache(parameters.CDSId);
+
             return JsonGetSuccess();
         }
         [HandleErrorWithJson]
@@ -245,6 +263,8 @@ namespace FeatureDemandPlanning.Controllers
                 return JsonGetFailure(string.Format("User '{0}' could not be set as an administrator", parameters.CDSId));
             }
 
+            FlushCache(parameters.CDSId);
+
             return JsonGetSuccess();
         }
         [HandleErrorWithJson]
@@ -261,6 +281,8 @@ namespace FeatureDemandPlanning.Controllers
             {
                 return JsonGetFailure(string.Format("User '{0}' could not be unset as an administrator", parameters.CDSId));
             }
+
+            FlushCache(parameters.CDSId);
 
             return JsonGetSuccess();
         }
@@ -282,6 +304,13 @@ namespace FeatureDemandPlanning.Controllers
             if (!result.IsValid)
             {
                 throw new ValidationException(result.Errors);
+            }
+        }
+        private void FlushCache(string cdsId)
+        {
+            if (HttpContext.Cache.Get(cdsId) != null)
+            {
+                HttpContext.Cache.Remove(cdsId);
             }
         }
     }

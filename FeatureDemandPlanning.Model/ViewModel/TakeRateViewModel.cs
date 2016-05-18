@@ -627,6 +627,8 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             var watch = Stopwatch.StartNew();
             volumeModel.TakeRate.MarketReview = await GetMarketReview(context, volumeModel.Document);
+            volumeModel.MarketReviewStatus =
+                (Enumerations.MarketReviewStatus) volumeModel.TakeRate.MarketReview.FdpMarketReviewStatusId;
 
             watch.Stop();
             Log.Debug(watch.ElapsedMilliseconds);

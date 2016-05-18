@@ -6,6 +6,7 @@
         AwaitingReview = 1,
         AwaitingApproval = 2,
         Rejected = 3,
-        Approved = 4
+        Approved = 4,
+        Recalled = 5
     }
 }

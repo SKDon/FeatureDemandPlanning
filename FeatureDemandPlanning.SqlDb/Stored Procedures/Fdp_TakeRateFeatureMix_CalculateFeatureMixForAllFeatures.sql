@@ -1,6 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateFeatureMix_CalculateFeatureMixForAllFeatures]
 	  @FdpVolumeHeaderId	AS INT
-	, @MarketId				AS INT = NULL
 	, @CDSId				AS NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
@@ -22,7 +21,7 @@ AS
 	DECLARE @FeatureMix AS TABLE
 	(
 		  FdpVolumeHeaderId				INT
-		, MarketId						INT
+		, MarketId						INT NULL
 		, FeatureId						INT NULL
 		, FdpFeatureId					INT	NULL
 		, FeaturePackId					INT NULL
@@ -30,22 +29,7 @@ AS
 		, PercentageTakeRate			DECIMAL(5, 4)
 		, FdpTakeRateFeatureMixId		INT NULL
 	)
-	DECLARE @Market AS TABLE
-	(
-		MarketId INT
-	)
-	
-	-- Filter by markets
-	INSERT INTO @Market (MarketId)
-	SELECT 
-		DISTINCT MarketId 
-	FROM
-	Fdp_VolumeDataItem_VW AS D
-	WHERE
-	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	AND
-	(@MarketId IS NULL OR D.MarketId = @MarketId);
-	
+
 	-- Add all volume data existing rows to our data table
 	
 	INSERT INTO @DataForFeature
@@ -61,7 +45,7 @@ AS
 		, FdpVolumeDataItemId
 	)
 	SELECT
-		  F.FdpVolumeHeaderId
+		  H.FdpVolumeHeaderId
 		, M.MarketId
 		, D.ModelId
 		, F.FeatureId
@@ -71,21 +55,21 @@ AS
 		, ISNULL(D.PercentageTakeRate, 0)
 		, D.FdpVolumeDataItemId
 	FROM
-	Fdp_AllFeatures_VW		AS F
-	CROSS APPLY @Market		AS MK
-	CROSS APPLY dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(F.FdpVolumeHeaderId, MK.MarketId, NULL, NULL) AS M
-	LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON MK.MarketId = D.MarketId
-										 AND F.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-										 AND D.IsFeatureData = 1
+	Fdp_VolumeHeader_VW AS H
+	JOIN OXO_Programme_MarketGroupMarket_VW AS MK ON H.ProgrammeId = MK.Programme_Id
+	JOIN Fdp_Feature_VW		AS F	ON H.DocumentId = F.DocumentId
+	CROSS APPLY dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(H.FdpVolumeHeaderId, MK.Market_Id, NULL, NULL) AS M
+	LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
+										 AND MK.Market_Id = D.MarketId
 										 AND M.Id = D.ModelId
 										 AND F.FeatureId = D.FeatureId
 	WHERE
-	F.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 
 	UNION
 
 	SELECT
-		  F.FdpVolumeHeaderId
+		  H.FdpVolumeHeaderId
 		, M.MarketId
 		, D.ModelId
 		, NULL
@@ -95,17 +79,17 @@ AS
 		, ISNULL(D.PercentageTakeRate, 0)
 		, D.FdpVolumeDataItemId
 	FROM
-	Fdp_AllFeatures_VW		AS F
-	CROSS APPLY @Market		AS MK
-	CROSS APPLY dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(F.FdpVolumeHeaderId, MK.MarketId, NULL, NULL) AS M
-	LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON MK.MarketId = D.MarketId
-										 AND F.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-										 AND D.IsFeatureData = 1
+	Fdp_VolumeHeader_VW AS H
+	JOIN OXO_Programme_MarketGroupMarket_VW AS MK ON H.ProgrammeId = MK.Programme_Id
+	JOIN Fdp_Feature_VW		AS F	ON H.DocumentId = F.DocumentId
+	CROSS APPLY dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(H.FdpVolumeHeaderId, MK.Market_Id, NULL, NULL) AS M
+	LEFT JOIN Fdp_VolumeDataItem_VW	AS D ON MK.Market_Id = D.MarketId
+										 AND H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
 										 AND M.Id = D.ModelId
 										 AND F.FeaturePackId = D.FeaturePackId
 										 AND D.FeatureId IS NULL
 	WHERE
-	F.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	F.FeatureId IS NULL
 
@@ -132,7 +116,7 @@ AS
 		, MAX(CUR.FdpTakeRateFeatureMixId) AS FdpTakeRateFeatureMixId
 	FROM 
 	@DataForFeature AS D
-	JOIN @Market	AS M ON D.MarketId = M.MarketId
+	--JOIN @Market	AS M ON D.MarketId = M.MarketId
 	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON	D.FeatureId = CUR.FeatureId
 											AND D.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
 											AND D.MarketId = CUR.MarketId
@@ -157,7 +141,7 @@ AS
 		, MAX(CUR.FdpTakeRateFeatureMixId) AS FdpTakeRateFeatureMixId
 	FROM 
 	@DataForFeature AS D
-	JOIN @Market	AS M ON D.MarketId = M.MarketId
+	--JOIN @Market	AS M ON D.MarketId = M.MarketId
 	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON	D.FeaturePackId = CUR.FeaturePackId
 											AND D.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
 											AND D.MarketId = CUR.MarketId
@@ -183,12 +167,55 @@ AS
 
 	UPDATE F SET TotalVolume = M.Volume
 	FROM @FeatureMix	AS F
-	JOIN @Market		AS MK ON F.MarketId = MK.MarketId
 	CROSS APPLY dbo.fn_Fdp_VolumeByMarket_GetMany(@FdpVolumeHeaderId, @CDSID) AS M
 	WHERE
-	MK.MarketId = M.MarketId
+	F.MarketId = M.MarketId
 	AND
 	F.TotalVolume > M.Volume
+
+	-- We need to add an "ALL MARKETS" feature mix entry to save computing aggregates each time
+
+	DECLARE @TotalVolume AS INT = 0;
+	SELECT @TotalVolume = SUM(Volume)
+	FROM dbo.fn_Fdp_VolumeByMarket_GetMany(@FdpVolumeHeaderId, NULL)
+
+	INSERT INTO @FeatureMix
+	(
+		  FdpVolumeHeaderId
+		, FeatureId
+		, FeaturePackId
+		, TotalVolume
+		, PercentageTakeRate
+	)
+	SELECT
+		  M.FdpVolumeHeaderId
+		, M.FeatureId
+		, NULL
+		, SUM(TotalVolume) AS TotalVolume
+		, SUM(TotalVolume) / CAST(@TotalVolume AS DECIMAL(10, 4)) AS PercentageTakeRate
+	FROM
+	@FeatureMix AS M
+	WHERE
+	M.FeatureId IS NOT NULL
+	GROUP BY
+	FdpVolumeHeaderId, FeatureId
+
+	UNION
+
+	SELECT
+		  FdpVolumeHeaderId
+		, NULL
+		, FeaturePackId
+		, SUM(TotalVolume) AS TotalVolume
+		, SUM(TotalVolume) / CAST(@TotalVolume AS DECIMAL(10, 4)) AS PercentageTakeRate
+	FROM
+	@FeatureMix
+	WHERE
+	FeatureId IS NULL
+	AND
+	FeaturePackId IS NOT NULL
+	GROUP BY
+	FdpVolumeHeaderId, FeaturePackId
 
 	-- Update existing feature mix entries
 
@@ -206,6 +233,10 @@ AS
 	F.TotalVolume <> F1.Volume
 
 	PRINT CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' feature mix entries updated'
+
+	-- Delete the old "ALL MARKETS" mix entry
+
+	DELETE FROM Fdp_TakeRateFeatureMix WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId AND MarketId IS NULL;
 
 	-- Add new ones
 

@@ -46,10 +46,11 @@
 
                             <ul class="list-group" style="margin-bottom:10px">
                                 <li class="list-group-item standardFeature">Standard Feature</li>
+                                <li class="list-group-item marketFeature">Market Feature</li>
                                 <li class="list-group-item optionalFeature">Optional Feature</li>
                                 <li class="list-group-item packFeature">Package Feature</li>
-                                <li class="list-group-item nonApplicableFeature">Not Applicable</li>
-                                <li class="list-group-item orphanedFeature">Not Available</li>
+                                @*<li class="list-group-item nonApplicableFeature">Not Applicable</li>*@
+                                <li class="list-group-item orphanedFeature">Hidden</li>
                             </ul>
 
 
@@ -63,21 +64,30 @@
                     <div class="panel-body">
                         <form class="form-horizontal">
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
-                                <label for="txtVolume" class="col-sm-8 control-label">Total Volume (All Markets):</label>
-                                <div class="col-sm-4 form-control-static">
+                                <label class="col-sm-8 control-label">Total Volume (All Markets):</label>
+                                <div id="@(Model.IdentifierPrefix)_AllMarketVolume" class="col-sm-4 form-control-static">
                                     @Model.Document.TakeRateData.TotalVolume.ToString("N0")
                                 </div>
                             </div>
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
                                 <label class="col-sm-8 control-label">Filtered Volume (Selected Markets):</label>
-                                <div class="col-sm-4 form-control-static">
-                                    @Model.Document.TakeRateData.FilteredVolume.ToString("N0")
-                                </div>
+                                @if (!(Model.Document.Market is EmptyMarket))
+                                {
+                                    <div id="@(Model.IdentifierPrefix)_MarketVolume" class="col-sm-4 form-control-static" data-target="@Model.Document.Market.Id">
+                                        @Model.Document.TakeRateData.FilteredVolume.ToString("N0")
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-sm-4 form-control-static">
+                                        @Model.Document.TakeRateData.FilteredVolume.ToString("N0")
+                                    </div>
+                                }
                             </div>
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
                                 <label class="col-sm-8 control-label">% of Total Volume:</label>
-                                <div class="col-sm-4 form-control-static">
-                                    @Model.Document.TakeRateData.PercentageOfTotalVolume.ToString("P0")
+                                <div id="@(Model.IdentifierPrefix)_MarketPercentageTakeRate" class="col-sm-4 form-control-static">
+                                    @Model.Document.TakeRateData.PercentageOfTotalVolume.ToString("P2")
                                 </div>
                             </div>
                         </form>

@@ -11,14 +11,14 @@ model.DataChangeset = function () {
 model.DataChange = function () {
     var me = this;
     me.FdpChangesetDataItemId = null,
-    me.MarketId = null,
-    me.ModelIdentifier = null,
-    me.FeatureIdentifier = null,
-    me.Mode = 0,
-    me.PercentageTakeRate = null,
-    me.Volume = null,
-    me.Comment = "",
-    me.DerivativeCode = null
+        me.MarketId = null,
+        me.ModelIdentifier = null,
+        me.FeatureIdentifier = null,
+        me.Mode = 0,
+        me.PercentageTakeRate = null,
+        me.Volume = null,
+        me.Comment = "",
+        me.DerivativeCode = null;
 };
 
 model.Change = function (marketIdentifier, 
@@ -89,7 +89,7 @@ model.Change = function (marketIdentifier,
         return privateStore[me.id].Mode;
     };
     me.setMode = function (mode) {
-        privateStore[me.id].Model = mode;
+        privateStore[me.id].Mode = mode;
     };
     me.isValid = function () {
         return (me.getChangedTakeRate() == null || (me.getChangedTakeRate() >= 0 && me.getChangedTakeRate() <= 100)) &&

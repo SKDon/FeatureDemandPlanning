@@ -41,6 +41,7 @@ model.OxoVolume = function (params) {
     privateStore[me.id].CurrentEditValue = null;
     privateStore[me.id].IsImportCompleted = params.IsCompleted;
     privateStore[me.id].HasValidationErrors = false;
+    privateStore[me.id].HasChanges = false;
     privateStore[me.id].Parameters = params;
 
     me.ModelName = "OxoVolume";
@@ -369,9 +370,15 @@ model.OxoVolume = function (params) {
     me.HasValidationErrors = function() {
         return privateStore[me.id].HasValidationErrors;
     };
+    me.HasChanges = function() {
+        return privateStore[me.id].HasChanges;
+    }
     me.setHasValidationErrors = function(hasValidationErrors) {
         privateStore[me.id].HasValidationErrors = hasValidationErrors;
     };
+    me.setHasChanges = function(hasChanges) {
+        privateStore[me.id].HasChanges = hasChanges;
+    }
     function genericErrorCallback(response) {
         if (response.status === 400) {
             var json = JSON.parse(response.responseText);
