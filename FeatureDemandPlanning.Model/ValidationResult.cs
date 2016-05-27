@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel;
-using System.Reflection;
 using FeatureDemandPlanning.Model.Enumerations;
 
 namespace FeatureDemandPlanning.Model
 {
     public class ValidationResult
     {
+        public int? FdpValidationId { get; set; }
         public int TakeRateId { get; set; }
         public int MarketId { get; set; }
         public int MarketGroupId { get; set; }

@@ -28,6 +28,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         public TakeRateDocument Document { get; set; }
         public FdpChangeset Changes { get; set; }
         public FdpChangesetHistory History { get; set; }
+        public FdpChangesetHistoryDetails HistoryDetails { get; set; }
         public MarketReviewStatus MarketReviewStatus { get; set; }
         public string Filter { get; set; }
         public RawTakeRateData RawData { get; set; }
@@ -174,10 +175,13 @@ namespace FeatureDemandPlanning.Model.ViewModel
                     break;
                 case TakeRateDataItemAction.SaveChanges:
                 case TakeRateDataItemAction.History:
-                case TakeRateDataItemAction.Filter:
+                case TakeRateDataItemAction.HistoryDetails:
                 case TakeRateDataItemAction.MarketReview:
                 case TakeRateDataItemAction.ValidationSummary:
                     model = await GetFullAndPartialViewModelForTakeRateDataPageExcludingData(context, filter);
+                    break;
+                case TakeRateDataItemAction.Filter:
+                    model = await GetFullAndPartialViewModelForFilter(context, filter);
                     break;
                 case TakeRateDataItemAction.Changeset:
                     model = await GetFullAndPartialViewModelForChangeset(context, filter);
@@ -210,6 +214,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
             };
             takeRateModel.Document.PageIndex = filter.PageIndex;
             takeRateModel.Document.PageSize = filter.PageSize;
+            if (takeRateModel.Document.PageSize == -1)
+            {
+                takeRateModel.Document.PageSize = int.MaxValue;
+            }
 
             if (!takeRateModel.Document.PageIndex.HasValue)
             {
@@ -217,7 +225,12 @@ namespace FeatureDemandPlanning.Model.ViewModel
             }
             if (!takeRateModel.Document.PageSize.HasValue)
             {
-                takeRateModel.Document.PageSize = context.ConfigurationSettings.GetInteger("TakeRateDataPageSize");
+                var configuredPageSize = context.ConfigurationSettings.GetInteger("TakeRateDataPageSize");
+                if (configuredPageSize == -1)
+                {
+                    configuredPageSize = int.MaxValue;
+                }
+                takeRateModel.Document.PageSize = configuredPageSize;
             }
 
             await HydrateOxoDocument(context, takeRateModel);
@@ -266,6 +279,24 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             await HydrateFdpVolumeHeader(context, takeRateModel);
             await HydratePowertrain(context, takeRateModel);
+
+            return takeRateModel;
+        }
+
+        private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForFilter(IDataContext context,
+            TakeRateFilter filter)
+        {
+            var modelBase = GetBaseModel(context);
+            var takeRateModel = new TakeRateViewModel(modelBase)
+            {
+                Document = (TakeRateDocument)TakeRateDocument.FromFilter(filter),
+                Configuration = context.ConfigurationSettings,
+                MarketReviewStatus = filter.MarketReviewStatus,
+                Filter = filter.Filter
+            };
+
+            await HydrateOxoDocument(context, takeRateModel);
+            await HydrateFdpVolumeHeader(context, takeRateModel);
 
             return takeRateModel;
         }
@@ -358,11 +389,29 @@ namespace FeatureDemandPlanning.Model.ViewModel
         }
         private static async Task<IVehicle> GetVehicle(IDataContext context, Vehicle forVehicle, OXODoc forDocument)
         {
-            // Do not deep get all vehicle details such as markets, derivatives, etc, as these are populated elsewhere
-            return await context.Vehicle.GetVehicle(new VehicleFilter()
-            {
-                ProgrammeId = forVehicle.ProgrammeId, Gateway = forVehicle.Gateway, DocumentId = forDocument.Id, Deep = false
-            });
+            IVehicle vehicle = new EmptyVehicle();
+
+            var cacheKey = string.Format("Vehicle_{0}_{1}_{2}", forVehicle.ProgrammeId, forVehicle.Gateway,
+                forDocument.Id);
+
+            //var cachedLookup = GetCache(cacheKey);
+            //if (cachedLookup != null)
+            //{
+            //    vehicle = (Vehicle) cachedLookup;
+            //}
+            //else
+            //{
+                // Do not deep get all vehicle details such as markets, derivatives, etc, as these are populated elsewhere
+                vehicle = await context.Vehicle.GetVehicle(new VehicleFilter()
+                {
+                    ProgrammeId = forVehicle.ProgrammeId, Gateway = forVehicle.Gateway, DocumentId = forDocument.Id, Deep = false
+                });
+
+                if (!(vehicle is EmptyVehicle))
+                    AddCache(cacheKey, vehicle);
+            //}
+           
+            return vehicle;
         }
         private static async Task<Market> GetMarket(IDataContext context, TakeRateDocument forTakeRateDocument)
         {
@@ -534,31 +583,35 @@ namespace FeatureDemandPlanning.Model.ViewModel
         private static async Task<RawTakeRateData> HydrateRawData(IDataContext context,
             TakeRateViewModel takeRateViewModel)
         {
-            var watch = Stopwatch.StartNew();
             takeRateViewModel.RawData = await GetRawData(context, takeRateViewModel);
-            watch.Stop();
-            Log.Debug(watch.ElapsedMilliseconds);
             return takeRateViewModel.RawData;
         }
         private static async Task<IEnumerable<MarketGroup>> ListAvailableMarketGroups(IDataContext context, ITakeRateDocument document)
         {
-            return await context.TakeRate.ListAvailableMarketGroups(new TakeRateFilter()
+            IEnumerable<MarketGroup> marketGroups;
+
+            var cacheKey = string.Format("MarketGroup_{0}", document.UnderlyingOxoDocument.Id);
+
+            var cachedObject = GetCache(cacheKey);
+            if (cachedObject != null)
             {
-                DocumentId = document.UnderlyingOxoDocument.Id
-            });
+                marketGroups = (IEnumerable<MarketGroup>) cachedObject;
+            }
+            else
+            {
+                marketGroups = await context.TakeRate.ListAvailableMarketGroups(new TakeRateFilter()
+                {
+                    DocumentId = document.UnderlyingOxoDocument.Id
+                });
+
+                if (marketGroups != null && marketGroups.Any())
+                    AddCache(cacheKey, marketGroups);
+            }
+
+            return marketGroups;
         }
 
-        private static void AddCache(string cacheKey, object data)
-        {
-            if (HttpContext.Current == null)
-                return;
-            
-            HttpContext.Current.Cache.Add(cacheKey, data, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
-        }
-        private static object GetCache(string cacheKey)
-        {
-            return HttpContext.Current == null ? null : HttpContext.Current.Cache.Get(cacheKey);
-        }
+        
 
         private static async Task<FdpModel> HydrateCurrentModel(IDataContext context, TakeRateViewModel takeRateModel)
         {
@@ -661,11 +714,20 @@ namespace FeatureDemandPlanning.Model.ViewModel
         }
         private static async Task<TakeRateData> HydrateData(IDataContext context, TakeRateViewModel takeRateModel)
         {
-            var watch = Stopwatch.StartNew();
-            takeRateModel.Document.TakeRateData = await ListTakeRateData(context, takeRateModel);
+            //var cacheKey = string.Format("TakeRateData_{0}_{1}_{2}_{3}", takeRateModel.Document.TakeRateId, takeRateModel.Document.Market.Id, takeRateModel.PageIndex, takeRateModel.PageSize);
+            //var cachedData = HttpContext.Current.Cache.Get(cacheKey);
+            //if (cachedData != null)
+            //{
+            //    takeRateModel.Document.TakeRateData = (TakeRateData) cachedData;
+            //}
+            //else
+            //{
+                takeRateModel.Document.TakeRateData = await ListTakeRateData(context, takeRateModel);
+            //    HttpContext.Current.Cache.Insert(cacheKey, takeRateModel.Document.TakeRateData, null,
+            //        DateTime.Now.AddMinutes(10), Cache.NoSlidingExpiration);
+            //}
+            
 
-            watch.Stop();
-            Log.Debug(watch.ElapsedMilliseconds);
             return takeRateModel.Document.TakeRateData;
         }
         private static async Task<IVehicle> HydrateVehicle(IDataContext context, TakeRateViewModel volumeModel)

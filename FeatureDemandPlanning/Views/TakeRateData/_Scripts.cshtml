@@ -21,8 +21,10 @@
         FilterUri: "@Url.Action("Filter")",
         PowertrainUri: "@Url.Action("Powertrain")",
         ChangesetHistoryUri: "@Url.Action("ChangesetHistory")",
+        ChangesetHistoryDetailsUri: "@Url.Action("ChangesetHistoryDetails")",
         ValidationSummaryUri: "@Url.Action("GetValidationSummary")",
         UndoChangesetUri: "@Url.Action("UndoChangeset")",
+        UndoAllChangesetUri: "@Url.Action("UndoAllChangeset")",
         GetValidationUri: "@Url.Action("GetValidation")",
         ValidationMessageUri: "@Url.Action("ValidationMessage")",
         Configuration: {},
@@ -30,7 +32,7 @@
         PageSize: @Model.PageSize,
         PageIndex: @Model.PageIndex,
         CookieKey: "@Model.CookieKey",
-        OxoDocId: null,
+            OxoDocId: null,
         TakeRateId: null,
         MarketGroupId: null,
         MarketId: null,
@@ -42,19 +44,19 @@
     @if (Model.Document.UnderlyingOxoDocument != null)
     {
         @:params.OxoDocId = @Model.Document.UnderlyingOxoDocument.Id;
-    }
+        }
     @if (!(Model.Document.Market is EmptyMarket))
     {
         @:params.MarketId = @Model.Document.Market.Id;
-    }
+        }
     @if (!(Model.Document.MarketGroup is EmptyMarketGroup))
     {
         @:params.MarketGroupId = @Model.Document.MarketGroup.Id;
-    }
+        }
     @if (Model.Document.TakeRateId.HasValue)
     {
         @:params.TakeRateId = @Model.Document.TakeRateId.Value;
-    }
+        }
 </script>
 
 @Scripts.Render("~/bundles/js/shared")

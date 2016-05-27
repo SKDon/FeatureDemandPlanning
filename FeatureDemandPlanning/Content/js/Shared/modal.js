@@ -80,6 +80,30 @@ model.Modal = function (params) {
     me.setModel = function (model) {
         privateStore[me.id].Model = model;
     };
+    me.hideModal = function() {
+        $("#" + me.getModalDialogId()).modal("hide");
+    };
+    me.refreshModal = function(parameters) {
+        var dialog = $("#" + me.getModalDialogId());
+        var content = dialog.find("#Modal_Content");
+        var title = dialog.find("#Modal_Title");
+        var notifier = dialog.find("#Modal_Notify");
+        var ok = dialog.find("#Modal_OK");
+        var cancel = dialog.find("#Modal_Cancel");
+
+        content.html("");
+        title.html("");
+        notifier.html("").hide();
+
+        me.setModalParameters(parameters);
+        me.setModel(parameters.Model);
+        me.setActionModel(parameters.ActionModel);
+
+        me.getModelContent(parameters.Title, parameters.Uri, parameters.Data);
+
+        ok.html("OK").show();
+        cancel.html("Cancel");
+    };
     me.showModal = function (parameters) {
         var dialog = $("#" + me.getModalDialogId());
         var content = dialog.find("#Modal_Content");

@@ -2,17 +2,17 @@
 
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
-<th class="cross-tab-data-item feature-description">Description</th>
-<th class="cross-tab-data-item feature-notes">Notes</th>
-<th class="cross-tab-data-item feature-code">Code</th>
+<th class="cross-tab-data-item feature-description">DESCRIPTION</th>
+<th class="cross-tab-data-item feature-notes">NOTES</th>
+<th class="cross-tab-data-item feature-code">CODE</th>
 <th class="text-right model-mix">
     @if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
     {
-        @:% Mix
+        @:% MIX
     }
     else
     {
-        @:Volume
+        @:VOLUME
     }
 </th>
 @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)

@@ -54,6 +54,10 @@ model.Filter = function (params) {
     };
     me.setCurrentFilter = function(filter) {
         privateStore[me.id].CurrentFilter = filter;
+        //$.jCookies({
+        //    name: "Filter",
+        //    value: filter
+        //});
     };
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;

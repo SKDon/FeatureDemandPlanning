@@ -9,7 +9,7 @@
     {
         if (Model.CurrentUser.HasApproverRole())
         {
-            <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" data-content="Submit take rate data to market for review" data-toggle="popover"><span class="glyphicon glyphicon-flag"></span></button>
+            <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" data-content="Submit take rate data to market for review" data-toggle="popover" data-container="body"><span class="glyphicon glyphicon-flag"></span></button>
         }
     }
     else
@@ -20,42 +20,42 @@
             case enums.MarketReviewStatus.NotSet:
                 if (Model.CurrentUser.HasApproverRole())
                 {
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" data-content="Submit take rate data to market for review" data-toggle="popover"><span class="glyphicon glyphicon-flag"></span></button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" data-content="Submit take rate data to market for review" data-toggle="popover" data-container="body"><span class="glyphicon glyphicon-flag"></span></button>
                 }
                 break;
             case enums.MarketReviewStatus.Recalled:
                 if (Model.CurrentUser.HasApproverRole())
                 {
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" data-content="Submit take rate data to market for review" data-toggle="popover"><span class="glyphicon glyphicon-flag"></span></button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" data-container="body" data-content="Submit take rate data to market for review" data-toggle="popover"><span class="glyphicon glyphicon-flag"></span></button>
                 }
                 break;
             case enums.MarketReviewStatus.AwaitingReview:
                 if (Model.CurrentUser.HasReviewerRole())
                 {
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_SubmitMarketReview" data-content="Submit changes for approval" data-toggle="popover"><span class="glyphicon glyphicon-share-alt"></span></button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_SubmitMarketReview" data-container="body" data-content="Submit changes for approval" data-toggle="popover"><span class="glyphicon glyphicon-share-alt"></span></button>
                 }
                 if (Model.CurrentUser.HasApproverRole())
                 {
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_RecallMarketReview" data-content="Recall market review" data-toggle="popover"><span class="glyphicon glyphicon-remove"></span></button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_RecallMarketReview" data-container="body" data-content="Recall market review" data-toggle="popover"><span class="glyphicon glyphicon-remove"></span></button>
                 }
                 break;
             case enums.MarketReviewStatus.AwaitingApproval:
                 if (Model.CurrentUser.HasApproverRole())
                 {
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_ApproveMarketReview" data-content="Approve changes" data-toggle="popover"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_RejectMarketReview" data-content="Reject changes" data-toggle="popover"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_ApproveMarketReview" data-container="body" data-content="Approve changes" data-toggle="popover"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_RejectMarketReview" data-container="body" data-content="Reject changes" data-toggle="popover"><span class="glyphicon glyphicon-thumbs-down"></span></button>
                 }
                 break;
             case enums.MarketReviewStatus.Rejected:
                 if (Model.CurrentUser.HasReviewerRole())
                 {
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_SubmitMarketReview" data-content="Submit changes for approval" data-toggle="popover"><span class="glyphicon glyphicon-send"></span></button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_SubmitMarketReview" data-container="body" data-content="Submit changes for approval" data-toggle="popover"><span class="glyphicon glyphicon-send"></span></button>
                 }
                 break;
             case enums.MarketReviewStatus.Approved:
                 if (Model.CurrentUser.HasApproverRole())
                 {
-                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" data-content="Submit take rate data to market for review" data-toggle="popover"><span class="glyphicon glyphicon-flag"></span></button>
+                    <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_MarketReview" data-container="body" data-content="Submit take rate data to market for review" data-toggle="popover"><span class="glyphicon glyphicon-flag"></span></button>
                 }
                 break;
             default:

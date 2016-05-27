@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FeatureDemandPlanning.Model.Enumerations;
 using FluentValidation;
 
@@ -25,7 +26,7 @@ namespace FeatureDemandPlanning.Model.Validators
         }
         private static object GetModelTakeRate(RawTakeRateData rawData)
         {
-            return rawData.SummaryItems.Where(s => s.ModelId.HasValue || s.FdpModelId.HasValue).Sum(s => s.PercentageTakeRate);
+            return Math.Round(rawData.SummaryItems.Where(s => s.ModelId.HasValue || s.FdpModelId.HasValue).Sum(s => s.PercentageTakeRate), 2);
         }
         private static object GetModelVolume(RawTakeRateData rawData)
         {

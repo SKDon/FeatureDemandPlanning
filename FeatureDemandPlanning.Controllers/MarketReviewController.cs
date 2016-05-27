@@ -66,6 +66,13 @@ namespace FeatureDemandPlanning.Controllers
             var marketReview = await DataContext.TakeRate.SetMarketReview(
                 TakeRateFilter.FromTakeRateParameters(parameters));
 
+            if (parameters.MarketReviewStatus == MarketReviewStatus.Approved)
+            {
+                // Automatically save the changes from the market
+                parameters.Comment = "Changes from market review";
+                await DataContext.TakeRate.PersistChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
+            }
+
             return Json(marketReview);
         }
         [HandleErrorWithJson]

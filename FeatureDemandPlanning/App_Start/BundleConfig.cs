@@ -14,7 +14,8 @@ namespace FeatureDemandPlanning
                         "~/Content/js/jquery-1.12.0.js",
                         "~/Content/js/jquery.jeditable.js",
                         "~/Content/js/jquery.spin.js",
-                        "~/Content/js/jquery.contextMenu.js"));
+                        "~/Content/js/jquery.contextMenu.js",
+                        "~/Content/js/jcookies.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
                 "~/Content/js/bootstrap.js"));
@@ -23,6 +24,7 @@ namespace FeatureDemandPlanning
                     "~/Content/js/jquery.dataTables.js",
                     "~/Content/js/dataTables.bootstrap.js",
                     "~/Content/js/dataTables.fixedColumns.js",
+                    "~/Content/js/dataTables.fixedHeader.min.js",
                     "~/Content/js/jquery.dataTables.rowGrouping.js",
                     "~/Content/js/dataTables.responsive.js"
                 ));
@@ -211,7 +213,8 @@ namespace FeatureDemandPlanning
                 .Include("~/Content/css/site.css", cssFixer)
                 .Include("~/Content/css/BrushedMetal.css", cssFixer)
                 .Include("~/Content/css/jquery.contextMenu.css", cssFixer)
-                .Include("~/Content/css/bootstrap-multiselect.css", cssFixer));
+                .Include("~/Content/css/bootstrap-multiselect.css", cssFixer)
+                .Include("~/Content/css/jquery.spin.css", cssFixer));
 
             bundles.Add(new StyleBundle("~/bundles/css/dataTables").Include(
                     "~/Content/css/dataTables.bootstrap.css",

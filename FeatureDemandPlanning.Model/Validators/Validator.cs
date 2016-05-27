@@ -19,6 +19,15 @@ namespace FeatureDemandPlanning.Model.Validators
             FluentValidation.Results.ValidationResult modelLevelResults = null;
             FluentValidation.Results.ValidationResult featureMixResults = null;
 
+            // Bit of a hack here, we need to bind a reference to all of the available feature packs
+            // to each individual feature pack. This is needed as for pack item take rates, the take is the sum of any feature packs
+            // containing that item. We could validate at a higher level, but then we won't be able to identify which pack is in error
+
+            foreach (var pack in data.FeaturePacks)
+            {
+                pack.AllPacks = data.FeaturePacks;
+            }
+
             Parallel.Invoke(
                 () => featureLevelResults = TakeRateDataValidator.ValidateData(data),  
                 () => modelLevelResults = TakeRateSummaryValidator.ValidateData(data),

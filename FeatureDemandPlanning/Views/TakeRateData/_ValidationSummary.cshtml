@@ -29,6 +29,7 @@
                 <th></th>
                 <th>Validation Message</th>
                 <th>Rule</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -41,6 +42,7 @@
                         <td>@(i++).</td>
                         <td>@item.Message</td>
                         <td>@item.RuleDescription</td>
+                        <td>@Html.ActionLink("Ignore", "IgnoreValidationError", new { TakeRateId = Model.Document.TakeRateId, MarketId = Model.Document.Market.Id, FdpValidationId = item.FdpValidationId })</td>
                     </tr>
                 }
 

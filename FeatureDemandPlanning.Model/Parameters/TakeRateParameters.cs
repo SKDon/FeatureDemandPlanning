@@ -8,6 +8,7 @@ namespace FeatureDemandPlanning.Model.Parameters
     {
         public int? DocumentId { get; set; }
         public int? TakeRateId { get; set; }
+        public int? ChangesetId { get; set; }
         public int? TakeRateDataItemId { get; set; }
         public int? MarketId { get; set; }
         public int? MarketGroupId { get; set; }
@@ -66,6 +67,8 @@ namespace FeatureDemandPlanning.Model.Parameters
                     break;
                 case TakeRateDataItemAction.History:
                     break;
+                case TakeRateDataItemAction.HistoryDetails:
+                    break;
                 case TakeRateDataItemAction.Validate:
                     break;
                 case TakeRateDataItemAction.Changeset:
@@ -91,5 +94,7 @@ namespace FeatureDemandPlanning.Model.Parameters
 
             return new {};
         }
+
+        public int? FdpValidationId { get; set; }
     }
 }

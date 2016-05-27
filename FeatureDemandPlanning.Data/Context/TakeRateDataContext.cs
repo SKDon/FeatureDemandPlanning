@@ -124,6 +124,10 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_takeRateDataStore.FdpTakeRateHistoryGet(filter));
         }
+        public async Task<FdpChangesetHistoryDetails> GetChangesetHistoryDetails(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpTakeRateHistoryDetailsGet(filter));
+        }
         public async Task<FdpChangeset> SaveChangeset(TakeRateFilter filter, FdpChangeset changesetToSave)
         {
             var savedChangeset = await Task.FromResult(_takeRateDataStore.FdpChangesetSave(filter, changesetToSave));
@@ -221,6 +225,11 @@ namespace FeatureDemandPlanning.DataStore
             var changeset = await GetUnsavedChangesForUser(takeRateFilter);
             return await Task.FromResult(_takeRateDataStore.FdpChangesetUndo(takeRateFilter, changeset));
         }
+        public async Task<FdpChangeset> UndoAllChangeset(TakeRateFilter takeRateFilter)
+        {
+            var changeset = await GetUnsavedChangesForUser(takeRateFilter);
+            return await Task.FromResult(_takeRateDataStore.FdpChangesetUndoAll(takeRateFilter, changeset));
+        }
         public async Task<FdpChangeset> RevertUnsavedChangesForUser(TakeRateFilter takeRateFilter)
         {
             return await Task.FromResult(_takeRateDataStore.FdpChangesetRevert(takeRateFilter));
@@ -285,6 +294,7 @@ namespace FeatureDemandPlanning.DataStore
                 SummaryItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateSummaryGetRaw(filter)),
                 FeatureMixItems = await Task.FromResult(_takeRateDataStore.FdpTakeRateFeatureMixGetRaw(filter)),
                 PowertrainDataItems = await ListPowertrainData(filter),
+                PackFeatures = await Task.FromResult(_takeRateDataStore.FdpFeaturePackItemsGetMany(filter)),
                 TotalVolume = await GetVolumeForAllOtherMarkets(filter)
             };
             return rawData;
@@ -296,6 +306,10 @@ namespace FeatureDemandPlanning.DataStore
         public async Task<IEnumerable<RawPowertrainDataItem>> ListPowertrainData(TakeRateFilter takeRateFilter)
         {
             return await Task.FromResult(_takeRateDataStore.FdpPowertrainDataItemGetRaw(takeRateFilter));
+        }
+        public void IgnoreValidationError(TakeRateFilter takeRateFilter)
+        {
+            _takeRateDataStore.FdpValidationIgnore(takeRateFilter);
         }
 
         #endregion
@@ -323,5 +337,8 @@ namespace FeatureDemandPlanning.DataStore
         private readonly ProgrammeDataStore _programmeDataStore;
 
         #endregion
+
+
+       
     }
 }

@@ -99,6 +99,23 @@ model.Page = function (models) {
             ActionModel: actionModel
         });
     };
+    me.showHistoryDetails = function(changesetId) {
+        var model = getTakeRateDataModel();
+        var action = model.getChangesetHistoryDetailsAction();
+        var actionModel = model.getActionModel(action);
+        var filter = getFilter("");
+
+        $.extend(filter, { ChangesetId: changesetId });
+        filter.Action = action;
+       
+        getModal().refreshModal({
+            Title: "Change Details",
+            Uri: model.getChangesetHistoryDetailsUri(),
+            Data: JSON.stringify(filter),
+            Model: model,
+            ActionModel: actionModel
+        });
+    };
     me.showPowertrain = function() {
         var model = getTakeRateDataModel();
         var action = model.getPowertrainAction();
@@ -145,8 +162,32 @@ model.Page = function (models) {
             ActionModel: actionModel
         });
     }
-    me.undoData = function() {
+    me.undoData = function () {
+        me.showSpinner("Undo Data");
         getTakeRateDataModel().undoData({ Data: getChangeset().getDataChanges() }, me.undoDataCallback);
+    };
+    me.undoAllData = function () {
+        me.showSpinner("Undo All Data");
+        getTakeRateDataModel().undoAllData({ Data: getChangeset().getDataChanges() }, me.undoDataCallback);
+    };
+    me.showSpinner = function(spinnerText) {
+        var spinnerModal = $("#" + me.getIdentifierPrefix() + "_SpinnerModal");
+        var spinner = $("#" + me.getIdentifierPrefix() + "_Spinner");
+        var spinnerTitle = $("#" + me.getIdentifierPrefix() + "_SpinnerModalTitle");
+
+        spinnerTitle.html(spinnerText);
+        spinnerModal.modal({
+            backdrop: "static",
+            keyboard: false
+        });
+        spinner.spin("show");
+    };
+    me.hideSpinner = function() {
+        var spinnerModal = $("#" + me.getIdentifierPrefix() + "_SpinnerModal");
+        var spinner = $("#" + me.getIdentifierPrefix() + "_Spinner");
+
+        spinner.spin("hide");
+        spinnerModal.modal("hide");
     };
     me.getPersistSuccessMessage = function() {
         return "Changes committed successfully. Data will now reload";
@@ -160,9 +201,10 @@ model.Page = function (models) {
         me.setInitial(false);
         me.loadChangeset();
         me.revertData(revertedData);
+        me.hideSpinner();
     };
     me.reloadPage = function() {
-        location.reload();
+        location.reload(true);
     };
     me.saveData = function (callback) {
         var changes = getChangeset().getDataChanges();
@@ -206,10 +248,12 @@ model.Page = function (models) {
             .unbind("Save").on("Save", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSaveDelegate", [eventArgs]); })
             .unbind("Saved").on("Saved", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSavedDelegate", [eventArgs]); })
             .unbind("UpdateFilterVolume").on("UpdateFilterVolume", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdateFilterVolumeDelegate", [eventArgs]); })
-            .unbind("Filtered").on("Filtered", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnFilteredDelegate", [eventArgs]); });
+            .unbind("Filtered").on("Filtered", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnFilteredDelegate", [eventArgs]); })
+            .unbind("HistoryDetails").on("HistoryDetails", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnHistoryDetailsDelegate", [eventArgs]); });
 
         $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
         $("#" + prefix + "_Undo").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoDelegate", [eventArgs]); });
+        $("#" + prefix + "_UndoAll").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoAllDelegate", [eventArgs]); });
         $("#" + prefix + "_History").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnHistoryDelegate", [eventArgs]); });
         $("#" + prefix + "_Validation").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnValidationSummaryDelegate", [eventArgs]); });
         $("#" + prefix + "_Powertrain").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPowertrainDelegate", [eventArgs]); });
@@ -224,7 +268,6 @@ model.Page = function (models) {
         $("#" + prefix + "_Filter").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnFilterDelegate", [eventArgs]); });
         $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
         $(".efg-item").unbind("click").on("click", function(sender, eventArgs) { me.filterItem(this); });
-        //$(".pack-item").unbind("click").on("click", function (sender, eventArgs) { me.filterItem(this); });
     };
     me.registerSubscribers = function () {
         var prefix = me.getIdentifierPrefix();
@@ -246,25 +289,17 @@ model.Page = function (models) {
             .on("OnSavedDelegate", me.onSavedEventHandler)
             .on("OnPersistDelegate", me.onPersistEventHandler)
             .on("OnHistoryDelegate", me.onHistoryEventHandler)
+            .on("OnHistoryDetailsDelegate", me.onHistoryDetailsEventHandler)
             .on("OnPowertrainDelegate", me.onPowertrainEventHandler)
             .on("OnValidationSummaryDelegate", me.onValidationSummaryEventHandler)
             .on("OnMarketReviewDelegate", me.onMarketReviewEventHandler)
             .on("OnUndoDelegate", me.onUndoEventHandler)
+            .on("OnUndoAllDelegate", me.onUndoAllEventHandler)
             .on("OnToggleDelegate", me.onToggleEventHandler)
             .on("OnFilterDelegate", me.onFilterEventHandler);
 
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
-        $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);
-
-        $(window).resize(function () {
-            console.log("resize");
-            var panel = $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel");
-            var table = me.getDataTable();
-            //var settings = table.settings();
-            panel.height(me.calcPanelHeight());
-            $("div.dataTables_scrollBody").css("height", me.calcDataTableHeight());
-            table.draw();
-        });       
+        $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);      
     };
     me.configureCellEditing = function () {
         var prefix = me.getIdentifierPrefix();
@@ -329,7 +364,8 @@ model.Page = function (models) {
         return f;
     };
     me.cellEditCallback = function (value, settings) {
-        
+
+        me.showSpinner("Updating Data");
         var target = $(this).attr("data-target");
         target = target.replace("MS|", "");
         var identifiers = target.split("|");
@@ -500,7 +536,7 @@ model.Page = function (models) {
     me.saveCallback = function () {
         me.setInitial(false);
         me.loadChangeset();
-        me.loadValidation();
+        me.hideSpinner();
     };
     me.loadChangeset = function () {
         getTakeRateDataModel().loadChangeset(me.loadChangesetCallback);
@@ -524,12 +560,14 @@ model.Page = function (models) {
             if (model.HasChanges())
             {
                 $("#" + prefix + "_Undo").prop("disabled", false);
+                $("#" + prefix + "_UndoAll").prop("disabled", false);
                 $("#" + prefix + "_RecallMarketReview").prop("disabled", true);
             }
 
             if (!model.HasChanges())
             {
                 $("#" + prefix + "_Undo").prop("disabled", true);
+                $("#" + prefix + "_UndoAll").prop("disabled", true);
             }
 
             return;
@@ -543,6 +581,7 @@ model.Page = function (models) {
         {
             $("#" + prefix + "_Save").prop("disabled", false);
             $("#" + prefix + "_Undo").prop("disabled", false);
+            $("#" + prefix + "_UndoAll").prop("disabled", false);
             $("#" + prefix + "_MarketReview").prop("disabled", true);
             $("#" + prefix + "_RecallMarketReview").prop("disabled", true);
         }
@@ -550,6 +589,7 @@ model.Page = function (models) {
         if (!model.HasChanges())
         {
             $("#" + prefix + "_Undo").prop("disabled", true);
+            $("#" + prefix + "_UndoAll").prop("disabled", true);
         }
     }
     me.loadValidationCallback = function(validationData) {
@@ -638,6 +678,14 @@ model.Page = function (models) {
                 displayValue = me.formatVolume(currentChange.Volume);
                 selector = $("#" + me.getIdentifierPrefix() + "_AllMarketVolume");
             }
+            else if (currentChange.IsPowertrainChange) {
+
+                displayValue = me.formatVolume(currentChange.Volume);
+                displayValue2 = me.formatPercentageTakeRate(currentChange.PercentageTakeRate);
+
+                selector = $(".read-only-derivative[data-target='" + currentChange.DataTarget + "|PTV']").first();
+                selector2 = $(".editable-derivative[data-target='" + currentChange.DataTarget + "|PTP']").first();
+            }
             else
             {
                 if (me.getResultsMode() === "PercentageTakeRate")
@@ -662,11 +710,11 @@ model.Page = function (models) {
                     selector = $("tbody div[data-target='" + currentChange.DataTarget + "']");
                 }
             }
-
-            selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
-            if (selector2 != null && displayValue2 != null)
-            {
-                selector2.addClass(me.getEditedDataClass(currentChange)).html(displayValue2);
+            if (selector !== null && selector !== undefined) {
+                selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
+                if (selector2 != null && displayValue2 != null) {
+                    selector2.addClass(me.getEditedDataClass(currentChange)).html(displayValue2);
+                }
             }
         }
 
@@ -731,6 +779,7 @@ model.Page = function (models) {
                 }
             }
         }
+        $("#" + me.getIdentifierPrefix() + "_Spinner").spin("hide");
     };
     me.loadChangesetCallback = function (changesetData) {
         var changeset = getChangeset();
@@ -862,8 +911,14 @@ model.Page = function (models) {
     me.onUndoEventHandler = function() {
         me.undoData();
     };
+    me.onUndoAllEventHandler = function () {
+        me.undoAllData();
+    };
     me.onHistoryEventHandler = function () {
         me.showHistory();
+    };
+    me.onHistoryDetailsEventHandler = function (sender, eventArgs) {
+        me.showHistoryDetails(eventArgs.ChangesetId);
     };
     me.onPowertrainEventHandler = function() {
         me.showPowertrain();
@@ -1048,9 +1103,9 @@ model.Page = function (models) {
                         var filter = $(this).attr("data-filter");
                         $("[data-toggle='popover']").popover("destroy");
                         me.filter(filter);
-                    })
+                    });
                 } else {
-                    $(this).data("state", "hover")
+                    $(this).data("state", "hover");
                     $(this).popover("hover");
                 }
             });
@@ -1074,31 +1129,33 @@ model.Page = function (models) {
         $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover", placement: "auto bottom" });
 
         var prefix = me.getIdentifierPrefix();
-        $("#" + prefix + "_Save").popover({ trigger: "hover", title: "Save Changes", placement: "auto bottom" });
-        $("#" + prefix + "_Undo").popover({ trigger: "hover", title: "Undo", placement: "auto bottom" });
-        $("#" + prefix + "_History").popover({ trigger: "hover", title: "Change History", placement: "auto bottom" });
-        $("#" + prefix + "_Validation").popover({ trigger: "hover", title: "Validation Summary", placement: "auto bottom" });
-        $("#" + prefix + "_Powertrain").popover({ trigger: "hover", title: "Derivative Mix Data", placement: "auto bottom" });
-        $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom" });
-        $("#" + prefix + "_Toggle").popover({ trigger: "hover", title: "Toggle", placement: "auto bottom" });
-        $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom" });
+        $("#" + prefix + "_Save").popover({ trigger: "hover", title: "Save Changes", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_Undo").popover({ trigger: "hover", title: "Undo", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_UndoAll").popover({ trigger: "hover", title: "Undo All", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_History").popover({ trigger: "hover", title: "Change History", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_Validation").popover({ trigger: "hover", title: "Validation Summary", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_Powertrain").popover({ trigger: "hover", title: "Derivative Mix Data", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_Toggle").popover({ trigger: "hover", title: "Toggle", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_Filter").popover({ trigger: "hover", title: "Filter", placement: "auto bottom", container: "body" });
 
-        $("#" + prefix + "_MarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
-        $("#" + prefix + "_SubmitMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
-        $("#" + prefix + "_ApproveMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
-        $("#" + prefix + "_RejectMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
-        $("#" + prefix + "_RecallMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom" });
+        $("#" + prefix + "_MarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_SubmitMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_ApproveMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_RejectMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_RecallMarketReview").popover({ trigger: "hover", title: "Market Review", placement: "auto bottom", container: "body" });
 
-        $("#" + prefix + "_FirstPage").popover({ trigger: "hover", title: "First Page", placement: "auto bottom" });
-        $("#" + prefix + "_PrevPage").popover({ trigger: "hover", title: "Previous Page", placement: "auto bottom" });
-        $("#" + prefix + "_NextPage").popover({ trigger: "hover", title: "Next Page", placement: "auto bottom" });
-        $("#" + prefix + "_LastPage").popover({ trigger: "hover", title: "Last Page", placement: "auto bottom" });
+        $("#" + prefix + "_FirstPage").popover({ trigger: "hover", title: "First Page", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_PrevPage").popover({ trigger: "hover", title: "Previous Page", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_NextPage").popover({ trigger: "hover", title: "Next Page", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_LastPage").popover({ trigger: "hover", title: "Last Page", placement: "auto bottom", container: "body" });
+
+        //$(window).on("resize", function () {
+        //    me.getDataTable().destroy();
+        //    me.configureDataTables();
+        //});
     };
     me.configureDataTables = function () {
-
-        console.log("in configure dt");
-        var sw = new model.StopWatch();
-        sw.Start();
 
         var prefix = me.getIdentifierPrefix();
         var filterModel = getFilterModel();
@@ -1112,14 +1169,13 @@ model.Page = function (models) {
             processing: false,
             dom: "t",
             scrollX: true,
-            scrollY: height,
-            scrollCollapse: true
+            //autoWidth: false,
+            scrollY: height//,
+            //scrollCollapse: true
         });
         var fixedColumns = new $.fn.dataTable.FixedColumns(table, {
             leftColumns: leftFixedColumns,
             drawCallback: function (left) {
-                sw.Stop();
-                console.log("Milliseconds to configure rows: " + sw.ElapsedMilliseconds);
                 //// If we are filtering, remove the row groupings, as they aren't necessary and mess up the resizing
                 //// upon filter
                 if (filterModel.getCurrentFilter() === null || filterModel.getCurrentFilter() === "") {
@@ -1127,8 +1183,14 @@ model.Page = function (models) {
                 } 
                 me.configureComments();
                 me.bindContextMenu();
+
+                var filter = $.jCookies({ get: "Filter" });
+                if (filter) {
+                    me.filter({ Filter: filter });
+                }
             }
         });
+
         me.setDataTable(table);
     };
     me.configureRowGroupings = function(table, left) {

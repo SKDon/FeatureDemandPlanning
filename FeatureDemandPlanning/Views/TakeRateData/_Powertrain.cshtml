@@ -5,60 +5,44 @@
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
 <form>
-    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix"/>
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
 
-    <table id="@(Model.IdentifierPrefix)_PowertrainData" class="table table-bordered table-condensed dataTable cross-tab">
-        <thead>
-        <tr class="cross-tab-header">
-            <th>
+    <table id="@(Model.IdentifierPrefix)_PowertrainData" class="table table-bordered table-condensed dataTable cross-tab" style="overflow-x: auto">
+    <thead>
+    <tr>
+        <th class="cross-tab-header text-center">Derivative</th>
+        <th class="cross-tab-header text-center">BMC</th>
+        <th class="cross-tab-header text-center">No. of Models</th>
+        <th class ="cross-tab-header text-center">Volume</th>
+        <th class="cross-tab-header text-center">% Take Rate</th>
+    </tr>
+    </thead>
+    <tbody>
+@foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
+{
+    <tr>
+        <td class="text-center cross-tab-data-item cross-tab-fixed" style="min-width: 80px; max-width: 80px">
+            <div class="glyphicon glyphicon-alert validation-error model-validation-error"
+                 style="display: none"
+                 data-content=""></div>
+            @powertrainItem.Doors&nbsp;@powertrainItem.Shape&nbsp;@powertrainItem.Size&nbsp;@powertrainItem.Cylinder&nbsp;
+            @powertrainItem.FuelType&nbsp;
+            @powertrainItem.Power&nbsp;PS
+        </td>
+        <td class="cross-tab-fixed cross-tab-data-item text-center">
+            @powertrainItem.DerivativeCode
+        </td>
+        <td class="cross-tab-fixed cross-tab-data-item text-center">
+            @powertrainItem.NumberOfModels
+        </td>
+        <td class="text-center cross-tab-data-item read-only-derivative @RenderEdited(powertrainItem)" data-target="@Model.Document.Market.Id|@powertrainItem.DerivativeCode|PTV">@powertrainItem.Volume.ToString("N0")</td>
+        <td class="text-center cross-tab-data-item editable-derivative @RenderEdited(powertrainItem)" data-target="@Model.Document.Market.Id|@powertrainItem.DerivativeCode|PTP">@powertrainItem.PercentageTakeRate.ToString("P2")</td>
+    </tr>
+}
+    </tbody>
+        </table>
 
-            </th>
-            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
-            {
-                <th class="text-center model" style="min-width: 80px; max-width: 80px" data="@powertrainItem.DerivativeCode" data-target="D|@Model.Document.Market.Id|@powertrainItem.DerivativeCode" data-model="@powertrainItem.DerivativeCode">
-                    <div class="glyphicon glyphicon-alert validation-error model-validation-error"
-                         style="display: none"
-                         data-content=""></div>
-
-                    @powertrainItem.Doors&nbsp;@powertrainItem.Shape<br/>
-                    @powertrainItem.Size&nbsp;@powertrainItem.Cylinder<br/>
-                    @powertrainItem.FuelType<br/>
-                    @powertrainItem.Power&nbsp;PS
-                </th>
-            }
-        </tr>
-        <tr class="cross-tab-header">
-            <th class="text-right bmc">
-                BMC
-            </th>
-            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
-            {
-                <th class="text-center bmc">@powertrainItem.DerivativeCode</th>
-            }
-        </tr>
-        </thead>
-        <tbody>
-
-        <tr>
-            <td class="cross-tab-data-item cross-tab-fixed">Volume</td>
-            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
-            {
-                <td class="text-center cross-tab-data-item @RenderEdited(powertrainItem)" data-target="@Model.Document.Market.Id|@powertrainItem.DerivativeCode">@powertrainItem.Volume.ToString("N0")</td>
-            }
-        </tr>
-
-        <tr>
-            <td class="cross-tab-data-item cross-tab-fixed">
-                % Take Rate
-            </td>
-            @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
-            {
-                <td class="text-center cross-tab-data-item editable-derivative @RenderEdited(powertrainItem)" data-target="@Model.Document.Market.Id|@powertrainItem.DerivativeCode">@powertrainItem.PercentageTakeRate.ToString("P2")</td>
-            }
-        </tr>
-
-        </tbody>
-    </table>
+            
 </form>
 
 @helper RenderEdited(RawPowertrainDataItem powertrainData)
@@ -68,12 +52,15 @@
         return;
     }
         
-    if (!(Model.TakeRate.MarketReview is EmptyMarketReview))
+    if (Model.TakeRate.MarketReview is EmptyMarketReview || 
+        Model.MarketReviewStatus == enums.MarketReviewStatus.NotSet ||
+        Model.MarketReviewStatus == enums.MarketReviewStatus.Recalled || 
+        Model.MarketReviewStatus == enums.MarketReviewStatus.Approved)
     {
-        @("edited-market-review")
+        @("edited")
     }
     else
     {
-        @("edited")
+        @("edited-market-review")
     }
 }

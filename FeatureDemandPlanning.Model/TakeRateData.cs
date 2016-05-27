@@ -20,7 +20,8 @@ namespace FeatureDemandPlanning.Model
         public IEnumerable<TakeRateDataItemNote> NoteAvailability { get; set; }
         public IEnumerable<ExclusiveFeatureGroup> ExclusiveFeatureGroups { get; set; }
         public IEnumerable<PackFeature> PackFeatures { get; set; }
-        public IEnumerable<RawPowertrainDataItem> PowertrainData { get; set; } 
+        public IEnumerable<RawPowertrainDataItem> PowertrainData { get; set; }
+        public IEnumerable<MultiMappedFeatureGroup> MultiMappedFeatureGroups { get; set; } 
 
         public bool HasData
         {
@@ -35,6 +36,7 @@ namespace FeatureDemandPlanning.Model
             NoteAvailability = Enumerable.Empty<TakeRateDataItemNote>();
             ExclusiveFeatureGroups = Enumerable.Empty<ExclusiveFeatureGroup>();
             PowertrainData = Enumerable.Empty<RawPowertrainDataItem>();
+            MultiMappedFeatureGroups = Enumerable.Empty<MultiMappedFeatureGroup>();
         }
     }
 }

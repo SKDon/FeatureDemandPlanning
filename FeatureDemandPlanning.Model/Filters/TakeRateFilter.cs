@@ -36,6 +36,9 @@ namespace FeatureDemandPlanning.Model.Filters
         public int TotalRecords { get; set; }
         public int TotalDisplayRecords { get; set; }
 
+        public int? FdpValidationId { get; set; }
+        public int? ChangesetId { get; set; }
+
         public TakeRateFilter()
         {
             Mode = TakeRateResultMode.PercentageTakeRate;
@@ -92,7 +95,9 @@ namespace FeatureDemandPlanning.Model.Filters
                 MarketReviewStatus = parameters.MarketReviewStatus,
                 Filter = parameters.Filter,
                 PageSize = parameters.PageSize,
-                PageIndex = parameters.PageIndex
+                PageIndex = parameters.PageIndex,
+                FdpValidationId = parameters.FdpValidationId,
+                ChangesetId = parameters.ChangesetId
             };
 
             if (!string.IsNullOrEmpty(parameters.ModelIdentifier))

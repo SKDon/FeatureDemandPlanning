@@ -15,6 +15,12 @@ model.HistoryAction = function (params) {
     me.action = function () {
         sendData(me.getActionUri(), me.getActionParameters());
     };
+    me.details = function(changesetId) {
+        var actionParameters = getData();
+        
+        $.extend(actionParameters, { ChangesetId: changesetId });
+        $(document).trigger("HistoryDetails", actionParameters);
+    };
     me.getActionParameters = function () {
         var actionParameters = getData();
         $.extend(actionParameters, { Comment: me.getComment() });
@@ -62,13 +68,19 @@ model.HistoryAction = function (params) {
     me.registerEvents = function () {
         $("#Modal_OK").unbind("click").on("click", me.action);
         $(document)
-            .unbind("Success").on("Success", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
-            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); })
+            .unbind("Success").on("Success", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
+            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); });
+
+        $(".changeset-history-details").unbind("click").on("click", function () {
+            var changesetId = parseInt($(this).attr("data-target"));
+            me.details(changesetId);
+        });
+
     };
     me.registerSubscribers = function () {
         $("#Modal_Notify")
             .unbind("OnSuccessDelegate").on("OnSuccessDelegate", me.onSuccessEventHandler)
-            .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler)
+            .unbind("OnErrorDelegate").on("OnErrorDelegate", me.onErrorEventHandler);
     };
     me.setParameters = function (parameters) {
         privateStore[me.id].Parameters = parameters;

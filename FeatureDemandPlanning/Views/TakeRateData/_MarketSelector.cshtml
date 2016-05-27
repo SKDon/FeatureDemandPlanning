@@ -5,23 +5,35 @@
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 @{
     var totalDerivatives = Model.Document.TotalDerivatives;
-    var totalDerivativesForSelection = Model.Document.Vehicle.AvailableModels.Count();
 }
 <div class="btn-group" role="group" aria-label="Market Selector">
     <!-- Single button -->
     <button id="btnMarket" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class="validation-error primary-validation-error glyphicon glyphicon-alert" data-target="" style="display:none"></span>&nbsp;
-        @if (!(Model.Document.MarketGroup is EmptyMarketGroup))
+        @if (!(Model.Document.Market is EmptyMarket))
         {
-            @:Market Group: @Model.Document.MarketGroup.GroupName (@totalDerivativesForSelection)
+            var variantCount = 0;
+            foreach (var marketGroup in Model.Document.Vehicle.AvailableMarketGroups)
+            {
+                foreach (var market in marketGroup.Markets)
+                {
+                    if (market.Id != Model.Document.Market.Id)
+                    {
+                        continue;
+                    }
+                    variantCount = market.VariantCount;
+                    break;
+                }
+                if (variantCount > 0)
+                {
+                    break;
+                }
             }
-        else if (!(Model.Document.Market is EmptyMarket))
-        {
-            @:Market: @Model.Document.Market.Name (@totalDerivativesForSelection)
+            @:@Model.Document.Market.Name (@variantCount Model Variants)
             }
         else
         {
-            @:All Markets (@totalDerivatives)
+            @:All Markets (@totalDerivatives Model Variants)
             }
         <span class="caret"></span>
     </button>

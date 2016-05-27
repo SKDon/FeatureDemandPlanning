@@ -9,7 +9,8 @@ namespace FeatureDemandPlanning.Model
         public IEnumerable<RawTakeRateDataItem> DataItems { get; set; }
         public IEnumerable<RawTakeRateSummaryItem> SummaryItems { get; set; }
         public IEnumerable<RawTakeRateFeatureMixItem> FeatureMixItems { get; set; }
-        public IEnumerable<RawPowertrainDataItem> PowertrainDataItems { get; set; } 
+        public IEnumerable<RawPowertrainDataItem> PowertrainDataItems { get; set; }
+        public IEnumerable<RawFeaturePackItem> PackFeatures { get; set; } 
         public int TotalVolume { get; set; }
 
         public IEnumerable<EfgGrouping> EfgGroupings
@@ -34,6 +35,7 @@ namespace FeatureDemandPlanning.Model
             SummaryItems = Enumerable.Empty<RawTakeRateSummaryItem>();
             FeatureMixItems = Enumerable.Empty<RawTakeRateFeatureMixItem>();
             PowertrainDataItems = Enumerable.Empty<RawPowertrainDataItem>();
+            PackFeatures = Enumerable.Empty<RawFeaturePackItem>();
         }
 
         private IEnumerable<RawTakeRateDataItem> ListFeaturesWithVolumeGreaterThanModel()
@@ -142,28 +144,52 @@ namespace FeatureDemandPlanning.Model
                 return _packs;
 
             var packs =
-                from dataItem in DataItems
-                where IsInFeaturePack(dataItem)
-                group dataItem by new
+                (from packItem in PackFeatures
+                group packItem by new
                 {
-                    TakeRateId = dataItem.FdpVolumeHeaderId,
-                    dataItem.MarketId,
-                    ModelId = dataItem.ModelId.GetValueOrDefault(),
-                    dataItem.FeaturePackId,
-                    dataItem.PackName
+                    TakeRateId = packItem.FdpVolumeHeaderId,
+                    packItem.MarketId,
+                    packItem.ModelId,
+                    packItem.FeaturePackId,
+                    PackName = packItem.FeaturePackName
                 }
                 into g
                 select new FeaturePack
                 {
                     TakeRateId = g.Key.TakeRateId,
                     MarketId = g.Key.MarketId,
-                    Market = g.First().Market,
                     ModelId = g.Key.ModelId,
-                    Model = g.First().Model,
-                    FeaturePackId = g.Key.FeaturePackId.GetValueOrDefault(),
+                    FeaturePackId = g.Key.FeaturePackId,
                     PackName = g.Key.PackName,
                     PackItems = g.ToList()
-                };
+                })
+                .ToList();
+
+            // Populate the actual take rate data for each pack
+            // I changed the way packs and features were determined to cater for features in multiple packs, 
+            // just didn't want to rewrite all the take rate routines
+            foreach (var pack in packs)
+            {
+                var featuresInPack = pack.PackItems.Select(f => f.FeatureId).ToList();
+                pack.DataItems = DataItems
+                    .Where(d =>
+                        d.MarketId == pack.MarketId &&
+                        d.ModelId.GetValueOrDefault() == pack.ModelId &&
+                        (
+                            // Feature pack data item
+                            featuresInPack.Contains(d.FeatureId.GetValueOrDefault())
+                            ||
+                            // Feature pack itself
+                            (!d.FeatureId.HasValue && d.FeaturePackId.GetValueOrDefault() == pack.FeaturePackId)
+                        )
+                    )
+                    .ToList();
+
+                if (!pack.DataItems.Any()) continue;
+
+                pack.Market = pack.DataItems.First().Market;
+                pack.Model = pack.DataItems.First().Model;
+            }
 
             _packs = packs;
 

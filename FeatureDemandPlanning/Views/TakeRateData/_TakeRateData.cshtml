@@ -4,191 +4,150 @@
 
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
-<div class="panel panel-primary">
-    <div class="panel-heading" style="height:50px">
-        <div class="viewport-toolbar pull-left col-xs-12 col-lg-6">
+<div class="panel panel-primary" style="margin-bottom:5px">
+    <div class="panel-body" style="padding-bottom: 5px;padding-top:5px">
+
+        <div class="viewport-toolbar col-xs-12 col-md-4">
             <div class="btn-group pull-left">
                 @Html.Partial("_ViewModeSelector", Model)
                 @Html.Partial("_MarketSelector", Model)
             </div>
-            @*<div class="input-group input-group-sm">
-                    <input id="@(Model.IdentifierPrefix)_FilterMessage" class="form-control" style="top:1px" type="text" maxlength="10" placeholder="Filter" aria-describedby="filter-addon" />
-                </div>*@
-            @*<div class="col-xs-6 pull-left">
 
-                @if (!(Model.Document.Market is EmptyMarket))
-                {
-                    if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
-                    {
-                        <form class="form-horizontal">
-                            <div class="form-group-sm">
-                                <div class="col-xs-4">
-                                    <label for="@(Model.IdentifierPrefix)_PercentageOfTotalVolume" class="control-label text-right" style="font-size:11px">% of Total Volume:</label>
-                                </div>
-                                <div class="input-group col-xs-8">
-                                    <input type="text" id="@(Model.IdentifierPrefix)_PercentageOfTotalVolume" class="form-control input-filtered-volume" value="@((Model.Document.TakeRateData.PercentageOfTotalVolume * 100).ToString("N2"))" />
-                                    @if (Model.AllowEdit)
-                                    {
-                                        <span class="input-group-btn">
-
-                                            <button type="button" id="@(Model.IdentifierPrefix)_UpdatePercentageOfTotalVolume" class="btn btn-sm btn-default update-filtered-volume">
-                                                <span class="glyphicon glyphicon-refresh"></span> Update
-                                            </button>
-
-                                        </span>
-                                    }
-                                </div>
-                            </div>
-                        </form>
-                    }
-                    else
-                    {
-                        <form class="form-horizontal">
-                            <div class="form-group-sm">
-                                <div class="col-xs-4">
-                                    <label for="@(Model.IdentifierPrefix)_FilteredVolume" class="control-label text-right" style="font-size:11px">Volume:</label>
-                                </div>
-                                <div class="input-group col-xs-8">
-                                    <input type="text" id="@(Model.IdentifierPrefix)_FilteredTotalVolume" class="form-control input-filtered-volume col-xs-2" value="@Model.Document.TakeRateData.FilteredVolume" data-target="@Model.Document.Market.Id" />
-                                    @if (Model.AllowEdit)
-                                    {
-                                        <span class="input-group-btn">
-                                            <button type="button" id="@(Model.IdentifierPrefix)_UpdateFilteredVolume" class="btn btn-sm btn-default update-filtered-volume">
-                                                <span class="glyphicon glyphicon-refresh"></span>
-                                            </button>
-                                        </span>
-                                    }
-                                </div>
-
-                            </div>
-                        </form>
-                    }
-                }
-            </div>*@
         </div>
-        <div class="viewport-toolbar pull-right col-xs-12 col-lg-6">
+        <div class="viewport-toolbar col-xs-12 col-md-8">
             @Html.Partial("_Buttons")
         </div>
     </div>
-
-    <div id="@(Model.IdentifierPrefix)_TakeRateDataPanel" class="panel-body subscribers-notify" style="padding:3px; height: 88%">
-        <div class="col-xs-12" style="padding: 0px">
-            <table id="@(Model.IdentifierPrefix)_TakeRateData" class="table table-bordered table-condensed dataTable cross-tab">
-                <thead>
-                    <tr class="cross-tab-header">
-                        <th colspan="4" class="text-center first-cell">
-                            
-                                @switch (Model.MarketReviewStatus)
-                                {
-                                    case enums.MarketReviewStatus.NotSet:
-                                        break;
-                                    case enums.MarketReviewStatus.AwaitingReview:
-                                        <div><span class="glyphicon glyphicon-flag"></span> Awaiting Market Review</div>
-                                        break;
-                                    case enums.MarketReviewStatus.AwaitingApproval:
-                                    <div><span class="glyphicon glyphicon-flag"></span> Market Review Awaiting Approval</div>
-                                        break;
-                                    case enums.MarketReviewStatus.Rejected:
-                                    <div><span class="glyphicon glyphicon-flag"></span> Market Review Rejected</div>
-                                        break;
-                                    case enums.MarketReviewStatus.Approved:
-                                    <div><span class="glyphicon glyphicon-flag"></span> Market Review Approved</div>
-                                        break;
-                                    case enums.MarketReviewStatus.Recalled:
-                                    <div><span class="glyphicon glyphicon-flag"></span> Market Review Recalled</div>
-                                        break;
-                                    default:
-                                        throw new ArgumentOutOfRangeException();
-                                }
-                                
-                          
-                        </th>
-                        @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
-                        {
-                            var modelClassName = string.Empty;
-                            if (availableModel.FdpModelId.HasValue)
-                            {
-                                modelClassName = "fdp-model";
-                            }
-                            <th class="text-center model @modelClassName" data="@availableModel.StringIdentifier" data-target="MS|z@Model.Document.Market.Id|@availableModel.StringIdentifier" data-model="@availableModel.StringIdentifier">
-                                <div class="glyphicon glyphicon-alert validation-error model-validation-error"
-                                     style="display: none"
-                                     data-content=""></div>
-
-                                @foreach (string namePart in availableModel.NameWithBR.Split('#'))
-                                {
-                                    @namePart<br />
-                                }
-                            </th>
-                        }
-                    </tr>
-                    <tr class="cross-tab-header" style="height:27px">
-                        <th colspan="4" class="text-right bmc">BMC</th>
-                        @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
-                        {
-                            var modelClassName = string.Empty;
-                            if (availableModel.FdpModelId.HasValue)
-                            {
-                                modelClassName = "fdp-model";
-                            }
-                            <th class="text-center bmc @modelClassName" data-model="@availableModel.StringIdentifier">
-                                @if (!string.IsNullOrEmpty(availableModel.BMC))
-                                {
-                                    <span>@availableModel.BMC</span>
-                                }
-                                else
-                                {
-                                    <span>-</span>
-                                }
-                            </th>
-                        }
-                    </tr>
-                    <tr class="cross-tab-header">
-                        <th colspan="4" class="text-right trim-level">Trim Level / DPCK</th>
-                        @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
-                        {
-                            var modelClassName = string.Empty;
-                            if (availableModel.FdpModelId.HasValue)
-                            {
-                                modelClassName = "fdp-model";
-                            }
-                            <th class="text-center trim-level @modelClassName" data-model="@availableModel.StringIdentifier">
-                                @if (!string.IsNullOrEmpty(availableModel.TrimLevel))
-                                {
-                                    <span>
-                                        @availableModel.TrimLevel
-                                    </span>
-                                    if (!string.IsNullOrEmpty(availableModel.DPCK))
-                                    {
-                                        <span>&nbsp;/ @availableModel.DPCK</span>
-                                    }
-                                }
-                                else
-                                {
-                                    <span>-</span>
-                                }
-                            </th>
-                        }
-                    </tr>
-                    <tr class="cross-tab-header" id="@(Model.IdentifierPrefix)_TakeRateByModel">
-                        @Html.Partial("_TakeRateDataByModel")
-                    </tr>
-                </thead>
-                <tbody id="@(Model.IdentifierPrefix)_TakeRateByFeature">
-                    @foreach (var featureRow in Model.Document.TakeRateData.RawData)
-                    {
-                        TempData["CurrentRow"] = featureRow;
-                        @Html.Partial("_TakeRateDataByFeature")
-                        ;
-                    }
-                </tbody>
-
-            </table>
-        </div>
-    </div>
-
-
 </div>
+
+<div id="@(Model.IdentifierPrefix)_TakeRateDataPanel" class="panel-body subscribers-notify" style="padding: 3px;">
+    <div class="col-xs-12" style="padding: 0;">
+
+        <table id="@(Model.IdentifierPrefix)_TakeRateData" class="table table-bordered table-condensed dataTable cross-tab">
+            <thead>
+                <tr class="cross-tab-header">
+                    <th colspan="4" class="text-center first-cell">
+
+                        @switch (Model.MarketReviewStatus)
+                        {
+                            case enums.MarketReviewStatus.NotSet:
+                                break;
+                            case enums.MarketReviewStatus.AwaitingReview:
+                                <div>
+                                    <span class="glyphicon glyphicon-flag"></span> Awaiting Market Review
+                                </div>
+                                break;
+                            case enums.MarketReviewStatus.AwaitingApproval:
+                            <div>
+                                <span class="glyphicon glyphicon-flag"></span> Market Review Awaiting Approval
+                            </div>
+                                break;
+                            case enums.MarketReviewStatus.Rejected:
+                            <div>
+                                <span class="glyphicon glyphicon-flag"></span> Market Review Rejected
+                            </div>
+                                break;
+                            case enums.MarketReviewStatus.Approved:
+                            <div>
+                                <span class="glyphicon glyphicon-flag"></span> Market Review Approved
+                            </div>
+                                break;
+                            case enums.MarketReviewStatus.Recalled:
+                            <div>
+                                <span class="glyphicon glyphicon-flag"></span> Market Review Recalled
+                            </div>
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
+
+                    </th>
+                    @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
+                    {
+                        var modelClassName = string.Empty;
+                        if (availableModel.FdpModelId.HasValue)
+                        {
+                            modelClassName = "fdp-model";
+                        }
+                        <th class="text-center model @modelClassName" data="@availableModel.StringIdentifier" data-target="MS|z@Model.Document.Market.Id|@availableModel.StringIdentifier" data-model="@availableModel.StringIdentifier">
+                            <div class="glyphicon glyphicon-alert validation-error model-validation-error"
+                                 style="display: none"
+                                 data-content=""></div>
+
+                            @foreach (string namePart in availableModel.NameWithBR.Split('#'))
+                            {
+                                @namePart<br />
+                            }
+                        </th>
+                    }
+                </tr>
+                <tr class="cross-tab-header" style="height: 27px;">
+                    <th colspan="4" class="text-right bmc">BMC</th>
+                    @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
+                    {
+                        var modelClassName = string.Empty;
+                        if (availableModel.FdpModelId.HasValue)
+                        {
+                            modelClassName = "fdp-model";
+                        }
+                        <th class="text-center bmc @modelClassName" data-model="@availableModel.StringIdentifier">
+                            @if (!string.IsNullOrEmpty(availableModel.BMC))
+                            {
+                                <span>@availableModel.BMC</span>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </th>
+                    }
+                </tr>
+                @*<tr class="cross-tab-header">
+                    <th colspan="4" class="text-right trim-level">Trim Level / DPCK</th>
+                    @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
+                    {
+                        var modelClassName = string.Empty;
+                        if (availableModel.FdpModelId.HasValue)
+                        {
+                            modelClassName = "fdp-model";
+                        }
+                        <th class="text-center trim-level @modelClassName" data-model="@availableModel.StringIdentifier">
+                            @if (!string.IsNullOrEmpty(availableModel.TrimLevel))
+                            {
+                                <span>
+                                    @availableModel.TrimLevel
+                                </span>
+                                if (!string.IsNullOrEmpty(availableModel.DPCK))
+                                {
+                                    <span>&nbsp;/ @availableModel.DPCK</span>
+                                }
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </th>
+                    }
+                </tr>*@
+                <tr class="cross-tab-header" id="@(Model.IdentifierPrefix)_TakeRateByModel">
+                    @Html.Partial("_TakeRateDataByModel")
+                </tr>
+            </thead>
+            <tbody id="@(Model.IdentifierPrefix)_TakeRateByFeature">
+                @foreach (var featureRow in Model.Document.TakeRateData.RawData)
+                {
+                    TempData["CurrentRow"] = featureRow;
+                    @Html.Partial("_TakeRateDataByFeature")
+                    ;
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+
 
 <input type="hidden" id="@(Model.IdentifierPrefix)_OriginalVolumeByMarket" value="@Model.Document.TakeRateData.FilteredVolume" />
 <input type="hidden" id="@(Model.IdentifierPrefix)_OriginalTakeRateByMarket" value="@Model.Document.TakeRateData.PercentageOfTotalVolume" />

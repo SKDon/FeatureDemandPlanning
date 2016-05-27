@@ -58,6 +58,10 @@ namespace FeatureDemandPlanning.Model
                 {
                     dataTarget = string.Format("{0}|{1}", MarketId, FeatureIdentifier);
                 }
+                else if (IsPowertrainChange)
+                {
+                    dataTarget = string.Format("{0}|{1}", MarketId, DerivativeCode);
+                }
                 else
                 {
                     dataTarget = string.Format("{0}|{1}|{2}", MarketId, ModelIdentifier, FeatureIdentifier);
@@ -190,5 +194,25 @@ namespace FeatureDemandPlanning.Model
         public int? FdpTakeRateSummaryId { get; set; }
         public int? FdpTakeRateFeatureMixId { get; set; }
         public int? FdpPowertrainDataItemId { get; set; }
+
+        public bool IsMatchingModel(RawTakeRateDataItem dataItem)
+        {
+            return (IsFdpModel && dataItem.FdpModelId == GetModelId()) || (!IsFdpModel && dataItem.ModelId == GetModelId());
+        }
+
+        public bool IsMatchingModel(RawTakeRateSummaryItem summaryItem)
+        {
+            return (IsFdpModel && summaryItem.FdpModelId == GetModelId()) || (!IsFdpModel && summaryItem.ModelId == GetModelId());
+        }
+
+        public bool IsMatchingFeature(RawTakeRateDataItem dataItem)
+        {
+            return (IsFdpFeature && dataItem.FdpFeatureId == GetFeatureId()) || (IsFeature && dataItem.FeatureId == GetFeatureId()) || (IsFeaturePack && !dataItem.FeatureId.HasValue && dataItem.FeaturePackId == GetFeatureId());
+        }
+
+        public bool IsMatchingFeatureMix(RawTakeRateFeatureMixItem mixItem)
+        {
+            return (IsFdpFeature && mixItem.FdpFeatureId == GetFeatureId()) || (IsFeature && mixItem.FeatureId == GetFeatureId()) || (IsFeaturePack && !mixItem.FeatureId.HasValue && mixItem.FeaturePackId == GetFeatureId());
+        }
     }
 }

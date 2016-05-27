@@ -33,6 +33,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<FdpChangeset> PersistChangeset(TakeRateFilter takeRateFilter);
         Task<FdpChangeset> UndoChangeset(TakeRateFilter takeRateFilter);
+        Task<FdpChangeset> UndoAllChangeset(TakeRateFilter takeRateFilter);
         Task<FdpChangeset> RevertUnsavedChangesForUser(TakeRateFilter takeRateFilter);
 
         Task<int> GetVolumeForModel(TakeRateFilter filter);
@@ -57,5 +58,9 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<TakeRateSummary> CloneTakeRateDocument(TakeRateFilter filter);
 
         Task<IEnumerable<RawPowertrainDataItem>> ListPowertrainData(TakeRateFilter takeRateFilter);
+
+        void IgnoreValidationError(TakeRateFilter takeRateFilter);
+
+        Task<FdpChangesetHistoryDetails> GetChangesetHistoryDetails(TakeRateFilter filter);
     }
 }

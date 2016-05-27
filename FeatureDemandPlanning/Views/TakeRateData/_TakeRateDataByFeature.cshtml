@@ -18,15 +18,17 @@
         var featureClassName = "";
         var featureFixedClassName = "cross-tab-fixed";
         var featureFixedLastClassName = "cross-tab-fixed-last";
-        if (featureRow.Field<string>("FeatureIdentifier").StartsWith("F"))
-        {
-            featureClassName = "fdp-data-item";
-            featureFixedClassName = "fdp-data-item-fixed";
-            featureFixedLastClassName = "fdp-data-item-fixed-last";
-        }
 
         var isOrphanedData = featureRow.Field<bool>("IsOrphanedData");
+        var isIgnoredFeature = featureRow.Field<bool>("IsIgnoredData");
         if (isOrphanedData)
+        {
+            featureClassName = "orphaned-data-item";
+            featureFixedClassName = "orphaned-data-item-fixed";
+            featureFixedLastClassName = "orphaned-data-item-fixed-last";
+        }
+
+        if (isIgnoredFeature)
         {
             featureClassName = "orphaned-data-item";
             featureFixedClassName = "orphaned-data-item-fixed";
@@ -55,6 +57,13 @@
             <span class="glyphicon glyphicon-wrench"></span>
         </div>
 
+        @if (featureRow.Field<bool>("IsMappedToMultipleImportFeatures"))
+        {
+            <div class="indicator rule-item pull-right" data-toggle="popover" title="Feature Mapping" data-content="@RenderMultiMapping(featureRow.Field<string>("FeatureCode"))">
+                <span class="glyphicon glyphicon-random"></span>&nbsp;
+            </div>
+        }
+        
         @if (!string.IsNullOrEmpty(featureRow.Field<string>("FeatureRuleText")))
         {
             <div class="indicator rule-item pull-right" data-toggle="popover" title="Rules" data-content="@(featureRow.Field<string>("FeatureRuleText"))">
@@ -216,6 +225,18 @@
     foreach (var featureInGroup in featuresInGroup)
     {
         sb.Append(string.Format("{0} ({1})", featureInGroup.Feature, featureInGroup.FeatureCode));
+        sb.Append("<br/>");
+    }
+    @sb.ToString();
+}
+
+@helper RenderMultiMapping(string featureCode)
+{
+    var mappedFeatures = Model.Document.TakeRateData.MultiMappedFeatureGroups.Where(f => f.FeatureCode.Equals(featureCode, StringComparison.OrdinalIgnoreCase));
+    var sb = new StringBuilder();
+    foreach (var mappedFeature in mappedFeatures)
+    {
+        sb.Append(string.Format("{0} ({1})", mappedFeature.Description, mappedFeature.ImportFeatureCode));
         sb.Append("<br/>");
     }
     @sb.ToString();

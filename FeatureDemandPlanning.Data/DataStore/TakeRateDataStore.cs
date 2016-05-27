@@ -204,6 +204,15 @@ namespace FeatureDemandPlanning.DataStore
                         PackName = p.Field<string>("PackName"),
                         BrandDescription = p.Field<string>("Feature")
                     });
+
+                    // 8. Multi-mapped features
+
+                    retVal.MultiMappedFeatureGroups = ds.Tables[7].AsEnumerable().Select(m => new MultiMappedFeatureGroup
+                    {
+                        FeatureCode = m.Field<string>("MappedFeatureCode"),
+                        ImportFeatureCode = m.Field<string>("ImportFeatureCode"),
+                        Description = m.Field<string>("Description")
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -832,6 +841,39 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
+        public FdpChangeset FdpChangesetUndoAll(TakeRateFilter takeRateFilter, FdpChangeset changesetToUndo)
+        {
+            FdpChangeset retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                using (var tran = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        var para = new DynamicParameters();
+                        para.Add("@FdpChangesetId", changesetToUndo.FdpChangesetId, DbType.Int32);
+
+                        var revertedItems = conn.Query<DataChange>("dbo.Fdp_Changeset_UndoAll", para, tran, commandType: CommandType.StoredProcedure);
+
+                        tran.Commit();
+
+                        retVal = FdpChangesetGet(changesetToUndo);
+                        var dataChanges = revertedItems as IList<DataChange> ?? revertedItems.ToList();
+                        if (dataChanges.Any())
+                        {
+                            retVal.Reverted = dataChanges.ToList();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex);
+                        throw;
+                    }
+                }
+            }
+            return retVal;
+        }
         private static void FdpChangesetPersist(FdpChangeset changesetToPersist, IDbTransaction tran)
         {
             var para = new DynamicParameters();
@@ -1430,6 +1472,72 @@ namespace FeatureDemandPlanning.DataStore
                         Log.Error(ex);
                         throw;
                     }
+                }
+            }
+            return retVal;
+        }
+
+        public void FdpValidationIgnore(TakeRateFilter takeRateFilter)
+        {
+            using (var conn = DbHelper.GetDBConnection())
+            {
+
+                try
+                {
+                    var para = DynamicParameters.FromCDSId(CurrentCDSID);
+                    para.Add("@FdpValidationId", takeRateFilter.FdpValidationId, DbType.Int32);
+
+                    conn.Execute("dbo.Fdp_Validation_Ignore", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+
+            }
+        }
+
+        public FdpChangesetHistoryDetails FdpTakeRateHistoryDetailsGet(TakeRateFilter filter)
+        {
+            var retVal = new FdpChangesetHistoryDetails();
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@FdpChangesetId", filter.ChangesetId, DbType.Int32);
+
+                    retVal.HistoryDetails = conn.Query<FdpChangesetHistoryItemDetails>("dbo.Fdp_ChangesetDetails_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+
+        public IEnumerable<RawFeaturePackItem> FdpFeaturePackItemsGetMany(TakeRateFilter filter)
+        {
+            IEnumerable<RawFeaturePackItem> retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var para = new DynamicParameters();
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
+                    para.Add("@MarketId", filter.MarketId, DbType.Int32);
+
+                    retVal = conn.Query<RawFeaturePackItem>("dbo.Fdp_FeaturePackItems_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
                 }
             }
             return retVal;

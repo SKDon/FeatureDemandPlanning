@@ -10,7 +10,7 @@
                 <h4 class="modal-title modal-title-sm" id="Modal_Title">[Title]</h4>
             </div>
             <div class="modal-body modal-body-sm">
-                <div id="Modal_Notify" class="subscribers-notify alert" style="display:none;"></div>
+                <div id="Modal_Notify" class="subscribers-notify alert" style="display: none;"></div>
                 <div id="Modal_Content"></div>
             </div>
             <div class="modal-footer">
@@ -20,3 +20,28 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="@(Model.IdentifierPrefix)_SpinnerModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal-header-sm">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title modal-title-sm" id="@(Model.IdentifierPrefix)_SpinnerModalTitle">Updating</h4>
+            </div>
+            <div class="modal-body modal-body-sm">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div id="@(Model.IdentifierPrefix)_Spinner" class="spin" data-spin=""></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class ="col-lg-8 col-lg-offset-2">
+                        <h4 style="text-align:center">Please Wait...</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

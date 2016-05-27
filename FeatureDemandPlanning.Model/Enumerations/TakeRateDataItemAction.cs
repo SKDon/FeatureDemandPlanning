@@ -17,6 +17,7 @@
         Filter = 12,
         ValidationSummary = 13,
         Clone = 14,
-        Powertrain = 15
+        Powertrain = 15,
+        HistoryDetails = 16
     }
 }

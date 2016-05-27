@@ -4,6 +4,7 @@ using System.Linq;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Extensions;
 using FluentValidation;
+using FluentValidation.Validators;
 
 namespace FeatureDemandPlanning.Model.Validators
 {
@@ -14,7 +15,7 @@ namespace FeatureDemandPlanning.Model.Validators
         public FeaturePackEquivalentTakeRateValidator()
         {
             RuleFor(p => p)
-                .Must(p => p.DistinctTakeRates() <= 1)
+                .Must(p => p.AllPacks.IsFeatureTakeRateEquivalentToPack(p))
                 .WithMessage(Message,
                     p => p.PackName,
                     p => p.Model)
@@ -29,7 +30,7 @@ namespace FeatureDemandPlanning.Model.Validators
         public OptionItemGreaterThanOrEqualToPackValidator()
         {
             RuleFor(p => p)
-                .Must(AllOptionalFeaturesTakeRateGreaterThanOrEqualToPack)
+                .Must(p => p.AllPacks.IsFeatureTakeRateEquivalentToOrGreaterThanPack(p))
                 .WithMessage(Message,
                     p => _invalidOptions.ToCommaSeperatedList(),
                     p => p.Model,
@@ -40,7 +41,7 @@ namespace FeatureDemandPlanning.Model.Validators
         public bool AllOptionalFeaturesTakeRateGreaterThanOrEqualToPack(FeaturePack pack)
         {
             _invalidOptions = new List<string>();
-            var optionalFeatures = pack.PackItems.Where(d => d.IsOptionalFeatureInGroup && d.FeatureId.HasValue);
+            var optionalFeatures = pack.DataItems.Where(d => d.IsOptionalFeatureInGroup && d.FeatureId.HasValue);
             foreach (var optionalFeature in optionalFeatures)
             {
                 if (optionalFeature.PercentageTakeRate >= pack.PackPercentageTakeRate &&

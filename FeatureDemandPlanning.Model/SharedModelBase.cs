@@ -86,11 +86,23 @@ namespace FeatureDemandPlanning.Model
                 CurrentVersion =  Assembly.GetExecutingAssembly().GetName().Version.ToString()
             };
         }
+        protected static void AddCache(string cacheKey, object data)
+        {
+            if (HttpContext.Current == null)
+                return;
+
+            HttpContext.Current.Cache.Add(cacheKey, data, null, DateTime.Now.AddMinutes(60), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+        }
+        protected static object GetCache(string cacheKey)
+        {
+            return HttpContext.Current == null ? null : HttpContext.Current.Cache.Get(cacheKey);
+        }
         private static User GetUser(IDataContext context)
         {
             User retVal;
             var cdsId = GetAuthenticatedUser();
-            var cachedUser = HttpContext.Current.Cache.Get(cdsId);
+            var cacheKey = string.Format("User_{0}", cdsId);
+            var cachedUser = GetCache(cacheKey);
             if (cachedUser != null)
             {
                 retVal = (User)cachedUser;
@@ -98,7 +110,7 @@ namespace FeatureDemandPlanning.Model
             else
             {
                 retVal = context.User.GetUser();
-                HttpContext.Current.Cache.Insert(cdsId, retVal, null, DateTime.Now.AddMinutes(30), Cache.NoSlidingExpiration);
+                AddCache(cacheKey, retVal);
             }
             return retVal;
         }

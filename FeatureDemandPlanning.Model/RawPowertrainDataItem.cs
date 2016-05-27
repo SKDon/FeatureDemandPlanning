@@ -26,5 +26,6 @@
 		public int Volume { get; set; }
         public decimal PercentageTakeRate { get; set; }
         public bool IsDirty { get; set; }
+        public int NumberOfModels { get; set; }
     }
 }

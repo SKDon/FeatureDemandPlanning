@@ -268,6 +268,7 @@
     <Content Include="Content\Images\Icons\news32.png" />
     <Content Include="Content\Images\Icons\news64.png" />
     <Content Include="Content\js\bootstrap-multiselect.js" />
+    <Content Include="Content\js\dataTables.fixedHeader.min.js" />
     <Content Include="Content\js\DerivativeMapping\bmcinit.js" />
     <Content Include="Content\js\DerivativeMapping\bmc.js" />
     <Content Include="Content\js\DerivativeMapping\bmcpage.js" />
@@ -281,6 +282,7 @@
     <Content Include="Content\js\Import\mapoxotrimaction.js" />
     <Content Include="Content\js\Import\mapoxoderivativeaction.js" />
     <Content Include="Content\js\Import\processdataaction.js" />
+    <Content Include="Content\js\jcookies.js" />
     <Content Include="Content\js\jquery.contextMenu.js" />
     <Content Include="Content\js\jquery.ui.position.js" />
     <Content Include="Content\js\MarketReview\init.js" />
@@ -889,14 +891,12 @@
     <Content Include="Content\js\Import\exceptionsinit.js" />
     <Content Include="Content\js\Import\upload.js" />
     <Content Include="Content\js\Import\uploadaction.js" />
-    <Content Include="Content\js\jquery.cookie.js" />
     <Content Include="Content\js\MarketMapping\copy.js" />
     <Content Include="Content\js\MarketMapping\delete.js" />
     <Content Include="Content\js\MarketMapping\init.js" />
     <Content Include="Content\js\MarketMapping\model.js" />
     <Content Include="Content\js\MarketMapping\page.js" />
     <Content Include="Content\js\Shared\contextmenu.js" />
-    <Content Include="Content\js\Shared\cookie.js" />
     <Content Include="Content\js\Shared\modal.js" />
     <Content Include="Content\js\Shared\pager.js" />
     <Content Include="Content\js\Shared\vehicle.js" />
@@ -1150,6 +1150,7 @@
     <Content Include="Views\Import\_ContextMenu.cshtml" />
     <Content Include="Views\Import\_DeleteImport.cshtml" />
     <Content Include="Views\Import\_ImportActionHeader.cshtml" />
+    <Content Include="Views\TakeRateData\_ChangesetHistoryDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -12,4 +12,14 @@ namespace FeatureDemandPlanning.Model
             History = Enumerable.Empty<FdpChangesetHistoryItem>();
         }
     }
+
+    public class FdpChangesetHistoryDetails
+    {
+        public IEnumerable<FdpChangesetHistoryItemDetails> HistoryDetails { get; set; }
+
+        public FdpChangesetHistoryDetails()
+        {
+            HistoryDetails = Enumerable.Empty<FdpChangesetHistoryItemDetails>();
+        }
+    }
 }

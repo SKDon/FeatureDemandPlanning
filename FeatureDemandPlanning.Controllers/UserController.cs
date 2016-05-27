@@ -308,9 +308,10 @@ namespace FeatureDemandPlanning.Controllers
         }
         private void FlushCache(string cdsId)
         {
-            if (HttpContext.Cache.Get(cdsId) != null)
+            var cacheKey = string.Format("User_{0}", cdsId);
+            if (HttpContext.Cache.Get(cacheKey) != null)
             {
-                HttpContext.Cache.Remove(cdsId);
+                HttpContext.Cache.Remove(cacheKey);
             }
         }
     }
