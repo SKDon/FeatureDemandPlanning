@@ -53,7 +53,7 @@ namespace FeatureDemandPlanning.ValidationTest
                 MarketId = marketId
             };
             var filter = TakeRateFilter.FromTakeRateParameters(p);
-            var rawData = await context.TakeRate.GetRawData(filter);
+            var rawData = context.TakeRate.GetRawData(filter).Result;
             var results = Validator.Validate(rawData);
             
             foreach (var error in results.Errors)
@@ -61,7 +61,7 @@ namespace FeatureDemandPlanning.ValidationTest
                 Console.WriteLine(error.ErrorMessage);
             }
 
-            var persistedResults = await Validator.Persist(context, filter, results);
+            var persistedResults = Validator.Persist(context, filter, results);
         }
     }
 }

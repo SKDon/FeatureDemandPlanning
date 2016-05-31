@@ -131,7 +131,7 @@ namespace FeatureDemandPlanning.Controllers
             SaveImportFileToFileSystem();
             QueueItemForProcessing();
             ProcessQueuedItem();
-            ValidateProcessedItem();
+            //ValidateProcessedItem();
             RefreshQueuedItem();
 
             var retVal = JsonGetSuccess();
@@ -248,33 +248,33 @@ namespace FeatureDemandPlanning.Controllers
             }
         }
 
-        private void ValidateProcessedItem()
-        {
-            if (Result == null || !Result.TakeRateId.HasValue)
-                return;
+        //private void ValidateProcessedItem()
+        //{
+        //    if (Result == null || !Result.TakeRateId.HasValue)
+        //        return;
 
-            var filter = new TakeRateFilter()
-            {
-                TakeRateId = Result.TakeRateId
-            };
+        //    var filter = new TakeRateFilter()
+        //    {
+        //        TakeRateId = Result.TakeRateId
+        //    };
 
-            var markets = DataContext.Market.ListMarkets(filter).Result;
-            foreach (var market in markets)
-            {
-                try
-                {
-                    filter.MarketId = market.Id;
-                    var rawData = DataContext.TakeRate.GetRawData(filter).Result;
+        //    var markets = DataContext.Market.ListMarkets(filter).Result;
+        //    foreach (var market in markets)
+        //    {
+        //        try
+        //        {
+        //            filter.MarketId = market.Id;
+        //            var rawData = DataContext.TakeRate.GetRawData(filter).Result;
 
-                    var validationResults = Validator.Validate(rawData);
-                    Validator.Persist(DataContext, filter, validationResults).RunSynchronously();
-                }
-                catch (ValidationException vex)
-                {
-                    // Sink the exception, as we don't want any validation errors propagating up
-                }
-            }
-        }
+        //            var validationResults = Validator.Validate(rawData);
+        //            Validator.Persist(DataContext, filter, validationResults).RunSynchronously();
+        //        }
+        //        catch (ValidationException vex)
+        //        {
+        //            // Sink the exception, as we don't want any validation errors propagating up
+        //        }
+        //    }
+        //}
         private void RefreshQueuedItem()
         {
             if (CurrentQueuedItem == null || CurrentQueuedItem is EmptyImportQueue)

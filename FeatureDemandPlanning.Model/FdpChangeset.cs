@@ -12,7 +12,7 @@ namespace FeatureDemandPlanning.Model
         public bool IsSaved { get; set; }
         public string Comment { get; set; }
 
-        public IList<DataChange> Changes { get; set; }
+        public List<DataChange> Changes { get; set; }
         public IList<DataChange> Reverted { get; set; }
 
         public FdpChangeset()

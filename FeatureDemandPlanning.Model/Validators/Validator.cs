@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FeatureDemandPlanning.Model.Enumerations;
@@ -14,7 +12,6 @@ namespace FeatureDemandPlanning.Model.Validators
     {
         public static FluentValidation.Results.ValidationResult Validate(RawTakeRateData data)
         {
-            var watch = Stopwatch.StartNew();
             FluentValidation.Results.ValidationResult featureLevelResults = null;
             FluentValidation.Results.ValidationResult modelLevelResults = null;
             FluentValidation.Results.ValidationResult featureMixResults = null;
@@ -39,26 +36,23 @@ namespace FeatureDemandPlanning.Model.Validators
                 .Concat(featureMixResults.Errors);
 
             var validationFailures = allErrors as IList<ValidationFailure> ?? allErrors.ToList();
-
-            watch.Stop();
-            Console.WriteLine("Total Validation Time : {0} ms", watch.ElapsedMilliseconds);
             
             return new FluentValidation.Results.ValidationResult(validationFailures);
         }
 
-        public static async Task<IEnumerable<ValidationResult>> Persist(IDataContext context,
+        public static IEnumerable<ValidationResult> Persist(IDataContext context,
             TakeRateFilter filter,
             FluentValidation.Results.ValidationResult results)
         {
-            return await context.TakeRate.PersistValidationErrors(filter, results);
+            return context.TakeRate.PersistValidationErrors(filter, results);
         }
 
-        public static async Task<IEnumerable<ValidationResult>> Persist(IDataContext context,
+        public static IEnumerable<ValidationResult> Persist(IDataContext context,
             TakeRateFilter filter,
             FluentValidation.Results.ValidationResult results,
             bool global)
         {
-            return await context.TakeRate.PersistValidationErrors(filter, results, global);
+            return context.TakeRate.PersistValidationErrors(filter, results, global);
         }
     }
     // Stores state information for validation such that it can be stored in the database and the appropriate objects

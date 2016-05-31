@@ -214,5 +214,14 @@ namespace FeatureDemandPlanning.Model
         {
             return (IsFdpFeature && mixItem.FdpFeatureId == GetFeatureId()) || (IsFeature && mixItem.FeatureId == GetFeatureId()) || (IsFeaturePack && !mixItem.FeatureId.HasValue && mixItem.FeaturePackId == GetFeatureId());
         }
+
+        public bool HasChanged
+        {
+            get
+            {
+                return OriginalVolume != Volume ||
+                       OriginalPercentageTakeRate != PercentageTakeRateAsFraction.GetValueOrDefault();
+            }
+        }
     }
 }

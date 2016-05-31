@@ -130,8 +130,8 @@ namespace FeatureDemandPlanning.Controllers
 			        filter.MarketId = market.Id;
 			        var rawData = await DataContext.TakeRate.GetRawData(filter);
 
-			        var validationResults = Validator.Validate(rawData);
-			        await Validator.Persist(DataContext, filter, validationResults);
+			        //var validationResults = Validator.Validate(rawData);
+			        //Validator.Persist(DataContext, filter, validationResults);
 			    }
 			    catch (ValidationException vex)
 			    {

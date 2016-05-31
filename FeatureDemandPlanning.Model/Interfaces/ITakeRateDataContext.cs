@@ -53,7 +53,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<RawTakeRateData> GetRawData(TakeRateFilter filter);
 
-        Task<IEnumerable<ValidationResult>> PersistValidationErrors(TakeRateFilter filter, FluentValidation.Results.ValidationResult validationResult, bool global = false);
+        IEnumerable<ValidationResult> PersistValidationErrors(TakeRateFilter filter, FluentValidation.Results.ValidationResult validationResult, bool global = false);
 
         Task<TakeRateSummary> CloneTakeRateDocument(TakeRateFilter filter);
 

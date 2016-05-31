@@ -590,23 +590,23 @@ namespace FeatureDemandPlanning.Model.ViewModel
         {
             IEnumerable<MarketGroup> marketGroups;
 
-            var cacheKey = string.Format("MarketGroup_{0}", document.UnderlyingOxoDocument.Id);
+            //var cacheKey = string.Format("MarketGroup_{0}", document.UnderlyingOxoDocument.Id);
 
-            var cachedObject = GetCache(cacheKey);
-            if (cachedObject != null)
-            {
-                marketGroups = (IEnumerable<MarketGroup>) cachedObject;
-            }
-            else
-            {
+            //var cachedObject = GetCache(cacheKey);
+            //if (cachedObject != null)
+            //{
+            //    marketGroups = (IEnumerable<MarketGroup>) cachedObject;
+            //}
+            //else
+            //{
                 marketGroups = await context.TakeRate.ListAvailableMarketGroups(new TakeRateFilter()
                 {
                     DocumentId = document.UnderlyingOxoDocument.Id
                 });
 
-                if (marketGroups != null && marketGroups.Any())
-                    AddCache(cacheKey, marketGroups);
-            }
+            //    if (marketGroups != null && marketGroups.Any())
+            //        AddCache(cacheKey, marketGroups);
+            //}
 
             return marketGroups;
         }

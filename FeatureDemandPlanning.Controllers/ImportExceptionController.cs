@@ -468,28 +468,28 @@ namespace FeatureDemandPlanning.Controllers
 
             // Get the markets and iterate through them, validating in turn
 
-            var availableMarkets = DataContext.Market.ListMarkets(takeRateFilter).Result;
-            foreach (var market in availableMarkets)
-            {
-                takeRateFilter.Action = TakeRateDataItemAction.Validate;
-                takeRateFilter.MarketId = market.Id;
-                var takeRateView = await TakeRateViewModel.GetModel(DataContext, takeRateFilter);
+            //var availableMarkets = DataContext.Market.ListMarkets(takeRateFilter).Result;
+            //foreach (var market in availableMarkets)
+            //{
+            //    takeRateFilter.Action = TakeRateDataItemAction.Validate;
+            //    takeRateFilter.MarketId = market.Id;
+            //    var takeRateView = await TakeRateViewModel.GetModel(DataContext, takeRateFilter);
 
-                try
-                {
-                    var interimResults = Validator.Validate(takeRateView.RawData);
-                    await Validator.Persist(DataContext, takeRateFilter, interimResults, true);
-                }
-                catch (ValidationException vex)
-                {
-                    // Just in case someone has thrown an exception from the validation, which we don't actually want
-                    Log.Warning(vex);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex);
-                }
-            }
+            //    try
+            //    {
+            //        var interimResults = Validator.Validate(takeRateView.RawData);
+            //        await Validator.Persist(DataContext, takeRateFilter, interimResults, true);
+            //    }
+            //    catch (ValidationException vex)
+            //    {
+            //        // Just in case someone has thrown an exception from the validation, which we don't actually want
+            //        Log.Warning(vex);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Log.Error(ex);
+            //    }
+            //}
 
             return Json(JsonActionResult.GetSuccess(), JsonRequestBehavior.AllowGet);
         }

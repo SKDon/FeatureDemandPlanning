@@ -109,7 +109,7 @@ namespace FeatureDemandPlanning.Controllers
 
         [HandleErrorWithJson]
         [HttpPost]
-        public async Task<ActionResult> SaveChangeset(TakeRateParameters parameters)
+        public ActionResult SaveChangeset(TakeRateParameters parameters)
         {
             TakeRateParametersValidator
                 .ValidateTakeRateParameters(DataContext, parameters,
@@ -118,11 +118,11 @@ namespace FeatureDemandPlanning.Controllers
             CheckModelAllowsEdit(parameters);
 
             var business = new TakeRateBusiness(DataContext, parameters);
-            var savedChangeset = business.SaveChangeset();
+            
+            business.CalculateChanges();
+            business.SaveChangeset();
 
-            await business.ValidateChangeset();
-
-            return Json(savedChangeset);
+            return Json(business.CurrentChangeSet);
         }
 	    [HandleErrorWithJson]
 	    [HttpPost]
@@ -250,9 +250,9 @@ namespace FeatureDemandPlanning.Controllers
                 await DataContext.TakeRate.UndoChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
 
             // TODO break this out into a separate call, as we want it to return as fast as possible
-            var rawData = await DataContext.TakeRate.GetRawData(filter);
-            var validationResults = Validator.Validate(rawData);
-            var savedValidationResults = await Validator.Persist(DataContext, filter, validationResults);
+            //var rawData = await DataContext.TakeRate.GetRawData(filter);
+            //var validationResults = Validator.Validate(rawData);
+            //var savedValidationResults = await Validator.Persist(DataContext, filter, validationResults);
 
             return JsonGetSuccess(undoneChangeset);
         }
@@ -272,10 +272,10 @@ namespace FeatureDemandPlanning.Controllers
             }
             var undoneChangeset = await DataContext.TakeRate.UndoAllChangeset(TakeRateFilter.FromTakeRateParameters(parameters));
 
-            // TODO break this out into a separate call, as we want it to return as fast as possible
-            var rawData = await DataContext.TakeRate.GetRawData(filter);
-            var validationResults = Validator.Validate(rawData);
-            var savedValidationResults = await Validator.Persist(DataContext, filter, validationResults);
+            //// TODO break this out into a separate call, as we want it to return as fast as possible
+            //var rawData = await DataContext.TakeRate.GetRawData(filter);
+            //var validationResults = Validator.Validate(rawData);
+            //var savedValidationResults = await Validator.Persist(DataContext, filter, validationResults);
 
             return JsonGetSuccess(undoneChangeset);
         }
@@ -303,6 +303,12 @@ namespace FeatureDemandPlanning.Controllers
 	    {
 	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
+	        if (parameters.MarketId.HasValue)
+	        {
+	            var business = new TakeRateBusiness(DataContext, parameters);
+	            business.ValidateChangeset();
+	        }
+
 	        var validation = await DataContext.TakeRate.GetValidation(TakeRateFilter.FromTakeRateParameters(parameters));
 
 	        return Json(validation);
@@ -320,35 +326,35 @@ namespace FeatureDemandPlanning.Controllers
 
             return PartialView("_ValidationSummary", takeRateView);
 	    }
-	    [HandleErrorWithJson]
-	    [HttpPost]
-	    public async Task<ActionResult> Validate(TakeRateParameters parameters)
-	    {
-	        var validationResults = Enumerable.Empty<ValidationResult>();
+        //[HandleErrorWithJson]
+        //[HttpPost]
+        //public async Task<ActionResult> Validate(TakeRateParameters parameters)
+        //{
+        //    var validationResults = Enumerable.Empty<ValidationResult>();
 
-	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+        //    TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
-	        var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-	        filter.Action = TakeRateDataItemAction.Validate;
-	        var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
+        //    var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+        //    filter.Action = TakeRateDataItemAction.Validate;
+        //    var takeRateView = await TakeRateViewModel.GetModel(DataContext, filter);
 
-	        try
-	        {
-	            var interimResults = Validator.Validate(takeRateView.RawData);
-	            validationResults = await Validator.Persist(DataContext, filter, interimResults);
-	        }
-	        catch (ValidationException vex)
-	        {
-	            // Just in case someone has thrown an exception from the validation, which we don't actually want
-	            Log.Warning(vex);
-	        }
-	        catch (Exception ex)
-	        {
-	            Log.Error(ex);
-	        }
+        //    try
+        //    {
+        //        var interimResults = Validator.Validate(takeRateView.RawData);
+        //        validationResults = await Validator.Persist(DataContext, filter, interimResults);
+        //    }
+        //    catch (ValidationException vex)
+        //    {
+        //        // Just in case someone has thrown an exception from the validation, which we don't actually want
+        //        Log.Warning(vex);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error(ex);
+        //    }
 
-	        return JsonGetSuccess(validationResults);
-	    }
+        //    return JsonGetSuccess(validationResults);
+        //}
 
 	    public ActionResult IgnoreValidationError(TakeRateParameters parameters)
 	    {

@@ -157,7 +157,7 @@ namespace FeatureDemandPlanning.DataStore
             return await Task.FromResult(_takeRateDataStore.FdpChangesetPersist(filter, changeset));
         }
 
-        public async Task<IEnumerable<ValidationResult>> PersistValidationErrors(TakeRateFilter filter, FluentValidation.Results.ValidationResult validationResult, bool global = false)
+        public IEnumerable<ValidationResult> PersistValidationErrors(TakeRateFilter filter, FluentValidation.Results.ValidationResult validationResult, bool global = false)
         {
             var results = new List<ValidationResult>();
             
@@ -188,7 +188,7 @@ namespace FeatureDemandPlanning.DataStore
                     Message = validationError.ErrorMessage
                 };
 
-                validationData = await Task.FromResult(_takeRateDataStore.FdpValidationPersist(validationData, global));
+                validationData = _takeRateDataStore.FdpValidationPersist(validationData, global);
                 results.Add(validationData);
 
                 foreach (var childState in state.ChildStates)
@@ -213,7 +213,7 @@ namespace FeatureDemandPlanning.DataStore
 
                         Message = validationError.ErrorMessage
                     };
-                    validationData = await Task.FromResult(_takeRateDataStore.FdpValidationPersist(validationData, global));
+                    validationData = _takeRateDataStore.FdpValidationPersist(validationData, global);
                     results.Add(validationData);
                 }
             }

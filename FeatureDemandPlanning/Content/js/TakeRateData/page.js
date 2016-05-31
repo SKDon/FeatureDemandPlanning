@@ -29,6 +29,7 @@ model.Page = function (models) {
     privateStore[me.id].Changeset = null;
     privateStore[me.id].Initial = true;
     privateStore[me.id].Expanded = true;
+    privateStore[me.id].InEdit = false;
     
     me.initialise = function () {
         $(privateStore[me.id].Models).each(function () {
@@ -62,11 +63,13 @@ model.Page = function (models) {
         privateStore[me.id].ResultsMode = resultsMode;
     };
     me.loadData = function () {
+        me.showSpinner("Loading");
         me.initialiseControls();
         me.configureDataTables();
-        me.configureRowHighlight();
         me.configureChangeset();
         me.loadChangeset();
+        me.loadValidation();
+        me.configureRowHighlight();
     };
     me.persistData = function () {
         var model = getTakeRateDataModel();
@@ -168,7 +171,7 @@ model.Page = function (models) {
     };
     me.undoAllData = function () {
         me.showSpinner("Undo All Data");
-        getTakeRateDataModel().undoAllData({ Data: getChangeset().getDataChanges() }, me.undoDataCallback);
+        getTakeRateDataModel().undoAllData({ Data: getChangeset().getDataChanges() }, me.undoAllDataCallback);
     };
     me.showSpinner = function(spinnerText) {
         var spinnerModal = $("#" + me.getIdentifierPrefix() + "_SpinnerModal");
@@ -199,9 +202,14 @@ model.Page = function (models) {
     };
     me.undoDataCallback = function(revertedData) {
         me.setInitial(false);
-        me.loadChangeset();
+        //me.loadChangeset();
         me.revertData(revertedData);
         me.hideSpinner();
+        me.loadValidation();
+    };
+    me.undoAllDataCallback = function(revertedData) {
+        me.undoAllData(revertedData);
+        me.reloadPage();
     };
     me.reloadPage = function() {
         location.reload(true);
@@ -301,6 +309,12 @@ model.Page = function (models) {
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
         $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);      
     };
+    me.lowerCellEditing = function () {
+        var prefix = me.getIdentifierPrefix();
+        $(".editable").unbind("click.editable");
+        $(".editable-header").unbind("click.editable");
+        $("#" + prefix + "_MarketVolume").unbind("click.editable");
+    };
     me.configureCellEditing = function () {
         var prefix = me.getIdentifierPrefix();
         $(".editable").editable(me.cellEditCallback,
@@ -337,7 +351,7 @@ model.Page = function (models) {
                     return;
                 }
                 var selector = $("table.dataTable");
-                var rowIndex = $(this).closest("tr").index() + 4; // Add +4 as we need to exclude the additional header rows
+                var rowIndex = $(this).closest("tr").index() + 3; // Add +3 as we need to exclude the additional header rows
                 var columnIndex = $(this).index();
                
                 var modelIdentifier = $(this).attr("data-model");
@@ -366,6 +380,7 @@ model.Page = function (models) {
     me.cellEditCallback = function (value, settings) {
 
         me.showSpinner("Updating Data");
+        
         var target = $(this).attr("data-target");
         target = target.replace("MS|", "");
         var identifiers = target.split("|");
@@ -409,7 +424,8 @@ model.Page = function (models) {
                 formattedValue = me.formatVolume(change.getChangedVolume());
             }
         }
-        $(document).trigger("EditCell", change);
+        if (!privateStore[me.id].InEdit)
+            $(document).trigger("EditCell", change);
 
         return formattedValue;
     };
@@ -519,6 +535,7 @@ model.Page = function (models) {
         //}
     };
     me.onSaveEventHandler = function () {
+        privateStore[me.id].InEdit = true;
         me.saveData(me.saveCallback);
     };
     me.onSavedEventHandler = function() {
@@ -536,7 +553,8 @@ model.Page = function (models) {
     me.saveCallback = function () {
         me.setInitial(false);
         me.loadChangeset();
-        me.hideSpinner();
+        privateStore[me.id].InEdit = false;
+        me.loadValidation();
     };
     me.loadChangeset = function () {
         getTakeRateDataModel().loadChangeset(me.loadChangesetCallback);
@@ -719,7 +737,7 @@ model.Page = function (models) {
         }
 
         me.configureCellEditing();
-        me.loadValidation();
+        me.hideSpinner();
     };
     me.revertData = function(revertedData) {
         for (var i = 0; i < revertedData.Reverted.length; i++) {
@@ -1183,11 +1201,6 @@ model.Page = function (models) {
                 } 
                 me.configureComments();
                 me.bindContextMenu();
-
-                var filter = $.jCookies({ get: "Filter" });
-                if (filter) {
-                    me.filter({ Filter: filter });
-                }
             }
         });
 
