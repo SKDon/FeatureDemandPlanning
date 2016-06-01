@@ -41,7 +41,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
 
         Task<FdpChangesetHistory> GetChangesetHistory(TakeRateFilter filter);
 
-        Task<TakeRateDataItemNote> AddDataItemNote(TakeRateFilter filter);
+        Task<DataChange> AddDataItemNote(TakeRateFilter filter);
 
         Task<FdpValidation> GetValidation(TakeRateFilter filter);
 

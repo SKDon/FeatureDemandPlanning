@@ -77,7 +77,7 @@ model.PowertrainAction = function(params) {
         me.registerSubscribers();
 
         $("#Modal_OK").hide();
-        $("#Modal_Cancel").html("OK");
+        $("#Modal_Cancel").html("Close");
 
         me.configureDerivativeCellEditing();
     };
@@ -89,10 +89,14 @@ model.PowertrainAction = function(params) {
             data: me.parseInputData,
             select: true,
             onblur: "submit"
+        }).click(function() {
+            $("#Modal_Cancel").attr("disabled", "disabled");
         });
     };
     me.derivativeCellEditCallback = function (value, settings) {
 
+        me.showSpinner("Updating Derivative Mix");
+       
         var target = $(this).attr("data-target");
         var identifiers = target.split("|");
 
@@ -118,10 +122,30 @@ model.PowertrainAction = function(params) {
                 formattedValue = me.formatPercentageTakeRate(change.getOriginalTakeRate());
             }
 
-        } 
-        
+        }
+        //me.hideSpinner();
+        $("#Modal_Cancel").removeAttr("disabled");
 
         return formattedValue;
+    };
+    me.showSpinner = function (spinnerText) {
+        var spinnerModal = $("#" + me.getIdentifierPrefix() + "_SpinnerModal");
+        var spinner = $("#" + me.getIdentifierPrefix() + "_Spinner");
+        var spinnerTitle = $("#" + me.getIdentifierPrefix() + "_SpinnerModalTitle");
+
+        spinnerTitle.html(spinnerText);
+        spinnerModal.modal({
+            backdrop: "static",
+            keyboard: false
+        });
+        spinner.spin("show");
+    };
+    me.hideSpinner = function () {
+        var spinnerModal = $("#" + me.getIdentifierPrefix() + "_SpinnerModal");
+        var spinner = $("#" + me.getIdentifierPrefix() + "_Spinner");
+
+        spinner.spin("hide");
+        spinnerModal.modal("hide");
     };
     me.parseInputData = function (value) {
         var parsedValue = value.replace("%", "");

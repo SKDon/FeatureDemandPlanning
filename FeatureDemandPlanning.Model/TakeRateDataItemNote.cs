@@ -20,6 +20,8 @@ namespace FeatureDemandPlanning.Model
         public int? FeatureId { get; set; }
         public int? FdpFeatureId { get; set; }
 
+        public bool? IsUncommittedChange { get; set; }
+
         public string ModelIdentifier
         {
             get {

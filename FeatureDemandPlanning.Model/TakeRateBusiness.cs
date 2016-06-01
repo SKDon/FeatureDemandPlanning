@@ -903,18 +903,19 @@ namespace FeatureDemandPlanning.Model
         {
             var features = CurrentData.DataItems.Where(f => !f.IsNonApplicableFeatureInGroup && f.PercentageTakeRate != 0);
 
+            var modelChanges = CurrentChangeSet.Changes.Where(m => m.IsModelSummary).ToList();
+
             Parallel.ForEach(features,
                 () => new List<DataChange>(),
                 (feature, state, localList) =>
                 {
                     var modelDataChange =
-                            CurrentChangeSet.Changes.FirstOrDefault(
-                                m => m.IsModelSummary && feature.ModelId == m.GetModelId());
+                            modelChanges.FirstOrDefault(m => feature.ModelId == m.GetModelId());
 
                     // If the affected model has not been changed, there won't be a changeset entry, therefore we don't need to recompute any of the features
 
                     if (modelDataChange == null)
-                        return null;
+                        return localList;
 
                     var modelVolume = (int)(_currentDataChange.Volume.GetValueOrDefault() * modelDataChange.PercentageTakeRateAsFraction.GetValueOrDefault());
                     var featureDataChange = new DataChange(_currentDataChange)
@@ -988,13 +989,14 @@ namespace FeatureDemandPlanning.Model
             var marketVolume = _currentDataChange.Volume.GetValueOrDefault();
             var featureMixes = CurrentData.FeatureMixItems.Where(f => f.PercentageTakeRate != 0).ToList();
 
+            var featureChanges = CurrentChangeSet.Changes.Where(f => f.IsFeatureChange).ToList();
+
             Parallel.ForEach(featureMixes,
                 () => new List<DataChange>(),
                 (featureMix, state, localList) =>
                 {
                     var featureMixVolume =
-                        CurrentChangeSet.Changes.Where(
-                            c => c.IsFeatureChange && c.FeatureIdentifier == featureMix.FeatureIdentifier)
+                       featureChanges.Where(c => c.FeatureIdentifier == featureMix.FeatureIdentifier)
                             .Sum(c => c.Volume);
 
                     var featureMixDataChange = new DataChange(_currentDataChange)

@@ -88,14 +88,14 @@ namespace FeatureDemandPlanning.Model
         {
             get
             {
-                return !string.IsNullOrEmpty(ModelIdentifier) && string.IsNullOrEmpty(FeatureIdentifier);
+                return !string.IsNullOrEmpty(ModelIdentifier) && string.IsNullOrEmpty(FeatureIdentifier) && !IsNote;
             }
         }
         public bool IsFeatureSummary
         {
             get
             {
-                return string.IsNullOrEmpty(ModelIdentifier) && !string.IsNullOrEmpty(FeatureIdentifier);
+                return string.IsNullOrEmpty(ModelIdentifier) && !string.IsNullOrEmpty(FeatureIdentifier) && !IsNote;
             }
         }
         public bool IsFdpModel
@@ -134,7 +134,7 @@ namespace FeatureDemandPlanning.Model
                 return MarketId.HasValue &&
                        string.IsNullOrEmpty(ModelIdentifier) &&
                        string.IsNullOrEmpty(FeatureIdentifier) &&
-                       !IsPowertrainChange;
+                       !IsPowertrainChange && !IsNote;
             }
         }
 
@@ -145,12 +145,12 @@ namespace FeatureDemandPlanning.Model
                 return !MarketId.HasValue &&
                        string.IsNullOrEmpty(ModelIdentifier) &&
                        string.IsNullOrEmpty(FeatureIdentifier) &&
-                       !IsPowertrainChange;
+                       !IsPowertrainChange && !IsNote;
             }
         }
         public bool IsPowertrainChange
         {
-            get { return !string.IsNullOrEmpty(DerivativeCode); }
+            get { return !string.IsNullOrEmpty(DerivativeCode) && !IsNote; }
         }
         public TakeRateDataItem ToDataItem()
         {
@@ -186,8 +186,13 @@ namespace FeatureDemandPlanning.Model
         {
             get
             {
-                return !IsModelSummary && !IsFeatureSummary && !IsWholeMarketChange && !IsPowertrainChange;
+                return !IsModelSummary && !IsFeatureSummary && !IsWholeMarketChange && !IsPowertrainChange && !IsNote;
             }
+        }
+
+        public bool IsNote
+        {
+            get { return !string.IsNullOrEmpty(Note); }
         }
 
         public int? FdpVolumeDataItemId { get; set; }

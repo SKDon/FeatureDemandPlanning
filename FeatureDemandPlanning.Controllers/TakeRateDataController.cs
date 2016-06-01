@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using FeatureDemandPlanning.Model;
+using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Interfaces;
 using FluentValidation;
 
@@ -303,13 +304,15 @@ namespace FeatureDemandPlanning.Controllers
 	    {
 	        TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
 
+            var validation = new FdpValidation();
+
 	        if (parameters.MarketId.HasValue)
 	        {
 	            var business = new TakeRateBusiness(DataContext, parameters);
 	            business.ValidateChangeset();
-	        }
 
-	        var validation = await DataContext.TakeRate.GetValidation(TakeRateFilter.FromTakeRateParameters(parameters));
+                validation = await DataContext.TakeRate.GetValidation(TakeRateFilter.FromTakeRateParameters(parameters));
+	        }
 
 	        return Json(validation);
 	    }

@@ -36,18 +36,20 @@
             }
 
             @{
-                var model = availableModel;
-                var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => string.IsNullOrEmpty(n.FeatureIdentifier) && n.ModelIdentifier == model.StringIdentifier);
-                if (notes.Any())
-                {
-                    <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
-                        <div class="triangle"></div>
-                    </div>
-                }
-                @*else
-                {
-                    <div class="triangle" style="display: none"></div>
-                }*@
+        var model = availableModel;
+        var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => string.IsNullOrEmpty(n.FeatureIdentifier) && n.ModelIdentifier == model.StringIdentifier);
+        if (notes.Any())
+        {
+            <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-target="N|@Model.Document.Market.Id|@availableModel.StringIdentifier|" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
+                <div class="triangle"></div>
+            </div>
+        }
+        else
+        {
+            <div class="indicator comment-item" style="display:none" role="button" data-target="N|@Model.Document.Market.Id|@availableModel.StringIdentifier|" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
+                <div class="triangle"></div>
+            </div>
+        }
             }
         </th>
     }
@@ -55,28 +57,36 @@
     {
         <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
             @{
-                var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.FirstOrDefault(s => s.StringIdentifier == availableModel.StringIdentifier);
-                var volume = "-";
-                if (summary != null)
-                {
-                    volume = summary.Volume.ToString();
-                }
-                @volume
+        var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.FirstOrDefault(s => s.StringIdentifier == availableModel.StringIdentifier);
+        var volume = "-";
+        if (summary != null)
+        {
+            volume = summary.Volume.ToString();
+        }
+        @volume
             }
 
             @{
-                var model = availableModel;
-                var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => string.IsNullOrEmpty(n.FeatureIdentifier) && n.ModelIdentifier == model.StringIdentifier);
-                if (notes.Any())
-                {
-                    <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
-                        <div class="triangle"></div>
-                    </div>
-                }
-                @*else
-                {
-                    <div class="triangle" style="display: none"></div>
-                }*@
+        var model = availableModel;
+        var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => string.IsNullOrEmpty(n.FeatureIdentifier) && n.ModelIdentifier == model.StringIdentifier);
+        if (notes.Any())
+        {
+            <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
+                <div class="triangle"></div>
+            </div>
+        }
+        if (notes.Any())
+        {
+            <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-target="N|@Model.Document.Market.Id|@availableModel.StringIdentifier|" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
+                <div class="triangle"></div>
+            </div>
+        }
+        else
+        {
+            <div class="indicator comment-item" style="display:none" role="button" data-target="C|@Model.Document.Market.Id|@availableModel.StringIdentifier|" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
+                <div class="triangle"></div>
+            </div>
+        }
             }
         </th>
     }

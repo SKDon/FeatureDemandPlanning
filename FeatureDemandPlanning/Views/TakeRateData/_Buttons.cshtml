@@ -16,7 +16,7 @@
     }
 </div>
 
-@if (Model.AllowEdit)
+@if (Model.AllowEdit && !(Model.Document.Market is EmptyMarket))
 {
     <div class="btn-group pull-right">
         <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Validation" data-container="body" data-content="Show a summary of all validation errors for the currently selected market" data-toggle="popover" disabled="disabled"><span class="glyphicon glyphicon glyphicon-alert"></span></button>

@@ -48,6 +48,7 @@ model.AddNoteAction = function (params) {
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");
+        $(document).trigger("NoteAdded");
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
         if (eventArgs.IsValidation) {

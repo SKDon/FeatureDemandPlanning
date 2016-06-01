@@ -246,7 +246,7 @@ namespace FeatureDemandPlanning.DataStore
         {
             return await Task.FromResult(_takeRateDataStore.FdpAllOtherMarketVolumesGet(filter));
         }
-        public async Task<TakeRateDataItemNote> AddDataItemNote(TakeRateFilter filter)
+        public async Task<DataChange> AddDataItemNote(TakeRateFilter filter)
         {
             return await Task.FromResult(_takeRateDataStore.TakeRateDataItemNoteSave(filter));
         }

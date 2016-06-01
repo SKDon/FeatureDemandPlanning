@@ -63,7 +63,7 @@ model.Page = function (models) {
         privateStore[me.id].ResultsMode = resultsMode;
     };
     me.loadData = function () {
-        me.showSpinner("Loading");
+        me.showSpinner("Loading Changes & Validating");
         me.initialiseControls();
         me.configureDataTables();
         me.configureChangeset();
@@ -257,7 +257,8 @@ model.Page = function (models) {
             .unbind("Saved").on("Saved", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSavedDelegate", [eventArgs]); })
             .unbind("UpdateFilterVolume").on("UpdateFilterVolume", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdateFilterVolumeDelegate", [eventArgs]); })
             .unbind("Filtered").on("Filtered", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnFilteredDelegate", [eventArgs]); })
-            .unbind("HistoryDetails").on("HistoryDetails", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnHistoryDetailsDelegate", [eventArgs]); });
+            .unbind("HistoryDetails").on("HistoryDetails", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnHistoryDetailsDelegate", [eventArgs]); })
+            .unbind("NoteAdded").on("NoteAdded", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnNoteAddedDelegate", [eventArgs]); });
 
         $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
         $("#" + prefix + "_Undo").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoDelegate", [eventArgs]); });
@@ -275,7 +276,8 @@ model.Page = function (models) {
         $("#" + prefix + "_Toggle").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnToggleDelegate", [eventArgs]); });
         $("#" + prefix + "_Filter").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnFilterDelegate", [eventArgs]); });
         $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
-        $(".efg-item").unbind("click").on("click", function(sender, eventArgs) { me.filterItem(this); });
+        $(".efg-item").unbind("click").on("click", function (sender, eventArgs) { me.filterItem(this); });
+        $("a").unbind("click").on("click", function(sender, eventArgs) { me.showSpinner("Loading"); });
     };
     me.registerSubscribers = function () {
         var prefix = me.getIdentifierPrefix();
@@ -289,6 +291,7 @@ model.Page = function (models) {
             .unbind("OnValidationDelegate").on("OnValidationDelegate", me.onValidationEventHandler)
             .unbind("OnActionDelegate").on("OnActionDelegate", me.onActionEventHandler)
             .unbind("OnUpdateFilterVolumeDelegate").on("OnUpdateFilterVolumeDelegate", me.onUpdateFilterVolumeEventHandler)
+            .unbind("OnNoteAddedDelegate").on("OnNoteAddedDelegate", me.onNoteAddedEventHandler)
             .unbind("OnFilteredDelegate").on("OnFilteredDelegate", me.onFilterChangedEventHandler);
 
         $("#" + me.getIdentifierPrefix() + "_TakeRateDataPanel")
@@ -723,15 +726,26 @@ model.Page = function (models) {
                 {
                     selector = $(".editable-header[data-target='MS|" + currentChange.DataTarget + "']").first();
                 }
+                else if (currentChange.IsNote)
+                {
+                    selector = $("div[data-target='N|" + currentChange.DataTarget + "']");
+                }
                 else
                 {
                     selector = $("tbody div[data-target='" + currentChange.DataTarget + "']");
                 }
             }
-            if (selector !== null && selector !== undefined) {
-                selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
-                if (selector2 != null && displayValue2 != null) {
-                    selector2.addClass(me.getEditedDataClass(currentChange)).html(displayValue2);
+
+            if (!currentChange.IsNote) {
+                if (selector !== null && selector !== undefined) {
+                    selector.addClass(me.getEditedDataClass(currentChange)).html(displayValue);
+                    if (selector2 != null && displayValue2 != null) {
+                        selector2.addClass(me.getEditedDataClass(currentChange)).html(displayValue2);
+                    }
+                }
+            } else {
+                if (selector !== null && selector !== undefined) {
+                    selector.show();
                 }
             }
         }
@@ -1534,9 +1548,11 @@ model.Page = function (models) {
             me.fadeOutNotify();
             return;
         }
-        var html = "<div class=\"alert alert-dismissible alert-success\">" + eventArgs.Message + "</div>";
-        me.scrollToNotify();
-        me.fadeInNotify(html);
+        if (eventArgs.Message !== null && eventArgs.Message !== undefined) {
+            var html = "<div class=\"alert alert-dismissible alert-success\">" + eventArgs.Message + "</div>";
+            me.scrollToNotify();
+            me.fadeInNotify(html);
+        }
     };
     me.onErrorEventHandler = function (sender, eventArgs) {
         var html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.Message + "</div>";
@@ -1558,6 +1574,9 @@ model.Page = function (models) {
     };
     me.onUpdatedEventHandler = function (sender, eventArgs) {
         $("#notifier").html("<div class=\"alert alert-dismissible alert-success\">" + eventArgs.StatusMessage + "</div>");
+    };
+    me.onNoteAddedEventHandler = function(sender, eventArgs) {
+        me.loadChangeset();
     };
     me.redrawDataTable = function () {
         console.log("in redraw");

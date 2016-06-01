@@ -271,9 +271,9 @@ namespace FeatureDemandPlanning.DataStore
 
             return retVal;
         }
-        public TakeRateDataItemNote TakeRateDataItemNoteSave(TakeRateFilter filter)
+        public DataChange TakeRateDataItemNoteSave(TakeRateFilter filter)
         {
-            TakeRateDataItemNote retVal = new EmptyTakeRateDataItemNote();
+            DataChange retVal = new EmptyDataChange();
             using (var conn = DbHelper.GetDBConnection())
             {
                 try
@@ -288,8 +288,8 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpFeatureId", filter.FdpFeatureId, DbType.Int32);
                     para.Add("@Note", filter.Comment, DbType.String);
                     
-                    var results = conn.Query<TakeRateDataItemNote>(fdpTakeRateDataItemNoteSaveStoredProcedureName, para, commandType: CommandType.StoredProcedure);
-                    var takeRateDataItemNotes = results as IList<TakeRateDataItemNote> ?? results.ToList();
+                    var results = conn.Query<DataChange>(fdpTakeRateDataItemNoteSaveStoredProcedureName, para, commandType: CommandType.StoredProcedure);
+                    var takeRateDataItemNotes = results as IList<DataChange> ?? results.ToList();
                     if (takeRateDataItemNotes.Any())
                     {
                         retVal = takeRateDataItemNotes.First();

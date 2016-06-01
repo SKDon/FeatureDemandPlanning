@@ -130,10 +130,11 @@
         var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => n.FeatureIdentifier == featureIdentifier && n.ModelIdentifier == modelIdentifier);
         if (notes.Any())
         {
-            <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Details...&quot for additional information"><div class="triangle"></div></div>
+            <div class="indicator comment-item" role="button" data-target="N|@marketIdentifier|@modelIdentifier|@featureIdentifier" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Details...&quot for additional information"><div class="triangle"></div></div>
         }
         else
         {
+            <div class="indicator comment-item" style="display:none" role="button" data-target="N|@marketIdentifier|@modelIdentifier|@featureIdentifier" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Details...&quot for additional information"><div class="triangle"></div></div>
             <div class="triangle" style="display:none"></div>
         }
             }

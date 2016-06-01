@@ -24,9 +24,18 @@
                 @foreach (var note in Model.CurrentTakeRateDataItem.Notes)
                 {
                     <tr>
-                        <td class="text-center">@note.EnteredOn.ToString("dd/MM/yyyy HH:mm")</td>
-                        <td class="text-center">@note.EnteredBy</td>
-                        <td>@note.Note</td>
+                        @if (!note.IsUncommittedChange.GetValueOrDefault())
+                        {
+                            <td class="text-center">@note.EnteredOn.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">@note.EnteredBy</td>
+                            <td>@note.Note</td>
+                        }
+                        else
+                        {
+                            <td class="text-center"><span class="edited">@note.EnteredOn.ToString("dd/MM/yyyy HH:mm")</span></td>
+                            <td class="text-center"><span class="edited">@note.EnteredBy</span></td>
+                            <td><span class="edited">@note.Note</span></td>
+                        }
                     </tr>
                 }
                 </tbody>
