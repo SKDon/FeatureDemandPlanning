@@ -108,7 +108,7 @@ AS
 			, KD
 			, Available
 		FROM
-		dbo.fn_Fdp_AvailableModelByMarket_GetMany(@FdpVolumeHeaderId, @MarketId) AS M
+		dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(@FdpVolumeHeaderId, @MarketId, NULL, NULL) AS M
 		WHERE
 		M.Available = 1
 		ORDER BY 

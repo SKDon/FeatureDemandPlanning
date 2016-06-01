@@ -23,6 +23,7 @@
     [ParentFdpChangesetDataItemId] INT            NULL,
     [CreatedBy]                    NVARCHAR (16)  NULL,
     [FdpVolumeHeaderId]            INT            NULL,
+    [Note]                         NVARCHAR (MAX) NULL,
     CONSTRAINT [PK_Fdp_ChangesetDataItem] PRIMARY KEY CLUSTERED ([FdpChangesetDataItemId] ASC) WITH (FILLFACTOR = 90),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_ChangesetDataItem] FOREIGN KEY ([ParentFdpChangesetDataItemId]) REFERENCES [dbo].[Fdp_ChangesetDataItem] ([FdpChangesetDataItemId]),
     CONSTRAINT [FK_Fdp_ChangesetDataItem_Fdp_Feature] FOREIGN KEY ([FdpFeatureId]) REFERENCES [dbo].[Fdp_Feature] ([FdpFeatureId]),
@@ -36,6 +37,8 @@
     CONSTRAINT [FK_Fdp_ChangesetDataItem_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id]),
     CONSTRAINT [FK_FdpChangesetDataItem_Fdp_Changeset] FOREIGN KEY ([FdpChangesetId]) REFERENCES [dbo].[Fdp_Changeset] ([FdpChangesetId])
 );
+
+
 
 
 

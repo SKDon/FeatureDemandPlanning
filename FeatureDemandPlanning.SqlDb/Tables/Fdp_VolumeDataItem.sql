@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[Fdp_VolumeDataItem] (
+CREATE TABLE [dbo].[Fdp_VolumeDataItem] (
     [FdpVolumeDataItemId]         INT            IDENTITY (1, 1) NOT NULL,
     [CreatedOn]                   DATETIME       CONSTRAINT [DF_Fdp_VolumeDataItem_CreatedOn] DEFAULT (getdate()) NOT NULL,
     [CreatedBy]                   NVARCHAR (16)  NULL,
@@ -47,29 +47,26 @@
 
 
 
-GO
-CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_FdpVolumeHeaderId]
-    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC)
-    INCLUDE([MarketId], [TrimId], [FeatureId], [Volume]);
-
-
-
-
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_MarketId]
-    ON [dbo].[Fdp_VolumeDataItem]([MarketId] ASC);
 
 
-GO
-CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_TrimId]
-    ON [dbo].[Fdp_VolumeDataItem]([TrimId] ASC);
+
+
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_NC_Fdp_VolumeDataItem_FeatureId]
-    ON [dbo].[Fdp_VolumeDataItem]([FeatureId] ASC);
+
+
+
+GO
+
+
+
+GO
+
 
 
 GO
@@ -108,31 +105,29 @@ AS
 		
 	FROM deleted	AS D
 GO
-CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_VolumeDataItem_Cover3]
-    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC, [FeatureId] ASC)
-    INCLUDE([FdpFeatureId], [FeaturePackId]);
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_VolumeDataItem_Cover2]
-    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC, [FeatureId] ASC)
-    INCLUDE([FdpVolumeDataItemId], [MarketId], [ModelId], [FeaturePackId], [Volume], [PercentageTakeRate]);
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_VolumeDataItem_Cover]
-    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC)
-    INCLUDE([FdpVolumeDataItemId], [MarketId], [ModelId], [FeatureId], [Volume], [PercentageTakeRate]);
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_VolumeDataItem_Cover4]
-    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC)
-    INCLUDE([FdpVolumeDataItemId], [MarketId], [ModelId], [FdpModelId], [FeatureId], [FdpFeatureId], [FeaturePackId], [Volume], [PercentageTakeRate]);
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [Ix_Fdp_VolumeDataItem_Cover5]
-    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC, [MarketId] ASC)
-    INCLUDE([ModelId], [FdpModelId], [FeatureId], [FdpFeatureId], [FeaturePackId], [Volume]);
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_VolumeDataItem_MarketModelAndFeature]
+    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC, [MarketId] ASC, [ModelId] ASC, [FeatureId] ASC, [FeaturePackId] ASC, [OriginalFdpVolumeDataItemId] ASC)
+    INCLUDE([CreatedBy], [CreatedOn], [FdpFeatureId], [FdpModelId], [FdpTrimId], [FdpVolumeDataItemId], [IsManuallyEntered], [MarketGroupId], [PercentageTakeRate], [TrimId], [UpdatedBy], [UpdatedOn], [Volume]) WITH (FILLFACTOR = 90);
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_VolumeDataItem_FeatureModelAndMarket]
+    ON [dbo].[Fdp_VolumeDataItem]([FdpVolumeHeaderId] ASC, [FeatureId] ASC, [FeaturePackId] ASC, [ModelId] ASC, [MarketId] ASC, [OriginalFdpVolumeDataItemId] ASC)
+    INCLUDE([CreatedBy], [CreatedOn], [FdpFeatureId], [FdpModelId], [FdpTrimId], [FdpVolumeDataItemId], [IsManuallyEntered], [MarketGroupId], [PercentageTakeRate], [TrimId], [UpdatedBy], [UpdatedOn], [Volume]) WITH (FILLFACTOR = 90);
 

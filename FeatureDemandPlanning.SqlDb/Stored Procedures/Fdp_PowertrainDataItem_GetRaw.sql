@@ -9,6 +9,13 @@ BEGIN
 	DECLARE @FdpChangesetId INT;
 	SET @FdpChangesetId = dbo.fn_Fdp_Changeset_GetLatestByUser(@FdpVolumeHeaderId, @MarketId, @CDSId);
 
+	WITH Derivatives AS 
+	(
+		SELECT BMC, COUNT(M.Id) AS NumberOfModels
+		FROM
+		dbo.fn_Fdp_AvailableModelByMarketWithPaging_GetMany(@FdpVolumeHeaderId, @MarketId, NULL, NULL) AS M
+		GROUP BY BMC
+	)
 	SELECT
 		  H.FdpVolumeHeaderId
 		, P.FdpPowertrainDataItemId
@@ -33,9 +40,12 @@ BEGIN
 		, ISNULL(C.TotalVolume, P.Volume) AS Volume
 		, ISNULL(C.PercentageTakeRate, P.PercentageTakeRate) AS PercentageTakeRate
 		, CAST(CASE WHEN C.FdpChangesetId IS NOT NULL THEN 1 ELSE 0 END AS BIT) AS IsDirty
+		, D.NumberOfModels
+		, P.[Power]
     FROM
     Fdp_VolumeHeader_VW						AS H
     JOIN Fdp_PowertrainDataItem_VW			AS P	ON	H.FdpVolumeHeaderId = P.FdpVolumeHeaderId
+	JOIN Derivatives						AS D	ON	P.DerivativeCode	= D.BMC
     JOIN OXO_Programme_MarketGroupMarket_VW AS M	ON	P.MarketId			= M.Market_Id
 													AND H.ProgrammeId		= M.Programme_Id							
 	-- Any changeset information

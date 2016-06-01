@@ -1,5 +1,6 @@
 ﻿
 
+
 CREATE VIEW [dbo].[Fdp_PowertrainDataItem_VW]
 AS
 
@@ -18,6 +19,7 @@ AS
 		, ISNULL(E1.Cylinder, E2.Cylinder) AS Cylinder
 		, ISNULL(E1.Electrification, E2.Electrification) AS Electrification
 		, ISNULL(E1.Fuel_Type, E2.Fuel_Type) AS FuelType
+		, ISNULL(E1.[Power], E2.[Power]) AS [Power]
 		, ISNULL(O.BodyId, F.BodyId) AS BodyId
 		, ISNULL(B1.Shape, B2.Shape) AS Shape
 		, ISNULL(B1.Wheelbase, B2.Wheelbase) AS Wheelbase

@@ -3,7 +3,6 @@
 	, @CDSId				AS NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
-	SET ANSI_WARNINGS OFF;
 
 	DECLARE @DataForFeature AS TABLE
 	(
@@ -27,7 +26,6 @@ AS
 		, FeaturePackId					INT NULL
 		, TotalVolume					INT
 		, PercentageTakeRate			DECIMAL(5, 4)
-		, FdpTakeRateFeatureMixId		INT NULL
 	)
 
 	-- Add all volume data existing rows to our data table
@@ -102,7 +100,6 @@ AS
 		, FeaturePackId
 		, TotalVolume
 		, PercentageTakeRate
-		, FdpTakeRateFeatureMixId
 	)
 	SELECT 
 		  D.FdpVolumeHeaderId
@@ -113,13 +110,8 @@ AS
 		, SUM(ISNULL(D.TotalVolume, 0)) AS TotalVolume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(ISNULL(D.TotalVolume, 0)), 
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
-		, MAX(CUR.FdpTakeRateFeatureMixId) AS FdpTakeRateFeatureMixId
 	FROM 
 	@DataForFeature AS D
-	--JOIN @Market	AS M ON D.MarketId = M.MarketId
-	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON	D.FeatureId = CUR.FeatureId
-											AND D.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
-											AND D.MarketId = CUR.MarketId
 	WHERE
 	D.FeatureId IS NOT NULL
 	GROUP BY
@@ -138,14 +130,8 @@ AS
 		, SUM(ISNULL(D.TotalVolume, 0)) AS TotalVolume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(ISNULL(D.TotalVolume, 0)), 
 		  dbo.fn_Fdp_VolumeByMarket_Get(D.FdpVolumeHeaderId, D.MarketId, NULL)) AS PercentageTakeRate
-		, MAX(CUR.FdpTakeRateFeatureMixId) AS FdpTakeRateFeatureMixId
 	FROM 
 	@DataForFeature AS D
-	--JOIN @Market	AS M ON D.MarketId = M.MarketId
-	LEFT JOIN Fdp_TakeRateFeatureMix AS CUR ON	D.FeaturePackId = CUR.FeaturePackId
-											AND D.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
-											AND D.MarketId = CUR.MarketId
-											AND CUR.FeatureId IS NULL
 	WHERE
 	D.FeaturePackId IS NOT NULL
 	AND
@@ -217,26 +203,10 @@ AS
 	GROUP BY
 	FdpVolumeHeaderId, FeaturePackId
 
-	-- Update existing feature mix entries
+	-- Delete all feature mix entries
 
-	UPDATE F1 SET 
-		  PercentageTakeRate	= F.PercentageTakeRate
-		, Volume				= F.TotalVolume
-		, UpdatedBy				= @CDSId
-		, UpdatedOn				= GETDATE()
-	FROM
-	Fdp_TakeRateFeatureMix	AS F1
-	JOIN @FeatureMix		AS F ON  F.FdpTakeRateFeatureMixId = F1.FdpTakeRateFeatureMixId 	
-	WHERE
-	F.PercentageTakeRate <> F1.PercentageTakeRate
-	OR
-	F.TotalVolume <> F1.Volume
-
-	PRINT CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' feature mix entries updated'
-
-	-- Delete the old "ALL MARKETS" mix entry
-
-	DELETE FROM Fdp_TakeRateFeatureMix WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId AND MarketId IS NULL;
+	DELETE FROM Fdp_TakeRateFeatureMixAudit WHERE FdpTakeRateFeatureMixId IN (SELECT FdpTakeRateFeatureMixId FROM Fdp_TakeRateFeatureMix WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId)
+	DELETE FROM Fdp_TakeRateFeatureMix WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
 
 	-- Add new ones
 
@@ -262,7 +232,5 @@ AS
 		, F.PercentageTakeRate
 	FROM
 	@FeatureMix AS F
-	WHERE
-	F.FdpTakeRateFeatureMixId IS NULL
 
 	PRINT CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' feature mix entries added'

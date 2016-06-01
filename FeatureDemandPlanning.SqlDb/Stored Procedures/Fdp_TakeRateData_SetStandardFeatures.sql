@@ -130,8 +130,6 @@ AS
 	JOIN @UpdateFeatures AS U ON D.FdpVolumeDataItemId = U.FdpVolumeDataItemId;
 	
 	SET @UpdateCount = @UpdateCount + @@ROWCOUNT;
-
-	SELECT * FROM @UpdateFeatures WHERE Volume < 0
 	
 	-- Add any data items that we do not have any volume data for. It may have a volume of zero, but we still need a take rate of 100%
 	

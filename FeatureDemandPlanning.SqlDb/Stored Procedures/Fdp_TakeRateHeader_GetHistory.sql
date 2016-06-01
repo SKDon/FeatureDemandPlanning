@@ -12,14 +12,20 @@ BEGIN
 		, HISTORY.Market
 		, HISTORY.MarketGroup
 		, HISTORY.Comment
+		, HISTORY.FdpChangesetId
+		, HISTORY.IsSaved
+		, HISTORY.IsMarketReview
     FROM
     (
     SELECT 
-		  C.UpdatedOn
-		, C.UpdatedBy
+		  C.CreatedOn AS UpdatedOn
+		, C.CreatedBy AS UpdatedBy 
 		, M.Market_Name			AS Market
 		, M.Market_Group_Name	AS MarketGroup
 		, C.Comment
+		, C.FdpChangesetId
+		, C.IsSaved
+		, CAST(0 AS BIT) AS IsMarketReview
 	FROM
 	Fdp_VolumeHeader_VW						AS H
 	JOIN Fdp_Changeset						AS C ON		H.FdpVolumeHeaderId	= C.FdpVolumeHeaderId
@@ -31,8 +37,8 @@ BEGIN
 	(@MarketId IS NULL OR C.MarketId = @MarketId)
 	AND
 	(@MarketGroupId IS NULL OR M.Market_Group_Id = @MarketGroupId)
-	AND
-	C.IsSaved = 1
+	--AND
+	--C.IsSaved = 1
 	AND
 	C.IsDeleted = 0
 	
@@ -44,6 +50,9 @@ BEGIN
 		, M.Market_Name			AS Market
 		, M.Market_Group_Name	AS MarketGroup
 		, R.Comment
+		, NULL
+		, CAST(1 AS BIT)		AS IsSaved
+		, CAST(0 AS BIT) AS IsMarketReview
 	FROM
 	Fdp_VolumeHeader_VW						AS H
 	JOIN Fdp_MarketReview					AS R ON		H.FdpVolumeHeaderId = R.FdpVolumeHeaderId
@@ -64,6 +73,9 @@ BEGIN
 		, M.Market_Name			AS Market
 		, M.Market_Group_Name	AS MarketGroup
 		, A.Comment
+		, NULL
+		, CAST(1 AS BIT)		AS IsSaved
+		, CAST(0 AS BIT) AS IsMarketReview
 	FROM
 	Fdp_VolumeHeader_VW						AS H
 	JOIN Fdp_MarketReview					AS R ON		H.FdpVolumeHeaderId = R.FdpVolumeHeaderId

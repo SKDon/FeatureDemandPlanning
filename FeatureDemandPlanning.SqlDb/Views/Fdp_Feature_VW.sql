@@ -1,13 +1,5 @@
-﻿
-
-
-
-
-
-
-CREATE VIEW [dbo].[Fdp_Feature_VW]
+﻿CREATE VIEW [dbo].[Fdp_Feature_VW]
 AS
-
 WITH Packs AS
 (
 	SELECT ProgrammeId, FeatureCode, MAX(PackId) AS PackId
@@ -55,8 +47,8 @@ FROM
 (
 SELECT
 	  F.ID					AS FeatureId
-	, E.Created_On			AS CreatedOn
-	, E.Created_By			AS CreatedBy
+	, ISNULL(LR.Created_On, J.Created_On)	AS CreatedOn
+	, ISNULL(LR.Created_By, J.Created_By)	AS CreatedBy
 	, CAST(NULL AS INT)		AS FdpFeatureId
 	, F.Name 
 	, F.AKA
@@ -81,15 +73,16 @@ SELECT
 	, ISNULL(F.LongDescription, '') AS LongDescription
 	, F.EFGName
 	, CAST(0 AS BIT)		AS IsFdpFeature
-	, E.Last_Updated		AS UpdatedOn
-	, E.Updated_By			AS UpdatedBy
+	, ISNULL(LR.Last_Updated, J.Last_Updated)		AS UpdatedOn
+	, ISNULL(LR.Updated_By, J.Last_Updated)			AS UpdatedBy
 	, F.EFGName				AS ExclusiveFeatureGroup
 	, CAST(CASE WHEN ISNULL(F.[Status], '') = 'REMOVED' THEN 0 ELSE 1 END AS BIT) AS IsActive
 	
 FROM 
 OXO_Doc							AS O
 JOIN OXO_Programme_Feature_VW	AS F	ON O.Programme_Id	= F.ProgrammeId  
-JOIN OXO_Feature_Ext			AS E	WITH (INDEX(Ix_NC_OXO_Feature_Ext_Cover)) ON F.FeatureCode	= E.Feat_Code
+LEFT JOIN OXO_Feature_Ext		AS LR	WITH (INDEX(Ix_NC_OXO_Feature_Ext_Cover)) ON F.FeatureCode	= LR.Feat_Code
+LEFT JOIN OXO_Feature_Ext		AS J	WITH (INDEX(Ix_NC_OXO_Feature_Ext_Cover)) ON F.FeatureCode	= J.OA_Code
 JOIN Fdp_Gateways_VW			AS G	ON F.ProgrammeId	= G.ProgrammeId
 LEFT JOIN OXO_Feature_Group		AS GR	ON F.FeatureGroup	= GR.Group_Name
 										AND 
@@ -105,6 +98,8 @@ LEFT JOIN OXO_Pack_Feature_VW	AS P	ON	P1.PackId		= P.PackId
 										AND P1.FeatureCode	= P.FeatureCode
 
 UNION ALL
+
+-- Feature Packs
 
 SELECT 
 	  CAST(NULL AS INT)		AS FeatureId 

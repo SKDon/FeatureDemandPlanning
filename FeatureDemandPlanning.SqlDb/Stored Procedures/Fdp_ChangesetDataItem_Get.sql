@@ -25,6 +25,7 @@ AS
 		, D.OriginalVolume
 		, D.ParentFdpChangesetDataItemId
 		, D.CreatedBy
+		, D.Note
 	FROM
 	Fdp_ChangesetDataItem AS D
 	WHERE

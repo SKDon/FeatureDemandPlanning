@@ -8,15 +8,6 @@ AS
 	DECLARE @OxoDocId			INT;
 	DECLARE @FdpVolumeHeaderId	INT;
 	DECLARE @CDSId				NVARCHAR(16);
-	DECLARE @MarketMix AS TABLE
-	(
-		  FdpVolumeHeaderId INT
-		, CreatedBy NVARCHAR(16)
-		, FdpSpecialFeatureMappingId INT
-		, MarketId INT
-		, Volume INT
-		, PercentageTakeRate DECIMAL(5, 4)
-	)
 	DECLARE @TotalVolume AS INT;
 	
 	SELECT 
@@ -119,6 +110,12 @@ AS
 	
 	DELETE FROM Fdp_ChangesetDataItem WHERE FdpChangesetId IN (SELECT FdpChangesetId FROM Fdp_Changeset WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId);
 	DELETE FROM Fdp_Changeset WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
+
+	-- Remove any "cached" pivot data
+
+	DELETE FROM Fdp_PivotData WHERE FdpPivotHeaderId IN (SELECT FdpPivotHeaderId FROM Fdp_PivotHeader WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId);
+	DELETE FROM Fdp_PivotHeader WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	DELETE FROM Fdp_RawTakeRateData WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	
 	-- Add feature applicability information for the OXO document, we can flatten this information to improve performance, as it is only ever 
 	-- considered to be read only
@@ -130,8 +127,15 @@ AS
 
 	-- If there are no active errors for the import...
 	-- For every entry in the import, create an entry in FDP_VolumeDataItem
-	
-	SET @Message = 'Adding volume data...';
+
+	SET @Message = 'Deleting old feature take rate data...';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;
+
+	DELETE FROM Fdp_TakeRateDataItemAudit WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId
+	DELETE FROM Fdp_TakeRateDataItemNote WHERE FdpTakeRateDataItemId IN (SELECT FdpVolumeDataItemId FROM Fdp_VolumeDataItem WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId)
+	DELETE FROM Fdp_VolumeDataItem WHERE FdpVolumeDataItemId IN (SELECT FdpVolumeDataItemId FROM Fdp_VolumeDataItem WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId)
+
+	SET @Message = 'Adding new feature take rate data...';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 	
 	CREATE TABLE #NewData
@@ -141,11 +145,8 @@ AS
 		, MarketId INT
 		, MarketGroupId INT
 		, ModelId INT NULL
-		, FdpModelId INT NULL
 		, TrimId INT NULL
-		, FdpTrimId INT NULL
 		, FeatureId INT NULL
-		, FdpFeatureId INT NULL
 		, FeaturePackId INT NULL
 		, Volume INT
 		, IsMarketMissing BIT
@@ -161,11 +162,8 @@ AS
 		, MarketId
 		, MarketGroupId
 		, ModelId
-		, FdpModelId
 		, TrimId
-		, FdpTrimId
 		, FeatureId
-		, FdpFeatureId
 		, FeaturePackId
 		, Volume
 		, IsMarketMissing
@@ -180,12 +178,9 @@ AS
 		, I.MarketId
 		, I.MarketGroupId
 		, I.ModelId
-		, I.FdpModelId
 		, I.TrimId
-		, I.FdpTrimId
 		, I.FeatureId
-		, I.FdpFeatureId
-		, I.FeaturePackId
+		, CASE WHEN I.FeatureId IS NULL THEN I.FeaturePackId ELSE NULL END
 		, CAST(I.ImportVolume AS INT) 
 		, I.IsMarketMissing
 		, I.IsDerivativeMissing
@@ -195,8 +190,6 @@ AS
 	FROM
 	Fdp_Import_VW					AS I
 	WHERE 
-	I.IsExistingData = 0
-	AND
 	I.FdpImportId = @FdpImportId
 	AND
 	I.FdpImportQueueId = @FdpImportQueueId;
@@ -211,7 +204,8 @@ AS
 	);
 
 	-- We may have a situation where we have multiple data rows for the same model / trim / feature
-	-- This is due to any mappings to the same feature from the import data. We need to aggregate these together and remove any duplicates
+	-- This is due to any mappings to the same feature from the import data or if we have the same feature contained in multiple packs
+	-- We need to aggregate these together and remove any duplicates
 
 	INSERT INTO Fdp_VolumeDataItem
 	(
@@ -220,11 +214,8 @@ AS
 		, MarketId
 		, MarketGroupId
 		, ModelId
-		, FdpModelId
 		, TrimId
-		, FdpTrimId
 		, FeatureId
-		, FdpFeatureId
 		, FeaturePackId
 		, Volume
 	)
@@ -234,11 +225,8 @@ AS
 		, MarketId
 		, MarketGroupId
 		, ModelId
-		, FdpModelId
 		, TrimId
-		, FdpTrimId
 		, FeatureId
-		, FdpFeatureId
 		, FeaturePackId
 		, SUM(Volume) 
 	FROM #NewData
@@ -257,41 +245,11 @@ AS
 	, MarketId
 	, MarketGroupId
 	, ModelId
-	, FdpModelId
 	, TrimId
-	, FdpTrimId
 	, FeatureId
-	, FdpFeatureId
 	, FeaturePackId
 
-	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' data items added';
-	RAISERROR(@Message, 0, 1) WITH NOWAIT;
-
-	-- Delete any duplicates that may have been added. Whilst we check for existing data, if that existing data is part of an aggregate, it will
-	-- not have been picked up
-
-	DELETE FROM Fdp_VolumeDataItem
-	WHERE
-	FdpVolumeDataItemId NOT IN
-	(
-		SELECT MAX(FdpVolumeDataItemId) AS FdpVolumeDataItemId
-		FROM Fdp_VolumeDataItem
-		WHERE
-		FdpVolumeHeaderId = @FdpVolumeHeaderId
-		GROUP BY
-		  FdpVolumeHeaderId
-		, MarketId
-		, MarketGroupId
-		, ModelId
-		, FdpModelId
-		, TrimId
-		, FdpTrimId
-		, FeatureId
-		, FdpFeatureId
-		, FeaturePackId
-	)
-
-	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' duplicate data items removed';
+	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' take rate data items added';
 	RAISERROR(@Message, 0, 1) WITH NOWAIT;
 
 	-- Add any missing feature data if none has been provided by the import

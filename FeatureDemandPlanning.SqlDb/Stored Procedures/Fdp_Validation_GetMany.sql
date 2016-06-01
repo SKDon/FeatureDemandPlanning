@@ -21,6 +21,7 @@ AS
 		, V1.TransmissionId
 		, V1.[Message]
 		, V1.ValidationRule
+		, V1.FdpValidationId
 	FROM
 	(
 		-- Any validation not associated with a specific changeset change
@@ -37,6 +38,7 @@ AS
 			, V.[Message]
 			, V.ExclusiveFeatureGroup
 			, V.ValidationRule
+			, V.FdpValidationId
 		FROM
 		Fdp_Validation_VW AS V
 		WHERE
@@ -70,6 +72,7 @@ AS
 			, V.[Message]
 			, V.ExclusiveFeatureGroup
 			, V.ValidationRule
+			, V.FdpValidationId
 		FROM
 		Fdp_Validation_VW				AS V
 		JOIN Fdp_ChangesetDataItem_VW	AS C ON V.FdpChangesetDataItemId = C.FdpChangesetDataItemId

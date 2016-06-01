@@ -39,6 +39,7 @@ AS
 	
 	SELECT
 		  D.CreatedOn
+		, D.CreatedBy
 		, D.MarketId
 		, CASE 
 			WHEN D.ModelId IS NOT NULL THEN 'O' + CAST(D.ModelId AS NVARCHAR(10))
@@ -52,6 +53,7 @@ AS
 		  END
 		  AS FeatureIdentifier
 		, D.DerivativeCode
+		, D.Note
 		, D.TotalVolume AS Volume
 		, D.PercentageTakeRate * 100 AS PercentageTakeRate
 		, @IsMarketReview AS IsMarketReview

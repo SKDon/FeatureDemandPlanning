@@ -48,21 +48,53 @@ AS
 	WHERE
 	S.FdpTakeRateSummaryId = @FdpTakeRateSummaryId;
 	
-	SELECT
-		  N.FdpTakeRateDataItemNoteId
-		, N.EnteredOn
-		, N.EnteredBy
-		, N.Note
+	SELECT 
+		  NOTES.EnteredOn
+		, NOTES.EnteredBy
+		, NOTES.Note
+		, NOTES.IsUncommittedChange
 	FROM
-	Fdp_TakeRateDataItemNote AS N
-	WHERE
-	FdpTakeRateSummaryId = @FdpTakeRateSummaryId
+	(
+		SELECT
+			  N.EnteredOn
+			, N.EnteredBy
+			, N.Note
+			, CAST(0 AS BIT) AS IsUncommittedChange
+		FROM
+		Fdp_TakeRateDataItemNote AS N
+		WHERE
+		FdpTakeRateSummaryId = @FdpTakeRateSummaryId
+
+		UNION
+
+		SELECT
+			  D.CreatedOn AS EnteredOn
+			, D.CreatedBy AS EnteredBy
+			, D.Note
+			, CAST(1 AS BIT) AS IsUncommittedChange
+		FROM
+		Fdp_ChangesetDataItem AS D
+		JOIN Fdp_Changeset AS C ON D.FdpChangesetId = C.FdpChangesetId
+		WHERE
+		D.FdpTakeRateSummaryId = @FdpTakeRateSummaryId
+		AND 
+		D.IsDeleted = 0
+		AND
+		C.IsSaved = 0
+		AND
+		D.Note IS NOT NULL
+	)
+	AS NOTES
 	ORDER BY
-	N.EnteredOn DESC
+	NOTES.EnteredOn DESC
+
+	DECLARE @EarliestDate AS DATETIME;
+	DECLARE @CreatedBy AS NVARCHAR(16);
+	SELECT TOP 1 @EarliestDate = CreatedOn, @CreatedBy = CreatedBy FROM Fdp_VolumeHeader_VW WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId
 	
 	SELECT
-		  HISTORY.AuditOn
-		, HISTORY.AuditBy
+		  ISNULL(HISTORY.AuditOn, @EarliestDate) AS AuditOn
+		, ISNULL(HISTORY.AuditBy, @CreatedBy) AS AuditBy
 		, HISTORY.Volume
 		, HISTORY.PercentageTakeRate
 		, HISTORY.IsUncommittedChange
@@ -96,6 +128,8 @@ AS
 		D.IsDeleted = 0
 		AND
 		C.IsSaved = 0
+		AND
+		D.Note IS NULL
 		
 		UNION
 		
@@ -125,4 +159,4 @@ AS
 	)
 	AS HISTORY
 	ORDER BY
-	ISNULL(HISTORY.AuditOn, GETDATE()) DESC;
+	AuditOn DESC;

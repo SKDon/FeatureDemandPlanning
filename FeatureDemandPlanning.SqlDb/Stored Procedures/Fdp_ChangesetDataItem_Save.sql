@@ -18,7 +18,8 @@
 	, @FdpPowertrainDataItemId		AS INT = NULL
 	, @IsVolumeUpdate				AS BIT = 0
 	, @IsPercentageUpdate			AS BIT = 0
-	, @CDSId						AS NVARCHAR(16) = NULL
+	, @CDSId						AS NVARCHAR(16)		= NULL
+	, @Note							AS NVARCHAR(MAX)	= NULL
 AS
 	SET NOCOUNT ON;
 	
@@ -58,6 +59,8 @@ AS
 	D.FdpVolumeDataItemId = @FdpVolumeDataItemId
 	AND
 	@FdpVolumeDataItemId IS NOT NULL
+	AND
+	D.Note IS NULL -- Do not delete notes for data items
 
 	UNION
 
@@ -70,6 +73,8 @@ AS
 	D.FdpTakeRateSummaryId = @FdpTakeRateSummaryId
 	AND
 	@FdpTakeRateSummaryId IS NOT NULL
+	AND
+	D.Note IS NULL -- Do not delete notes for summary items
 
 	UNION
 
@@ -93,7 +98,7 @@ AS
 	AND
 	D.FdpPowertrainDataItemId = @FdpPowertrainDataItemId
 	AND
-	@FdpTakeRateFeatureMixId IS NOT NULL;
+	@FdpPowertrainDataItemId IS NOT NULL
 
 	UPDATE D SET IsDeleted = 1
 	FROM Fdp_ChangesetDataItem AS D
@@ -123,6 +128,7 @@ AS
 		, ParentFdpChangesetDataItemId
 		, CreatedBy
 		, FdpVolumeHeaderId
+		, Note
 	)
 	VALUES
 	(
@@ -147,6 +153,7 @@ AS
 		, @ParentFdpChangesetDataItemId
 		, @CDSId
 		, CASE WHEN @MarketId IS NULL THEN @FdpVolumeHeaderId ELSE NULL END
+		, LTRIM(RTRIM(@Note))
 	);
 	
 	SET @FdpChangesetDataItemId = SCOPE_IDENTITY();

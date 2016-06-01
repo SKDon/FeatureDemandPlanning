@@ -1,7 +1,9 @@
-﻿CREATE PROCEDURE Fdp_TakeRateData_AddMissingData
+﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateData_AddMissingData]
 	@FdpVolumeHeaderId AS INT
 AS
 	SET NOCOUNT ON;
+
+	DECLARE @Message AS NVARCHAR(MAX);
 
 	INSERT INTO Fdp_VolumeDataItem 
 	(
@@ -30,7 +32,7 @@ AS
 		  END
 		  AS TrimId
 		, F.ID AS FeatureId
-		, PK.PackId
+		, NULL --PK.PackId
 		, CASE
 			WHEN Applicability LIKE '%NA%' THEN 0
 			WHEN Applicability LIKE '%S%' THEN S.TotalVolume
@@ -56,8 +58,8 @@ AS
 														AND	MK.Market_Id		= S.MarketId
 														AND M.Id				= S.ModelId
 	JOIN OXO_Programme_Feature_VW				AS F	ON	H.ProgrammeId		= F.ProgrammeId
-	LEFT JOIN OXO_Pack_Feature_VW				AS PK	ON	H.ProgrammeId		= PK.ProgrammeId
-														AND F.ID				= PK.Id
+	--LEFT JOIN OXO_Pack_Feature_VW				AS PK	ON	H.ProgrammeId		= PK.ProgrammeId
+	--													AND F.ID				= PK.Id
 	LEFT JOIN Fdp_VolumeDataItem_VW				AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
 														AND MK.Market_Id		= D.MarketId
 														AND M.Id				= D.ModelId
@@ -125,4 +127,7 @@ AS
 	WHERE
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	D.FdpVolumeDataItemId IS NULL
+	D.FdpVolumeDataItemId IS NULL;
+
+	SET @Message = CAST(@@ROWCOUNT AS NVARCHAR(10)) + ' missing take rate data items added';
+	RAISERROR(@Message, 0, 1) WITH NOWAIT;

@@ -20,24 +20,8 @@ RETURNS
 )
 AS
 BEGIN
-	DECLARE @Models AS TABLE
-	(	
-		ModelId INT
-	);
-	DECLARE @ModelIdentifiers AS NVARCHAR(MAX);
-
-	INSERT INTO @Models (ModelId)
-	SELECT DISTINCT M.ModelId
-	FROM
-	Fdp_TakeRateSummaryByModelAndMarket_VW AS M
-	WHERE
-	M.FdpVolumeHeaderId = @FdpVolumeHeaderId
-	AND
-	(@MarketId IS NULL OR M.MarketId = @MarketId);
-
-	SELECT @ModelIdentifiers = COALESCE(@ModelIdentifiers+',' ,'') + '[' + CAST(ModelId AS NVARCHAR(10)) + ']' FROM @Models;
-
-	WITH ApplicabilityForMarket AS
+	
+	;WITH ApplicabilityForMarket AS
 	(
 		SELECT
 			  FA.MarketId
