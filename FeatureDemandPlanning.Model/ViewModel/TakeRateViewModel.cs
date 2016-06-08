@@ -55,9 +55,32 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 _allowEdit = CurrentUser.HasEditRole() &&
                        CurrentUser.IsProgrammeEditable(programmeId) &&
                        CurrentUser.IsMarketEditable(marketId) &&
-                       !TakeRate.IsPublished();
+                       !TakeRate.Publish.IsPublished;
 
                 return _allowEdit.Value;
+            }
+        }
+
+        public bool AllowPublish
+        {
+            get
+            {
+                if (_allowPublish.HasValue)
+                {
+                    return _allowPublish.Value;
+                }
+
+                var programmeId = Document.UnderlyingOxoDocument.ProgrammeId;
+                var marketId = Document.Market.Id;
+
+                // User must be allowed to edit the programme / market itself and be in a role that allows for editing
+                // In addition, the document cannot have been published
+                _allowPublish = CurrentUser.HasPublisherRole() &&
+                       CurrentUser.IsProgrammeEditable(programmeId) &&
+                       CurrentUser.IsMarketEditable(marketId) &&
+                       !TakeRate.Publish.IsPublished;
+
+                return _allowPublish.Value;
             }
         }
 
@@ -160,8 +183,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 case TakeRateDataItemAction.TakeRates:
                     model = await GetFullAndPartialViewModelForTakeRates(context, filter);
                     break;
+                case TakeRateDataItemAction.TakeRateDataHeader:
+                    model = await GetFullViewModelForTakeRateDataPage(context, filter);
+                    break;
                 case TakeRateDataItemAction.TakeRateDataPage:
-                    model = await GetFullAndPartialViewModelForTakeRateDataPage(context, filter);
+                    model = await GetPartialViewModelForTakeRateDataPage(context, filter);
                     break;
                 case TakeRateDataItemAction.Validate:
                     model = await GetFullAndPartialViewModelForValidation(context, filter);
@@ -177,6 +203,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 case TakeRateDataItemAction.History:
                 case TakeRateDataItemAction.HistoryDetails:
                 case TakeRateDataItemAction.MarketReview:
+                case TakeRateDataItemAction.Publish:
                 case TakeRateDataItemAction.ValidationSummary:
                     model = await GetFullAndPartialViewModelForTakeRateDataPageExcludingData(context, filter);
                     break;
@@ -203,7 +230,56 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
         #region "Private Methods"
 
-        private static async Task<TakeRateViewModel> GetFullAndPartialViewModelForTakeRateDataPage(IDataContext context, TakeRateFilter filter)
+        private static async Task<TakeRateViewModel> GetFullViewModelForTakeRateDataPage(IDataContext context, TakeRateFilter filter)
+        {
+            var watch = Stopwatch.StartNew();
+
+            var modelBase = GetBaseModel(context);
+            var takeRateModel = new TakeRateViewModel(modelBase)
+            {
+                Document = (TakeRateDocument)TakeRateDocument.FromFilter(filter),
+                Configuration = context.ConfigurationSettings
+            };
+            takeRateModel.Document.PageIndex = filter.PageIndex;
+            takeRateModel.Document.PageSize = filter.PageSize;
+            if (takeRateModel.Document.PageSize == -1)
+            {
+                takeRateModel.Document.PageSize = int.MaxValue;
+            }
+
+            if (!takeRateModel.Document.PageIndex.HasValue)
+            {
+                takeRateModel.Document.PageIndex = 1;
+            }
+            if (!takeRateModel.Document.PageSize.HasValue)
+            {
+                var configuredPageSize = context.ConfigurationSettings.GetInteger("TakeRateDataPageSize");
+                if (configuredPageSize == -1)
+                {
+                    configuredPageSize = int.MaxValue;
+                }
+                takeRateModel.Document.PageSize = configuredPageSize;
+            }
+
+            await HydrateOxoDocument(context, takeRateModel);
+            await HydrateFdpVolumeHeader(context, takeRateModel);
+            //await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
+            await HydrateVehicle(context, takeRateModel);
+            await HydrateMarket(context, takeRateModel);
+            await HydrateMarketGroup(context, takeRateModel);
+            await HydrateMarketGroups(context, takeRateModel);
+            await HydrateModelsByMarket(context, takeRateModel);
+            await HydrateData(context, takeRateModel);
+            await HydrateMarketReview(context, takeRateModel);
+            await HydratePublish(context, takeRateModel);
+
+            watch.Stop();
+            Log.Debug("GetFullAndPartialViewModelForTakeRateDataPage : " + watch.ElapsedMilliseconds);
+
+            return takeRateModel;
+        }
+
+        private static async Task<TakeRateViewModel> GetPartialViewModelForTakeRateDataPage(IDataContext context, TakeRateFilter filter)
         {
             var watch = Stopwatch.StartNew();
 
@@ -279,6 +355,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
 
             await HydrateFdpVolumeHeader(context, takeRateModel);
             await HydratePowertrain(context, takeRateModel);
+            await HydratePublish(context, takeRateModel);
 
             return takeRateModel;
         }
@@ -320,6 +397,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             await HydrateMarketGroups(context, takeRateModel);
             await HydrateModelsByMarket(context, takeRateModel);
             await HydrateMarketReview(context, takeRateModel);
+            await HydratePublish(context, takeRateModel);
 
             return takeRateModel;
         }
@@ -334,6 +412,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             await HydrateOxoDocument(context, takeRateModel);
             await HydrateFdpVolumeHeaders(context, takeRateModel);
             //await HydrateFdpVolumeHeadersFromOxoDocument(context, takeRateModel);
+            await HydratePublish(context, takeRateModel);
             
             return takeRateModel;
         }
@@ -354,6 +433,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
             await HydrateFeatures(context, takeRateModel);
             await HydrateCurrentModel(context, takeRateModel);
             await HydrateCurrentFeature(context, takeRateModel);
+            await HydratePublish(context, takeRateModel);
 
             return takeRateModel;
         }
@@ -446,6 +526,18 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 TakeRateId = forTakeRateDocument.TakeRateId,
                 MarketId = forTakeRateDocument.Market.Id
             });
+        }
+        private static async Task<Publish> GetPublishState(IDataContext context, TakeRateDocument takeRateDocument)
+        {
+            var publish = await context.TakeRate.GetPublish(new TakeRateFilter
+            {
+                TakeRateId = takeRateDocument.TakeRateId,
+                MarketId = takeRateDocument.Market.Id
+            });
+            publish.Document = takeRateDocument.UnderlyingOxoDocument;
+            publish.Programme = takeRateDocument.Vehicle.GetProgramme();
+
+            return publish;
         }
         private static async Task<MarketGroup> GetMarketGroup(IDataContext context, TakeRateDocument forTakeRateDocument)
         {
@@ -686,6 +778,11 @@ namespace FeatureDemandPlanning.Model.ViewModel
             watch.Stop();
             Log.Debug(watch.ElapsedMilliseconds);
         }
+
+        private static async Task HydratePublish(IDataContext context, TakeRateViewModel volumeModel)
+        {
+            volumeModel.TakeRate.Publish = await GetPublishState(context, volumeModel.Document);
+        }
         private static async Task<OXODoc> HydrateOxoDocument(IDataContext context, TakeRateViewModel volumeModel)
         {
             var watch = Stopwatch.StartNew();
@@ -836,6 +933,7 @@ namespace FeatureDemandPlanning.Model.ViewModel
         #region "Private Members"
 
         private bool? _allowEdit;
+        private bool? _allowPublish;
 
         #endregion
     }

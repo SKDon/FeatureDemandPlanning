@@ -10,7 +10,9 @@ using FeatureDemandPlanning.Model.Attributes;
 using MvcSiteMapProvider.Web.Mvc.Filters;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
+using System.Web.Helpers;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Interfaces;
@@ -34,26 +36,36 @@ namespace FeatureDemandPlanning.Controllers
         [HttpGet]
         [ActionName("Index")]
         [SiteMapTitle("DocumentName")]
-        public async Task<ActionResult> TakeRateDataPage(TakeRateParameters parameters)
+        public ActionResult TakeRateDataPage(TakeRateParameters parameters)
         {
             Log.Debug(MethodBase.GetCurrentMethod().Name);
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.TakeRateDataPage;
-            var model = await TakeRateViewModel.GetModel(DataContext, filter);
+            filter.Action = TakeRateDataItemAction.TakeRateDataHeader;
+            var model = TakeRateViewModel.GetModel(DataContext, filter).Result;
 
             ViewData["DocumentName"] = model.Document.UnderlyingOxoDocument.Name;
             ViewBag.Title = string.Format("{0} - {1} ({2}) - {3}", model.Document.Vehicle.Code,
                 model.Document.Vehicle.ModelYear, model.Document.UnderlyingOxoDocument.Gateway,
                 model.Document.TakeRateSummary.First().Version);
+
+            stopwatch.Stop();
+            Log.Debug(string.Format("TakeRateDataPage: {0} ms", stopwatch.ElapsedMilliseconds));
 
             return View("TakeRateDataPage", model);
         }
 
-        [HttpPost]
+        //[HttpPost]
+        //[OutputCache(Duration = 600, VaryByParam = "TakeRateParameters.TakeRateId;TakeRateParameters.MarketId;TakeRateParameters.PageSize;TakeRateParameters.PageIndex")]
         public async Task<ActionResult> TakeRateDataPartialPage(TakeRateParameters parameters)
         {
             Log.Debug(MethodBase.GetCurrentMethod().Name);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
 
             var filter = TakeRateFilter.FromTakeRateParameters(parameters);
             filter.Action = TakeRateDataItemAction.TakeRateDataPage;
@@ -63,6 +75,9 @@ namespace FeatureDemandPlanning.Controllers
             ViewBag.Title = string.Format("{0} - {1} ({2}) - {3}", model.Document.Vehicle.Code,
                 model.Document.Vehicle.ModelYear, model.Document.UnderlyingOxoDocument.Gateway,
                 model.Document.TakeRateSummary.First().Version);
+
+            stopwatch.Stop();
+            Log.Debug(string.Format("TakeRateDataPartialPage: {0} ms", stopwatch.ElapsedMilliseconds));
 
             return PartialView("_TakeRateData", model);
         }
@@ -372,6 +387,24 @@ namespace FeatureDemandPlanning.Controllers
 	        // Something is making a GET request to this page and I can't figure out what
 	        return PartialView("_ValidationMessage", message);
 	    }
+
+        public async Task<JsonResult> Markets(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifier);
+            var marketsGroups =
+                await DataContext.TakeRate.ListAvailableMarketGroups(TakeRateFilter.FromTakeRateParameters(parameters));
+
+            var markets = marketsGroups.SelectMany(mg => mg.Markets).Select(m => new
+            {
+                m.Name,
+                m.GroupName,
+                m.VariantCount,
+                m.LastUpdated,
+                m.UpdatedBy
+            });
+
+            return Json(markets, JsonRequestBehavior.AllowGet);
+        }
 
 	    #region "Private Methods"
 

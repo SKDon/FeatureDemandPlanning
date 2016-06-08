@@ -8,7 +8,7 @@ namespace FeatureDemandPlanning.Model.Validators
     public class TakeRateForModels100PercentValidator : AbstractValidator<RawTakeRateData>
     {
         private const string Message =
-            "Take Rate for models of {0:P} for market should equal 100 %.";
+            "Derivative Mix equals {0:P}. It should equal 100%";
 
         public TakeRateForModels100PercentValidator()
         {

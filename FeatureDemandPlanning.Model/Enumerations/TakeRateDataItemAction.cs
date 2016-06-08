@@ -18,6 +18,8 @@
         ValidationSummary = 13,
         Clone = 14,
         Powertrain = 15,
-        HistoryDetails = 16
+        HistoryDetails = 16,
+        TakeRateDataHeader = 17,
+        Publish = 18
     }
 }

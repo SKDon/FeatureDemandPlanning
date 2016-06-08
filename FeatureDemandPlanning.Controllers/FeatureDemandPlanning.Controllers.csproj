@@ -112,6 +112,7 @@
     <Compile Include="ImportExceptionController.cs" />
     <Compile Include="MarketController.cs" />
     <Compile Include="MarketMappingController.cs" />
+    <Compile Include="PublishController.cs" />
     <Compile Include="MarketReviewController.cs" />
     <Compile Include="NewsController.cs" />
     <Compile Include="OutputCacheComplexAttribute.cs" />

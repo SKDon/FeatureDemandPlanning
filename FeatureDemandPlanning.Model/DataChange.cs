@@ -224,8 +224,9 @@ namespace FeatureDemandPlanning.Model
         {
             get
             {
-                return OriginalVolume != Volume ||
-                       OriginalPercentageTakeRate != PercentageTakeRateAsFraction.GetValueOrDefault();
+                return ((Mode == TakeRateResultMode.PercentageTakeRate &&
+                         OriginalPercentageTakeRate != PercentageTakeRateAsFraction.GetValueOrDefault()) ||
+                        Mode == TakeRateResultMode.Raw && OriginalVolume != Volume.GetValueOrDefault());
             }
         }
     }

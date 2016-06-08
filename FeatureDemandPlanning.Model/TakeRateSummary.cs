@@ -45,9 +45,6 @@ namespace FeatureDemandPlanning.Model
                 url.RouteUrl("TakeRateData", new { takeRateId = TakeRateId })
             };
         }
-        public bool IsPublished()
-        {
-            return ((Enumerations.TakeRateStatus) FdpTakeRateStatusId) == Enumerations.TakeRateStatus.Published;
-        }
+        public Publish Publish { get; set; }
     }
 }

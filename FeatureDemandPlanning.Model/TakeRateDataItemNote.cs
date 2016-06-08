@@ -16,31 +16,32 @@ namespace FeatureDemandPlanning.Model
         public int? MarketId { get; set; }
         public int? MarketGroupId { get; set; }
         public int? ModelId { get; set; }
-        public int? FdpModelId { get; set; }
+        //public int? FdpModelId { get; set; }
         public int? FeatureId { get; set; }
-        public int? FdpFeatureId { get; set; }
+        public int? FeaturePackId { get; set; }
+        //public int? FdpFeatureId { get; set; }
 
         public bool? IsUncommittedChange { get; set; }
 
         public string ModelIdentifier
         {
             get {
-                if (!ModelId.HasValue && !FdpModelId.HasValue)
+                if (!ModelId.HasValue)
                 {
                     return string.Empty;
                 }
-                return ModelId.HasValue ? string.Format("O{0}", ModelId) : string.Format("F{0}", FdpModelId);
+                return string.Format("O{0}", ModelId);
             }
         }
 
         public string FeatureIdentifier
         {
             get {
-                if (!FeatureId.HasValue && !FdpFeatureId.HasValue)
+                if (!FeatureId.HasValue && !FeaturePackId.HasValue)
                 {
                     return string.Empty;
                 }
-                return FeatureId.HasValue ? string.Format("O{0}", FeatureId) : string.Format("F{0}", FdpFeatureId);
+                return FeatureId.HasValue ? string.Format("O{0}", FeatureId) : string.Format("P{0}", FeaturePackId);
             }
         }
 

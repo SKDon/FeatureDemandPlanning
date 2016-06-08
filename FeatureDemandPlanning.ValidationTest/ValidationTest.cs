@@ -17,12 +17,20 @@ namespace FeatureDemandPlanning.ValidationTest
         {
             try
             {
-                
-                Task.Run(() =>
+                if (!EventLog.SourceExists("FeatureDemandPlanning"))
                 {
-                    var test = new ValidationTest();
-                    RunAsync();
-                }).Wait();
+                    EventLog.CreateEventSource("FeatureDemandPlanning", "FeatureDemandPlanning");
+                }
+                //Task.Run(() =>
+                //{
+                //    var test = new ValidationTest();
+                //    RunAsync();
+                //}).Wait();
+
+                var log = new EventLog {Source = "FeatureDemandPlanning"};
+
+                // Write an informational entry to the event log.    
+                log.WriteEntry("Writing to event log.");
                 
             }
             catch (Exception ex)

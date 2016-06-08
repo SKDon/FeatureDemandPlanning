@@ -390,6 +390,7 @@ textarea {
 .table-bordered.dataTable {
     border-color: #152A55;
     background-color: #fff;
+    margin-bottom: 0;
 }
 
 .table-bordered.dataTable > thead {
@@ -534,6 +535,18 @@ select
     position:absolute;
     top:0;
     right:0;
+    cursor:pointer;
+}
+
+.triangle2 {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 0;
+    border-color: transparent #801505 transparent;
+    position:relative;
+    top:-5px;
+    right:-10px;
     cursor:pointer;
 }
 
@@ -1113,6 +1126,10 @@ button, input, optgroup, select, textarea {
     margin: 0;
 }
 
+.modal-dialog {
+    top: 70px;
+}
+
 .modal-header {
     color: #FFF;
     background-image: linear-gradient(to left, #061639, #152A55 66%, #4E638E);
@@ -1233,6 +1250,13 @@ button.close {
 }
 
 .table-bordered > thead > tr > th.cross-tab-header {
+    color:#cecece;
+    font-size:8pt;
+    vertical-align:middle;
+    padding:3px;
+}
+
+.table-bordered > tfoot > tr > td.cross-tab-footer {
     color:#cecece;
     font-size:8pt;
     vertical-align:middle;
@@ -1665,4 +1689,10 @@ td.checkbox-column {
 
 .close {
     display: none;
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 300px;
+    overflow-x: hidden;
 }

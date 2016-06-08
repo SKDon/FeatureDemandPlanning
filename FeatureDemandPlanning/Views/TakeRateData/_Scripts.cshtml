@@ -1,10 +1,10 @@
 ﻿@using FeatureDemandPlanning.Model.Empty
 
-@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel 
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
 <script type="text/javascript">
 
-    var volume, vehicle, pager, page, modal, details, addNote, marketReview, filter, powertrain;
+    var volume, vehicle, pager, page, modal, details, addNote, marketReview, filter, powertrain, publish;
     var params = {
         ActionsUri: "@Url.Action("ContextMenu")",
         ModalContentUri: "@Url.Action("ModalContent")",
@@ -14,8 +14,13 @@
         GetChangesetUri: "@Url.Action("GetLatestChangeset")",
         RevertChangesetUri: "@Url.Action("RevertLatestChangeset")",
         SaveChangesetUri: "@Url.Action("SaveChangeset")",
+        MarketUri: "@Url.RouteUrl("TakeRateMarkets", new {TakeRateId = Model.Document.TakeRateId.GetValueOrDefault()})",
         MarketReviewUri: "@Url.Action("MarketReview", "MarketReview")",
         MarketReviewConfirmUri: "@Url.Action("MarketReviewConfirm", "MarketReview")",
+
+        PublishUri: "@Url.Action("Publish", "Publish")",
+        PublishConfirmUri: "@Url.Action("PublishConfirm", "Publish")",
+
         PersistChangesetUri: "@Url.Action("PersistChangeset")",
         PersistChangesetConfirmUri: "@Url.Action("PersistChangesetConfirm")",
         FilterUri: "@Url.Action("Filter")",
@@ -32,7 +37,7 @@
         PageSize: @Model.PageSize,
         PageIndex: @Model.PageIndex,
         CookieKey: "@Model.CookieKey",
-            OxoDocId: null,
+        OxoDocId: null,
         TakeRateId: null,
         MarketGroupId: null,
         MarketId: null,
@@ -44,21 +49,21 @@
     @if (Model.Document.UnderlyingOxoDocument != null)
     {
         @:params.OxoDocId = @Model.Document.UnderlyingOxoDocument.Id;
-        }
+    }
     @if (!(Model.Document.Market is EmptyMarket))
     {
         @:params.MarketId = @Model.Document.Market.Id;
-        }
+    }
     @if (!(Model.Document.MarketGroup is EmptyMarketGroup))
     {
         @:params.MarketGroupId = @Model.Document.MarketGroup.Id;
-        }
+    }
     @if (Model.Document.TakeRateId.HasValue)
     {
         @:params.TakeRateId = @Model.Document.TakeRateId.Value;
-        }
-</script>
+    }
 
-@Scripts.Render("~/bundles/js/shared")
-@Scripts.Render("~/bundles/js/takeratedata")
-<script language="javascript" src="@Url.Content("~/Content/js/TakeRateData/init.js")?v=@Model.CurrentVersion"></script>
+</script>
+@Scripts.Render("~/Content/js/sharedbundle")
+@Scripts.Render("~/Content/js/takeratedatabundle")
+<script language="javascript" src="@Url.Content("~/Content/js/TakeRateData/init.js")"></script>

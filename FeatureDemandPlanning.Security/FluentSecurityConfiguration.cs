@@ -88,6 +88,12 @@ namespace FeatureDemandPlanning.Security
                     .AddPolicy<HasAccessToProgrammePolicy>()
                     .RequireAnyRole("Administrator", "Editor", "MarketReviewer");
 
+                configuration.For<PublishController>()
+                    .RemovePolicy<DefaultSecurityPolicy>()
+                    .AddPolicy<HasAccessToMarketPolicy>()
+                    .AddPolicy<HasAccessToProgrammePolicy>()
+                    .RequireAnyRole("Administrator", "Editor", "Publisher");
+
                 configuration.For<DerivativeController>()
                     .RemovePolicy<DefaultSecurityPolicy>()
                     .RequireAnyRole("Administrator", "Importer");

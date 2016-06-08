@@ -1,4 +1,6 @@
-﻿namespace FeatureDemandPlanning.Model
+﻿using DocumentFormat.OpenXml.Bibliography;
+
+namespace FeatureDemandPlanning.Model
 {
     // POCO representing raw(ish) take rate information to use for validation
     // Includes metadata such as feature / model name to better describe any validation failures
@@ -30,6 +32,7 @@
         public int Volume { get; set; }
         public decimal PercentageTakeRate { get; set; }
         public bool IsOrphanedData { get; set; }
+        public bool IsUncodedFeature { get; set; }
 
         public string FeatureIdentifier
         {

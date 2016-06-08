@@ -41,7 +41,7 @@ namespace FeatureDemandPlanning.Model.Extensions
             return true;
         }
 
-        public static bool IsFeatureTakeRateEquivalentToOrGreaterThanPack(this IEnumerable<FeaturePack> featurePacks, FeaturePack forPack)
+        public static bool IsFeaturePlusPackTakeLessThan100Percent(this IEnumerable<FeaturePack> featurePacks, FeaturePack forPack)
         {
             // Iterate through the pack features and obtain the take rate of the feature
             // The take rate of the features must be the aggregate of all packs containing the feature
@@ -61,7 +61,7 @@ namespace FeatureDemandPlanning.Model.Extensions
                         p.DataItems.Any(d => d.FeatureId == packItem.FeatureId.GetValueOrDefault()))
                     .Sum(p => p.PackPercentageTakeRate);
 
-                if (packItem.PercentageTakeRate < combinedPackTakeRate)
+                if (packItem.PercentageTakeRate + combinedPackTakeRate > 1)
                 {
                     return false;
                 }

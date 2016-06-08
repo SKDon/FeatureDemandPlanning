@@ -92,5 +92,10 @@ namespace FeatureDemandPlanning.Model
                 Mail = parameters.Mail
             };
         }
+
+        public bool HasPublisherRole()
+        {
+            return Roles.Any(r => r == UserRole.Publisher);
+        }
     }
 }

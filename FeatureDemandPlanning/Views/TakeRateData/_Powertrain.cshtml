@@ -6,7 +6,7 @@
 
 <form>
     <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
-
+    <div style="height: 400px; overflow: scroll; overflow-x: hidden">
     <table id="@(Model.IdentifierPrefix)_PowertrainData" class="table table-bordered table-condensed dataTable cross-tab" style="overflow-x: auto">
     <thead>
     <tr>
@@ -17,32 +17,41 @@
         <th class="cross-tab-header text-center">% Take Rate</th>
     </tr>
     </thead>
-    <tbody>
-@foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
-{
-    <tr>
-        <td class="text-center cross-tab-data-item cross-tab-fixed" style="min-width: 80px; max-width: 80px">
-            <div class="glyphicon glyphicon-alert validation-error model-validation-error"
-                 style="display: none"
-                 data-content=""></div>
-            @powertrainItem.Doors&nbsp;@powertrainItem.Shape&nbsp;@powertrainItem.Size&nbsp;@powertrainItem.Cylinder&nbsp;
-            @powertrainItem.FuelType&nbsp;
-            @powertrainItem.Power&nbsp;PS
-        </td>
-        <td class="cross-tab-fixed cross-tab-data-item text-center">
-            @powertrainItem.DerivativeCode
-        </td>
-        <td class="cross-tab-fixed cross-tab-data-item text-center">
-            @powertrainItem.NumberOfModels
-        </td>
-        <td class="text-center cross-tab-data-item read-only-derivative @RenderEdited(powertrainItem)" data-target="@Model.Document.Market.Id|@powertrainItem.DerivativeCode|PTV">@powertrainItem.Volume.ToString("N0")</td>
-        <td class="text-center cross-tab-data-item editable-derivative @RenderEdited(powertrainItem)" data-target="@Model.Document.Market.Id|@powertrainItem.DerivativeCode|PTP">@powertrainItem.PercentageTakeRate.ToString("P2")</td>
-    </tr>
-}
-    </tbody>
+        <tbody>
+        @foreach (var powertrainItem in Model.Document.TakeRateData.PowertrainData)
+        {
+            <tr>
+                <td class="text-center cross-tab-data-item cross-tab-fixed" style="min-width: 80px; max-width: 80px">
+                    <div class="glyphicon glyphicon-alert validation-error model-validation-error"
+                         style="display: none"
+                         data-content=""></div>
+                    @powertrainItem.Doors&nbsp;@powertrainItem.Shape&nbsp;@powertrainItem.Size&nbsp;@powertrainItem.Cylinder&nbsp;
+                    @powertrainItem.FuelType&nbsp;
+                    @powertrainItem.Power&nbsp;PS
+                </td>
+                <td class="cross-tab-fixed cross-tab-data-item text-center">
+                    @powertrainItem.DerivativeCode
+                </td>
+                <td class="cross-tab-fixed cross-tab-data-item text-center">
+                    @powertrainItem.NumberOfModels
+                </td>
+                <td class="text-center cross-tab-data-item read-only-derivative @RenderEdited(powertrainItem)" data-target="@Model.Document.Market.Id|@powertrainItem.DerivativeCode|PTV">@powertrainItem.Volume.ToString("N0")</td>
+                <td class="text-center cross-tab-data-item editable-derivative @RenderEdited(powertrainItem)" data-target="@Model.Document.Market.Id|@powertrainItem.DerivativeCode|PTP">@powertrainItem.PercentageTakeRate.ToString("P2")</td>
+            </tr>
+        }
+        </tbody>
+        <tfoot>
+        <tr>
+            <td class="cross-tab-footer"></td>
+            <td class="pull-right cross-tab-footer"><strong>Total</strong></td>
+            <td class ="cross-tab-footer text-center">@Model.Document.TakeRateData.PowertrainData.Sum(powertrainData => powertrainData.NumberOfModels).ToString("N0")</td>
+            <td class="cross-tab-footer text-center">@Model.Document.TakeRateData.PowertrainData.Sum(powertrainData => powertrainData.Volume).ToString("N0")</tdclass>
+            <td class="cross-tab-footer text-center">@Model.Document.TakeRateData.PowertrainData.Sum(powertrainData => powertrainData.PercentageTakeRate).ToString("P2")</td>
+        </tr>
+        </tfoot>
         </table>
 
-            
+    </div>
 </form>
 
 @helper RenderEdited(RawPowertrainDataItem powertrainData)

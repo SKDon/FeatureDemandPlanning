@@ -28,6 +28,7 @@ namespace FeatureDemandPlanning.DataStore
                 {
                     var para = DynamicParameters.FromCDSId(CurrentCDSID);
                     para.Add("@DocumentId", filter.DocumentId, DbType.Int32);
+                    para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
 
                     using (var results = conn.QueryMultiple("dbo.Fdp_MarketGroup_GetMany", para, commandType: CommandType.StoredProcedure))
                     {

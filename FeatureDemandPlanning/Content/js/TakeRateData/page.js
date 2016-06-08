@@ -17,8 +17,6 @@ model.StopWatch = function () {
     }
 }
 
-
-
 model.Page = function (models) {
     var uid = 0, privateStore = {}, me = this;
 
@@ -30,15 +28,19 @@ model.Page = function (models) {
     privateStore[me.id].Initial = true;
     privateStore[me.id].Expanded = true;
     privateStore[me.id].InEdit = false;
+    privateStore[me.id].Markets = null;
+    privateStore[me.id].RowOffset = 0;
     
-    me.initialise = function () {
+    me.initialise = function ()
+    {    
         $(privateStore[me.id].Models).each(function () {
             this.initialise();
         });
+        
         me.setResultsMode($("#" + me.getIdentifierPrefix() + "_Mode").val());
         me.loadData();
         me.registerEvents();
-        me.registerSubscribers(); 
+        me.registerSubscribers();
     };
     me.calcPanelHeight = function () {
         return ($(window).height()) - 135 + "px";
@@ -65,11 +67,10 @@ model.Page = function (models) {
     me.loadData = function () {
         me.showSpinner("Loading Changes & Validating");
         me.initialiseControls();
-        me.configureDataTables();
         me.configureChangeset();
+        me.configureDataTables();
         me.loadChangeset();
         me.loadValidation();
-        me.configureRowHighlight();
     };
     me.persistData = function () {
         var model = getTakeRateDataModel();
@@ -258,7 +259,8 @@ model.Page = function (models) {
             .unbind("UpdateFilterVolume").on("UpdateFilterVolume", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnUpdateFilterVolumeDelegate", [eventArgs]); })
             .unbind("Filtered").on("Filtered", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnFilteredDelegate", [eventArgs]); })
             .unbind("HistoryDetails").on("HistoryDetails", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnHistoryDetailsDelegate", [eventArgs]); })
-            .unbind("NoteAdded").on("NoteAdded", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnNoteAddedDelegate", [eventArgs]); });
+            .unbind("NoteAdded").on("NoteAdded", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnNoteAddedDelegate", [eventArgs]); })
+            .unbind("ValidationNavigation").on("ValidationNavigation", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnValidationNavigationDelegate", [eventArgs]); });
 
         $("#" + prefix + "_Save").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPersistDelegate", [eventArgs]); });
         $("#" + prefix + "_Undo").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnUndoDelegate", [eventArgs]); });
@@ -273,10 +275,12 @@ model.Page = function (models) {
         $("#" + prefix + "_RejectMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate", [{ MarketReviewStatus: 3 }]); });
         $("#" + prefix + "_RecallMarketReview").unbind("click").on("click", function () { $(".subscribers-notify").trigger("OnMarketReviewDelegate", [{ MarketReviewStatus: 5 }]); });
 
+        $("#" + prefix + "_Publish").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnPublishDelegate", [eventArgs]); });
+
         $("#" + prefix + "_Toggle").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnToggleDelegate", [eventArgs]); });
         $("#" + prefix + "_Filter").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnFilterDelegate", [eventArgs]); });
         $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
-        $(".efg-item").unbind("click").on("click", function (sender, eventArgs) { me.filterItem(this); });
+        $(".efg-item").unbind("click").on("click", function (sender, eventArgs) { $(this).popover("hide"); me.filterItem(this); });
         $("a").unbind("click").on("click", function(sender, eventArgs) { me.showSpinner("Loading"); });
     };
     me.registerSubscribers = function () {
@@ -304,10 +308,12 @@ model.Page = function (models) {
             .on("OnPowertrainDelegate", me.onPowertrainEventHandler)
             .on("OnValidationSummaryDelegate", me.onValidationSummaryEventHandler)
             .on("OnMarketReviewDelegate", me.onMarketReviewEventHandler)
+            .on("OnPublishDelegate", me.onPublishEventHandler)
             .on("OnUndoDelegate", me.onUndoEventHandler)
             .on("OnUndoAllDelegate", me.onUndoAllEventHandler)
             .on("OnToggleDelegate", me.onToggleEventHandler)
-            .on("OnFilterDelegate", me.onFilterEventHandler);
+            .on("OnFilterDelegate", me.onFilterEventHandler)
+            .on("OnValidationNavigationDelegate", me.onValidationNavigationEventHandler);
 
         // Iterate through each of the forecast / comparison controls and register onclick / change handlers
         $(".fdp-volume-header-toggle").unbind("click").on("click", me.toggleFdpVolumeHeader);      
@@ -574,6 +580,7 @@ model.Page = function (models) {
         {
             $("#" + prefix + "_Validation").prop("disabled", false).addClass("validation-error");
             $("#" + prefix + "_Save").prop("disabled", true);
+            $("#" + prefix + "_Publish").prop("disabled", true);
             $("#" + prefix + "_MarketReview").prop("disabled", true);
             $("#" + prefix + "_SubmitMarketReview").prop("disabled", true);
             $("#" + prefix + "_ApproveMarketReview").prop("disabled", true);
@@ -601,16 +608,19 @@ model.Page = function (models) {
         if (model.HasChanges())
         {
             $("#" + prefix + "_Save").prop("disabled", false);
+            $("#" + prefix + "_Publish").prop("disabled", true);
             $("#" + prefix + "_Undo").prop("disabled", false);
             $("#" + prefix + "_UndoAll").prop("disabled", false);
             $("#" + prefix + "_MarketReview").prop("disabled", true);
             $("#" + prefix + "_RecallMarketReview").prop("disabled", true);
+            $("#" + prefix + "_Publish").prop("disabled", true);
         }
 
         if (!model.HasChanges())
         {
             $("#" + prefix + "_Undo").prop("disabled", true);
             $("#" + prefix + "_UndoAll").prop("disabled", true);
+            $("#" + prefix + "_Publish").prop("disabled", false);
         }
     }
     me.loadValidationCallback = function(validationData) {
@@ -671,6 +681,8 @@ model.Page = function (models) {
             
             mainIndicator.fadeIn();
         }
+
+        me.configureComments();
     };
     me.confirmLoadChangeset = function(changesetData) {
 
@@ -750,6 +762,21 @@ model.Page = function (models) {
             }
         }
 
+        // Load the model mix
+
+        if (changesetData.ModelMix.HasModelMixChanged === true && me.getResultsMode() === "PercentageTakeRate")
+        {
+            $(".model-mix-total").each(function() {
+                $(this).html(me.formatPercentageTakeRate(changesetData.ModelMix.ModelMix * 100)).addClass(me.getEditedDataClass(changesetData.ModelMix));
+            });
+        }
+        else if (changesetData.ModelMix.HasModelVolumeChanged === true)
+        {
+            $(".model-mix-total").each(function () {
+                $(this).html(me.formatVolume(changesetData.ModelMix.ModelVolume)).addClass(me.getEditedDataClass(changesetData.ModelMix));
+            });
+        }
+
         me.configureCellEditing();
         me.hideSpinner();
     };
@@ -810,6 +837,19 @@ model.Page = function (models) {
                     selector2.addClass(editedDataClass);
                 }
             }
+
+            // Load the model mix
+
+            if (revertedData.ModelMix.HasModelMixChanged === false && me.getResultsMode() === "PercentageTakeRate") {
+                $(".model-mix-total").each(function () {
+                    $(this).html(me.formatPercentageTakeRate(revertedData.ModelMix.ModelMix * 100)).removeClass(me.getEditedDataClass(revertedData.ModelMix));
+                });
+            }
+            else if (revertedData.ModelMix.HasModelVolumeChanged === false) {
+                $(".model-mix-total").each(function () {
+                    $(this).html(me.formatVolume(revertedData.ModelMix.ModelVolume)).removeClass(me.getEditedDataClass(revertedData.ModelMix));
+                });
+            }
         }
         $("#" + me.getIdentifierPrefix() + "_Spinner").spin("hide");
     };
@@ -852,7 +892,10 @@ model.Page = function (models) {
     };
     me.getEditedDataClass = function (changesetChange) {
         var className;
-        if (changesetChange.IsFeatureSummary) {
+        if (changesetChange.IsModelMix) {
+            className = me.getEditedDataClassForModelMix(changesetChange);
+        }
+        else if (changesetChange.IsFeatureSummary) {
             className = me.getEditedDataClassForFeatureSummary(changesetChange);
         }
         else if (changesetChange.IsModelSummary) {
@@ -894,6 +937,14 @@ model.Page = function (models) {
         if (changesetChange.ModelIdentifier !== null && changesetChange.ModelIdentifier.charAt(0) === "F") {
             className = "edited";
         }
+        if (changesetChange.IsMarketReview) {
+            className = className + "-market-review";
+        }
+        return className;
+    };
+    me.getEditedDataClassForModelMix = function (changesetChange) {
+        var className = "edited";
+        
         if (changesetChange.IsMarketReview) {
             className = className + "-market-review";
         }
@@ -961,6 +1012,15 @@ model.Page = function (models) {
     me.onFilterEventHandler = function() {
         me.showFilter();
     };
+    me.onValidationNavigationEventHandler = function(sender, eventArgs) {
+        var dataTable = me.getDataTable();
+
+        var selector = $("td[data-feature='" + eventArgs + "']").first().parent();
+
+        var rowIndex = dataTable.rows(selector);
+
+        dataTable.row(rowIndex).scrollTo();
+    };
     me.onMarketReviewEventHandler = function(sender, eventArgs) {
         switch (eventArgs.MarketReviewStatus)
         {
@@ -981,6 +1041,9 @@ model.Page = function (models) {
                 break;
         }
     };
+    me.onPublishEventHandler = function (sender, eventArgs) {
+        me.publish();
+    };
     me.marketReview = function(marketReviewStatus) {
         var model = getMarketReviewModel();
         model.setMarketReviewStatus(marketReviewStatus);
@@ -998,6 +1061,21 @@ model.Page = function (models) {
             ActionModel: actionModel
         });
     };
+    me.publish = function() {
+        var model = getPublishModel();
+        var action = model.getPublishAction();
+        var actionModel = model.getActionModel(action);
+        var filter = getFilter("");
+        filter.Action = action;
+
+        getModal().showModal({
+            Title: "Publish",
+            Uri: model.getActionContentUri(),
+            Data: JSON.stringify(filter),
+            Model: model,
+            ActionModel: actionModel
+        });
+    }
     me.submitMarketReview = function(marketReviewStatus) {
         var model = getMarketReviewModel();
         model.setMarketReviewStatus(marketReviewStatus);
@@ -1068,100 +1146,149 @@ model.Page = function (models) {
     };
     me.configureComments = function () {
 
+        var prefix = me.getIdentifierPrefix();
+
         // We need to destroy and re-initialise the popovers each time the filter results is performed
         // Otherwise we get unexpected results
 
         $("[data-toggle='popover']").popover("destroy");
 
-        $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover", placement: "auto bottom" });
-
-        $(".comment-item").on("click", function() {
-            $(".comment-item").not(this).popover("hide");
-        });
-
-        $(".rule-item").popover({ html: true, title: "Rules", container: "body", trigger: "hover", placement: "auto bottom" });
-
-        $(".rule-item").on("click", function() {
-            $(".rule-item").not(this).popover("hide");
-        });
-
-        $(".efg-item").popover({ html: true, title: "Exclusive Feature Group", container: "body", trigger: "hover", placement: "auto bottom" });
-
-        $(".efg-item").on("click", function() {
-            $(".efg-item").not(this).popover("hide");
-        });
-
-        $(".pack-item")
-            .popover({
-                html: true,
-                container: "body",
-                placement: "auto bottom",
-                trigger: "manual",
-                title: "Pack Contents <span class='glyphicon glyphicon-filter'></span> Click to Filter"
-            })
-            .unbind("mouseenter").on("mouseenter", function() {
-                $(this).popover("show");
-            })
-            .unbind("mouseleave").on("mouseleave", function() {
-                $(this).popover("hide");
-            })
-            .unbind("click").on("click", function() {
-                var filter = $(this).attr("data-filter");
-                $("[data-toggle='popover']").popover("destroy");
-                me.filter(filter);
+        $(".comment-item")
+            .each(function () {
+                var commentItem = $(this);
+                if (commentItem.is(":visible")) {
+                    commentItem
+                        .popover({
+                            html: true,
+                            title: "Comments",
+                            container: "body",
+                            trigger: "hover",
+                            placement: "auto bottom"
+                        })
+                        .on("click", function() {
+                            $("[data-toggle='popover']")
+                                .is(":visible")
+                                .popover("hide");
+                        });
+                }
             });
 
-        $(".feature-pack-item")
-            .data("state", "hover")
-            .popover({
-                html: true,
-                container: "body",
-                placement: "auto bottom",
-                trigger: "manual",
-                title: "Feature Packs <span class='glyphicon glyphicon-filter'></span> Click Pack Name to Filter"
-            })
-            .unbind("mouseenter").on("mouseenter", function () {
-                if ($(this).data("state") === "hover")
-                    $(this).popover("show");
-            })
-            .unbind("mouseleave").on("mouseleave", function () {
-                if ($(this).data("state") === "hover")
-                    $(this).popover("hide");
-            })
-            .unbind("click").on("click", function () {
-                if ($(this).data("state") === "hover") {
-                    $(this).data("state", "pinned");
-                    $(".feature-pack-item-header").unbind("click").on("click", function() {
+
+        $(".rule-item")
+            .each(function() {
+                var ruleItem = $(this);
+                if (ruleItem.is(":visible")) {
+                    ruleItem.popover({
+                        html: true,
+                        title: "Rules",
+                        container: "body",
+                        trigger: "hover",
+                        placement: "auto bottom"
+                    });
+                };
+            });
+
+        $(".efg-item")
+            .each(function () {
+                var efgItem = $(this);
+                if (efgItem.is(":visible")) {
+                    efgItem.popover({
+                        html: true,
+                        title: "Exclusive Feature Group",
+                        container: "body",
+                        trigger: "hover",
+                        placement: "auto bottom"
+                    });
+                }
+            });
+
+        $(".pack-item")
+            .each(function () {
+                var packItem = $(this);
+                if (packItem.is(":visible")) {
+                    packItem.popover({
+                        html: true,
+                        container: "body",
+                        placement: "auto bottom",
+                        trigger: "manual",
+                        title: "Pack Contents <span class='glyphicon glyphicon-filter'></span> Click to Filter"
+                    })
+                    .unbind("mouseenter").on("mouseenter", function () {
+                        packItem.popover("show");
+                    })
+                    .unbind("mouseleave").on("mouseleave", function () {
+                        packItem.popover("hide");
+                    })
+                    .unbind("click").on("click", function () {
                         var filter = $(this).attr("data-filter");
                         $("[data-toggle='popover']").popover("destroy");
                         me.filter(filter);
                     });
-                } else {
-                    $(this).data("state", "hover");
-                    $(this).popover("hover");
                 }
             });
-        
 
-        $(".feature-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover", placement: "auto bottom" });
-        $(".feature-validation-error").on("click", function() {
-            $(".feature-validation-error").not(this).popover("hide");
-        });
-        $(".model-validation-error").popover({ html: true, title: "Validation Error", container: "body", trigger: "hover", placement: "auto bottom" });
-        $(".model-validation-error").on("click", function() {
-            $(".model-validation-error").not(this).popover("hide");
-        });
-        $(".primary-validation-error")
-            //.attr("data-content", "One or more validation errors exist for the dataset. Examine each indicated market in turn to rectify any errors.")
-            .popover({ html: true, title: "Validation Error", container: "body", trigger: "hover", placement: "auto bottom" });
-        $(".primary-validation-error").on("click", function() {
-            $(".primary-validation-error").not(this).popover("hide");
+        $(".feature-pack-item")
+            .each(function () {
+                var featurePackItem = $(this);
+                if (featurePackItem.is(":visible")) {
+                    featurePackItem
+                        .data("state", "hover")
+                        .popover({
+                            html: true,
+                            container: "body",
+                            placement: "auto bottom",
+                            trigger: "manual",
+                            title: "Feature Packs <span class='glyphicon glyphicon-filter'></span> Click Pack Name to Filter"
+                        })
+                        .unbind("mouseenter").on("mouseenter", function () {
+                            if (featurePackItem.data("state") === "hover")
+                                featurePackItem.popover("show");
+                        })
+                        .unbind("mouseleave").on("mouseleave", function () {
+                            if (featurePackItem.data("state") === "hover")
+                                featurePackItem.popover("hide");
+                        })
+                        .unbind("click").on("click", function () {
+                            if (featurePackItem.data("state") === "hover") {
+                                featurePackItem.data("state", "pinned");
+                                $(".feature-pack-item-header").unbind("click").on("click", function () {
+                                    var filter = $(this).attr("data-filter");
+                                    $("[data-toggle='popover']").popover("destroy");
+                                    me.filter(filter);
+                                });
+                            } else {
+                                featurePackItem
+                                    .data("state", "hover")
+                                    .popover("hover");
+                            }
+                        });
+                }
+            });
+
+        var validationErrors = $(".feature-validation-error, .model-validation-error, .primary-validation-error");
+        validationErrors.each(function () {
+            var error = $(this);
+            if (error.is(":visible")) {
+                error
+                    .popover({
+                        html: true,
+                        title: "Validation Error",
+                        container: "body",
+                        trigger: "hover",
+                        placement: "auto bottom"
+                    })
+                .on("click", function () {
+                    validationErrors.not(error).each(function () {
+                        if ($(this).is(":visible")) {
+                            $(this).popover("hide");
+                        }
+                    });
+                });
+            }
         });
 
-        $(".comment-item").popover({ html: true, title: "Comments", container: "body", trigger: "hover", placement: "auto bottom" });
-
-        var prefix = me.getIdentifierPrefix();
         $("#" + prefix + "_Save").popover({ trigger: "hover", title: "Save Changes", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_Publish").popover({ trigger: "hover", title: "Publish", placement: "auto bottom", container: "body" });
         $("#" + prefix + "_Undo").popover({ trigger: "hover", title: "Undo", placement: "auto bottom", container: "body" });
         $("#" + prefix + "_UndoAll").popover({ trigger: "hover", title: "Undo All", placement: "auto bottom", container: "body" });
         $("#" + prefix + "_History").popover({ trigger: "hover", title: "Change History", placement: "auto bottom", container: "body" });
@@ -1187,12 +1314,47 @@ model.Page = function (models) {
         //    me.configureDataTables();
         //});
     };
+    me.configureMarkets = function() {
+        privateStore[me.id].Markets = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace("Name"),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: getTakeRateDataModel().getMarketUri()
+        });
+        $("#" + me.getIdentifierPrefix() + "_Markets .typeahead").typeahead(null, {
+            name: "Markets",
+            display: "Name",
+            source: privateStore[me.id].Markets,
+            templates: {
+                empty: "<div class='empty-message'>No matching markets</div>",
+                highlighter: function(item) {
+                    var parts = item.split("#");
+                    var html = "<div class='typeahead'>";
+                    html += "<div class='pull-left margin-small'>";
+                    html += "<div class='text-left'><strong>" + parts[0] + "</strong></div>";
+                    html += "<div class='text-left'>" + parts[1] + "</div>";
+                    html += "</div>";
+                    html += "<div class='clearfix'></div>";
+                    html += "</div>";
+                    return html;
+                },
+                    suggestion: function(data) {
+                        var html = "<p><strong>" + data.Name + "</strong></p>";
+                        html += "<p>Number of Model Variants:" + data.VariantCount + "</p>";
+                        html += "<p>Market Group" + data.GroupName + "</p>";
+                        return html;
+                    }
+                
+            }
+        });
+    };
     me.configureDataTables = function () {
 
         var prefix = me.getIdentifierPrefix();
         var filterModel = getFilterModel();
         var height = me.calcDataTableHeight();
         var leftFixedColumns = 4;
+
+        me.showSpinner("Loading Data");
         
         var table = $("#" + prefix + "_TakeRateData").DataTable({
             serverSide: false,
@@ -1202,8 +1364,8 @@ model.Page = function (models) {
             dom: "t",
             scrollX: true,
             //autoWidth: false,
-            scrollY: height//,
-            //scrollCollapse: true
+            scrollY: height,
+            scrollCollapse: true
         });
         var fixedColumns = new $.fn.dataTable.FixedColumns(table, {
             leftColumns: leftFixedColumns,
@@ -1212,9 +1374,9 @@ model.Page = function (models) {
                 //// upon filter
                 if (filterModel.getCurrentFilter() === null || filterModel.getCurrentFilter() === "") {
                     me.configureRowGroupings(table, left);
-                } 
-                me.configureComments();
+                }
                 me.bindContextMenu();
+                me.configureRowHighlight();
             }
         });
 
@@ -1322,16 +1484,69 @@ model.Page = function (models) {
             }
         }
 
+        privateStore[me.id].RowOffset = corrector;
+
         // Clear spurious child elements from the hidden sizing columns
         $(".dataTables_sizing").empty();
     };
-    me.bindContextMenu = function () {
+    me.bindContextMenuForPublish = function() {
         var prefix = me.getIdentifierPrefix();
         $.contextMenu({
             selector: "#" + prefix + "_TakeRateData .cross-tab-data-item",
             callback: function (key, options) {
-                var m = "clicked: " + key;
-                window.console && console.log(m) || alert(m);
+                //var m = "clicked: " + key;
+                //window.console && console.log(m) || alert(m);
+            },
+            items: {
+                view: {
+                    name: "ViewDetails",
+                    icon: function (opt, $itemElement) {
+                        // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                        $itemElement.html('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> View Details...' + opt.selector);
+                    },
+                    callback: function (itemKey, opt) {
+                        var target = opt.$trigger.children().first();
+                        me.actionTriggered(target, 4);
+                    }
+                }
+            },
+            className: "context-menu-custom"
+        });
+        $.contextMenu({
+            selector: "#" + prefix + "_TakeRateDataPanel .model-mix",
+            callback: function (key, options) {
+                //var m = "clicked: " + key;
+                //window.console && console.log(m) || alert(m);
+            },
+            items: {
+                view: {
+                    name: "ViewDetails",
+                    icon: function (opt, $itemElement) {
+                        // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                        $itemElement.html('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> View Model Mix Details...' + opt.selector);
+                    },
+                    callback: function (itemKey, opt) {
+                        var target = opt.$trigger;
+                        me.actionTriggered(target, 4);
+                    }
+                }
+            },
+            className: "context-menu-custom"
+        });
+    },
+    me.bindContextMenu = function () {
+        var prefix = me.getIdentifierPrefix();
+
+        var isPublished = parseInt($("#" + prefix + "_Published").val());
+        if (isPublished === 1) {
+            me.bindContextMenuForPublish();
+            return;
+        }
+        $.contextMenu({
+            selector: "#" + prefix + "_TakeRateData .cross-tab-data-item",
+            callback: function (key, options) {
+                //var m = "clicked: " + key;
+                //window.console && console.log(m) || alert(m);
             },
             items: {
                 view: {
@@ -1362,8 +1577,8 @@ model.Page = function (models) {
         $.contextMenu({
             selector: "#" + prefix + "_TakeRateDataPanel .model-mix",
             callback: function(key, options) {
-                var m = "clicked: " + key;
-                window.console && console.log(m) || alert(m);
+                //var m = "clicked: " + key;
+                //window.console && console.log(m) || alert(m);
             },
             items: {
                 view: {
@@ -1531,7 +1746,7 @@ model.Page = function (models) {
     }, 500);
     };
     me.getValidationMessageError = function (jqXHR, textStatus, errorThrown) {
-        console.log("Validate: " + errorThrown);
+        //console.log("Validate: " + errorThrown);
     };
     me.onBeforeValidationFilterEventHandler = function (sender, eventArgs) {
         $(sender.target).removeClass("has-error").removeClass("has-warning");
@@ -1567,7 +1782,7 @@ model.Page = function (models) {
         $(document).trigger("Filtered", { Filter: searchFilter });
     };
     me.onFilterChangedEventHandler = function (sender, eventArgs) {
-        console.log("filter changed");
+        //console.log("filter changed");
         var filter = eventArgs.Filter;
         getFilterModel().setCurrentFilter(filter);
         me.getDataTable().search(filter).draw();
@@ -1579,7 +1794,7 @@ model.Page = function (models) {
         me.loadChangeset();
     };
     me.redrawDataTable = function () {
-        console.log("in redraw");
+        //console.log("in redraw");
         me.getDataTable().draw();
     };
     me.getExpandedState = function() {
@@ -1663,6 +1878,9 @@ model.Page = function (models) {
     };
     function getMarketReviewModel() {
         return getModel("MarketReview");
+    };
+    function getPublishModel() {
+        return getModel("Publish");
     };
     function getFilterModel() {
         return getModel("Filter");

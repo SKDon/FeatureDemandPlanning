@@ -8,11 +8,11 @@
 <th class="text-right model-mix">
     @if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
     {
-        @:% MIX
+        @:% MIX<br /> (<span class="model-mix-total">@Model.Document.TakeRateData.ModelMix.ToString("P2")</span>)
     }
     else
     {
-        @:VOLUME
+        @:VOLUME<br /> (<span class="model-mix-total">@Model.Document.TakeRateData.ModelVolume.ToString("N0")</span>)
     }
 </th>
 @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
@@ -24,7 +24,7 @@
     }
     if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
     {
-        <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier" data-model="@availableModel.StringIdentifier">
+        <th class="text-center model-mix @modelClassName @RenderEditableClass()" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier" data-model="@availableModel.StringIdentifier">
             @{
         var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.FirstOrDefault(s => s.StringIdentifier == availableModel.StringIdentifier);
         var percentage = "-";
@@ -34,28 +34,11 @@
         }
         @percentage
             }
-
-            @{
-        var model = availableModel;
-        var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => string.IsNullOrEmpty(n.FeatureIdentifier) && n.ModelIdentifier == model.StringIdentifier);
-        if (notes.Any())
-        {
-            <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-target="N|@Model.Document.Market.Id|@availableModel.StringIdentifier|" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
-                <div class="triangle"></div>
-            </div>
-        }
-        else
-        {
-            <div class="indicator comment-item" style="display:none" role="button" data-target="N|@Model.Document.Market.Id|@availableModel.StringIdentifier|" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
-                <div class="triangle"></div>
-            </div>
-        }
-            }
         </th>
     }
     else
     {
-        <th class="text-center model-mix @RenderEditableClass() @modelClassName" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
+        <th class="text-center model-mix @modelClassName @RenderEditableClass()" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
             @{
         var summary = Model.Document.TakeRateData.TakeRateSummaryByModel.FirstOrDefault(s => s.StringIdentifier == availableModel.StringIdentifier);
         var volume = "-";
@@ -65,30 +48,19 @@
         }
         @volume
             }
-
-            @{
-        var model = availableModel;
-        var notes = Model.Document.TakeRateData.NoteAvailability.Where(n => string.IsNullOrEmpty(n.FeatureIdentifier) && n.ModelIdentifier == model.StringIdentifier);
-        if (notes.Any())
-        {
-            <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
-                <div class="triangle"></div>
-            </div>
-        }
-        if (notes.Any())
-        {
-            <div class="indicator comment-item" role="button" data-toggle="popover" title="Notes" data-target="N|@Model.Document.Market.Id|@availableModel.StringIdentifier|" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
-                <div class="triangle"></div>
-            </div>
-        }
-        else
-        {
-            <div class="indicator comment-item" style="display:none" role="button" data-target="C|@Model.Document.Market.Id|@availableModel.StringIdentifier|" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Model Details...&quot; for additional information">
-                <div class="triangle"></div>
-            </div>
-        }
-            }
         </th>
+    }
+}
+@{
+    var modelCount = Model.Document.Vehicle.AvailableModels.Count();
+    if ((Model.Document.PageSize != -1 && Model.Document.PageSize != int.MaxValue && modelCount < Model.Document.PageSize) || modelCount < 10)
+    {
+        var numberToPad = 10 - modelCount;
+
+        for (var i = 0; i < numberToPad; i++)
+        {
+            <th class="model-mix"></th>
+        }
     }
 }
 

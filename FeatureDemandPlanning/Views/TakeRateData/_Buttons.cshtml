@@ -10,9 +10,9 @@
     <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Undo" disabled="disabled" data-content="Undo the last change" data-toggle="popover" data-container="body"><span class="glyphicon glyphicon-repeat"></span></button>
     <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_UndoAll" disabled="disabled" data-content="Undo all changes" data-toggle="popover" data-container="body"><span class="glyphicon glyphicon-refresh"></span></button>
     <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Toggle" data-content="Expand / collapse the feature groups" data-toggle="popover" data-container="body"><span class="glyphicon glyphicon-minus"></span></button>
-    <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" data-container="body" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample" data-content="Show / hide the page summary and key">
+    <button type="button" class="btn btn-default btn-sm" data-toggle="collapse" data-container="body" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample" data-content="Show / hide the page summary and key">
         <span class="glyphicon glyphicon-collapse-down"></span>
-    </a>
+    </button>
     }
 </div>
 
@@ -25,6 +25,10 @@
             <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Save" data-container="body" disabled="disabled" data-content="Permanently save any outstanding changes, merging them into the take rate document" data-toggle="popover"><i class="glyphicon glyphicon-floppy-save"></i></button>
         }
         @Html.Partial("_MarketReviewButtons")
+        @if (Model.AllowPublish)
+        {
+            <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Publish" data-container="body" data-content="Publish the take rate data for the market" data-toggle="popover"><i class="glyphicon glyphicon-pushpin"></i></button>
+        }
     </div>
 }
 
@@ -37,26 +41,27 @@
     <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_Filter" data-content="Filter the results for the selected market" data-toggle="popover" data-container="body"><span class="glyphicon glyphicon-search"></span></button>
 </div>
 
+   <div class="btn-group pull-right">
+        <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_FirstPage" href="@RenderUrlForPage(enums.PageAction.FirstPage)" @RenderDisabled(enums.PageAction.FirstPage) data-content="Go to the first page of model information" data-container="body" data-toggle="popover"><i class="glyphicon glyphicon-step-backward"></i></a>
+        <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_PrevPage" href="@RenderUrlForPage(enums.PageAction.PreviousPage)" @RenderDisabled(enums.PageAction.PreviousPage) data-content="Go to the previous page of model information" data-container="body" data-toggle="popover"><i class="glyphicon glyphicon-backward"></i></a>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Page @Model.Document.PageIndex of @Model.Document.TotalPages
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
 
-<div class="btn-group pull-right">
-    <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_FirstPage" href="@RenderUrlForPage(enums.PageAction.FirstPage)" @RenderDisabled(enums.PageAction.FirstPage) data-content="Go to the first page of model information" data-container="body" data-toggle="popover"><i class="glyphicon glyphicon-step-backward"></i></a>
-    <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_PrevPage" href="@RenderUrlForPage(enums.PageAction.PreviousPage)" @RenderDisabled(enums.PageAction.PreviousPage) data-content="Go to the previous page of model information" data-container="body" data-toggle="popover"><i class="glyphicon glyphicon-backward"></i></a>
-    <div class="btn-group" role="group">
-        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Page @Model.Document.PageIndex of @Model.Document.TotalPages
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-            <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 1)">All Models</a></li>
-            <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 5)">5 Models per Page</a></li>
-            <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 10)">10 Models per Page</a></li>
-            <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 20)">20 Models per Page</a></li>
-            <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 50)">50 Models per Page</a></li>
-        </ul>
+                <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, -1)">All Models</a></li>
+                <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 5)">5 Models per Page</a></li>
+                <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 10)">10 Models per Page</a></li>
+                <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 20)">20 Models per Page</a></li>
+                <li><a href="@RenderUrlForPage(enums.PageAction.FirstPage, 50)">50 Models per Page</a></li>
+            </ul>
+        </div>
+        <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_NextPage" href="@RenderUrlForPage(enums.PageAction.NextPage)" @RenderDisabled(enums.PageAction.NextPage) data-content="Go to the next page of model information" data-container="body" data-toggle="popover"><i class="glyphicon glyphicon-forward"></i></a>
+        <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_LastPage" href="@RenderUrlForPage(enums.PageAction.LastPage)" @RenderDisabled(enums.PageAction.LastPage) data-content="Go to the last page of model information" data-container="body" data-toggle="popover"><i class="glyphicon glyphicon-step-forward"></i></a>
     </div>
-    <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_NextPage" href="@RenderUrlForPage(enums.PageAction.NextPage)" @RenderDisabled(enums.PageAction.NextPage) data-content="Go to the next page of model information" data-container="body" data-toggle="popover"><i class="glyphicon glyphicon-forward"></i></a>
-    <a class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_LastPage" href="@RenderUrlForPage(enums.PageAction.LastPage)" @RenderDisabled(enums.PageAction.LastPage) data-content="Go to the last page of model information" data-container="body" data-toggle="popover"><i class="glyphicon glyphicon-step-forward"></i></a>
-</div>
+
 
 @helper RenderDisabled(enums.PageAction action)
 {

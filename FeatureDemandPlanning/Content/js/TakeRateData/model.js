@@ -21,6 +21,7 @@ model.OxoVolume = function (params) {
     privateStore[me.id].GetChangesetUri = params.GetChangesetUri;
     privateStore[me.id].RevertChangesetUri = params.RevertChangesetUri;
     privateStore[me.id].SaveChangesetUri = params.SaveChangesetUri;
+    privateStore[me.id].MarketUri = params.MarketUri;
     privateStore[me.id].MarketReviewUri = params.MarketReviewUri;
     privateStore[me.id].MarketReviewConfirmUri = params.MarketReviewConfirmUri;
     privateStore[me.id].PersistChangesetUri = params.PersistChangesetUri;
@@ -138,6 +139,9 @@ model.OxoVolume = function (params) {
     };
     me.getChangesetHistoryDetailsAction = function() {
         return 16;
+    };
+    me.getMarketUri = function () {
+        return privateStore[me.id].MarketUri;
     };
     me.getMarketReviewUri = function() {
         return privateStore[me.id].MarketReviewUri;

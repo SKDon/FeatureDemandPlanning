@@ -26,7 +26,7 @@ USING (VALUES
 	, (N'SkipFirstXRowsInImportFile', N'3', N'Specifies the number of rows to skip for FDP import files. Eliminates header information', N'System.Int32')
 	, (N'ReprocessImportAfterHandleError', N'1', N'Whether to reprocess the entire dataset each time an error is handled in the worktray', N'System.Boolean')
 	, (N'FlagOrphanedImportDataAsError', N'0', N'Whether to flag import data that cannot be mapped to an OXO derivative / trim level or feature as an error', N'System.Boolean')
-	, (N'TakeRateDataPageSize', N'10', N'The page size to use for models when showing take rate files', N'System.Int32')
+	, (N'TakeRateDataPageSize', N'-1', N'The page size to use for models when showing take rate files', N'System.Int32')
 )
 AS SOURCE (ConfigurationKey, Value, [Description], DataType) ON TARGET.ConfigurationKey = SOURCE.ConfigurationKey
 WHEN MATCHED THEN
@@ -355,6 +355,7 @@ USING (VALUES
 	, (9, N'Approver', N'User can approve market review changes')
 	, (10, N'Cloner', N'User can clone take rate data into other take rate documents')
 	, (11, N'CanDelete', N'User can delete imported take rate files')
+	, (12, N'Publisher', N'User can publish take rate files')
 )
 AS SOURCE (FdpUserRoleId, [Role], [Description]) ON TARGET.FdpUserRoleId = SOURCE.FdpUserRoleId
 WHEN MATCHED THEN

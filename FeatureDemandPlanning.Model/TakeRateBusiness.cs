@@ -157,7 +157,7 @@ namespace FeatureDemandPlanning.Model
         private void BuildFeatureChangeset(DataChange fromChange)
         {
             var featureChange = CalculateFeatureChange(fromChange);
-            if (featureChange == null) return;
+            if (featureChange == null || !featureChange.HasChanged) return;
 
             var featureMixChange = CalculateFeatureMixChange(featureChange);
             if (featureMixChange != null)
@@ -165,23 +165,28 @@ namespace FeatureDemandPlanning.Model
                 CurrentChangeSet.Changes.Add(featureMixChange);
             }
 
-            var standardFeatureChange = CalculateStandardFeatureChange(featureChange);
-            if (standardFeatureChange != null)
+            var standardFeatureChanges = CalculateStandardFeatureChange(featureChange);
+            if (standardFeatureChanges.Any())
             {
-                CurrentChangeSet.Changes.Add(standardFeatureChange);
-            }
+                foreach (var standardFeatureChange in standardFeatureChanges)
+                {
+                    CurrentChangeSet.Changes.Add(standardFeatureChange);
 
-            var standardFeatureMixChange = CalculateFeatureMixChange(standardFeatureChange);
-            if (standardFeatureMixChange != null)
-            {
-                CurrentChangeSet.Changes.Add(standardFeatureMixChange);
+                    var standardFeatureMixChange = CalculateFeatureMixChange(standardFeatureChange);
+                    if (standardFeatureMixChange != null)
+                    {
+                        CurrentChangeSet.Changes.Add(standardFeatureMixChange);
+                    }
+                }
             }
 
             CurrentChangeSet.Changes.AddRange(CalculatePackFromFeature(featureChange));
             CurrentChangeSet.Changes.AddRange(CalculateFeaturesFromPack(featureChange));
         }
-        private DataChange CalculateStandardFeatureChange(DataChange fromChange)
+        private IEnumerable<DataChange> CalculateStandardFeatureChange(DataChange fromChange)
         {
+            var standardFeatureDataChanges = new List<DataChange>();
+
             // If this is a feature within an exclusive feature group and not the standard feature, recalculate the percentage take and volume
             // standard feature as the model volume less the volume of any options in the group
 
@@ -189,7 +194,7 @@ namespace FeatureDemandPlanning.Model
                 CurrentData.DataItems.FirstOrDefault(
                     f => f.FeatureId == fromChange.GetFeatureId() && f.ModelId == fromChange.GetModelId());
 
-            if (feature == null) return null;
+            if (feature == null) return standardFeatureDataChanges;
 
             var efgItems =
                 CurrentData.DataItems.Where(
@@ -197,11 +202,10 @@ namespace FeatureDemandPlanning.Model
                         fromChange.IsMatchingModel(g) &&
                         g.ExclusiveFeatureGroup == feature.ExclusiveFeatureGroup).ToList();
 
-            var optionalFeatures = efgItems.Where(g => !g.IsStandardFeatureInGroup).ToList();
-            var standardFeature = efgItems.FirstOrDefault(g => g.IsStandardFeatureInGroup);
+            var optionalFeatures = efgItems.Where(g => !g.IsStandardFeatureInGroup && !g.IsUncodedFeature).ToList();
+            var standardFeatures = efgItems.Where(g => g.IsStandardFeatureInGroup && g.FeatureId != _existingFeature.FeatureId && !g.IsUncodedFeature).ToList();
 
-            if (standardFeature == null || !optionalFeatures.Any() ||
-                standardFeature.FeatureId == _existingFeature.FeatureId) return null;
+            if (!optionalFeatures.Any() || !standardFeatures.Any()) return standardFeatureDataChanges;
 
             var optionalFeaturePercentageTakeRate =
                 optionalFeatures.Where(o => o.FeatureIdentifier != fromChange.FeatureIdentifier)
@@ -231,19 +235,34 @@ namespace FeatureDemandPlanning.Model
             {
                 standardFeatureVolume = (int)(_currentModelVolume * standardFeaturePercentageTakeRate);
             }
-            var standardFeatureDataChange = new DataChange(fromChange)
+
+            // Whilst an error in the OXO, we may have more than 1 standard feature in a group
+            // We need to apportion the take rate and volume between them
+            if (standardFeatures.Count() > 1)
             {
-                FeatureIdentifier = "O" + standardFeature.FeatureId,
-                Volume = standardFeatureVolume,
-                PercentageTakeRate = standardFeaturePercentageTakeRate * 100,
-                // Make sure we use the id of the standard feature item, not the original data change item
-                FdpVolumeDataItemId =
-                    standardFeature.FdpVolumeDataItemId == 0 ? (int?)null : standardFeature.FdpVolumeDataItemId,
-                Mode = _currentDataChange.Mode,
-                OriginalPercentageTakeRate = standardFeature.PercentageTakeRate,
-                OriginalVolume = standardFeature.Volume
-            };
-            return standardFeatureDataChange;
+                standardFeatureVolume = standardFeatureVolume/standardFeatures.Count();
+                standardFeaturePercentageTakeRate = standardFeaturePercentageTakeRate/standardFeatures.Count();
+            }
+
+            foreach (var standardFeature in standardFeatures)
+            {
+                var standardFeatureDataChange = new DataChange(fromChange)
+                {
+                    FeatureIdentifier = "O" + standardFeature.FeatureId,
+                    Volume = standardFeatureVolume,
+                    PercentageTakeRate = standardFeaturePercentageTakeRate*100,
+                    // Make sure we use the id of the standard feature item, not the original data change item
+                    FdpVolumeDataItemId =
+                        standardFeature.FdpVolumeDataItemId == 0 ? (int?) null : standardFeature.FdpVolumeDataItemId,
+                    Mode = _currentDataChange.Mode,
+                    OriginalPercentageTakeRate = standardFeature.PercentageTakeRate,
+                    OriginalVolume = standardFeature.Volume
+                };
+
+                standardFeatureDataChanges.Add(standardFeatureDataChange);
+            }
+
+            return standardFeatureDataChanges;
         }
         private DataChange CalculateFeatureMixChange(DataChange fromChange)
         {
@@ -315,8 +334,9 @@ namespace FeatureDemandPlanning.Model
 
             // If this is an optional feature and can have a take rate independant of the feature packs (but not less)
             // Then do not update the other features
+            // Also, if this is an uncoded feature, do not change anything else
 
-            if (!fromChange.IsFeatureChange || fromChange.IsFeaturePack || _existingFeature.IsOptionalFeatureInGroup)
+            if (!fromChange.IsFeatureChange || fromChange.IsFeaturePack || _existingFeature.IsOptionalFeatureInGroup || _existingFeature.IsUncodedFeature)
             {
                 return packChanges;
             }
@@ -343,7 +363,9 @@ namespace FeatureDemandPlanning.Model
                             d.FeatureId.GetValueOrDefault() != fromChange.GetFeatureId() &&
                             commonFeatureIdentifiers.Contains(d.FeatureId.GetValueOrDefault()) &&
                             !d.OxoCode.Contains("S") &&
-                            !d.OxoCode.Contains("NA")).ToList();
+                            !d.OxoCode.Contains("NA") &&
+                            !d.OxoCode.Contains("O") &&
+                            !d.IsUncodedFeature).ToList();
 
             // Make sure the pack itself is also in the list
             var parentPack = allPacks.First();
@@ -493,11 +515,16 @@ namespace FeatureDemandPlanning.Model
                         p.ModelId == _currentDataChange.GetModelId() &&
                         p.FeaturePackId == _currentDataChange.GetFeatureId());
 
+            // Ignore non-applicable features, standard features (these will always be 100% or 0% respectively)
+            // Also ignore optional features that can be chosen outside of the pack, the take rate is computed seperately to the pack
+            
             var packItems =
                 pack.DataItems
                     .Where(d => d.FeatureId.HasValue &&
                                 !d.OxoCode.Contains("S") &&
-                                !d.OxoCode.Contains("NA"));
+                                !d.OxoCode.Contains("NA") &&
+                                !d.OxoCode.Contains("O") &&
+                                !d.IsUncodedFeature);
 
             Parallel.ForEach(packItems,
                 () => new List<DataChange>(),
@@ -531,17 +558,19 @@ namespace FeatureDemandPlanning.Model
             if (featureMixDataChange.HasChanged)
                 childChanges.Add(featureMixDataChange);
 
-            var standardFeatureDataChange = CalculateStandardFeatureChange(fromChange);
+            var standardFeatureDataChanges = CalculateStandardFeatureChange(fromChange);
 
-            if (standardFeatureDataChange == null || !standardFeatureDataChange.HasChanged) 
-                return childChanges;
-
-            childChanges.Add(standardFeatureDataChange);
-          
-            var standardFeatureMixDataChange = CalculateFeatureMixChange(standardFeatureDataChange);
-            if (standardFeatureMixDataChange != null && standardFeatureMixDataChange.HasChanged)
+            foreach (var standardFeatureDataChange in standardFeatureDataChanges)
             {
-                childChanges.Add(standardFeatureMixDataChange);
+                if (!standardFeatureDataChange.HasChanged) continue;
+
+                childChanges.Add(standardFeatureDataChange);
+
+                var standardFeatureMixDataChange = CalculateFeatureMixChange(standardFeatureDataChange);
+                if (standardFeatureMixDataChange != null && standardFeatureMixDataChange.HasChanged)
+                {
+                    childChanges.Add(standardFeatureMixDataChange);
+                }
             }
 
             return childChanges;
@@ -585,6 +614,16 @@ namespace FeatureDemandPlanning.Model
 
             // Get the original values from raw data
             var existingDerivative = CurrentData.PowertrainDataItems.FirstOrDefault(p => p.DerivativeCode == _currentDataChange.DerivativeCode);
+
+            if (existingDerivative == null) return;
+
+            _currentDataChange.OriginalPercentageTakeRate = existingDerivative.PercentageTakeRate;
+            _currentDataChange.OriginalVolume = existingDerivative.Volume;
+            _currentDataChange.FdpPowertrainDataItemId = existingDerivative.FdpPowertrainDataItemId;
+
+            if (!_currentDataChange.HasChanged) return;
+
+
             var affectedModels = CurrentData.SummaryItems.Where(s => s.DerivativeCode == _currentDataChange.DerivativeCode).ToList();
             var unaffectedModels = CurrentData.SummaryItems.Where(s => !string.IsNullOrEmpty(s.ModelIdentifier) && s.DerivativeCode != _currentDataChange.DerivativeCode && !string.IsNullOrEmpty(s.DerivativeCode)).ToList();
 
@@ -597,15 +636,6 @@ namespace FeatureDemandPlanning.Model
             var volumePerModel = _currentDataChange.Volume / numberOfAffectedModels;
             var modelPercentageTakeRate = decimal.Divide(volumePerModel.Value, marketVolume);
             var remainder = _currentDataChange.Volume % numberOfAffectedModels;
-
-            // Get the original values
-
-            if (existingDerivative != null)
-            {
-                _currentDataChange.OriginalPercentageTakeRate = existingDerivative.PercentageTakeRate;
-                _currentDataChange.OriginalVolume = existingDerivative.Volume;
-                _currentDataChange.FdpPowertrainDataItemId = existingDerivative.FdpPowertrainDataItemId;
-            }
 
             // Update the mix for each of the models under the derivative in question
             // Split the volume and percentage take rate equally amongst all models
@@ -757,6 +787,14 @@ namespace FeatureDemandPlanning.Model
                 CurrentData.DataItems.Where(f => _currentDataChange.IsMatchingModel(f) && !f.IsNonApplicableFeatureInGroup);
             var existingModelVolumes = CurrentData.SummaryItems.Where(m => m.ModelId != _currentDataChange.GetModelId() && m.ModelId.HasValue).Sum(m => m.Volume);
 
+            if (existingModel == null) return;
+
+            _currentDataChange.OriginalPercentageTakeRate = existingModel.PercentageTakeRate;
+            _currentDataChange.OriginalVolume = existingModel.Volume;
+            _currentDataChange.FdpTakeRateSummaryId = existingModel.FdpTakeRateSummaryId;
+
+            if (!_currentDataChange.HasChanged) return;
+
             switch (_currentDataChange.Mode)
             {
                 case TakeRateResultMode.PercentageTakeRate:
@@ -771,12 +809,8 @@ namespace FeatureDemandPlanning.Model
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (existingModel != null)
-            {
-                _currentDataChange.OriginalPercentageTakeRate = existingModel.PercentageTakeRate;
-                _currentDataChange.OriginalVolume = existingModel.Volume;
-                _currentDataChange.FdpTakeRateSummaryId = existingModel.FdpTakeRateSummaryId;
-            }
+           
+            
 
             // Re-compute all affected features and feature mix
 
@@ -802,7 +836,7 @@ namespace FeatureDemandPlanning.Model
                     var existingFeatureMix =
                         CurrentData.FeatureMixItems.First(f => f.FeatureIdentifier == affectedFeature.FeatureIdentifier);
                     var featureMixVolume =
-                        CurrentData.DataItems.Where(d => d.FeatureId == _currentDataChange.GetFeatureId() &&
+                        CurrentData.DataItems.Where(d => d.FeatureId == featureDataChange.GetFeatureId() &&
                                                          d.ModelId != _currentDataChange.GetModelId()).Sum(d => d.Volume) +
                         featureDataChange.Volume;
                     var updatedMarketVolume = existingModelVolumes + _currentDataChange.Volume;

@@ -2,14 +2,14 @@
 
 var model = namespace("FeatureDemandPlanning.Volume");
 
-model.ValidationSummaryAction = function (params) {
+model.PublishAction = function (params) {
     var uid = 0;
     var privateStore = {};
     var me = this;
 
     privateStore[me.id = uid++] = {};
     privateStore[me.id].Config = params.Configuration;
-    privateStore[me.id].ActionUri = "";
+    privateStore[me.id].ActionUri = params.PublishUri;
     privateStore[me.id].Parameters = params;
 
     me.action = function () {
@@ -20,7 +20,7 @@ model.ValidationSummaryAction = function (params) {
         $.extend(actionParameters, { Comment: me.getComment() });
         return actionParameters;
     };
-    me.getChangeset = function () {
+    me.getChangeset = function() {
         return getData().Changeset;
     };
     me.getIdentifierPrefix = function () {
@@ -29,22 +29,22 @@ model.ValidationSummaryAction = function (params) {
     me.getActionUri = function () {
         return privateStore[me.id].ActionUri;
     };
+    me.getComment = function() {
+        return $("#" + me.getIdentifierPrefix() + "_Comment").val().trim();
+    };
     me.getParameters = function () {
         return privateStore[me.id].Parameters;
     };
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
-
-        $("#Modal_OK").hide();
-        $("#Modal_Cancel").html("Close");
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
         $("#Modal_Notify")
             .removeClass("alert-danger")
             .removeClass("alert-warning")
             .addClass("alert-success")
-            .html("Changes to market updated successfully")
+            .html("Take rate data published")
             .show();
         $("#Modal_OK").hide();
         $("#Modal_Cancel").html("Close");
@@ -66,12 +66,7 @@ model.ValidationSummaryAction = function (params) {
         $("#Modal_OK").unbind("click").on("click", me.action);
         $(document)
             .unbind("Success").on("Success", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnSuccessDelegate", [eventArgs]); })
-            .unbind("Error").on("Error", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); });
-
-        $(".validation-navbutton").unbind("click").on("click", function(sender, eventArgs) {
-            var target = $(this).data("target");
-            $(document).trigger("ValidationNavigation", target);
-        });
+            .unbind("Error").on("Error", function(sender, eventArgs) { $(".subscribers-notify").trigger("OnErrorDelegate", [eventArgs]); });
     };
     me.registerSubscribers = function () {
         $("#Modal_Notify")
@@ -96,7 +91,7 @@ model.ValidationSummaryAction = function (params) {
             "url": uri,
             "data": params,
             "success": function (json) {
-                $(document).trigger("Success", json);
+                $(document).trigger("Saved", json);
             },
             "error": function (jqXHR, textStatus, errorThrown) {
                 $(document).trigger("Error", jqXHR.responseJSON);

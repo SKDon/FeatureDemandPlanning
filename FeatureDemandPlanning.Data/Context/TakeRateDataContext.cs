@@ -1,5 +1,4 @@
-﻿using System;
-using FeatureDemandPlanning.Model;
+﻿using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Context;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Filters;
@@ -311,16 +310,31 @@ namespace FeatureDemandPlanning.DataStore
         {
             _takeRateDataStore.FdpValidationIgnore(takeRateFilter);
         }
+        public async Task<PagedResults<Publish>> ListPublish(TakeRateFilter filter)
+        {
+            var publish = await Task.FromResult(_takeRateDataStore.FdpPublishGetMany(filter));
+            foreach (var currentPublish in publish.CurrentPage)
+            {
+                currentPublish.Programme = _programmeDataStore.ProgrammeGet(currentPublish.ProgrammeId);
+                currentPublish.Document = _documentDataStore.OXODocGet(currentPublish.DocumentId,
+                    currentPublish.ProgrammeId);
+            }
+            return publish;
+        }
+        public async Task<Publish> GetPublish(TakeRateFilter filter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpPublishGet(filter));
+        }
+
+        public async Task<Publish> SetPublish(TakeRateFilter takeRateFilter)
+        {
+            return await Task.FromResult(_takeRateDataStore.FdpPublishSave(takeRateFilter));
+        }
 
         #endregion
 
         #region "Private Methods"
 
-        private bool IsDocumentForVehicle(OXODoc documentToCheck, IVehicle vehicle)
-        {
-            return (!vehicle.ProgrammeId.HasValue || documentToCheck.ProgrammeId == vehicle.ProgrammeId.Value) &&
-                (string.IsNullOrEmpty(vehicle.Gateway) || documentToCheck.Gateway == vehicle.Gateway);
-        }
         private bool IsFilterValidForTakeRateData(TakeRateFilter filter)
         {
             //return filter.DocumentId.HasValue && (filter.MarketId.HasValue || filter.MarketGroupId.HasValue);
@@ -337,8 +351,5 @@ namespace FeatureDemandPlanning.DataStore
         private readonly ProgrammeDataStore _programmeDataStore;
 
         #endregion
-
-
-       
     }
 }

@@ -4,16 +4,11 @@
 
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
-@section PageScripts
-{
-    @Html.Partial("_Scripts", Model)
-}
-
 @section PageContentHeader
 {
     <form>
-    <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
-</form>
+        <input id="Page_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
+    </form>
     <div id="collapseExample" class="collapse row">
         <div class="col-lg-12 inverse">
 
@@ -29,8 +24,8 @@
                                 <h5 id="lblVehicleDescription">@RenderSelectedVehicle()</h5>
 
                                 <div id="lblPageDescription" class="subscribers-notifyPageChanged">
-                                <p class="page-description">View and edit take rate data for the selected OXO document</p>
-                                    </div>
+                                    <p class="page-description">View and edit take rate data for the selected OXO document</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -40,7 +35,7 @@
             <div class="hidden-xs hidden-sm hidden-md col-lg-2 pull-right" style="padding-top: 20px">
                 <div class="panel panel-primary" style="margin-bottom: 0px; height:160px">
                     <div class="panel-heading" style="padding:3px 15px"><div class="panel-title">Key</div></div>
-                    <div class="panel-body" style="padding-top: 3px" >
+                    <div class="panel-body" style="padding-top: 3px">
 
                         <div>
 
@@ -94,7 +89,7 @@
                     </div>
                 </div>
             </div>
-            
+
         </div>
     </div>
 }
@@ -104,24 +99,55 @@
     <ul id="@(Model.IdentifierPrefix)_ContextMenu" class="dropdown-menu context-menu" role="menu" style="display:none"></ul>
     <div id="notifier" class="subscribers-notify col-lg-12" style="float:none;margin-top:5px"></div>
 
-    @Html.Partial("_Modal", Model)
+    @{
+        Html.RenderPartial("_Modal", Model);
+    }
 
-    <form method="post" id="frmContent" action="@Url.Action("VolumePage")" class="form-group-sm subscribers-notifyPageChanged">
+    <div class="panel panel-primary" style="margin-bottom:5px">
+        <div class="panel-body" style="padding-bottom: 5px;padding-top:5px">
 
-        @Html.Partial("_TakeRateData")
- 
+            <div class="viewport-toolbar col-xs-12 col-md-4">
+                <div class="btn-group pull-left">
+                    @{
+                        Html.RenderPartial("_ViewModeSelector", Model);
+                        Html.RenderPartial("_MarketSelector", Model);
+                    }
+                </div>
+
+            </div>
+            <div class="viewport-toolbar col-xs-12 col-md-8">
+                @{
+                    Html.RenderPartial("_Buttons");
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <form method="post" id="frmContent" class="form-group-sm subscribers-notifyPageChanged">
+        <div id="@(Model.IdentifierPrefix)_TakeRateDataPanel" class="panel-body subscribers-notify">
+            @{
+                Html.RenderPartial("_TakeRateData", Model);
+            }
+        </div>
     </form>
 }
 
 @helper RenderSelectedVehicle()
 {
-    if (!(Model.Document.UnderlyingOxoDocument is EmptyOxoDocument)) {
+    if (!(Model.Document.UnderlyingOxoDocument is EmptyOxoDocument))
+    {
         @Model.Document.UnderlyingOxoDocument.Name
     }
     else if (!(Model.Document.Vehicle is EmptyVehicle))
     {
         @Model.Document.Vehicle.FullDescription
     }
+}
+
+@section PageScripts
+{
+    @Html.Partial("_Scripts", Model)
 }
 
 

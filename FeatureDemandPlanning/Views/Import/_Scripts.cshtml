@@ -23,6 +23,6 @@
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 
 </script>
-@Scripts.Render("~/bundles/js/shared")
-@Scripts.Render("~/bundles/js/import")
+@Scripts.Render("~/Content/js/sharedbundle")
+@Scripts.Render("~/Content/js/importbundle")
 <script language="javascript" src="@Url.Content("~/Content/js/Import/importqueueinit.js")?v=@Model.CurrentVersion"></script>

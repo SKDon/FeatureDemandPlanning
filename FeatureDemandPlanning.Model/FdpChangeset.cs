@@ -19,6 +19,13 @@ namespace FeatureDemandPlanning.Model
         {
             Changes = new List<DataChange>();
             Reverted = new List<DataChange>();
+            ModelMix = new AllModelMix()
+            {
+                HasModelMixChanged = false,
+                HasModelVolumeChanged = false
+            };
         }
+
+        public AllModelMix ModelMix { get; set; }
     }
 }

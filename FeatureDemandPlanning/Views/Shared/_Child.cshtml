@@ -13,11 +13,11 @@
         <title>FDD</title>
     }
 
-    @Styles.Render("~/bundles/css/dataTables")
-    @Styles.Render("~/bundles/css")
+    @Styles.Render("~/Content/styles/dataTables")
+    @Styles.Render("~/Content/styles")
 
     @RenderSection("PageStyles", false)
-
+    
     <link rel="icon" type="image/x-icon" href="@Url.Content("~/favicon.ico?v=3")" />
 </head>
 <body>
@@ -83,9 +83,9 @@
     @RenderSection("PageFooter", false)
 </div>
 
-    @Scripts.Render("~/bundles/js/jquery");
-    @Scripts.Render("~/bundles/js/dataTables")
-    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/Content/js/jquery");
+    @Scripts.Render("~/Content/js/dataTables")
+    @Scripts.Render("~/Content/js/bootstrap")
     @RenderSection("PageScripts", required: false)
 </body>
 </html>

@@ -22,6 +22,6 @@
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 
 </script>
-@Scripts.Render("~/bundles/js/shared")
-@Scripts.Render("~/bundles/js/trimmapping")
+@Scripts.Render("~/Content/js/sharedbundle")
+@Scripts.Render("~/Content/js/trimmappingbundle")
 <script language="javascript" src="@Url.Content("~/Content/js/TrimMapping/init.js")?v=@Model.CurrentVersion"></script>

@@ -10,30 +10,32 @@ namespace FeatureDemandPlanning
             if (bundles == null)
                 return;
 
-            bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/jquery").Include(
                         "~/Content/js/jquery-1.12.0.js",
                         "~/Content/js/jquery.jeditable.js",
                         "~/Content/js/jquery.spin.js",
                         "~/Content/js/jquery.contextMenu.js",
-                        "~/Content/js/jcookies.js"));
+                        "~/Content/js/jcookies.js",
+                        "~/Content/js/typeahead.bundle.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/bootstrap").Include(
                 "~/Content/js/bootstrap.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/dataTables").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/dataTables").Include(
                     "~/Content/js/jquery.dataTables.js",
                     "~/Content/js/dataTables.bootstrap.js",
                     "~/Content/js/dataTables.fixedColumns.js",
                     "~/Content/js/dataTables.fixedHeader.min.js",
                     "~/Content/js/jquery.dataTables.rowGrouping.js",
-                    "~/Content/js/dataTables.responsive.js"
+                    "~/Content/js/dataTables.responsive.js",
+                    "~/Content/js/dataTables.scroller.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/bootstrapmultiselect").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/bootstrapmultiselect").Include(
                     "~/Content/js/bootstrap-multiselect.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/admin").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/adminbundle").Include(
                     "~/Content/js/Admin/admin.js",
                     "~/Content/js/Admin/enginecodemapping.js",
                     "~/Content/js/Admin/enginecodemappingpage.js",
@@ -41,14 +43,14 @@ namespace FeatureDemandPlanning
                     "~/Content/js/Admin/model.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/derivative").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/derivativebundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Derivative/delete.js",
                     "~/Content/js/Derivative/model.js",
                     "~/Content/js/Derivative/page.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/derivativemapping").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/derivativemappingbundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/DerivativeMapping/copy.js",
                     "~/Content/js/DerivativeMapping/delete.js",
@@ -58,14 +60,14 @@ namespace FeatureDemandPlanning
                     "~/Content/js/DerivativeMapping/bmcpage.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/feature").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/featurebundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Feature/delete.js",
                     "~/Content/js/Feature/model.js",
                     "~/Content/js/Feature/page.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/featuremapping").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/featuremappingbundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/FeatureMapping/copy.js",
                     "~/Content/js/FeatureMapping/delete.js",
@@ -75,14 +77,14 @@ namespace FeatureDemandPlanning
                     "~/Content/js/FeatureMapping/featurecodepage.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/ignoredexception").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/ignoredexceptionbundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/IgnoredException/delete.js",
                     "~/Content/js/IgnoredException/model.js",
                     "~/Content/js/IgnoredException/page.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/import").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/importbundle").Include(
                     "~/Content/js/Import/addderivativeaction.js",
                     "~/Content/js/Import/addfeatureaction.js",
                     "~/Content/js/Import/addtrimaction.js",
@@ -113,7 +115,7 @@ namespace FeatureDemandPlanning
                     "~/Content/js/Import/uploadaction.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/marketmapping").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/marketmappingbundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/MarketMapping/copy.js",
                     "~/Content/js/MarketMapping/delete.js",
@@ -121,13 +123,19 @@ namespace FeatureDemandPlanning
                     "~/Content/js/MarketMapping/page.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/marketreview").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/marketreviewbundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/MarketReview/model.js",
                     "~/Content/js/MarketReview/page.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/shared").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/publishbundle").Include(
+                    "~/Content/js/Shared/contextmenu.js",
+                    "~/Content/js/Publish/model.js",
+                    "~/Content/js/Publish/page.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/Content/js/sharedbundle").Include(
                     "~/Content/js/Shared/namespace.js",
                     "~/Content/js/Shared/modal.js",
                     "~/Content/js/Shared/cookie.js",
@@ -136,7 +144,7 @@ namespace FeatureDemandPlanning
                     "~/Content/js/Shared/takeratefilter.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/specialfeaturemapping").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/specialfeaturemappingbundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/SpecialFeatureMapping/copy.js",
                     "~/Content/js/SpecialFeatureMapping/delete.js",
@@ -144,14 +152,14 @@ namespace FeatureDemandPlanning
                     "~/Content/js/SpecialFeatureMapping/page.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/takerate").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/takeratebundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/TakeRate/model.js",
                     "~/Content/js/TakeRate/page.js",
                     "~/Content/js/TakeRate/clone.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/takeratedata").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/takeratedatabundle").Include(
                     "~/Content/js/TakeRateData/addnote.js",
                     "~/Content/js/TakeRateData/addnoteaction.js",
                     "~/Content/js/TakeRateData/changeset.js",
@@ -166,24 +174,26 @@ namespace FeatureDemandPlanning
                     "~/Content/js/TakeRateData/page.js",
                     "~/Content/js/TakeRateData/powertrain.js",
                     "~/Content/js/TakeRateData/powertrainaction.js",
+                    "~/Content/js/TakeRateData/publish.js",
+                    "~/Content/js/TakeRateData/publishaction.js",
                     "~/Content/js/TakeRateData/save.js",
                     "~/Content/js/TakeRateData/saveaction.js",
                     "~/Content/js/TakeRateData/validationsummary.js",
                     "~/Content/js/TakeRateData/validationsummaryaction.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/Forecast")
+            bundles.Add(new ScriptBundle("~/Content/Forecast")
                 .Include("~/Content/js/Forecast/vehicle.js",
                          "~/Content/js/Forecast/forecast.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/trim").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/trimbundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/Trim/delete.js",
                     "~/Content/js/Trim/model.js",
                     "~/Content/js/Trim/page.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/trimmapping").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/trimmappingbundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/TrimMapping/copy.js",
                     "~/Content/js/TrimMapping/delete.js",
@@ -193,7 +203,7 @@ namespace FeatureDemandPlanning
                     "~/Content/js/TrimMapping/dpckpage.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/user").Include(
+            bundles.Add(new ScriptBundle("~/Content/js/userbundle").Include(
                     "~/Content/js/Shared/contextmenu.js",
                     "~/Content/js/User/addnewuseraction.js",
                     "~/Content/js/User/disableuseraction.js",
@@ -207,7 +217,7 @@ namespace FeatureDemandPlanning
 
             var cssFixer = new CssRewriteUrlTransformFixed();
 
-            bundles.Add(new StyleBundle("~/bundles/css")
+            bundles.Add(new StyleBundle("~/Content/styles")
                 .Include("~/Content/css/bootstrap.css", cssFixer)
                 .Include("~/Content/css/responsive.bootstrap.css", cssFixer)
                 .Include("~/Content/css/site.css", cssFixer)
@@ -216,8 +226,9 @@ namespace FeatureDemandPlanning
                 .Include("~/Content/css/bootstrap-multiselect.css", cssFixer)
                 .Include("~/Content/css/jquery.spin.css", cssFixer));
 
-            bundles.Add(new StyleBundle("~/bundles/css/dataTables").Include(
+            bundles.Add(new StyleBundle("~/Content/styles/dataTables").Include(
                     "~/Content/css/dataTables.bootstrap.css",
+                    "~/Content/css/scroller.bootstrap.css",
                     "~/Content/css/responsive.dataTables.css"
                 ));
         }

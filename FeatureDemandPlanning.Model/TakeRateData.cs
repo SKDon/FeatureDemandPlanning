@@ -10,6 +10,8 @@ namespace FeatureDemandPlanning.Model
         public int TotalVolume { get; set; }
         public int FilteredVolume { get; set; }
         public decimal PercentageOfTotalVolume { get; set; }
+        public decimal ModelMix { get; set; }
+        public int ModelVolume { get; set; }
 
         public DateTime CreatedOn { get; set; }
         public string CreatedBy { get; set; }

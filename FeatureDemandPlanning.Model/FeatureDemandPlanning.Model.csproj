@@ -120,6 +120,7 @@
     <Compile Include="ConfigurationSettings.cs" />
     <Compile Include="EfgGrouping.cs" />
     <Compile Include="Empty\EmptyFdpValidation.cs" />
+    <Compile Include="Empty\EmptyPublish.cs" />
     <Compile Include="Empty\EmptyMarketReview.cs" />
     <Compile Include="Empty\EmptyRawTakeRateData.cs" />
     <Compile Include="Enumerations\EmailEvent.cs" />
@@ -136,7 +137,9 @@
     <Compile Include="Enumerations\UserRole.cs" />
     <Compile Include="FeaturePack.cs" />
     <Compile Include="Helpers\Logger.cs" />
+    <Compile Include="Publish.cs" />
     <Compile Include="MarketReview.cs" />
+    <Compile Include="ModelMix.cs" />
     <Compile Include="MultiMappedFeatureGroup.cs" />
     <Compile Include="RawFeaturePackItem.cs" />
     <Compile Include="RawPowertrainDataItem.cs" />
@@ -372,6 +375,7 @@
     <Compile Include="FdpChangesetHistory.cs" />
     <Compile Include="ViewModel\IgnoredExceptionViewModel.cs" />
     <Compile Include="ViewModel\MarketMappingViewModel.cs" />
+    <Compile Include="ViewModel\PublishViewModel.cs" />
     <Compile Include="ViewModel\MarketReviewViewModel.cs" />
     <Compile Include="ViewModel\SpecialFeatureMappingViewModel.cs" />
     <Compile Include="ViewModel\TrimMappingViewModel.cs" />

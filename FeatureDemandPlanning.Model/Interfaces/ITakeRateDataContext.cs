@@ -62,5 +62,11 @@ namespace FeatureDemandPlanning.Model.Interfaces
         void IgnoreValidationError(TakeRateFilter takeRateFilter);
 
         Task<FdpChangesetHistoryDetails> GetChangesetHistoryDetails(TakeRateFilter filter);
+
+        Task<PagedResults<Publish>> ListPublish(TakeRateFilter filter);
+
+        Task<Publish> SetPublish(TakeRateFilter takeRateFilter);
+
+        Task<Publish> GetPublish(TakeRateFilter takeRateFilter);
     }
 }

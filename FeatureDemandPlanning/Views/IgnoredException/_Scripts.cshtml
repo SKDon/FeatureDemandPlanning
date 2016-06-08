@@ -20,6 +20,6 @@
     params.Configuration = @Html.Raw(Json.Encode(Model.Configuration));
 
 </script>
-@Scripts.Render("~/bundles/js/shared")
-@Scripts.Render("~/bundles/js/ignoredexception")
+@Scripts.Render("~/Content/js/sharedbundle")
+@Scripts.Render("~/Content/js/ignoredexceptionbundle")
 <script language="javascript" src="@Url.Content("~/Content/js/IgnoredException/init.js")?v=@Model.CurrentVersion"></script>

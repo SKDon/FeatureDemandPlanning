@@ -13,6 +13,7 @@
         AllProgrammes = 8,
         Approver = 9,
         Cloner = 10,
-        CanDelete = 11
+        CanDelete = 11,
+        Publisher = 12
     }
 }

@@ -37,6 +37,17 @@
     }
 
     <td class="cross-tab-data-item @featureFixedClassName @featureClassName" data-feature="@featureIdentifier">
+        @{
+            var featureNotes = Model.Document.TakeRateData.NoteAvailability.Where(n => n.FeatureIdentifier == featureIdentifier && !n.ModelId.HasValue);
+            if (featureNotes.Any())
+            {
+                <div class="indicator comment-item pull-right" role="button" data-target="N|@marketIdentifier|@featureIdentifier" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Details...&quot for additional information"><div class="triangle2"></div></div>
+            }
+            else
+            {
+                <div class="indicator comment-item pull-right" style="display:none" role="button" data-target="N|@marketIdentifier|@featureIdentifier" data-toggle="popover" title="Notes" data-content="Notes have been added for this item. Click &quot;View Details...&quot for additional information"><div class="triangle2"></div></div>
+            }
+        }
         @(featureRow.Field<string>("BrandDescription"))
         <div style="display: none">@(featureRow.Field<string>("ExclusiveFeatureGroup"))</div>
         @if (!featureIdentifier.StartsWith("P"))
@@ -141,6 +152,21 @@
 
         </td>
     }
+    @{
+        var modelCount = Model.Document.Vehicle.AvailableModels.Count();
+        var numberToPad = 0;
+
+        if ((Model.Document.PageSize != -1 && Model.Document.PageSize != int.MaxValue && modelCount < Model.Document.PageSize) || modelCount < 10)
+        {
+            numberToPad = 10 - modelCount;
+        }
+    }
+    @for (var i = 0;
+        i < numberToPad;
+        i++)
+    {
+        <td class="cross-tab-data-item orphaned-data-item"></td>
+    }
 </tr>
 
 @helper RenderDataItem(string modelIdentifier, DataRow dataItem)
@@ -207,8 +233,10 @@
 
     var parsedFeatureApplicability = OxoHelper.ParseFeatureApplicability(featureApplicability);
 
-    // Standard and non-applicable features cannot be edited. They are either zero or set to 100% or set as a combination of options in an exclusive feature group.
-    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket) && Model.AllowEdit && parsedFeatureApplicability != "NA" && parsedFeatureApplicability != "S")
+    // Standard and non-applicable features cannot be edited. 
+    //They are either zero or set to 100% or set as a combination of options in an exclusive feature group.
+    // In addition, pack only features can now only be edited by changing the pack itself.
+    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket) && Model.AllowEdit && parsedFeatureApplicability != "NA" && parsedFeatureApplicability != "S" && parsedFeatureApplicability != "P")
     {
         @("editable")
     }
