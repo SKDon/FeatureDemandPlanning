@@ -2,23 +2,28 @@
 
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
-<form>
-    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix"/>
+
+    <input id="Action_IdentifierPrefix" type="hidden" value="@Model.IdentifierPrefix" />
     <div style="padding-top:10px">
         <div class="well">
-        <div class="form-group">
-            <label for="@(Model.IdentifierPrefix)_FilterMessage">Feature Filter:</label>
-            @if (string.IsNullOrEmpty(Model.Filter))
-            {
-                <input type="text" id="@(Model.IdentifierPrefix)_FilterMessage" class="form-control" placeholder="-- Filter Criteria --"/>
-            }
-            else
-            {
-                <input type="text" id="@(Model.IdentifierPrefix)_FilterMessage" class="form-control" placeholder="-- Filter Criteria --" value="@Model.Filter" />
-            }
-            
+            @*<div class="col-lg-8">*@
+                <div class="input-group col-lg-8">
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_ClearFilter">Clear Filter</button>
+                    </span>
+                    @if (string.IsNullOrEmpty(Model.Filter))
+                    {
+                        <input type="text" id="@(Model.IdentifierPrefix)_FilterMessage" class="form-control" placeholder="-- Filter Criteria --" />
+                    }
+                    else
+                    {
+                        <input type="text" id="@(Model.IdentifierPrefix)_FilterMessage" class="form-control" placeholder="-- Filter Criteria --" value="@Model.Filter" />
+                    }
+                    <span class="input-group-btn">
+                        <button type="button" id="@(Model.IdentifierPrefix)_FilterSearch" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-search"></span></button>
+                    </span>
+                </div>
+            </div>
         </div>
-            <button type="button" class="btn btn-default btn-sm" id="@(Model.IdentifierPrefix)_ClearFilter">Clear Search Filters</button>
-    </div>
-    </div>
-</form>
+    @*</div>*@
+

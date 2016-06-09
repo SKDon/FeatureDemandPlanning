@@ -27,6 +27,10 @@ namespace FeatureDemandPlanning.Model.Parameters
         public int? PageSize { get; set; }
         public int? PageIndex { get; set; }
 
+        public string BMC { get; set; }
+        public string DPCK { get; set; }
+        public string FeatureCode { get; set; }
+
         public TakeRateParameters()
         {
             Action = TakeRateDataItemAction.NotSet;
@@ -96,5 +100,7 @@ namespace FeatureDemandPlanning.Model.Parameters
         }
 
         public int? FdpValidationId { get; set; }
+
+
     }
 }

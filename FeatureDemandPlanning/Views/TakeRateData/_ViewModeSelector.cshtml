@@ -4,35 +4,37 @@
 
 @model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
 
-<div class="btn-group" role="group" aria-label="Take Rate Mode">
-<button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    @if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate || Model.Document.Mode == enums.TakeRateResultMode.NotSet)
-    {
-        @:Take Rate by %
-        }
-    else
-    {
-        @:Take Rate by Vol.
-    }
-    <span class="caret"></span>
-</button>
 <input type="hidden" id="@(Model.IdentifierPrefix)_Mode" value="@Model.Document.Mode"/>
-<ul class="dropdown-menu">
-    @if (!(Model.Document.Market is EmptyMarket))
-    {
-        <li>@Html.RouteLink("Take Rate by %", "TakeRateDataByMarket", new { takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id })</li>
-        <li>@Html.RouteLink("Take Rate by Vol.", "TakeRateDataByMarketRaw", new { takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id })</li>
-    }
-    else if (!(Model.Document.MarketGroup is EmptyMarketGroup))
-    {
-        <li>@Html.RouteLink("Take Rate by %", "TakeRateDataByMarketGroup", new { takeRateId = Model.Document.TakeRateId, marketGroupId = Model.Document.MarketGroup.Id })</li>
-        <li>@Html.RouteLink("Take Rate by Vol.", "TakeRateDataByMarketGroupRaw", new { takeRateId = Model.Document.TakeRateId, marketGroupId = Model.Document.MarketGroup.Id })</li>
-    }
-    else
-    {
-        <li>@Html.RouteLink("Take Rate by %", "TakeRateData", new { takeRateId = Model.Document.TakeRateId })</li>
-        <li>@Html.RouteLink("Take Rate by Vol.", "TakeRateDataRaw", new { takeRateId = Model.Document.TakeRateId })</li>
-    }
-</ul>
+@if (Model.CurrentUser.HasViewVolumesRole())
+{
+    <div class="btn-group" role="group" aria-label="Take Rate Mode">
+        <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate || Model.Document.Mode == enums.TakeRateResultMode.NotSet)
+            {
+                @:Take Rate by %
+            }
+            else
+            {
+                @:Take Rate by Vol.
+            }
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            @if (!(Model.Document.Market is EmptyMarket))
+            {
+                <li>@Html.RouteLink("Take Rate by %", "TakeRateDataByMarket", new {takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id})</li>
+                <li>@Html.RouteLink("Take Rate by Vol.", "TakeRateDataByMarketRaw", new {takeRateId = Model.Document.TakeRateId, marketId = Model.Document.Market.Id})</li>
+            }
+            else if (!(Model.Document.MarketGroup is EmptyMarketGroup))
+            {
+                <li>@Html.RouteLink("Take Rate by %", "TakeRateDataByMarketGroup", new {takeRateId = Model.Document.TakeRateId, marketGroupId = Model.Document.MarketGroup.Id})</li>
+                <li>@Html.RouteLink("Take Rate by Vol.", "TakeRateDataByMarketGroupRaw", new {takeRateId = Model.Document.TakeRateId, marketGroupId = Model.Document.MarketGroup.Id})</li>
+            }
+            else
+            {
+                <li>@Html.RouteLink("Take Rate by %", "TakeRateData", new {takeRateId = Model.Document.TakeRateId})</li>
+                <li>@Html.RouteLink("Take Rate by Vol.", "TakeRateDataRaw", new {takeRateId = Model.Document.TakeRateId})</li>
+            }
+        </ul>
     </div>
-
+}

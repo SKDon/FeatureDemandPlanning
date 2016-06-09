@@ -2,6 +2,7 @@
 using FeatureDemandPlanning.Model.Filters;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Data;
 
 namespace FeatureDemandPlanning.Model.Interfaces
 {
@@ -68,5 +69,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<Publish> SetPublish(TakeRateFilter takeRateFilter);
 
         Task<Publish> GetPublish(TakeRateFilter takeRateFilter);
+
+        Task<DataTable> GetChangesetHistoryDetailsAsDataTable(TakeRateFilter filter);
     }
 }

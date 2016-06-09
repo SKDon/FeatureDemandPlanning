@@ -141,6 +141,11 @@ namespace FeatureDemandPlanning.DataStore
                         cmd.Parameters.Add(new SqlParameter("@ShowPercentage", SqlDbType.Bit) { Value = true });
                     }
 
+                    if (!string.IsNullOrEmpty(filter.FeatureCode))
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@FeatureCode", SqlDbType.NVarChar, 5) { Value = filter.FeatureCode });
+                    }
+
                     var adapter = new SqlDataAdapter((SqlCommand)cmd);
                     var ds = new DataSet();
                     adapter.Fill(ds);
@@ -1531,6 +1536,41 @@ namespace FeatureDemandPlanning.DataStore
                     para.Add("@FdpChangesetId", filter.ChangesetId, DbType.Int32);
 
                     retVal.HistoryDetails = conn.Query<FdpChangesetHistoryItemDetails>("dbo.Fdp_ChangesetDetails_GetMany", para, commandType: CommandType.StoredProcedure);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public DataTable FdpTakeRateHistoryDetailsGetAsDataTable(TakeRateFilter filter)
+        {
+            DataTable retVal;
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var cmd = conn.CreateCommand();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = "Fdp_ChangesetDetails_GetMany";
+                    cmd.CommandTimeout = 0;
+
+                    if (filter.TakeRateId.HasValue)
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@FdpChangesetId", SqlDbType.Int)
+                        {
+                            Value = filter.ChangesetId
+                        });
+                    }
+
+                    var adapter = new SqlDataAdapter((SqlCommand)cmd);
+                    var ds = new DataSet();
+                    adapter.Fill(ds);
+
+                    retVal = ds.Tables[0];
                 }
                 catch (Exception ex)
                 {

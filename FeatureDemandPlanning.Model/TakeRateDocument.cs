@@ -22,6 +22,8 @@ namespace FeatureDemandPlanning.Model
         public int TotalPages { get; set; }
         public int TotalRecords { get; set; }
         public int TotalDisplayRecords { get; set; }
+        public string BMC { get; set; }
+        public string DPCK { get; set; }
 
         public TakeRateDocument()
         {
@@ -59,9 +61,26 @@ namespace FeatureDemandPlanning.Model
                 volume.Market = new Market() { Id = filter.MarketId.Value };
             }
 
+            if (!string.IsNullOrEmpty(filter.BMC))
+            {
+                volume.BMC = filter.BMC;
+            }
+
+            if (!string.IsNullOrEmpty(filter.DPCK))
+            {
+                volume.DPCK = filter.DPCK;
+            }
+
+            if (!string.IsNullOrEmpty(filter.FeatureCode))
+            {
+                volume.FeatureCode = filter.FeatureCode;
+            }
+
             volume.Mode = filter.Mode;
 
             return volume;
         }
+
+        public string FeatureCode { get; set; }
     }
 }

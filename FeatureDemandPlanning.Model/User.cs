@@ -54,6 +54,10 @@ namespace FeatureDemandPlanning.Model
         {
             return Roles.Any(r => r == UserRole.AllMarkets);
         }
+        public bool HasViewVolumesRole()
+        {
+            return Roles.Any(r => r == UserRole.CanViewVolumes);
+        }
         public bool IsMarketEditable(int marketId)
         {
             return Markets.Any(m => m.Action == UserAction.Edit && m.MarketId == marketId) ||

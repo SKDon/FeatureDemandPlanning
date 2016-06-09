@@ -96,41 +96,42 @@
 
 @section PageBody
 {
-    <ul id="@(Model.IdentifierPrefix)_ContextMenu" class="dropdown-menu context-menu" role="menu" style="display:none"></ul>
-    <div id="notifier" class="subscribers-notify col-lg-12" style="float:none;margin-top:5px"></div>
+    <form method="post" id="frmContent" class="form-group-sm subscribers-notifyPageChanged" onsubmit="return false">
+        
+        <ul id="@(Model.IdentifierPrefix)_ContextMenu" class="dropdown-menu context-menu" role="menu" style="display: none"></ul>
+        <div id="notifier" class="subscribers-notify col-lg-12" style="float: none; margin-top: 5px"></div>
 
-    @{
-        Html.RenderPartial("_Modal", Model);
-    }
+        @{
+            Html.RenderPartial("_Modal", Model);
+        }
 
-    <div class="panel panel-primary" style="margin-bottom:5px">
-        <div class="panel-body" style="padding-bottom: 5px;padding-top:5px">
+        <div class="panel panel-primary" style="margin-bottom: 5px">
+            <div class="panel-body" style="padding-bottom: 5px; padding-top: 5px">
 
-            <div class="viewport-toolbar col-xs-12 col-md-4">
-                <div class="btn-group pull-left">
+                <div class="viewport-toolbar col-xs-12 col-md-4">
+                    <div class="btn-group pull-left">
+                        @{
+                            Html.RenderPartial("_ViewModeSelector", Model);
+                            Html.RenderPartial("_MarketSelector", Model);
+                        }
+                    </div>
+
+                </div>
+                <div class="viewport-toolbar col-xs-12 col-md-8">
                     @{
-                        Html.RenderPartial("_ViewModeSelector", Model);
-                        Html.RenderPartial("_MarketSelector", Model);
+                        Html.RenderPartial("_Buttons");
                     }
                 </div>
-
-            </div>
-            <div class="viewport-toolbar col-xs-12 col-md-8">
-                @{
-                    Html.RenderPartial("_Buttons");
-                }
             </div>
         </div>
-    </div>
 
-
-    <form method="post" id="frmContent" class="form-group-sm subscribers-notifyPageChanged">
         <div id="@(Model.IdentifierPrefix)_TakeRateDataPanel" class="panel-body subscribers-notify">
             @{
                 Html.RenderPartial("_TakeRateData", Model);
             }
         </div>
     </form>
+
 }
 
 @helper RenderSelectedVehicle()

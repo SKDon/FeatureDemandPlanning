@@ -41,7 +41,7 @@ model.FilterAction = function(params) {
     me.registerEvents = function() {
         $("#Modal_OK").unbind("click").on("click", me.action);
 
-        $("#" + me.getIdentifierPrefix() + "_FilterMessage").on("keyup", function() {
+        $("#" + me.getIdentifierPrefix() + "_FilterSearch").on("click", function() {
             var value = $("#" + me.getIdentifierPrefix() + "_FilterMessage").val();
             if (value.length === 0 || value.length >= 3) {
                 $(document).trigger("Filtered", me.getActionParameters());

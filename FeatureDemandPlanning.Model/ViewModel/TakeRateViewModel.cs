@@ -876,7 +876,10 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 Gateway = forVolume.UnderlyingOxoDocument.Gateway, 
                 DocumentId = forVolume.UnderlyingOxoDocument.Id,
                 PageSize = forVolume.PageSize,
-                PageIndex = forVolume.PageIndex
+                PageIndex = forVolume.PageIndex,
+                BMC = forVolume.BMC,
+                DPCK= forVolume.DPCK,
+                FeatureCode = forVolume.FeatureCode
             };
 
             if (!(forVolume.Market is EmptyMarket))
@@ -884,20 +887,6 @@ namespace FeatureDemandPlanning.Model.ViewModel
                 filter.MarketId = forVolume.Market.Id;
             }
             filteredModels = (await context.Market.ListAvailableModelsByMarket(filter));
-            //if (!(forVolume.Market is EmptyMarket))
-            //{
-            //    filter.MarketId = forVolume.Market.Id;
-            //    filteredModels = (await context.Market.ListAvailableModelsByMarket(filter)).Where(m => m.Available);
-            //}
-            //else if (!(forVolume.MarketGroup is EmptyMarketGroup))
-            //{
-            //    filter.MarketGroupId = forVolume.MarketGroup.Id;
-            //    filteredModels = (await context.Market.ListAvailableModelsByMarketGroup(filter)).Where(m => m.Available);
-            //}
-            //else
-            //{
-            //    filteredModels = forVolume.Vehicle.AvailableModels;
-            //}
 
             // Bit of a hack here. We have introduced model level paging and the easiest way to return the page values is in the original filter object
 

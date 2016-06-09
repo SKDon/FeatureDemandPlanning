@@ -23,6 +23,9 @@ namespace FeatureDemandPlanning.Model.Filters
         public int? FeaturePackId { get; set; }
         public MarketReviewStatus MarketReviewStatus { get; set; }
         public string Filter { get; set; }
+        public string BMC { get; set; }
+        public string DPCK { get; set; }
+        public string FeatureCode { get; set; }
 
         // For updating take rate and volume for summary items
         public int? NewTakeRate { get; set; }
@@ -69,6 +72,7 @@ namespace FeatureDemandPlanning.Model.Filters
                 filter.Models = takeRateViewModel.Document.Vehicle.AvailableModels;
 
             filter.Mode = takeRateViewModel.Document.Mode;
+            filter.FeatureCode = takeRateViewModel.Document.FeatureCode;
 
             return filter;
         }
@@ -97,7 +101,10 @@ namespace FeatureDemandPlanning.Model.Filters
                 PageSize = parameters.PageSize,
                 PageIndex = parameters.PageIndex,
                 FdpValidationId = parameters.FdpValidationId,
-                ChangesetId = parameters.ChangesetId
+                ChangesetId = parameters.ChangesetId,
+                BMC = parameters.BMC,
+                DPCK = parameters.DPCK,
+                FeatureCode = parameters.FeatureCode
             };
 
             if (!string.IsNullOrEmpty(parameters.ModelIdentifier))

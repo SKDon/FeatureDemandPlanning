@@ -35,7 +35,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var item in Model.History.History)
+        @foreach (var item in Model.History.History.OrderBy(h => h.UpdatedOn))
         {
             var index = 0;
             <tr>
@@ -43,10 +43,17 @@
                 <td class="@RenderSavedClass(item)">@item.UpdatedBy</td>
                 <td class="@RenderSavedClass(item)">@item.Market</td>
                 <td class="@RenderSavedClass(item)">@item.Comment</td>
-                <td>
+                <td class="text-center">
                     @if (item.FdpChangesetId.HasValue)
                     {
                         <button id="@(Model.IdentifierPrefix)_History_@(index++)" class="btn btn-sm btn-default changeset-history-details" data-target="@item.FdpChangesetId">...</button>
+                        <a class="btn btn-default btn-sm" target="_blank" href="@Url.Action("ExportChangeDetails", "TakeRateData", new
+                                                 {
+                                                     Model.Document.TakeRateId,
+                                                     ChangesetId = item.FdpChangesetId
+                                                 })">
+                            <span class="glyphicon glyphicon-export"></span>
+                        </a>
                     }
                 </td>
             </tr>

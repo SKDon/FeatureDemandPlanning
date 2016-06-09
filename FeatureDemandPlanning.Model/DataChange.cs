@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Enumerations;
 
@@ -152,6 +153,10 @@ namespace FeatureDemandPlanning.Model
         {
             get { return !string.IsNullOrEmpty(DerivativeCode) && !IsNote; }
         }
+        public bool Is100PercentChange
+        {
+            get { return Mode == TakeRateResultMode.PercentageTakeRate && PercentageTakeRate == 1; }   
+        }
         public TakeRateDataItem ToDataItem()
         {
             if (IsPowertrainChange)
@@ -224,9 +229,11 @@ namespace FeatureDemandPlanning.Model
         {
             get
             {
-                return ((Mode == TakeRateResultMode.PercentageTakeRate &&
-                         OriginalPercentageTakeRate != PercentageTakeRateAsFraction.GetValueOrDefault()) ||
-                        Mode == TakeRateResultMode.Raw && OriginalVolume != Volume.GetValueOrDefault());
+                var roundedOriginalPercentage = Math.Round(OriginalPercentageTakeRate, 4);
+                var roundedNewPercentage = Math.Round(PercentageTakeRateAsFraction.GetValueOrDefault(), 4);
+
+                return roundedOriginalPercentage != roundedNewPercentage ||
+                        OriginalVolume != Volume.GetValueOrDefault();
             }
         }
     }

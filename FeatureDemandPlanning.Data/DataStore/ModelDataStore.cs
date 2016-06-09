@@ -30,6 +30,8 @@ namespace FeatureDemandPlanning.DataStore
 
                     para.Add("@FdpVolumeHeaderId", filter.TakeRateId, DbType.Int32);
                     para.Add("@MarketId", filter.MarketId, DbType.Int32);
+                    para.Add("@BMC", filter.BMC, DbType.String);
+                    para.Add("@DPCK", filter.DPCK, DbType.String);
                     para.Add("@PageIndex", filter.PageIndex, DbType.Int32);
                     para.Add("@PageSize", filter.PageSize, DbType.Int32);
 

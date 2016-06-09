@@ -356,6 +356,7 @@ USING (VALUES
 	, (10, N'Cloner', N'User can clone take rate data into other take rate documents')
 	, (11, N'CanDelete', N'User can delete imported take rate files')
 	, (12, N'Publisher', N'User can publish take rate files')
+	, (13, N'CanViewVolumes', N'User can view volume information for take rate files')
 )
 AS SOURCE (FdpUserRoleId, [Role], [Description]) ON TARGET.FdpUserRoleId = SOURCE.FdpUserRoleId
 WHEN MATCHED THEN

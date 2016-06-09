@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
+using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
@@ -20,13 +23,13 @@ namespace FeatureDemandPlanning.Model
             _dataContext = context;
             _filter = TakeRateFilter.FromTakeRateParameters(forParameters);
 
-            CurrentData = _dataContext.TakeRate.GetRawData(_filter).Result;
+            
             CurrentChangeSet = forParameters.Changeset;
-            if (CurrentChangeSet == null)
+            if (CurrentChangeSet == null || CurrentChangeSet is EmptyFdpChangeset)
             {
                 return;
             }
-
+            CurrentData = _dataContext.TakeRate.GetRawData(_filter).Result;
             _currentDataChange = CurrentChangeSet.Changes.First();
             InitialiseDataForChange();
         }
@@ -56,6 +59,23 @@ namespace FeatureDemandPlanning.Model
             
             RemoveUnchangedItemsFromChangeset();
             UpdateDataFromChangeset();
+        }
+        public XLWorkbook ExportChangeset()
+        {
+            var changes = _dataContext.TakeRate.GetChangesetHistoryDetailsAsDataTable(_filter).Result;
+
+            var dv = changes.DefaultView;
+            dv.Sort = "UpdatedOn";
+            changes = dv.ToTable();
+
+            var wb = new XLWorkbook();
+            wb.Worksheets.Add(changes);
+            wb.Worksheets.First().Column(5).CellsUsed().Style.NumberFormat.NumberFormatId = 10;
+            wb.Worksheets.First().Column(6).CellsUsed().Style.NumberFormat.NumberFormatId = 10;
+            wb.Worksheets.First().Column(7).CellsUsed().Style.NumberFormat.NumberFormatId = 3;
+            wb.Worksheets.First().Column(8).CellsUsed().Style.NumberFormat.NumberFormatId = 3;
+
+            return wb;
         }
         public void SaveChangeset()
         {
@@ -233,14 +253,14 @@ namespace FeatureDemandPlanning.Model
             }
             else if (standardFeaturePercentageTakeRate > 0)
             {
-                standardFeatureVolume = (int)(_currentModelVolume * standardFeaturePercentageTakeRate);
+                standardFeatureVolume = (int)Math.Round(_currentModelVolume * standardFeaturePercentageTakeRate);
             }
 
             // Whilst an error in the OXO, we may have more than 1 standard feature in a group
             // We need to apportion the take rate and volume between them
             if (standardFeatures.Count() > 1)
             {
-                standardFeatureVolume = standardFeatureVolume/standardFeatures.Count();
+                standardFeatureVolume = (int)Math.Round(standardFeatureVolume/(decimal)standardFeatures.Count());
                 standardFeaturePercentageTakeRate = standardFeaturePercentageTakeRate/standardFeatures.Count();
             }
 
@@ -290,8 +310,17 @@ namespace FeatureDemandPlanning.Model
             }
 
             if (featureMixPercentageTakeRate > 0)
-                featureMixVolume = (int)(_currentModelVolumes * featureMixPercentageTakeRate);
-            
+            {
+                if (featureMixPercentageTakeRate == 1)
+                {
+                    featureMixVolume = _currentModelVolumes;
+                }
+                else
+                {
+                    featureMixVolume = (int)Math.Round(_currentModelVolumes * featureMixPercentageTakeRate);
+                }
+            }
+
             var featureMixDataChange = new DataChange(fromChange)
             {
                 PercentageTakeRate = featureMixPercentageTakeRate * 100,
@@ -370,7 +399,7 @@ namespace FeatureDemandPlanning.Model
             // Make sure the pack itself is also in the list
             var parentPack = allPacks.First();
             var packFeature =
-                CurrentData.DataItems.FirstOrDefault(p => !p.FeatureId.HasValue && p.FeaturePackId == parentPack.FeaturePackId);
+                CurrentData.DataItems.FirstOrDefault(p => !p.FeatureId.HasValue && p.FeaturePackId == parentPack.FeaturePackId && p.ModelId == fromChange.GetModelId());
 
             commonFeatures.Add(packFeature);
 
@@ -582,8 +611,15 @@ namespace FeatureDemandPlanning.Model
             switch (fromChange.Mode)
             {
                 case TakeRateResultMode.PercentageTakeRate:
-                    fromChange.Volume =
-                        (int)(_currentModelVolume * decimal.Divide(fromChange.PercentageTakeRate.GetValueOrDefault(), 100));
+                    if (fromChange.Is100PercentChange)
+                    {
+                        fromChange.Volume = _currentModelVolume;
+                    }
+                    else
+                    {
+                        fromChange.Volume =
+                        (int)Math.Round(_currentModelVolume * fromChange.PercentageTakeRateAsFraction.GetValueOrDefault());
+                    }
                     break;
                 case TakeRateResultMode.Raw:
                     fromChange.PercentageTakeRate = (fromChange.Volume / (decimal)_currentModelVolume) * 100;
@@ -627,7 +663,7 @@ namespace FeatureDemandPlanning.Model
             var affectedModels = CurrentData.SummaryItems.Where(s => s.DerivativeCode == _currentDataChange.DerivativeCode).ToList();
             var unaffectedModels = CurrentData.SummaryItems.Where(s => !string.IsNullOrEmpty(s.ModelIdentifier) && s.DerivativeCode != _currentDataChange.DerivativeCode && !string.IsNullOrEmpty(s.DerivativeCode)).ToList();
 
-            _currentDataChange.Volume = (int)(marketVolume * decimal.Divide(_currentDataChange.PercentageTakeRate.GetValueOrDefault(), 100));
+            _currentDataChange.Volume = (int)Math.Round(marketVolume * _currentDataChange.PercentageTakeRateAsFraction.GetValueOrDefault());
 
             var modelVolume = unaffectedModels.Select(m => m.Volume).Sum() + _currentDataChange.Volume.GetValueOrDefault();
 
@@ -697,7 +733,7 @@ namespace FeatureDemandPlanning.Model
 
                     var featureDataChange = new DataChange(_currentDataChange)
                     {
-                        Volume = (int)(modelDataChange.Volume * affectedFeature.PercentageTakeRate),
+                        Volume = (int)Math.Round(modelDataChange.Volume.GetValueOrDefault() * affectedFeature.PercentageTakeRate),
                         PercentageTakeRate = affectedFeature.PercentageTakeRate * 100,
                         FdpVolumeDataItemId = affectedFeature.FdpVolumeDataItemId,
                         OriginalVolume = affectedFeature.Volume,
@@ -798,7 +834,15 @@ namespace FeatureDemandPlanning.Model
             switch (_currentDataChange.Mode)
             {
                 case TakeRateResultMode.PercentageTakeRate:
-                    _currentDataChange.Volume = (int)(marketVolume * decimal.Divide(_currentDataChange.PercentageTakeRate.GetValueOrDefault(), 100));
+                    if (_currentDataChange.Is100PercentChange)
+                    {
+                        _currentDataChange.Volume = marketVolume;
+                    }
+                    else
+                    {
+                        _currentDataChange.Volume = (int)Math.Round(marketVolume * decimal.Divide(_currentDataChange.PercentageTakeRate.GetValueOrDefault(), 100));
+                    }
+                    
                     break;
                 case TakeRateResultMode.Raw:
                     _currentDataChange.PercentageTakeRate = (_currentDataChange.Volume / (decimal)marketVolume) * 100;
@@ -809,9 +853,6 @@ namespace FeatureDemandPlanning.Model
                     throw new ArgumentOutOfRangeException();
             }
 
-           
-            
-
             // Re-compute all affected features and feature mix
 
             Parallel.ForEach(affectedFeatures,
@@ -820,7 +861,7 @@ namespace FeatureDemandPlanning.Model
                 {
                     var featureDataChange = new DataChange(_currentDataChange)
                     {
-                        Volume = (int)(_currentDataChange.Volume * affectedFeature.PercentageTakeRate),
+                        Volume = (int)Math.Round(_currentDataChange.Volume.GetValueOrDefault() * affectedFeature.PercentageTakeRate),
                         PercentageTakeRate = affectedFeature.PercentageTakeRate * 100,
                         FdpVolumeDataItemId = affectedFeature.FdpVolumeDataItemId,
                         OriginalVolume = affectedFeature.Volume,

@@ -93,7 +93,7 @@ model.Change = function (marketIdentifier,
     };
     me.isValid = function () {
         return (me.getChangedTakeRate() == null || (me.getChangedTakeRate() >= 0 && me.getChangedTakeRate() <= 100)) &&
-            (me.getChangedVolume() == null || me.getChangedVolume() >= 0)
+        (me.getChangedVolume() == null || me.getChangedVolume() >= 0);
     }
     me.isChanged = function () {
         return me.getOriginalTakeRate() != me.getChangedTakeRate() || 

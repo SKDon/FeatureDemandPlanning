@@ -11,6 +11,7 @@ using MvcSiteMapProvider.Web.Mvc.Filters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Web.Helpers;
 using FeatureDemandPlanning.Model;
@@ -38,11 +39,6 @@ namespace FeatureDemandPlanning.Controllers
         [SiteMapTitle("DocumentName")]
         public ActionResult TakeRateDataPage(TakeRateParameters parameters)
         {
-            Log.Debug(MethodBase.GetCurrentMethod().Name);
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
             var filter = TakeRateFilter.FromTakeRateParameters(parameters);
             filter.Action = TakeRateDataItemAction.TakeRateDataHeader;
             var model = TakeRateViewModel.GetModel(DataContext, filter).Result;
@@ -51,9 +47,6 @@ namespace FeatureDemandPlanning.Controllers
             ViewBag.Title = string.Format("{0} - {1} ({2}) - {3}", model.Document.Vehicle.Code,
                 model.Document.Vehicle.ModelYear, model.Document.UnderlyingOxoDocument.Gateway,
                 model.Document.TakeRateSummary.First().Version);
-
-            stopwatch.Stop();
-            Log.Debug(string.Format("TakeRateDataPage: {0} ms", stopwatch.ElapsedMilliseconds));
 
             return View("TakeRateDataPage", model);
         }
@@ -192,6 +185,27 @@ namespace FeatureDemandPlanning.Controllers
             takeRateView.HistoryDetails = await DataContext.TakeRate.GetChangesetHistoryDetails(filter);
 
             return PartialView("_ChangesetHistoryDetails", takeRateView);
+        }
+
+        public void ExportChangeDetails(TakeRateParameters parameters)
+        {
+            TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);
+
+            var business = new TakeRateBusiness(DataContext, parameters);
+            var exportData = business.ExportChangeset();
+
+            Response.ClearContent();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment; filename=ChangeHistory.xlsx");
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+            using (var stream = new MemoryStream())
+            {
+                exportData.SaveAs(stream);
+                stream.WriteTo(Response.OutputStream);
+                Response.Flush();
+                Response.End();
+            }        
         }
 
 	    [HandleErrorWithJson]

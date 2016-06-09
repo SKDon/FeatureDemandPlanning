@@ -14,6 +14,7 @@
         Approver = 9,
         Cloner = 10,
         CanDelete = 11,
-        Publisher = 12
+        Publisher = 12,
+        CanViewVolumes = 13
     }
 }

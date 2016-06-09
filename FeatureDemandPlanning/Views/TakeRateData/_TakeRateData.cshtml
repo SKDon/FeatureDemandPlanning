@@ -97,11 +97,16 @@
                         </div>
                     }
                         }
-
-                        @foreach (string namePart in availableModel.NameWithBR.Split('#'))
-                        {
-                            @namePart<br />
-                        }
+                        <a href="@Url.RouteUrl("TakeRateDataByMarket", new
+                                 {
+                                     Model.Document.TakeRateId,
+                                     marketId = Model.Document.Market.Id,
+                                     availableModel.DPCK
+                                 })">@foreach (string namePart in availableModel.NameWithBR.Split('#'))
+                                 {
+                                    @namePart<br />
+                                 }</a>
+                        
                     </th>
                 }
                 @for (var i = 0; i < numberToPad; i++)
@@ -110,7 +115,11 @@
                 }
             </tr>
             <tr class="cross-tab-header" style="height: 27px;">
-                <th colspan="4" class="text-right bmc">BMC</th>
+                <th colspan="4" class="text-right bmc">@Html.RouteLink("BMC", "TakeRateDataByMarket", new
+                                  {
+                                      Model.Document.TakeRateId,
+                                      marketId = Model.Document.Market.Id
+                                  })</th>
                 @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
                 {
                     var modelClassName = string.Empty;
@@ -121,7 +130,12 @@
                     <th class="text-center bmc @modelClassName" data-model="@availableModel.StringIdentifier">
                         @if (!string.IsNullOrEmpty(availableModel.BMC))
                         {
-                            <span>@availableModel.BMC</span>
+                            <span>@Html.RouteLink(availableModel.BMC, "TakeRateDataByMarket", new
+                                  {
+                                      Model.Document.TakeRateId,
+                                      marketId = Model.Document.Market.Id,
+                                      availableModel.BMC
+                                  })</span>
                         }
                         else
                         {

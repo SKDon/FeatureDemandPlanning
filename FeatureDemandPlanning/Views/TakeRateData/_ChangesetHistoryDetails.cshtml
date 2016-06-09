@@ -21,33 +21,34 @@
 }
 @if (Model.HistoryDetails.HistoryDetails.Any())
 {
-    <table class="table dataTable table-bordered table-condensed table-responsive" style="font-size:11px">
-        <thead>
-        <tr>
-            <th>Updated On</th>
-            <th>Updated By</th>
-            <th>Change</th>
-            <th>Old Value</th>
-            <th>New Value</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in Model.HistoryDetails.HistoryDetails)
-        {
+    <div style="height: 400px; overflow: scroll; overflow-x: hidden">
+        <table class="table dataTable table-bordered table-condensed table-responsive" style="font-size: 11px">
+            <thead>
             <tr>
-                <td>@item.UpdatedOn.ToString("dd/MM/yyyy HH:mm")</td>
-                <td>@item.UpdatedBy</td>
-                <td>@item.Change</td>
-                <td>
-                    @(item.IsPercentageUpdate ? item.OldPercentageTakeRate.ToString("P2") : item.OldVolume.ToString("N"))
-                </td>
-                <td>
-                    @(item.IsPercentageUpdate ? item.NewPercentageTakeRate.ToString("P2") : item.NewVolume.ToString("N"))
-                </td>
+                <th>Updated On</th>
+                <th>Updated By</th>
+                <th>Change</th>
+                <th>Old Value</th>
+                <th>New Value</th>
             </tr>
-        }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.HistoryDetails.HistoryDetails.OrderBy(h => h.UpdatedOn))
+            {
+                <tr>
+                    <td>@item.UpdatedOn.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@item.UpdatedBy</td>
+                    <td>@item.Change</td>
+                    <td>
+                        @(item.IsPercentageUpdate ? item.OldPercentageTakeRate.ToString("P2") : item.OldVolume.ToString("N"))
+                    </td>
+                    <td>
+                        @(item.IsPercentageUpdate ? item.NewPercentageTakeRate.ToString("P2") : item.NewVolume.ToString("N"))
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
 }
-
-

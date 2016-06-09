@@ -533,6 +533,8 @@ model.Page = function (models) {
         }
         //else if (eventArgs.isChanged())
         //{
+
+        if (eventArgs.isValid()) {
             changeSet.addChange(eventArgs);
             //editedCell.addClass("edited");
             //editedRow.find(".changed-indicator").show();
@@ -541,7 +543,9 @@ model.Page = function (models) {
             // recalculation necessary
 
             $(document).trigger("Save");
-        //}
+        } else {
+            me.hideSpinner();
+        }
     };
     me.onSaveEventHandler = function () {
         privateStore[me.id].InEdit = true;
@@ -1415,6 +1419,16 @@ model.Page = function (models) {
                 $(nGroup).on("click", function() {
                     var clickedGroup = $(this).attr("data-toggle");
                     $("tbody tr[data-group='" + clickedGroup + "']").toggle();
+
+                    var frozenRows = $("tbody tr[data-toggle='" + clickedGroup + "']");
+                    frozenRows.each(function () {
+                        var r = $(this);
+                        if (r.is(":visible")) {
+                            r.find("span").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+                        } else {
+                            r.find("span").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+                        }
+                    });
                 });
 
                 /* Cell to insert into the frozen columns */
