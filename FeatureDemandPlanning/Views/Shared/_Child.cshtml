@@ -54,10 +54,22 @@
                     </li>
                 </ul>
                 <div class="pull-left breadcrumb">
-                    @Html.MvcSiteMap().SiteMapPath()
+                    
+
+                    @if (!string.IsNullOrEmpty(ViewBag.DocumentName))
+                    {
+                        // Sitemap simply does not want to work with the take rate routing, therefore construct the breadcrumb bar manually
+                        @Html.ActionLink("Home", "Index", "Home") 
+                        @:>
+                        @ViewBag.DocumentName
+                    }
+                    else
+                    {
+                        @Html.MvcSiteMap().SiteMapPath()
+                    }
                 </div>
 
-                <div class="nav navbar-nav navbar-right" style="position:relative;width:230px;height:60px;">
+                <div class="nav navbar-nav navbar-right hidden-sm" style="position:relative;width:230px;height:60px;">
                     <img class="navbar-right" src="~/Content/Images/Brand/jag_logo_transparent.png" style="position:absolute;left:0;bottom:0;" />
                     <img class="navbar-right" src="~/Content/Images/Brand/lr_logo_v2_transparent.png" style="position:absolute;left:108px;bottom:0;" />
                 </div>

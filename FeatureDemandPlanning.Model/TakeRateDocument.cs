@@ -82,5 +82,8 @@ namespace FeatureDemandPlanning.Model
         }
 
         public string FeatureCode { get; set; }
+
+        public bool ShowCombinedPackOptions { get; set; }
+        public bool ExcludeOptionalPackItems { get; set; }
     }
 }

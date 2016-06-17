@@ -69,6 +69,9 @@ model.Page = function (models) {
         me.initialiseControls();
         me.configureChangeset();
         me.configureDataTables();
+        //me.loadModelData();
+        //me.loadFeatureData();
+        //me.loadFeatureApplicabilityData();
         me.loadChangeset();
         me.loadValidation();
     };
@@ -281,7 +284,7 @@ model.Page = function (models) {
         $("#" + prefix + "_Filter").unbind("click").on("click", function (sender, eventArgs) { $(".subscribers-notify").trigger("OnFilterDelegate", [eventArgs]); });
         $(".update-filtered-volume").unbind("click").on("click", function (sender, eventArgs) { me.raiseFilteredVolumeChanged(); });
         $(".efg-item").unbind("click").on("click", function (sender, eventArgs) { $(this).popover("hide"); me.filterItem(this); });
-        $("a").unbind("click").on("click", function(sender, eventArgs) { me.showSpinner("Loading"); });
+        $("a").not("#" + prefix + "_ExportPricing, #" + prefix + "_ExportCPAT").unbind("click").on("click", function(sender, eventArgs) { me.showSpinner("Loading"); });
     };
     me.registerSubscribers = function () {
         var prefix = me.getIdentifierPrefix();
@@ -353,7 +356,7 @@ model.Page = function (models) {
             onblur: "submit"
         });
     };
-    me.configureRowHighlight = function() {
+    me.configureRowHighlight = function () {
         $(document).on({
             mouseenter: function() {
                 if (me.isGroup(this)) {
@@ -362,16 +365,16 @@ model.Page = function (models) {
                 var selector = $("table.dataTable");
                 var rowIndex = $(this).closest("tr").index() + 3; // Add +3 as we need to exclude the additional header rows
                 var columnIndex = $(this).index();
-               
+
                 var modelIdentifier = $(this).attr("data-model");
-                
+
                 // Highlight the cell itself and any previous siblings
                 selector.find("tr:eq(" + rowIndex + ") td:lt(" + (columnIndex + 1) + "),td[class='cross-tab-fixed']").addClass("highlight");
 
                 // Highlight the cells in the same column with a row index <= the current index
                 selector.find("tr:lt(" + (rowIndex + 1) + ") td[data-model='" + modelIdentifier + "'], th[data-model='" + modelIdentifier + "']").addClass("highlight");
             },
-            mouseleave: function () {
+            mouseleave: function() {
                 var selector = $("table.dataTable");
                 selector.find("tbody tr td").removeClass("highlight");
                 selector.find("thead tr th").removeClass("highlight");
@@ -572,6 +575,15 @@ model.Page = function (models) {
     me.loadChangeset = function () {
         getTakeRateDataModel().loadChangeset(me.loadChangesetCallback);
     };
+    me.loadFeatureData = function() {
+        getTakeRateDataModel().loadFeatureData(me.loadFeatureDataCallback);
+    };
+    me.loadFeatureApplicabilityData = function () {
+        getTakeRateDataModel().loadFeatureApplicabilityData(me.loadFeatureApplicabilityDataCallback);
+    };
+    me.loadModelData = function() {
+        getTakeRateDataModel().loadModelData(me.loadModelDataCallback);
+    };
     me.loadValidation = function() {
         getTakeRateDataModel().loadValidation(me.loadValidationCallback);
     };
@@ -585,6 +597,7 @@ model.Page = function (models) {
             $("#" + prefix + "_Validation").prop("disabled", false).addClass("validation-error");
             $("#" + prefix + "_Save").prop("disabled", true);
             $("#" + prefix + "_Publish").prop("disabled", true);
+            $("#" + prefix + "_Export").prop("disabled", true);
             $("#" + prefix + "_MarketReview").prop("disabled", true);
             $("#" + prefix + "_SubmitMarketReview").prop("disabled", true);
             $("#" + prefix + "_ApproveMarketReview").prop("disabled", true);
@@ -613,6 +626,7 @@ model.Page = function (models) {
         {
             $("#" + prefix + "_Save").prop("disabled", false);
             $("#" + prefix + "_Publish").prop("disabled", true);
+            $("#" + prefix + "_Export").prop("disabled", true);
             $("#" + prefix + "_Undo").prop("disabled", false);
             $("#" + prefix + "_UndoAll").prop("disabled", false);
             $("#" + prefix + "_MarketReview").prop("disabled", true);
@@ -625,6 +639,7 @@ model.Page = function (models) {
             $("#" + prefix + "_Undo").prop("disabled", true);
             $("#" + prefix + "_UndoAll").prop("disabled", true);
             $("#" + prefix + "_Publish").prop("disabled", false);
+            $("#" + prefix + "_Export").prop("disabled", false);
         }
     }
     me.loadValidationCallback = function(validationData) {
@@ -687,6 +702,49 @@ model.Page = function (models) {
         }
 
         me.configureComments();
+    };
+    me.loadFeatureDataCallback = function(featureData) {
+
+        var container = $(".DTFC_LeftBodyLiner");
+        for (var i = 0; i < featureData.FeatureData.length; i++) {
+            var currentFeature = featureData.FeatureData[i];
+            var dataTarget = featureData.Market.Id + "|" + currentFeature.FeatureIdentifier;
+            var row = $("tr[data-target='" + dataTarget + "']", container);
+
+            $(".feature-mix", row).text(me.formatPercentageTakeRate(currentFeature.TotalPercentageTakeRate * 100));
+
+            //var cell = container.find(".cross-tab-data-item[data-feature='" + currentFeature.FeatureIdentifier + "'][data-model='" + currentFeature.ModelIdentifier + "']");
+            //cell.text(currentFeature.PercentageTakeRate);
+        }
+    };
+    me.loadFeatureApplicabilityDataCallback = function (featureApplicabilityData) {
+
+        var container = $(".dataTables_scrollBody");
+        for (var i = 0; i < featureApplicabilityData.FeatureApplicabilityData.length; i++) {
+            var current = featureApplicabilityData.FeatureApplicabilityData[i];
+            var dataTarget = featureApplicabilityData.Market.Id + "|" + current.ModelIdentifier + "|" + current.FeatureIdentifier;
+            var cell = $("td[data-target='" + dataTarget + "']", container);
+            
+            if (current.Applicability === "S") {
+                cell.addClass("standardFeature");
+            }
+            
+
+            //var cell = container.find(".cross-tab-data-item[data-feature='" + currentFeature.FeatureIdentifier + "'][data-model='" + currentFeature.ModelIdentifier + "']");
+            //cell.text(currentFeature.PercentageTakeRate);
+        }
+    };
+    me.loadModelDataCallback = function (modelData) {
+
+        var container = $(".dataTables_scrollHeadInner");
+        for (var i = 0; i < modelData.ModelData.length; i++) {
+            var currentModel = modelData.ModelData[i];
+            var dataTarget = "MS|" + modelData.Market.Id + "|" + currentModel.StringIdentifier;
+            $(".model-mix[data-target='" + dataTarget + "']", container).text(me.formatPercentageTakeRate(currentModel.PercentageOfFilteredVolume * 100));
+
+            //var cell = container.find(".cross-tab-data-item[data-feature='" + currentFeature.FeatureIdentifier + "'][data-model='" + currentFeature.ModelIdentifier + "']");
+            //cell.text(currentFeature.PercentageTakeRate);
+        }
     };
     me.confirmLoadChangeset = function(changesetData) {
 
@@ -1293,6 +1351,7 @@ model.Page = function (models) {
 
         $("#" + prefix + "_Save").popover({ trigger: "hover", title: "Save Changes", placement: "auto bottom", container: "body" });
         $("#" + prefix + "_Publish").popover({ trigger: "hover", title: "Publish", placement: "auto bottom", container: "body" });
+        $("#" + prefix + "_Export").popover({ trigger: "hover", title: "Export", placement: "auto top", container: "body" });
         $("#" + prefix + "_Undo").popover({ trigger: "hover", title: "Undo", placement: "auto bottom", container: "body" });
         $("#" + prefix + "_UndoAll").popover({ trigger: "hover", title: "Undo All", placement: "auto bottom", container: "body" });
         $("#" + prefix + "_History").popover({ trigger: "hover", title: "Change History", placement: "auto bottom", container: "body" });
@@ -1786,6 +1845,7 @@ model.Page = function (models) {
     me.onErrorEventHandler = function (sender, eventArgs) {
         var html = "<div class=\"alert alert-dismissible alert-danger\">" + eventArgs.Message + "</div>";
         me.scrollToNotify();
+        me.hideSpinner();
         me.fadeInNotify(html);
     };
     me.filterItem = function(item) {

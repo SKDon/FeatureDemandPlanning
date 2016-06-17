@@ -41,6 +41,8 @@ model.HistoryAction = function (params) {
     me.initialise = function () {
         me.registerEvents();
         me.registerSubscribers();
+        $("#Modal_OK").hide();
+        $("#Modal_Cancel").html("Close");
     };
     me.onSuccessEventHandler = function (sender, eventArgs) {
         $("#Modal_Notify")

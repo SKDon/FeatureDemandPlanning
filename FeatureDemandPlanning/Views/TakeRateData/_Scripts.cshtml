@@ -11,6 +11,11 @@
         ModalActionUri: "@Url.Action("ModalAction")",
         ModalDialogId: "modal",
         ModalContentId: "modalBody",
+
+        FeatureDataUri: "@Url.Action("TakeRateFeatureData")",
+        ModelDataUri: "@Url.Action("TakeRateModelData")",
+        FeatureApplicabilityDataUri: "@Url.Action("TakeRateFeatureApplicabilityData")",
+
         GetChangesetUri: "@Url.Action("GetLatestChangeset")",
         RevertChangesetUri: "@Url.Action("RevertLatestChangeset")",
         SaveChangesetUri: "@Url.Action("SaveChangeset")",
@@ -49,19 +54,19 @@
     @if (Model.Document.UnderlyingOxoDocument != null)
     {
         @:params.OxoDocId = @Model.Document.UnderlyingOxoDocument.Id;
-    }
+        }
     @if (!(Model.Document.Market is EmptyMarket))
     {
         @:params.MarketId = @Model.Document.Market.Id;
-    }
+        }
     @if (!(Model.Document.MarketGroup is EmptyMarketGroup))
     {
         @:params.MarketGroupId = @Model.Document.MarketGroup.Id;
-    }
+        }
     @if (Model.Document.TakeRateId.HasValue)
     {
         @:params.TakeRateId = @Model.Document.TakeRateId.Value;
-    }
+        }
 
 </script>
 @Scripts.Render("~/Content/js/sharedbundle")

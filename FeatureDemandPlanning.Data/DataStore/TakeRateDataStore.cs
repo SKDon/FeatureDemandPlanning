@@ -146,12 +146,25 @@ namespace FeatureDemandPlanning.DataStore
                         cmd.Parameters.Add(new SqlParameter("@FeatureCode", SqlDbType.NVarChar, 5) { Value = filter.FeatureCode });
                     }
 
+                    if (filter.ShowCombinedPackOptions)
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@ShowCombinedOptions", SqlDbType.Bit) {Value = true});
+                    }
+
+                    if (filter.ExcludeOptionalPackItems)
+                    {
+                        // If an option is available both in a pack and can be taken seperately, exclude the rows for the take rate for the option
+                        // outside the pack. If combined with "ShowCombinedPackOptions" above, the take rate will have been combined into the overall
+                        // take for the feature
+                        cmd.Parameters.Add(new SqlParameter("@ExcludeOptionalPackItems", SqlDbType.Bit) { Value = true });
+                    }
+
                     var adapter = new SqlDataAdapter((SqlCommand)cmd);
                     var ds = new DataSet();
                     adapter.Fill(ds);
 
                     // 1. Take rate / volume data
-                    retVal.RawData = ds.Tables[0].AsEnumerable();
+                    retVal.RawData = ds.Tables[0];
 
                     // 2. Whether or not features are standard / optional or not applicable for derivative / market
                     retVal.FeatureApplicabilityData = ds.Tables[1].AsEnumerable();
@@ -221,6 +234,55 @@ namespace FeatureDemandPlanning.DataStore
                         ImportFeatureCode = m.Field<string>("ImportFeatureCode"),
                         Description = m.Field<string>("Description")
                     });
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                    throw;
+                }
+            }
+            return retVal;
+        }
+        public TakeRateData TakeRateDataItemFeatureList(TakeRateFilter filter)
+        {
+            var retVal = new TakeRateData();
+
+            using (var conn = DbHelper.GetDBConnection())
+            {
+                try
+                {
+                    var cmd = conn.CreateCommand();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = "Fdp_TakeRateData_GetCrossTabFeatures";
+                    cmd.CommandTimeout = 0;
+
+                    if (filter.TakeRateId.HasValue)
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@FdpVolumeHeaderId", SqlDbType.Int)
+                        {
+                            Value = filter.TakeRateId
+                        });
+                    }
+                    if (filter.DocumentId.HasValue)
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@DocumentId", SqlDbType.Int)
+                        {
+                            Value = filter.DocumentId.Value
+                        });
+                    }
+                    cmd.Parameters.Add(new SqlParameter("@ModelIds", SqlDbType.NVarChar, -1) { Value = filter.Models.ToCommaSeperatedString() });
+
+                    if (filter.MarketId.HasValue)
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@MarketId", SqlDbType.Int) { Value = filter.MarketId.Value });
+                    }
+
+                    var adapter = new SqlDataAdapter((SqlCommand)cmd);
+                    var ds = new DataSet();
+                    adapter.Fill(ds);
+
+                    // 1. Features
+                    retVal.RawData = ds.Tables[0];
                 }
                 catch (Exception ex)
                 {
@@ -900,9 +962,9 @@ namespace FeatureDemandPlanning.DataStore
             }
             return retVal;
         }
-        private static void FdpChangesetPersist(FdpChangeset changesetToPersist, IDbTransaction tran)
+        private void FdpChangesetPersist(FdpChangeset changesetToPersist, IDbTransaction tran)
         {
-            var para = new DynamicParameters();
+            var para = DynamicParameters.FromCDSId(CurrentCDSID);
             para.Add("@FdpChangesetId", changesetToPersist.FdpChangesetId, DbType.Int32);
             para.Add("@Comment", changesetToPersist.Comment, DbType.String);
 

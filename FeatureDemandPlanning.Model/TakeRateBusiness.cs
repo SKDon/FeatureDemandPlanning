@@ -10,6 +10,7 @@ using FeatureDemandPlanning.Model.Filters;
 using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Parameters;
 using FeatureDemandPlanning.Model.Validators;
+using FeatureDemandPlanning.Model.ViewModel;
 
 namespace FeatureDemandPlanning.Model
 {
@@ -23,14 +24,9 @@ namespace FeatureDemandPlanning.Model
             _dataContext = context;
             _filter = TakeRateFilter.FromTakeRateParameters(forParameters);
 
-            
-            CurrentChangeSet = forParameters.Changeset;
-            if (CurrentChangeSet == null || CurrentChangeSet is EmptyFdpChangeset)
-            {
-                return;
-            }
             CurrentData = _dataContext.TakeRate.GetRawData(_filter).Result;
-            _currentDataChange = CurrentChangeSet.Changes.First();
+            CurrentChangeSet = forParameters.Changeset;
+            
             InitialiseDataForChange();
         }
         public void CalculateChanges()
@@ -60,6 +56,327 @@ namespace FeatureDemandPlanning.Model
             RemoveUnchangedItemsFromChangeset();
             UpdateDataFromChangeset();
         }
+        public XLWorkbook ExportPricing()
+        {
+            _filter.Action = TakeRateDataItemAction.Export;
+            _filter.Mode = TakeRateResultMode.PercentageTakeRate;
+            _filter.ShowCombinedPackOptions = true;
+
+            var model = TakeRateViewModel.GetModel(_dataContext, _filter).Result;
+            var availableModels = model.Document.Vehicle.AvailableModels.OrderBy(m => m.DisplayOrder).ToList();
+
+            // Get the powertrain data as it's not automatically included in the model
+
+            model.Document.TakeRateData.PowertrainData = _dataContext.TakeRate.ListPowertrainData(_filter).Result;
+
+            // Now we have the view model, translate this into a single datatable
+            var dt = new DataTable("Take Rate %");
+
+            dt.Columns.Add("Feature Code", typeof(string));
+            dt.Columns.Add("Group", typeof(string));
+            dt.Columns.Add("Subgroup", typeof(string));
+            dt.Columns.Add("Feature", typeof(string));
+            dt.Columns.Add("Feature Mix", typeof(decimal));
+
+            foreach (var availableModel in availableModels)
+            {
+                dt.Columns.Add(availableModel.Name);
+            }
+
+            var rawData = model.Document.TakeRateData.RawData.AsEnumerable().ToList();
+            foreach (var dataItem in rawData)
+            {
+                var dr = dt.NewRow();
+                dr[0] = dataItem.Field<string>("FeatureCode");
+                dr[1] = dataItem.Field<string>("FeatureGroup");
+                dr[2] = dataItem.Field<string>("FeatureSubGroup");
+                dr[3] = dataItem.Field<string>("BrandDescription");
+                dr[4] = dataItem.Field<decimal>("TotalPercentageTakeRate");
+
+                var columnIndex = 5;
+                foreach (var availableModel in availableModels)
+                {
+                    dr[columnIndex++] = dataItem.Field<decimal?>(availableModel.StringIdentifier);
+                }
+
+                dt.Rows.Add(dr);
+            }
+
+            // Convert the datatable into Excel
+
+            var wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("Take Rate %");
+
+            // Delete the automatically inserted header, as it causes problems
+
+            ws.FirstRow().FirstCell().InsertData(dt.Rows);
+
+            // Insert a placeholder for the header
+
+            ws.Range(ws.FirstRow().FirstCell(), ws.FirstRow().LastCellUsed()).InsertRowsAbove(5);
+
+            // Insert an extra column to partition the BMC, DPCK and feature mix
+
+            var headerRow = ws.FirstRow();
+            var bmcRow = headerRow.RowBelow();
+            var derivativeMixRow = bmcRow.RowBelow();
+            var modelMixRow = derivativeMixRow.RowBelow();
+            var featureRow = modelMixRow.RowBelow();
+
+            featureRow.Cell(1).Value = "Feature Code";
+            featureRow.Cell(2).Value = "Group";
+            featureRow.Cell(3).Value = "Subgroup";
+            featureRow.Cell(4).Value = "Description";
+            featureRow.Cell(5).Value = "Feature Mix %";
+
+            bmcRow.Cell(5).Value = "BMC";
+            derivativeMixRow.Cell(5).Value = "Derivative Mix %";
+            modelMixRow.Cell(5).Value = "Model Mix %";
+            //featureRow.Cell(6).Value = "DPCK";
+
+            var cellIndex = 6;
+            var lastBMC = string.Empty;
+            var derivativeStartIndex = cellIndex;
+            
+            foreach (var currentModel in availableModels)
+            {
+                headerRow.Cell(cellIndex).Value = currentModel.NameWithBR.Replace("#", Environment.NewLine);
+                bmcRow.Cell(cellIndex).Value = currentModel.BMC;
+
+                var modelMix = model.Document.TakeRateData.TakeRateSummaryByModel
+                    .FirstOrDefault(m => m.StringIdentifier == currentModel.StringIdentifier);
+
+                modelMixRow.Cell(cellIndex).Value = modelMix != null ? modelMix.PercentageOfFilteredVolume : 0;
+
+                var derivativeMix = model.Document.TakeRateData.PowertrainData
+                    .FirstOrDefault(d => d.DerivativeCode == currentModel.BMC);
+
+                derivativeMixRow.Cell(cellIndex).Value = derivativeMix != null ? derivativeMix.PercentageTakeRate : 0;
+
+                // Merge the derivative mix cells as appropriate
+
+                if (!string.IsNullOrEmpty(lastBMC) && lastBMC != currentModel.BMC)
+                {
+                    ws.Range(derivativeMixRow.Cell(derivativeStartIndex), derivativeMixRow.Cell(cellIndex - 1)).Row(1)
+                        .Merge()
+                        .Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+                    ws.Range(headerRow.Cell(cellIndex -1), modelMixRow.Cell(cellIndex -1))
+                        .Style
+                        .Border.SetRightBorder(XLBorderStyleValues.Thin)
+                        .Border.SetRightBorderColor(XLColor.White);
+                    ws.Range(featureRow.Cell(cellIndex - 1), ws.LastRowUsed().Cell(cellIndex - 1))
+                        .Style
+                        .Border.SetRightBorder(XLBorderStyleValues.Thin)
+                        .Border.SetRightBorderColor(XLColor.Black);
+                    
+                    derivativeStartIndex = cellIndex;
+                }
+                cellIndex++;
+                lastBMC = currentModel.BMC;
+            }
+
+            ws.Range(headerRow.Cell(5), modelMixRow.Cell(5))
+                        .Style
+                        .Border.SetRightBorder(XLBorderStyleValues.Thin)
+                        .Border.SetRightBorderColor(XLColor.White);
+            ws.Range(featureRow.Cell(5), ws.LastRowUsed().Cell(5))
+                        .Style
+                        .Border.SetRightBorder(XLBorderStyleValues.Thin)
+                        .Border.SetRightBorderColor(XLColor.Black);
+
+            //// Format the headers
+
+            var modelRange = ws.Range(headerRow.Cell(5), modelMixRow.Cell(5 + availableModels.Count()));
+            modelRange.Style.Fill.BackgroundColor = XLColor.DarkElectricBlue;
+            modelRange.Style.Font.FontColor = XLColor.White;
+            modelRange.Style.Font.SetBold();
+            modelRange.Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Right);
+
+            var featureRange = ws.Range(featureRow.FirstCell(), featureRow.Cell(5));
+            featureRange.Style.Fill.BackgroundColor = XLColor.BlanchedAlmond;
+            featureRange.Style.Font.FontColor = XLColor.Black;
+            featureRange.Style.Font.SetBold();
+
+            var blankRange = ws.Range(headerRow.FirstCell(), modelMixRow.Cell(4));
+            blankRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+
+            featureRow.Cell(5).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Right);
+
+            ws.Columns().AdjustToContents();
+
+            //// Format the take rate data as %
+
+            var takeRateRange = ws.Range(derivativeMixRow.Cell(6), ws.LastRowUsed().LastCellUsed());
+            takeRateRange.DataType = XLCellValues.Number;
+            takeRateRange.Style.NumberFormat.NumberFormatId = 10;
+
+            var featureMixRateRange = ws.Range(featureRow.RowBelow().Cell(5), ws.LastRowUsed().Cell(5));
+            featureMixRateRange.DataType = XLCellValues.Number;
+            featureMixRateRange.Style.NumberFormat.NumberFormatId = 10;
+
+            //// Add a blank row for each feature group
+
+            var dataRow = featureRow.RowBelow();
+            var lastGroup = string.Empty;
+            var lastSubGroup = string.Empty;
+
+            foreach (var currentDataRow in ws.Range(dataRow.FirstCell(), ws.LastRowUsed().LastCellUsed()).Rows())
+            {
+                var currentGroup = currentDataRow.Cell(2).Value.ToString();
+                var currentSubGroup = currentDataRow.Cell(3).Value.ToString();
+                if ((!string.IsNullOrEmpty(lastGroup) && lastGroup != currentGroup) || (!string.IsNullOrEmpty(lastSubGroup) && lastSubGroup != currentSubGroup))
+                {
+                    currentDataRow.InsertRowsAbove(1);
+                }
+                lastGroup = currentGroup;
+                lastSubGroup = currentSubGroup;
+            }
+
+            // Add a warning if this has not been published
+
+            var publish = _dataContext.TakeRate.GetPublish(_filter).Result;
+
+            if (!publish.IsPublished)
+            {
+                var firstCell = ws.FirstRow().FirstCell();
+                var firstCellRange = ws.Range(firstCell, ws.Row(2).Cell(4));
+
+                firstCell.Value = string.Format("{0} - {1} :: {2}", 
+                    model.Document.UnderlyingOxoDocument.Name, 
+                    model.Document.Market.Name,
+                    "UNPUBLISHED");
+                firstCell.DataType = XLCellValues.Text;
+                firstCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                firstCell.Style.Font.FontColor = XLColor.RadicalRed;
+                firstCell.Style.Font.SetBold();
+                firstCell.Style.Font.FontSize = 18;
+                firstCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                firstCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+                firstCellRange.Merge();
+            }
+            else
+            {
+                var firstCell = ws.FirstRow().FirstCell();
+                var firstCellRange = ws.Range(firstCell, ws.Row(2).Cell(4));
+
+                firstCell.Value = string.Format("{0} - {1} :: {2}",
+                    model.Document.UnderlyingOxoDocument.Name,
+                    model.Document.Market.Name,
+                    "PUBLISHED");
+                firstCell.DataType = XLCellValues.Text;
+                firstCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                //firstCell.Style.Font.FontColor = XLColor.RadicalRed;
+                firstCell.Style.Font.SetBold();
+                firstCell.Style.Font.FontSize = 18;
+                firstCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                firstCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+                firstCellRange.Merge();
+            }
+
+            derivativeMixRow.Style.Fill.BackgroundColor = XLColor.DarkGray;
+            modelMixRow.Style.Fill.BackgroundColor = XLColor.Silver;
+            modelMixRow.Style.Font.FontColor = XLColor.Black;
+            featureRow.Style.Fill.BackgroundColor = XLColor.BlanchedAlmond;
+
+            return wb;
+        }
+
+        public XLWorkbook ExportCpat()
+        {
+            _filter.Action = TakeRateDataItemAction.Export;
+            _filter.Mode = TakeRateResultMode.PercentageTakeRate;
+            _filter.ShowCombinedPackOptions = true;
+            _filter.ExcludeOptionalPackItems = true;
+
+            var model = TakeRateViewModel.GetModel(_dataContext, _filter).Result;
+
+            // Now we have the view model, translate this into a single datatable
+            var dt = new DataTable("Take Rate %");
+
+            dt.Columns.Add("Feature Code", typeof(string));
+            dt.Columns.Add("Group", typeof(string));
+            dt.Columns.Add("Subgroup", typeof(string));
+            dt.Columns.Add("Feature", typeof(string));
+            dt.Columns.Add("Rules", typeof (string));
+            dt.Columns.Add("Comments", typeof (string));
+            dt.Columns.Add("Feature Mix", typeof(decimal));
+
+            var rawData = model.Document.TakeRateData.RawData.AsEnumerable().ToList();
+            foreach (var dataItem in rawData)
+            {
+                var dr = dt.NewRow();
+                dr[0] = dataItem.Field<string>("FeatureCode");
+                dr[1] = dataItem.Field<string>("FeatureGroup");
+                dr[2] = dataItem.Field<string>("FeatureSubGroup");
+                dr[3] = dataItem.Field<string>("BrandDescription");
+                dr[4] = dataItem.Field<string>("FeatureRuleText");
+                dr[5] = dataItem.Field<string>("FeatureComment");
+                dr[6] = dataItem.Field<decimal>("TotalPercentageTakeRate");
+
+                dt.Rows.Add(dr);
+            }
+
+            // Convert the datatable into Excel
+
+            var wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("Take Rate %");
+
+            // Delete the automatically inserted header, as it causes problems
+
+            ws.FirstRow().FirstCell().InsertData(dt.Rows);
+
+            // Insert a placeholder for the header
+
+            ws.Range(ws.FirstRow().FirstCell(), ws.FirstRow().LastCellUsed()).InsertRowsAbove(1);
+
+            // Insert an extra column to partition the BMC, DPCK and feature mix
+
+            var headerRow = ws.FirstRow();
+
+            headerRow.Cell(1).Value = "Feature Code";
+            headerRow.Cell(2).Value = "Group";
+            headerRow.Cell(3).Value = "Subgroup";
+            headerRow.Cell(4).Value = "Description";
+            headerRow.Cell(5).Value = "Rules";
+            headerRow.Cell(6).Value = "Comments";
+            headerRow.Cell(7).Value = "Feature Mix %";
+
+            var featureRange = ws.Range(headerRow.FirstCell(), headerRow.LastCellUsed());
+            featureRange.Style.Fill.BackgroundColor = XLColor.BlanchedAlmond;
+            featureRange.Style.Font.FontColor = XLColor.Black;
+            featureRange.Style.Font.SetBold();
+
+            ws.Columns().AdjustToContents();
+
+            //// Format the take rate data as %
+
+            var featureMixRateRange = ws.Range(headerRow.RowBelow().Cell(7), ws.LastRowUsed().Cell(7));
+            featureMixRateRange.DataType = XLCellValues.Number;
+            featureMixRateRange.Style.NumberFormat.NumberFormatId = 10;
+
+            //// Add a blank row for each feature group
+
+            var dataRow = headerRow.RowBelow();
+            var lastGroup = string.Empty;
+            var lastSubGroup = string.Empty;
+
+            foreach (var currentDataRow in ws.Range(dataRow.FirstCell(), ws.LastRowUsed().LastCellUsed()).Rows())
+            {
+                var currentGroup = currentDataRow.Cell(2).Value.ToString();
+                var currentSubGroup = currentDataRow.Cell(3).Value.ToString();
+                if ((!string.IsNullOrEmpty(lastGroup) && lastGroup != currentGroup) || (!string.IsNullOrEmpty(lastSubGroup) && lastSubGroup != currentSubGroup))
+                {
+                    currentDataRow.InsertRowsAbove(1);
+                }
+                lastGroup = currentGroup;
+                lastSubGroup = currentSubGroup;
+            }
+
+            return wb;
+        }
+
         public XLWorkbook ExportChangeset()
         {
             var changes = _dataContext.TakeRate.GetChangesetHistoryDetailsAsDataTable(_filter).Result;
@@ -92,11 +409,15 @@ namespace FeatureDemandPlanning.Model
 
         private void InitialiseDataForChange()
         {
-            _currentDataChange = CurrentChangeSet.Changes.First();
-            _currentModelId = _currentDataChange.GetModelId().GetValueOrDefault();
-            _currentModelVolumes = CurrentData.SummaryItems.Where(s => s.ModelId.HasValue).Sum(s => s.Volume);
-            _currentModelVolume = GetModelVolume(_currentModelId);
+            if (CurrentChangeSet == null) return;
 
+            _currentDataChange = CurrentChangeSet.Changes.FirstOrDefault();
+            _currentModelVolumes = CurrentData.SummaryItems.Where(s => s.ModelId.HasValue).Sum(s => s.Volume);
+
+            if (_currentDataChange == null) return;
+
+            _currentModelId = _currentDataChange.GetModelId().GetValueOrDefault();
+            _currentModelVolume = GetModelVolume(_currentModelId);
             _existingFeature =
                 CurrentData.DataItems.FirstOrDefault(
                     d => _currentDataChange.IsMatchingModel(d) && _currentDataChange.IsMatchingFeature(d));

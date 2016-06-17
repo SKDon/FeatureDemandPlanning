@@ -28,27 +28,27 @@
                                 break;
                             case enums.MarketReviewStatus.AwaitingReview:
                                 <div>
-                                    <span class="glyphicon glyphicon-flag"></span> Awaiting Market Review
+                                    <span class="glyphicon glyphicon-flag"></span> AWAITING MARKET REVIEW
                                 </div>
                                 break;
                             case enums.MarketReviewStatus.AwaitingApproval:
                                 <div>
-                                    <span class="glyphicon glyphicon-flag"></span> Market Review Awaiting Approval
+                                    <span class="glyphicon glyphicon-flag"></span> MARKET REVIEW AWAITING APPROVAL
                                 </div>
                                 break;
                             case enums.MarketReviewStatus.Rejected:
                                 <div>
-                                    <span class="glyphicon glyphicon-flag"></span> Market Review Rejected
+                                    <span class="glyphicon glyphicon-flag"></span> MARKET REVIEW REJECTED
                                 </div>
                                 break;
                             case enums.MarketReviewStatus.Approved:
                                 <div>
-                                    <span class="glyphicon glyphicon-flag"></span> Market Review Approved
+                                    <span class="glyphicon glyphicon-flag"></span> MARKET REVIEW APPROVED
                                 </div>
                                 break;
                             case enums.MarketReviewStatus.Recalled:
                                 <div>
-                                    <span class="glyphicon glyphicon-flag"></span> Market Review Recalled
+                                    <span class="glyphicon glyphicon-flag"></span> MARKET REVIEW RECALLED
                                 </div>
                                 break;
                             default:
@@ -58,7 +58,7 @@
                     else
                     {
                         <div>
-                            <span class="glyphicon glyphicon-pushpin"></span> Published
+                            <span class="glyphicon glyphicon-pushpin"></span> PUBLISHED
                         </div>
                     }
 
@@ -148,39 +148,12 @@
                     <th class="model"></th>
                 }
             </tr>
-            @*<tr class="cross-tab-header">
-                    <th colspan="4" class="text-right trim-level">Trim Level / DPCK</th>
-                    @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
-                    {
-                        var modelClassName = string.Empty;
-                        if (availableModel.FdpModelId.HasValue)
-                        {
-                            modelClassName = "fdp-model";
-                        }
-                        <th class="text-center trim-level @modelClassName" data-model="@availableModel.StringIdentifier">
-                            @if (!string.IsNullOrEmpty(availableModel.TrimLevel))
-                            {
-                                <span>
-                                    @availableModel.TrimLevel
-                                </span>
-                                if (!string.IsNullOrEmpty(availableModel.DPCK))
-                                {
-                                    <span>&nbsp;/ @availableModel.DPCK</span>
-                                }
-                            }
-                            else
-                            {
-                                <span>-</span>
-                            }
-                        </th>
-                    }
-                </tr>*@
             <tr class="cross-tab-header" id="@(Model.IdentifierPrefix)_TakeRateByModel">
                 @{ Html.RenderPartial("_TakeRateDataByModel"); }
             </tr>
         </thead>
         <tbody id="@(Model.IdentifierPrefix)_TakeRateByFeature">
-            @foreach (var featureRow in Model.Document.TakeRateData.RawData)
+            @foreach (var featureRow in Model.Document.TakeRateData.RawData.AsEnumerable())
             {
                 TempData["CurrentRow"] = featureRow;
                 Html.RenderPartial("_TakeRateDataByFeature");
@@ -189,7 +162,6 @@
 
     </table>
 </div>
-@*</div>*@
 
 
 

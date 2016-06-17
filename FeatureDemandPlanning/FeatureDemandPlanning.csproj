@@ -1164,6 +1164,8 @@
     <Content Include="Views\Publish\_Publish.cshtml" />
     <Content Include="Views\Publish\_Scripts.cshtml" />
     <Content Include="Views\Publish\PublishPage.cshtml" />
+    <Content Include="Views\TakeRateData\_TakeRateDataByFeature2.cshtml" />
+    <Content Include="Views\TakeRateData\_TakeRateDataByModel2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

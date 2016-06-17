@@ -1,0 +1,45 @@
+﻿@using System.Data
+@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+@{
+    var featureRow = (DataRow)TempData["CurrentRow"];
+    var featureIdentifier = featureRow.Field<string>("FeatureIdentifier");
+    var marketIdentifier = Model.Document.Market.Id;
+}
+
+<tr data-target="@marketIdentifier|@featureIdentifier" data-group="@(featureRow.Field<string>("FeatureGroup"))" data-subgroup="@(featureRow.Field<string>("FeatureSubGroup"))">
+    <td class="cross-tab-data-item cross-tab-fixed" data-feature="@featureIdentifier">
+        @(featureRow.Field<string>("BrandDescription"))
+    </td>
+    <td class="cross-tab-data-item cross-tab-fixed text-center feature-notes" data-feature="@featureIdentifier"></td>
+    <td class="cross-tab-data-item cross-tab-fixed text-center feature-code" data-feature="@featureIdentifier">@(featureRow.Field<string>("FeatureCode"))</td>
+    <td class="cross-tab-data-item cross-tab-fixed cross-tab-fixed-last text-center feature-mix" data-feature="@featureIdentifier">-</td>
+    @foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
+    {
+        <td class="text-center cross-tab-data-item" data-feature="@featureIdentifier" data-model="@availableModel.StringIdentifier">-</td>
+    }
+    @{
+        var modelCount = Model.Document.Vehicle.AvailableModels.Count();
+        var numberToPad = 0;
+
+        if ((Model.Document.PageSize != -1 && Model.Document.PageSize != int.MaxValue && modelCount < Model.Document.PageSize) || modelCount < 10)
+        {
+            numberToPad = 10 - modelCount;
+        }
+    }
+    @for (var i = 0;
+        i < numberToPad;
+        i++)
+    {
+        <td class="cross-tab-data-item orphaned-data-item"></td>
+    }
+</tr>
+
+
+
+
+
+
+

@@ -14,11 +14,5 @@
 
     var panel = $("#" + page.getIdentifierPrefix() + "_TakeRateDataPanel");
     panel.height = page.calcPanelHeight() + "px";
-    //    if (url && url.length > 0) {
-    //        $(item).load(url, function() {
-    //            page.initialise();
-    //        });
-//    }
 
     page.initialise();
-//}); 

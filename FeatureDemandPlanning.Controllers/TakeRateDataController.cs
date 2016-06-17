@@ -2,22 +2,20 @@
 using FeatureDemandPlanning.Model.Validators;
 using FeatureDemandPlanning.Model.Enumerations;
 using FeatureDemandPlanning.Model.ViewModel;
-using System.Linq;
-using System.Web.Mvc;
-using System.Threading.Tasks;
-using FeatureDemandPlanning.Model.Parameters;
-using FeatureDemandPlanning.Model.Attributes;
-using MvcSiteMapProvider.Web.Mvc.Filters;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using System.Web.Helpers;
 using FeatureDemandPlanning.Model;
 using FeatureDemandPlanning.Model.Empty;
 using FeatureDemandPlanning.Model.Interfaces;
-using FluentValidation;
+using FeatureDemandPlanning.Model.Parameters;
+using FeatureDemandPlanning.Model.Attributes;
+using System.Linq;
+using System.Web.Mvc;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.IO.Compression;
+using System.Reflection;
 
 namespace FeatureDemandPlanning.Controllers
 {
@@ -36,43 +34,118 @@ namespace FeatureDemandPlanning.Controllers
 
         [HttpGet]
         [ActionName("Index")]
-        [SiteMapTitle("DocumentName")]
+        //[OutputCache(Duration = 600, 
+        //    VaryByParam = "TakeRateParameters.TakeRateId,TakeRateParameters.MarketId,TakeRateParameters.PageSize,TakeRateParameters.PageIndex")]
+        //[SiteMapTitle("DocumentName")]
         public ActionResult TakeRateDataPage(TakeRateParameters parameters)
         {
             var filter = TakeRateFilter.FromTakeRateParameters(parameters);
-            filter.Action = TakeRateDataItemAction.TakeRateDataHeader;
+            filter.Action = TakeRateDataItemAction.TakeRateDataPage;
             var model = TakeRateViewModel.GetModel(DataContext, filter).Result;
 
-            ViewData["DocumentName"] = model.Document.UnderlyingOxoDocument.Name;
-            ViewBag.Title = string.Format("{0} - {1} ({2}) - {3}", model.Document.Vehicle.Code,
+            var title = string.Format("{0} - {1} ({2}) - {3}", 
+                model.Document.Vehicle.Code,
                 model.Document.Vehicle.ModelYear, model.Document.UnderlyingOxoDocument.Gateway,
                 model.Document.TakeRateSummary.First().Version);
+            
+            ViewBag.Title = title;
+
+            string displayName;
+            if (model.Document.Market is EmptyMarket)
+            {
+                displayName = string.Format("{0} - ALL MARKETS", title);
+            }
+            else
+            {
+                displayName = string.Format("{0} - {1}",
+                    title,
+                    model.Document.Market.Name.ToUpper());
+            }
+
+            ViewData["DocumentName"] = displayName;
 
             return View("TakeRateDataPage", model);
         }
 
-        //[HttpPost]
-        //[OutputCache(Duration = 600, VaryByParam = "TakeRateParameters.TakeRateId;TakeRateParameters.MarketId;TakeRateParameters.PageSize;TakeRateParameters.PageIndex")]
-        public async Task<ActionResult> TakeRateDataPartialPage(TakeRateParameters parameters)
+        [HttpPost]
+        public async Task<JsonResult> TakeRateFeatureData(TakeRateParameters parameters)
         {
             Log.Debug(MethodBase.GetCurrentMethod().Name);
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
 
             var filter = TakeRateFilter.FromTakeRateParameters(parameters);
             filter.Action = TakeRateDataItemAction.TakeRateDataPage;
             var model = await TakeRateViewModel.GetModel(DataContext, filter);
 
-            ViewData["DocumentName"] = model.Document.UnderlyingOxoDocument.Name;
-            ViewBag.Title = string.Format("{0} - {1} ({2}) - {3}", model.Document.Vehicle.Code,
-                model.Document.Vehicle.ModelYear, model.Document.UnderlyingOxoDocument.Gateway,
-                model.Document.TakeRateSummary.First().Version);
+            var rows = new List<Dictionary<string, object>>();
+            foreach (DataRow dr in model.Document.TakeRateData.RawData.Rows)
+            {
+                var row = new Dictionary<string, object>();
+                foreach (DataColumn col in model.Document.TakeRateData.RawData.Columns)
+                {
+                    row.Add(col.ColumnName, dr[col]);
+                }
+                rows.Add(row);
+            }
 
-            stopwatch.Stop();
-            Log.Debug(string.Format("TakeRateDataPartialPage: {0} ms", stopwatch.ElapsedMilliseconds));
+            Response.AddHeader("Content-Encoding", "gzip");
+            Response.Filter = new GZipStream(Response.Filter,
+                                 CompressionMode.Compress);
+            
+            return Json(new
+            {
+                FeatureData = rows,
+                model.Document.Market
+            });
+        }
 
-            return PartialView("_TakeRateData", model);
+        [HttpPost]
+        public async Task<JsonResult> TakeRateModelData(TakeRateParameters parameters)
+        {
+            Log.Debug(MethodBase.GetCurrentMethod().Name);
+
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.TakeRateDataPage;
+            var model = await TakeRateViewModel.GetModel(DataContext, filter);
+
+            Response.AddHeader("Content-Encoding", "gzip");
+            Response.Filter = new GZipStream(Response.Filter,
+                                 CompressionMode.Compress);
+
+            return Json(new
+            {
+                ModelData = model.Document.TakeRateData.TakeRateSummaryByModel,
+                model.Document.Market
+            });
+        }
+        [HttpPost]
+        public async Task<JsonResult> TakeRateFeatureApplicabilityData(TakeRateParameters parameters)
+        {
+            Log.Debug(MethodBase.GetCurrentMethod().Name);
+
+            var filter = TakeRateFilter.FromTakeRateParameters(parameters);
+            filter.Action = TakeRateDataItemAction.TakeRateDataPage;
+            var model = await TakeRateViewModel.GetModel(DataContext, filter);
+
+            var rows = new List<Dictionary<string, object>>();
+            foreach (DataRow dr in model.Document.TakeRateData.RawData.Rows)
+            {
+                var row = new Dictionary<string, object>();
+                foreach (DataColumn col in model.Document.TakeRateData.RawData.Columns)
+                {
+                    row.Add(col.ColumnName, dr[col]);
+                }
+                rows.Add(row);
+            }
+
+            Response.AddHeader("Content-Encoding", "gzip");
+            Response.Filter = new GZipStream(Response.Filter,
+                                 CompressionMode.Compress);
+
+            return Json(new
+            {
+                FeatureApplicabilityData = rows,
+                model.Document.Market
+            });
         }
 
         [HttpPost]
@@ -187,6 +260,49 @@ namespace FeatureDemandPlanning.Controllers
             return PartialView("_ChangesetHistoryDetails", takeRateView);
         }
 
+        public void Export(TakeRateParameters parameters)
+        {
+            var business = new TakeRateBusiness(DataContext, parameters);
+            var exportData = business.ExportPricing();
+            var fileName = string.Format("TakeRatePricingExport_{0:yyyyMMdd}_{1}_{2}.xlsx", 
+                DateTime.Now,
+                parameters.TakeRateId,
+                parameters.MarketId);
+            
+            Response.ClearContent();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment; filename=" + fileName);
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+            using (var stream = new MemoryStream())
+            {
+                exportData.SaveAs(stream);
+                stream.WriteTo(Response.OutputStream);
+                Response.Flush();
+                Response.End();
+            } 
+        }
+        public void ExportCpat(TakeRateParameters parameters)
+        {
+            var business = new TakeRateBusiness(DataContext, parameters);
+            var exportData = business.ExportCpat();
+            var fileName = string.Format("TakeRateCpatExport_{0:yyyyMMdd}_{1}.xlsx",
+                DateTime.Now,
+                parameters.TakeRateId);
+
+            Response.ClearContent();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment; filename=" + fileName);
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+            using (var stream = new MemoryStream())
+            {
+                exportData.SaveAs(stream);
+                stream.WriteTo(Response.OutputStream);
+                Response.Flush();
+                Response.End();
+            }
+        }
         public void ExportChangeDetails(TakeRateParameters parameters)
         {
             TakeRateParametersValidator.ValidateTakeRateParameters(DataContext, parameters, TakeRateParametersValidator.TakeRateIdentifierWithChangeset);

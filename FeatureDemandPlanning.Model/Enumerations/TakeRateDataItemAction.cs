@@ -20,6 +20,7 @@
         Powertrain = 15,
         HistoryDetails = 16,
         TakeRateDataHeader = 17,
-        Publish = 18
+        Publish = 18,
+        Export = 19
     }
 }

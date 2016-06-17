@@ -4,6 +4,7 @@ using FeatureDemandPlanning.Model.Interfaces;
 using FeatureDemandPlanning.Model.Parameters;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml.Drawing;
 using FeatureDemandPlanning.Model.ViewModel;
 
 namespace FeatureDemandPlanning.Model.Filters
@@ -42,6 +43,12 @@ namespace FeatureDemandPlanning.Model.Filters
         public int? FdpValidationId { get; set; }
         public int? ChangesetId { get; set; }
 
+        // For exports, we need additional rows showing the combined take for option features also available in a pack
+        public bool ShowCombinedPackOptions { get; set; }
+        // For exports, do not show rows for an optional feature that is also included in a pack. Only show the take rate inside the pack
+        // If combined with "ShowCombinedPackOptions", the combined row will still include the overall take pack + option
+        public bool ExcludeOptionalPackItems { get; set; }
+
         public TakeRateFilter()
         {
             Mode = TakeRateResultMode.PercentageTakeRate;
@@ -73,6 +80,8 @@ namespace FeatureDemandPlanning.Model.Filters
 
             filter.Mode = takeRateViewModel.Document.Mode;
             filter.FeatureCode = takeRateViewModel.Document.FeatureCode;
+            filter.ShowCombinedPackOptions = takeRateViewModel.Document.ShowCombinedPackOptions;
+            filter.ExcludeOptionalPackItems = takeRateViewModel.Document.ExcludeOptionalPackItems;
 
             return filter;
         }
@@ -104,7 +113,8 @@ namespace FeatureDemandPlanning.Model.Filters
                 ChangesetId = parameters.ChangesetId,
                 BMC = parameters.BMC,
                 DPCK = parameters.DPCK,
-                FeatureCode = parameters.FeatureCode
+                FeatureCode = parameters.FeatureCode,
+                ShowCombinedPackOptions = parameters.ShowCombinedPackOptions
             };
 
             if (!string.IsNullOrEmpty(parameters.ModelIdentifier))

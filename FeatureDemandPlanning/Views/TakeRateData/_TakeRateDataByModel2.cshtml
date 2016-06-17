@@ -1,0 +1,52 @@
+﻿@using enums = FeatureDemandPlanning.Model.Enumerations
+
+@model FeatureDemandPlanning.Model.ViewModel.TakeRateViewModel
+
+@{
+    var editableClass = "";
+    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket) && Model.AllowEdit)
+    {
+        editableClass = "editable-header";
+    }
+}
+
+
+<th class="cross-tab-data-item feature-description">DESCRIPTION</th>
+<th class="cross-tab-data-item feature-notes">NOTES</th>
+<th class="cross-tab-data-item feature-code">CODE</th>
+<th class="text-right model-mix">
+    @if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+    {
+        @:% MIX<br /> (<span class="model-mix-total">0%</span>)
+    }
+    else
+    {
+        @:VOLUME<br /> (<span class="model-mix-total">0</span>)
+    }
+</th>
+@foreach (var availableModel in Model.Document.Vehicle.AvailableModels)
+{
+    <th class="text-center model-mix @editableClass" data-target="MS|@Model.Document.Market.Id|@availableModel.StringIdentifier">
+        @if (Model.Document.Mode == enums.TakeRateResultMode.PercentageTakeRate)
+        {
+            @availableModel.PercentageTakeRate.GetValueOrDefault().ToString("P2")
+        }
+        else
+        {
+            @availableModel.Volume.GetValueOrDefault().ToString("N");
+        }
+    </th>
+}
+@{
+    var modelCount = Model.Document.Vehicle.AvailableModels.Count();
+    if ((Model.Document.PageSize != -1 && Model.Document.PageSize != int.MaxValue && modelCount < Model.Document.PageSize) || modelCount < 10)
+    {
+        var numberToPad = 10 - modelCount;
+
+        for (var i = 0; i < numberToPad; i++)
+        {
+            <th class="model-mix"></th>
+        }
+    }
+}
+

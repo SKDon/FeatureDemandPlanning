@@ -24,11 +24,15 @@
       <mvcSiteMapNode title="Take Rate" controller="TakeRateData" action="Index"/>
       <mvcSiteMapNode title="Take Rate" controller="TakeRateData" action="TakeRateDataPage"/>
     </mvcSiteMapNode>-->
-    <mvcSiteMapNode title="Take Rates" route="TakeRate">
-      <mvcSiteMapNode title="Take Rate Data (%)" route="TakeRateData"/>
-      <mvcSiteMapNode title="Take Rate Data (Volume)" route="TakeRateDataRaw"/>
-      <mvcSiteMapNode title="Take Rate Data by Market (%)" route="TakeRateDataByMarket"/>
-      <mvcSiteMapNode title="Take Rate Data by Market (Volume)" route="TakeRateDataByMarketRaw"/>
+    <!--<mvcSiteMapNode title="Take Rates" controller="TakeRate" action="Index">
+      --><!--<mvcSiteMapNode title="Take Rate" route="TakeRateDataByMarket"/>--><!--
+      --><!--<mvcSiteMapNode title="Take Rate" route="TakeRateData"/>--><!--
+    </mvcSiteMapNode>-->
+
+    <mvcSiteMapNode title="Take Rates" controller="TakeRate" action="Index">
+      <mvcSiteMapNode title="Take Rate" route="TakeRateDataByMarket"/>
+      <mvcSiteMapNode title="Take Rate" controller="TakeRateData" action="Index"/>
+      <mvcSiteMapNode title="Take Rate" controller="TakeRateData" action="TakeRateDataPage"/>
     </mvcSiteMapNode>
     
   <mvcSiteMapNode title="Settings" controller="Admin" action="Index">

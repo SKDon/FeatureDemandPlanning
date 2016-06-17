@@ -12,31 +12,32 @@
     <!-- Single button -->
     <button id="btnMarket" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class="validation-error primary-validation-error glyphicon glyphicon-alert" data-target="" style="display: none"></span>&nbsp;
-        @if (!(Model.Document.Market is EmptyMarket))
-        {
-            var variantCount = 0;
-            foreach (var marketGroup in Model.Document.Vehicle.AvailableMarketGroups)
+            @if (!(Model.Document.Market is EmptyMarket))
             {
-                foreach (var market in marketGroup.Markets)
+                var variantCount = 0;
+                foreach (var marketGroup in Model.Document.Vehicle.AvailableMarketGroups)
                 {
-                    if (market.Id != Model.Document.Market.Id)
+                    foreach (var market in marketGroup.Markets)
                     {
-                        continue;
+                        if (market.Id != Model.Document.Market.Id)
+                        {
+                            continue;
+                        }
+                        variantCount = market.VariantCount;
+                        break;
                     }
-                    variantCount = market.VariantCount;
-                    break;
+                    if (variantCount > 0)
+                    {
+                        break;
+                    }
                 }
-                if (variantCount > 0)
-                {
-                    break;
-                }
+                @:@Model.Document.Market.Name (@variantCount Model Variants)
             }
-            @:@Model.Document.Market.Name (@variantCount Model Variants)
-        }
-        else
-        {
-            @:All Markets (@totalDerivatives Model Variants)
-        }
+            else
+            {
+                @:All Markets (@totalDerivatives Model Variants)
+            }
+        
         <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">

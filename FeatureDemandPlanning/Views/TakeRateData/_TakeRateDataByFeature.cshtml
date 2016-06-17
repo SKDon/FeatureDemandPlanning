@@ -232,11 +232,19 @@
         .FirstOrDefault();
 
     var parsedFeatureApplicability = OxoHelper.ParseFeatureApplicability(featureApplicability);
+    var isUncodedFeature = false;
+    var featureCode = dataItem.Field<string>("FeatureCode");
+    isUncodedFeature = featureCode.ToUpper().StartsWith("UNC");
 
     // Standard and non-applicable features cannot be edited. 
     //They are either zero or set to 100% or set as a combination of options in an exclusive feature group.
     // In addition, pack only features can now only be edited by changing the pack itself.
-    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket) && Model.AllowEdit && parsedFeatureApplicability != "NA" && parsedFeatureApplicability != "S" && parsedFeatureApplicability != "P")
+    if (!(Model.Document.Market is FeatureDemandPlanning.Model.Empty.EmptyMarket) && 
+        Model.AllowEdit &&
+        ( 
+            (parsedFeatureApplicability != "NA" && parsedFeatureApplicability != "S" && parsedFeatureApplicability != "P" ) ||
+            isUncodedFeature
+        ))
     {
         @("editable")
     }

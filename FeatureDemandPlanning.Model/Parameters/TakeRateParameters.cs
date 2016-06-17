@@ -31,6 +31,8 @@ namespace FeatureDemandPlanning.Model.Parameters
         public string DPCK { get; set; }
         public string FeatureCode { get; set; }
 
+        public bool ShowCombinedPackOptions { get; set; }
+
         public TakeRateParameters()
         {
             Action = TakeRateDataItemAction.NotSet;
@@ -100,7 +102,5 @@ namespace FeatureDemandPlanning.Model.Parameters
         }
 
         public int? FdpValidationId { get; set; }
-
-
     }
 }

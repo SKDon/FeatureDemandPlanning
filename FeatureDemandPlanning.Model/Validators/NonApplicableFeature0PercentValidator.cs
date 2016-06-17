@@ -12,7 +12,7 @@ namespace FeatureDemandPlanning.Model.Validators
         {
             RuleFor(d => d.PercentageTakeRate)
                 .Must(d => d == 0)
-                .When(d => !d.IsOrphanedData)
+                .When(d => !d.IsOrphanedData && !d.IsUncodedFeature)
                 .WithMessage(
                     Message,
                     d => d.PercentageTakeRate,

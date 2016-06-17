@@ -60,6 +60,13 @@ namespace FeatureDemandPlanning.DataStore
 
             return await Task.FromResult(_takeRateDataStore.TakeRateDataItemList(filter));
         }
+        public async Task<TakeRateData> GetTakeRateDocumentFeatures(TakeRateFilter filter)
+        {
+            if (!IsFilterValidForTakeRateData(filter))
+                return new TakeRateData();
+
+            return await Task.FromResult(_takeRateDataStore.TakeRateDataItemFeatureList(filter));
+        }
         public async Task<TakeRateDataItem> GetDataItem(TakeRateFilter filter)
         {
             if (filter.FeatureId.HasValue || filter.FdpFeatureId.HasValue)

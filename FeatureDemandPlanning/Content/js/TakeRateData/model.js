@@ -39,6 +39,9 @@ model.OxoVolume = function (params) {
     privateStore[me.id].ValidationMessageUri = params.ValidationMessageUri;
     privateStore[me.id].AddNoteUri = params.AddNoteUri;
     privateStore[me.id].RefreshNotesUri = params.RefreshNotesUri;
+    privateStore[me.id].FeatureDataUri = params.FeatureDataUri;
+    privateStore[me.id].FeatureApplicabilityDataUri = params.FeatureApplicabilityDataUri;
+    privateStore[me.id].ModelDataUri = params.ModelDataUri;
     privateStore[me.id].IsValid = true;
     privateStore[me.id].FdpVolumeHeaders = [];
     privateStore[me.id].CurrentEditValue = null;
@@ -176,6 +179,15 @@ model.OxoVolume = function (params) {
     me.getValidationUri = function() {
         return privateStore[me.id].GetValidationUri;
     };
+    me.getFeatureDataUri = function () {
+        return privateStore[me.id].FeatureDataUri;
+    };
+    me.getFeatureApplicabilityDataUri = function () {
+        return privateStore[me.id].FeatureApplicabilityDataUri;
+    };
+    me.getModelDataUri = function () {
+        return privateStore[me.id].ModelDataUri;
+    };
     me.getValidateUri = function () {
         return privateStore[me.id].ValidateUri;
     };
@@ -236,6 +248,54 @@ model.OxoVolume = function (params) {
             }
         });
     };
+    me.loadFeatureData = function(callback) {
+        var params = getFilter();
+        $.ajax({
+            "dataType": "json",
+            "async": true,
+            "type": "POST",
+            "url": me.getFeatureDataUri(),
+            "data": params,
+            "success": function(response) {
+                callback(response);
+            },
+            "error": function(response) {
+                genericErrorCallback(response);
+            }
+        });
+    };
+    me.loadFeatureApplicabilityData = function(callback) {
+        var params = getFilter();
+        $.ajax({
+            "dataType": "json",
+            "async": true,
+            "type": "POST",
+            "url": me.getFeatureApplicabilityDataUri(),
+            "data": params,
+            "success": function(response) {
+                callback(response);
+            },
+            "error": function(response) {
+                genericErrorCallback(response);
+            }
+        });
+    };
+    me.loadModelData = function (callback) {
+        var params = getFilter();
+        $.ajax({
+            "dataType": "json",
+            "async": true,
+            "type": "POST",
+            "url": me.getModelDataUri(),
+            "data": params,
+            "success": function (response) {
+                callback(response);
+            },
+            "error": function (response) {
+                genericErrorCallback(response);
+            }
+        });
+    }
     me.marketReview = function(callback) {
         var params = getFilter();
         $.ajax({

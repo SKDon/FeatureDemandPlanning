@@ -1343,7 +1343,7 @@ td.orphaned-data-item-fixed {
 }
 
 .table-condensed > thead > tr > th.bmc {
-    font-size:8pt;
+    font-size:11px;
     border-top: none;
     border-left:none;
     border-bottom: solid 1px #2E4372;
@@ -1371,7 +1371,7 @@ td.orphaned-data-item-fixed {
 }
 
 .table-condensed > thead > tr > th.dpck {
-    font-size:8pt;
+    font-size:11px;
     border-left:none;
     border-top: none;
     border-bottom: none;
@@ -1383,7 +1383,7 @@ td.orphaned-data-item-fixed {
 }
 
 .table-condensed > thead > tr > th.trim-level {
-    font-size:8pt;
+    font-size:11px;
     border-top: none;
     border-right: solid 1px #2E4372;
     border-bottom: solid 1px #2E4372;
@@ -1394,7 +1394,7 @@ td.orphaned-data-item-fixed {
 }
 
 .table-condensed > thead > tr > th.model-mix {
-    font-size:8pt;
+    font-size:11px;
     color:#cecece;
     text-align:center;
     border-top: none;
@@ -1403,7 +1403,7 @@ td.orphaned-data-item-fixed {
 }
 
 .table-condensed > thead > tr > th.feature-description {
-    font-size:8pt;
+    font-size:11px;
     color:#cecece;
     border-top: none;
     border-right: solid 1px #2E4372;

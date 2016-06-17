@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace FeatureDemandPlanning.Model.Extensions
@@ -9,7 +10,7 @@ namespace FeatureDemandPlanning.Model.Extensions
         {
             var retVal = string.Empty;
             var sb = new StringBuilder();
-            foreach (var model in models)
+            foreach (var model in models.OrderBy(m => m.DisplayOrder))
             {
                 if (model.FdpModelId.HasValue)
                 {

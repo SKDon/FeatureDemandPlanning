@@ -19,6 +19,9 @@ namespace FeatureDemandPlanning.Model
 
         public DateTime? UpdatedOn { get; set; }
 
+        public int? Volume { get; set; }
+        public decimal? PercentageTakeRate { get; set; }
+
         public FdpFeature()
         {
             IsActive = true;

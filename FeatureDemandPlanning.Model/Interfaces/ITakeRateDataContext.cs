@@ -17,6 +17,7 @@ namespace FeatureDemandPlanning.Model.Interfaces
         Task<ITakeRateDocument> GetTakeRateDocument(TakeRateFilter filter);
         
         Task<TakeRateData> GetTakeRateDocumentData(TakeRateFilter filter);
+        Task<TakeRateData> GetTakeRateDocumentFeatures(TakeRateFilter filter);
 
         Task<TakeRateDataItem> GetDataItem(TakeRateFilter filter);
         Task<IEnumerable<TakeRateDataItemNote>> ListDataItemNotes(TakeRateFilter filter);
