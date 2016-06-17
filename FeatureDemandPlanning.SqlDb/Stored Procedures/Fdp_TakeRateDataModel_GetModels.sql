@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Fdp_AvailableModelByMarket_GetMany]   
+﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateDataModel_GetModels]   
 	  @FdpVolumeHeaderId	INT
 	, @MarketId				INT
 	, @BMC					NVARCHAR(5) = NULL
@@ -210,35 +210,42 @@ AS
 	END
 	
 	SELECT 
-	  StringIdentifier		
-	, DisplayOrder			
-	, VehicleName			
-	, VehicleAKA			
-	, ModelYear				
-	, DisplayFormat			
-	, Name					
-	, NameWithBR			
-	, Id					
-	, FdpModelId			
-	, BMC					
-	, ProgrammeId			
-	, BodyId				
-	, EngineId				
-	, TransmissionId		
-	, TrimId				
-	, FdpTrimId				
-	, DPCK					
-	, TrimLevel				
-	, CoA					
-	, Active				
-	, CreatedBy				
-	, CreatedOn				
-	, UpdatedBy				
-	, LastUpdated			
-	, Shape					
-	, KD					
-	, Available				
+	  M.StringIdentifier		
+	, M.DisplayOrder			
+	, M.VehicleName			
+	, M.VehicleAKA			
+	, M.ModelYear				
+	, M.DisplayFormat			
+	, M.Name					
+	, M.NameWithBR			
+	, M.Id								
+	, M.BMC					
+	, M.ProgrammeId			
+	, M.BodyId				
+	, M.EngineId				
+	, M.TransmissionId		
+	, M.TrimId							
+	, M.DPCK					
+	, M.TrimLevel				
+	, M.CoA					
+	, M.Active				
+	, M.CreatedBy				
+	, M.CreatedOn				
+	, M.UpdatedBy				
+	, M.LastUpdated			
+	, M.Shape					
+	, M.KD					
+	, M.Available
+	, S.TotalVolume AS Volume
+	, S.PercentageTakeRate			
 	FROM
-	@Models
+	@Models AS M
+	LEFT JOIN Fdp_TakeRateSummaryByModelAndMarket_VW AS S ON M.Id = S.ModelId
+														  AND
+														  (
+															(@MarketId IS NULL AND S.MarketId IS NULL)
+															OR
+															(@MarketId IS NOT NULL AND S.MarketId = @MarketId)								
+														  )
 	ORDER BY
 	DisplayOrder;

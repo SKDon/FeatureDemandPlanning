@@ -9,10 +9,5 @@ SET NOCOUNT ON;
 DELETE FROM Fdp_Validation 
 WHERE 
 FdpVolumeHeaderId = @FdpVolumeHeaderId 
-AND 
-(
-	ISNULL(ValidationBy, '') = '' 
-	OR ValidationBy = @CDSId
-)
 AND
 (@MarketId IS NULL OR MarketId = @MarketId);

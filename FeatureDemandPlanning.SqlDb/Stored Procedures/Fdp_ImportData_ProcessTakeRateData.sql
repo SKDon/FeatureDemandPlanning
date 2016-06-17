@@ -303,6 +303,10 @@ AS
 	RAISERROR(@Message, 0, 1) WITH NOWAIT
 
 	EXEC Fdp_PowertrainDataItem_CalculateMixForAllDerivatives @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSID = @CDSId;
+
+	SET @Message = 'Calculating ALL MARKET view...'
+
+	EXEC Fdp_TakeRateData_CalculateAllMarkets 13, @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSID = @CDSId;
 	
 	EXEC Fdp_TakeRateHeader_Get @FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	

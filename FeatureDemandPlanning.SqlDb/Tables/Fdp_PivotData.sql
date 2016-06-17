@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[Fdp_PivotData] (
+CREATE TABLE [dbo].[Fdp_PivotData] (
     [FdpPivotDataId]                   INT             IDENTITY (1, 1) NOT NULL,
     [FdpPivotHeaderId]                 INT             NOT NULL,
     [DisplayOrder]                     INT             NULL,
@@ -23,17 +23,24 @@
     [IsOrphanedData]                   BIT             NOT NULL,
     [IsIgnoredData]                    BIT             NOT NULL,
     [IsMappedToMultipleImportFeatures] BIT             NOT NULL,
+    [IsCombinedPackOption]             BIT             CONSTRAINT [DF_Fdp_PivotData_IsCombinedPackOption] DEFAULT ((0)) NOT NULL,
+    [IsOptionalPackItem]               BIT             CONSTRAINT [DF_Fdp_PivotData_IsOptionalPackItem] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_Fdp_PivotData] PRIMARY KEY CLUSTERED ([FdpPivotDataId] ASC),
     CONSTRAINT [FK_Fdp_PivotData_Fdp_PivotHeader] FOREIGN KEY ([FdpPivotHeaderId]) REFERENCES [dbo].[Fdp_PivotHeader] ([FdpPivotHeaderId])
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_PivotData_Cover]
-    ON [dbo].[Fdp_PivotData]([FdpPivotHeaderId] ASC, [FeatureCode] ASC, [FeatureId] ASC, [FeaturePackId] ASC, [ModelId] ASC, [StringIdentifier] ASC, [FeatureIdentifier] ASC);
+    ON [dbo].[Fdp_PivotData]([FdpPivotHeaderId] ASC, [FeatureCode] ASC, [FeatureId] ASC, [FeaturePackId] ASC, [ModelId] ASC, [StringIdentifier] ASC, [FeatureIdentifier] ASC, [IsCombinedPackOption] ASC, [IsOptionalPackItem] ASC);
+
+
 
 
 GO
-ALTER INDEX [Ix_NC_Fdp_PivotData_Cover]
-    ON [dbo].[Fdp_PivotData] DISABLE;
+CREATE NONCLUSTERED INDEX [Ix_NC_Fdp_PivotData_PivotHeader]
+    ON [dbo].[Fdp_PivotData]([FdpPivotHeaderId] ASC)
+    INCLUDE([DisplayOrder], [FeatureCode], [Volume], [PercentageTakeRate], [OxoCode], [StringIdentifier], [FeatureIdentifier], [IsCombinedPackOption], [IsOptionalPackItem]);
 

@@ -25,8 +25,9 @@ AS
 
 	DECLARE @FdpVolumeDataItemId INT;
 	DECLARE @FdpTakeRateSummaryId INT;
+	DECLARE @FdpTakeRateFeatureMixId INT;
 	
-	IF @FeatureId IS NOT NULL OR @FeaturePackId IS NOT NULL
+	IF (@FeatureId IS NOT NULL OR @FeaturePackId IS NOT NULL) AND @ModelId IS NOT NULL 
 	BEGIN
 		SELECT TOP 1 @FdpVolumeDataItemId = FdpVolumeDataItemId
 		FROM
@@ -44,6 +45,21 @@ AS
 		(@FeaturePackId IS NULL OR D.FeaturePackId = @FeaturePackId)
 		AND
 		D.IsFeatureData = 1;
+	END
+	ELSE IF (@FeatureId IS NOT NULL OR @FeaturePackId IS NOT NULL) AND @ModelId IS NULL 
+	BEGIN
+		SELECT TOP 1 @FdpTakeRateFeatureMixId = FdpTakeRateFeatureMixId
+		FROM
+		Fdp_VolumeHeader			AS H
+		JOIN Fdp_TakeRateFeatureMix	AS F ON H.FdpVolumeHeaderId = F.FdpVolumeHeaderId
+		WHERE
+		H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		(@MarketId IS NULL OR F.MarketId = @MarketId)
+		AND
+		(@FeatureId IS NULL OR F.FeatureId = @FeatureId)
+		AND
+		(@FeaturePackId IS NULL OR F.FeaturePackId = @FeaturePackId)
 	END
 	ELSE
 	BEGIN
@@ -77,7 +93,7 @@ AS
 		, 0
 		, @FdpVolumeDataItemId
 		, @FdpTakeRateSummaryId
-		, NULL
+		, @FdpTakeRateFeatureMixId
 		, NULL
 		, 0
 		, 0

@@ -47,6 +47,11 @@ BEGIN
 	D.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	(@MarketId IS NULL OR D.MarketId = @MarketId);
+
+	DECLARE @AllMarketVolume AS INT
+	SELECT @AllMarketVolume = SUM(TotalVolume)
+	FROM Fdp_TakeRateSummaryByMarket_VW
+	WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId
 	
 	-- Add all volume data existing rows to our data table
 	
@@ -116,6 +121,28 @@ BEGIN
 	, D.DerivativeCode
 	, D.FdpOxoDerivativeId
 	, D.FdpDerivativeId
+
+	UNION
+
+	SELECT 
+		  D.FdpVolumeHeaderId
+		, NULL AS MarketId
+		, D.DerivativeCode
+		, D.FdpOxoDerivativeId
+		, D.FdpDerivativeId
+		, SUM(D.TotalVolume) AS TotalVolume
+		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(D.TotalVolume), @AllMarketVolume) AS PercentageTakeRate
+		, MAX(CUR.FdpPowertrainDataItemId) AS FdpPowertrainDataItemId
+	FROM 
+	@DataForDerivative	AS D
+	LEFT JOIN Fdp_PowertrainDataItem AS CUR ON	D.DerivativeCode	= CUR.DerivativeCode
+											AND D.FdpVolumeHeaderId = CUR.FdpVolumeHeaderId
+											AND CUR.MarketId IS NULL
+	GROUP BY
+	  D.FdpVolumeHeaderId
+	, D.DerivativeCode
+	, D.FdpOxoDerivativeId
+	, D.FdpDerivativeId
     
 	-- Update existing entries
 
@@ -160,5 +187,5 @@ BEGIN
 	WHERE
 	D.FdpPowertrainDataItemId IS NULL;
 
-
+	
 END

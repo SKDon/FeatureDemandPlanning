@@ -3,7 +3,7 @@
     [CreatedOn]               DATETIME       CONSTRAINT [DF_Fdp_PowertrainDataItem_CreatedOn] DEFAULT (getdate()) NOT NULL,
     [CreatedBy]               NVARCHAR (16)  CONSTRAINT [DF_Fdp_PowertrainDataItem_CreatedBy] DEFAULT (suser_sname()) NOT NULL,
     [FdpVolumeHeaderId]       INT            NOT NULL,
-    [MarketId]                INT            NOT NULL,
+    [MarketId]                INT            NULL,
     [DerivativeCode]          NVARCHAR (20)  NULL,
     [FdoOxoDerivativeId]      INT            NULL,
     [FdpDerivativeId]         INT            NULL,
@@ -11,12 +11,14 @@
     [PercentageTakeRate]      DECIMAL (5, 4) CONSTRAINT [DF_Fdp_PowertrainDataItem_PercentageTakeRate] DEFAULT ((0)) NOT NULL,
     [UpdatedOn]               DATETIME       NULL,
     [UpdatedBy]               NVARCHAR (16)  NULL,
-    CONSTRAINT [PK_Fdp_PowertrainDataItem] PRIMARY KEY CLUSTERED ([FdpPowertrainDataItemId] ASC),
+    CONSTRAINT [PK_Fdp_PowertrainDataItem] PRIMARY KEY CLUSTERED ([FdpPowertrainDataItemId] ASC) WITH (FILLFACTOR = 90),
     CONSTRAINT [FK_Fdp_PowertrainDataItem_Fdp_Derivative] FOREIGN KEY ([FdpDerivativeId]) REFERENCES [dbo].[Fdp_Derivative] ([FdpDerivativeId]),
     CONSTRAINT [FK_Fdp_PowertrainDataItem_Fdp_OxoDervivative] FOREIGN KEY ([FdoOxoDerivativeId]) REFERENCES [dbo].[Fdp_OxoDerivative] ([FdpOxoDerivativeId]),
     CONSTRAINT [FK_Fdp_PowertrainDataItem_Fdp_VolumeHeader] FOREIGN KEY ([FdpVolumeHeaderId]) REFERENCES [dbo].[Fdp_VolumeHeader] ([FdpVolumeHeaderId]),
     CONSTRAINT [FK_Fdp_PowertrainDataItem_OXO_Master_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[OXO_Master_Market] ([Id])
 );
+
+
 
 
 

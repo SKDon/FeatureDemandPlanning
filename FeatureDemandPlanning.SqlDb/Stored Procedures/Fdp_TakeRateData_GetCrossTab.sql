@@ -1,12 +1,15 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_TakeRateData_GetCrossTab] 
-    @FdpVolumeHeaderId	INT = NULL
-  , @DocumentId			INT = NULL
-  , @Mode				NVARCHAR(2)
-  , @ObjectId			INT = NULL
-  , @ModelIds			NVARCHAR(MAX)
-  , @ShowPercentage		BIT = 0
-  , @IsExport			BIT = 0
-  , @Filter				NVARCHAR(100) = NULL
+    @FdpVolumeHeaderId			INT = NULL
+  , @DocumentId					INT = NULL
+  , @Mode						NVARCHAR(2)
+  , @ObjectId					INT = NULL
+  , @ModelIds					NVARCHAR(MAX)
+  , @ShowPercentage				BIT = 0
+  , @IsExport					BIT = 0
+  , @Filter						NVARCHAR(100) = NULL
+  , @FeatureCode				NVARCHAR(5) = NULL
+  , @ShowCombinedOptions		BIT = 0
+  , @ExcludeOptionalPackItems	BIT = 0
 AS
 	SET NOCOUNT ON;
 
@@ -17,6 +20,8 @@ AS
 	DECLARE @FdpOxoDocId		INT;
 	DECLARE @FilteredVolume		INT;
 	DECLARE @FilteredPercentage	DECIMAL(5,4);
+	DECLARE @ModelMix			DECIMAL(5, 4);
+	DECLARE @ModelVolume		INT;
 	DECLARE @TotalVolume		INT;
 
 	-- If the take rate file has not been specified explicitly work out the latest file
@@ -63,6 +68,8 @@ AS
 
 	SELECT @FilteredVolume = @TotalVolume;
 	SET @FilteredPercentage = 1;
+	SET @ModelMix = 1
+	SET @ModelVolume = @TotalVolume;
 
 	IF @ObjectId IS NOT NULL 
 	BEGIN
@@ -74,6 +81,16 @@ AS
 		MarketId = @ObjectId
 		AND
 		ModelId IS NULL;
+
+		SELECT @ModelMix = SUM(PercentageTakeRate), @ModelVolume = SUM(Volume)
+		FROM
+		Fdp_TakeRateSummary
+		WHERE
+		FdpVolumeHeaderId = @FdpVolumeHeaderId
+		AND
+		(@ObjectId IS NULL OR MarketId = @ObjectId)
+		AND
+		ModelId IS NOT NULL;
 	END;
 
 	DECLARE @FdpPivotHeaderId AS INT;
@@ -107,11 +124,21 @@ AS
 		SET @Sql = @Sql + '  SystemDescription, HasRule, LongDescription, FeaturePackId, IsOrphanedData, IsIgnoredData, IsMappedToMultipleImportFeatures, ISNULL(Volume, 0) AS Volume '
 		SET @Sql = @Sql + '  FROM Fdp_PivotData '
 		SET @Sql = @Sql + '  WHERE FdpPivotHeaderId = ' + CAST(@FdpPivotHeaderId AS NVARCHAR(10)) + ' '
+		
+		IF @FeatureCode IS NOT NULL
+			SET @Sql = @Sql + ' AND FeatureCode = ''' + @FeatureCode + ''''
+
+		IF @ShowCombinedOptions = 0
+			SET @Sql = @Sql + ' AND IsCombinedPackOption = 0'
+
+		IF @ExcludeOptionalPackItems = 1
+			SET @Sql = @Sql + ' AND IsOptionalPackItem = 0'
+
 		SET @Sql = @Sql + ') AS S1 '
 		SET @Sql = @Sql + 'LEFT JOIN '
 		SET @Sql = @Sql + '( '
 		SET @Sql = @Sql + ' SELECT FdpVolumeHeaderId, MarketId AS FeatureMixMarketId, FeatureIdentifier AS FeatureMixIdentifier, Volume AS TotalVolume, PercentageTakeRate AS TotalPercentageTakeRate '
-		SET @Sql = @Sql + ' FROM Fdp_TakeRateFeatureMix AS F '
+		SET @Sql = @Sql + ' FROM Fdp_TakeRateFeatureMixPivot_VW AS F '
 		SET @Sql = @Sql + ') '
 		SET @Sql = @Sql + 'AS FMIX ON S1.FeatureIdentifier = FMIX.FeatureMixIdentifier '
 		SET @Sql = @Sql + 'AND FMIX.FdpVolumeHeaderId = ' + CAST(@FdpVolumeHeaderId AS NVARCHAR(10)) + ' '
@@ -134,11 +161,21 @@ AS
 		SET @Sql = @Sql + '  SystemDescription, HasRule, LongDescription, FeaturePackId, IsOrphanedData, IsIgnoredData, IsMappedToMultipleImportFeatures, PercentageTakeRate '
 		SET @Sql = @Sql + '  FROM Fdp_PivotData '
 		SET @Sql = @Sql + '  WHERE FdpPivotHeaderId = ' + CAST(@FdpPivotHeaderId AS NVARCHAR(10)) + ' '
+
+		IF @FeatureCode IS NOT NULL
+			SET @Sql = @Sql + ' AND FeatureCode = ''' + @FeatureCode + ''''
+
+		IF @ShowCombinedOptions = 0
+			SET @Sql = @Sql + ' AND IsCombinedPackOption = 0'
+
+		IF @ExcludeOptionalPackItems = 1
+			SET @Sql = @Sql + ' AND IsOptionalPackItem = 0'
+
 		SET @Sql = @Sql + ') AS S2 '
 		SET @Sql = @Sql + 'LEFT JOIN '
 		SET @Sql = @Sql + '( '
 		SET @Sql = @Sql + ' SELECT FdpVolumeHeaderId, MarketId AS FeatureMixMarketId, FeatureIdentifier AS FeatureMixIdentifier, PercentageTakeRate AS TotalPercentageTakeRate '
-		SET @Sql = @Sql + ' FROM Fdp_TakeRateFeatureMix AS F '
+		SET @Sql = @Sql + ' FROM Fdp_TakeRateFeatureMixPivot_VW AS F '
 		SET @Sql = @Sql + ') '
 		SET @Sql = @Sql + 'AS FMIX ON S2.FeatureIdentifier = FMIX.FeatureMixIdentifier '
 		SET @Sql = @Sql + 'AND FMIX.FdpVolumeHeaderId = ' + CAST(@FdpVolumeHeaderId AS NVARCHAR(10)) + ' '
@@ -165,7 +202,15 @@ AS
 	SET @Sql = @Sql + 'FROM ( '
 	SET @Sql = @Sql + 'SELECT RANK() OVER (ORDER BY DisplayOrder, FeatureCode, FeatureIdentifier) AS Id, DisplayOrder, FeatureIdentifier, FeatureGroup, FeatureSubGroup, FeatureCode, BrandDescription, FeatureComment, FeatureRuleText, ExclusiveFeatureGroup, StringIdentifier, '
 	SET @Sql = @Sql + 'SystemDescription, HasRule, LongDescription, FeaturePackId, IsOrphanedData, IsIgnoredData, IsMappedToMultipleImportFeatures, OXOCode '
-	SET @Sql = @Sql + 'FROM Fdp_PivotData WHERE FdpPivotHeaderId = ' + CAST(@FdpPivotHeaderId AS NVARCHAR(10)) + ') AS S3 '
+	SET @Sql = @Sql + 'FROM Fdp_PivotData WHERE FdpPivotHeaderId = ' + CAST(@FdpPivotHeaderId AS NVARCHAR(10))
+	
+	IF @ShowCombinedOptions = 0
+		SET @Sql = @Sql + ' AND IsCombinedPackOption = 0'
+
+	IF @ExcludeOptionalPackItems = 1
+		SET @Sql = @Sql + ' AND IsOptionalPackItem = 0'
+
+	SET @Sql = @Sql + ') AS S3 '
 	SET @Sql = @Sql + 'PIVOT ( '
 	SET @Sql = @Sql + 'MAX([OXOCode]) FOR StringIdentifier '
 	SET @Sql = @Sql + 'IN (' + @ModelIds + ')) AS DATASET '
@@ -177,74 +222,21 @@ AS
 	-- Third dataset returning volume and percentage take rate by derivative
 	-- Calculate the total volumes for the whole unfiltered dataset and the filtered dataset
 
-	IF @Mode = 'MG'
-	BEGIN
-		SELECT 
+	SELECT 
 		  M.StringIdentifier
 		, M.IsFdpModel
 		, SUM(S.TotalVolume) AS Volume
 		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(S.TotalVolume), @FilteredVolume) AS PercentageOfFilteredVolume
-		FROM
-		Fdp_TakeRateSummaryByModelAndMarket_VW AS S
-		JOIN @Model AS M ON S.ModelId = M.ModelId
-						 AND M.IsFdpModel = 0
-		WHERE
-		S.FdpVolumeHeaderId = @FdpVolumeHeaderId
-		AND
-		(@MarketGroupId IS NULL OR S.MarketGroupId = @MarketGroupId)
-		GROUP BY
-		M.StringIdentifier, M.IsFdpModel
-
-		UNION
-
-		SELECT 
-			  M.StringIdentifier
-			, M.IsFdpModel
-			, SUM(S.TotalVolume) AS Volume
-			, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(S.TotalVolume), @FilteredVolume) AS PercentageOfFilteredVolume
-		FROM
-		Fdp_TakeRateSummaryByModelAndMarket_VW AS S
-		JOIN @Model AS M ON S.FdpModelId = M.ModelId
-						 AND M.IsFdpModel = 1
-		WHERE
-		S.FdpVolumeHeaderId = @FdpVolumeHeaderId
-		AND
-		(@MarketGroupId IS NULL OR S.MarketGroupId = @MarketGroupId)
-		GROUP BY
-		M.StringIdentifier, M.IsFdpModel
-	END
-	ELSE
-	BEGIN
-	SELECT 
-		  M.StringIdentifier
-		, M.IsFdpModel
-		, S.TotalVolume AS Volume
-		, S.PercentageTakeRate AS PercentageOfFilteredVolume
-		FROM
-		Fdp_TakeRateSummaryByModelAndMarket_VW AS S
-		JOIN @Model AS M ON S.ModelId = M.ModelId
-						 AND M.IsFdpModel = 0
-		WHERE
-		S.FdpVolumeHeaderId = @FdpVolumeHeaderId
-		AND
-		S.MarketId = @ObjectId
-
-		UNION
-
-		SELECT 
-			  M.StringIdentifier
-			, M.IsFdpModel
-			, S.TotalVolume
-			, S.PercentageTakeRate AS PercentageOfFilteredVolume
-		FROM
-		Fdp_TakeRateSummaryByModelAndMarket_VW AS S
-		JOIN @Model AS M ON S.FdpModelId = M.ModelId
-						 AND M.IsFdpModel = 1
-		WHERE
-		S.FdpVolumeHeaderId = @FdpVolumeHeaderId
-		AND
-		S.MarketId = @ObjectId
-	END
+	FROM
+	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
+	JOIN @Model AS M ON S.ModelId = M.ModelId
+						AND M.IsFdpModel = 0
+	WHERE
+	S.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	(@ObjectId IS NULL OR S.MarketId = @ObjectId)
+	GROUP BY
+	M.StringIdentifier, M.IsFdpModel
 	
 	-- Summary dataset returning the meta information for the data (created by, updated, total volume mix, volume for market, etc)
 	
@@ -252,6 +244,8 @@ AS
 		  ISNULL(@TotalVolume, 0)				AS TotalVolume
 		, ISNULL(@FilteredVolume, 0)			AS FilteredVolume
 		, ISNULL(@FilteredPercentage, 0.0)		AS PercentageOfTotalVolume
+		, ISNULL(@ModelMix, 0)					AS ModelMix
+		, ISNULL(@ModelVolume, 0)				AS ModelVolume
 		, H.CreatedBy
 		, H.CreatedOn
 		
@@ -268,9 +262,8 @@ AS
 		, D.MarketId
 		, D.MarketGroupId
 		, D.ModelId
-		, D.FdpModelId
 		, D.FeatureId
-		, D.FdpFeatureId
+		, D.FeaturePackId
 		
 	FROM Fdp_VolumeHeader	AS H
 	JOIN
@@ -307,9 +300,8 @@ AS
 		, S.MarketId
 		, CAST(NULL AS INT) AS MarketGroupId
 		, S.ModelId
-		, S.FdpModelId
 		, CAST(NULL AS INT) AS FeatureId
-		, CAST(NULL AS INT) AS FdpFeatureId
+		, CAST(NULL AS INT) AS FeaturePackId
 		
 	FROM Fdp_VolumeHeader	AS H
 	JOIN
@@ -333,6 +325,40 @@ AS
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
 	(@Mode = 'M' AND (@ObjectId IS NULL OR S.MarketId = @ObjectId))
+
+	UNION
+	
+	SELECT 
+		  CAST(NULL AS INT) AS FdpVolumeDataItemId
+		, F.FdpTakeRateFeatureMixId
+		, F.MarketId
+		, CAST(NULL AS INT) AS MarketGroupId
+		, CAST(NULL AS INT) AS ModelId
+		, F.FeatureId AS FeatureId
+		, F.FeaturePackId AS FeaturePackId
+		
+	FROM Fdp_VolumeHeader	AS H
+	JOIN
+	(
+		SELECT
+			  H.DocumentId
+			, H.FdpVolumeHeaderId
+			, F.FdpTakeRateFeatureMixId
+		FROM 
+		Fdp_VolumeHeader				AS H
+		JOIN Fdp_TakeRateFeatureMix		AS F ON	H.FdpVolumeHeaderId	= F.FdpVolumeHeaderId
+		JOIN Fdp_TakeRateDataItemNote	AS N ON F.FdpTakeRateFeatureMixId = N.FdpTakeRateFeatureMixId
+		GROUP BY
+		  H.DocumentId
+		, H.FdpVolumeHeaderId
+		, F.FdpTakeRateFeatureMixId
+	)
+							AS N	ON	H.FdpVolumeHeaderId		= N.FdpVolumeHeaderId
+	JOIN Fdp_TakeRateFeatureMix	AS F	ON	N.FdpTakeRateFeatureMixId	= F.FdpTakeRateFeatureMixId
+	WHERE 
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	(@Mode = 'M' AND (@ObjectId IS NULL OR F.MarketId = @ObjectId))
 	
 	-- Exclusive feature groups
 	

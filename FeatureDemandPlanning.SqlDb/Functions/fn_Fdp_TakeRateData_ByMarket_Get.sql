@@ -66,18 +66,21 @@ BEGIN
 		--, CAST(CASE WHEN ISNULL(F.IsActive, 0) = 0 THEN 1 ELSE 0 END AS BIT) AS IsOrphanedData	
     FROM 
 	Fdp_VolumeHeader_VW						AS H
-	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	H.ProgrammeId		= MK.Programme_Id
+	--JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	H.ProgrammeId		= MK.Programme_Id
 	CROSS APPLY @Models						AS M 
 	JOIN Fdp_Feature_VW						AS AF	ON	H.DocumentId		= AF.DocumentId
 													AND AF.FeatureId		IS NOT NULL
-	LEFT JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-		    										AND MK.Market_Id		= D.MarketId
+	JOIN Fdp_VolumeDataItem_VW				AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
 													AND M.ModelId			= D.ModelId
 													AND AF.FeatureId		= D.FeatureId										
 	WHERE 
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	(@MarketId IS NULL OR MK.Market_Id = @MarketId)
+	(
+		(@MarketId IS NULL AND D.MarketId IS NULL)
+		OR
+		(@MarketId IS NOT NULL AND D.MarketId = @MarketId)
+	)
 	
 	UNION
 	
@@ -95,20 +98,22 @@ BEGIN
 		--, CAST(CASE WHEN ISNULL(F.IsActive, 0) = 0 THEN 1 ELSE 0 END AS BIT) AS IsOrphanedData	
     FROM 
 	Fdp_VolumeHeader_VW						AS H
-	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	H.ProgrammeId		= MK.Programme_Id
 	CROSS APPLY @Models						AS M 
 	JOIN Fdp_Feature_VW						AS AF	ON	H.DocumentId		= AF.DocumentId
 													AND AF.FeatureId		IS NULL
 													AND	AF.FeaturePackId	IS NOT NULL
 	LEFT JOIN Fdp_VolumeDataItem_VW			AS D	ON	H.FdpVolumeHeaderId = D.FdpVolumeHeaderId
-		    										AND MK.Market_Id		= D.MarketId
 													AND M.ModelId			= D.ModelId
 													AND AF.FeaturePackId	= D.FeaturePackId
 													AND D.FeatureId			IS NULL										
 	WHERE 
 	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	(@MarketId IS NULL OR MK.Market_Id = @MarketId)
+	(
+		(@MarketId IS NULL AND D.MarketId IS NULL)
+		OR
+		(@MarketId IS NOT NULL AND D.MarketId = @MarketId)
+	)
 	
 	RETURN; 
 END

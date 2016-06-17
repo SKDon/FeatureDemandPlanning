@@ -1,10 +1,10 @@
-CREATE TABLE [dbo].[Fdp_VolumeDataItem] (
+﻿CREATE TABLE [dbo].[Fdp_VolumeDataItem] (
     [FdpVolumeDataItemId]         INT            IDENTITY (1, 1) NOT NULL,
     [CreatedOn]                   DATETIME       CONSTRAINT [DF_Fdp_VolumeDataItem_CreatedOn] DEFAULT (getdate()) NOT NULL,
     [CreatedBy]                   NVARCHAR (16)  NULL,
     [FdpVolumeHeaderId]           INT            NOT NULL,
     [IsManuallyEntered]           BIT            CONSTRAINT [DF_Fdp_VolumeDataItem_IsManuallyEntered] DEFAULT ((1)) NOT NULL,
-    [MarketId]                    INT            NOT NULL,
+    [MarketId]                    INT            NULL,
     [MarketGroupId]               INT            NULL,
     [ModelId]                     INT            NULL,
     [FdpModelId]                  INT            NULL,
@@ -25,6 +25,8 @@ CREATE TABLE [dbo].[Fdp_VolumeDataItem] (
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Model] FOREIGN KEY ([ModelId]) REFERENCES [dbo].[OXO_Programme_Model] ([Id]),
     CONSTRAINT [FK_Fdp_VolumeDataItem_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id])
 );
+
+
 
 
 

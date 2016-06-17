@@ -76,6 +76,7 @@ BEGIN
 		, C1.FdpChangesetDataItemId
 		, NULL AS FdpChangesetDataItemId
 		, CAST(0 AS BIT) AS IsOrphanedData
+		, CAST(CASE WHEN F.FeatureCode LIKE 'UNC%' THEN 1 ELSE 0 END AS BIT) AS IsUncodedFeature
     FROM
     Fdp_VolumeHeader_VW						AS H
 	JOIN Fdp_Feature_VW						AS F	ON	H.DocumentId		= F.DocumentId
@@ -136,6 +137,7 @@ BEGIN
 		, C1.FdpChangesetDataItemId
 		, NULL AS FdpChangesetDataItemId
 		, CAST(0 AS BIT) AS IsOrphanedData
+		, CAST(CASE WHEN F.FeatureCode LIKE 'UNC%' THEN 1 ELSE 0 END AS BIT) AS IsUncodedFeature
     FROM
     Fdp_VolumeHeader_VW						AS H
 	JOIN Fdp_Feature_VW						AS F	ON	H.DocumentId		= F.DocumentId

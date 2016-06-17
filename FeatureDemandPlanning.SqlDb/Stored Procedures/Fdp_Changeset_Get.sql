@@ -65,3 +65,23 @@ AS
 	IsDeleted = 0
 	ORDER BY
 	D.FdpChangesetDataItemId DESC;
+
+	-- Final dataset yields the updated model mix (if any)
+	-- Can't include in the dataset above as it's an aggregation
+
+	SELECT 
+		  SUM(ISNULL(D.PercentageTakeRate, S.PercentageTakeRate)) AS ModelMix
+		, SUM(ISNULL(D.TotalVolume, S.Volume)) AS ModelVolume
+		, CAST(CASE WHEN SUM(D.PercentageTakeRate) > 0 THEN 1 ELSE 0 END AS BIT) AS HasModelMixChanged
+		, CAST(CASE WHEN SUM(D.TotalVolume) > 0 THEN 1 ELSE 0 END AS BIT) AS HasModelVolumeChanged
+		, @IsMarketReview AS IsMarketReview
+	FROM
+	Fdp_Changeset AS C
+	JOIN Fdp_TakeRateSummary		AS S	ON	C.FdpVolumeHeaderId = S.FdpVolumeHeaderId
+											AND C.MarketId			= S.MarketId
+											AND S.ModelId IS NOT NULL
+	LEFT JOIN Fdp_ChangesetDataItem AS D	ON	C.FdpChangesetId		= D.FdpChangesetId
+											AND S.FdpTakeRateSummaryId	= D.FdpTakeRateSummaryId
+											AND D.IsDeleted = 0
+	WHERE
+	C.FdpChangesetId = @FdpChangesetId;

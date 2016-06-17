@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_Changeset_PersistChanges]
 	  @FdpChangesetId	AS INT
-	, @Comment		AS NVARCHAR(MAX)
+	, @Comment			AS NVARCHAR(MAX)
+	, @CDSID			AS NVARCHAR(16)
 AS
 	SET NOCOUNT ON;
 
@@ -164,3 +165,7 @@ AS
 
 	DELETE FROM Fdp_PivotData WHERE FdpPivotHeaderId IN (SELECT FdpPivotHeaderId FROM Fdp_PivotHeader WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId AND (MarketId = @MarketId OR MarketId IS NULL));
 	DELETE FROM Fdp_PivotHeader WHERE FdpPivotHeaderId IN (SELECT FdpPivotHeaderId FROM Fdp_PivotHeader WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId AND (MarketId = @MarketId OR MarketId IS NULL));
+
+	-- Update the ALL MARKETS view accordingly
+
+	EXEC Fdp_TakeRateData_CalculateAllMarkets @FdpVolumeHeaderId = @FdpVolumeHeaderId, @CDSID = @CDSID;

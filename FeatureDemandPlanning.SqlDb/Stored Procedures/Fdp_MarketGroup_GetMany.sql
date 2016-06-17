@@ -1,8 +1,12 @@
 ﻿CREATE PROCEDURE [dbo].[Fdp_MarketGroup_GetMany]
-  @DocumentId int,	
-  @CDSId NVARCHAR(16)
+  @DocumentId int = NULL,	
+  @CDSId NVARCHAR(16),
+  @FdpVolumeHeaderId INT = NULL
 AS
 	SET NOCOUNT ON;
+
+	IF @DocumentId IS NULL
+		SELECT TOP 1 @DocumentId = DocumentId FROM Fdp_VolumeHeader_VW WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
 	
 	DECLARE @ProgrammeId AS INT;
 	
@@ -67,7 +71,8 @@ AS
 					M.PAR AS PAR_L,
 					M.Market_Group_Id AS ParentId,
 					M.SubRegion AS SubRegion,
-					M.SubRegionOrder
+					M.SubRegionOrder,
+					M.Market_Group_Name
 				FROM OXO_Programme_MarketGroupMarket_VW AS M WITH(NOLOCK)
 				JOIN dbo.fn_Fdp_UserMarkets_GetMany2(@CDSId) AS SEC ON M.Market_Id = SEC.MarketId
 				WHERE Programme_Id = @ProgrammeId
@@ -75,6 +80,7 @@ AS
 			SELECT MK.Id, MK.Name, MK.WHD AS WHD,
 				   MK.PAR_X, MK.PAR_L, MK.ParentId,
 				   MK.SubRegion, MK.SubRegionOrder,
+				   MK.Market_Group_Name AS GroupName,
 				   ISNULL(M.VariantCount,0) AS VariantCount  
 			FROM markets MK
 			LEFT OUTER JOIN models M

@@ -6,6 +6,7 @@
 
 
 
+
 CREATE VIEW [dbo].[Fdp_TakeRateSummaryByModelAndMarket_VW] AS
 
 	WITH TotalsByModelAndMarket AS
@@ -49,7 +50,7 @@ CREATE VIEW [dbo].[Fdp_TakeRateSummaryByModelAndMarket_VW] AS
 		, T.PercentageTakeRate
 		, T.FdpTakeRateSummaryId
 	FROM TotalsByModelAndMarket				AS T
-	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	T.ProgrammeId = MK.Programme_Id
+	LEFT JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON	T.ProgrammeId = MK.Programme_Id
 													AND	T.MarketId	= MK.Market_Id
 	LEFT JOIN OXO_Programme_Model			AS M	ON	T.ProgrammeId = M.Programme_Id
 													AND	T.ModelId		= M.Id

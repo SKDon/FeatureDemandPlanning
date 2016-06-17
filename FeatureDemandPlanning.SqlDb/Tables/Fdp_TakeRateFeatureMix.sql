@@ -1,4 +1,4 @@
-CREATE TABLE [dbo].[Fdp_TakeRateFeatureMix] (
+﻿CREATE TABLE [dbo].[Fdp_TakeRateFeatureMix] (
     [FdpTakeRateFeatureMixId] INT            IDENTITY (1, 1) NOT NULL,
     [CreatedOn]               DATETIME       CONSTRAINT [DF_Fdp_TakeRateFeatureMix_CreatedOn] DEFAULT (getdate()) NOT NULL,
     [CreatedBy]               NVARCHAR (25)  CONSTRAINT [DF_Fdp_TakeRateFeatureMix_CreatedBy] DEFAULT (suser_sname()) NOT NULL,
@@ -17,6 +17,10 @@ CREATE TABLE [dbo].[Fdp_TakeRateFeatureMix] (
     CONSTRAINT [FK_Fdp_TakeRateFeatureMix_OXO_Feature_Ext] FOREIGN KEY ([FeatureId]) REFERENCES [dbo].[OXO_Feature_Ext] ([Id]),
     CONSTRAINT [FK_Fdp_TakeRateFeatureMix_OXO_Programme_Pack] FOREIGN KEY ([FeaturePackId]) REFERENCES [dbo].[OXO_Programme_Pack] ([Id])
 );
+
+
+
+
 
 
 

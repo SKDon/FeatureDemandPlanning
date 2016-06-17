@@ -89,6 +89,27 @@ BEGIN
 	AND
 	(@MarketGroupId IS NULL OR M.Market_Group_Id = @MarketGroupId)
 	
+	UNION
+
+	SELECT
+		  P.PublishOn			AS AuditOn
+		, P.PublishBy			AS AuditBy
+		, MK.Market_Name		AS Market
+		, MK.Market_Group_Name	AS MarketGroup
+		, P.Comment
+		, NULL
+		, CAST(1 AS BIT)		AS IsSaved
+		, CAST(0 AS BIT)		AS IsMarketReview
+	FROM
+	Fdp_VolumeHeader_VW						AS H
+	JOIN Fdp_Publish						AS P	ON H.FdpVolumeHeaderId	= P.FdpVolumeHeaderId
+	JOIN OXO_Programme_MarketGroupMarket_VW AS MK	ON H.ProgrammeId		= MK.Programme_Id
+													AND P.MarketId			= MK.Market_Id
+	WHERE
+	H.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	(@MarketId IS NULL OR P.MarketId = @MarketId)
+
 	)
 	AS HISTORY
 	ORDER BY

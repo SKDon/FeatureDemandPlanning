@@ -6,6 +6,10 @@
 );
 
 
+
+
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_NC_Fdp_RawModel]
     ON [dbo].[Fdp_RawModel]([ModelId] ASC, [ModelIdentifier] ASC);
