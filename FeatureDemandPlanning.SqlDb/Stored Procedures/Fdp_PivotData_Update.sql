@@ -268,108 +268,111 @@ AS
 	-- Where we have feature pack items that can be chosen as an option outside of the pack, we need to add an extra row
 	-- for the combined amount. Whilst this row is not used by the UI, any export needs to split the take rate
 	
-	;WITH PackFeaturesAsOptions AS
-	(
-		SELECT
-			  PH.FdpPivotHeaderId
-			, PH.MarketId
-			, H.FdpVolumeHeaderId
-			, F.FeatureId
-			, F.FeaturePackId 
-		FROM 
-		Fdp_PivotHeader					AS PH
-		JOIN Fdp_VolumeHeader_VW		AS H	ON	PH.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
-		JOIN Fdp_Feature_VW				AS F	ON	H.DocumentId			= F.DocumentId
-		JOIN Fdp_FeatureApplicability	AS A	ON	F.FeatureId				= A.FeatureId
-												AND H.DocumentId			= A.DocumentId
-												AND PH.MarketId				= A.MarketId
-		WHERE
-		F.FeaturePackId IS NOT NULL
-		AND
-		A.Applicability LIKE '%O%'
-		AND
-		PH.FdpPivotHeaderId = @FdpPivotHeaderId
-		GROUP BY
-		PH.FdpPivotHeaderId, H.FdpVolumeHeaderId, PH.MarketId, F.FeatureId, F.FeaturePackId
-	)
-
-	INSERT INTO Fdp_PivotData
-	(
-		  FdpPivotHeaderId
-		, DisplayOrder
-		, FeatureGroup
-		, FeatureSubGroup
-		, FeatureCode
-		, BrandDescription
-		, FeatureId
-		, FeaturePackId
-		, FeatureComment
-		, FeatureRuleText
-		, SystemDescription
-		, HasRule
-		, LongDescription
-		, Volume	
-		, PercentageTakeRate
-		, OxoCode		
-		, ModelId
-		, StringIdentifier
-		, FeatureIdentifier	
-		, ExclusiveFeatureGroup
-		, IsOrphanedData
-		, IsIgnoredData
-		, IsMappedToMultipleImportFeatures
-		, IsCombinedPackOption
-	)
-	SELECT
-		  PF.FdpPivotHeaderId
-		, F.DisplayOrder
-		, F.FeatureGroup
-		, F.FeatureSubGroup
-		, F.FeatureCode
-		, F.BrandDescription + ' (COMBINED)' AS BrandDescription
-		, F.FeatureId
-		, F.FeaturePackId	 
-		, F.FeatureComment
-		, F.FeatureRuleText
-		, F.SystemDescription + ' (COMBINED)' AS SystemDescription
-		, F.FeatureRuleText
-		, F.LongDescription
-		, CASE
-			WHEN A.Applicability LIKE '%O%' THEN ISNULL(FT.Volume, 0) + ISNULL(PT.Volume, 0) 
-			ELSE ISNULL(FT.Volume, 0)
-		  END AS Volume
-		, CASE
-			WHEN A.Applicability LIKE '%O%' THEN ISNULL(FT.PercentageTakeRate, 0) + ISNULL(PT.PercentageTakeRate, 0) 
-			ELSE ISNULL(FT.PercentageTakeRate, 0)
-		  END AS PercentageTakeRate
-		, A.Applicability
-		, M.ModelId
-		, M.StringIdentifier
-		, 'O' + CAST(F.FeatureId AS NVARCHAR(10)) + 'C' AS FeatureIdentifier
-		, F.ExclusiveFeatureGroup
-		, 0
-		, 0
-		, 0
-		, CAST(1 AS BIT) AS IsCombinedPackOption
-	FROM
-	PackFeaturesAsOptions		AS PF
-	JOIN Fdp_VolumeHeader_VW	AS H	ON	PF.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
-	JOIN Fdp_Feature_VW			AS F	ON	H.DocumentId			= F.DocumentId
-										AND PF.FeatureId			= F.FeatureId
 	
-	CROSS APPLY dbo.fn_Fdp_SplitModelIds(@ModelIds) AS M
-	JOIN Fdp_FeatureApplicability AS A	ON	H.DocumentId		= A.DocumentId
-										AND PF.MarketId			= A.MarketId
-										AND F.FeatureId			= A.FeatureId
-										AND M.ModelId			= A.ModelId
+	IF @MarketId IS NOT NULL
+	BEGIN
+		;WITH PackFeaturesAsOptions AS
+		(
+			SELECT
+				  PH.FdpPivotHeaderId
+				, PH.MarketId
+				, H.FdpVolumeHeaderId
+				, F.FeatureId
+				, F.FeaturePackId 
+			FROM 
+			Fdp_PivotHeader					AS PH
+			JOIN Fdp_VolumeHeader_VW		AS H	ON	PH.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
+			JOIN Fdp_Feature_VW				AS F	ON	H.DocumentId			= F.DocumentId
+			JOIN Fdp_FeatureApplicability	AS A	ON	F.FeatureId				= A.FeatureId
+													AND H.DocumentId			= A.DocumentId
+													AND PH.MarketId				= A.MarketId
+			WHERE
+			F.FeaturePackId IS NOT NULL
+			AND
+			A.Applicability LIKE '%O%'
+			AND
+			PH.FdpPivotHeaderId = @FdpPivotHeaderId
+			GROUP BY
+			PH.FdpPivotHeaderId, H.FdpVolumeHeaderId, PH.MarketId, F.FeatureId, F.FeaturePackId
+		)
+		INSERT INTO Fdp_PivotData
+		(
+			  FdpPivotHeaderId
+			, DisplayOrder
+			, FeatureGroup
+			, FeatureSubGroup
+			, FeatureCode
+			, BrandDescription
+			, FeatureId
+			, FeaturePackId
+			, FeatureComment
+			, FeatureRuleText
+			, SystemDescription
+			, HasRule
+			, LongDescription
+			, Volume	
+			, PercentageTakeRate
+			, OxoCode		
+			, ModelId
+			, StringIdentifier
+			, FeatureIdentifier	
+			, ExclusiveFeatureGroup
+			, IsOrphanedData
+			, IsIgnoredData
+			, IsMappedToMultipleImportFeatures
+			, IsCombinedPackOption
+		)
+		SELECT
+			  PF.FdpPivotHeaderId
+			, F.DisplayOrder
+			, F.FeatureGroup
+			, F.FeatureSubGroup
+			, F.FeatureCode
+			, F.BrandDescription + ' (COMBINED)' AS BrandDescription
+			, F.FeatureId
+			, F.FeaturePackId	 
+			, F.FeatureComment
+			, F.FeatureRuleText
+			, F.SystemDescription + ' (COMBINED)' AS SystemDescription
+			, F.FeatureRuleText
+			, F.LongDescription
+			, CASE
+				WHEN A.Applicability LIKE '%O%' THEN ISNULL(FT.Volume, 0) + ISNULL(PT.Volume, 0) 
+				ELSE ISNULL(FT.Volume, 0)
+			  END AS Volume
+			, CASE
+				WHEN A.Applicability LIKE '%O%' THEN ISNULL(FT.PercentageTakeRate, 0) + ISNULL(PT.PercentageTakeRate, 0) 
+				ELSE ISNULL(FT.PercentageTakeRate, 0)
+			  END AS PercentageTakeRate
+			, A.Applicability
+			, M.ModelId
+			, M.StringIdentifier
+			, 'O' + CAST(F.FeatureId AS NVARCHAR(10)) + 'C' AS FeatureIdentifier
+			, F.ExclusiveFeatureGroup
+			, 0
+			, 0
+			, 0
+			, CAST(1 AS BIT) AS IsCombinedPackOption
+		FROM
+		PackFeaturesAsOptions		AS PF
+		JOIN Fdp_VolumeHeader_VW	AS H	ON	PF.FdpVolumeHeaderId	= H.FdpVolumeHeaderId
+		JOIN Fdp_Feature_VW			AS F	ON	H.DocumentId			= F.DocumentId
+											AND PF.FeatureId			= F.FeatureId
+	
+		CROSS APPLY dbo.fn_Fdp_SplitModelIds(@ModelIds) AS M
+		JOIN Fdp_FeatureApplicability AS A	ON	H.DocumentId		= A.DocumentId
+											AND PF.MarketId			= A.MarketId
+											AND F.FeatureId			= A.FeatureId
+											AND M.ModelId			= A.ModelId
 
-	LEFT JOIN Fdp_VolumeDataItem AS FT ON	H.FdpVolumeHeaderId = FT.FdpVolumeHeaderId
-										AND PF.MarketId			= FT.MarketId
-										AND F.FeatureId			= FT.FeatureId
-										AND M.ModelId			= FT.ModelId
+		LEFT JOIN Fdp_VolumeDataItem AS FT ON	H.FdpVolumeHeaderId = FT.FdpVolumeHeaderId
+											AND PF.MarketId			= FT.MarketId
+											AND F.FeatureId			= FT.FeatureId
+											AND M.ModelId			= FT.ModelId
 
-	LEFT JOIN Fdp_VolumeDataItem AS PT ON	H.FdpVolumeHeaderId = PT.FdpVolumeHeaderId
-										AND PF.MarketId			= PT.MarketId
-										AND PT.FeatureId		IS NULL
-										AND F.FeaturePackId		= PT.FeaturePackId
-										AND M.ModelId			= PT.ModelId
+		LEFT JOIN Fdp_VolumeDataItem AS PT ON	H.FdpVolumeHeaderId = PT.FdpVolumeHeaderId
+											AND PF.MarketId			= PT.MarketId
+											AND PT.FeatureId		IS NULL
+											AND F.FeaturePackId		= PT.FeaturePackId
+											AND M.ModelId			= PT.ModelId
+	END

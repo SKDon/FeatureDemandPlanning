@@ -55,5 +55,11 @@ namespace FeatureDemandPlanning.Model
 
             return distinctTakeRates > 1;
         }
+
+        public bool IsPackApplicable()
+        {
+            var parentPackItem = DataItems.FirstOrDefault(p => !p.FeatureId.HasValue && p.FeaturePackId.HasValue);
+            return parentPackItem != null && !parentPackItem.IsNonApplicableFeatureInGroup;
+        }
     }
 }

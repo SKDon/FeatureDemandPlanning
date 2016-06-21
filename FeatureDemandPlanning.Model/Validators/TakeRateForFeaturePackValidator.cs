@@ -14,6 +14,7 @@ namespace FeatureDemandPlanning.Model.Validators
         {
             RuleFor(p => p)
                 .Must(p => p.AllPacks.IsFeatureTakeRateEquivalentToPack(p))
+                .When(p => p.IsPackApplicable()) // Make sure we only look at packs that are valid for the vehicle
                 .WithMessage(Message,
                     p => p.PackName,
                     p => p.Model)
@@ -28,6 +29,7 @@ namespace FeatureDemandPlanning.Model.Validators
         {
             RuleFor(p => p)
                 .Must(p => p.AllPacks.IsFeaturePlusPackTakeLessThan100Percent(p))
+                .When(p => p.IsPackApplicable())
                 .WithMessage(Message,
                     p => p.Model,
                     p => p.PackName)

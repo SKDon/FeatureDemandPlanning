@@ -14,14 +14,18 @@ namespace FeatureDemandPlanning.Model.Extensions
             {
                 // Skip standard features, non-applicable features and optional features that may be chosen outside the pack
                 if (packItem.IsStandardFeatureInGroup || packItem.IsOptionalFeatureInGroup ||
-                    packItem.IsNonApplicableFeatureInGroup)
+                    packItem.IsNonApplicableFeatureInGroup || packItem.IsUncodedFeature)
                 {
                     continue;
                 }
 
                 // Skip pack items that are in exclusive feature groups, as these will be picked up by other rules
+                // If the item is in an exclusive feature group by itself (1 item in group), then we need to validate
+                // Also if this item is a pack-only item, we need to validate, otherwise no other rules will pick this up
 
-                if (!string.IsNullOrEmpty(packItem.ExclusiveFeatureGroup))
+                if (!string.IsNullOrEmpty(packItem.ExclusiveFeatureGroup) && 
+                    packItem.FeaturesInExclusiveFeatureGroup > 1 && 
+                    !packItem.IsPackOnlyItem)
                 {
                     continue;
                 }

@@ -262,7 +262,7 @@ namespace FeatureDemandPlanning.Controllers
 
         public void Export(TakeRateParameters parameters)
         {
-            var business = new TakeRateBusiness(DataContext, parameters);
+            var business = new TakeRateBusiness(DataContext, parameters, false);
             var exportData = business.ExportPricing();
             var fileName = string.Format("TakeRatePricingExport_{0:yyyyMMdd}_{1}_{2}.xlsx", 
                 DateTime.Now,
@@ -284,7 +284,7 @@ namespace FeatureDemandPlanning.Controllers
         }
         public void ExportCpat(TakeRateParameters parameters)
         {
-            var business = new TakeRateBusiness(DataContext, parameters);
+            var business = new TakeRateBusiness(DataContext, parameters, false);
             var exportData = business.ExportCpat();
             var fileName = string.Format("TakeRateCpatExport_{0:yyyyMMdd}_{1}.xlsx",
                 DateTime.Now,

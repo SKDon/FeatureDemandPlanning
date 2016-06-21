@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[Fdp_ChangesetDataItem] (
+CREATE TABLE [dbo].[Fdp_ChangesetDataItem] (
     [FdpChangesetDataItemId]       INT            IDENTITY (1, 1) NOT NULL,
     [CreatedOn]                    DATETIME       CONSTRAINT [DF_Fdp_ChangesetDataItem_CreatedOn] DEFAULT (getdate()) NOT NULL,
     [FdpChangesetId]               INT            NOT NULL,
@@ -53,12 +53,9 @@
 
 
 
+
+
 GO
-
-
-
-
-
-
-
+CREATE NONCLUSTERED INDEX [Ix_NC_FdpChangesetDataItem_Cover]
+    ON [dbo].[Fdp_ChangesetDataItem]([ModelId] ASC, [FdpModelId] ASC, [FeatureId] ASC, [FdpFeatureId] ASC, [IsDeleted] ASC);
 

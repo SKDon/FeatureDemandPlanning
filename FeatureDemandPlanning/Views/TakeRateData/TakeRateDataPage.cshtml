@@ -59,13 +59,13 @@
                     <div class="panel-body">
                         <form class="form-horizontal">
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
-                                <label class="col-sm-8 control-label">Total Volume (All Markets):</label>
+                                <label class="col-sm-8 control-label">Total Volume (All Published Markets):</label>
                                 <div id="@(Model.IdentifierPrefix)_AllMarketVolume" class="col-sm-4 form-control-static">
                                     @Model.Document.TakeRateData.TotalVolume.ToString("N0")
                                 </div>
                             </div>
                             <div class="form-group form-group-sm" style="margin-bottom:5px">
-                                <label class="col-sm-8 control-label">Filtered Volume (Selected Markets):</label>
+                                <label class="col-sm-8 control-label">Market Volume:</label>
                                 @if (!(Model.Document.Market is EmptyMarket))
                                 {
                                     <div id="@(Model.IdentifierPrefix)_MarketVolume" class="col-sm-4 form-control-static" data-target="@Model.Document.Market.Id">

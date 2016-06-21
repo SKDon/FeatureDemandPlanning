@@ -46,7 +46,7 @@ BEGIN
     Fdp_VolumeHeader_VW						AS H
     JOIN Fdp_PowertrainDataItem_VW			AS P	ON	H.FdpVolumeHeaderId = P.FdpVolumeHeaderId
 	JOIN Derivatives						AS D	ON	P.DerivativeCode	= D.BMC
-    JOIN OXO_Programme_MarketGroupMarket_VW AS M	ON	P.MarketId			= M.Market_Id
+    LEFT JOIN OXO_Programme_MarketGroupMarket_VW AS M	ON	P.MarketId			= M.Market_Id
 													AND H.ProgrammeId		= M.Programme_Id							
 	-- Any changeset information
 	LEFT JOIN Fdp_ChangesetPowertrainDataItem_VW	AS C	ON	P.FdpPowertrainDataItemId	= C.FdpPowertrainDataItemId
@@ -55,6 +55,10 @@ BEGIN
     WHERE
     H.FdpVolumeHeaderId = @FdpVolumeHeaderId
     AND
-    P.MarketId = @MarketId;
+    (
+		(@MarketId IS NULL AND P.MarketId IS NULL)
+		OR
+		(@MarketId IS NOT NULL AND P.MarketId = @MarketId)
+	)
     
 END

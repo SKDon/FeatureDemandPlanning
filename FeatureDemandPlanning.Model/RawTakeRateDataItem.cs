@@ -53,5 +53,7 @@ namespace FeatureDemandPlanning.Model
                 return string.Empty;
             }
         }
+
+        public bool IsPackOnlyItem { get { return OxoCode.Contains("P");  } }
     }
 }

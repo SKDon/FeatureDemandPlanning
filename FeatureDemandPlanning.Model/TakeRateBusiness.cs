@@ -19,10 +19,12 @@ namespace FeatureDemandPlanning.Model
         public FdpChangeset CurrentChangeSet { get; set; }
         public RawTakeRateData CurrentData { get; set; }
 
-        public TakeRateBusiness(IDataContext context, TakeRateParameters forParameters)
+        public TakeRateBusiness(IDataContext context, TakeRateParameters forParameters, bool initData = true)
         {
             _dataContext = context;
             _filter = TakeRateFilter.FromTakeRateParameters(forParameters);
+
+            if (!initData) return;
 
             CurrentData = _dataContext.TakeRate.GetRawData(_filter).Result;
             CurrentChangeSet = forParameters.Changeset;
@@ -241,10 +243,20 @@ namespace FeatureDemandPlanning.Model
                 var firstCell = ws.FirstRow().FirstCell();
                 var firstCellRange = ws.Range(firstCell, ws.Row(2).Cell(4));
 
-                firstCell.Value = string.Format("{0} - {1} :: {2}", 
-                    model.Document.UnderlyingOxoDocument.Name, 
-                    model.Document.Market.Name,
-                    "UNPUBLISHED");
+                if (model.Document.Market is EmptyMarket)
+                {
+                    firstCell.Value = string.Format("{0} - {1} :: {2}",
+                        model.Document.UnderlyingOxoDocument.Name,
+                        "ALL MARKETS",
+                        "UNPUBLISHED");
+                }
+                else
+                {
+                    firstCell.Value = string.Format("{0} - {1} :: {2}",
+                        model.Document.UnderlyingOxoDocument.Name,
+                        model.Document.Market.Name,
+                        "UNPUBLISHED");
+                }
                 firstCell.DataType = XLCellValues.Text;
                 firstCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 firstCell.Style.Font.FontColor = XLColor.RadicalRed;
@@ -260,10 +272,20 @@ namespace FeatureDemandPlanning.Model
                 var firstCell = ws.FirstRow().FirstCell();
                 var firstCellRange = ws.Range(firstCell, ws.Row(2).Cell(4));
 
-                firstCell.Value = string.Format("{0} - {1} :: {2}",
-                    model.Document.UnderlyingOxoDocument.Name,
-                    model.Document.Market.Name,
-                    "PUBLISHED");
+                if (model.Document.Market is EmptyMarket)
+                {
+                    firstCell.Value = string.Format("{0} - {1} :: {2}",
+                        model.Document.UnderlyingOxoDocument.Name,
+                        "ALL MARKETS",
+                        "UNPUBLISHED");
+                }
+                else
+                {
+                    firstCell.Value = string.Format("{0} - {1} :: {2}",
+                        model.Document.UnderlyingOxoDocument.Name,
+                        model.Document.Market.Name,
+                        "UNPUBLISHED");
+                }
                 firstCell.DataType = XLCellValues.Text;
                 firstCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 //firstCell.Style.Font.FontColor = XLColor.RadicalRed;
@@ -341,7 +363,7 @@ namespace FeatureDemandPlanning.Model
             headerRow.Cell(4).Value = "Description";
             headerRow.Cell(5).Value = "Rules";
             headerRow.Cell(6).Value = "Comments";
-            headerRow.Cell(7).Value = "Feature Mix %";
+            headerRow.Cell(7).Value = "Take Rate %";
 
             var featureRange = ws.Range(headerRow.FirstCell(), headerRow.LastCellUsed());
             featureRange.Style.Fill.BackgroundColor = XLColor.BlanchedAlmond;
@@ -358,21 +380,47 @@ namespace FeatureDemandPlanning.Model
 
             //// Add a blank row for each feature group
 
-            var dataRow = headerRow.RowBelow();
-            var lastGroup = string.Empty;
-            var lastSubGroup = string.Empty;
+            //var dataRow = headerRow.RowBelow();
+            //var lastGroup = string.Empty;
+            //var lastSubGroup = string.Empty;
 
-            foreach (var currentDataRow in ws.Range(dataRow.FirstCell(), ws.LastRowUsed().LastCellUsed()).Rows())
+            //foreach (var currentDataRow in ws.Range(dataRow.FirstCell(), ws.LastRowUsed().LastCellUsed()).Rows())
+            //{
+            //    var currentGroup = currentDataRow.Cell(2).Value.ToString();
+            //    var currentSubGroup = currentDataRow.Cell(3).Value.ToString();
+            //    if ((!string.IsNullOrEmpty(lastGroup) && lastGroup != currentGroup) || (!string.IsNullOrEmpty(lastSubGroup) && lastSubGroup != currentSubGroup))
+            //    {
+            //        currentDataRow.InsertRowsAbove(1);
+            //    }
+            //    lastGroup = currentGroup;
+            //    lastSubGroup = currentSubGroup;
+            //}
+
+            // Add an overall header
+
+            headerRow.InsertRowsAbove(1);
+            var titleRow = ws.Rows().First();
+            var titleCell = titleRow.FirstCell();
+            if (model.Document.Market is EmptyMarket)
             {
-                var currentGroup = currentDataRow.Cell(2).Value.ToString();
-                var currentSubGroup = currentDataRow.Cell(3).Value.ToString();
-                if ((!string.IsNullOrEmpty(lastGroup) && lastGroup != currentGroup) || (!string.IsNullOrEmpty(lastSubGroup) && lastSubGroup != currentSubGroup))
-                {
-                    currentDataRow.InsertRowsAbove(1);
-                }
-                lastGroup = currentGroup;
-                lastSubGroup = currentSubGroup;
+                titleCell.Value = string.Format("{0} - {1}",
+                    model.Document.UnderlyingOxoDocument.Name,
+                    "ALL PUBLISHED MARKETS");
             }
+            else
+            {
+                titleCell.Value = string.Format("{0} - {1}",
+                    model.Document.UnderlyingOxoDocument.Name,
+                    model.Document.Market.Name);
+            }
+            titleCell.DataType = XLCellValues.Text;
+            titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            titleCell.Style.Font.SetBold();
+            titleCell.Style.Font.FontSize = 18;
+            titleCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+            var titleCellRange = ws.Range(titleCell, titleRow.Cell(4));
+            titleCellRange.Merge();
 
             return wb;
         }

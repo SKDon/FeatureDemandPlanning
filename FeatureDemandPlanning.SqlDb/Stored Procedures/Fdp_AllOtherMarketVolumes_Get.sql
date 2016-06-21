@@ -11,6 +11,9 @@ AS
 	Fdp_VolumeHeader AS H
 	JOIN Fdp_TakeRateSummaryByMarket_VW		AS S	ON	H.FdpVolumeHeaderId		= S.FdpVolumeHeaderId
 													AND S.MarketId				<> @MarketId
+	JOIN Fdp_Publish						AS P	ON	H.FdpVolumeHeaderId		= P.FdpVolumeHeaderId
+													AND S.MarketId				= P.MarketId
+													AND P.IsPublished			= 1
 	--LEFT JOIN Fdp_Changeset					AS C	ON	H.FdpVolumeHeaderId		= C.FdpVolumeHeaderId
 	--												AND C.CreatedBy				= @CDSId
 	--												AND C.IsDeleted				= 0

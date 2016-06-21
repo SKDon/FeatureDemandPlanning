@@ -9,7 +9,6 @@
   , @Filter						NVARCHAR(100) = NULL
   , @FeatureCode				NVARCHAR(5) = NULL
   , @ShowCombinedOptions		BIT = 0
-  , @ExcludeOptionalPackItems	BIT = 0
 AS
 	SET NOCOUNT ON;
 
@@ -64,7 +63,14 @@ AS
 	
 	-- Work out total volumes so we can calculate percentage take from the feature mix
 	
-	SELECT TOP 1 @TotalVolume = TotalVolume FROM Fdp_VolumeHeader WHERE FdpVolumeHeaderId = @FdpVolumeHeaderId;
+	SELECT @TotalVolume = SUM(V.Volume)
+	FROM
+	dbo.fn_Fdp_VolumeByMarket_GetMany(@FdpVolumeHeaderId, NULL) AS V
+	JOIN Fdp_Publish AS P ON V.MarketId = P.MarketId
+	WHERE
+	P.FdpVolumeHeaderId = @FdpVolumeHeaderId
+	AND
+	P.IsPublished = 1;
 
 	SELECT @FilteredVolume = @TotalVolume;
 	SET @FilteredPercentage = 1;
@@ -88,7 +94,7 @@ AS
 		WHERE
 		FdpVolumeHeaderId = @FdpVolumeHeaderId
 		AND
-		(@ObjectId IS NULL OR MarketId = @ObjectId)
+		MarketId = @ObjectId
 		AND
 		ModelId IS NOT NULL;
 	END;
@@ -131,9 +137,6 @@ AS
 		IF @ShowCombinedOptions = 0
 			SET @Sql = @Sql + ' AND IsCombinedPackOption = 0'
 
-		IF @ExcludeOptionalPackItems = 1
-			SET @Sql = @Sql + ' AND IsOptionalPackItem = 0'
-
 		SET @Sql = @Sql + ') AS S1 '
 		SET @Sql = @Sql + 'LEFT JOIN '
 		SET @Sql = @Sql + '( '
@@ -167,9 +170,6 @@ AS
 
 		IF @ShowCombinedOptions = 0
 			SET @Sql = @Sql + ' AND IsCombinedPackOption = 0'
-
-		IF @ExcludeOptionalPackItems = 1
-			SET @Sql = @Sql + ' AND IsOptionalPackItem = 0'
 
 		SET @Sql = @Sql + ') AS S2 '
 		SET @Sql = @Sql + 'LEFT JOIN '
@@ -207,9 +207,6 @@ AS
 	IF @ShowCombinedOptions = 0
 		SET @Sql = @Sql + ' AND IsCombinedPackOption = 0'
 
-	IF @ExcludeOptionalPackItems = 1
-		SET @Sql = @Sql + ' AND IsOptionalPackItem = 0'
-
 	SET @Sql = @Sql + ') AS S3 '
 	SET @Sql = @Sql + 'PIVOT ( '
 	SET @Sql = @Sql + 'MAX([OXOCode]) FOR StringIdentifier '
@@ -225,18 +222,19 @@ AS
 	SELECT 
 		  M.StringIdentifier
 		, M.IsFdpModel
-		, SUM(S.TotalVolume) AS Volume
-		, dbo.fn_Fdp_PercentageTakeRate_Get(SUM(S.TotalVolume), @FilteredVolume) AS PercentageOfFilteredVolume
+		, S.TotalVolume AS Volume
+		, S.PercentageTakeRate PercentageOfFilteredVolume
 	FROM
 	Fdp_TakeRateSummaryByModelAndMarket_VW AS S
 	JOIN @Model AS M ON S.ModelId = M.ModelId
-						AND M.IsFdpModel = 0
 	WHERE
 	S.FdpVolumeHeaderId = @FdpVolumeHeaderId
 	AND
-	(@ObjectId IS NULL OR S.MarketId = @ObjectId)
-	GROUP BY
-	M.StringIdentifier, M.IsFdpModel
+	(
+		(@ObjectId IS NULL AND S.MarketId IS NULL)
+		OR
+		(@ObjectId IS NOT NULL AND S.MarketId = @ObjectId)
+	)
 	
 	-- Summary dataset returning the meta information for the data (created by, updated, total volume mix, volume for market, etc)
 	
